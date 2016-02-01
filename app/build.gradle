@@ -35,6 +35,30 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    productFlavors {
+        fat {
+            flavorDimension "abi"
+            ndk {
+                abiFilters "x86", "armeabi-v7a", "armeabi"
+                versionCode = 0
+            }
+        }
+
+
+    }
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'armeabi-v7a'
+            universalApk true
+        }
+    }
+
+    sourceSets.main {
+        jniLibs.srcDir '../ndk/libs'
+    }
 }
 
 dependencies {

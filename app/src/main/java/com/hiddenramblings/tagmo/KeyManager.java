@@ -24,42 +24,53 @@ public class KeyManager {
 
     private static final int KEY_FILE_SIZE = 80;
 
+    byte[] fixedKey = null;
+    byte[] unfixedKey = null;
+
     Context context;
 
     public KeyManager(Context context) {
         this.context = context;
+
+        try {
+            if (hasLocalFile(FIXED_KEY_FILE))
+                fixedKey = loadKeyFromStorage(FIXED_KEY_FILE);
+
+            if (hasLocalFile(UNFIXED_KEY_FILE))
+                unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to load keys: ", e);
+        }
+    }
+
+    boolean hasLocalFile(String file) {
+        String[] files = context.fileList();
+        for(int i=0; i<files.length; i++)
+        {
+            if (files[i].equals(file))
+                return true;
+        }
+        return false;
     }
 
     public boolean hasFixedKey() {
-        String[] files = context.fileList();
-        for(int i=0; i<files.length; i++)
-        {
-            if (files[i].equals(FIXED_KEY_FILE))
-                return true;
-        }
-        return false;
+        return fixedKey != null;
     }
 
     public boolean hasUnFixedKey() {
-        String[] files = context.fileList();
-        for(int i=0; i<files.length; i++)
-        {
-            if (files[i].equals(UNFIXED_KEY_FILE))
-                return true;
-        }
-        return false;
+        return unfixedKey != null;
     }
 
-    private boolean loadKey(Uri source, String targetfile, String md5) {
+    private void loadKey(Uri source, String targetfile, String md5) throws Exception {
         try {
             InputStream strm = context.getContentResolver().openInputStream(source);
             try {
                 byte[] data = new byte[KEY_FILE_SIZE];
                 if (strm.read(data, 0, data.length) != KEY_FILE_SIZE)
-                    return false;
+                    throw new Exception("Key file size does not match.");
 
                 if (!md5.equals(Util.md5(data)))
-                    return false;
+                    throw new Exception("Key file signature does not match.");
 
                 FileOutputStream fos = context.openFileOutput(targetfile, context.MODE_PRIVATE);
                 try {
@@ -67,26 +78,40 @@ public class KeyManager {
                 } finally {
                     fos.close();
                 }
-
-                return true;
-
             } finally {
                 strm.close();
             }
 
         } catch (Exception e) {
-            Log.e(TAG, "Loading key failed", e);
             context.deleteFile(targetfile);
+            throw e;
         }
-        return false;
     }
 
-    public boolean loadFixedKey(Uri fileuri) {
-        return loadKey(fileuri, FIXED_KEY_FILE, FIXED_KEY_MD5);
+    private byte[] loadKeyFromStorage(String file) throws Exception {
+        try {
+            FileInputStream fs = context.openFileInput(file);
+            try {
+                byte[] key = new byte[KEY_FILE_SIZE];
+                if (fs.read(key) != KEY_FILE_SIZE) throw new Exception("Invalid file size");
+                return key;
+            } finally {
+                fs.close();
+            }
+        } catch(Exception e) {
+            Log.e(TAG, "Error reading key from local storage", e);
+        }
+        return null;
     }
 
-    public boolean loadUnfixedKey(Uri fileuri) {
-        return loadKey(fileuri, UNFIXED_KEY_FILE, UNFIXED_KEY_MD5);
+    public void loadFixedKey(Uri fileuri) throws Exception {
+        loadKey(fileuri, FIXED_KEY_FILE, FIXED_KEY_MD5);
+        this.fixedKey = loadKeyFromStorage(FIXED_KEY_FILE);
+    }
+
+    public void loadUnfixedKey(Uri fileuri) throws Exception {
+        loadKey(fileuri, UNFIXED_KEY_FILE, UNFIXED_KEY_MD5);
+        this.unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
     }
 
 }

@@ -1,6 +1,10 @@
 package com.hiddenramblings.tagmo;
 
+import java.util.Arrays;
+
 public class TagUtil {
+    public static final int TAG_FILE_SIZE = 532;
+    public static final int PAGE_SIZE = 4;
 
     public static byte[] keygen(byte[] uuid) {
         //from AmiiManage (GPL)
@@ -34,6 +38,14 @@ public class TagUtil {
         key[5] = pages0_1[6];
         key[6] = pages0_1[7];
         return key;
+    }
+
+    public static byte[][] splitPages(byte[] data) { //assume correct sizes
+        byte[][] pages = new byte[data.length / TagUtil.PAGE_SIZE][];
+        for (int i = 0, j = 0; i < data.length; i += TagUtil.PAGE_SIZE, j++) {
+            pages[j] = Arrays.copyOfRange(data, i, i + TagUtil.PAGE_SIZE);
+        }
+        return pages;
     }
 
 }

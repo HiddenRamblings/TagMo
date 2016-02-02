@@ -46,6 +46,5 @@ typedef struct {
 #pragma pack()
 
 void nfc3d_keygen(const nfc3d_keygen_masterkeys * baseKeys, const uint8_t * baseSeed, nfc3d_keygen_derivedkeys * derivedKeys);
-bool nfc3d_load_keys(nfc3d_keygen_masterkeys * baseKeys, const char * path);
 
 #endif

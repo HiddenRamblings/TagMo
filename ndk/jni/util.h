@@ -28,7 +28,7 @@
 #include <string.h>
 
 void aes128ctr(const uint8_t * in, uint8_t * out, size_t size, const uint8_t * key, const uint8_t * iv);
-void sha256hmac(const uint8_t * in, uint8_t * out, size_t size, const uint8_t * key, size_t keySize);
+void sha256hmac(const uint8_t * key, size_t keySize, const uint8_t * in, size_t inSize, uint8_t * out);
 void printhex(void * data, size_t size);
 
 #endif

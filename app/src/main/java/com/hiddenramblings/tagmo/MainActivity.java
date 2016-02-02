@@ -59,24 +59,46 @@ public class MainActivity extends AppCompatActivity {
     NfcMode currentMode;
 
     /*
-    void test() {
+    void test() throws Exception {
+        Uri inputFile = Uri.parse("file:///storage/emulated/0/.bin");
+        tagFile.loadFile(inputFile);
+
         Log.d(TAG, "Loading jni3");
         AmiiTool t = new AmiiTool();
         Log.d(TAG, "Loading fixed keys");
-        int res = t.setKeysFixed(lockedkey, lockedkey.length);
+        int res = t.setKeysFixed(keyManager.fixedKey, keyManager.fixedKey.length);
         Log.d(TAG, "---------result "+ res);
         Log.d(TAG, "Loading unfixed keys");
-        res = t.setKeysUnfixed(unfixedkey, unfixedkey.length);
+        res = t.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length);
         Log.d(TAG, "---------result "+ res);
-        byte[] plainTag = new byte[encryptedTag.length];
-        res = t.unpack(encryptedTag, encryptedTag.length, plainTag, plainTag.length);
+
+        Log.d(TAG, "Decrypting");
+        byte[] plainTag = new byte[tagFile.tagData.length];
+        res = t.unpack(tagFile.tagData, tagFile.tagData.length, plainTag, plainTag.length);
         Log.d(TAG, "---------result "+ res);
         Log.d(TAG, Util.bytesToHex(plainTag));
-        byte[] finalTag = new byte[encryptedTag.length];
+
+        Log.d(TAG, "Patching");
+        plainTag[0x1D4] = (byte) 0x04;
+        plainTag[0x1D5] = (byte) 0xED;
+        plainTag[0x1D6] = (byte) 0x7c;
+        plainTag[0x1D7] = (byte) 0x1d;
+        plainTag[0x1D8] = (byte) 0x52;
+        plainTag[0x1D9] = (byte) 0xC2;
+        plainTag[0x1DA] = (byte) 0x3e;
+        plainTag[0x1DB] = (byte) 0x80;
+        plainTag[0] = (byte) 0x2E;
+        Log.d(TAG, Util.bytesToHex(plainTag));
+
+        Log.d(TAG, "Encrypting");
+        byte[] finalTag = new byte[plainTag.length];
         res = t.pack(plainTag, plainTag.length, finalTag, finalTag.length);
         Log.d(TAG, "---------result "+ res);
         Log.d(TAG, Util.bytesToHex(finalTag));
-        Log.d(TAG, "Match: " + Arrays.equals(finalTag, encryptedTag));
+
+        byte[] correct = Util.hexStringToByteArray(tagHex);
+        Log.d(TAG, Util.bytesToHex(correct));
+        Log.d(TAG, "Match: " + Arrays.equals(finalTag, correct));
     }
     */
 

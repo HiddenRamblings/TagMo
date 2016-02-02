@@ -36,9 +36,9 @@ void aes128ctr(const uint8_t * in, uint8_t * out, size_t size, const uint8_t * k
 	EVP_CIPHER_CTX_cleanup(&ctx);
 }
 
-void sha256hmac(const uint8_t * in, uint8_t * out, size_t size, const uint8_t * key, size_t keySize) {
+void sha256hmac(const uint8_t * key, size_t keySize, const uint8_t * in, size_t inSize, uint8_t * out) {
 	unsigned int hmacLen;
-	HMAC(EVP_sha256(), key, keySize, in, size, out, &hmacLen);
+	HMAC(EVP_sha256(), key, keySize, in, inSize, out, &hmacLen);
 }
 
 void printhex(void * data, size_t size) {

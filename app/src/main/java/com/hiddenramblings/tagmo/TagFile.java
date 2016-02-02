@@ -71,6 +71,7 @@ public class TagFile {
         if (!keyManager.hasFixedKey() || !keyManager.hasUnFixedKey())
             throw new Exception("Key files not loaded!");
 
+        Log.d(TAG, "decrypting tag");
 
         AmiiTool tool = new AmiiTool();
         if (tool.setKeysFixed(keyManager.fixedKey, keyManager.fixedKey.length) == 0)

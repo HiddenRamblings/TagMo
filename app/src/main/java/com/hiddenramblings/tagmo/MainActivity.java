@@ -48,8 +48,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static final int FILE_LOAD_DUMP = 0x100;
-    private static final int FILE_LOAD_FIXED_KEYS = 0x101;
-    private static final int FILE_LOAD_UNFIXED_KEYS = 0x102;
+    private static final int FILE_LOAD_KEYS = 0x101;
 
     @ViewById(R.id.logMessages)
     EditText logMessages;
@@ -156,16 +155,10 @@ public class MainActivity extends AppCompatActivity {
         showFileChooser("Load encrypted tag file for writing", "*/*", FILE_LOAD_DUMP);
     }
 
-    @OptionsItem(R.id.mnu_load_fixed_keys)
+    @OptionsItem(R.id.mnu_load_keys)
     void loadFixedKeysClicked() {
-        showFileChooser("Load the fixed key file", "*/*", FILE_LOAD_FIXED_KEYS);
+        showFileChooser("Load the key file", "*/*", FILE_LOAD_KEYS);
     }
-
-    @OptionsItem(R.id.mnu_load_unfixed_keys)
-    void loadUnFixedKeysClicked() {
-        showFileChooser("Load the unfixed key file", "*/*", FILE_LOAD_UNFIXED_KEYS);
-    }
-
 
     @OptionsItem(R.id.mnu_dump_tag)
     void dumpTag() {
@@ -319,9 +312,8 @@ public class MainActivity extends AppCompatActivity {
 
         Uri uri = data.getData();
         switch (requestCode) {
-            case FILE_LOAD_FIXED_KEYS:
-            case FILE_LOAD_UNFIXED_KEYS:
-                loadKey(requestCode, uri);
+            case FILE_LOAD_KEYS:
+                loadKey(uri);
                 break;
             case FILE_LOAD_DUMP:
                 loadDumpFile(uri);
@@ -357,18 +349,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Background
-    void loadKey(int type, Uri uri) {
+    void loadKey(Uri uri) {
         try {
-            switch (type) {
-                case FILE_LOAD_FIXED_KEYS:
-                    this.keyManager.loadFixedKey(uri);
-                    updateStatus();
-                    break;
-                case FILE_LOAD_UNFIXED_KEYS:
-                    this.keyManager.loadUnfixedKey(uri);
-                    updateStatus();
-                    break;
-            }
+            this.keyManager.loadKey(uri);
+            updateStatus();
         } catch (Exception e) {
             LogMessage("Error: " + e.getMessage());
         }

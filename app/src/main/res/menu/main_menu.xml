@@ -9,8 +9,6 @@
     <item android:id="@+id/mnu_write_tag_raw"
         android:title="Write to tag (Raw)" />
 
-    <item android:id="@+id/mnu_load_fixed_keys"
-        android:title="Load Locked Keys" />
-    <item android:id="@+id/mnu_load_unfixed_keys"
-        android:title="Load Unfixed keys" />
+    <item android:id="@+id/mnu_load_keys"
+        android:title="Load key(s) file..." />
 </menu>

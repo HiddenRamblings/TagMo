@@ -7,8 +7,10 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.Key;
 
 /**
  * Created by MAS on 31/01/2016.
@@ -61,33 +63,6 @@ public class KeyManager {
         return unfixedKey != null;
     }
 
-    private void loadKey(Uri source, String targetfile, String md5) throws Exception {
-        try {
-            InputStream strm = context.getContentResolver().openInputStream(source);
-            try {
-                byte[] data = new byte[KEY_FILE_SIZE];
-                if (strm.read(data, 0, data.length) != KEY_FILE_SIZE)
-                    throw new Exception("Key file size does not match.");
-
-                if (!md5.equals(Util.md5(data)))
-                    throw new Exception("Key file signature does not match.");
-
-                FileOutputStream fos = context.openFileOutput(targetfile, context.MODE_PRIVATE);
-                try {
-                    fos.write(data);
-                } finally {
-                    fos.close();
-                }
-            } finally {
-                strm.close();
-            }
-
-        } catch (Exception e) {
-            context.deleteFile(targetfile);
-            throw e;
-        }
-    }
-
     private byte[] loadKeyFromStorage(String file) throws Exception {
         try {
             FileInputStream fs = context.openFileInput(file);
@@ -104,14 +79,45 @@ public class KeyManager {
         return null;
     }
 
-    public void loadFixedKey(Uri fileuri) throws Exception {
-        loadKey(fileuri, FIXED_KEY_FILE, FIXED_KEY_MD5);
-        this.fixedKey = loadKeyFromStorage(FIXED_KEY_FILE);
+    void saveKeyFile(String file, byte[] key) throws IOException {
+        FileOutputStream fos = context.openFileOutput(file, context.MODE_PRIVATE);
+        try {
+            fos.write(key);
+        } finally {
+            fos.close();
+        }
     }
 
-    public void loadUnfixedKey(Uri fileuri) throws Exception {
-        loadKey(fileuri, UNFIXED_KEY_FILE, UNFIXED_KEY_MD5);
-        this.unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
+    boolean readKey(InputStream strm) throws Exception {
+        byte[] data = new byte[KEY_FILE_SIZE];
+        int rlen = strm.read(data, 0, data.length);
+        if (rlen <= 0)
+            return false;
+
+        if (rlen < KEY_FILE_SIZE)
+            throw new Exception("Key file size does not match.");
+
+        String md5 = Util.md5(data);
+        if (FIXED_KEY_MD5.equals(md5)) {
+            saveKeyFile(FIXED_KEY_FILE, data);
+            this.fixedKey = loadKeyFromStorage(FIXED_KEY_FILE);
+        } else if (UNFIXED_KEY_MD5.equals(md5)) {
+            saveKeyFile(UNFIXED_KEY_FILE, data);
+            this.unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
+        } else
+            throw new Exception("Key file signature does not match.");
+        return true;
+    }
+
+    public void loadKey(Uri file) throws Exception {
+        InputStream strm = context.getContentResolver().openInputStream(file);
+        try {
+            if (!readKey(strm))
+                throw new Exception("No valid key in file."); //if we can't even read one key then it's completely wrong
+            readKey(strm);
+        } finally {
+            strm.close();
+        }
     }
 
 }

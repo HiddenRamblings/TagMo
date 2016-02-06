@@ -63,6 +63,14 @@ public class TagWriter {
         }
     }
 
+    public static void restoreTag(MifareUltralight tag, byte[] tagData) throws Exception {
+        validate(tag, tagData);
+        doAuth(tag);
+        byte[][] pages = TagUtil.splitPages(tagData);
+        writePages(tag, 4, 12, pages);
+        writePages(tag, 32, 129, pages);
+    }
+
     static byte[] adjustTag(KeyManager keyManager, TagFile tagFile, MifareUltralight mifare) throws Exception {
         byte[] pages = mifare.readPages(0);
         if (pages == null || pages.length != TagUtil.PAGE_SIZE * 4)
@@ -157,9 +165,37 @@ public class TagWriter {
             throw new IOException("Read failed");
 
         tag.writePage(2, new byte[]{pages[2 * TagUtil.PAGE_SIZE], pages[(2 * TagUtil.PAGE_SIZE) + 1], (byte) 0x0F, (byte) 0xE0}); //lock bits
-        tag.writePage(130, new byte[]{(byte)0x01, (byte)0x00, (byte)0x0F, (byte)0x00}); //dynamic lock bits. should the last bit be 0xBD accoridng to the nfc docs though: //Remark: Set all bits marked with RFUI to 0, when writing to the dynamic lock bytes.
+        tag.writePage(130, new byte[]{(byte) 0x01, (byte) 0x00, (byte) 0x0F, (byte) 0x00}); //dynamic lock bits. should the last bit be 0xBD accoridng to the nfc docs though: //Remark: Set all bits marked with RFUI to 0, when writing to the dynamic lock bytes.
         tag.writePage(131, new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x04}); //config
-        tag.writePage(132, new byte[]{(byte)0x5F, (byte)0x00, (byte)0x00, (byte)0x00}); //config
+        tag.writePage(132, new byte[]{(byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00}); //config
+    }
+
+    static void doAuth(MifareUltralight tag) throws Exception {
+        byte[] pages0_1 = tag.readPages(0);
+
+        if (pages0_1 == null || pages0_1.length != TagUtil.PAGE_SIZE * 4)
+            throw new Exception("Read failed");
+
+        byte[] uid = TagUtil.uidFromPages(pages0_1);
+        byte[] password = TagUtil.keygen(uid);
+
+        Log.d(TAG, "Password: " + Util.bytesToHex(password));
+
+        byte[] auth = new byte[]{
+                (byte) 0x1B,
+                password[0],
+                password[1],
+                password[2],
+                password[3]
+        };
+        byte[] response = tag.transceive(auth);
+        if (response == null)
+            throw new Exception("Auth result was null");
+        String respStr = Util.bytesToHex(response);
+        Log.e(TAG, "Auth response " + respStr);
+        if (!"8080".equals(respStr)) {
+            throw new Exception("Authenticaiton failed");
+        }
     }
 
 }

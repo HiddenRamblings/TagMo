@@ -104,4 +104,32 @@ public class TagFile {
         return encrypted;
     }
 
+    /*
+    Does nto work
+    public void buildTag(byte[] parameters, KeyManager keyManager) throws Exception {
+        if (parameters == null || parameters.length!=8)
+            throw new Exception("Invalid parameter size");
+        byte[] internal = new byte[TagUtil.TAG_FILE_SIZE];
+        System.arraycopy(parameters, 0, internal, 0x1DC, 8); //parameters
+        System.arraycopy(Util.hexStringToByteArray("0512941E"), 0, internal, 0x1E4, 4); //page of unknown significance
+        System.arraycopy(Util.getRandom(8 * 4), 0, internal, 0x1E8, 8 * 4); //keygen salt
+        System.arraycopy(Util.hexStringToByteArray("F110FFEE"), 0, internal, 0x4, 4); //cc
+        System.arraycopy(Util.hexStringToByteArray("0FE0"), 0, internal, 0x2, 2); //lock bytes
+        System.arraycopy(Util.hexStringToByteArray("01000FBD000000045F000000"), 0, internal, 0x208, 12); //config and dynamic locks
+        internal[0x1D4] = (byte)0x0f; //UID 1st byte
+
+        try {
+            this.decryptedData = internal;
+
+            this.tagData = this.encryptToUid(Util.hexStringToByteArray("040000000000000000"), keyManager);
+            validateTag(this.tagData);
+            Log.d(TAG, Util.bytesToHex(tagData));
+        } catch (Exception e) {
+            this.tagData = null;
+            this.decryptedData = null;
+            throw e;
+        }
+    }
+    */
+
 }

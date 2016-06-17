@@ -8,3 +8,6 @@
 /captures
 /ndk/libs
 /ndk/obj
+/app/build
+/app/libs
+/app/app.iml

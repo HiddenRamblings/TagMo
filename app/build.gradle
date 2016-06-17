@@ -1,20 +1,20 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
-def AAVersion = '3.2'
+def AAVersion = '4.0.0'
 
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
 }
 
 apt {
     arguments {
-        androidManifestFile variant.outputs[0].processResources.manifestFile
-        resourcePackageName 'com.hiddenramblings.tagmo'
+        //androidManifestFile variant.outputs[0].processResources.manifestFile
+        resourcePackageName android.defaultConfig.applicationId
     }
 }
 

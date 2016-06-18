@@ -1,23 +1,22 @@
 package com.hiddenramblings.tagmo;
 
-import android.app.DialogFragment;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.nfc.tech.MifareUltralight;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -30,9 +29,8 @@ import org.androidannotations.annotations.ViewById;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.net.URLEncoder;
+import java.io.InputStream;
 import java.util.Arrays;
-import java.util.IdentityHashMap;
 
 
 @EActivity(R.layout.activity_main)
@@ -40,26 +38,21 @@ import java.util.IdentityHashMap;
 public class MainActivity extends AppCompatActivity /* implements TagCreateDialog.TagCreateListener */ {
     private static final String TAG = "MainActivity";
 
-    public enum NfcMode {
-        Idle, SaveTag, RestoreTag , WriteRaw, WriteAuto, CreateTag
-    }
-
-    private static final int FILE_LOAD_DUMP = 0x100;
+    private static final int FILE_LOAD_TAG = 0x100;
     private static final int FILE_LOAD_KEYS = 0x101;
+    private static final int NFC_ACTIVITY = 0x102;
 
-    @ViewById(R.id.webView)
-    WebView webView;
     @ViewById(R.id.txtLockedKey)
     TextView txtLockedKey;
     @ViewById(R.id.txtUnfixedKey)
     TextView txtUnfixedKey;
     @ViewById(R.id.txtNFC)
     TextView txtNFC;
+    @ViewById(R.id.txtTagId)
+    TextView txtTagId;
+
     @ViewById(R.id.btnSaveTag)
     Button btnSaveTag;
-    /*
-    @ViewById(R.id.btnCreateTag)
-    Button btnCreateTag; */
     @ViewById(R.id.btnLoadTag)
     Button btnLoadTag;
     @ViewById(R.id.btnWriteTagAuto)
@@ -68,27 +61,22 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     Button btnWriteTagRaw;
     @ViewById(R.id.btnRestoreTag)
     Button btnRestoreTag;
-    @ViewById(R.id.txtStatus)
-    TextView txtStatus;
 
-    TagFile tagFile;
+    @ViewById(R.id.cbAutoSaveOnScan)
+    CheckBox cbAutoSaveOnScan;
+    @ViewById(R.id.cbNoIDValidate)
+    CheckBox cbNoIDValidate;
+
+    byte[] currentTagData;
     KeyManager keyManager;
     NfcAdapter nfcAdapter;
-    NfcMode currentMode;
 
-    void initWebView() {
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("file:///android_asset/log.html");
-    }
+    boolean keyWarningShown;
 
     @AfterViews
     protected void afterViews() {
-        initWebView();
-
-        this.tagFile = new TagFile(this);
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         keyManager = new KeyManager(this);
-        currentMode = NfcMode.Idle;
 
         updateStatus();
     }
@@ -97,6 +85,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     protected void onResume() {
         super.onResume();
         startNfcMonitor();
+        updateStatus();
     }
 
     @Override
@@ -118,25 +107,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
     void startNfcMonitor() {
         if (nfcAdapter == null)
-        {
             return;
-        }
-
-        Intent intent = new Intent(this.getApplicationContext(), this.getClass());
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        PendingIntent nfcPendingIntent = PendingIntent.getActivity(this.getApplicationContext(), 0, intent, 0);
-
-        String[][] nfcTechList = new String[][]{};
-
-        IntentFilter filter1 = new IntentFilter();
-        filter1.addAction(NfcAdapter.ACTION_TAG_DISCOVERED);
-
-        IntentFilter[] nfcIntentFilter = new IntentFilter[]{filter1};
-
-        nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, nfcIntentFilter, nfcTechList);
-
-        //monitor nfc status
         IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
         this.registerReceiver(mReceiver, filter);
     }
@@ -144,7 +115,6 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     void stopNfcMonitor() {
         if (nfcAdapter == null)
             return;
-        nfcAdapter.disableForegroundDispatch(this);
         this.unregisterReceiver(mReceiver);
     }
 
@@ -152,10 +122,10 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     void updateStatus() {
         boolean hasNfc = (nfcAdapter != null);
         boolean nfcEnabled = hasNfc && nfcAdapter.isEnabled();
-        boolean hasfixed = this.keyManager.hasFixedKey();
-        boolean hasunfixed = this.keyManager.hasUnFixedKey();
-        boolean hasKeys = hasfixed && hasunfixed;
-        boolean hasTag = this.tagFile.isValid();
+        boolean hasFixed = this.keyManager.hasFixedKey();
+        boolean hasUnfixed = this.keyManager.hasUnFixedKey();
+        boolean hasKeys = hasFixed && hasUnfixed;
+        boolean hasTag = currentTagData != null;
 
         if (!hasNfc) {
             txtNFC.setTextColor(Color.RED);
@@ -168,7 +138,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
             txtNFC.setText("NFC enabled!");
         }
 
-        if (!hasfixed) {
+        if (!hasFixed) {
             txtLockedKey.setTextColor(Color.RED);
             txtLockedKey.setText("No Locked key!");
         } else {
@@ -176,7 +146,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
             txtLockedKey.setText("Locked key OK.");
         }
 
-        if (!hasunfixed) {
+        if (!hasUnfixed) {
             txtUnfixedKey.setTextColor(Color.RED);
             txtUnfixedKey.setText("No Unfixed key!");
         } else {
@@ -184,207 +154,178 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
             txtUnfixedKey.setText("Unfixed key OK.");
         }
 
-        switch (currentMode) {
-            case Idle: txtStatus.setText("Mode: Idle"); break;
-            case CreateTag: txtStatus.setText("Mode: Create"); break;
-            case WriteRaw: txtStatus.setText("Mode: Write (Raw)"); break;
-            case WriteAuto: txtStatus.setText("Mode: Write (Auto)"); break;
-            case SaveTag: txtStatus.setText("Mode: Save"); break;
-            case RestoreTag: txtStatus.setText("Mode: Restore"); break;
-        }
-
-        btnSaveTag.setEnabled(nfcEnabled);
         btnWriteTagAuto.setEnabled(nfcEnabled && hasKeys && hasTag);
         btnWriteTagRaw.setEnabled(nfcEnabled && hasTag);
-        //btnCreateTag.setEnabled(nfcEnabled && hasKeys);
         btnRestoreTag.setEnabled(nfcEnabled && hasTag);
+        btnSaveTag.setEnabled(nfcEnabled && hasTag);
 
-        if (!hasKeys) {
+        if (!hasKeys && !keyWarningShown) {
             LogError("Not all keys loaded. Load keys using the menu.");
+            keyWarningShown = true;
+        }
+
+        try {
+            if (this.currentTagData != null) {
+                String charid = TagUtil.CharIdFromTag(this.currentTagData);
+                String uid = Util.bytesToHex(TagUtil.uidFromPages(this.currentTagData));
+                txtTagId.setText("TagId: " + charid + " / " + uid);
+            } else {
+                txtTagId.setText("TagId: <No tag loaded>");
+            }
+        } catch (Exception e) {
+            LogError("Error parsing tag id", e);
+            txtTagId.setText("TagID: <Error>");
         }
     }
 
     @Click(R.id.btnLoadTag)
     void loadTagFile() {
-        currentMode = NfcMode.Idle;
-        updateStatus();
-        showFileChooser("Load encrypted tag file for writing", "*/*", FILE_LOAD_DUMP);
+        showFileChooser("Load encrypted tag file for writing", "*/*", FILE_LOAD_TAG);
     }
 
     @OptionsItem(R.id.mnu_load_keys)
     void loadKeysClicked() {
-        currentMode = NfcMode.Idle;
-        updateStatus();
         showFileChooser("Load key file", "*/*", FILE_LOAD_KEYS);
     }
 
-    @Click(R.id.btnSaveTag)
-    void dumpTag() {
-        currentMode = NfcMode.SaveTag;
-        updateStatus();
-        LogMessage("Place phone on valid tag.");
+    @Click(R.id.btnScanTag)
+    void scanTag() {
+        Intent intent = new Intent(this, NfcActivity_.class);
+        intent.setAction(NfcActivity.ACTION_SCAN_TAG);
+        startActivityForResult(intent, NFC_ACTIVITY);
     }
 
     @Click(R.id.btnWriteTagRaw)
     void writeToTagRaw() {
-        currentMode = NfcMode.Idle;
-
-        if (!this.tagFile.isValid()) {
-            LogError("No valid tag file loaded!");
-        } else {
-            currentMode = NfcMode.WriteRaw;
-            LogMessage("Place phone on (blank) tag.");
+        if (this.currentTagData == null) {
+            LogError("No tag loaded");
+            return;
         }
-        updateStatus();
+        Intent intent = new Intent(this, NfcActivity_.class);
+        intent.setAction(NfcActivity.ACTION_WRITE_TAG_RAW);
+        intent.putExtra(NfcActivity.EXTRA_TAG_DATA, this.currentTagData);
+        startActivityForResult(intent, NFC_ACTIVITY);
     }
 
     @Click(R.id.btnRestoreTag)
     void restoreTag() {
-        currentMode = NfcMode.Idle;
-
-        if (!this.tagFile.isValid()) {
-            LogError("No valid tag file loaded!");
-        } else {
-            currentMode = NfcMode.RestoreTag;
-            LogMessage("Place phone on valid tag. (Caution this option may brick your tag).");
+        if (this.currentTagData == null) {
+            LogError("No tag loaded");
+            return;
         }
-        updateStatus();
+        Intent intent = new Intent(this, NfcActivity_.class);
+        intent.setAction(NfcActivity.ACTION_WRITE_TAG_DATA);
+        intent.putExtra(NfcActivity.EXTRA_TAG_DATA, this.currentTagData);
+        intent.putExtra(NfcActivity.EXTRA_IGNORE_TAG_ID, this.cbNoIDValidate.isChecked());
+        startActivityForResult(intent, NFC_ACTIVITY);
     }
 
     @Click(R.id.btnWriteTagAuto)
     void writeToTagAuto() {
-        currentMode = NfcMode.Idle;
-
-        try {
-
-            if (!this.keyManager.hasFixedKey() || !this.keyManager.hasUnFixedKey()) {
-                LogError("Key files not loaded. This functionality is unavailable without them!");
-                return;
-            }
-
-            if (!this.tagFile.isValid()) {
-                LogError("No valid tag file loaded!");
-                return;
-            }
-
-            try {
-                this.tagFile.decrypt(this.keyManager);
-            } catch (Exception e) {
-                LogError("Failed to decrypt tag. :" + e.getMessage());
-                return;
-            }
-
-            LogMessage("Place phone on the (blank) tag.");
-            currentMode = NfcMode.WriteAuto;
-        } finally {
-            updateStatus();
+        if (this.currentTagData == null) {
+            LogError("No tag loaded");
+            return;
         }
+        Intent intent = new Intent(this, NfcActivity_.class);
+        intent.setAction(NfcActivity.ACTION_WRITE_TAG_FULL);
+        intent.putExtra(NfcActivity.EXTRA_TAG_DATA, this.currentTagData);
+        startActivityForResult(intent, NFC_ACTIVITY);
     }
 
-    /*
-    Does not work.
-    @Click(R.id.btnCreateTag)
-    void createTag() {
-        currentMode = NfcMode.Idle;
-        updateStatus();
-
-        DialogFragment dialog = new TagCreateDialog();
-        dialog.show(getFragmentManager(), "TagCreateDialog");
+    @Click(R.id.btnSaveTag)
+    void saveTag() {
+        if (this.currentTagData == null) {
+            LogError("No tag loaded");
+            return;
+        }
+        writeTagToFile(this.currentTagData);
     }
 
     @Override
-    public void onTagCreateDialogConfirm(DialogFragment dialog, byte[] parameters) {
-        Log.d(TAG, Util.bytesToHex(parameters));
-        this.buildTag(parameters);
-    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK)
+            return;
 
-    @Background
-    void buildTag(byte[] parameters) {
-        try {
-            this.tagFile.buildTag(parameters, keyManager);
-            this.currentMode = NfcMode.CreateTag;
-            updateStatus();
-            LogMessage("Place phone on valid tag. (Caution this option may brick your tag).");
-        } catch (Exception e) {
-            LogError("Error:", e);
+        Log.d(TAG, "onActivityResult");
+
+        switch (requestCode)
+        {
+            case NFC_ACTIVITY:
+                if (data == null) return;
+                String action = data.getAction();
+                if (!NfcActivity.ACTION_NFC_SCANNED.equals(action))
+                    return;
+                this.currentTagData = data.getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
+                updateStatus();
+                if (this.currentTagData == null) {
+                    LogError("Tag data is empty");
+                    return;
+                }
+                if (cbAutoSaveOnScan.isChecked())
+                    writeTagToFile(this.currentTagData);
+                break;
+            case FILE_LOAD_KEYS:
+                loadKey(data.getData());
+                break;
+            case FILE_LOAD_TAG:
+                loadTagFile(data.getData());
+                break;
         }
     }
-    */
 
+    private void showFileChooser(String title, String mimeType, int resultCode) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");      //all files
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        if (intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            LogMessage("Tag detected..");
-            this.onTagDiscovered(intent);
+        try {
+            startActivityForResult(Intent.createChooser(intent, title), resultCode);
+        } catch (android.content.ActivityNotFoundException ex) {
+            LogError("Failed to show file open dialog. Please install a file manager app.");
+            Log.e(TAG, ex.getMessage());
         }
     }
 
-    @Background
-    void onTagDiscovered(Intent intent) {
-        NfcMode mode = this.currentMode;
 
+    @Background
+    void loadKey(Uri uri) {
         try {
-            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Log.d(TAG, tag.toString());
-            if (tag == null)
-                throw new Exception("Error getting tag data");
-            MifareUltralight mifare = MifareUltralight.get(tag);
-            if (mifare == null)
-                throw new Exception("Error getting tag data. Possibly not a NTAG215");
-            mifare.connect();
-            try {
-                Log.d(TAG, mode.toString());
-                switch (mode) {
-                    case WriteRaw:
-                        TagWriter.writeToTagRaw(mifare, this.tagFile);
-                        LogMessage("Done");
-                        break;
-                    case WriteAuto:
-                        TagWriter.writeToTagAuto(mifare, this.tagFile, this.keyManager);
-                        LogMessage("Done");
-                        break;
-                    case RestoreTag:
-                        //TagWriter.validate(mifare, this.tagFile.tagData);
-                        TagWriter.restoreTag(mifare, this.tagFile.tagData);
-                        LogMessage("Done");
-                        break;
-                    case CreateTag:
-                        TagWriter.writeToTagAuto(mifare, this.tagFile, this.keyManager);
-                        LogMessage("Done");
-                        break;
-                    case SaveTag:
-                        byte[] data = TagWriter.readFromTag(mifare);
-                        writeTagToFile(data);
-                        break;
-                    default:
-                        LogMessage("No action selected. Select an action.");
-                }
-            } finally {
-                try {
-                    mifare.close();
-                } catch (Exception e) {
-                    LogError("Error closing tag: " + e.getMessage());
-                }
-            }
+            this.keyManager.loadKey(uri);
         } catch (Exception e) {
             LogError("Error: " + e.getMessage());
-            if (e.getCause() != null)
-                LogError(e.getCause().toString());
         }
-        currentMode = NfcMode.Idle;
         updateStatus();
     }
 
-    protected  void writeTagToFile(byte[] tagdata) {
+    @Background
+    void loadTagFile(Uri uri) {
+        try {
+            InputStream strm = getContentResolver().openInputStream(uri);
+            byte[] data = new byte[TagUtil.TAG_FILE_SIZE];
+            try {
+                int len = strm.read(data);
+                if (len != TagUtil.TAG_FILE_SIZE)
+                    throw new Exception("Invalid file size. was expecting " + TagUtil.TAG_FILE_SIZE);
+            } finally {
+                strm.close();
+            }
+            this.currentTagData = data;
+            showToast("Loaded tag file.");
+        } catch (Exception e) {
+            LogError("Error: " + e.getMessage());
+        }
+        updateStatus();
+    }
+
+    @Background
+    protected void writeTagToFile(byte[] tagdata) {
         boolean valid = false;
         try {
-            TagFile.validateTag(tagdata);
+            TagUtil.validateTag(tagdata);
             valid = true;
         } catch (Exception e) {
-            LogError("Warning tag not valid");
+            LogError("Warning tag is not valid");
         }
 
         try {
@@ -410,70 +351,40 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK)
-            return;
-
-        Uri uri = data.getData();
-        switch (requestCode) {
-            case FILE_LOAD_KEYS:
-                loadKey(uri);
-                break;
-            case FILE_LOAD_DUMP:
-                loadDumpFile(uri);
-        }
-    }
-
-    private void showFileChooser(String title, String mimeType, int resultCode) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");      //all files
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        try {
-            startActivityForResult(Intent.createChooser(intent, title), resultCode);
-        } catch (android.content.ActivityNotFoundException ex) {
-            LogError("Failed to show file open dialog. Please install a file manager app.");
-            Log.e(TAG, ex.getMessage());
-        }
-    }
-
-    @Background
-    void loadKey(Uri uri) {
-        try {
-            this.keyManager.loadKey(uri);
-        } catch (Exception e) {
-            LogMessage("Error: " + e.getMessage());
-        }
-        updateStatus();
-    }
-
-    @Background
-    void loadDumpFile(Uri uri) {
-        try {
-            this.tagFile.loadFile(uri);
-            LogMessage("Loaded tag file.");
-        } catch (Exception e) {
-            LogError("Error: " + e.getMessage());
-        }
-        updateStatus();
+    @UiThread
+    void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
     @UiThread
     void LogMessage(String msg) {
-        webView.loadUrl("javascript:logMsg('" + URLEncoder.encode(msg).replace("+", "%20") + "');");
+        new AlertDialog.Builder(this).setMessage(msg)
+        .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).show();
     }
     @UiThread
     void LogError(String msg, Throwable e) {
-        webView.loadUrl("javascript:logErr('" + URLEncoder.encode(msg).replace("+", "%20") + "');");
-        if (e != null) {
-            webView.loadUrl("javascript:logErr('" + URLEncoder.encode(e.getMessage()).replace("+", "%20") + "');");
-        }
+        new AlertDialog.Builder(this).setTitle("Error").setMessage(msg)
+        .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).show();
     }
     @UiThread
     void LogError(String msg) {
-        webView.loadUrl("javascript:logErr('" + URLEncoder.encode(msg).replace("+", "%20") + "');");
+        new AlertDialog.Builder(this).setTitle("Error").setMessage(msg)
+        .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).show();
     }
 
 }

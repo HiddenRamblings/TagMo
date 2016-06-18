@@ -12,11 +12,11 @@ import java.util.Arrays;
 public class TagWriter {
     private static final String TAG = "TagWriter";
 
-    public static void writeToTagRaw(MifareUltralight mifare, TagFile file) throws Exception
+    public static void writeToTagRaw(MifareUltralight mifare, byte[] tagData) throws Exception
     {
-        validate(mifare, file.tagData);
+        validate(mifare, tagData);
         try {
-            byte[][] pages = TagUtil.splitPages(file.tagData);
+            byte[][] pages = TagUtil.splitPages(tagData);
             writePages(mifare, 3, 129, pages);
             Log.d(TAG, "Wrote main data");
         } catch (Exception e) {
@@ -36,9 +36,9 @@ public class TagWriter {
         }
     }
 
-    public static void writeToTagAuto(MifareUltralight mifare, TagFile file, KeyManager keyManager) throws Exception
+    public static void writeToTagAuto(MifareUltralight mifare, byte[] tagData, KeyManager keyManager) throws Exception
     {
-        byte[] tagData = adjustTag(keyManager, file, mifare);
+        tagData = adjustTag(keyManager, tagData, mifare);
 
         Log.d(TAG, Util.bytesToHex(tagData));
         validate(mifare, tagData);
@@ -63,20 +63,22 @@ public class TagWriter {
         }
     }
 
-    public static void restoreTag(MifareUltralight tag, byte[] tagData) throws Exception {
-        validate(tag, tagData);
-        doAuth(tag);
+    public static void restoreTag(MifareUltralight mifare, byte[] tagData, boolean ignoreUid, KeyManager keyManager) throws Exception {
+        if (ignoreUid)
+            tagData = adjustTag(keyManager, tagData, mifare);
+        validate(mifare, tagData);
+        doAuth(mifare);
         byte[][] pages = TagUtil.splitPages(tagData);
-        writePages(tag, 4, 12, pages);
-        writePages(tag, 32, 129, pages);
+        writePages(mifare, 4, 12, pages);
+        writePages(mifare, 32, 129, pages);
     }
 
-    static byte[] adjustTag(KeyManager keyManager, TagFile tagFile, MifareUltralight mifare) throws Exception {
+    static byte[] adjustTag(KeyManager keyManager, byte[] tagData, MifareUltralight mifare) throws Exception {
         byte[] pages = mifare.readPages(0);
         if (pages == null || pages.length != TagUtil.PAGE_SIZE * 4)
             throw new Exception("Read failed! Unexpected read size.");
 
-        return tagFile.encryptToUid(pages, keyManager);
+        return TagUtil.patchUid(pages, tagData, keyManager, true);
     }
 
     static void validate(MifareUltralight mifare, byte[] tagData) throws Exception

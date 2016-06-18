@@ -44,10 +44,6 @@ public class Util {
         return null;
     }
 
-    public static String javascriptEncode(String str) {
-        return str.replace("'", "\\'").replace("\\", "\\\\");
-    }
-
     public static byte[] getRandom(int length) {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[length];

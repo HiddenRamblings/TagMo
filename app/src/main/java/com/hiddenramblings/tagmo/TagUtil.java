@@ -102,6 +102,23 @@ public class TagUtil {
         return decrypted;
     }
 
+    public static byte[] encrypt(KeyManager keyManager, byte[] tagData) throws Exception {
+        if (!keyManager.hasFixedKey() || !keyManager.hasUnFixedKey())
+            throw new Exception("Key files not loaded!");
+
+        AmiiTool tool = new AmiiTool();
+        if (tool.setKeysFixed(keyManager.fixedKey, keyManager.fixedKey.length) == 0)
+            throw new Exception("Failed to initialise amiitool");
+        if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length)== 0)
+            throw new Exception("Failed to initialise amiitool");
+        byte[] encrypted = new byte[TagUtil.TAG_FILE_SIZE];
+        if (tool.pack(tagData, tagData.length, encrypted, encrypted.length) == 0)
+            throw new Exception("Failed to decrypt tag");
+
+        return encrypted;
+    }
+
+
     public static byte[] patchUid(byte[] uid, byte[] tagData, KeyManager keyManager, boolean encrypted) throws Exception {
         if (encrypted)
             tagData = decrypt(keyManager, tagData);

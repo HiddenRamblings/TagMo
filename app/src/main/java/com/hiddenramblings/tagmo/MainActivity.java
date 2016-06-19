@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     private static final int FILE_LOAD_TAG = 0x100;
     private static final int FILE_LOAD_KEYS = 0x101;
     private static final int NFC_ACTIVITY = 0x102;
+    private static final int EDIT_TAG = 0x103;
 
     @ViewById(R.id.txtLockedKey)
     TextView txtLockedKey;
@@ -61,6 +62,8 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     Button btnWriteTagRaw;
     @ViewById(R.id.btnRestoreTag)
     Button btnRestoreTag;
+    @ViewById(R.id.btnEditDataSSB)
+    Button btnEditDataSSB;
 
     @ViewById(R.id.cbAutoSaveOnScan)
     CheckBox cbAutoSaveOnScan;
@@ -158,6 +161,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         btnWriteTagRaw.setEnabled(nfcEnabled && hasTag);
         btnRestoreTag.setEnabled(nfcEnabled && hasTag);
         btnSaveTag.setEnabled(nfcEnabled && hasTag);
+        btnEditDataSSB.setEnabled(hasKeys && hasTag);
 
         if (!hasKeys && !keyWarningShown) {
             LogError("Not all keys loaded. Load keys using the menu.");
@@ -241,6 +245,18 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         writeTagToFile(this.currentTagData);
     }
 
+    @Click(R.id.btnEditDataSSB)
+    void editSSBData() {
+        if (this.currentTagData == null) {
+            LogError("No tag loaded");
+            return;
+        }
+        Intent intent = new Intent(this, EditorSSB_.class);
+        intent.setAction(Actions.ACTION_EDIT_DATA);
+        intent.putExtra(Actions.EXTRA_TAG_DATA, this.currentTagData);
+        startActivityForResult(intent, EDIT_TAG);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -249,11 +265,23 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
         Log.d(TAG, "onActivityResult");
 
+        String action = null;
         switch (requestCode)
         {
+            case EDIT_TAG:
+                if (data == null) return;
+                action = data.getAction();
+                if (!Actions.ACTION_EDIT_COMPLETE.equals(action))
+                    return;
+                this.currentTagData = data.getByteArrayExtra(Actions.EXTRA_TAG_DATA);
+                this.updateStatus();
+                if (this.currentTagData == null) {
+                    LogError("Tag data is empty");
+                    return;
+                }
             case NFC_ACTIVITY:
                 if (data == null) return;
-                String action = data.getAction();
+                action = data.getAction();
                 if (!NfcActivity.ACTION_NFC_SCANNED.equals(action))
                     return;
                 this.currentTagData = data.getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);

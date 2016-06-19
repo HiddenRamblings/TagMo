@@ -21,7 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NfcActivity_"></activity>
+        <activity android:name=".NfcActivity_" />
+        <activity android:name=".EditorSSB_"></activity>
     </application>
 
 </manifest>

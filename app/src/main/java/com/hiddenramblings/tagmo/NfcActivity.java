@@ -29,15 +29,15 @@ import org.androidannotations.annotations.ViewById;
 public class NfcActivity extends AppCompatActivity {
     private static final String TAG = "NfcActivity";
 
-    public static final String ACTION_SCAN_TAG = "com.hiddenramblings.intent.SCAN_TAG";
-    public static final String ACTION_WRITE_TAG_FULL = "com.hiddenramblings.intent.WRITE_TAG_FULL";
-    public static final String ACTION_WRITE_TAG_RAW = "com.hiddenramblings.intent.WRITE_TAG_RAW";
-    public static final String ACTION_WRITE_TAG_DATA = "com.hiddenramblings.intent.WRITE_TAG_DATA";
+    public static final String ACTION_SCAN_TAG = "com.hiddenramblings.tagmo.SCAN_TAG";
+    public static final String ACTION_WRITE_TAG_FULL = "com.hiddenramblings.tagmo.WRITE_TAG_FULL";
+    public static final String ACTION_WRITE_TAG_RAW = "com.hiddenramblings.tagmo.WRITE_TAG_RAW";
+    public static final String ACTION_WRITE_TAG_DATA = "com.hiddenramblings.tagmo.WRITE_TAG_DATA";
 
-    public static final String ACTION_NFC_SCANNED = "com.hiddenramblings.intent.NFC_SCANNED";
+    public static final String ACTION_NFC_SCANNED = "com.hiddenramblings.tagmo.NFC_SCANNED";
 
-    public static final String EXTRA_TAG_DATA = "com.hiddenramblings.intent.TAG_DATA";
-    public static final String EXTRA_IGNORE_TAG_ID = "com.hiddenramblings.intent.EXTRA_IGNORE_TAG_ID";
+    public static final String EXTRA_TAG_DATA = "com.hiddenramblings.tagmo.EXTRA_TAG_DATA";
+    public static final String EXTRA_IGNORE_TAG_ID = "com.hiddenramblings.tagmo.EXTRA_IGNORE_TAG_ID";
 
     @ViewById(R.id.prgBusy)
     ProgressBar prgBusy;
@@ -53,6 +53,7 @@ public class NfcActivity extends AppCompatActivity {
     void afterViews() {
         this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         this.keyManager = new KeyManager(this);
+        updateTitle();
     }
 
     @Override
@@ -65,6 +66,29 @@ public class NfcActivity extends AppCompatActivity {
             this.nfcAdapter = null;
         } else
             startNfcMonitor();
+    }
+
+    void updateTitle() {
+        Intent commandIntent = this.getIntent();
+        String mode = commandIntent.getAction();
+        switch (mode) {
+            case ACTION_WRITE_TAG_RAW:
+                setTitle("Write to Tag (Raw)");
+                break;
+            case ACTION_WRITE_TAG_FULL:
+                setTitle("Write to Tag (Auto)");
+                showToast("Done");
+                break;
+            case ACTION_WRITE_TAG_DATA:
+                setTitle("Update Data on Tag");
+                break;
+            case ACTION_SCAN_TAG:
+                setTitle("Scan Tag");
+                break;
+            default:
+                setTitle("Error");
+                finish();
+        }
     }
 
     @Override

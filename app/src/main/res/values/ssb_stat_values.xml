@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ssb_stat_values">
+        <item>-200</item>
+        <item>-199</item>
+        <item>-198</item>
+        <item>-197</item>
+        <item>-196</item>
+        <item>-195</item>
+        <item>-194</item>
+        <item>-193</item>
+        <item>-192</item>
+        <item>-191</item>
+        <item>-190</item>
+        <item>-189</item>
+        <item>-188</item>
+        <item>-187</item>
+        <item>-186</item>
+        <item>-185</item>
+        <item>-184</item>
+        <item>-183</item>
+        <item>-182</item>
+        <item>-181</item>
+        <item>-180</item>
+        <item>-179</item>
+        <item>-178</item>
+        <item>-177</item>
+        <item>-176</item>
+        <item>-175</item>
+        <item>-174</item>
+        <item>-173</item>
+        <item>-172</item>
+        <item>-171</item>
+        <item>-170</item>
+        <item>-169</item>
+        <item>-168</item>
+        <item>-167</item>
+        <item>-166</item>
+        <item>-165</item>
+        <item>-164</item>
+        <item>-163</item>
+        <item>-162</item>
+        <item>-161</item>
+        <item>-160</item>
+        <item>-159</item>
+        <item>-158</item>
+        <item>-157</item>
+        <item>-156</item>
+        <item>-155</item>
+        <item>-154</item>
+        <item>-153</item>
+        <item>-152</item>
+        <item>-151</item>
+        <item>-150</item>
+        <item>-149</item>
+        <item>-148</item>
+        <item>-147</item>
+        <item>-146</item>
+        <item>-145</item>
+        <item>-144</item>
+        <item>-143</item>
+        <item>-142</item>
+        <item>-141</item>
+        <item>-140</item>
+        <item>-139</item>
+        <item>-138</item>
+        <item>-137</item>
+        <item>-136</item>
+        <item>-135</item>
+        <item>-134</item>
+        <item>-133</item>
+        <item>-132</item>
+        <item>-131</item>
+        <item>-130</item>
+        <item>-129</item>
+        <item>-128</item>
+        <item>-127</item>
+        <item>-126</item>
+        <item>-125</item>
+        <item>-124</item>
+        <item>-123</item>
+        <item>-122</item>
+        <item>-121</item>
+        <item>-120</item>
+        <item>-119</item>
+        <item>-118</item>
+        <item>-117</item>
+        <item>-116</item>
+        <item>-115</item>
+        <item>-114</item>
+        <item>-113</item>
+        <item>-112</item>
+        <item>-111</item>
+        <item>-110</item>
+        <item>-109</item>
+        <item>-108</item>
+        <item>-107</item>
+        <item>-106</item>
+        <item>-105</item>
+        <item>-104</item>
+        <item>-103</item>
+        <item>-102</item>
+        <item>-101</item>
+        <item>-100</item>
+        <item>- 99</item>
+        <item>- 98</item>
+        <item>- 97</item>
+        <item>- 96</item>
+        <item>- 95</item>
+        <item>- 94</item>
+        <item>- 93</item>
+        <item>- 92</item>
+        <item>- 91</item>
+        <item>- 90</item>
+        <item>- 89</item>
+        <item>- 88</item>
+        <item>- 87</item>
+        <item>- 86</item>
+        <item>- 85</item>
+        <item>- 84</item>
+        <item>- 83</item>
+        <item>- 82</item>
+        <item>- 81</item>
+        <item>- 80</item>
+        <item>- 79</item>
+        <item>- 78</item>
+        <item>- 77</item>
+        <item>- 76</item>
+        <item>- 75</item>
+        <item>- 74</item>
+        <item>- 73</item>
+        <item>- 72</item>
+        <item>- 71</item>
+        <item>- 70</item>
+        <item>- 69</item>
+        <item>- 68</item>
+        <item>- 67</item>
+        <item>- 66</item>
+        <item>- 65</item>
+        <item>- 64</item>
+        <item>- 63</item>
+        <item>- 62</item>
+        <item>- 61</item>
+        <item>- 60</item>
+        <item>- 59</item>
+        <item>- 58</item>
+        <item>- 57</item>
+        <item>- 56</item>
+        <item>- 55</item>
+        <item>- 54</item>
+        <item>- 53</item>
+        <item>- 52</item>
+        <item>- 51</item>
+        <item>- 50</item>
+        <item>- 49</item>
+        <item>- 48</item>
+        <item>- 47</item>
+        <item>- 46</item>
+        <item>- 45</item>
+        <item>- 44</item>
+        <item>- 43</item>
+        <item>- 42</item>
+        <item>- 41</item>
+        <item>- 40</item>
+        <item>- 39</item>
+        <item>- 38</item>
+        <item>- 37</item>
+        <item>- 36</item>
+        <item>- 35</item>
+        <item>- 34</item>
+        <item>- 33</item>
+        <item>- 32</item>
+        <item>- 31</item>
+        <item>- 30</item>
+        <item>- 29</item>
+        <item>- 28</item>
+        <item>- 27</item>
+        <item>- 26</item>
+        <item>- 25</item>
+        <item>- 24</item>
+        <item>- 23</item>
+        <item>- 22</item>
+        <item>- 21</item>
+        <item>- 20</item>
+        <item>- 19</item>
+        <item>- 18</item>
+        <item>- 17</item>
+        <item>- 16</item>
+        <item>- 15</item>
+        <item>- 14</item>
+        <item>- 13</item>
+        <item>- 12</item>
+        <item>- 11</item>
+        <item>- 10</item>
+        <item>-  9</item>
+        <item>-  8</item>
+        <item>-  7</item>
+        <item>-  6</item>
+        <item>-  5</item>
+        <item>-  4</item>
+        <item>-  3</item>
+        <item>-  2</item>
+        <item>-  1</item>
+        <item> 0  </item>
+        <item>   1</item>
+        <item>   2</item>
+        <item>   3</item>
+        <item>   4</item>
+        <item>   5</item>
+        <item>   6</item>
+        <item>   7</item>
+        <item>   8</item>
+        <item>   9</item>
+        <item>  10</item>
+        <item>  11</item>
+        <item>  12</item>
+        <item>  13</item>
+        <item>  14</item>
+        <item>  15</item>
+        <item>  16</item>
+        <item>  17</item>
+        <item>  18</item>
+        <item>  19</item>
+        <item>  20</item>
+        <item>  21</item>
+        <item>  22</item>
+        <item>  23</item>
+        <item>  24</item>
+        <item>  25</item>
+        <item>  26</item>
+        <item>  27</item>
+        <item>  28</item>
+        <item>  29</item>
+        <item>  30</item>
+        <item>  31</item>
+        <item>  32</item>
+        <item>  33</item>
+        <item>  34</item>
+        <item>  35</item>
+        <item>  36</item>
+        <item>  37</item>
+        <item>  38</item>
+        <item>  39</item>
+        <item>  40</item>
+        <item>  41</item>
+        <item>  42</item>
+        <item>  43</item>
+        <item>  44</item>
+        <item>  45</item>
+        <item>  46</item>
+        <item>  47</item>
+        <item>  48</item>
+        <item>  49</item>
+        <item>  50</item>
+        <item>  51</item>
+        <item>  52</item>
+        <item>  53</item>
+        <item>  54</item>
+        <item>  55</item>
+        <item>  56</item>
+        <item>  57</item>
+        <item>  58</item>
+        <item>  59</item>
+        <item>  60</item>
+        <item>  61</item>
+        <item>  62</item>
+        <item>  63</item>
+        <item>  64</item>
+        <item>  65</item>
+        <item>  66</item>
+        <item>  67</item>
+        <item>  68</item>
+        <item>  69</item>
+        <item>  70</item>
+        <item>  71</item>
+        <item>  72</item>
+        <item>  73</item>
+        <item>  74</item>
+        <item>  75</item>
+        <item>  76</item>
+        <item>  77</item>
+        <item>  78</item>
+        <item>  79</item>
+        <item>  80</item>
+        <item>  81</item>
+        <item>  82</item>
+        <item>  83</item>
+        <item>  84</item>
+        <item>  85</item>
+        <item>  86</item>
+        <item>  87</item>
+        <item>  88</item>
+        <item>  89</item>
+        <item>  90</item>
+        <item>  91</item>
+        <item>  92</item>
+        <item>  93</item>
+        <item>  94</item>
+        <item>  95</item>
+        <item>  96</item>
+        <item>  97</item>
+        <item>  98</item>
+        <item>  99</item>
+        <item> 100</item>
+        <item> 101</item>
+        <item> 102</item>
+        <item> 103</item>
+        <item> 104</item>
+        <item> 105</item>
+        <item> 106</item>
+        <item> 107</item>
+        <item> 108</item>
+        <item> 109</item>
+        <item> 110</item>
+        <item> 111</item>
+        <item> 112</item>
+        <item> 113</item>
+        <item> 114</item>
+        <item> 115</item>
+        <item> 116</item>
+        <item> 117</item>
+        <item> 118</item>
+        <item> 119</item>
+        <item> 120</item>
+        <item> 121</item>
+        <item> 122</item>
+        <item> 123</item>
+        <item> 124</item>
+        <item> 125</item>
+        <item> 126</item>
+        <item> 127</item>
+        <item> 128</item>
+        <item> 129</item>
+        <item> 130</item>
+        <item> 131</item>
+        <item> 132</item>
+        <item> 133</item>
+        <item> 134</item>
+        <item> 135</item>
+        <item> 136</item>
+        <item> 137</item>
+        <item> 138</item>
+        <item> 139</item>
+        <item> 140</item>
+        <item> 141</item>
+        <item> 142</item>
+        <item> 143</item>
+        <item> 144</item>
+        <item> 145</item>
+        <item> 146</item>
+        <item> 147</item>
+        <item> 148</item>
+        <item> 149</item>
+        <item> 150</item>
+        <item> 151</item>
+        <item> 152</item>
+        <item> 153</item>
+        <item> 154</item>
+        <item> 155</item>
+        <item> 156</item>
+        <item> 157</item>
+        <item> 158</item>
+        <item> 159</item>
+        <item> 160</item>
+        <item> 161</item>
+        <item> 162</item>
+        <item> 163</item>
+        <item> 164</item>
+        <item> 165</item>
+        <item> 166</item>
+        <item> 167</item>
+        <item> 168</item>
+        <item> 169</item>
+        <item> 170</item>
+        <item> 171</item>
+        <item> 172</item>
+        <item> 173</item>
+        <item> 174</item>
+        <item> 175</item>
+        <item> 176</item>
+        <item> 177</item>
+        <item> 178</item>
+        <item> 179</item>
+        <item> 180</item>
+        <item> 181</item>
+        <item> 182</item>
+        <item> 183</item>
+        <item> 184</item>
+        <item> 185</item>
+        <item> 186</item>
+        <item> 187</item>
+        <item> 188</item>
+        <item> 189</item>
+        <item> 190</item>
+        <item> 191</item>
+        <item> 192</item>
+        <item> 193</item>
+        <item> 194</item>
+        <item> 195</item>
+        <item> 196</item>
+        <item> 197</item>
+        <item> 198</item>
+        <item> 199</item>
+        <item> 200</item>
+    </string-array>
+</resources>

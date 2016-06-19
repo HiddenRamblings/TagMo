@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ssb_bonus_effects">
+        <item>Increased running speed</item>
+        <item>Decreased running speed</item>
+        <item>Faster sideways air movement</item>
+        <item>Slower sideways air movement</item>
+        <item>Improved jumping ability</item>
+        <item>Weakened jumping ability</item>
+        <item>Skating</item>
+        <item>Improved ground jumps</item>
+        <item>Weakened ground jumps</item>
+        <item>Improved mid-air jumps</item>
+        <item>Weakened mid-air jumps</item>
+        <item>Floaty jumps</item>
+        <item>Heavy jump</item>
+        <item>Increased walking speed</item>
+        <item>Decreased walking speed</item>
+        <item>Increased edge-grab duration</item>
+        <item>Decreased edge-grab duration</item>
+        <item>Easier edge-grabbing</item>
+        <item>More difficult edge-grabbing</item>
+        <item>Improved braking ability</item>
+        <item>Easy perfect shield</item>
+        <item>No perfect shield</item>
+        <item>Faster Shield Recharge</item>
+        <item>Slower Shield Recharge</item>
+        <item>Improved air defense</item>
+        <item>Weakened air defense</item>
+        <item>Easier Dodging</item>
+        <item>More difficult dodging</item>
+        <item>Reduced landing stiffness</item>
+        <item>Increased landing stiffness</item>
+        <item>Quick smash</item>
+        <item>Hyper smash</item>
+        <item>Improved air attacks</item>
+        <item>Weakened air attacks</item>
+        <item>Improved meteor smashes</item>
+        <item>Improved attack in a crisis</item>
+        <item>Improved defense in a crisis</item>
+        <item>Improved speed in a crisis</item>
+        <item>Powered up in a crisis</item>
+        <item>Invincible in a crisis</item>
+        <item>Improved attack at 0 damage</item>
+        <item>Improved speed at 0 damage</item>
+        <item>Improved attack/speed at 0%</item>
+        <item>Trade-off for improved attack</item>
+        <item>Trade-off for improved defense</item>
+        <item>Trade-off for improved speed</item>
+        <item>Trade-off for improved abilities</item>
+        <item>Improved upward launching</item>
+        <item>Health-stealing ability</item>
+        <item>Resistant smash charge</item>
+        <item>Critical hits</item>
+        <item>Hit downed foes harder</item>
+        <item>First strike bonus</item>
+        <item>Countdown bonus</item>
+        <item>Crash run</item>
+        <item>Explosive perfect shield</item>
+        <item>Shield restores health</item>
+        <item>Shield counter</item>
+        <item>Quick escape</item>
+        <item>Improved item throwing</item>
+        <item>Weakened item throwing</item>
+        <item>Bonus to battering items</item>
+        <item>Bonus to thrown items</item>
+        <item>Bonus to shooting items</item>
+        <item>High-speed batting</item>
+        <item>Star rod equipped</item>
+        <item>Lip&quot;s stick equipped</item>
+        <item>Nintendo scope equipped</item>
+        <item>Ray gun equipped</item>
+        <item>Fire flower equipped</item>
+        <item>Beam sword equipped</item>
+        <item>Home-run bat equipped</item>
+        <item>Bob-omb equipped</item>
+        <item>Mr. Saturn equipped</item>
+        <item>Increased healing from food</item>
+        <item>Decreased healing from food</item>
+        <item>Heal while crouching</item>
+        <item>Improved attack after eating</item>
+        <item>Improved speed after eating</item>
+        <item>Improved defense after eating</item>
+        <item>Powered up after eating</item>
+        <item>KO healing</item>
+        <item>Invincible after eating</item>
+        <item>Auto-heal</item>
+        <item>Smash ball gravitation</item>
+        <item>Final smash after respawning</item>
+        <item>Keep final smash if hurt</item>
+        <item>Smash ball powers you up</item>
+        <item>Healing smash ball</item>
+        <item>Double final smash</item>
+        <item>Lucky sudden death</item>
+        <item>Extended respawn invincibility</item>
+        <item>No respawn invincibility</item>
+        <item>5D - Unknown/None</item>
+        <item>5E - Unknown/None</item>
+        <item>5F - Unknown/None</item>
+        <item>60 - Unknown/None</item>
+        <item>61 - Unknown/None</item>
+        <item>62 - Unknown/None</item>
+        <item>63 - Unknown/None</item>
+        <item>64 - Unknown/None</item>
+        <item>65 - Unknown/None</item>
+        <item>66 - Unknown/None</item>
+        <item>67 - Unknown/None</item>
+        <item>68 - Unknown/None</item>
+        <item>69 - Unknown/None</item>
+        <item>6A - Unknown/None</item>
+        <item>6B - Unknown/None</item>
+        <item>6C - Unknown/None</item>
+        <item>6D - Unknown/None</item>
+        <item>6E - Unknown/None</item>
+        <item>6F - Unknown/None</item>
+        <item>70 - Unknown/None</item>
+        <item>71 - Unknown/None</item>
+        <item>72 - Unknown/None</item>
+        <item>73 - Unknown/None</item>
+        <item>74 - Unknown/None</item>
+        <item>75 - Unknown/None</item>
+        <item>76 - Unknown/None</item>
+        <item>77 - Unknown/None</item>
+        <item>78 - Unknown/None</item>
+        <item>79 - Unknown/None</item>
+        <item>7A - Unknown/None</item>
+        <item>7B - Unknown/None</item>
+        <item>7C - Unknown/None</item>
+        <item>7D - Unknown/None</item>
+        <item>7E - Unknown/None</item>
+        <item>7F - Unknown/None</item>
+        <item>80 - Unknown/None</item>
+        <item>81 - Unknown/None</item>
+        <item>82 - Unknown/None</item>
+        <item>83 - Unknown/None</item>
+        <item>84 - Unknown/None</item>
+        <item>85 - Unknown/None</item>
+        <item>86 - Unknown/None</item>
+        <item>87 - Unknown/None</item>
+        <item>88 - Unknown/None</item>
+        <item>89 - Unknown/None</item>
+        <item>8A - Unknown/None</item>
+        <item>8B - Unknown/None</item>
+        <item>8C - Unknown/None</item>
+        <item>8D - Unknown/None</item>
+        <item>8E - Unknown/None</item>
+        <item>8F - Unknown/None</item>
+        <item>90 - Unknown/None</item>
+        <item>91 - Unknown/None</item>
+        <item>92 - Unknown/None</item>
+        <item>93 - Unknown/None</item>
+        <item>94 - Unknown/None</item>
+        <item>95 - Unknown/None</item>
+        <item>96 - Unknown/None</item>
+        <item>97 - Unknown/None</item>
+        <item>98 - Unknown/None</item>
+        <item>99 - Unknown/None</item>
+        <item>9A - Unknown/None</item>
+        <item>9B - Unknown/None</item>
+        <item>9C - Unknown/None</item>
+        <item>9D - Unknown/None</item>
+        <item>9E - Unknown/None</item>
+        <item>9F - Unknown/None</item>
+        <item>A0 - Unknown/None</item>
+        <item>A1 - Unknown/None</item>
+        <item>A2 - Unknown/None</item>
+        <item>A3 - Unknown/None</item>
+        <item>A4 - Unknown/None</item>
+        <item>A5 - Unknown/None</item>
+        <item>A6 - Unknown/None</item>
+        <item>A7 - Unknown/None</item>
+        <item>A8 - Unknown/None</item>
+        <item>A9 - Unknown/None</item>
+        <item>AA - Unknown/None</item>
+        <item>AB - Unknown/None</item>
+        <item>AC - Unknown/None</item>
+        <item>AD - Unknown/None</item>
+        <item>AE - Unknown/None</item>
+        <item>AF - Unknown/None</item>
+        <item>B0 - Unknown/None</item>
+        <item>B1 - Unknown/None</item>
+        <item>B2 - Unknown/None</item>
+        <item>B3 - Unknown/None</item>
+        <item>B4 - Unknown/None</item>
+        <item>B5 - Unknown/None</item>
+        <item>B6 - Unknown/None</item>
+        <item>B7 - Unknown/None</item>
+        <item>B8 - Unknown/None</item>
+        <item>B9 - Unknown/None</item>
+        <item>BA - Unknown/None</item>
+        <item>BB - Unknown/None</item>
+        <item>BC - Unknown/None</item>
+        <item>BD - Unknown/None</item>
+        <item>BE - Unknown/None</item>
+        <item>BF - Unknown/None</item>
+        <item>C0 - Unknown/None</item>
+        <item>C1 - Unknown/None</item>
+        <item>C2 - Unknown/None</item>
+        <item>C3 - Unknown/None</item>
+        <item>C4 - Unknown/None</item>
+        <item>C5 - Unknown/None</item>
+        <item>C6 - Unknown/None</item>
+        <item>C7 - Unknown/None</item>
+        <item>C8 - Unknown/None</item>
+        <item>C9 - Unknown/None</item>
+        <item>CA - Unknown/None</item>
+        <item>CB - Unknown/None</item>
+        <item>CC - Unknown/None</item>
+        <item>CD - Unknown/None</item>
+        <item>CE - Unknown/None</item>
+        <item>CF - Unknown/None</item>
+        <item>D0 - Unknown/None</item>
+        <item>D1 - Unknown/None</item>
+        <item>D2 - Unknown/None</item>
+        <item>D3 - Unknown/None</item>
+        <item>D4 - Unknown/None</item>
+        <item>D5 - Unknown/None</item>
+        <item>D6 - Unknown/None</item>
+        <item>D7 - Unknown/None</item>
+        <item>D8 - Unknown/None</item>
+        <item>D9 - Unknown/None</item>
+        <item>DA - Unknown/None</item>
+        <item>DB - Unknown/None</item>
+        <item>DC - Unknown/None</item>
+        <item>DD - Unknown/None</item>
+        <item>DE - Unknown/None</item>
+        <item>DF - Unknown/None</item>
+        <item>E0 - Unknown/None</item>
+        <item>E1 - Unknown/None</item>
+        <item>E2 - Unknown/None</item>
+        <item>E3 - Unknown/None</item>
+        <item>E4 - Unknown/None</item>
+        <item>E5 - Unknown/None</item>
+        <item>E6 - Unknown/None</item>
+        <item>E7 - Unknown/None</item>
+        <item>E8 - Unknown/None</item>
+        <item>E9 - Unknown/None</item>
+        <item>EA - Unknown/None</item>
+        <item>EB - Unknown/None</item>
+        <item>EC - Unknown/None</item>
+        <item>ED - Unknown/None</item>
+        <item>EE - Unknown/None</item>
+        <item>EF - Unknown/None</item>
+        <item>F0 - Unknown/None</item>
+        <item>F1 - Unknown/None</item>
+        <item>F2 - Unknown/None</item>
+        <item>F3 - Unknown/None</item>
+        <item>F4 - Unknown/None</item>
+        <item>F5 - Unknown/None</item>
+        <item>F6 - Unknown/None</item>
+        <item>F7 - Unknown/None</item>
+        <item>F8 - Unknown/None</item>
+        <item>F9 - Unknown/None</item>
+        <item>FA - Unknown/None</item>
+        <item>FB - Unknown/None</item>
+        <item>FC - Unknown/None</item>
+        <item>FD - Unknown/None</item>
+        <item>FE - Unknown/None</item>
+        <item>No Effect</item>
+    </string-array>
+</resources>

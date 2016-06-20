@@ -61,24 +61,14 @@ public class EditorSSB extends AppCompatActivity {
 
     @AfterViews
     void afterViews() {
-        setListForSpinners(new Spinner[]{spnAppearance, spnSpecial1, spnSpecial2, spnSpecial3, spnSpecial4},
+        setListForSpinners(new Spinner[]{spnAppearance},
+                R.array.ssb_appearance_values, android.R.layout.simple_list_item_1);
+        setListForSpinners(new Spinner[]{spnSpecial1, spnSpecial2, spnSpecial3, spnSpecial4},
                 R.array.hex_list, android.R.layout.simple_list_item_1);
         setListForSpinners(new Spinner[]{spnEffect1, spnEffect2, spnEffect3},
                 R.array.ssb_bonus_effects, android.R.layout.simple_list_item_1);
         setListForSpinners(new Spinner[]{spnStatAttack, spnStatDefense, spnStatSpeed},
                 R.array.ssb_stat_values, android.R.layout.simple_list_item_1);
-
-        spnEffect1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "pos " + position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
         keyManager = new KeyManager(this);
 
@@ -132,6 +122,26 @@ public class EditorSSB extends AppCompatActivity {
         data[offset+1] = (byte)(((short)value) & 0xFF);
     }
 
+    void setEffectValue(Spinner spinner, int value) {
+        if (value == 0xFF)
+            value = 0;
+        else
+            value++;
+
+        if (value > spinner.getAdapter().getCount())
+            value = 0;
+        spinner.setSelection(value);
+    }
+
+    int getEffectValue(Spinner spinner) {
+        int value = spinner.getSelectedItemPosition();
+        if (value == 0)
+            value = 0xFF;
+        else
+            value--;
+        return value;
+    }
+
     void loadData(final byte[] data) {
         spnAppearance.setSelection(data[OFFSET_APPEARANCE] & 0xFF);
 
@@ -143,13 +153,10 @@ public class EditorSSB extends AppCompatActivity {
         spnStatAttack.setSelection(readStat(data, OFFSET_STATS_ATTACK));
         spnStatDefense.setSelection(readStat(data, OFFSET_STATS_DEFENSE));
         spnStatSpeed.setSelection(readStat(data, OFFSET_STATS_SPEED));
-        Log.d(TAG, "Attack: " + readStat(data, OFFSET_STATS_ATTACK));
-        Log.d(TAG, "Defense: " + readStat(data, OFFSET_STATS_DEFENSE));
-        Log.d(TAG, "Speed: " + readStat(data, OFFSET_STATS_SPEED));
 
-        spnEffect1.setSelection(data[OFFSET_BONUS_EFFECT1] & 0xFF);
-        spnEffect2.setSelection(data[OFFSET_BONUS_EFFECT2] & 0xFF);
-        spnEffect3.setSelection(data[OFFSET_BONUS_EFFECT3] & 0xFF);
+        setEffectValue(spnEffect1, data[OFFSET_BONUS_EFFECT1] & 0xFF);
+        setEffectValue(spnEffect2, data[OFFSET_BONUS_EFFECT2] & 0xFF);
+        setEffectValue(spnEffect3, data[OFFSET_BONUS_EFFECT3] & 0xFF);
     }
 
     void updateData(byte[] data) {
@@ -163,9 +170,9 @@ public class EditorSSB extends AppCompatActivity {
         writeStat(data, (short)spnStatDefense.getSelectedItemPosition(), OFFSET_STATS_DEFENSE);
         writeStat(data, (short)spnStatSpeed.getSelectedItemPosition(), OFFSET_STATS_SPEED);
 
-        data[OFFSET_BONUS_EFFECT1] = (byte)spnEffect1.getSelectedItemPosition();
-        data[OFFSET_BONUS_EFFECT2] = (byte)spnEffect2.getSelectedItemPosition();
-        data[OFFSET_BONUS_EFFECT3] = (byte)spnEffect3.getSelectedItemPosition();
+        data[OFFSET_BONUS_EFFECT1] = (byte)getEffectValue(spnEffect1);
+        data[OFFSET_BONUS_EFFECT2] = (byte)getEffectValue(spnEffect2);
+        data[OFFSET_BONUS_EFFECT3] = (byte)getEffectValue(spnEffect3);
     }
 
     void setListForSpinners(Spinner[] controls, int list, int layout) {

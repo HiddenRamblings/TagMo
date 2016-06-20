@@ -47,7 +47,8 @@
                 <Spinner
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/spnSpecial1" />
+                    android:id="@+id/spnSpecial1"
+                    android:spinnerMode="dialog" />
             </TableRow>
 
             <TableRow>
@@ -64,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/spnSpecial2"
-                    />
+                    android:spinnerMode="dialog" />
             </TableRow>
 
             <TableRow>
@@ -81,7 +82,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/spnSpecial3"
-                    android:scrollbarAlwaysDrawHorizontalTrack="false" />
+                    android:spinnerMode="dialog" />
             </TableRow>
 
             <TableRow>
@@ -134,7 +135,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/spnStatDefense"
-                    android:layout_column="1" />
+                    android:layout_column="1"
+                    android:spinnerMode="dialog" />
 
             </TableRow>
 
@@ -153,7 +155,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/spnStatSpeed"
-                    android:layout_column="1" />
+                    android:layout_column="1"
+                    android:spinnerMode="dialog" />
 
             </TableRow>
 
@@ -172,7 +175,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/spnEffect1"
-                    />
+                    android:spinnerMode="dialog" />
             </TableRow>
 
             <TableRow>
@@ -189,7 +192,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/spnEffect2"
-                    />
+                    android:spinnerMode="dialog" />
             </TableRow>
             <TableRow>
 
@@ -205,7 +208,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/spnEffect3"
-                    />
+                    android:spinnerMode="dialog" />
             </TableRow>
         </TableLayout>
     </ScrollView>

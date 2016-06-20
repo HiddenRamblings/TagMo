@@ -24,10 +24,10 @@ android {
 
     defaultConfig {
         applicationId "com.hiddenramblings.tagmo"
-        minSdkVersion 16
+        minSdkVersion 14
         targetSdkVersion 23
         versionCode 4
-        versionName "2.2"
+        versionName "2.3"
     }
     buildTypes {
         release {

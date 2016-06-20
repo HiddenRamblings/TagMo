@@ -14,6 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +27,7 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.AnimationRes;
 
 @EActivity(R.layout.activity_nfc)
 public class NfcActivity extends AppCompatActivity {
@@ -39,12 +43,15 @@ public class NfcActivity extends AppCompatActivity {
     public static final String EXTRA_TAG_DATA = "com.hiddenramblings.tagmo.EXTRA_TAG_DATA";
     public static final String EXTRA_IGNORE_TAG_ID = "com.hiddenramblings.tagmo.EXTRA_IGNORE_TAG_ID";
 
-    @ViewById(R.id.prgBusy)
-    ProgressBar prgBusy;
     @ViewById(R.id.txtMessage)
     TextView txtMessage;
     @ViewById(R.id.txtError)
     TextView txtError;
+
+    @ViewById(R.id.imgNfcBar)
+    ImageView imgNfcBar;
+    @ViewById(R.id.imgNfcCircle)
+    ImageView imgNfcCircle;
 
     NfcAdapter nfcAdapter;
     KeyManager keyManager;
@@ -54,6 +61,9 @@ public class NfcActivity extends AppCompatActivity {
         this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         this.keyManager = new KeyManager(this);
         updateTitle();
+
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.nfc_scanning);
+        imgNfcBar.setAnimation(animation);
     }
 
     @Override
@@ -117,14 +127,16 @@ public class NfcActivity extends AppCompatActivity {
         txtError.setText(msg);
         txtError.setVisibility(View.VISIBLE);
         txtMessage.setVisibility(View.GONE);
-        prgBusy.setVisibility(View.GONE);
+        imgNfcCircle.setVisibility(View.GONE);
+        imgNfcBar.setVisibility(View.GONE);
     }
 
     @UiThread
     void clearError() {
         txtError.setVisibility(View.GONE);
         txtMessage.setVisibility(View.VISIBLE);
-        prgBusy.setVisibility(View.VISIBLE);
+        imgNfcCircle.setVisibility(View.VISIBLE);
+        imgNfcBar.setVisibility(View.VISIBLE);
     }
 
     @Background

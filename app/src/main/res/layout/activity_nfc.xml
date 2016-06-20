@@ -9,15 +9,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.hiddenramblings.tagmo.NfcActivity">
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/prgBusy"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:indeterminate="true" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,5 +27,25 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:textColor="#fa0505" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imgNfcCircle"
+        android:src="@drawable/nfc_circle"
+        android:minWidth="100dip"
+        android:minHeight="100dip"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imgNfcBar"
+        android:src="@drawable/nfc_bar"
+        android:minWidth="100dip"
+        android:minHeight="10dip"
+        android:layout_alignTop="@+id/imgNfcCircle"
+        android:layout_alignLeft="@+id/imgNfcCircle" />
 
 </RelativeLayout>

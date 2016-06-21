@@ -1,15 +1,20 @@
 package com.hiddenramblings.tagmo;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
+import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -31,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.jar.Manifest;
 
 
 @EActivity(R.layout.activity_main)
@@ -75,6 +81,12 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     NfcAdapter nfcAdapter;
 
     boolean keyWarningShown;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.verifyStoragePermissions();
+    }
 
     @AfterViews
     protected void afterViews() {
@@ -312,6 +324,21 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         } catch (android.content.ActivityNotFoundException ex) {
             LogError("Failed to show file open dialog. Please install a file manager app.");
             Log.e(TAG, ex.getMessage());
+        }
+    }
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
+    private static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
+    private static String[] PERMISSIONS_STORAGE = {
+            READ_EXTERNAL_STORAGE,
+            WRITE_EXTERNAL_STORAGE
+    };
+
+    void verifyStoragePermissions() {
+        int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
         }
     }
 

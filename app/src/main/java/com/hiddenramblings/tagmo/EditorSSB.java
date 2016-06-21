@@ -64,7 +64,7 @@ public class EditorSSB extends AppCompatActivity {
         setListForSpinners(new Spinner[]{spnAppearance},
                 R.array.ssb_appearance_values, android.R.layout.simple_list_item_1);
         setListForSpinners(new Spinner[]{spnSpecial1, spnSpecial2, spnSpecial3, spnSpecial4},
-                R.array.hex_list, android.R.layout.simple_list_item_1);
+                R.array.ssb_specials_values, android.R.layout.simple_list_item_1);
         setListForSpinners(new Spinner[]{spnEffect1, spnEffect2, spnEffect3},
                 R.array.ssb_bonus_effects, android.R.layout.simple_list_item_1);
         setListForSpinners(new Spinner[]{spnStatAttack, spnStatDefense, spnStatSpeed},
@@ -142,13 +142,21 @@ public class EditorSSB extends AppCompatActivity {
         return value;
     }
 
+    void setSpecialValue(Spinner spinner, int value) {
+        if (value > 2)
+            value = 2;
+        if (value < 0)
+            value = 0;
+        spinner.setSelection(value);
+    }
+
     void loadData(final byte[] data) {
         spnAppearance.setSelection(data[OFFSET_APPEARANCE] & 0xFF);
 
-        spnSpecial1.setSelection(data[OFFSET_SPECIAL_NEUTRAL] & 0xFF);
-        spnSpecial2.setSelection(data[OFFSET_SPECIAL_SIDE_TO_SIDE] & 0xFF);
-        spnSpecial3.setSelection(data[OFFSET_SPECIAL_UP] & 0xFF);
-        spnSpecial4.setSelection(data[OFFSET_SPECIAL_DOWN] & 0xFF);
+        setSpecialValue(spnSpecial1, data[OFFSET_SPECIAL_NEUTRAL] & 0xFF);
+        setSpecialValue(spnSpecial2, data[OFFSET_SPECIAL_SIDE_TO_SIDE] & 0xFF);
+        setSpecialValue(spnSpecial3, data[OFFSET_SPECIAL_UP] & 0xFF);
+        setSpecialValue(spnSpecial4, data[OFFSET_SPECIAL_DOWN] & 0xFF);
 
         spnStatAttack.setSelection(readStat(data, OFFSET_STATS_ATTACK));
         spnStatDefense.setSelection(readStat(data, OFFSET_STATS_DEFENSE));

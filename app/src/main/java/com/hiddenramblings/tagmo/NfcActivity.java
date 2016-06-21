@@ -56,14 +56,15 @@ public class NfcActivity extends AppCompatActivity {
     NfcAdapter nfcAdapter;
     KeyManager keyManager;
 
+    Animation nfcAnimation;
+
     @AfterViews
     void afterViews() {
         this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         this.keyManager = new KeyManager(this);
         updateTitle();
 
-        Animation animation = AnimationUtils.loadAnimation(this, R.anim.nfc_scanning);
-        imgNfcBar.setAnimation(animation);
+        nfcAnimation = AnimationUtils.loadAnimation(this, R.anim.nfc_scanning);
     }
 
     @Override
@@ -129,6 +130,7 @@ public class NfcActivity extends AppCompatActivity {
         txtMessage.setVisibility(View.GONE);
         imgNfcCircle.setVisibility(View.GONE);
         imgNfcBar.setVisibility(View.GONE);
+        imgNfcBar.clearAnimation();
     }
 
     @UiThread
@@ -137,6 +139,7 @@ public class NfcActivity extends AppCompatActivity {
         txtMessage.setVisibility(View.VISIBLE);
         imgNfcCircle.setVisibility(View.VISIBLE);
         imgNfcBar.setVisibility(View.VISIBLE);
+        imgNfcBar.setAnimation(nfcAnimation);
     }
 
     @Background

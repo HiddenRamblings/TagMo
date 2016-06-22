@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     Button btnRestoreTag;
     @ViewById(R.id.btnEditDataSSB)
     Button btnEditDataSSB;
+    @ViewById(R.id.btnViewHex)
+    Button btnViewHex;
 
     @ViewById(R.id.cbAutoSaveOnScan)
     CheckBox cbAutoSaveOnScan;
@@ -174,6 +176,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         btnRestoreTag.setEnabled(nfcEnabled && hasTag);
         btnSaveTag.setEnabled(nfcEnabled && hasTag);
         btnEditDataSSB.setEnabled(hasKeys && hasTag);
+        btnViewHex.setEnabled(hasKeys && hasTag);
 
         if (!hasKeys && !keyWarningShown) {
             LogError("Not all keys loaded. Load keys using the menu.");
@@ -267,6 +270,18 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         intent.setAction(Actions.ACTION_EDIT_DATA);
         intent.putExtra(Actions.EXTRA_TAG_DATA, this.currentTagData);
         startActivityForResult(intent, EDIT_TAG);
+    }
+
+    @Click(R.id.btnViewHex)
+    void viewHex() {
+        if (this.currentTagData == null) {
+            LogError("No tag loaded");
+            return;
+        }
+        Intent intent = new Intent(this, HexViewerActivity_.class);
+        intent.setAction(Actions.ACTION_EDIT_DATA);
+        intent.putExtra(Actions.EXTRA_TAG_DATA, this.currentTagData);
+        startActivity(intent);
     }
 
     @Override

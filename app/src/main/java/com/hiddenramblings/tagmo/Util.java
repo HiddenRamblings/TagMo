@@ -12,7 +12,7 @@ import java.security.SecureRandom;
 public class Util {
     final static String TAG = "Util";
 
-    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    final public static char[] hexArray = "0123456789ABCDEF".toCharArray();
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for ( int j = 0; j < bytes.length; j++ ) {

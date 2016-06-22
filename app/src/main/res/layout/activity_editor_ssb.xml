@@ -31,7 +31,24 @@
                 <Spinner
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/spnAppearance" />
+                    android:id="@+id/spnAppearance"
+                    android:spinnerMode="dialog" />
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Level"
+                    android:id="@+id/txtLevel"
+                    android:layout_gravity="center|left" />
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spnLevel"
+                    android:spinnerMode="dialog" />
             </TableRow>
 
             <TableRow>

@@ -57,6 +57,9 @@ public class EditorSSB extends AppCompatActivity {
     @ViewById(R.id.spnStatSpeed)
     Spinner spnStatSpeed;
 
+    @ViewById(R.id.spnLevel)
+    Spinner spnLevel;
+
     KeyManager keyManager;
 
     @AfterViews
@@ -69,6 +72,8 @@ public class EditorSSB extends AppCompatActivity {
                 R.array.ssb_bonus_effects, android.R.layout.simple_list_item_1);
         setListForSpinners(new Spinner[]{spnStatAttack, spnStatDefense, spnStatSpeed},
                 R.array.ssb_stat_values, android.R.layout.simple_list_item_1);
+        setListForSpinners(new Spinner[]{spnLevel},
+                R.array.ssb_levels, android.R.layout.simple_list_item_1);
 
         keyManager = new KeyManager(this);
 
@@ -100,6 +105,8 @@ public class EditorSSB extends AppCompatActivity {
     private static final int OFFSET_BONUS_EFFECT1 = OFFSET_APP_DATA + 0x0D;
     private static final int OFFSET_BONUS_EFFECT2 = OFFSET_APP_DATA + 0x0E;
     private static final int OFFSET_BONUS_EFFECT3 = OFFSET_APP_DATA + 0x0F;
+
+    private static final int OFFSET_LEVEL = OFFSET_APP_DATA + 0x7C;
 
     int readStat(byte[] data, int offset) {
         short value = (short)((data[offset] & 0xFF) << 8);
@@ -150,6 +157,36 @@ public class EditorSSB extends AppCompatActivity {
         spinner.setSelection(value);
     }
 
+    private static final int[] LEVEL_THRESHOLDS = new int[]{ 0x00, 0x08, 0x010, 0x01D, 0x02D, 0x048,
+            0x05B, 0x075, 0x08D, 0x0AF, 0x0E1, 0x0103, 0x0126, 0x0149, 0x0172, 0x0196, 0x01BE, 0x01F7,
+            0x0216, 0x0240, 0x0278, 0x02A4, 0x02D6, 0x030E, 0x034C, 0x037C, 0x03BB, 0x03F4, 0x042A, 0x0440,
+            0x048A, 0x04B6,0x04E3, 0x053F, 0x056D, 0x059C, 0x0606, 0x0641, 0x0670, 0x069E, 0x06FC, 0x072E,
+            0x075D, 0x07B9, 0x07E7, 0x0844, 0x0875, 0x08D3, 0x0902, 0x093E
+    };
+
+    int readLevel(byte[] data) {
+        int value = (data[OFFSET_LEVEL] & 0xFF) << 8;
+        value |= (data[OFFSET_LEVEL+1] & 0xFF);
+
+        for (int i= LEVEL_THRESHOLDS.length-1; i>=0; i--) {
+            if (LEVEL_THRESHOLDS[i] <= value)
+                return i+1;
+        }
+        return 1;
+    }
+
+    void writeLevel(byte[] data, int level) {
+        int oldlevel = readLevel(data);
+        if (oldlevel == level)
+            return; //level is a granular value as such we dont want to overwrite it in case its halfway through a level
+
+        int value = LEVEL_THRESHOLDS[level - 1];
+
+        data[OFFSET_LEVEL] = (byte) ((value >> 8) & 0xFF);
+        data[OFFSET_LEVEL + 1] = (byte) (value & 0xFF);
+    }
+
+
     void loadData(final byte[] data) {
         spnAppearance.setSelection(data[OFFSET_APPEARANCE] & 0xFF);
 
@@ -165,6 +202,8 @@ public class EditorSSB extends AppCompatActivity {
         setEffectValue(spnEffect1, data[OFFSET_BONUS_EFFECT1] & 0xFF);
         setEffectValue(spnEffect2, data[OFFSET_BONUS_EFFECT2] & 0xFF);
         setEffectValue(spnEffect3, data[OFFSET_BONUS_EFFECT3] & 0xFF);
+
+        spnLevel.setSelection(readLevel(data)-1);
     }
 
     void updateData(byte[] data) {
@@ -181,6 +220,8 @@ public class EditorSSB extends AppCompatActivity {
         data[OFFSET_BONUS_EFFECT1] = (byte)getEffectValue(spnEffect1);
         data[OFFSET_BONUS_EFFECT2] = (byte)getEffectValue(spnEffect2);
         data[OFFSET_BONUS_EFFECT3] = (byte)getEffectValue(spnEffect3);
+
+        writeLevel(data, spnLevel.getSelectedItemPosition()+1);
     }
 
     void setListForSpinners(Spinner[] controls, int list, int layout) {

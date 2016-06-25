@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.jar.Manifest;
 
 
@@ -407,7 +408,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
             byte[] uid = Arrays.copyOfRange(tagdata, 0, 9);
             String uids = Util.bytesToHex(uid);
-            String fname = String.format("%s_%s%s.bin", charid,  uids, (valid ? "" : "_corrupted_"));
+            String fname = String.format("%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin", charid,  uids, Calendar.getInstance(), (valid ? "" : "_corrupted_"));
 
             File dir = new File(Environment.getExternalStorageDirectory(), DATA_DIR);
             if (!dir.isDirectory())

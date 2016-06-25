@@ -44,6 +44,8 @@ import java.util.jar.Manifest;
 public class MainActivity extends AppCompatActivity /* implements TagCreateDialog.TagCreateListener */ {
     private static final String TAG = "MainActivity";
 
+    private static final String DATA_DIR = "tagmo";
+
     private static final int FILE_LOAD_TAG = 0x100;
     private static final int FILE_LOAD_KEYS = 0x101;
     private static final int NFC_ACTIVITY = 0x102;
@@ -400,10 +402,19 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         }
 
         try {
+            byte[] charIdData = TagUtil.charIdDataFromTag(this.currentTagData);
+            String charid = AmiiboDictionary.getDisplayName(charIdData);
+
             byte[] uid = Arrays.copyOfRange(tagdata, 0, 9);
             String uids = Util.bytesToHex(uid);
-            String fname = "tagmo_" + uids + (valid ? "" : "_corrupted_") + ".bin";
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fname);
+            String fname = String.format("%s_%s%s.bin", charid,  uids, (valid ? "" : "_corrupted_"));
+
+            File dir = new File(Environment.getExternalStorageDirectory(), DATA_DIR);
+            if (!dir.isDirectory())
+                dir.mkdir();
+
+            File file = new File(dir.getAbsolutePath(), fname);
+
             Log.d(TAG, file.toString());
             FileOutputStream fos = new FileOutputStream(file);
             try {
@@ -416,7 +427,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
             } catch (Exception e) {
                 Log.e(TAG, "Failed to refresh media scanner", e);
             }
-            LogMessage("Wrote to file " + fname + " in downloads.");
+            LogMessage("Wrote to file " + fname + " in tagmo directory.");
         } catch (Exception e) {
             LogError("Error writing to file: " + e.getMessage());
         }

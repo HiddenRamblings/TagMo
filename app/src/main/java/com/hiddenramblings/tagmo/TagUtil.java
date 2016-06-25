@@ -46,14 +46,14 @@ public class TagUtil {
     }
 
     /**
-     * Returns Character id from a tagdata in TagFormat.
+     * Returns Character id bytes from a tagdata in TagFormat.
      */
-    public static String CharIdFromTag(byte[] data) throws Exception {
+    public static byte[] charIdDataFromTag(byte[] data) throws Exception {
         if (data.length < 0x5C)
             throw new Exception("Invalid tag data");
         byte[] id = new byte[4*2];
         System.arraycopy(data, 0x54, id, 0, id.length);
-        return Util.bytesToHex(id);
+        return id;
     }
 
     public static byte[][] splitPages(byte[] data) { //assume correct sizes

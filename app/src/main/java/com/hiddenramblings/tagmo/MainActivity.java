@@ -185,7 +185,8 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
         try {
             if (this.currentTagData != null) {
-                String charid = TagUtil.CharIdFromTag(this.currentTagData);
+                byte[] charIdData = TagUtil.charIdDataFromTag(this.currentTagData);
+                String charid = AmiiboDictionary.getDisplayName(charIdData);
                 String uid = Util.bytesToHex(TagUtil.uidFromPages(this.currentTagData));
                 txtTagId.setText("TagId: " + charid + " / " + uid);
             } else {

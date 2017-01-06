@@ -21,7 +21,7 @@ public class AmiiboDictionary {
         seriesNames.put(0x0902, "The Legend of Zelda");
         seriesNames.put(0x0A02, "Shovel Knight");
         seriesNames.put(0x0C02, "Kirby");
-        seriesNames.put(0x0D02, "Pokkén Tournament");
+        seriesNames.put(0x0D02, "PokkÃ©n Tournament");
         seriesNames.put(0x0F02, "Monster Hunter Stories");
     }
 
@@ -138,7 +138,7 @@ public class AmiiboDictionary {
         idList.put(0x005A, "Cheri (ACC1)");
         idList.put(0x005B, "Kyle (ACC1)");
         idList.put(0x005C, "Al (ACC1)");
-        idList.put(0x005D, "Renée (ACC1)");
+        idList.put(0x005D, "RenÃ©e (ACC1)");
         idList.put(0x005E, "Lopez (ACC1)");
         idList.put(0x005F, "Jambette (ACC1)");
         idList.put(0x0060, "Rasher (ACC1)");
@@ -621,7 +621,7 @@ public class AmiiboDictionary {
         idList.put(0x0318, "Tasha (AC)");
         idList.put(0x0319, "Rilla (AC)");
         idList.put(0x031A, "Marty (AC)");
-        idList.put(0x031B, "Étoile (AC)");
+        idList.put(0x031B, "Ã‰toile (AC)");
         idList.put(0x031C, "Chai (AC)");
         idList.put(0x031D, "Chelsea (AC)");
         idList.put(0x031E, "Toby (AC)");
@@ -1068,7 +1068,7 @@ public class AmiiboDictionary {
         charList.put(0x04B400, "Spike");
         charList.put(0x04B600, "Hornsby");
         charList.put(0x04B900, "Merengue");
-        charList.put(0x04BA00, "Renée");
+        charList.put(0x04BA00, "RenÃ©e");
         charList.put(0x04C500, "Vesta");
         charList.put(0x04C600, "Baabara");
         charList.put(0x04C700, "Eunice");
@@ -1081,7 +1081,7 @@ public class AmiiboDictionary {
         charList.put(0x04D000, "Frita");
         charList.put(0x04D100, "Muffy");
         charList.put(0x04D200, "Pietro");
-        charList.put(0x04D301, "Étoile");
+        charList.put(0x04D301, "Ã‰toile");
         charList.put(0x04DD00, "Peanut");
         charList.put(0x04DE00, "Blaire");
         charList.put(0x04DF00, "Filbert");

@@ -1197,7 +1197,7 @@ public class AmiiboDictionary {
         name = getNameById(data.Brand, data.BrandedIdSequence, data.Variant);
         if (name != null) {
             String seriesName = "UNK";
-            if (seriesShortNames.contains(this.Series)
+            if (seriesShortNames.containsKey(data.Series))
                 seriesName = seriesShortNames.get(data.Series);
             return String.format("%s (%s)", name, seriesName);
         }
@@ -1224,7 +1224,7 @@ public class AmiiboDictionary {
         @Override
         public String toString() {
             String seriesName = "UNK";
-            if (seriesShortNames.contains(this.Series)
+            if (seriesShortNames.containsKey(this.Series))
                 seriesName = seriesShortNames.get(this.Series);
 
             return String.format("Brand:%03X\tSeq:%X\tVar:%02X\tForm:%02X\tAmiSeq:%04X\tSeries:%02X\t%s",

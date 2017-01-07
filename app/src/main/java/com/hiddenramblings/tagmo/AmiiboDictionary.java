@@ -1047,7 +1047,7 @@ public class AmiiboDictionary {
         charList.put(0x047A0001, "Rasher");
         charList.put(0x047B0001, "Hugh");
         charList.put(0x047C0001, "Lucy");
-        charList.put(0x047D0001, "Spork-Crackle");
+        charList.put(0x047D0001, "Spork/Crackle");
         charList.put(0x04800001, "Cobb");
         charList.put(0x04810001, "Boris");
         charList.put(0x04820001, "Maggie");

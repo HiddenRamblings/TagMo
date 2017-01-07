@@ -404,7 +404,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
         try {
             byte[] charIdData = TagUtil.charIdDataFromTag(this.currentTagData);
-            String charid = AmiiboDictionary.getDisplayName(charIdData);
+            String charid = AmiiboDictionary.getDisplayName(charIdData).replace("/", "-"); //prevent invalid filenames
 
             byte[] uid = Arrays.copyOfRange(tagdata, 0, 9);
             String uids = Util.bytesToHex(uid);

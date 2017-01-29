@@ -153,6 +153,16 @@
 
     <Button
         android:layout_height="wrap_content"
+        android:text="@string/edit_tp_data"
+        android:id="@+id/btnEditDataTP"
+        android:layout_row="15"
+        android:layout_column="3"
+        android:layout_gravity="right"
+        android:layout_width="148dp"
+        android:visibility="invisible" />
+
+    <Button
+        android:layout_height="wrap_content"
         android:text="Fix Signatures"
         android:id="@+id/btnFixSig"
         android:layout_row="17"

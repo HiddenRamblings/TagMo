@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,10 +17,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.hiddenramblings.tagmo.editors.EditorSSB_;
+import com.hiddenramblings.tagmo.editors.EditorTP_;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -37,7 +40,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.jar.Manifest;
 
 
 @EActivity(R.layout.activity_main)
@@ -192,12 +194,38 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
                 String charid = AmiiboDictionary.getDisplayName(charIdData);
                 String uid = Util.bytesToHex(TagUtil.uidFromPages(this.currentTagData));
                 txtTagId.setText("TagId: " + charid + " / " + uid);
+                onTagLoaded(charIdData);
             } else {
                 txtTagId.setText("TagId: <No tag loaded>");
+                onTagLoaded(null);
             }
         } catch (Exception e) {
             LogError("Error parsing tag id", e);
             txtTagId.setText("TagID: <Error>");
+            onTagLoaded(null);
+        }
+    }
+
+    void onTagLoaded(byte[] charIdData) {
+        Button edit_ssb = (Button) findViewById(R.id.btnEditDataSSB);
+        Button edit_tp = (Button) findViewById(R.id.btnEditDataTP);
+
+        if (charIdData == null) {
+            edit_ssb.setVisibility(View.INVISIBLE);
+            edit_tp.setVisibility(View.INVISIBLE);
+        } else {
+            AmiiboDictionary.AmiiboIdData ad = AmiiboDictionary.parseid(charIdData);
+            int id = (ad.Brand << 16) + (ad.Variant << 8) + ad.Type;
+            switch (id) {
+                case 0x01030000: // Wolf Link; TODO: Make AmiiboDictinary IDS an enum
+                    edit_ssb.setVisibility(View.INVISIBLE);
+                    edit_tp.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    edit_ssb.setVisibility(View.VISIBLE);
+                    edit_tp.setVisibility(View.INVISIBLE);
+                    break;
+            }
         }
     }
 
@@ -271,6 +299,18 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
             return;
         }
         Intent intent = new Intent(this, EditorSSB_.class);
+        intent.setAction(Actions.ACTION_EDIT_DATA);
+        intent.putExtra(Actions.EXTRA_TAG_DATA, this.currentTagData);
+        startActivityForResult(intent, EDIT_TAG);
+    }
+
+    @Click(R.id.btnEditDataTP)
+    void editTPData() {
+        if (this.currentTagData == null) {
+            LogError("No tag loaded");
+            return;
+        }
+        Intent intent = new Intent(this, EditorTP_.class);
         intent.setAction(Actions.ACTION_EDIT_DATA);
         intent.putExtra(Actions.EXTRA_TAG_DATA, this.currentTagData);
         startActivityForResult(intent, EDIT_TAG);

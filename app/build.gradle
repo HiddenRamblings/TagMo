@@ -28,6 +28,10 @@ android {
         targetSdkVersion 23
         versionCode 4
         versionName "2.3.4"
+
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a', 'x86'
+        }
     }
     buildTypes {
         release {
@@ -58,6 +62,11 @@ android {
 
     sourceSets.main {
         jniLibs.srcDir '../ndk/libs'
+    }
+    externalNativeBuild {
+        ndkBuild {
+           path '../ndk/jni/Android.mk'
+        }
     }
 }
 

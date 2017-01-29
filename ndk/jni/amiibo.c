@@ -27,11 +27,9 @@
 #define HMAC_POS_DATA 0x008
 #define HMAC_POS_TAG 0x1B4
 
-void bzero(void *s, size_t n);;
-
 void nfc3d_amiibo_calc_seed(const uint8_t * dump, uint8_t * key) {
 	memcpy(key + 0x00, dump + 0x029, 0x02);
-	bzero(key + 0x02, 0x0E);
+	memset(key + 0x02, 0, 0x0E);
 	memcpy(key + 0x10, dump + 0x1D4, 0x08);
 	memcpy(key + 0x18, dump + 0x1D4, 0x08);
 	memcpy(key + 0x20, dump + 0x1E8, 0x20);

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">TagMo</string>
+    <string name="shadow_cave_progress">Shadow Cave progress</string>
+    <string name="hearts">Hearts</string>
+    <string name="edit_tp_data">Edit TP Data</string>
+    <string name="editor_error_outofbounds">Amiibo contains an invalid current state.</string>
 </resources>

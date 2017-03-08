@@ -8,7 +8,7 @@ include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 
-LOCAL_C_INCLUDES := ./jni/include
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
 LOCAL_CFLAGS += -std=c99
 LOCAL_MODULE := amiitool
 

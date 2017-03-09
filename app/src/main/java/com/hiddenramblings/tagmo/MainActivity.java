@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,7 +36,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.jar.Manifest;
 
 
 @EActivity(R.layout.activity_main)
@@ -189,9 +187,9 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         try {
             if (this.currentTagData != null) {
                 byte[] charIdData = TagUtil.charIdDataFromTag(this.currentTagData);
-                String charid = AmiiboDictionary.getDisplayName(charIdData);
+                String charId = AmiiboDictionary.getDisplayName(charIdData);
                 String uid = Util.bytesToHex(TagUtil.uidFromPages(this.currentTagData));
-                txtTagId.setText("TagId: " + charid + " / " + uid);
+                txtTagId.setText("TagId: " + charId + " / " + uid);
             } else {
                 txtTagId.setText("TagId: <No tag loaded>");
             }
@@ -296,7 +294,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
         Log.d(TAG, "onActivityResult");
 
-        String action = null;
+        String action;
         switch (requestCode)
         {
             case EDIT_TAG:
@@ -335,7 +333,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
     private void showFileChooser(String title, String mimeType, int resultCode) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");      //all files
+        intent.setType(mimeType);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         try {
@@ -404,17 +402,17 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
         try {
             byte[] charIdData = TagUtil.charIdDataFromTag(this.currentTagData);
-            String charid = AmiiboDictionary.getDisplayName(charIdData).replace("/", "-"); //prevent invalid filenames
+            String charId = AmiiboDictionary.getDisplayName(charIdData).replace("/", "-"); //prevent invalid filenames
 
-            byte[] uid = Arrays.copyOfRange(tagdata, 0, 9);
-            String uids = Util.bytesToHex(uid);
-            String fname = String.format("%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin", charid,  uids, Calendar.getInstance(), (valid ? "" : "_corrupted_"));
+            byte[] uId = Arrays.copyOfRange(tagdata, 0, 9);
+            String uIds = Util.bytesToHex(uId);
+            String fName = String.format("%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin", charId,  uIds, Calendar.getInstance(), (valid ? "" : "_corrupted_"));
 
             File dir = new File(Environment.getExternalStorageDirectory(), DATA_DIR);
             if (!dir.isDirectory())
                 dir.mkdir();
 
-            File file = new File(dir.getAbsolutePath(), fname);
+            File file = new File(dir.getAbsolutePath(), fName);
 
             Log.d(TAG, file.toString());
             FileOutputStream fos = new FileOutputStream(file);
@@ -428,7 +426,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
             } catch (Exception e) {
                 Log.e(TAG, "Failed to refresh media scanner", e);
             }
-            LogMessage("Wrote to file " + fname + " in tagmo directory.");
+            LogMessage("Wrote to file " + fName + " in tagmo directory.");
         } catch (Exception e) {
             LogError("Error writing to file: " + e.getMessage());
         }

@@ -7,6 +7,8 @@ import java.util.HashMap;
  */
 public class AmiiboDictionary {
 
+    // Last 4 bits of the 2nd byte are the game series identifier
+    // -------- ----XXXX
     static final HashMap<Integer, String> seriesNames = new HashMap<Integer, String>();
 
     static {
@@ -25,6 +27,8 @@ public class AmiiboDictionary {
         seriesNames.put(0x0F02, "Monster Hunter Stories");
     }
 
+    // Same as above but with short names
+    // TODO: Useless IMO
     static final HashMap<Integer, String> seriesShortNames = new HashMap<Integer, String>();
 
     static {
@@ -43,6 +47,8 @@ public class AmiiboDictionary {
         seriesShortNames.put(0x0F02, "MON");
     }
 
+    // First 4 bits of the 2nd byte are the variant of the character
+    // -------- XXXX----
     static final HashMap<Integer, String> idList = new HashMap<Integer, String>();
 
     static {
@@ -629,8 +635,15 @@ public class AmiiboDictionary {
         idList.put(0x034F, "8-bit Link (The Legend of Zelda) (LOZ)");
         idList.put(0x0350, "Toon Link (The Wind Waker) (LOZ)");
         idList.put(0x0352, "Toon Zelda (The Wind Waker) (LOZ)");
+        idList.put(0x0353, "Link (Archer) (BOTW)");
+        idList.put(0x0354, "Link (Rider) (BOTW)");
+        idList.put(0x0355, "Guardian (BOTW)");
+        idList.put(0x0356, "Zelda (BOTW)");
+        idList.put(0x035C, "Bokoblin (BOTW)");
     }
 
+    // 1st byte is the character identifier
+    // XXXXXXXX --------
     static final HashMap<Integer, String> charList = new HashMap<Integer, String>();
 
     static {
@@ -1188,6 +1201,11 @@ public class AmiiboDictionary {
         charList.put(0x35C00000, "Shovel Knight");
         charList.put(0x38400000, "Cloud Strife"); // TODO last two digits for this and next
         charList.put(0x39800000, "Bayonetta");
+        charList.put(0x01000000, "Link (Archer)");
+        charList.put(0x01000000, "Link (Rider)");
+        charList.put(0x01400000, "Guardian");
+        charList.put(0x01010000, "Zelda");
+        charList.put(0x01410000, "Bokoblin");
     }
 
 

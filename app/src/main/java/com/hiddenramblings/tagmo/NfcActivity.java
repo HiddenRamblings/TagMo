@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo;
 
 import android.app.Activity;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,23 +10,19 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.res.AnimationRes;
 
 @EActivity(R.layout.activity_nfc)
 public class NfcActivity extends AppCompatActivity {
@@ -149,8 +144,6 @@ public class NfcActivity extends AppCompatActivity {
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             Log.d(TAG, tag.toString());
-            if (tag == null)
-                showError("Error getting tag data");
             MifareUltralight mifare = MifareUltralight.get(tag);
             if (mifare == null)
                 throw new Exception("Error getting tag data. Possibly not a NTAG215");
@@ -159,7 +152,7 @@ public class NfcActivity extends AppCompatActivity {
             int resultCode = Activity.RESULT_CANCELED;
             try {
                 Log.d(TAG, mode);
-                byte[] data = null;
+                byte[] data;
                 switch (mode) {
                     case ACTION_WRITE_TAG_RAW:
                         data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);

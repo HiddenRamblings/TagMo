@@ -3,13 +3,8 @@ package com.hiddenramblings.tagmo;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.NumberPicker;
-import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -82,7 +77,7 @@ public class EditorSSB extends AppCompatActivity {
             tagData = TagUtil.decrypt(keyManager, tagData);
             this.loadData(tagData);
         } catch (Exception e) {
-            Log.d(TAG, "Error decyrpting data", e);
+            Log.d(TAG, "Error decrypting data", e);
             finish();
         }
     }
@@ -176,9 +171,9 @@ public class EditorSSB extends AppCompatActivity {
     }
 
     void writeLevel(byte[] data, int level) {
-        int oldlevel = readLevel(data);
-        if (oldlevel == level)
-            return; //level is a granular value as such we dont want to overwrite it in case its halfway through a level
+        int oldLevel = readLevel(data);
+        if (oldLevel == level)
+            return; //level is a granular value as such we don't want to overwrite it in case its halfway through a level
 
         int value = LEVEL_THRESHOLDS[level - 1];
 

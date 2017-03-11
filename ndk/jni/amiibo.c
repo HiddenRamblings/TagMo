@@ -22,16 +22,15 @@
 
 #include "nfc3d/amiibo.h"
 #include "util.h"
+#include <openssl/hmac.h>
 #include <errno.h>
 
 #define HMAC_POS_DATA 0x008
 #define HMAC_POS_TAG 0x1B4
 
-void bzero(void *s, size_t n);;
-
 void nfc3d_amiibo_calc_seed(const uint8_t * dump, uint8_t * key) {
 	memcpy(key + 0x00, dump + 0x029, 0x02);
-	bzero(key + 0x02, 0x0E);
+	memset(key + 0x02, 0x00, 0x0E);
 	memcpy(key + 0x10, dump + 0x1D4, 0x08);
 	memcpy(key + 0x18, dump + 0x1D4, 0x08);
 	memcpy(key + 0x20, dump + 0x1E8, 0x20);
@@ -89,9 +88,22 @@ bool nfc3d_amiibo_unpack(const nfc3d_amiibo_keys * amiiboKeys, const uint8_t * t
 	// Decrypt
 	nfc3d_amiibo_cipher(&dataKeys, internal, plain);
 
-	// Check integrity. Note: order matters, data HMAC depends on tag HMAC!
-	sha256hmac(tagKeys.hmacKey, sizeof(tagKeys.hmacKey), plain + 0x1D4, 0x34, plain + HMAC_POS_TAG);
-	sha256hmac(dataKeys.hmacKey, sizeof(dataKeys.hmacKey), plain + 0x029, 0x1DF, plain + HMAC_POS_DATA);
+	// Init OpenSSL HMAC context
+	HMAC_CTX hmacCtx;
+	HMAC_CTX_init(&hmacCtx);
+
+	// Regenerate tag HMAC. Note: order matters, data HMAC depends on tag HMAC!
+	HMAC_Init_ex(&hmacCtx, tagKeys.hmacKey, sizeof(tagKeys.hmacKey), EVP_sha256(), NULL);
+	HMAC_Update(&hmacCtx, plain + 0x1D4, 0x34);
+	HMAC_Final(&hmacCtx, plain + HMAC_POS_TAG, NULL);
+
+	// Regenerate data HMAC
+	HMAC_Init_ex(&hmacCtx, dataKeys.hmacKey, sizeof(dataKeys.hmacKey), EVP_sha256(), NULL);
+	HMAC_Update(&hmacCtx, plain + 0x029, 0x1DF);
+	HMAC_Final(&hmacCtx, plain + HMAC_POS_DATA, NULL);
+
+	// HMAC cleanup
+	HMAC_CTX_cleanup(&hmacCtx);
 
 	return
 			memcmp(plain + HMAC_POS_DATA, internal + HMAC_POS_DATA, 32) == 0 &&
@@ -107,16 +119,27 @@ void nfc3d_amiibo_pack(const nfc3d_amiibo_keys * amiiboKeys, const uint8_t * pla
 	nfc3d_amiibo_keygen(&amiiboKeys->tag, plain, &tagKeys);
 	nfc3d_amiibo_keygen(&amiiboKeys->data, plain, &dataKeys);
 
-	uint8_t plain2[NFC3D_AMIIBO_SIZE];
-	memcpy(plain2, plain, NFC3D_AMIIBO_SIZE);
+	// Init OpenSSL HMAC context
+	HMAC_CTX hmacCtx;
+	HMAC_CTX_init(&hmacCtx);
 
-	// Generate HMAC //tag hmac is used by data hmac
-	sha256hmac(tagKeys.hmacKey, sizeof(tagKeys.hmacKey), plain2 + 0x1D4, 0x34, plain2 + HMAC_POS_TAG);
-	sha256hmac(tagKeys.hmacKey, sizeof(tagKeys.hmacKey), plain2 + 0x1D4, 0x34, cipher + HMAC_POS_TAG);
-	sha256hmac(dataKeys.hmacKey, sizeof(dataKeys.hmacKey), plain2 + 0x029, 0x1DF, cipher + HMAC_POS_DATA);
+	// Generate tag HMAC
+	HMAC_Init_ex(&hmacCtx, tagKeys.hmacKey, sizeof(tagKeys.hmacKey), EVP_sha256(), NULL);
+	HMAC_Update(&hmacCtx, plain + 0x1D4, 0x34);
+	HMAC_Final(&hmacCtx, cipher + HMAC_POS_TAG, NULL);
+
+	// Generate data HMAC
+	HMAC_Init_ex(&hmacCtx, dataKeys.hmacKey, sizeof(dataKeys.hmacKey), EVP_sha256(), NULL);
+	HMAC_Update(&hmacCtx, plain + 0x029, 0x18B); // Data
+	HMAC_Update(&hmacCtx, cipher + HMAC_POS_TAG, 0x20); // Tag HMAC
+	HMAC_Update(&hmacCtx, plain + 0x1D4, 0x34); // Here be dragons
+	HMAC_Final(&hmacCtx, cipher + HMAC_POS_DATA, NULL);
+
+	// HMAC cleanup
+	HMAC_CTX_cleanup(&hmacCtx);
 
 	// Encrypt
-	nfc3d_amiibo_cipher(&dataKeys, plain2, cipher);
+	nfc3d_amiibo_cipher(&dataKeys, plain, cipher);
 
 	// Convert back to hardware
 	nfc3d_amiibo_internal_to_tag(cipher, tag);

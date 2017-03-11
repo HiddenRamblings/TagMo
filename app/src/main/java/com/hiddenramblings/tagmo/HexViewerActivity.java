@@ -1,24 +1,19 @@
 package com.hiddenramblings.tagmo;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.List;
 
 @EActivity(R.layout.activity_hex_viewer)
 public class HexViewerActivity extends AppCompatActivity {
@@ -42,7 +37,6 @@ public class HexViewerActivity extends AppCompatActivity {
 
     void loadData(byte[] tagData) {
         int rows = (int)Math.ceil((float)tagData.length / 0x10);
-
 
         String[] data = new String[rows];
 
@@ -80,7 +74,6 @@ public class HexViewerActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                final Context context = getContext();
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.hexdump_line, parent, false);
                 convertView.setTag(convertView.findViewById(R.id.textView2));
             }

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">TagMo</string>
+    <string name="middleCenterError"> </string>
+    <string name="topCenterTextMessage">Place the Tag under the Phone</string>
+    <string name="nfcIconDescription">NFC Icon</string>
+    <string name="movingBarDescription">Moving bar indicating the scanning process</string>
 </resources>

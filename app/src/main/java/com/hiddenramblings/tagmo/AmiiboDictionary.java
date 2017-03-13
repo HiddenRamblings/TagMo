@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 /**
  Data from https://docs.google.com/spreadsheets/d/1WJ4HxS9hkLquq-ATt1Rq9mioH6RDgP3qQrtYVaOdimM by /u/MacGuffen
+ or from : https://docs.google.com/spreadsheets/d/19E7pMhKN6x583uB6bWVBeaTMyBPtEAC-Bk59Y6cfgxA/ by N3evin & CheatFreak
  */
 public class AmiiboDictionary {
 
@@ -25,6 +26,8 @@ public class AmiiboDictionary {
         seriesNames.put(0x0C02, "Kirby");
         seriesNames.put(0x0D02, "Pokkén Tournament");
         seriesNames.put(0x0F02, "Monster Hunter Stories");
+        seriesNames.put(0x0E02, "Mario Sports Superstars");
+
     }
 
     // Same as above but with short names
@@ -45,6 +48,8 @@ public class AmiiboDictionary {
         seriesShortNames.put(0x0C02, "KIR");
         seriesShortNames.put(0x0D02, "POK");
         seriesShortNames.put(0x0F02, "MON");
+        seriesShortNames.put(0x0E02, "MSS");
+
     }
 
     // First 4 bits of the 2nd byte are the variant of the character
@@ -640,6 +645,96 @@ public class AmiiboDictionary {
         idList.put(0x0355, "Guardian (BOTW)");
         idList.put(0x0356, "Zelda (BOTW)");
         idList.put(0x035C, "Bokoblin (BOTW)");
+        idList.put(0x0269,"Mario - Soccer (MSS)");
+        idList.put(0x026A,"Mario - Baseball (MSS)");
+        idList.put(0x026B,"Mario - Tennis (MSS)");
+        idList.put(0x026C,"Mario - Golf (MSS)");
+        idList.put(0x026D,"Mario - Horse Racing (MSS)");
+        idList.put(0x026E,"Luigi - Soccer (MSS)");
+        idList.put(0x026F,"Luigi - Baseball (MSS)");
+        idList.put(0x0270,"Luigi - Tennis (MSS)");
+        idList.put(0x0271,"Luigi - Golf (MSS)");
+        idList.put(0x0272,"Luigi - Horse Racing (MSS)");
+        idList.put(0x0273,"Peach - Soccer (MSS)");
+        idList.put(0x0274,"Peach - Baseball (MSS)");
+        idList.put(0x0275,"Peach - Tennis (MSS)");
+        idList.put(0x0276,"Peach - Golf (MSS)");
+        idList.put(0x0277,"Peach - Horse Racing (MSS)");
+        idList.put(0x0278,"Daisy - Soccer (MSS)");
+        idList.put(0x0279,"Daisy - Baseball (MSS)");
+        idList.put(0x027A,"Daisy - Tennis (MSS)");
+        idList.put(0x027B,"Daisy - Golf (MSS)");
+        idList.put(0x027C,"Daisy - Horse Racing (MSS)");
+        idList.put(0x027D,"Yoshi - Soccer (MSS)");
+        idList.put(0x027E,"Yoshi - Baseball (MSS)");
+        idList.put(0x027F,"Yoshi - Tennis (MSS)");
+        idList.put(0x0280,"Yoshi - Golf (MSS)");
+        idList.put(0x0281,"Yoshi - Horse Racing (MSS)");
+        idList.put(0x0282,"Wario - Soccer (MSS)");
+        idList.put(0x0283,"Wario - Baseball (MSS)");
+        idList.put(0x0284,"Wario - Tennis (MSS)");
+        idList.put(0x0285,"Wario - Golf (MSS)");
+        idList.put(0x0286,"Wario - Horse Racing (MSS)");
+        idList.put(0x0287,"Waluigi - Soccer (MSS)");
+        idList.put(0x0288,"Waluigi - Baseball (MSS)");
+        idList.put(0x0289,"Waluigi - Tennis (MSS)");
+        idList.put(0x028A,"Waluigi - Golf (MSS)");
+        idList.put(0x028B,"Waluigi - Horse Racing (MSS)");
+        idList.put(0x028C,"Donkey Kong - Soccer (MSS)");
+        idList.put(0x028D,"Donkey Kong - Baseball (MSS)");
+        idList.put(0x028E,"Donkey Kong - Tennis (MSS)");
+        idList.put(0x028F,"Donkey Kong - Golf (MSS)");
+        idList.put(0x0290,"Donkey Kong - Horse Racing (MSS)");
+        idList.put(0x0291,"Diddy Kong - Soccer (MSS)");
+        idList.put(0x0292,"Diddy Kong - Baseball (MSS)");
+        idList.put(0x0293,"Diddy Kong - Tennis (MSS)");
+        idList.put(0x0294,"Diddy Kong - Golf (MSS)");
+        idList.put(0x0295,"Diddy Kong - Horse Racing (MSS)");
+        idList.put(0x0296,"Bowser - Soccer (MSS)");
+        idList.put(0x0297,"Bowser - Baseball (MSS)");
+        idList.put(0x0298,"Bowser - Tennis (MSS)");
+        idList.put(0x0299,"Bowser - Golf (MSS)");
+        idList.put(0x029A,"Bowser - Horse Racing (MSS)");
+        idList.put(0x029B,"Bowser Jr. - Soccer (MSS)");
+        idList.put(0x029C,"Bowser Jr. - Baseball (MSS)");
+        idList.put(0x029D,"Bowser Jr. - Tennis (MSS)");
+        idList.put(0x029E,"Bowser Jr. - Golf (MSS)");
+        idList.put(0x029F,"Bowser Jr. - Horse Racing (MSS)");
+        idList.put(0x02A0,"Boo - Soccer (MSS)");
+        idList.put(0x02A1,"Boo - Baseball (MSS)");
+        idList.put(0x02A2,"Boo - Tennis (MSS)");
+        idList.put(0x02A3,"Boo - Golf (MSS)");
+        idList.put(0x02A4,"Boo - Horse Racing (MSS)");
+        idList.put(0x02A5,"Baby Mario - Soccer (MSS)");
+        idList.put(0x02A6,"Baby Mario - Baseball (MSS)");
+        idList.put(0x02A7,"Baby Mario - Tennis (MSS)");
+        idList.put(0x02A8,"Baby Mario - Golf (MSS)");
+        idList.put(0x02A9,"Baby Mario - Horse Racing (MSS)");
+        idList.put(0x02AA,"Baby Luigi - Soccer (MSS)");
+        idList.put(0x02AB,"Baby Luigi - Baseball (MSS)");
+        idList.put(0x02AC,"Baby Luigi - Tennis (MSS)");
+        idList.put(0x02AD,"Baby Luigi - Golf (MSS)");
+        idList.put(0x02AE,"Baby Luigi - Horse Racing (MSS)");
+        idList.put(0x02AF,"Birdo - Soccer (MSS)");
+        idList.put(0x02B0,"Birdo - Baseball (MSS)");
+        idList.put(0x02B1,"Birdo - Tennis (MSS)");
+        idList.put(0x02B2,"Birdo - Golf (MSS)");
+        idList.put(0x02B3,"Birdo - Horse Racing (MSS)");
+        idList.put(0x02B4,"Rosalina - Soccer (MSS)");
+        idList.put(0x02B5,"Rosalina - Baseball (MSS)");
+        idList.put(0x02B6,"Rosalina - Tennis (MSS)");
+        idList.put(0x02B7,"Rosalina - Golf (MSS)");
+        idList.put(0x02B8,"Rosalina - Horse Racing (MSS)");
+        idList.put(0x02B9,"Metal Mario - Soccer (MSS)");
+        idList.put(0x02BA,"Metal Mario - Baseball (MSS)");
+        idList.put(0x02BB,"Metal Mario - Tennis (MSS)");
+        idList.put(0x02BC,"Metal Mario - Golf (MSS)");
+        idList.put(0x02BD,"Metal Mario - Horse Racing (MSS)");
+        idList.put(0x02BE,"Pink Gold Peach - Soccer (MSS)");
+        idList.put(0x02BF,"Pink Gold Peach - Baseball (MSS)");
+        idList.put(0x02C0,"Pink Gold Peach - Tennis (MSS)");
+        idList.put(0x02C1,"Pink Gold Peach - Golf (MSS)");
+        idList.put(0x02C2,"Pink Gold Peach - Horse Racing (MSS)");
     }
 
     // 1st byte is the character identifier
@@ -1206,6 +1301,96 @@ public class AmiiboDictionary {
         charList.put(0x01400000, "Guardian");
         charList.put(0x01010000, "Zelda");
         charList.put(0x01410000, "Bokoblin");
+        charList.put(0x09C00101, "Mario - Soccer");
+        charList.put(0x09C00201, "Mario - Baseball");
+        charList.put(0x09C00301, "Mario - Tennis");
+        charList.put(0x09C00401, "Mario - Golf");
+        charList.put(0x09C00501, "Mario - Horse Racing");
+        charList.put(0x09C10101, "Luigi - Soccer");
+        charList.put(0x09C10201, "Luigi - Baseball");
+        charList.put(0x09C10301, "Luigi - Tennis");
+        charList.put(0x09C10401, "Luigi - Golf");
+        charList.put(0x09C10501, "Luigi - Horse Racing");
+        charList.put(0x09C20101, "Peach - Soccer");
+        charList.put(0x09C20201, "Peach - Baseball");
+        charList.put(0x09C20301, "Peach - Tennis");
+        charList.put(0x09C20401, "Peach - Golf");
+        charList.put(0x09C20501, "Peach - Horse Racing");
+        charList.put(0x09C30101, "Daisy - Soccer");
+        charList.put(0x09C30201, "Daisy - Baseball");
+        charList.put(0x09C30301, "Daisy - Tennis");
+        charList.put(0x09C30401, "Daisy - Golf");
+        charList.put(0x09C30501, "Daisy - Horse Racing");
+        charList.put(0x09C40101, "Yoshi - Soccer");
+        charList.put(0x09C40201, "Yoshi - Baseball");
+        charList.put(0x09C40301, "Yoshi - Tennis");
+        charList.put(0x09C40401, "Yoshi - Golf");
+        charList.put(0x09C40501, "Yoshi - Horse Racing");
+        charList.put(0x09C50101, "Wario - Soccer");
+        charList.put(0x09C50201, "Wario - Baseball");
+        charList.put(0x09C50301, "Wario - Tennis");
+        charList.put(0x09C50401, "Wario - Golf");
+        charList.put(0x09C50501, "Wario - Horse Racing");
+        charList.put(0x09C60101, "Waluigi - Soccer");
+        charList.put(0x09C60201, "Waluigi - Baseball");
+        charList.put(0x09C60301, "Waluigi - Tennis");
+        charList.put(0x09C60401, "Waluigi - Golf");
+        charList.put(0x09C60501, "Waluigi - Horse Racing");
+        charList.put(0x09C70101, "Donkey Kong - Soccer");
+        charList.put(0x09C70201, "Donkey Kong - Baseball");
+        charList.put(0x09C70301, "Donkey Kong - Tennis");
+        charList.put(0x09C70401, "Donkey Kong - Golf");
+        charList.put(0x09C70501, "Donkey Kong - Horse Racing");
+        charList.put(0x09C80101, "Diddy Kong - Soccer");
+        charList.put(0x09C80201, "Diddy Kong - Baseball");
+        charList.put(0x09C80301, "Diddy Kong - Tennis");
+        charList.put(0x09C80401, "Diddy Kong - Golf");
+        charList.put(0x09C80501, "Diddy Kong - Horse Racing");
+        charList.put(0x09C90101, "Bowser - Soccer");
+        charList.put(0x09C90201, "Bowser - Baseball");
+        charList.put(0x09C90301, "Bowser - Tennis");
+        charList.put(0x09C90401, "Bowser - Golf");
+        charList.put(0x09C90501, "Bowser - Horse Racing");
+        charList.put(0x09CA0101, "Bowser Jr. - Soccer");
+        charList.put(0x09CA0201, "Bowser Jr. - Baseball");
+        charList.put(0x09CA0301, "Bowser Jr. - Tennis");
+        charList.put(0x09CA0401, "Bowser Jr. - Golf");
+        charList.put(0x09CA0501, "Bowser Jr. - Horse Racing");
+        charList.put(0x09CB0101, "Boo - Soccer");
+        charList.put(0x09CB0201, "Boo - Baseball");
+        charList.put(0x09CB0301, "Boo - Tennis");
+        charList.put(0x09CB0401, "Boo - Golf");
+        charList.put(0x09CB0501, "Boo - Horse Racing");
+        charList.put(0x09CC0101, "Baby Mario - Soccer");
+        charList.put(0x09CC0201, "Baby Mario - Baseball");
+        charList.put(0x09CC0301, "Baby Mario - Tennis");
+        charList.put(0x09CC0401, "Baby Mario - Golf");
+        charList.put(0x09CC0501, "Baby Mario - Horse Racing");
+        charList.put(0x09CD0101, "Baby Luigi - Soccer");
+        charList.put(0x09CD0201, "Baby Luigi - Baseball");
+        charList.put(0x09CD0301, "Baby Luigi - Tennis");
+        charList.put(0x09CD0401, "Baby Luigi - Golf");
+        charList.put(0x09CD0501, "Baby Luigi - Horse Racing");
+        charList.put(0x09CE0101, "Birdo - Soccer");
+        charList.put(0x09CE0201, "Birdo - Baseball");
+        charList.put(0x09CE0301, "Birdo - Tennis");
+        charList.put(0x09CE0401, "Birdo - Golf");
+        charList.put(0x09CE0501, "Birdo - Horse Racing");
+        charList.put(0x09CF0101, "Rosalina - Soccer");
+        charList.put(0x09CF0201, "Rosalina - Baseball");
+        charList.put(0x09CF0301, "Rosalina - Tennis");
+        charList.put(0x09CF0401, "Rosalina - Golf");
+        charList.put(0x09CF0501, "Rosalina - Horse Racing");
+        charList.put(0x09D00101, "Metal Mario - Soccer");
+        charList.put(0x09D00201, "Metal Mario - Baseball");
+        charList.put(0x09D00301, "Metal Mario - Tennis");
+        charList.put(0x09D00401, "Metal Mario - Golf");
+        charList.put(0x09D00501, "Metal Mario - Horse Racing");
+        charList.put(0x09D10101, "Pink Gold Peach - Soccer");
+        charList.put(0x09D10201, "Pink Gold Peach - Baseball");
+        charList.put(0x09D10301, "Pink Gold Peach - Tennis");
+        charList.put(0x09D10401, "Pink Gold Peach - Golf");
+        charList.put(0x09D10501, "Pink Gold Peach - Horse Racing");
     }
 
 

@@ -143,13 +143,24 @@
         android:visibility="gone" />
 
     <Button
-        android:layout_height="wrap_content"
-        android:text="Edit SSB Data"
         android:id="@+id/btnEditDataSSB"
-        android:layout_row="15"
+        android:layout_width="148dp"
+        android:layout_height="wrap_content"
         android:layout_column="3"
         android:layout_gravity="right"
-        android:layout_width="148dp" />
+        android:layout_row="15"
+        android:text="Edit SSB Data"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/btnEditDataTP"
+        android:layout_width="148dp"
+        android:layout_height="wrap_content"
+        android:layout_column="3"
+        android:layout_gravity="right"
+        android:layout_row="15"
+        android:text="Edit SSB Data"
+        android:visibility="invisible" />
 
     <Button
         android:layout_height="wrap_content"

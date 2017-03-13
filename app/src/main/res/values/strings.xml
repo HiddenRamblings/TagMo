@@ -4,4 +4,8 @@
     <string name="topCenterTextMessage">Place the Tag under the Phone</string>
     <string name="nfcIconDescription">NFC Icon</string>
     <string name="movingBarDescription">Moving bar indicating the scanning process</string>
+    <string name="shadow_cave_progress">Shadow Cave progress</string>
+    <string name="hearts">Hearts</string>
+    <string name="edit_tp_data">Edit TP Data</string>
+    <string name="editor_error_outofbounds">Amiibo contains an invalid current state.</string>
 </resources>

@@ -23,6 +23,7 @@
         </activity>
         <activity android:name=".NfcActivity_" android:launchMode="singleTask" />
         <activity android:name=".EditorSSB_" />
+        <activity android:name=".EditorTP_" />
         <activity android:name=".HexViewerActivity_"></activity>
     </application>
 

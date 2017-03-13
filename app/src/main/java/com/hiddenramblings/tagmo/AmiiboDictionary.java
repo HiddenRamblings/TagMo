@@ -5,6 +5,7 @@ import java.util.HashMap;
 /**
  Data from https://docs.google.com/spreadsheets/d/1WJ4HxS9hkLquq-ATt1Rq9mioH6RDgP3qQrtYVaOdimM by /u/MacGuffen
  or from : https://docs.google.com/spreadsheets/d/19E7pMhKN6x583uB6bWVBeaTMyBPtEAC-Bk59Y6cfgxA/ by N3evin & CheatFreak
+ updated : 13/03/2017
  */
 public class AmiiboDictionary {
 

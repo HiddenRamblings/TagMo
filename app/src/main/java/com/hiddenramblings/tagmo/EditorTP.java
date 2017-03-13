@@ -14,8 +14,6 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 
-import com.hiddenramblings.tagmo.EditorTP;
-
 @EActivity(R.layout.activity_editor_tp)
 @OptionsMenu({R.menu.editor_menu})
 public class EditorTP extends AppCompatActivity {
@@ -31,9 +29,9 @@ public class EditorTP extends AppCompatActivity {
     @AfterViews
     void afterViews() {
         setListForSpinners(new Spinner[]{spnShadowCaveLevel},
-                //R.array.editor_tp_levels, android.R.layout.simple_list_item_1);
+                R.array.editor_tp_levels, android.R.layout.simple_list_item_1);
         setListForSpinners(new Spinner[]{spnHearts},
-                //R.array.editor_tp_hearts, android.R.layout.simple_list_item_1);
+                R.array.editor_tp_hearts, android.R.layout.simple_list_item_1);
 
         keyManager = new KeyManager(this);
 

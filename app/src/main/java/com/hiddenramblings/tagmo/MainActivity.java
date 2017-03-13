@@ -301,6 +301,18 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         startActivityForResult(intent, EDIT_TAG);
     }
 
+    @Click(R.id.btnEditDataTP)
+    void editTPData() {
+        if (this.currentTagData == null) {
+            LogError("No tag loaded");
+            return;
+        }
+        Intent intent = new Intent(this, EditorTP_.class);
+        intent.setAction(Actions.ACTION_EDIT_DATA);
+        intent.putExtra(Actions.EXTRA_TAG_DATA, this.currentTagData);
+        startActivityForResult(intent, EDIT_TAG);
+    }
+
     @Click(R.id.btnViewHex)
     void viewHex() {
         if (this.currentTagData == null) {

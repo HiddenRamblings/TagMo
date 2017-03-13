@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -190,12 +191,38 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
                 String charId = AmiiboDictionary.getDisplayName(charIdData);
                 String uid = Util.bytesToHex(TagUtil.uidFromPages(this.currentTagData));
                 txtTagId.setText("TagId: " + charId + " / " + uid);
+                onTagLoaded(charIdData);
             } else {
                 txtTagId.setText("TagId: <No tag loaded>");
+                onTagLoaded(null);
             }
         } catch (Exception e) {
             LogError("Error parsing tag id", e);
             txtTagId.setText("TagID: <Error>");
+            onTagLoaded(null);
+        }
+    }
+
+    void onTagLoaded(byte[] charIdData) {
+        //Button edit_ssb = (Button) findViewById(R.id.btnEditDataSSB);
+        Button edit_tp = (Button) findViewById(R.id.btnEditDataTP);
+
+        if (charIdData == null) {
+            //edit_ssb.setVisibility(View.INVISIBLE);
+            edit_tp.setVisibility(View.INVISIBLE);
+        } else {
+            AmiiboDictionary.AmiiboIdData ad = AmiiboDictionary.parseid(charIdData);
+            int id = (ad.Brand << 16) + (ad.Variant << 8) + ad.Type;
+            switch (id) {
+                case 0x01030000: // Wolf Link; TODO: Make AmiiboDictinary IDS an enum
+                    //edit_ssb.setVisibility(View.INVISIBLE);
+                    edit_tp.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    //edit_ssb.setVisibility(View.VISIBLE);
+                    edit_tp.setVisibility(View.INVISIBLE);
+                    break;
+            }
         }
     }
 

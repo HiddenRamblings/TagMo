@@ -1,28 +1,14 @@
 /*
- * Copyright (C) 2015 Marcos Vives Del Sol
+ * (c) 2015-2017 Marcos Del Sol Vives
+ * (c) 2016      javiMaD
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * SPDX-License-Identifier: MIT
  */
 
 #include "nfc3d/amiibo.h"
 #include "util.h"
-#include <openssl/hmac.h>
+#include "mbedtls/md.h"
+#include "mbedtls/aes.h"
 #include <errno.h>
 
 #define HMAC_POS_DATA 0x008
@@ -44,7 +30,16 @@ void nfc3d_amiibo_keygen(const nfc3d_keygen_masterkeys * masterKeys, const uint8
 }
 
 void nfc3d_amiibo_cipher(const nfc3d_keygen_derivedkeys * keys, const uint8_t * in, uint8_t * out) {
-	aes128ctr(in + 0x02C, out + 0x02C, 0x188, keys->aesKey, keys->aesIV);
+	mbedtls_aes_context aes;
+	size_t nc_off = 0;
+	unsigned char nonce_counter[16];
+	unsigned char stream_block[16];
+
+	mbedtls_aes_setkey_enc( &aes, keys->aesKey, 128 );
+	memset(nonce_counter, 0, sizeof(nonce_counter));
+	memset(stream_block, 0, sizeof(stream_block));
+	memcpy(nonce_counter, keys->aesIV, sizeof(nonce_counter));
+	mbedtls_aes_crypt_ctr( &aes, 0x188, &nc_off, nonce_counter, stream_block, in + 0x02C, out + 0x02C );
 
 	memcpy(out + 0x000, in + 0x000, 0x008);
 	// Data signature NOT copied
@@ -88,22 +83,13 @@ bool nfc3d_amiibo_unpack(const nfc3d_amiibo_keys * amiiboKeys, const uint8_t * t
 	// Decrypt
 	nfc3d_amiibo_cipher(&dataKeys, internal, plain);
 
-	// Init OpenSSL HMAC context
-	HMAC_CTX hmacCtx;
-	HMAC_CTX_init(&hmacCtx);
-
 	// Regenerate tag HMAC. Note: order matters, data HMAC depends on tag HMAC!
-	HMAC_Init_ex(&hmacCtx, tagKeys.hmacKey, sizeof(tagKeys.hmacKey), EVP_sha256(), NULL);
-	HMAC_Update(&hmacCtx, plain + 0x1D4, 0x34);
-	HMAC_Final(&hmacCtx, plain + HMAC_POS_TAG, NULL);
+	mbedtls_md_hmac( mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), tagKeys.hmacKey, sizeof(tagKeys.hmacKey),	
+			 plain + 0x1D4, 0x34, plain + HMAC_POS_TAG );
 
 	// Regenerate data HMAC
-	HMAC_Init_ex(&hmacCtx, dataKeys.hmacKey, sizeof(dataKeys.hmacKey), EVP_sha256(), NULL);
-	HMAC_Update(&hmacCtx, plain + 0x029, 0x1DF);
-	HMAC_Final(&hmacCtx, plain + HMAC_POS_DATA, NULL);
-
-	// HMAC cleanup
-	HMAC_CTX_cleanup(&hmacCtx);
+	mbedtls_md_hmac( mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), dataKeys.hmacKey, sizeof(dataKeys.hmacKey),	
+			 plain + 0x029, 0x1DF, plain + HMAC_POS_DATA );
 
 	return
 			memcmp(plain + HMAC_POS_DATA, internal + HMAC_POS_DATA, 32) == 0 &&
@@ -119,24 +105,25 @@ void nfc3d_amiibo_pack(const nfc3d_amiibo_keys * amiiboKeys, const uint8_t * pla
 	nfc3d_amiibo_keygen(&amiiboKeys->tag, plain, &tagKeys);
 	nfc3d_amiibo_keygen(&amiiboKeys->data, plain, &dataKeys);
 
-	// Init OpenSSL HMAC context
-	HMAC_CTX hmacCtx;
-	HMAC_CTX_init(&hmacCtx);
-
 	// Generate tag HMAC
-	HMAC_Init_ex(&hmacCtx, tagKeys.hmacKey, sizeof(tagKeys.hmacKey), EVP_sha256(), NULL);
-	HMAC_Update(&hmacCtx, plain + 0x1D4, 0x34);
-	HMAC_Final(&hmacCtx, cipher + HMAC_POS_TAG, NULL);
+	mbedtls_md_hmac( mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), tagKeys.hmacKey, sizeof(tagKeys.hmacKey),	
+			 plain + 0x1D4, 0x34, cipher + HMAC_POS_TAG );
+
+	// Init mbedtls HMAC context
+	mbedtls_md_context_t ctx;
+	mbedtls_md_init( &ctx );
+	mbedtls_md_setup( &ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), 1 );
 
 	// Generate data HMAC
-	HMAC_Init_ex(&hmacCtx, dataKeys.hmacKey, sizeof(dataKeys.hmacKey), EVP_sha256(), NULL);
-	HMAC_Update(&hmacCtx, plain + 0x029, 0x18B); // Data
-	HMAC_Update(&hmacCtx, cipher + HMAC_POS_TAG, 0x20); // Tag HMAC
-	HMAC_Update(&hmacCtx, plain + 0x1D4, 0x34); // Here be dragons
-	HMAC_Final(&hmacCtx, cipher + HMAC_POS_DATA, NULL);
+	mbedtls_md_hmac_starts( &ctx, dataKeys.hmacKey, sizeof(dataKeys.hmacKey) );
+	mbedtls_md_hmac_update( &ctx, plain + 0x029, 0x18B ); // Data
+	mbedtls_md_hmac_update( &ctx, cipher + HMAC_POS_TAG, 0x20 ); // Tag HMAC
+	mbedtls_md_hmac_update( &ctx, plain + 0x1D4, 0x34 ); // Here be dragons
+
+	mbedtls_md_hmac_finish( &ctx, cipher + HMAC_POS_DATA );
 
 	// HMAC cleanup
-	HMAC_CTX_cleanup(&hmacCtx);
+	mbedtls_md_free( &ctx );
 
 	// Encrypt
 	nfc3d_amiibo_cipher(&dataKeys, plain, cipher);

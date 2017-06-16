@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -183,22 +184,27 @@ public class EditorSSB extends AppCompatActivity {
 
 
     void loadData(final byte[] data) {
-        spnAppearance.setSelection(data[OFFSET_APPEARANCE] & 0xFF);
+        try {
+            spnAppearance.setSelection(data[OFFSET_APPEARANCE] & 0xFF);
 
-        setSpecialValue(spnSpecial1, data[OFFSET_SPECIAL_NEUTRAL] & 0xFF);
-        setSpecialValue(spnSpecial2, data[OFFSET_SPECIAL_SIDE_TO_SIDE] & 0xFF);
-        setSpecialValue(spnSpecial3, data[OFFSET_SPECIAL_UP] & 0xFF);
-        setSpecialValue(spnSpecial4, data[OFFSET_SPECIAL_DOWN] & 0xFF);
+            setSpecialValue(spnSpecial1, data[OFFSET_SPECIAL_NEUTRAL] & 0xFF);
+            setSpecialValue(spnSpecial2, data[OFFSET_SPECIAL_SIDE_TO_SIDE] & 0xFF);
+            setSpecialValue(spnSpecial3, data[OFFSET_SPECIAL_UP] & 0xFF);
+            setSpecialValue(spnSpecial4, data[OFFSET_SPECIAL_DOWN] & 0xFF);
 
-        spnStatAttack.setSelection(readStat(data, OFFSET_STATS_ATTACK));
-        spnStatDefense.setSelection(readStat(data, OFFSET_STATS_DEFENSE));
-        spnStatSpeed.setSelection(readStat(data, OFFSET_STATS_SPEED));
+            spnStatAttack.setSelection(readStat(data, OFFSET_STATS_ATTACK));
+            spnStatDefense.setSelection(readStat(data, OFFSET_STATS_DEFENSE));
+            spnStatSpeed.setSelection(readStat(data, OFFSET_STATS_SPEED));
 
-        setEffectValue(spnEffect1, data[OFFSET_BONUS_EFFECT1] & 0xFF);
-        setEffectValue(spnEffect2, data[OFFSET_BONUS_EFFECT2] & 0xFF);
-        setEffectValue(spnEffect3, data[OFFSET_BONUS_EFFECT3] & 0xFF);
+            setEffectValue(spnEffect1, data[OFFSET_BONUS_EFFECT1] & 0xFF);
+            setEffectValue(spnEffect2, data[OFFSET_BONUS_EFFECT2] & 0xFF);
+            setEffectValue(spnEffect3, data[OFFSET_BONUS_EFFECT3] & 0xFF);
 
-        spnLevel.setSelection(readLevel(data)-1);
+            spnLevel.setSelection(readLevel(data) - 1);
+        } catch (Exception ex) {
+            Log.e(TAG, "Error loading SSB data", ex);
+            Toast.makeText(this, "Error loading data. Tag may not be a SSB", Toast.LENGTH_LONG);
+        }
     }
 
     void updateData(byte[] data) {

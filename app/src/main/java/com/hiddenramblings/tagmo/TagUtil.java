@@ -1,7 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.util.Log;
-
 import java.util.Arrays;
 
 public class TagUtil {

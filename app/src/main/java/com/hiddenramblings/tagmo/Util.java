@@ -4,7 +4,6 @@ import android.util.Log;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 
 /**
  * Created by MAS on 31/01/2016.
@@ -43,13 +42,4 @@ public class Util {
         }
         return null;
     }
-
-    public static byte[] getRandom(int length) {
-        SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[length];
-        random.nextBytes(bytes);
-        return bytes;
-    }
-
-
 }

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Place Phone on Tag"
+        android:text="@string/topCenterTextMessage"
         android:id="@+id/txtMessage"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
@@ -22,30 +23,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
+        android:text="@string/middleCenterError"
         android:id="@+id/txtError"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:textColor="#fa0505" />
 
     <ImageView
+        android:contentDescription="@string/nfcIconDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imgNfcCircle"
-        android:src="@drawable/nfc_circle"
+        android:src="@drawable/ic_nfc_24dp"
         android:minWidth="100dip"
         android:minHeight="100dip"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
     <ImageView
+        android:contentDescription="@string/movingBarDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imgNfcBar"
-        android:src="@drawable/nfc_bar"
+        android:src="@drawable/ic_bar_24dp"
         android:minWidth="100dip"
         android:minHeight="10dip"
         android:layout_alignTop="@+id/imgNfcCircle"
-        android:layout_alignLeft="@+id/imgNfcCircle" />
+        android:layout_alignLeft="@+id/imgNfcCircle"
+        android:layout_alignStart="@+id/imgNfcCircle" />
 
 </RelativeLayout>

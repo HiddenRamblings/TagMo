@@ -4,7 +4,6 @@ import android.nfc.tech.MifareUltralight;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Created by MAS on 01/02/2016.
@@ -107,32 +106,29 @@ public class TagWriter {
     public static final int BULK_READ_PAGE_COUNT = 4;
     public static byte[] readFromTag(MifareUltralight tag) throws Exception
     {
-        byte[] tagdata = new byte[TagUtil.TAG_FILE_SIZE];
+        byte[] tagData = new byte[TagUtil.TAG_FILE_SIZE];
+        int pageCount = TagUtil.TAG_FILE_SIZE / TagUtil.PAGE_SIZE;
 
-        int pagecount = TagUtil.TAG_FILE_SIZE / TagUtil.PAGE_SIZE;
-        int readcount = (int)Math.ceil((double)TagUtil.TAG_FILE_SIZE / (pagecount * BULK_READ_PAGE_COUNT));
-
-        for(int i=0; i<pagecount; i+=BULK_READ_PAGE_COUNT) {
+        for(int i=0; i < pageCount;  i+=BULK_READ_PAGE_COUNT) {
             byte[] pages = tag.readPages(i);
             if (pages == null || pages.length != TagUtil.PAGE_SIZE * BULK_READ_PAGE_COUNT)
                 throw new Exception("Invalid read result size");
 
             int dstIndex = i*TagUtil.PAGE_SIZE;
-            int dstCount = Math.min(BULK_READ_PAGE_COUNT * TagUtil.PAGE_SIZE, tagdata.length - dstIndex);
+            int dstCount = Math.min(BULK_READ_PAGE_COUNT * TagUtil.PAGE_SIZE, tagData.length - dstIndex);
 
-            System.arraycopy(pages, 0, tagdata, dstIndex, dstCount);
+            System.arraycopy(pages, 0, tagData, dstIndex, dstCount);
         }
 
-        Log.d(TAG, Util.bytesToHex(tagdata));
-        return tagdata;
+        Log.d(TAG, Util.bytesToHex(tagData));
+        return tagData;
     }
 
     static void writePages(MifareUltralight tag, int pagestart, int pageend, byte[][] data) throws IOException {
-        int i = 0;
-        for(i=pagestart; i<=pageend; i++) {
+        for(int i = pagestart; i <= pageend; i++) {
             tag.writePage(i, data[i]);
+            Log.d(TAG, "Wrote to page " + i);
         }
-        Log.d(TAG, "Wrote to page " + i);
     }
 
     static void writePassword(MifareUltralight tag) throws IOException {
@@ -150,12 +146,6 @@ public class TagWriter {
         tag.writePage(0x86, new byte[]{(byte) 0x80, (byte) 0x80, (byte) 0, (byte)0});
 
         Log.d(TAG, "Writing PWD");
-        byte[] auth = new byte[] {
-                password[0],
-                password[1],
-                password[2],
-                password[3]
-        };
         tag.writePage(0x85, password);
         Log.d(TAG, "pwd done");
     }

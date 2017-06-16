@@ -1,37 +1,15 @@
 /*
- * Copyright (C) 2015 Marcos Vives Del Sol
+ * (c) 2015-2017 Marcos Del Sol Vives
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * SPDX-License-Identifier: MIT
  */
 
 #include "nfc3d/drbg.h"
 #include "nfc3d/keygen.h"
+#include "util.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-
-char * stpncpy (char *dst, const char *src, size_t len) {
-  size_t n = strlen (src);
-  if (n > len)
-    n = len;
-  return strncpy (dst, src, len) + n;
-}
 
 void nfc3d_keygen_prepare_seed(const nfc3d_keygen_masterkeys * baseKeys, const uint8_t * baseSeed, uint8_t * output, size_t * outputSize) {
 	assert(baseKeys != NULL);
@@ -42,7 +20,7 @@ void nfc3d_keygen_prepare_seed(const nfc3d_keygen_masterkeys * baseKeys, const u
 	uint8_t * start = output;
 
 	// 1: Copy whole type string
-	output = (uint8_t *) stpncpy((char *) output, baseKeys->typeString, sizeof(baseKeys->typeString)) + 1;
+	output = memccpy(output, baseKeys->typeString, '\0', sizeof(baseKeys->typeString));
 
 	// 2: Append (16 - magicBytesSize) from the input seed
 	size_t leadingSeedBytes = 16 - baseKeys->magicBytesSize;

@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +21,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -37,7 +37,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.jar.Manifest;
 
 
 @EActivity(R.layout.activity_main)
@@ -189,15 +188,41 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         try {
             if (this.currentTagData != null) {
                 byte[] charIdData = TagUtil.charIdDataFromTag(this.currentTagData);
-                String charid = AmiiboDictionary.getDisplayName(charIdData);
+                String charId = AmiiboDictionary.getDisplayName(charIdData);
                 String uid = Util.bytesToHex(TagUtil.uidFromPages(this.currentTagData));
-                txtTagId.setText("TagId: " + charid + " / " + uid);
+                txtTagId.setText("TagId: " + charId + " / " + uid);
+                onTagLoaded(charIdData);
             } else {
                 txtTagId.setText("TagId: <No tag loaded>");
+                onTagLoaded(null);
             }
         } catch (Exception e) {
             LogError("Error parsing tag id", e);
             txtTagId.setText("TagID: <Error>");
+            onTagLoaded(null);
+        }
+    }
+
+    void onTagLoaded(byte[] charIdData) {
+        //Button edit_ssb = (Button) findViewById(R.id.btnEditDataSSB);
+        Button edit_tp = (Button) findViewById(R.id.btnEditDataTP);
+
+        if (charIdData == null) {
+            //edit_ssb.setVisibility(View.INVISIBLE);
+            edit_tp.setVisibility(View.INVISIBLE);
+        } else {
+            AmiiboDictionary.AmiiboIdData ad = AmiiboDictionary.parseid(charIdData);
+            int id = (ad.Brand << 16) + (ad.Variant << 8) + ad.Type;
+            switch (id) {
+                case 0x01030000: // Wolf Link; TODO: Make AmiiboDictinary IDS an enum
+                    //edit_ssb.setVisibility(View.INVISIBLE);
+                    edit_tp.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    //edit_ssb.setVisibility(View.VISIBLE);
+                    edit_tp.setVisibility(View.INVISIBLE);
+                    break;
+            }
         }
     }
 
@@ -276,6 +301,18 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         startActivityForResult(intent, EDIT_TAG);
     }
 
+    @Click(R.id.btnEditDataTP)
+    void editTPData() {
+        if (this.currentTagData == null) {
+            LogError("No tag loaded");
+            return;
+        }
+        Intent intent = new Intent(this, EditorTP_.class);
+        intent.setAction(Actions.ACTION_EDIT_DATA);
+        intent.putExtra(Actions.EXTRA_TAG_DATA, this.currentTagData);
+        startActivityForResult(intent, EDIT_TAG);
+    }
+
     @Click(R.id.btnViewHex)
     void viewHex() {
         if (this.currentTagData == null) {
@@ -296,7 +333,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
         Log.d(TAG, "onActivityResult");
 
-        String action = null;
+        String action;
         switch (requestCode)
         {
             case EDIT_TAG:
@@ -335,7 +372,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
     private void showFileChooser(String title, String mimeType, int resultCode) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");      //all files
+        intent.setType(mimeType);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         try {
@@ -404,17 +441,17 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
         try {
             byte[] charIdData = TagUtil.charIdDataFromTag(this.currentTagData);
-            String charid = AmiiboDictionary.getDisplayName(charIdData).replace("/", "-"); //prevent invalid filenames
+            String charId = AmiiboDictionary.getDisplayName(charIdData).replace("/", "-"); //prevent invalid filenames
 
-            byte[] uid = Arrays.copyOfRange(tagdata, 0, 9);
-            String uids = Util.bytesToHex(uid);
-            String fname = String.format("%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin", charid,  uids, Calendar.getInstance(), (valid ? "" : "_corrupted_"));
+            byte[] uId = Arrays.copyOfRange(tagdata, 0, 9);
+            String uIds = Util.bytesToHex(uId);
+            String fName = String.format("%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin", charId,  uIds, Calendar.getInstance(), (valid ? "" : "_corrupted_"));
 
             File dir = new File(Environment.getExternalStorageDirectory(), DATA_DIR);
             if (!dir.isDirectory())
                 dir.mkdir();
 
-            File file = new File(dir.getAbsolutePath(), fname);
+            File file = new File(dir.getAbsolutePath(), fName);
 
             Log.d(TAG, file.toString());
             FileOutputStream fos = new FileOutputStream(file);
@@ -428,7 +465,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
             } catch (Exception e) {
                 Log.e(TAG, "Failed to refresh media scanner", e);
             }
-            LogMessage("Wrote to file " + fname + " in tagmo directory.");
+            LogMessage("Wrote to file " + fName + " in tagmo directory.");
         } catch (Exception e) {
             LogError("Error writing to file: " + e.getMessage());
         }

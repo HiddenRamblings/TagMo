@@ -153,6 +153,14 @@ public class EditorSSB extends AppCompatActivity {
         spinner.setSelection(value);
     }
 
+    void setSpinnerValue(Spinner spinner, int value) {
+        if (value >= spinner.getAdapter().getCount())
+            value = 0;
+        if (value < 0)
+            value = 0;
+        spinner.setSelection(value);
+    }
+
     private static final int[] LEVEL_THRESHOLDS = new int[]{ 0x00, 0x08, 0x010, 0x01D, 0x02D, 0x048,
             0x05B, 0x075, 0x08D, 0x0AF, 0x0E1, 0x0103, 0x0126, 0x0149, 0x0172, 0x0196, 0x01BE, 0x01F7,
             0x0216, 0x0240, 0x0278, 0x02A4, 0x02D6, 0x030E, 0x034C, 0x037C, 0x03BB, 0x03F4, 0x042A, 0x0440,
@@ -182,25 +190,24 @@ public class EditorSSB extends AppCompatActivity {
         data[OFFSET_LEVEL + 1] = (byte) (value & 0xFF);
     }
 
-
     void loadData(final byte[] data) {
         try {
-            spnAppearance.setSelection(data[OFFSET_APPEARANCE] & 0xFF);
+            setSpinnerValue(spnAppearance, data[OFFSET_APPEARANCE] & 0xFF);
 
             setSpecialValue(spnSpecial1, data[OFFSET_SPECIAL_NEUTRAL] & 0xFF);
             setSpecialValue(spnSpecial2, data[OFFSET_SPECIAL_SIDE_TO_SIDE] & 0xFF);
             setSpecialValue(spnSpecial3, data[OFFSET_SPECIAL_UP] & 0xFF);
             setSpecialValue(spnSpecial4, data[OFFSET_SPECIAL_DOWN] & 0xFF);
 
-            spnStatAttack.setSelection(readStat(data, OFFSET_STATS_ATTACK));
-            spnStatDefense.setSelection(readStat(data, OFFSET_STATS_DEFENSE));
-            spnStatSpeed.setSelection(readStat(data, OFFSET_STATS_SPEED));
+            setSpinnerValue(spnStatAttack, readStat(data, OFFSET_STATS_ATTACK));
+            setSpinnerValue(spnStatDefense, readStat(data, OFFSET_STATS_DEFENSE));
+            setSpinnerValue(spnStatSpeed, readStat(data, OFFSET_STATS_SPEED));
 
             setEffectValue(spnEffect1, data[OFFSET_BONUS_EFFECT1] & 0xFF);
             setEffectValue(spnEffect2, data[OFFSET_BONUS_EFFECT2] & 0xFF);
             setEffectValue(spnEffect3, data[OFFSET_BONUS_EFFECT3] & 0xFF);
 
-            spnLevel.setSelection(readLevel(data) - 1);
+            setSpinnerValue(spnLevel, readLevel(data) - 1);
         } catch (Exception ex) {
             Log.e(TAG, "Error loading SSB data", ex);
             Toast.makeText(this, "Error loading data. Tag may not be a SSB", Toast.LENGTH_LONG);

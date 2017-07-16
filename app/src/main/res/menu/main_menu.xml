@@ -5,4 +5,7 @@
         android:title="Load key(s) file..."
         app:showAsAction="withText"
         />
+    <item android:id="@+id/mnu_dump_logcat"
+        android:title="Dump Logcat (for bug reporting)"
+        />
 </menu>

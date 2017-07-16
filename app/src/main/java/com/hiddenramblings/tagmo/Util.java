@@ -1,7 +1,14 @@
 package com.hiddenramblings.tagmo;
 
+import android.media.MediaScannerConnection;
+import android.os.Build;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -41,5 +48,34 @@ public class Util {
             Log.e(TAG, e.getMessage());
         }
         return null;
+    }
+
+    public static void dumpLogcat(String fileName) throws Exception {
+        File file = new File(fileName);
+
+        Process process = Runtime.getRuntime().exec("logcat -d");
+        InputStream logStream = process.getInputStream();
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            try {
+                String phoneDetails = String.format("Manufacturer: %s - Model: %s\nAndroid Ver: %s\nTagMo Version: %s\n",
+                        Build.MANUFACTURER, Build.MODEL,
+                        Build.VERSION.RELEASE,
+                        BuildConfig.VERSION_NAME);
+
+                fos.write(phoneDetails.getBytes());
+
+                byte[] buf = new byte[1024];
+                int read = logStream.read(buf);
+                while (read >= 0) {
+                    fos.write(buf, 0, read);
+                    read = logStream.read(buf);
+                }
+            } finally {
+                fos.close();
+            }
+        } finally {
+            logStream.close();;
+        }
     }
 }

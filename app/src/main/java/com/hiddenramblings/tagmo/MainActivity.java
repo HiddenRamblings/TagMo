@@ -236,6 +236,11 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         showFileChooser("Load key file", "*/*", FILE_LOAD_KEYS);
     }
 
+    @OptionsItem(R.id.mnu_dump_logcat)
+    void dumpLogcatClicked() {
+        dumpLogCat();
+    }
+
     @Click(R.id.btnScanTag)
     void scanTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
@@ -460,6 +465,30 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
             } finally {
                 fos.close();
             }
+            try {
+                MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to refresh media scanner", e);
+            }
+            LogMessage("Wrote to file " + fName + " in tagmo directory.");
+        } catch (Exception e) {
+            LogError("Error writing to file: " + e.getMessage());
+        }
+    }
+
+    @Background
+    void dumpLogCat() {
+        try {
+            File dir = new File(Environment.getExternalStorageDirectory(), DATA_DIR);
+            if (!dir.isDirectory())
+                dir.mkdir();
+
+            String fName = "tagmo_logcat.txt";
+
+            File file = new File(dir.getAbsolutePath(), fName);
+
+            Log.d(TAG, file.toString());
+            Util.dumpLogcat(file.getAbsolutePath());
             try {
                 MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
             } catch (Exception e) {

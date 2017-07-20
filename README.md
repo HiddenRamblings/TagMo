@@ -4,13 +4,12 @@ TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC
 
 # Features:
 
-* Write dump files from legitimate Amiibos into an NTAG215 NFC in a way that WiiU/3DS devices will consider to be a legitimate Amiibo with the same functionality.
+* Write dump files from legitimate Amiibos into an NTAG215 tag in a way that WiiU/3DS/switch devices will consider to be a legitimate Amiibo with the same functionality.
 * Save data of a tag to a file and restore it to the same or different Amiibo/Clone provided they are of the same character/game/series.
 * Beta feature: Edit some parameters of a SSB type amiibo allowing you to change special effects, stats etc.
 
-# Limitations
+# Limitations:
 
-* Currently only Skylander Amiibos are supported 
 * Only NTAG215 tags can be used to clone Amiibos. no other type (eg: NTAG216/NTAG213) are supported.
 * You will require the key files used in the Amiibo encryption. Please don't PM me about them as I am unable to share them. The thread linked above may help you find them.
 * Once you write an NFC tag, it is effectively permanent.  If we rewrite the NFC tag, it will no longer be recognized as an Amiibo.
@@ -29,24 +28,23 @@ TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC
 * Install the app on the phone as usual.
 * Make sure NFC is enabled.
 * If this is the first time you run the app. Use the Menu->Load key(s) file to load the key file(s)
-* Use load tag to load an amiibo dump file, scan tag to scan an Amiibo.
+* Use "load tag" to load an amiibo dump file or "scan tag" to scan an Amiibo.
 * Use "Write Tag (Auto)" and place the phone over a blank NTAG215 tag to write the data and create a Amiibo out of it.
 
 ## Saving Amiibo data to file 
 * Click "Scan Tag" to scan the amiibo.
 * Click "Save Tag" to save data to a file. (A file name will be generated based on the tag details and saved to the download folder.)
 
-# Editing Super Smash Bros (SSB) data (Beta)  
-* Click "Scan Tag" to scan amiibo.
-* Click "Edit SSB Data" to edit properties related to SSB. Using this on non SSB amiibo will corrupt its saved data. requiring you to restore it from a save file (if you have one) or to reset it. It is recommended you back the amiibo data using the steps above before trying this out.
+# Editing Super Smash Bros (SSB) data  
+* Click "Scan Tag" to scan a amiibo. Make sure that the amiibo was once used in Super Smash Bros before.
+* Click "Edit SSB Data" to edit properties related to SSB. Using this on non SSB amiibo will corrupt its saved data. requiring you to restore it from a save file (if you have one) or to reset it. It is recommended you backup the amiibo data using the steps above before trying this out.
 
 # Credits
 This app is a result of work by many others. Mainly thanks go out to:
 
-* javiMaD
-* socram8888
-* Supercool330
-* _Tim_
-* /u/MacGuffen for the excellent well maintained list of Amiibo id list.
-* Special thanks to "some people" for their help with this latest version and new features.
-
+* HiddenRambler
+* masterchan-777
+* FinalDoom
+* azsde
+* Kidel
+* javimadgit

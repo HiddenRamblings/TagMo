@@ -22,7 +22,7 @@ TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC
 * Android phone with NFC (Tested on Nexus 5 running Android Lollipop)
 * Amiibo dumps or real Amiibos which you can copy. (Don't ask me for these)
 
-#Instructions
+# Instructions:
 
 ## Cloning Amiibo 
 * Install the app on the phone as usual.

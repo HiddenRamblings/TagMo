@@ -15,4 +15,11 @@
             android:key="@string/settings_reset_database"
             android:title="Reset Amiibo Database to default" />
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="File Browser">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/settings_enable_amiibo_browser"
+            android:title="Enable Amiibo File Browser" />
+    </PreferenceCategory>
 </PreferenceScreen>

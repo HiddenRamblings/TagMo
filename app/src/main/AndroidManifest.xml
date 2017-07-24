@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.hiddenramblings.tagmo"
-    android:versionCode="3">
+    package="com.hiddenramblings.tagmo">
 
     <uses-permission android:name="android.permission.BIND_NFC_SERVICE" />
     <uses-permission android:name="android.permission.NFC" />
@@ -21,10 +20,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NfcActivity_" android:launchMode="singleTop" />
+        <activity
+            android:name=".NfcActivity_"
+            android:launchMode="singleTop" />
         <activity android:name=".EditorSSB_" />
         <activity android:name=".EditorTP_" />
-        <activity android:name=".HexViewerActivity_"></activity>
+        <activity android:name=".HexViewerActivity_" />
+        <activity
+            android:name=".SettingsActivity_"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

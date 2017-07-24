@@ -44,9 +44,8 @@ public class KeyManager {
 
     boolean hasLocalFile(String file) {
         String[] files = context.fileList();
-        for(int i=0; i<files.length; i++)
-        {
-            if (files[i].equals(file))
+        for (String file1 : files) {
+            if (file1.equals(file))
                 return true;
         }
         return false;
@@ -118,5 +117,4 @@ public class KeyManager {
             strm.close();
         }
     }
-
 }

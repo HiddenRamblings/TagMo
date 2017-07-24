@@ -34,6 +34,7 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.json.JSONException;
 
 import java.io.File;
@@ -103,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
     NfcAdapter nfcAdapter;
 
     AmiiboManager amiiboManager = null;
+
+    @Pref
+    Preferences_ prefs;
 
     boolean keyWarningShown;
 
@@ -297,7 +301,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Click(R.id.btnLoadTag)
     void loadTagFile() {
-        showFileChooser("Load encrypted tag file for writing", "*/*", FILE_LOAD_TAG);
+        if (prefs.enableAmiiboBrowser().get()) {
+            Intent intent = new Intent(this, BrowserActivity_.class);
+            startActivityForResult(intent, FILE_LOAD_TAG);
+        } else {
+            showFileChooser("Load encrypted tag file for writing", "*/*", FILE_LOAD_TAG);
+        }
     }
 
     @OptionsItem(R.id.mnu_dump_logcat)

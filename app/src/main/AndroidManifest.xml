@@ -27,6 +27,13 @@
         <activity android:name=".EditorTP_" />
         <activity android:name=".HexViewerActivity_" />
         <activity
+            android:name=".BrowserActivity_"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
             android:name=".SettingsActivity_"
             android:theme="@style/AppTheme" />
     </application>

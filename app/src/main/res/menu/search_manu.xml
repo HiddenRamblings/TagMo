@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/ic_menu_search"
+        android:title="Search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="collapseActionView|always" />
+    <item
+        android:id="@+id/sort"
+        android:icon="@drawable/ic_menu_sort_by_size"
+        android:title="Sort"
+        app:showAsAction="collapseActionView">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/sort_id"
+                    android:title="ID" />
+                <item
+                    android:id="@+id/sort_name"
+                    android:title="Name" />
+                <item
+                    android:id="@+id/sort_game_series"
+                    android:title="Game Series" />
+                <item
+                    android:id="@+id/sort_character"
+                    android:title="Character" />
+                <item
+                    android:id="@+id/sort_amiibo_series"
+                    android:title="Amiibo Series" />
+                <item
+                    android:id="@+id/sort_amiibo_type"
+                    android:title="Amiibo Type" />
+                <item
+                    android:id="@+id/sort_file_path"
+                    android:title="File Path" />
+            </group>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/filter"
+        android:icon="@drawable/ic_filter_variant"
+        android:title="Filter"
+        app:showAsAction="collapseActionView">
+        <menu>
+            <item
+                android:id="@+id/filter_game_series"
+                android:title="Game Series">
+                <menu>
+                    <group
+                        android:id="@+id/filter_game_series_group"
+                        android:checkableBehavior="single" />
+                </menu>
+            </item>
+            <item
+                android:id="@+id/filter_character"
+                android:title="Character">
+                <menu>
+                    <group
+                        android:id="@+id/filter_character_group"
+                        android:checkableBehavior="single" />
+                </menu>
+            </item>
+            <item
+                android:id="@+id/filter_amiibo_series"
+                android:title="Amiibo Series">
+                <menu>
+                    <group
+                        android:id="@+id/filter_amiibo_series_group"
+                        android:checkableBehavior="single" />
+                </menu>
+            </item>
+            <item
+                android:id="@+id/filter_amiibo_type"
+                android:title="Amiibo Type">
+                <menu>
+                    <group
+                        android:id="@+id/filter_amiibo_type_group"
+                        android:checkableBehavior="single" />
+                </menu>
+            </item>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/refresh"
+        android:title="Refresh"
+        app:showAsAction="never" />
+</menu>

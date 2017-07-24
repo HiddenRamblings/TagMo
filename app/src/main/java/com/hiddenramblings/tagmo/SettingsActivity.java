@@ -29,8 +29,13 @@ public class SettingsActivity extends PreferenceActivity {
     private static final int RESULT_KEYS = 0;
     private static final int RESULT_AMIIBO_DATABASE = 1;
 
+    @Pref
+    Preferences_ prefs;
+
     @PreferenceByKey(R.string.settings_import_keys)
     Preference key;
+    @PreferenceByKey(R.string.settings_enable_amiibo_browser)
+    CheckBoxPreference enableAmiiboBrowser;
 
     KeyManager keyManager;
 
@@ -98,6 +103,11 @@ public class SettingsActivity extends PreferenceActivity {
     @PreferenceClick(R.string.settings_reset_database)
     void onResetDatabaseClicked() {
         this.deleteFile(AMIIBO_DATABASE_FILE);
+    }
+
+    @PreferenceClick(R.string.settings_enable_amiibo_browser)
+    void onEnableAmiiboBrowserClicked() {
+        prefs.enableAmiiboBrowser().put(enableAmiiboBrowser.isChecked());
     }
 
     private void showFileChooser(String title, String mimeType, int resultCode) {

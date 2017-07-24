@@ -8,4 +8,15 @@
     <string name="hearts">Hearts</string>
     <string name="edit_tp_data">Edit TP Data</string>
     <string name="editor_error_outofbounds">Amiibo contains an invalid current state.</string>
+    <string name="fixed_key_found">Locked key OK.</string>
+    <string name="fixed_key_missing">No Locked key!</string>
+    <string name="unfixed_key_found">Unfixed key OK.</string>
+    <string name="unfixed_key_missing">No Unfixed key!</string>
+    <string name="nfc_unsupported">NFC not supported!</string>
+    <string name="nfc_disabled">NFC not enabled!</string>
+    <string name="nfc_enabled">NFC enabled!</string>
+
+    <string name="settings_import_keys">import_keys</string>
+    <string name="settings_import_database">import_database</string>
+    <string name="settings_reset_database">reset_database</string>
 </resources>

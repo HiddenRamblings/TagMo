@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/mnu_load_keys"
-        android:title="Load key(s) file..."
-        app:showAsAction="withText"
-        />
-    <item android:id="@+id/mnu_dump_logcat"
-        android:title="Dump Logcat (for bug reporting)"
-        />
+    <item
+        android:id="@+id/settings"
+        android:title="Settings"
+        android:icon="@drawable/ic_menu_preferences"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/mnu_dump_logcat"
+        android:title="Dump Logcat (for bug reporting)" />
 </menu>

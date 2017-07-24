@@ -11,7 +11,6 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -23,31 +22,34 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View;
 
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
 
 
 @EActivity(R.layout.activity_main)
 @OptionsMenu({R.menu.main_menu})
-public class MainActivity extends AppCompatActivity /* implements TagCreateDialog.TagCreateListener */ {
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
-    private static final String DATA_DIR = "tagmo";
-
     private static final int FILE_LOAD_TAG = 0x100;
-    private static final int FILE_LOAD_KEYS = 0x101;
     private static final int NFC_ACTIVITY = 0x102;
     private static final int EDIT_TAG = 0x103;
 
@@ -57,8 +59,21 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     TextView txtUnfixedKey;
     @ViewById(R.id.txtNFC)
     TextView txtNFC;
+
+    @ViewById(R.id.txtTagInfo)
+    TextView txtTagInfo;
     @ViewById(R.id.txtTagId)
     TextView txtTagId;
+    @ViewById(R.id.txtName)
+    TextView txtName;
+    @ViewById(R.id.txtGameSeries)
+    TextView txtGameSeries;
+    @ViewById(R.id.txtCharacter)
+    TextView txtCharacter;
+    @ViewById(R.id.txtAmiiboType)
+    TextView txtAmiiboType;
+    @ViewById(R.id.txtAmiiboSeries)
+    TextView txtAmiiboSeries;
 
     @ViewById(R.id.btnSaveTag)
     Button btnSaveTag;
@@ -82,9 +97,12 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     @ViewById(R.id.cbNoIDValidate)
     CheckBox cbNoIDValidate;
 
+    @InstanceState
     byte[] currentTagData;
     KeyManager keyManager;
     NfcAdapter nfcAdapter;
+
+    AmiiboManager amiiboManager = null;
 
     boolean keyWarningShown;
 
@@ -97,15 +115,15 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     @AfterViews
     protected void afterViews() {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        keyManager = new KeyManager(this);
-
-        updateStatus();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         startNfcMonitor();
+        keyManager = new KeyManager(this);
+        this.loadAmiiboManager();
         updateStatus();
     }
 
@@ -113,6 +131,25 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     protected void onPause() {
         stopNfcMonitor();
         super.onPause();
+    }
+
+    @Background
+    void loadAmiiboManager() {
+        AmiiboManager amiiboManager = null;
+        try {
+            amiiboManager = Util.loadAmiiboManager(this);
+        } catch (IOException | JSONException | ParseException e) {
+            e.printStackTrace();
+            showToast("Unable to parse amiibo database");
+        }
+
+        setAmiiboManager(amiiboManager);
+    }
+
+    @UiThread
+    void setAmiiboManager(AmiiboManager amiiboManager) {
+        this.amiiboManager = amiiboManager;
+        this.updateStatus();
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -150,29 +187,29 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
 
         if (!hasNfc) {
             txtNFC.setTextColor(Color.RED);
-            txtNFC.setText("NFC not supported!");
+            txtNFC.setText(R.string.nfc_unsupported);
         } else if (!nfcEnabled) {
             txtNFC.setTextColor(Color.RED);
-            txtNFC.setText("NFC not enabled!");
+            txtNFC.setText(R.string.nfc_disabled);
         } else {
             txtNFC.setTextColor(Color.rgb(0x00, 0xAf, 0x00));
-            txtNFC.setText("NFC enabled!");
+            txtNFC.setText(R.string.nfc_enabled);
         }
 
-        if (!hasFixed) {
-            txtLockedKey.setTextColor(Color.RED);
-            txtLockedKey.setText("No Locked key!");
-        } else {
+        if (hasFixed) {
             txtLockedKey.setTextColor(Color.rgb(0x00, 0xAf, 0x00));
-            txtLockedKey.setText("Locked key OK.");
+            txtLockedKey.setText(R.string.fixed_key_found);
+        } else {
+            txtLockedKey.setTextColor(Color.RED);
+            txtLockedKey.setText(R.string.fixed_key_missing);
         }
 
-        if (!hasUnfixed) {
-            txtUnfixedKey.setTextColor(Color.RED);
-            txtUnfixedKey.setText("No Unfixed key!");
-        } else {
+        if (hasUnfixed) {
             txtUnfixedKey.setTextColor(Color.rgb(0x00, 0xAf, 0x00));
-            txtUnfixedKey.setText("Unfixed key OK.");
+            txtUnfixedKey.setText(R.string.unfixed_key_found);
+        } else {
+            txtUnfixedKey.setTextColor(Color.RED);
+            txtUnfixedKey.setText(R.string.unfixed_key_missing);
         }
 
         btnWriteTagAuto.setEnabled(nfcEnabled && hasKeys && hasTag);
@@ -183,47 +220,79 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         btnViewHex.setEnabled(hasKeys && hasTag);
 
         if (!hasKeys && !keyWarningShown) {
-            LogError("Not all keys loaded. Load keys using the menu.");
+            new AlertDialog.Builder(this)
+                .setMessage("Not all keys imported. Open settings?")
+                .setPositiveButton("Open", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        openSettings();
+                    }
+                })
+                .setNegativeButton("Close", null)
+                .show();
             keyWarningShown = true;
         }
 
-        try {
-            if (this.currentTagData != null) {
-                byte[] charIdData = TagUtil.charIdDataFromTag(this.currentTagData);
-                String charId = AmiiboDictionary.getDisplayName(charIdData);
-                String uid = Util.bytesToHex(TagUtil.uidFromPages(this.currentTagData));
-                txtTagId.setText("TagId: " + charId + " / " + uid);
-                onTagLoaded(charIdData);
-            } else {
-                txtTagId.setText("TagId: <No tag loaded>");
-                onTagLoaded(null);
+        String tagInfo = "";
+        String amiiboHexId = "";
+        String amiiboName = "";
+        String amiiboSeries = "";
+        String amiiboType = "";
+        String gameSeries = "";
+        String character = "";
+        int ssbVisibility = View.INVISIBLE;
+        int tpVisibility = View.INVISIBLE;
+
+        if (this.currentTagData == null) {
+            tagInfo = "<No tag loaded>";
+        } else {
+            try {
+                long amiiboId = TagUtil.amiiboIdFromTag(this.currentTagData);
+                Amiibo amiibo = null;
+                if (this.amiiboManager != null) {
+                    amiibo = amiiboManager.amiibos.get(amiiboId);
+                    if (amiibo == null)
+                        amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
+                }
+                if (amiibo != null) {
+                    amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
+                    if (amiibo.name != null)
+                        amiiboName = amiibo.name;
+                    if (amiibo.getAmiiboSeries() != null)
+                        amiiboSeries = amiibo.getAmiiboSeries().name;
+                    if (amiibo.getAmiiboType() != null)
+                        amiiboType = amiibo.getAmiiboType().name;
+                    if (amiibo.getGameSeries() != null)
+                        gameSeries = amiibo.getGameSeries().name;
+                    if (amiibo.getCharacter() != null)
+                        character = amiibo.getCharacter().name;
+
+                    switch (amiibo.getHead()) {
+                        case EditorTP.WOLF_LINK_ID:
+                            tpVisibility = View.VISIBLE;
+                            break;
+                        default:
+                            ssbVisibility = View.VISIBLE;
+                            break;
+                    }
+                } else {
+                    tagInfo = "<Unknown amiibo id: " + TagUtil.amiiboIdToHex(amiiboId) + ">";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                tagInfo = "<Error reading tag>";
             }
-        } catch (Exception e) {
-            LogError("Error parsing tag id", e);
-            txtTagId.setText("TagID: <Error>");
-            onTagLoaded(null);
-        }
-    }
-
-    void onTagLoaded(byte[] charIdData) {
-        if (charIdData == null) {
-            btnEditDataSSB.setVisibility(View.INVISIBLE);
-            btnEditDataTP.setVisibility(View.INVISIBLE);
-            return;
         }
 
-        AmiiboDictionary.AmiiboIdData ad = AmiiboDictionary.parseid(charIdData);
-        int id = (ad.Brand << 16) + (ad.Variant << 8) + ad.Type;
-        switch (id) {
-            case 0x01030000: // Wolf Link; TODO: Make AmiiboDictinary IDS an enum
-                btnEditDataSSB.setVisibility(View.INVISIBLE);
-                btnEditDataTP.setVisibility(View.VISIBLE);
-                break;
-            default:
-                btnEditDataSSB.setVisibility(View.VISIBLE);
-                btnEditDataTP.setVisibility(View.INVISIBLE);
-                break;
-        }
+        txtTagInfo.setText(tagInfo);
+        txtName.setText(amiiboName);
+        txtTagId.setText(amiiboHexId);
+        txtAmiiboSeries.setText(amiiboSeries);
+        txtAmiiboType.setText(amiiboType);
+        txtGameSeries.setText(gameSeries);
+        txtCharacter.setText(character);
+        btnEditDataSSB.setVisibility(ssbVisibility);
+        btnEditDataTP.setVisibility(tpVisibility);
     }
 
     @Click(R.id.btnLoadTag)
@@ -231,14 +300,15 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         showFileChooser("Load encrypted tag file for writing", "*/*", FILE_LOAD_TAG);
     }
 
-    @OptionsItem(R.id.mnu_load_keys)
-    void loadKeysClicked() {
-        showFileChooser("Load key file", "*/*", FILE_LOAD_KEYS);
-    }
-
     @OptionsItem(R.id.mnu_dump_logcat)
     void dumpLogcatClicked() {
         dumpLogCat();
+    }
+
+    @OptionsItem(R.id.settings)
+    void openSettings() {
+        Intent i = new Intent(this, SettingsActivity_.class);
+        startActivity(i);
     }
 
     @Click(R.id.btnScanTag)
@@ -339,8 +409,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         Log.d(TAG, "onActivityResult");
 
         String action;
-        switch (requestCode)
-        {
+        switch (requestCode) {
             case EDIT_TAG:
                 if (data == null) return;
                 action = data.getAction();
@@ -366,9 +435,6 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
                 if (cbAutoSaveOnScan.isChecked())
                     writeTagToFile(this.currentTagData);
                 break;
-            case FILE_LOAD_KEYS:
-                loadKey(data.getData());
-                break;
             case FILE_LOAD_TAG:
                 loadTagFile(data.getData());
                 break;
@@ -392,8 +458,8 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     private static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
     private static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
     private static String[] PERMISSIONS_STORAGE = {
-            READ_EXTERNAL_STORAGE,
-            WRITE_EXTERNAL_STORAGE
+        READ_EXTERNAL_STORAGE,
+        WRITE_EXTERNAL_STORAGE
     };
 
     void verifyStoragePermissions() {
@@ -403,30 +469,10 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         }
     }
 
-
-    @Background
-    void loadKey(Uri uri) {
-        try {
-            this.keyManager.loadKey(uri);
-        } catch (Exception e) {
-            LogError("Error: " + e.getMessage());
-        }
-        updateStatus();
-    }
-
     @Background
     void loadTagFile(Uri uri) {
         try {
-            InputStream strm = getContentResolver().openInputStream(uri);
-            byte[] data = new byte[TagUtil.TAG_FILE_SIZE];
-            try {
-                int len = strm.read(data);
-                if (len != TagUtil.TAG_FILE_SIZE)
-                    throw new Exception("Invalid file size. was expecting " + TagUtil.TAG_FILE_SIZE);
-            } finally {
-                strm.close();
-            }
-            this.currentTagData = data;
+            this.currentTagData = TagUtil.readTag(getContentResolver().openInputStream(uri));
             showToast("Loaded tag file.");
         } catch (Exception e) {
             LogError("Error: " + e.getMessage());
@@ -445,18 +491,26 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
         }
 
         try {
-            byte[] charIdData = TagUtil.charIdDataFromTag(this.currentTagData);
-            String charId = AmiiboDictionary.getDisplayName(charIdData).replace("/", "-"); //prevent invalid filenames
+            long amiiboId = TagUtil.amiiboIdFromTag(this.currentTagData);
+            String name = null;
+            if (this.amiiboManager != null) {
+                Amiibo amiibo = this.amiiboManager.amiibos.get(amiiboId);
+                if (amiibo != null && amiibo.name != null) {
+                    name = amiibo.name.replace("/", "-");
+                }
+            }
+            if (name == null)
+                name = TagUtil.amiiboIdToHex(amiiboId);
 
             byte[] uId = Arrays.copyOfRange(tagdata, 0, 9);
             String uIds = Util.bytesToHex(uId);
-            String fName = String.format("%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin", charId,  uIds, Calendar.getInstance(), (valid ? "" : "_corrupted_"));
+            String fileName = String.format("%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin", name, uIds, Calendar.getInstance(), (valid ? "" : "_corrupted_"));
 
-            File dir = new File(Environment.getExternalStorageDirectory(), DATA_DIR);
+            File dir = Util.getDataDir();
             if (!dir.isDirectory())
                 dir.mkdir();
 
-            File file = new File(dir.getAbsolutePath(), fName);
+            File file = new File(dir.getAbsolutePath(), fileName);
 
             Log.d(TAG, file.toString());
             FileOutputStream fos = new FileOutputStream(file);
@@ -470,7 +524,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
             } catch (Exception e) {
                 Log.e(TAG, "Failed to refresh media scanner", e);
             }
-            LogMessage("Wrote to file " + fName + " in tagmo directory.");
+            LogMessage("Wrote to file " + fileName + " in tagmo directory.");
         } catch (Exception e) {
             LogError("Error writing to file: " + e.getMessage());
         }
@@ -479,7 +533,7 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     @Background
     void dumpLogCat() {
         try {
-            File dir = new File(Environment.getExternalStorageDirectory(), DATA_DIR);
+            File dir = Util.getDataDir();
             if (!dir.isDirectory())
                 dir.mkdir();
 
@@ -501,39 +555,33 @@ public class MainActivity extends AppCompatActivity /* implements TagCreateDialo
     }
 
     @UiThread
-    void showToast(String msg) {
+    public void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
     @UiThread
     void LogMessage(String msg) {
-        new AlertDialog.Builder(this).setMessage(msg)
-        .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        }).show();
+        new AlertDialog.Builder(this)
+            .setMessage(msg)
+            .setPositiveButton("Close", null)
+            .show();
     }
+
     @UiThread
     void LogError(String msg, Throwable e) {
-        new AlertDialog.Builder(this).setTitle("Error").setMessage(msg)
-        .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        }).show();
+        new AlertDialog.Builder(this)
+            .setTitle("Error")
+            .setMessage(msg)
+            .setPositiveButton("Close", null)
+            .show();
     }
+
     @UiThread
     void LogError(String msg) {
-        new AlertDialog.Builder(this).setTitle("Error").setMessage(msg)
-        .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        }).show();
+        new AlertDialog.Builder(this)
+            .setTitle("Error")
+            .setMessage(msg)
+            .setPositiveButton("Close", null)
+            .show();
     }
-
 }

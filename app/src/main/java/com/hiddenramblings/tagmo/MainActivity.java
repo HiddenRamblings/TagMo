@@ -39,6 +39,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int FILE_LOAD_TAG = 0x100;
     private static final int NFC_ACTIVITY = 0x102;
     private static final int EDIT_TAG = 0x103;
+    private static final int SCAN_QR_CODE = 0x104;
 
     @ViewById(R.id.txtLockedKey)
     TextView txtLockedKey;
@@ -85,6 +87,10 @@ public class MainActivity extends AppCompatActivity {
     Button btnWriteTagRaw;
     @ViewById(R.id.btnRestoreTag)
     Button btnRestoreTag;
+    @ViewById(R.id.btnScanQRCode)
+    Button btnScanQRCode;
+    @ViewById(R.id.btnShowQRCode)
+    Button btnShowQRCode;
     @ViewById(R.id.btnEditDataSSB)
     Button btnEditDataSSB;
     @ViewById(R.id.btnEditDataTP)
@@ -216,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
         btnWriteTagRaw.setEnabled(nfcEnabled && hasTag);
         btnRestoreTag.setEnabled(nfcEnabled && hasTag);
         btnSaveTag.setEnabled(nfcEnabled && hasTag);
+        btnShowQRCode.setEnabled(hasTag);
         btnEditDataSSB.setEnabled(hasKeys && hasTag);
         btnViewHex.setEnabled(hasKeys && hasTag);
 
@@ -364,6 +371,60 @@ public class MainActivity extends AppCompatActivity {
         writeTagToFile(this.currentTagData);
     }
 
+    @Click(R.id.btnShowQRCode)
+    void showQRCode() {
+        if (this.currentTagData == null) {
+            LogError("No tag loaded");
+            return;
+        }
+
+        String content;
+        try {
+            content = new String(this.currentTagData, "ISO-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            showToast("Failed to encode QR Code");
+            return;
+        }
+
+        Intent intent = new Intent("com.google.zxing.client.android.ENCODE");
+        intent.putExtra("ENCODE_TYPE", "TEXT_TYPE");
+        intent.putExtra("ENCODE_SHOW_CONTENTS", false);
+        intent.putExtra("ENCODE_DATA", content);
+        startQRActivity(intent, -1);
+    }
+
+    @Click(R.id.btnScanQRCode)
+    void scanQRCode() {
+        Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+        intent.putExtra("CHARACTER_SET", "ISO-8859-1");
+        startQRActivity(intent, SCAN_QR_CODE);
+    }
+
+    void startQRActivity(Intent intent, int resultCode) {
+        try {
+            this.startActivityForResult(intent, resultCode);
+        } catch (Exception e) {
+            Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
+            Intent marketIntent = new Intent(Intent.ACTION_VIEW, marketUri);
+            startActivity(marketIntent);
+        }
+    }
+
+    void loadQRCode(String content) {
+        byte[] data;
+        try {
+            data = content.getBytes("ISO-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            showToast("Failed to decode QR Code");
+            return;
+        }
+        this.currentTagData = data;
+        this.updateStatus();
+    }
+
     @Click(R.id.btnEditDataSSB)
     void editSSBData() {
         if (this.currentTagData == null) {
@@ -437,6 +498,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case FILE_LOAD_TAG:
                 loadTagFile(data.getData());
+                break;
+            case SCAN_QR_CODE:
+                loadQRCode(data.getStringExtra("SCAN_RESULT"));
                 break;
         }
     }

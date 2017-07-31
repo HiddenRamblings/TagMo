@@ -49,6 +49,7 @@ This app is a result of work by many others. Thanks go out to (In alphabetical o
 * FinalDoom - Bug fixes/maintenance
 * javiMaD - Encryption algo help
 * Kidel - Bug Fixes
+* N3evin - AmiiboAPI data
 * North101 - File browser, Extended amiibo info, QR Code, general cleanup
 * masterchan-777 - Bug fixes/maintenance
 * possi - Wolf link editor

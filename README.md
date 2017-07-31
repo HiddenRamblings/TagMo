@@ -40,15 +40,19 @@ TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC
 * Click "Edit SSB Data" to edit properties related to SSB. Using this on non SSB amiibo will corrupt its saved data. requiring you to restore it from a save file (if you have one) or to reset it. It is recommended you backup the amiibo data using the steps above before trying this out.
 
 # Credits
-This app is a result of work by many others. Mainly thanks go out to:
+This app is a result of work by many others. Thanks go out to (In alphabetical order):
 
-* javiMaD
-* socram8888
-* Supercool330
-* _Tim_
-* azsde
-* Kidel
-* masterchan-777
-* possi
-* /u/MacGuffen for the excellent well maintained list of Amiibo id list.
+* _Tim_ - The originial idea
+* 1RedOne - support/readme
+* azsde - Bug fixes/maintenance
+* Bombastisch - support and motivation
+* FinalDoom - Bug fixes/maintenance
+* javiMaD - Encryption algo help
+* Kidel - Bug Fixes
+* North101 - File browser, Extended amiibo info, QR Code, general cleanup
+* masterchan-777 - Bug fixes/maintenance
+* possi - Wolf link editor
+* socram8888 - Decryotion encryption code
+* Supercool330 - Encryption algo help
 * Others who preferred to remain anonymous.
+* Many more who helped in testing.

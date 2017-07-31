@@ -76,6 +76,7 @@ dependencies {
     compile 'com.android.support:gridlayout-v7:25.3.1'
     apt "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"
+    compile 'com.journeyapps:zxing-android-embedded:3.5.0'
     compile 'com.robertlevonyan.view:MaterialChipView:1.0.1'
     compile 'org.apmem.tools:layouts:1.10@aar'
 }

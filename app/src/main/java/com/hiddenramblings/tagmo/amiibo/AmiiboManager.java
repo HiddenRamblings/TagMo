@@ -1,7 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo;
 
-import android.support.v4.util.LongSparseArray;
-import android.support.v4.util.SparseArrayCompat;
+import android.content.Context;
+import android.net.Uri;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,16 +12,34 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class AmiiboManager {
     public static final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd");
 
-    public final LongSparseArray<Amiibo> amiibos = new LongSparseArray<>();
-    public final SparseArrayCompat<GameSeries> gameSeries = new SparseArrayCompat<>();
-    public final SparseArrayCompat<Character> characters = new SparseArrayCompat<>();
-    public final SparseArrayCompat<AmiiboType> amiiboTypes = new SparseArrayCompat<>();
-    public final SparseArrayCompat<AmiiboSeries> amiiboSeries = new SparseArrayCompat<>();
+    public final HashMap<Long, Amiibo> amiibos = new HashMap<>();
+    public final HashMap<Integer, GameSeries> gameSeries = new HashMap<>();
+    public final HashMap<Integer, Character> characters = new HashMap<>();
+    public final HashMap<Integer, AmiiboType> amiiboTypes = new HashMap<>();
+    public final HashMap<Integer, AmiiboSeries> amiiboSeries = new HashMap<>();
+
+    public static AmiiboManager parse(Context context, Uri uri) throws IOException, JSONException, ParseException {
+        InputStream inputSteam = null;
+        try {
+            inputSteam = context.getContentResolver().openInputStream(uri);
+            return parse(inputSteam);
+        } finally {
+            if (inputSteam != null) {
+                try {
+                    inputSteam.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     public static AmiiboManager parse(InputStream inputStream) throws IOException, JSONException, ParseException {
         byte[] data = new byte[inputStream.available()];
@@ -92,5 +110,57 @@ public class AmiiboManager {
         }
 
         return manager;
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        JSONObject outputJSON = new JSONObject();
+
+        JSONObject amiibosJSON = new JSONObject();
+        for (Map.Entry<Long, Amiibo> entry : this.amiibos.entrySet()) {
+            Amiibo amiibo = entry.getValue();
+
+            JSONObject amiiboJSON = new JSONObject();
+            amiiboJSON.put("name", amiibo.name);
+
+            JSONObject releaseJSON = new JSONObject();
+            releaseJSON.put("na", amiibo.releaseDates.northAmerica == null ? null : iso8601.format(amiibo.releaseDates.northAmerica));
+            releaseJSON.put("jp", amiibo.releaseDates.japan == null ? null : iso8601.format(amiibo.releaseDates.japan));
+            releaseJSON.put("eu", amiibo.releaseDates.europe == null ? null : iso8601.format(amiibo.releaseDates.europe));
+            releaseJSON.put("au", amiibo.releaseDates.australia == null ? null : iso8601.format(amiibo.releaseDates.australia));
+            amiiboJSON.put("release", releaseJSON);
+
+            amiibosJSON.put(String.format("0x%016X", amiibo.id), amiiboJSON);
+        }
+        outputJSON.put("amiibos", amiibosJSON);
+
+        JSONObject gameSeriesJSON = new JSONObject();
+        for (Map.Entry<Integer, GameSeries> entry : this.gameSeries.entrySet()) {
+            GameSeries gameSeries = entry.getValue();
+            gameSeriesJSON.put(String.format("0x%03X", gameSeries.id >> GameSeries.BITSHIFT), gameSeries.name);
+        }
+        outputJSON.put("game_series", gameSeriesJSON);
+
+        JSONObject charactersJSON = new JSONObject();
+        for (Map.Entry<Integer, Character> entry : this.characters.entrySet()) {
+            Character characters = entry.getValue();
+            charactersJSON.put(String.format("0x%04X", characters.id >> Character.BITSHIFT), characters.name);
+        }
+        outputJSON.put("characters", charactersJSON);
+
+        JSONObject amiiboTypesJSON = new JSONObject();
+        for (Map.Entry<Integer, AmiiboType> entry : this.amiiboTypes.entrySet()) {
+            AmiiboType amiiboType = entry.getValue();
+            amiiboTypesJSON.put(String.format("0x%02X", amiiboType.id >> AmiiboType.BITSHIFT), amiiboType.name);
+        }
+        outputJSON.put("types", amiiboTypesJSON);
+
+        JSONObject amiiboSeriesJSON = new JSONObject();
+        for (Map.Entry<Integer, AmiiboSeries> entry : this.amiiboSeries.entrySet()) {
+            AmiiboSeries amiiboSeries = entry.getValue();
+            amiiboSeriesJSON.put(String.format("0x%02X", amiiboSeries.id >> AmiiboSeries.BITSHIFT), amiiboSeries.name);
+        }
+        outputJSON.put("amiibo_series", amiiboSeriesJSON);
+
+        return outputJSON;
     }
 }

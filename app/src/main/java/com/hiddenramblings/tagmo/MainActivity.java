@@ -232,14 +232,14 @@ public class MainActivity extends AppCompatActivity {
 
         if (!hasKeys && !keyWarningShown) {
             new AlertDialog.Builder(this)
-                .setMessage("Not all keys imported. Open settings?")
-                .setPositiveButton("Open", new DialogInterface.OnClickListener() {
+                .setMessage("To read and write Amiibo tags, encryption keys are required. Would you like to open settings to import them?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         openSettings();
                     }
                 })
-                .setNegativeButton("Close", null)
+                .setNegativeButton("No", null)
                 .show();
             keyWarningShown = true;
         }
@@ -296,14 +296,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         txtTagInfo.setText(tagInfo);
-        txtName.setText(amiiboName);
-        txtTagId.setText(amiiboHexId);
-        txtAmiiboSeries.setText(amiiboSeries);
-        txtAmiiboType.setText(amiiboType);
-        txtGameSeries.setText(gameSeries);
-        txtCharacter.setText(character);
+        setAmiiboInfoText(txtName, amiiboName, !tagInfo.isEmpty());
+        setAmiiboInfoText(txtTagId, amiiboHexId, !tagInfo.isEmpty());
+        setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, !tagInfo.isEmpty());
+        setAmiiboInfoText(txtAmiiboType, amiiboType, !tagInfo.isEmpty());
+        setAmiiboInfoText(txtGameSeries, gameSeries, !tagInfo.isEmpty());
+        setAmiiboInfoText(txtCharacter, character, !tagInfo.isEmpty());
         btnEditDataSSB.setVisibility(ssbVisibility);
         btnEditDataTP.setVisibility(tpVisibility);
+    }
+
+    void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+        if (hasTagInfo) {
+            textView.setText("");
+        } else if (text.length() == 0) {
+            textView.setText("Unknown");
+            textView.setTextColor(Color.RED);
+        } else {
+            textView.setText(text);
+            textView.setTextColor(textView.getTextColors().getDefaultColor());
+        }
     }
 
     @Click(R.id.btnLoadTag)
@@ -412,12 +424,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void startQRActivity(Intent intent, int resultCode) {
-        try {
+        if (intent.resolveActivity(getPackageManager()) != null) {
             this.startActivityForResult(intent, resultCode);
-        } catch (Exception e) {
-            Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
-            Intent marketIntent = new Intent(Intent.ACTION_VIEW, marketUri);
-            startActivity(marketIntent);
+        } else {
+            new AlertDialog.Builder(this)
+                .setMessage("Barcode Scanner is required to use QR Codes. Would you like to install it from the Play Store?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
+                        Intent marketIntent = new Intent(Intent.ACTION_VIEW, marketUri);
+                        startActivity(marketIntent);
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
         }
     }
 

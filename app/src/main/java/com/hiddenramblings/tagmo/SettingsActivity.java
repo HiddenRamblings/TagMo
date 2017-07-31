@@ -12,6 +12,8 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
@@ -20,14 +22,19 @@ import org.androidannotations.annotations.PreferenceClick;
 import org.androidannotations.annotations.PreferenceScreen;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.sharedpreferences.Pref;
+import org.json.JSONException;
 
-import static com.hiddenramblings.tagmo.Util.AMIIBO_DATABASE_FILE;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.ParseException;
 
 @PreferenceScreen(R.xml.settings)
 @EActivity
 public class SettingsActivity extends PreferenceActivity {
     private static final int RESULT_KEYS = 0;
-    private static final int RESULT_AMIIBO_DATABASE = 1;
+    private static final int RESULT_IMPORT_AMIIBO_DATABASE = 1;
 
     @Pref
     Preferences_ prefs;
@@ -36,13 +43,95 @@ public class SettingsActivity extends PreferenceActivity {
     Preference key;
     @PreferenceByKey(R.string.settings_enable_amiibo_browser)
     CheckBoxPreference enableAmiiboBrowser;
+    @PreferenceByKey(R.string.settings_database_amiibos)
+    Preference amiiboStats;
+    @PreferenceByKey(R.string.settings_database_game_series)
+    Preference gameSeriesStats;
+    @PreferenceByKey(R.string.settings_database_characters)
+    Preference characterStats;
+    @PreferenceByKey(R.string.settings_database_amiibo_series)
+    Preference amiiboSeriesStats;
+    @PreferenceByKey(R.string.settings_database_amiibo_types)
+    Preference amiiboTypeStats;
 
     KeyManager keyManager;
+    AmiiboManager amiiboManager = null;
 
     @AfterPreferences
     protected void afterViews() {
         this.keyManager = new KeyManager(this);
+        loadAmiiboManager();
         updateKeySummary();
+        updateAmiiboStats();
+    }
+
+    @Background
+    void loadAmiiboManager() {
+        try {
+            AmiiboManager amiiboManager = Util.loadAmiiboManager(this);
+            setAmiiboManager(amiiboManager);
+        } catch (IOException | JSONException | ParseException e) {
+            e.printStackTrace();
+            showToast("Unable to parse amiibo database");
+        }
+    }
+
+    @Background
+    void updateAmiiboManager(Uri data) {
+        try {
+            AmiiboManager amiiboManager = AmiiboManager.parse(this, data);
+            Util.saveLocalAmiiboDatabase(this, amiiboManager);
+            setAmiiboManager(amiiboManager);
+
+            showToast("Updated amiibo database");
+        } catch (IOException | ParseException | JSONException e) {
+            e.printStackTrace();
+            showToast("Unable to parse amiibo database");
+        } catch (Util.AmiiboDatabaseException e) {
+            e.printStackTrace();
+            showToast(e.getMessage());
+        }
+    }
+
+    @Background
+    void resetAmiiboManager() {
+        this.deleteFile(Util.AMIIBO_DATABASE_FILE);
+        AmiiboManager amiiboManager = null;
+        try {
+            amiiboManager = Util.loadAmiiboManager(this);
+        } catch (IOException | JSONException | ParseException e) {
+            e.printStackTrace();
+            showToast("Unable to parse amiibo database");
+        }
+
+        setAmiiboManager(amiiboManager);
+        showToast("Reset amiibo database");
+    }
+
+    @UiThread
+    void setAmiiboManager(AmiiboManager amiiboManager) {
+        this.amiiboManager = amiiboManager;
+        this.updateAmiiboStats();
+    }
+
+    void updateAmiiboStats() {
+        String amiiboCount = "0";
+        String gameSeriesCount = "0";
+        String characterCount = "0";
+        String amiiboSeriesCount = "0";
+        String amiiboTypeCount = "0";
+        if (amiiboManager != null) {
+            amiiboCount = String.valueOf(amiiboManager.amiibos.size());
+            gameSeriesCount = String.valueOf(amiiboManager.gameSeries.size());
+            characterCount = String.valueOf(amiiboManager.characters.size());
+            amiiboSeriesCount = String.valueOf(amiiboManager.amiiboSeries.size());
+            amiiboTypeCount = String.valueOf(amiiboManager.amiiboTypes.size());
+        }
+        this.amiiboStats.setSummary(amiiboCount);
+        this.gameSeriesStats.setSummary(gameSeriesCount);
+        this.characterStats.setSummary(characterCount);
+        this.amiiboSeriesStats.setSummary(amiiboSeriesCount);
+        this.amiiboTypeStats.setSummary(amiiboTypeCount);
     }
 
     @PreferenceClick(R.string.settings_import_keys)
@@ -96,13 +185,36 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     @PreferenceClick(R.string.settings_import_database)
-    void onLoadDatabaseClicked() {
-        showFileChooser("Fixed Key", "*/*", RESULT_AMIIBO_DATABASE);
+    void onImportDatabaseClicked() {
+        showFileChooser("Fixed Key", "*/*", RESULT_IMPORT_AMIIBO_DATABASE);
+    }
+
+    @PreferenceClick(R.string.settings_export_database)
+    void onExportDatabaseClicked() {
+        File file = new File(Util.getDataDir(), Util.AMIIBO_DATABASE_FILE);
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(file);
+            Util.saveAmiiboDatabase(this.amiiboManager, fileOutputStream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (Util.AmiiboDatabaseException e) {
+            e.printStackTrace();
+        } finally {
+            if (fileOutputStream != null) {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        showToast("Exported amiibo database to " + Util.friendlyPath(file.getAbsolutePath()));
     }
 
     @PreferenceClick(R.string.settings_reset_database)
     void onResetDatabaseClicked() {
-        this.deleteFile(AMIIBO_DATABASE_FILE);
+        resetAmiiboManager();
     }
 
     @PreferenceClick(R.string.settings_enable_amiibo_browser)
@@ -131,14 +243,8 @@ public class SettingsActivity extends PreferenceActivity {
             case RESULT_KEYS:
                 saveKeys(data.getData());
                 break;
-            case RESULT_AMIIBO_DATABASE:
-                try {
-                    Util.saveAmiiboDatabase(this, data.getData());
-                    showToast("Updated amiibo database");
-                } catch (Util.AmiiboDatabaseException e) {
-                    e.printStackTrace();
-                    showToast(e.getMessage());
-                }
+            case RESULT_IMPORT_AMIIBO_DATABASE:
+                updateAmiiboManager(data.getData());
                 break;
         }
     }

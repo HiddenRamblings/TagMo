@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -47,6 +48,8 @@ import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.apmem.tools.layouts.FlowLayout;
 import org.json.JSONException;
+import org.parceler.Parcel;
+import org.parceler.ParcelConstructor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,9 +58,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @EActivity(R.layout.browser_layout)
@@ -77,6 +78,9 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
     ListView listView;
     @ViewById(R.id.swiperefresh)
     SwipeRefreshLayout swipeRefreshLayout;
+    @ViewById(R.id.internalEmpty)
+    TextView emptyText;
+
 
     @OptionsMenuItem(R.id.search)
     MenuItem menuSearch;
@@ -108,12 +112,24 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
     SearchView searchView;
 
     @InstanceState
-    HashMap<String, Long> amiiboFiles = null;
+    ArrayList<AmiiboFile> amiiboFiles = null;
 
     AmiiboManager amiiboManager = null;
 
     @Pref
     Preferences_ prefs;
+
+    @Parcel(Parcel.Serialization.BEAN)
+    class AmiiboFile {
+        public final String filePath;
+        public final long id;
+
+        @ParcelConstructor
+        public AmiiboFile(String filePath, long id) {
+            this.filePath = filePath;
+            this.id = id;
+        }
+    }
 
     @AfterViews
     protected void afterViews() {
@@ -143,9 +159,9 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
     }
 
     @ItemClick(R.id.list)
-    public void onListItemClicked(Map.Entry<String, Long> item) {
+    public void onListItemClicked(AmiiboFile item) {
         Intent returnIntent = new Intent();
-        returnIntent.setData(Uri.fromFile(new File(item.getKey())));
+        returnIntent.setData(Uri.fromFile(new File(item.filePath)));
         this.setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
@@ -196,13 +212,13 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
     @Background
     void runListAmiibos() {
         setLoadingBarVisibility(true);
-        HashMap<String, Long> amiiboFiles = listAmiibos(Util.getDataDir());
+        ArrayList<AmiiboFile> amiiboFiles = listAmiibos(Util.getDataDir());
         setLoadingBarVisibility(false);
         setAmiiboFiles(amiiboFiles);
     }
 
-    HashMap<String, Long> listAmiibos(File rootFolder) {
-        HashMap<String, Long> amiiboFiles = new HashMap<>();
+    ArrayList<AmiiboFile> listAmiibos(File rootFolder) {
+        ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
 
         File[] files = rootFolder.listFiles();
         if (files == null)
@@ -210,12 +226,12 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
 
         for (File file : files) {
             if (file.isDirectory()) {
-                amiiboFiles.putAll(listAmiibos(file));
+                amiiboFiles.addAll(listAmiibos(file));
             } else {
                 try {
                     byte[] data = TagUtil.readTag(new FileInputStream(file));
                     TagUtil.validateTag(data);
-                    amiiboFiles.put(file.getAbsolutePath(), TagUtil.amiiboIdFromTag(data));
+                    amiiboFiles.add(new AmiiboFile(file.getAbsolutePath(), TagUtil.amiiboIdFromTag(data)));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -225,9 +241,15 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
     }
 
     @UiThread
-    void setAmiiboFiles(HashMap<String, Long> amiiboFiles) {
+    void setAmiiboFiles(ArrayList<AmiiboFile> amiiboFiles) {
         this.amiiboFiles = amiiboFiles;
         this.getListAdapter().setData(amiiboFiles);
+        if (amiiboFiles != null && amiiboFiles.size() == 0) {
+            String dirPath = Util.friendlyPath(Util.getDataDir().getAbsolutePath());
+            emptyText.setText("No Amiibo files found in\n" +  dirPath);
+        } else {
+            emptyText.setText("");
+        }
     }
 
     @UiThread
@@ -417,8 +439,8 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             return false;
 
         Set<String> items = new HashSet<>();
-        for (Map.Entry<String, Long> entry : adapter.data) {
-            Amiibo amiibo = amiiboManager.amiibos.get(entry.getValue());
+        for (AmiiboFile amiiboFile : adapter.data) {
+            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.id);
             if (amiibo == null)
                 continue;
 
@@ -471,8 +493,8 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             return true;
 
         Set<String> items = new HashSet<>();
-        for (Map.Entry<String, Long> entry : adapter.data) {
-            Amiibo amiibo = amiiboManager.amiibos.get(entry.getValue());
+        for (AmiiboFile amiiboFile : adapter.data) {
+            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.id);
             if (amiibo == null)
                 continue;
 
@@ -526,8 +548,8 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             return true;
 
         Set<String> items = new HashSet<>();
-        for (Map.Entry<String, Long> entry : adapter.data) {
-            Amiibo amiibo = amiiboManager.amiibos.get(entry.getValue());
+        for (AmiiboFile amiiboFile : adapter.data) {
+            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.id);
             if (amiibo == null)
                 continue;
 
@@ -580,8 +602,8 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             return true;
 
         Set<AmiiboType> items = new HashSet<>();
-        for (Map.Entry<String, Long> entry : adapter.data) {
-            Amiibo amiibo = amiiboManager.amiibos.get(entry.getValue());
+        for (AmiiboFile amiiboFile : adapter.data) {
+            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.id);
             if (amiibo == null)
                 continue;
 
@@ -639,8 +661,8 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
 
     static class AmiiboFilesAdapter extends BaseAdapter implements Filterable {
         private final BrowserActivity activity;
-        private ArrayList<Map.Entry<String, Long>> data;
-        private ArrayList<Map.Entry<String, Long>> filteredData;
+        private ArrayList<AmiiboFile> data;
+        private ArrayList<AmiiboFile> filteredData;
         private AmiiboFilter filter;
 
         AmiiboFilesAdapter(BrowserActivity activity) {
@@ -649,10 +671,10 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             this.filteredData = this.data;
         }
 
-        void setData(Map<String, Long> data) {
+        void setData(ArrayList<AmiiboFile> data) {
             this.data.clear();
             if (data != null)
-                this.data.addAll(data.entrySet());
+                this.data.addAll(data);
             this.refresh();
         }
 
@@ -662,28 +684,28 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         }
 
         @Override
-        public Map.Entry<String, Long> getItem(int i) {
+        public AmiiboFile getItem(int i) {
             return filteredData.get(i);
         }
 
         @Override
         public long getItemId(int i) {
-            return filteredData.get(i).getValue();
+            return filteredData.get(i).id;
         }
 
-        class CustomComparator implements Comparator<Map.Entry<String, Long>> {
+        class CustomComparator implements Comparator<AmiiboFile> {
             @Override
-            public int compare(Map.Entry<String, Long> o1, Map.Entry<String, Long> o2) {
-                String filePath1 = o1.getKey();
-                String filePath2 = o2.getKey();
+            public int compare(AmiiboFile amiiboFile1, AmiiboFile amiiboFile2) {
+                String filePath1 = amiiboFile1.filePath;
+                String filePath2 = amiiboFile2.filePath;
 
                 int sort = activity.getSort();
                 if (sort == SORT_FILE_PATH)
                     return filePath1.compareTo(filePath2);
 
                 int value = 0;
-                long amiiboId1 = o1.getValue();
-                long amiiboId2 = o2.getValue();
+                long amiiboId1 = amiiboFile1.id;
+                long amiiboId2 = amiiboFile2.id;
                 if (sort == SORT_ID) {
                     value = compareAmiiboId(amiiboId1, amiiboId2);
                 } else {
@@ -817,7 +839,7 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            Map.Entry<String, Long> item = getItem(position);
+            AmiiboFile item = getItem(position);
             String tagInfo = "";
             String amiiboHexId = "";
             String amiiboName = "";
@@ -826,7 +848,7 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             String gameSeries = "";
             String character = "";
 
-            long amiiboId = item.getValue();
+            long amiiboId = item.id;
             Amiibo amiibo = null;
             AmiiboManager amiiboManager = activity.amiiboManager;
             if (amiiboManager != null) {
@@ -852,21 +874,28 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
 
             String query = activity.getQuery().toLowerCase();
             holder.txtTagInfo.setText(tagInfo);
-            holder.txtName.setText(boldMatchingText(amiiboName, query));
-            holder.txtTagId.setText(boldStartText(amiiboHexId, query));
-            holder.txtAmiiboSeries.setText(boldMatchingText(amiiboSeries, query));
-            holder.txtAmiiboType.setText(boldMatchingText(amiiboType, query));
-            holder.txtGameSeries.setText(boldMatchingText(gameSeries, query));
-            holder.txtCharacter.setText(boldMatchingText(character, query));
+            setAmiiboInfoText(holder.txtName, boldMatchingText(amiiboName, query), !tagInfo.isEmpty());
+            setAmiiboInfoText(holder.txtTagId, boldStartText(amiiboHexId, query), !tagInfo.isEmpty());
+            setAmiiboInfoText(holder.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), !tagInfo.isEmpty());
+            setAmiiboInfoText(holder.txtAmiiboType, boldMatchingText(amiiboType, query), !tagInfo.isEmpty());
+            setAmiiboInfoText(holder.txtGameSeries, boldMatchingText(gameSeries, query), !tagInfo.isEmpty());
+            setAmiiboInfoText(holder.txtCharacter, boldMatchingText(character, query), !tagInfo.isEmpty());
 
-            String path = item.getKey();
-            String sdcardPath = Util.getDataDir().getAbsolutePath();
-            if (path.startsWith(sdcardPath)) {
-                path = path.substring(sdcardPath.length());
-            }
-            holder.txtPath.setText(boldMatchingText(path, query));
+            holder.txtPath.setText(boldMatchingText(Util.friendlyPath(item.filePath), query));
 
             return convertView;
+        }
+
+        void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+            if (hasTagInfo) {
+                textView.setText("");
+            } else if (text.length() == 0) {
+                textView.setText("Unknown");
+                textView.setTextColor(Color.RED);
+            } else {
+                textView.setText(text);
+                textView.setTextColor(textView.getTextColors().getDefaultColor());
+            }
         }
 
         static class ViewHolder {
@@ -913,23 +942,24 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
                 activity.setQuery(query);
 
                 FilterResults filterResults = new FilterResults();
-                ArrayList<Map.Entry<String, Long>> tempList = new ArrayList<>();
+                ArrayList<AmiiboFile> tempList = new ArrayList<>();
                 String queryText = query.trim().toLowerCase();
-                for (Map.Entry<String, Long> entry : data) {
-                    boolean add = false;
-                    Amiibo amiibo = null;
+                for (AmiiboFile amiiboFile : data) {
+                    boolean add;
+
                     AmiiboManager amiiboManager = activity.amiiboManager;
                     if (amiiboManager != null) {
-                        amiibo = amiiboManager.amiibos.get(entry.getValue());
+                        Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.id);
                         if (amiibo == null)
-                            amiibo = new Amiibo(amiiboManager, entry.getValue(), null, null);
-                    }
-                    if (amiibo != null)
+                            amiibo = new Amiibo(amiiboManager, amiiboFile.id, null, null);
                         add = amiiboContainsQuery(amiibo, queryText);
+                    } else {
+                        add = queryText.isEmpty();
+                    }
                     if (!add)
-                        add = pathContainsQuery(entry.getKey(), queryText);
+                        add = pathContainsQuery(amiiboFile.filePath, queryText);
                     if (add)
-                        tempList.add(entry);
+                        tempList.add(amiiboFile);
                 }
                 filterResults.count = tempList.size();
                 filterResults.values = tempList;
@@ -984,8 +1014,8 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                Collections.sort((ArrayList<Map.Entry<String, Long>>) filterResults.values, new CustomComparator());
-                filteredData = (ArrayList<Map.Entry<String, Long>>) filterResults.values;
+                Collections.sort((ArrayList<AmiiboFile>) filterResults.values, new CustomComparator());
+                filteredData = (ArrayList<AmiiboFile>) filterResults.values;
                 notifyDataSetChanged();
             }
         }

@@ -13,7 +13,7 @@ public class Amiibo implements Comparable<Amiibo> {
     public static int AMIIBO_MODEL_MASK = 0xFFFF0000;
     public static int UNKNOWN_MASK = 0x000000FF;
 
-    public final AmiiboManager manager;
+    public AmiiboManager manager;
     public final long id;
     public final String name;
     public final AmiiboReleaseDates releaseDates;
@@ -27,6 +27,10 @@ public class Amiibo implements Comparable<Amiibo> {
 
     public Amiibo(AmiiboManager manager, String id, String name, AmiiboReleaseDates releaseDates) {
         this(manager, hexToId(id), name, releaseDates);
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public int getHead() {
@@ -92,58 +96,72 @@ public class Amiibo implements Comparable<Amiibo> {
 
         GameSeries gameSeries1 = this.getGameSeries();
         GameSeries gameSeries2 = amiibo.getGameSeries();
-        if (gameSeries1 == null) {
-            return 1;
+        int value;
+        if (gameSeries1 == null && gameSeries2 == null) {
+            value = 0;
+        } else if (gameSeries1 == null) {
+            value = 1;
         } else if (gameSeries2 == null) {
-            return -1;
+            value = -1;
+        } else {
+            value = gameSeries1.compareTo(gameSeries2);
         }
-        int value = gameSeries1.compareTo(gameSeries2);
-        if (value != 0) {
+        if (value != 0)
             return value;
-        }
 
         Character character1 = this.getCharacter();
         Character character2 = amiibo.getCharacter();
-        if (character1 == null) {
-            return 1;
+        if (character1 == null && character2 == null) {
+            value = 0;
+        } else if (character1 == null) {
+            value = 1;
         } else if (character2 == null) {
-            return -1;
+            value = -1;
+        } else {
+            value = character1.compareTo(character2);
         }
-        value = character1.compareTo(character2);
-        if (value != 0) {
+        if (value != 0)
             return value;
-        }
 
         AmiiboSeries amiiboSeries1 = this.getAmiiboSeries();
         AmiiboSeries amiiboSeries2 = amiibo.getAmiiboSeries();
-        if (amiiboSeries1 == null) {
-            return 1;
+        if (amiiboSeries1 == null && amiiboSeries2 == null) {
+            value = 0;
+        } else if (amiiboSeries1 == null) {
+            value = 1;
         } else if (amiiboSeries2 == null) {
-            return -1;
+            value = -1;
+        } else {
+            value = amiiboSeries1.compareTo(amiiboSeries2);
         }
-        value = amiiboSeries1.compareTo(amiiboSeries2);
-        if (value != 0) {
+        if (value != 0)
             return value;
-        }
 
         AmiiboType amiiboType1 = this.getAmiiboType();
         AmiiboType amiiboType2 = amiibo.getAmiiboType();
-        if (amiiboType1 == null) {
-            return 1;
+        if (amiiboType1 == null && amiiboType2 == null) {
+            value = 0;
+        } else if (amiiboType1 == null) {
+            value = 1;
         } else if (amiiboType2 == null) {
-            return -1;
-        }
-        value = amiiboType1.compareTo(amiiboType2);
-        if (value != 0) {
-            return value;
-        }
-
-        if (this.name == null) {
-            return 1;
-        } else if (amiibo.name == null) {
-            return -1;
+            value = -1;
         } else {
-            return this.name.compareTo(amiibo.name);
+            value = amiiboType1.compareTo(amiiboType2);
         }
+        if (value != 0)
+            return value;
+
+        String name1 = this.getName();
+        String name2 = amiibo.getName();
+        if (name1 == null && name2 == null) {
+            value = 0;
+        } else if (name1 == null) {
+            value = 1;
+        } else if (name2 == null) {
+            value = -1;
+        } else {
+            value = name1.compareTo(name2);
+        }
+        return value;
     }
 }

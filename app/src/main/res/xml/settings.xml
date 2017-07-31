@@ -4,22 +4,50 @@
     <PreferenceCategory android:title="Encryption Keys">
         <Preference
             android:key="@string/settings_import_keys"
-            android:title="Import Keys" />
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="Amiibo Database">
-        <Preference
-            android:key="@string/settings_import_database"
-            android:title="Import custom Amiibo Database" />
-        <Preference
-            android:key="@string/settings_reset_database"
-            android:title="Reset Amiibo Database to default" />
+            android:title="Import Keys"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="File Browser">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_enable_amiibo_browser"
-            android:title="Enable Amiibo File Browser" />
+            android:title="Enable Amiibo File Browser"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Amiibo Database">
+        <Preference
+            android:key="@string/settings_import_database"
+            android:summary="Import Amiibo database from JSON"
+            android:title="Import Amiibo database"/>
+        <Preference
+            android:key="@string/settings_export_database"
+            android:summary="Export Amiibo database to JSON"
+            android:title="Export Amiibo database"/>
+        <Preference
+            android:key="@string/settings_reset_database"
+            android:title="Reset Amiibo database"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Amiibo Database Stats">
+        <Preference
+            android:key="@string/settings_database_amiibos"
+            android:selectable="false"
+            android:title="Amiibos"/>
+        <Preference
+            android:key="@string/settings_database_game_series"
+            android:selectable="false"
+            android:title="Game Series"/>
+        <Preference
+            android:key="@string/settings_database_characters"
+            android:selectable="false"
+            android:title="Characters"/>
+        <Preference
+            android:key="@string/settings_database_amiibo_series"
+            android:selectable="false"
+            android:title="Amiibo Series"/>
+        <Preference
+            android:key="@string/settings_database_amiibo_types"
+            android:selectable="false"
+            android:title="Amiibo Types"/>
     </PreferenceCategory>
 </PreferenceScreen>

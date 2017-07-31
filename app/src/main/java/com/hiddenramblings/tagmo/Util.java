@@ -2,7 +2,6 @@ package com.hiddenramblings.tagmo;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
@@ -12,10 +11,12 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import org.json.JSONException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -91,60 +92,13 @@ public class Util {
         }
     }
 
+    public static File getDataDir() {
+        return new File(Environment.getExternalStorageDirectory(), DATA_DIR);
+    }
+
     public static class AmiiboDatabaseException extends Exception {
         public AmiiboDatabaseException(String message) {
             super(message);
-        }
-    }
-
-    public static void saveAmiiboDatabase(Context context, Uri uri) throws AmiiboDatabaseException {
-        InputStream inputSteam = null;
-        try {
-            try {
-                inputSteam = context.getContentResolver().openInputStream(uri);
-                AmiiboManager.parse(inputSteam);
-            } catch (IOException | ParseException | JSONException e) {
-                e.printStackTrace();
-                throw new AmiiboDatabaseException("Failed to parse amiibo database");
-            }
-        } finally {
-            if (inputSteam != null) {
-                try {
-                    inputSteam.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        inputSteam = null;
-        OutputStream outputStream = null;
-        try {
-            try {
-                inputSteam = context.getContentResolver().openInputStream(uri);
-                outputStream = context.openFileOutput(AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
-                byte[] data = new byte[inputSteam.available()];
-                inputSteam.read(data);
-                outputStream.write(data);
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new AmiiboDatabaseException("Failed to update amiibo database");
-            }
-        } finally {
-            if (inputSteam != null) {
-                try {
-                    inputSteam.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
@@ -163,7 +117,53 @@ public class Util {
         return amiiboManager;
     }
 
-    public static File getDataDir() {
-        return new File(Environment.getExternalStorageDirectory(), DATA_DIR);
+    public static void saveAmiiboDatabase(AmiiboManager amiiboManager, OutputStream outputStream) throws AmiiboDatabaseException {
+        OutputStreamWriter streamWriter = null;
+        try {
+            try {
+                streamWriter = new OutputStreamWriter(outputStream);
+                streamWriter.write(amiiboManager.toJSON().toString());
+                outputStream.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new AmiiboDatabaseException("Failed to update amiibo database");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } finally {
+            if (streamWriter != null) {
+                try {
+                    streamWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static void saveLocalAmiiboDatabase(Context context, AmiiboManager amiiboManager) throws AmiiboDatabaseException, FileNotFoundException {
+        OutputStream outputStream = null;
+        try {
+            outputStream = context.openFileOutput(Util.AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
+            Util.saveAmiiboDatabase(amiiboManager, outputStream);
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static String friendlyPath(String filePath) {
+        String dirPath = filePath;
+        String sdcardPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        if (dirPath.startsWith(sdcardPath)) {
+            filePath = filePath.substring(sdcardPath.length());
+        }
+
+        return filePath;
     }
 }

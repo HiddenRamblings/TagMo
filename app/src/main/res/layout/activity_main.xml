@@ -138,6 +138,26 @@
             app:layout_row="9" />
 
         <Button
+            android:id="@+id/btnShowQRCode"
+            android:layout_width="148dp"
+            android:layout_height="wrap_content"
+            android:text="Show QR Code"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_gravity="start"
+            app:layout_row="10" />
+
+        <Button
+            android:id="@+id/btnScanQRCode"
+            android:layout_width="148dp"
+            android:layout_height="wrap_content"
+            android:text="Scan QR Code"
+            app:layout_column="1"
+            app:layout_columnWeight="1"
+            app:layout_gravity="end"
+            app:layout_row="10" />
+
+        <Button
             android:id="@+id/btnWriteTagAuto"
             android:layout_width="148dp"
             android:layout_height="wrap_content"
@@ -145,7 +165,7 @@
             app:layout_column="0"
             app:layout_columnWeight="1"
             app:layout_gravity="start"
-            app:layout_row="10" />
+            app:layout_row="11" />
 
         <Button
             android:id="@+id/btnSaveTag"
@@ -155,7 +175,7 @@
             app:layout_column="1"
             app:layout_columnWeight="1"
             app:layout_gravity="end"
-            app:layout_row="10" />
+            app:layout_row="11" />
 
         <Button
             android:id="@+id/btnCreateTag"
@@ -166,7 +186,7 @@
             app:layout_column="0"
             app:layout_columnWeight="1"
             app:layout_gravity="start"
-            app:layout_row="11" />
+            app:layout_row="12" />
 
         <Button
             android:id="@+id/btnWriteTagRaw"
@@ -176,7 +196,7 @@
             app:layout_column="0"
             app:layout_columnWeight="1"
             app:layout_gravity="start"
-            app:layout_row="12" />
+            app:layout_row="13" />
 
         <Button
             android:id="@+id/btnRestoreTag"
@@ -186,7 +206,7 @@
             app:layout_column="1"
             app:layout_columnWeight="1"
             app:layout_gravity="end"
-            app:layout_row="12" />
+            app:layout_row="13" />
 
         <CheckBox
             android:id="@+id/cbAutoSaveOnScan"

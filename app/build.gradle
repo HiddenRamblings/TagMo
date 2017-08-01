@@ -71,14 +71,12 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:gridlayout-v7:25.3.1'
     apt "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"
+    compile 'org.parceler:parceler-api:1.1.9'
+    apt 'org.parceler:parceler:1.1.9'
     compile 'com.journeyapps:zxing-android-embedded:3.5.0'
     compile 'com.robertlevonyan.view:MaterialChipView:1.0.1'
     compile 'org.apmem.tools:layouts:1.10@aar'
-    compile 'org.parceler:parceler-api:1.1.9'
-    annotationProcessor 'org.parceler:parceler:1.1.9'
 }

@@ -120,15 +120,32 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
     Preferences_ prefs;
 
     @Parcel(Parcel.Serialization.BEAN)
-    class AmiiboFile {
-        public final String filePath;
-        public final long id;
+    public static class AmiiboFile {
+        public String filePath;
+        public long id;
 
         @ParcelConstructor
         public AmiiboFile(String filePath, long id) {
             this.filePath = filePath;
             this.id = id;
         }
+
+        public String getFilePath() {
+            return filePath;
+        }
+
+        public void setFilePath(String filePath) {
+            this.filePath = filePath;
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(long id) {
+            this.id = id;
+        }
+
     }
 
     @AfterViews
@@ -833,7 +850,7 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             if (convertView == null) {
-                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.amiibo_info_view, parent, false);
+                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.amiibo_item_view, parent, false);
                 holder = new ViewHolder(convertView);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -882,6 +899,7 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             setAmiiboInfoText(holder.txtCharacter, boldMatchingText(character, query), !tagInfo.isEmpty());
 
             holder.txtPath.setText(boldMatchingText(Util.friendlyPath(item.filePath), query));
+            holder.txtPath.setVisibility(View.VISIBLE);
 
             return convertView;
         }

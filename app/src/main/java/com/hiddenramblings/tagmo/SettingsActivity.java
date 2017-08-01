@@ -1,18 +1,32 @@
 package com.hiddenramblings.tagmo;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
+import com.hiddenramblings.tagmo.amiibo.AmiiboType;
+import com.hiddenramblings.tagmo.amiibo.Character;
+import com.hiddenramblings.tagmo.amiibo.GameSeries;
 
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.Background;
@@ -29,6 +43,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 @PreferenceScreen(R.xml.settings)
 @EActivity
@@ -220,6 +237,193 @@ public class SettingsActivity extends PreferenceActivity {
     @PreferenceClick(R.string.settings_enable_amiibo_browser)
     void onEnableAmiiboBrowserClicked() {
         prefs.enableAmiiboBrowser().put(enableAmiiboBrowser.isChecked());
+    }
+
+    @PreferenceClick(R.string.settings_database_amiibos)
+    void onAmiiboStatsClicked() {
+        final ArrayList<Amiibo> items = new ArrayList<>(amiiboManager.amiibos.values());
+        Collections.sort(items);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+            .setTitle("Amiibos")
+            .setAdapter(new BaseAdapter() {
+                @Override
+                public int getCount() {
+                    return items.size();
+                }
+
+                @Override
+                public long getItemId(int i) {
+                    return items.get(i).id;
+                }
+
+                @Override
+                public Amiibo getItem(int i) {
+                    return items.get(i);
+                }
+
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    ViewHolder holder;
+                    if (convertView == null) {
+                        convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.amiibo_item_view, parent, false);
+                        holder = new ViewHolder(convertView);
+                    } else {
+                        holder = (ViewHolder) convertView.getTag();
+                    }
+
+                    String tagInfo = "";
+                    String amiiboHexId = "";
+                    String amiiboName = "";
+                    String amiiboSeries = "";
+                    String amiiboType = "";
+                    String gameSeries = "";
+                    String character = "";
+
+                    Amiibo amiibo = getItem(position);
+                    amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
+                    if (amiibo.name != null)
+                        amiiboName = amiibo.name;
+                    if (amiibo.getAmiiboSeries() != null)
+                        amiiboSeries = amiibo.getAmiiboSeries().name;
+                    if (amiibo.getAmiiboType() != null)
+                        amiiboType = amiibo.getAmiiboType().name;
+                    if (amiibo.getGameSeries() != null)
+                        gameSeries = amiibo.getGameSeries().name;
+                    if (amiibo.getCharacter() != null)
+                        character = amiibo.getCharacter().name;
+
+                    holder.txtTagInfo.setText(tagInfo);
+                    setAmiiboInfoText(holder.txtName, amiiboName, !tagInfo.isEmpty());
+                    setAmiiboInfoText(holder.txtTagId, amiiboHexId, !tagInfo.isEmpty());
+                    setAmiiboInfoText(holder.txtAmiiboSeries, amiiboSeries, !tagInfo.isEmpty());
+                    setAmiiboInfoText(holder.txtAmiiboType, amiiboType, !tagInfo.isEmpty());
+                    setAmiiboInfoText(holder.txtGameSeries, gameSeries, !tagInfo.isEmpty());
+                    setAmiiboInfoText(holder.txtCharacter, character, !tagInfo.isEmpty());
+
+                    return convertView;
+                }
+
+                void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+                    if (hasTagInfo) {
+                        textView.setText("");
+                    } else if (text.length() == 0) {
+                        textView.setText("Unknown");
+                        textView.setTextColor(Color.RED);
+                    } else {
+                        textView.setText(text);
+                        textView.setTextColor(textView.getTextColors().getDefaultColor());
+                    }
+                }
+
+                class ViewHolder {
+                    TextView txtTagInfo;
+                    TextView txtName;
+                    TextView txtTagId;
+                    TextView txtAmiiboSeries;
+                    TextView txtAmiiboType;
+                    TextView txtGameSeries;
+                    TextView txtCharacter;
+                    TextView txtPath;
+
+                    public ViewHolder(View view) {
+                        this.txtTagInfo = ((TextView) view.findViewById(R.id.txtTagInfo));
+                        this.txtName = ((TextView) view.findViewById(R.id.txtName));
+                        this.txtTagId = ((TextView) view.findViewById(R.id.txtTagId));
+                        this.txtAmiiboSeries = ((TextView) view.findViewById(R.id.txtAmiiboSeries));
+                        this.txtAmiiboType = ((TextView) view.findViewById(R.id.txtAmiiboType));
+                        this.txtGameSeries = ((TextView) view.findViewById(R.id.txtGameSeries));
+                        this.txtCharacter = ((TextView) view.findViewById(R.id.txtCharacter));
+                        this.txtPath = ((TextView) view.findViewById(R.id.txtPath));
+
+                        view.setTag(this);
+                    }
+                }
+            }, null)
+            .setPositiveButton("Close", null)
+            .show();
+    }
+
+    @PreferenceClick(R.string.settings_database_game_series)
+    void onGameSeriesStatsClicked() {
+        final ArrayList<String> items = new ArrayList<>();
+        for (GameSeries gameSeries : amiiboManager.gameSeries.values()) {
+            if (!items.contains(gameSeries.name))
+                items.add(gameSeries.name);
+        }
+        Collections.sort(items);
+
+        new AlertDialog.Builder(this)
+            .setTitle("Game Series")
+            .setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items), null)
+            .setPositiveButton("Close", null)
+            .show();
+    }
+
+    @PreferenceClick(R.string.settings_database_characters)
+    void onCharacterStatsClicked() {
+        final ArrayList<Character> items = new ArrayList<>();
+        for (Character character : amiiboManager.characters.values()) {
+            if (!items.contains(character))
+                items.add(character);
+        }
+        Collections.sort(items);
+
+        new AlertDialog.Builder(this)
+            .setTitle("Characters")
+            .setAdapter(new ArrayAdapter<Character>(this, android.R.layout.simple_list_item_2, android.R.id.text1, items) {
+                @NonNull
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    View view = super.getView(position, convertView, parent);
+                    TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+                    TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+
+                    Character character = getItem(position);
+                    text1.setText(character.name);
+
+                    GameSeries gameSeries = character.getGameSeries();
+                    text2.setText(gameSeries == null ? "" : gameSeries.name);
+
+                    return view;
+                }
+            }, null)
+            .setPositiveButton("Close", null)
+            .show();
+    }
+
+    @PreferenceClick(R.string.settings_database_amiibo_series)
+    void onAmiiboSeriesStatsClicked() {
+        final ArrayList<String> items = new ArrayList<>();
+        for (AmiiboSeries amiiboSeries : amiiboManager.amiiboSeries.values()) {
+            if (!items.contains(amiiboSeries.name))
+                items.add(amiiboSeries.name);
+        }
+        Collections.sort(items);
+
+        new AlertDialog.Builder(this)
+            .setTitle("Amiibo Series")
+            .setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items), null)
+            .setPositiveButton("Close", null)
+            .show();
+    }
+
+    @PreferenceClick(R.string.settings_database_amiibo_types)
+    void onAmiiboTypesStatsClicked() {
+        final ArrayList<AmiiboType> amiiboTypes = new ArrayList<>(amiiboManager.amiiboTypes.values());
+        Collections.sort(amiiboTypes);
+
+        final ArrayList<String> items = new ArrayList<>();
+        for (AmiiboType amiiboType : amiiboTypes) {
+            if (!items.contains(amiiboType.name))
+                items.add(amiiboType.name);
+        }
+
+        new AlertDialog.Builder(this)
+            .setTitle("Amiibo Types")
+            .setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items), null)
+            .setPositiveButton("Close", null)
+            .show();
     }
 
     private void showFileChooser(String title, String mimeType, int resultCode) {

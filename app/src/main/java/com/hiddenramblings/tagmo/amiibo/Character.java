@@ -20,6 +20,14 @@ public class Character implements Comparable<Character> {
         this(manager, hexToId(id), name);
     }
 
+    public int getGameSeriesId() {
+        return this.id & GameSeries.MASK;
+    }
+
+    public GameSeries getGameSeries() {
+        return this.manager.gameSeries.get(this.getGameSeriesId());
+    }
+
     public static int hexToId(String value) {
         return (Integer.decode(value) << BITSHIFT) & MASK;
     }

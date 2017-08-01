@@ -31,23 +31,18 @@
     <PreferenceCategory android:title="Amiibo Database Stats">
         <Preference
             android:key="@string/settings_database_amiibos"
-            android:selectable="false"
             android:title="Amiibos"/>
         <Preference
             android:key="@string/settings_database_game_series"
-            android:selectable="false"
             android:title="Game Series"/>
         <Preference
             android:key="@string/settings_database_characters"
-            android:selectable="false"
             android:title="Characters"/>
         <Preference
             android:key="@string/settings_database_amiibo_series"
-            android:selectable="false"
             android:title="Amiibo Series"/>
         <Preference
             android:key="@string/settings_database_amiibo_types"
-            android:selectable="false"
             android:title="Amiibo Types"/>
     </PreferenceCategory>
 </PreferenceScreen>

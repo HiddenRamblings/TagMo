@@ -251,8 +251,8 @@ public class MainActivity extends AppCompatActivity {
         String amiiboType = "";
         String gameSeries = "";
         String character = "";
-        int ssbVisibility = View.INVISIBLE;
-        int tpVisibility = View.INVISIBLE;
+        int ssbVisibility = View.GONE;
+        int tpVisibility = View.GONE;
 
         if (this.currentTagData == null) {
             tagInfo = "<No tag loaded>";

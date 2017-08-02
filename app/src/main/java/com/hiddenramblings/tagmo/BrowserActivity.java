@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -50,6 +51,7 @@ import org.apmem.tools.layouts.FlowLayout;
 import org.json.JSONException;
 import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
+import org.parceler.Parcels;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -111,7 +113,6 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
 
     SearchView searchView;
 
-    @InstanceState
     ArrayList<AmiiboFile> amiiboFiles = null;
 
     AmiiboManager amiiboManager = null;
@@ -119,10 +120,12 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
     @Pref
     Preferences_ prefs;
 
-    @Parcel(Parcel.Serialization.BEAN)
+    @Parcel
     public static class AmiiboFile {
-        public String filePath;
-        public long id;
+        String filePath;
+        long id;
+
+        public AmiiboFile() {}
 
         @ParcelConstructor
         public AmiiboFile(String filePath, long id) {
@@ -145,7 +148,19 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         public void setId(long id) {
             this.id = id;
         }
+    }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            amiiboFiles = Parcels.unwrap(savedInstanceState.getParcelable("amiiboFiles"));
+        }
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("amiiboFiles", Parcels.wrap(amiiboFiles));
     }
 
     @AfterViews

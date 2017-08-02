@@ -230,7 +230,7 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             amiiboManager = Util.loadAmiiboManager(this);
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast("Unable to parse amiibo database");
+            showToast("Unable to parse amiibo info");
         }
         this.setAmiiboManager(amiiboManager);
     }

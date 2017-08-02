@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
-def AAVersion = '4.0.0'
+def AAVersion = '4.3.1'
 
 buildscript {
     repositories {
@@ -9,26 +8,16 @@ buildscript {
             url "https://jitpack.io"
         }
     }
-    dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    }
-}
-
-apt {
-    arguments {
-        //androidManifestFile variant.outputs[0].processResources.manifestFile
-        resourcePackageName android.defaultConfig.applicationId
-    }
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.1'
 
     defaultConfig {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 5
         versionName "2.5.0"
     }
@@ -71,11 +60,11 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    apt "org.androidannotations:androidannotations:$AAVersion"
+    compile 'com.android.support:appcompat-v7:26.0.0'
+    annotationProcessor "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"
+    annotationProcessor 'org.parceler:parceler:1.1.9'
     compile 'org.parceler:parceler-api:1.1.9'
-    apt 'org.parceler:parceler:1.1.9'
     compile 'com.journeyapps:zxing-android-embedded:3.5.0'
     compile 'com.robertlevonyan.view:MaterialChipView:1.0.1'
     compile 'org.apmem.tools:layouts:1.10@aar'

@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -44,7 +43,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 @PreferenceScreen(R.xml.settings)
@@ -60,15 +58,15 @@ public class SettingsActivity extends PreferenceActivity {
     Preference key;
     @PreferenceByKey(R.string.settings_enable_amiibo_browser)
     CheckBoxPreference enableAmiiboBrowser;
-    @PreferenceByKey(R.string.settings_database_amiibos)
+    @PreferenceByKey(R.string.settings_info_amiibos)
     Preference amiiboStats;
-    @PreferenceByKey(R.string.settings_database_game_series)
+    @PreferenceByKey(R.string.settings_info_game_series)
     Preference gameSeriesStats;
-    @PreferenceByKey(R.string.settings_database_characters)
+    @PreferenceByKey(R.string.settings_info_characters)
     Preference characterStats;
-    @PreferenceByKey(R.string.settings_database_amiibo_series)
+    @PreferenceByKey(R.string.settings_info_amiibo_series)
     Preference amiiboSeriesStats;
-    @PreferenceByKey(R.string.settings_database_amiibo_types)
+    @PreferenceByKey(R.string.settings_info_amiibo_types)
     Preference amiiboTypeStats;
 
     KeyManager keyManager;
@@ -89,7 +87,7 @@ public class SettingsActivity extends PreferenceActivity {
             setAmiiboManager(amiiboManager);
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast("Unable to parse amiibo database");
+            showToast("Unable to parse amiibo info");
         }
     }
 
@@ -97,14 +95,14 @@ public class SettingsActivity extends PreferenceActivity {
     void updateAmiiboManager(Uri data) {
         try {
             AmiiboManager amiiboManager = AmiiboManager.parse(this, data);
-            Util.saveLocalAmiiboDatabase(this, amiiboManager);
+            Util.saveLocalAmiiboInfo(this, amiiboManager);
             setAmiiboManager(amiiboManager);
 
-            showToast("Updated amiibo database");
+            showToast("Updated amiibo info");
         } catch (IOException | ParseException | JSONException e) {
             e.printStackTrace();
-            showToast("Unable to parse amiibo database");
-        } catch (Util.AmiiboDatabaseException e) {
+            showToast("Unable to parse amiibo info");
+        } catch (Util.AmiiboInfoException e) {
             e.printStackTrace();
             showToast(e.getMessage());
         }
@@ -118,11 +116,11 @@ public class SettingsActivity extends PreferenceActivity {
             amiiboManager = Util.loadAmiiboManager(this);
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast("Unable to parse amiibo database");
+            showToast("Unable to parse amiibo info");
         }
 
         setAmiiboManager(amiiboManager);
-        showToast("Reset amiibo database");
+        showToast("Reset amiibo info");
     }
 
     @UiThread
@@ -201,21 +199,21 @@ public class SettingsActivity extends PreferenceActivity {
         updateKeySummary();
     }
 
-    @PreferenceClick(R.string.settings_import_database)
-    void onImportDatabaseClicked() {
+    @PreferenceClick(R.string.settings_import_info)
+    void onImportInfoClicked() {
         showFileChooser("Fixed Key", "*/*", RESULT_IMPORT_AMIIBO_DATABASE);
     }
 
-    @PreferenceClick(R.string.settings_export_database)
-    void onExportDatabaseClicked() {
+    @PreferenceClick(R.string.settings_export_info)
+    void onExportInfoClicked() {
         File file = new File(Util.getDataDir(), Util.AMIIBO_DATABASE_FILE);
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(file);
-            Util.saveAmiiboDatabase(this.amiiboManager, fileOutputStream);
+            Util.saveAmiiboInfo(this.amiiboManager, fileOutputStream);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (Util.AmiiboDatabaseException e) {
+        } catch (Util.AmiiboInfoException e) {
             e.printStackTrace();
         } finally {
             if (fileOutputStream != null) {
@@ -226,11 +224,11 @@ public class SettingsActivity extends PreferenceActivity {
                 }
             }
         }
-        showToast("Exported amiibo database to " + Util.friendlyPath(file.getAbsolutePath()));
+        showToast("Exported amiibo info to " + Util.friendlyPath(file.getAbsolutePath()));
     }
 
-    @PreferenceClick(R.string.settings_reset_database)
-    void onResetDatabaseClicked() {
+    @PreferenceClick(R.string.settings_reset_info)
+    void onResetInfoClicked() {
         resetAmiiboManager();
     }
 
@@ -239,7 +237,7 @@ public class SettingsActivity extends PreferenceActivity {
         prefs.enableAmiiboBrowser().put(enableAmiiboBrowser.isChecked());
     }
 
-    @PreferenceClick(R.string.settings_database_amiibos)
+    @PreferenceClick(R.string.settings_info_amiibos)
     void onAmiiboStatsClicked() {
         final ArrayList<Amiibo> items = new ArrayList<>(amiiboManager.amiibos.values());
         Collections.sort(items);
@@ -344,7 +342,7 @@ public class SettingsActivity extends PreferenceActivity {
             .show();
     }
 
-    @PreferenceClick(R.string.settings_database_game_series)
+    @PreferenceClick(R.string.settings_info_game_series)
     void onGameSeriesStatsClicked() {
         final ArrayList<String> items = new ArrayList<>();
         for (GameSeries gameSeries : amiiboManager.gameSeries.values()) {
@@ -360,7 +358,7 @@ public class SettingsActivity extends PreferenceActivity {
             .show();
     }
 
-    @PreferenceClick(R.string.settings_database_characters)
+    @PreferenceClick(R.string.settings_info_characters)
     void onCharacterStatsClicked() {
         final ArrayList<Character> items = new ArrayList<>();
         for (Character character : amiiboManager.characters.values()) {
@@ -392,7 +390,7 @@ public class SettingsActivity extends PreferenceActivity {
             .show();
     }
 
-    @PreferenceClick(R.string.settings_database_amiibo_series)
+    @PreferenceClick(R.string.settings_info_amiibo_series)
     void onAmiiboSeriesStatsClicked() {
         final ArrayList<String> items = new ArrayList<>();
         for (AmiiboSeries amiiboSeries : amiiboManager.amiiboSeries.values()) {
@@ -408,7 +406,7 @@ public class SettingsActivity extends PreferenceActivity {
             .show();
     }
 
-    @PreferenceClick(R.string.settings_database_amiibo_types)
+    @PreferenceClick(R.string.settings_info_amiibo_types)
     void onAmiiboTypesStatsClicked() {
         final ArrayList<AmiiboType> amiiboTypes = new ArrayList<>(amiiboManager.amiiboTypes.values());
         Collections.sort(amiiboTypes);

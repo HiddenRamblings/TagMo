@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
             amiiboManager = Util.loadAmiiboManager(this);
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast("Unable to parse amiibo database");
+            showToast("Unable to parse amiibo info");
         }
 
         setAmiiboManager(amiiboManager);

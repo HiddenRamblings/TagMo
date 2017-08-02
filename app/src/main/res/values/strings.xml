@@ -17,14 +17,14 @@
     <string name="nfc_enabled">NFC enabled!</string>
 
     <string name="settings_import_keys">import_keys</string>
-    <string name="settings_import_database">import_database</string>
-    <string name="settings_reset_database">reset_database</string>
+    <string name="settings_import_info">import_info</string>
+    <string name="settings_reset_info">reset_info</string>
     <string name="settings_enable_amiibo_browser">enable_amiibo_browser</string>
-    <string name="settings_export_database">settings_export_database</string>
-    <string name="settings_database_amiibos">settings_database_amiibos</string>
-    <string name="settings_database_game_series">settings_database_game_series</string>
-    <string name="settings_database_characters">settings_database_characters</string>
-    <string name="settings_database_amiibo_series">settings_database_amiibo_series</string>
-    <string name="settings_database_amiibo_types">settings_database_amiibo_types</string>
-    <string name="settings_import_database_amiiboapi">settings_sync_database_amiiboapi</string>
+    <string name="settings_export_info">settings_export_info</string>
+    <string name="settings_info_amiibos">settings_info_amiibos</string>
+    <string name="settings_info_game_series">settings_info_game_series</string>
+    <string name="settings_info_characters">settings_info_characters</string>
+    <string name="settings_info_amiibo_series">settings_info_amiibo_series</string>
+    <string name="settings_info_amiibo_types">settings_info_amiibo_types</string>
+    <string name="settings_import_info_amiiboapi">settings_sync_info_amiiboapi</string>
 </resources>

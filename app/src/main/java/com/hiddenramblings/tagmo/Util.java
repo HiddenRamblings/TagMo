@@ -96,8 +96,8 @@ public class Util {
         return new File(Environment.getExternalStorageDirectory(), DATA_DIR);
     }
 
-    public static class AmiiboDatabaseException extends Exception {
-        public AmiiboDatabaseException(String message) {
+    public static class AmiiboInfoException extends Exception {
+        public AmiiboInfoException(String message) {
             super(message);
         }
     }
@@ -117,7 +117,7 @@ public class Util {
         return amiiboManager;
     }
 
-    public static void saveAmiiboDatabase(AmiiboManager amiiboManager, OutputStream outputStream) throws AmiiboDatabaseException {
+    public static void saveAmiiboInfo(AmiiboManager amiiboManager, OutputStream outputStream) throws AmiiboInfoException {
         OutputStreamWriter streamWriter = null;
         try {
             try {
@@ -126,7 +126,7 @@ public class Util {
                 outputStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();
-                throw new AmiiboDatabaseException("Failed to update amiibo database");
+                throw new AmiiboInfoException("Failed to update amiibo info");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -141,11 +141,11 @@ public class Util {
         }
     }
 
-    public static void saveLocalAmiiboDatabase(Context context, AmiiboManager amiiboManager) throws AmiiboDatabaseException, FileNotFoundException {
+    public static void saveLocalAmiiboInfo(Context context, AmiiboManager amiiboManager) throws AmiiboInfoException, FileNotFoundException {
         OutputStream outputStream = null;
         try {
             outputStream = context.openFileOutput(Util.AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
-            Util.saveAmiiboDatabase(amiiboManager, outputStream);
+            Util.saveAmiiboInfo(amiiboManager, outputStream);
         } finally {
             if (outputStream != null) {
                 try {

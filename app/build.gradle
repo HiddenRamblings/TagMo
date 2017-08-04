@@ -65,7 +65,6 @@ dependencies {
     compile "org.androidannotations:androidannotations-api:$AAVersion"
     annotationProcessor 'org.parceler:parceler:1.1.9'
     compile 'org.parceler:parceler-api:1.1.9'
-    compile 'com.journeyapps:zxing-android-embedded:3.5.0'
     compile 'com.robertlevonyan.view:MaterialChipView:1.0.1'
     compile 'org.apmem.tools:layouts:1.10@aar'
 }

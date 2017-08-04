@@ -1,55 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<android.support.v7.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Encryption Keys">
-        <Preference
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Encryption Keys">
+        <android.support.v7.preference.Preference
             android:key="@string/settings_import_keys"
             android:title="Import Keys"/>
-    </PreferenceCategory>
+    </android.support.v7.preference.PreferenceCategory>
 
-    <PreferenceCategory android:title="File Browser">
-        <CheckBoxPreference
+    <android.support.v7.preference.PreferenceCategory
+        android:title="File Browser">
+        <android.support.v7.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_enable_amiibo_browser"
             android:title="Enable Amiibo File Browser"/>
-    </PreferenceCategory>
+    </android.support.v7.preference.PreferenceCategory>
 
-    <PreferenceCategory android:title="Tag Validation">
-        <CheckBoxPreference
+    <android.support.v7.preference.PreferenceCategory android:title="Tag Validation">
+        <android.support.v7.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_enable_tag_type_validation"
             android:title="Enable NTAG215 validation"/>
-    </PreferenceCategory>
+    </android.support.v7.preference.PreferenceCategory>
 
-    <PreferenceCategory android:title="Amiibo Info">
-        <Preference
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Amiibo Info">
+        <android.support.v7.preference.Preference
+            android:key="@string/settings_import_info_amiiboapi"
+            android:summary="Syncs Amiibo info with amiiboapi.com"
+            android:title="Sync Amiibo info with AmiiboAPI"/>
+        <android.support.v7.preference.Preference
             android:key="@string/settings_import_info"
             android:summary="Import Amiibo info from JSON"
             android:title="Import Amiibo info"/>
-        <Preference
+        <android.support.v7.preference.Preference
             android:key="@string/settings_export_info"
             android:summary="Export Amiibo info to JSON"
             android:title="Export Amiibo info"/>
-        <Preference
+        <android.support.v7.preference.Preference
             android:key="@string/settings_reset_info"
             android:title="Reset Amiibo info"/>
-    </PreferenceCategory>
+    </android.support.v7.preference.PreferenceCategory>
 
-    <PreferenceCategory android:title="Amiibo Info Stats">
-        <Preference
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Amiibo Info Stats">
+        <android.support.v7.preference.Preference
             android:key="@string/settings_info_amiibos"
             android:title="Amiibos"/>
-        <Preference
+        <android.support.v7.preference.Preference
             android:key="@string/settings_info_game_series"
             android:title="Game Series"/>
-        <Preference
+        <android.support.v7.preference.Preference
             android:key="@string/settings_info_characters"
             android:title="Characters"/>
-        <Preference
+        <android.support.v7.preference.Preference
             android:key="@string/settings_info_amiibo_series"
             android:title="Amiibo Series"/>
-        <Preference
+        <android.support.v7.preference.Preference
             android:key="@string/settings_info_amiibo_types"
             android:title="Amiibo Types"/>
-    </PreferenceCategory>
-</PreferenceScreen>
+    </android.support.v7.preference.PreferenceCategory>
+</android.support.v7.preference.PreferenceScreen>

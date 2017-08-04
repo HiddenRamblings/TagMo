@@ -13,6 +13,8 @@ public class Amiibo implements Comparable<Amiibo> {
     public static int AMIIBO_MODEL_MASK = 0xFFFF0000;
     public static int UNKNOWN_MASK = 0x000000FF;
 
+    public static String AMIIBO_API_IMAGE_URL = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08X-%18X.png";
+
     public AmiiboManager manager;
     public final long id;
     public final String name;
@@ -87,6 +89,10 @@ public class Amiibo implements Comparable<Amiibo> {
 
     public static long hexToId(String value) {
         return Long.decode(value);
+    }
+
+    public String getImageUrl() {
+        return String.format(AMIIBO_API_IMAGE_URL, getHead(), getTail());
     }
 
     @Override

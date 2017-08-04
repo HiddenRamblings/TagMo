@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hiddenramblings.tagmo">
 
-    <uses-permission android:name="android.permission.BIND_NFC_SERVICE" />
-    <uses-permission android:name="android.permission.NFC" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BIND_NFC_SERVICE"/>
+    <uses-permission android:name="android.permission.NFC"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -15,27 +17,27 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity_">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".NfcActivity_"
-            android:launchMode="singleTop" />
-        <activity android:name=".EditorSSB_" />
-        <activity android:name=".EditorTP_" />
-        <activity android:name=".HexViewerActivity_" />
+            android:launchMode="singleTop"/>
+        <activity android:name=".EditorSSB_"/>
+        <activity android:name=".EditorTP_"/>
+        <activity android:name=".HexViewerActivity_"/>
         <activity
             android:name=".BrowserActivity_"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
+                android:resource="@xml/searchable"/>
         </activity>
         <activity
             android:name=".SettingsActivity_"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>

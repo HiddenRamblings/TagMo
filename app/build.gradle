@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 def AAVersion = '4.3.1'
+def AndroidSupportVersion = '26.0.0'
 
 buildscript {
     repositories {
@@ -60,8 +61,11 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:26.0.0'
-    compile 'com.android.support:recyclerview-v7:26.0.0'
+    compile "com.android.support:appcompat-v7:$AndroidSupportVersion"
+    compile "com.android.support:recyclerview-v7:$AndroidSupportVersion"
+    compile "com.android.support:design:$AndroidSupportVersion"
+    compile "com.android.support:preference-v7:$AndroidSupportVersion"
+    compile "com.android.support:preference-v14:$AndroidSupportVersion"
     annotationProcessor "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"
     annotationProcessor 'org.parceler:parceler:1.1.9'

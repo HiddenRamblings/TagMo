@@ -41,6 +41,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -436,7 +437,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void loadQRCode(String content) {
-        byte[] data = Base64.decode(content, Base64.DEFAULT);
+        byte[] data;
+        try {
+            data = Base64.decode(content, Base64.DEFAULT);
+            TagUtil.validateTag(data);
+        } catch (Exception e) {
+            Log.e(TAG, "QR Code base64 decode failure", e);
+            data = null;
+        }
+        if (data == null) {
+            try {
+                data = content.getBytes("ISO-8859-1");
+                TagUtil.validateTag(data);
+            } catch (Exception e) {
+                Log.e(TAG, "QR Code legacy decode failure", e);
+                data = null;
+            }
+        }
+
+        if (data == null) {
+            showToast("Failed to decode QR Code");
+            return;
+        }
+
         this.currentTagData = data;
         this.updateStatus();
     }

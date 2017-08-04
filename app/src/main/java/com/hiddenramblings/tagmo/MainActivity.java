@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -40,7 +41,6 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -399,14 +399,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        String content;
-        try {
-            content = new String(this.currentTagData, "ISO-8859-1");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            showToast("Failed to encode QR Code");
-            return;
-        }
+        String content = Base64.encodeToString(this.currentTagData, Base64.DEFAULT);
 
         Intent intent = new Intent("com.google.zxing.client.android.ENCODE");
         intent.putExtra("ENCODE_TYPE", "TEXT_TYPE");
@@ -443,14 +436,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void loadQRCode(String content) {
-        byte[] data;
-        try {
-            data = content.getBytes("ISO-8859-1");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            showToast("Failed to decode QR Code");
-            return;
-        }
+        byte[] data = Base64.decode(content, Base64.DEFAULT);
         this.currentTagData = data;
         this.updateStatus();
     }

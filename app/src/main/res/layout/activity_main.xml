@@ -14,37 +14,15 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin">
 
-        <TextView
-            android:id="@+id/txtUnfixedKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="Unfixed Key"/>
-
-        <TextView
-            android:id="@+id/txtNFC"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:gravity="end"
-            android:text="NFC"/>
-
-        <TextView
-            android:id="@+id/txtLockedKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/txtUnfixedKey"
-            android:text="Locked Key"/>
-
         <include
             android:id="@+id/amiiboInfoView"
             layout="@layout/amiibo_info_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/txtLockedKey"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"/>
+            android:layout_below="@+id/txtError"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="15dp" />
 
         <Button
             android:id="@+id/btnLoadTag"
@@ -174,6 +152,20 @@
             android:layout_alignParentRight="true"
             android:layout_below="@id/btnEditDataSSB"
             android:text="View Hex"/>
+
+        <TextView
+            android:id="@+id/txtError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="Error !"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@android:color/holo_red_dark"
+            android:textStyle="bold"
+            android:visibility="visible" />
 
     </RelativeLayout>
 </ScrollView>

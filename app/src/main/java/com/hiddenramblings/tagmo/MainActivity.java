@@ -25,6 +25,7 @@ import android.view.View;
 
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.journeyapps.barcodescanner.CaptureActivity;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -388,41 +389,21 @@ public class MainActivity extends AppCompatActivity {
 
         String content = Base64.encodeToString(this.currentTagData, Base64.DEFAULT);
 
-        Intent intent = new Intent("com.google.zxing.client.android.ENCODE");
-        intent.putExtra("ENCODE_TYPE", "TEXT_TYPE");
-        intent.putExtra("ENCODE_SHOW_CONTENTS", false);
+        Intent intent = new Intent(this, QRCodeActivity_.class);
         intent.putExtra("ENCODE_DATA", content);
-        startQRActivity(intent, -1);
+        this.startActivity(intent);
     }
 
     @Click(R.id.btnScanQRCode)
     void scanQRCode() {
-        Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+        Intent intent = new Intent(this, CaptureActivity.class);
         intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
         intent.putExtra("CHARACTER_SET", "ISO-8859-1");
-        startQRActivity(intent, SCAN_QR_CODE);
-    }
-
-    void startQRActivity(Intent intent, int resultCode) {
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            this.startActivityForResult(intent, resultCode);
-        } else {
-            new AlertDialog.Builder(this)
-                .setMessage("Barcode Scanner is required to use QR Codes. Would you like to install it from the Play Store?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
-                        Intent marketIntent = new Intent(Intent.ACTION_VIEW, marketUri);
-                        startActivity(marketIntent);
-                    }
-                })
-                .setNegativeButton("No", null)
-                .show();
-        }
+        this.startActivityForResult(intent, SCAN_QR_CODE);
     }
 
     void loadQRCode(String content) {
+        Log.d("loadQRCode", content);
         byte[] data;
         try {
             data = Base64.decode(content, Base64.DEFAULT);

@@ -57,12 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int EDIT_TAG = 0x103;
     private static final int SCAN_QR_CODE = 0x104;
 
-    @ViewById(R.id.txtLockedKey)
-    TextView txtLockedKey;
-    @ViewById(R.id.txtUnfixedKey)
-    TextView txtUnfixedKey;
-    @ViewById(R.id.txtNFC)
-    TextView txtNFC;
+    @ViewById(R.id.txtError)
+    TextView txtError;
 
     @ViewById(R.id.txtTagInfo)
     TextView txtTagInfo;
@@ -195,33 +191,20 @@ public class MainActivity extends AppCompatActivity {
         boolean hasUnfixed = this.keyManager.hasUnFixedKey();
         boolean hasKeys = hasFixed && hasUnfixed;
         boolean hasTag = currentTagData != null;
+        boolean hasError = !hasNfc || !nfcEnabled || !hasKeys;
 
         if (!hasNfc) {
-            txtNFC.setTextColor(Color.RED);
-            txtNFC.setText(R.string.nfc_unsupported);
+            txtError.setText(R.string.nfc_unsupported);
         } else if (!nfcEnabled) {
-            txtNFC.setTextColor(Color.RED);
-            txtNFC.setText(R.string.nfc_disabled);
-        } else {
-            txtNFC.setTextColor(Color.rgb(0x00, 0xAf, 0x00));
-            txtNFC.setText(R.string.nfc_enabled);
+            txtError.setText(R.string.nfc_disabled);
+        } else if (!hasKeys) {
+            txtError.setText("Missing keys!");
         }
 
-        if (hasFixed) {
-            txtLockedKey.setTextColor(Color.rgb(0x00, 0xAf, 0x00));
-            txtLockedKey.setText(R.string.fixed_key_found);
-        } else {
-            txtLockedKey.setTextColor(Color.RED);
-            txtLockedKey.setText(R.string.fixed_key_missing);
-        }
-
-        if (hasUnfixed) {
-            txtUnfixedKey.setTextColor(Color.rgb(0x00, 0xAf, 0x00));
-            txtUnfixedKey.setText(R.string.unfixed_key_found);
-        } else {
-            txtUnfixedKey.setTextColor(Color.RED);
-            txtUnfixedKey.setText(R.string.unfixed_key_missing);
-        }
+        if (hasError)
+            txtError.setVisibility(View.VISIBLE);
+        else
+            txtError.setVisibility(View.GONE);
 
         btnWriteTagAuto.setEnabled(nfcEnabled && hasKeys && hasTag);
         btnWriteTagRaw.setEnabled(nfcEnabled && hasTag);

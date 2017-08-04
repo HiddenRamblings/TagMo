@@ -1,171 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/container_scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <RelativeLayout
+    <TextView
+        android:id="@+id/txtError"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin">
-
-        <include
-            android:id="@+id/amiiboInfoView"
-            layout="@layout/amiibo_info_view"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Error !"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@android:color/holo_red_dark"
+        android:textStyle="bold"
+        android:visibility="visible" />
+    <ScrollView
+        android:id="@+id/container_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/txtError"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="15dp" />
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
 
-        <Button
-            android:id="@+id/btnLoadTag"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/amiiboInfoView"
-            android:text="Load Tag"/>
+            <include
+                android:id="@+id/amiiboInfoView"
+                layout="@layout/amiibo_info_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txtError"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="15dp" />
 
-        <Button
-            android:id="@+id/btnScanTag"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/amiiboInfoView"
-            android:text="Scan Tag"/>
+            <Button
+                android:id="@+id/btnLoadTag"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/amiiboInfoView"
+                android:text="Load Tag"/>
 
-        <Button
-            android:id="@+id/btnShowQRCode"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/btnLoadTag"
-            android:text="Show QR Code"/>
+            <Button
+                android:id="@+id/btnScanTag"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/amiiboInfoView"
+                android:text="Scan Tag"/>
 
-        <Button
-            android:id="@+id/btnScanQRCode"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/btnScanTag"
-            android:text="Scan QR Code"/>
+            <Button
+                android:id="@+id/btnShowQRCode"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/btnLoadTag"
+                android:text="Show QR Code"/>
 
-        <Button
-            android:id="@+id/btnWriteTagAuto"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/btnShowQRCode"
-            android:text="Write Tag (Auto)"/>
+            <Button
+                android:id="@+id/btnScanQRCode"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/btnScanTag"
+                android:text="Scan QR Code"/>
 
-        <Button
-            android:id="@+id/btnSaveTag"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/btnScanQRCode"
-            android:text="Save Tag"/>
+            <Button
+                android:id="@+id/btnWriteTagAuto"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/btnShowQRCode"
+                android:text="Write Tag (Auto)"/>
 
-        <Button
-            android:id="@+id/btnCreateTag"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:text="Create Tag*"
-            android:visibility="gone"/>
+            <Button
+                android:id="@+id/btnSaveTag"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/btnScanQRCode"
+                android:text="Save Tag"/>
 
-        <Button
-            android:id="@+id/btnWriteTagRaw"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/btnWriteTagAuto"
-            android:text="Write Tag (Raw)"/>
+            <Button
+                android:id="@+id/btnCreateTag"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:text="Create Tag*"
+                android:visibility="gone"/>
 
-        <Button
-            android:id="@+id/btnRestoreTag"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/btnSaveTag"
-            android:text="Restore Tag"/>
+            <Button
+                android:id="@+id/btnWriteTagRaw"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/btnWriteTagAuto"
+                android:text="Write Tag (Raw)"/>
 
-        <CheckBox
-            android:id="@+id/cbAutoSaveOnScan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/btnWriteTagRaw"
-            android:text="Auto save scanned tags"/>
+            <Button
+                android:id="@+id/btnRestoreTag"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:text="Restore Tag"
+                android:layout_alignBaseline="@+id/btnWriteTagRaw"
+                android:layout_alignBottom="@+id/btnWriteTagRaw"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
-        <CheckBox
-            android:id="@+id/cbNoIDValidate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/cbAutoSaveOnScan"
-            android:text="Allow restore to different tag"/>
+            <CheckBox
+                android:id="@+id/cbAutoSaveOnScan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Auto save scanned tags"
+                android:layout_below="@+id/btnWriteTagRaw"
+                android:layout_toRightOf="@+id/btnCreateTag"
+                android:layout_toEndOf="@+id/btnCreateTag" />
 
-        <Button
-            android:id="@+id/btnEditDataMii"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/cbNoIDValidate"
-            android:text="Edit Mii Data"
-            android:visibility="gone"/>
+            <CheckBox
+                android:id="@+id/cbNoIDValidate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Allow restore to different tag"
+                android:layout_below="@+id/cbAutoSaveOnScan"
+                android:layout_toRightOf="@+id/btnCreateTag"
+                android:layout_toEndOf="@+id/btnCreateTag" />
 
-        <Button
-            android:id="@+id/btnEditDataSSB"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/cbNoIDValidate"
-            android:text="Edit SSB Data"
-            android:visibility="gone"/>
+            <Button
+                android:id="@+id/btnEditDataMii"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/cbNoIDValidate"
+                android:text="Edit Mii Data"
+                android:visibility="gone"/>
 
-        <Button
-            android:id="@+id/btnEditDataTP"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/cbNoIDValidate"
-            android:text="@string/edit_tp_data"
-            android:visibility="gone"/>
+            <Button
+                android:id="@+id/btnEditDataSSB"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/cbNoIDValidate"
+                android:text="Edit SSB Data"
+                android:visibility="gone"/>
 
-        <Button
-            android:id="@+id/btnFixSig"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/cbNoIDValidate"
-            android:text="Fix Signatures"
-            android:visibility="gone"/>
+            <Button
+                android:id="@+id/btnEditDataTP"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/cbNoIDValidate"
+                android:text="@string/edit_tp_data"
+                android:visibility="gone"/>
 
-        <Button
-            android:id="@+id/btnViewHex"
-            android:layout_width="148dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/btnEditDataSSB"
-            android:text="View Hex"/>
+            <Button
+                android:id="@+id/btnFixSig"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/cbNoIDValidate"
+                android:text="Fix Signatures"
+                android:visibility="gone"/>
 
-        <TextView
-            android:id="@+id/txtError"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:text="Error !"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textColor="@android:color/holo_red_dark"
-            android:textStyle="bold"
-            android:visibility="visible" />
+            <Button
+                android:id="@+id/btnViewHex"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/btnEditDataSSB"
+                android:text="View Hex"/>
 
-    </RelativeLayout>
-</ScrollView>
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

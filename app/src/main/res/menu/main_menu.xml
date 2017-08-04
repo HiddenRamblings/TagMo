@@ -9,4 +9,7 @@
     <item
         android:id="@+id/mnu_dump_logcat"
         android:title="Dump Logcat (for bug reporting)" />
+    <item
+        android:id="@+id/mnu_write_raw"
+        android:title="Write Tag (Raw mode)" />
 </menu>

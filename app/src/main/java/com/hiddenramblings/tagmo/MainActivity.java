@@ -81,8 +81,6 @@ public class MainActivity extends AppCompatActivity {
     Button btnLoadTag;
     @ViewById(R.id.btnWriteTagAuto)
     Button btnWriteTagAuto;
-    @ViewById(R.id.btnWriteTagRaw)
-    Button btnWriteTagRaw;
     @ViewById(R.id.btnRestoreTag)
     Button btnRestoreTag;
     @ViewById(R.id.btnScanQRCode)
@@ -207,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
             txtError.setVisibility(View.GONE);
 
         btnWriteTagAuto.setEnabled(nfcEnabled && hasKeys && hasTag);
-        btnWriteTagRaw.setEnabled(nfcEnabled && hasTag);
         btnRestoreTag.setEnabled(nfcEnabled && hasTag);
         btnSaveTag.setEnabled(nfcEnabled && hasTag);
         btnShowQRCode.setEnabled(hasTag);
@@ -330,10 +327,14 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, NFC_ACTIVITY);
     }
 
-    @Click(R.id.btnWriteTagRaw)
+    @OptionsItem(R.id.mnu_write_raw)
     void writeToTagRaw() {
         if (this.currentTagData == null) {
             LogError("No tag loaded");
+            return;
+        }
+        if (!this.keyManager.hasBothKeys()) {
+            LogError("Keys not loaded");
             return;
         }
         Intent intent = new Intent(this, NfcActivity_.class);

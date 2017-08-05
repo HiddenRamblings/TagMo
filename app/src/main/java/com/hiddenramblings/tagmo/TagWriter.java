@@ -14,6 +14,9 @@ public class TagWriter {
     public static void writeToTagRaw(MifareUltralight mifare, byte[] tagData) throws Exception
     {
         validate(mifare, tagData);
+
+        validateBlankTag(mifare);
+
         try {
             byte[][] pages = TagUtil.splitPages(tagData);
             writePages(mifare, 3, 129, pages);
@@ -35,12 +38,25 @@ public class TagWriter {
         }
     }
 
+    private static void validateBlankTag(MifareUltralight mifare) throws Exception {
+        byte[] lockPage = mifare.readPages(0x02);
+        Log.d(TAG, Util.bytesToHex(lockPage));
+        if (lockPage[2] == (byte)0x0F && lockPage[3] == (byte)0xE0) {
+            Log.d(TAG, "locked");
+            throw new Exception("Tag already an amiibo. Use 'Restore Tag' to write data");
+        }
+        Log.d(TAG, "not locked");
+    }
+
     public static void writeToTagAuto(MifareUltralight mifare, byte[] tagData, KeyManager keyManager) throws Exception
     {
         tagData = adjustTag(keyManager, tagData, mifare);
 
         Log.d(TAG, Util.bytesToHex(tagData));
         validate(mifare, tagData);
+
+        validateBlankTag(mifare);
+
         try {
             byte[][] pages = TagUtil.splitPages(tagData);
             writePages(mifare, 3, 129, pages);

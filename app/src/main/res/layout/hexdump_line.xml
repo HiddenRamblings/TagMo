@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content" android:layout_width="wrap_content">
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:typeface="monospace"
-        android:textSize="10dip"
-        android:gravity="center_vertical"
-        android:singleLine="true"
-        android:maxLines="1"
-        android:textColor="@android:color/darker_gray"
-        />
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:singleLine="true"
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="right"
         android:maxLines="1"
+        android:padding="2dp"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="12sp"
         android:typeface="monospace"
-        android:textSize="10dip"
-        android:textColor="@android:color/black"
-        />
+        android:text="FF"/>
 </LinearLayout>

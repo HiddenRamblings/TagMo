@@ -4,11 +4,15 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
+import android.os.Build;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -223,6 +227,26 @@ public class NfcActivity extends AppCompatActivity {
         {
             showError("NFC support not detected.");
             return;
+        }
+
+        if (!nfcAdapter.isEnabled()) {
+            showError("NFC Disabled.");
+            new AlertDialog.Builder(this)
+                .setMessage("NFC adapter is currently disabled. Enable NFC?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                            startActivity(intent);
+                        } else {
+                            Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                            startActivity(intent);
+                        }
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
         }
 
         //monitor nfc status

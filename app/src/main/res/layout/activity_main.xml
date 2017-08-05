@@ -34,9 +34,10 @@
                 layout="@layout/amiibo_info_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
+                android:layout_below="@+id/txtError"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="15dp" />
 
             <Button
                 android:id="@+id/btnLoadTag"
@@ -94,11 +95,20 @@
                 android:visibility="gone"/>
 
             <Button
+                android:id="@+id/btnWriteTagRaw"
+                android:layout_width="148dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/btnWriteTagAuto"
+                android:text="Write Tag (Raw)"/>
+
+            <Button
                 android:id="@+id/btnRestoreTag"
                 android:layout_width="148dp"
                 android:layout_height="wrap_content"
                 android:text="Restore Tag"
-                android:layout_below="@+id/btnWriteTagAuto"
+                android:layout_alignBaseline="@+id/btnWriteTagRaw"
+                android:layout_alignBottom="@+id/btnWriteTagRaw"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
 
@@ -107,9 +117,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Auto save scanned tags"
-                android:layout_below="@+id/btnRestoreTag"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_below="@+id/btnWriteTagRaw"
+                android:layout_toRightOf="@+id/btnCreateTag"
+                android:layout_toEndOf="@+id/btnCreateTag" />
 
             <CheckBox
                 android:id="@+id/cbNoIDValidate"

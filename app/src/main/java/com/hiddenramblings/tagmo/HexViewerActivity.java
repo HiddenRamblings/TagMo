@@ -3,7 +3,7 @@ package com.hiddenramblings.tagmo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,7 +25,7 @@ public class HexViewerActivity extends AppCompatActivity {
     private static final String TAG = "HexViewerActivity";
 
     @ViewById(R.id.gridView)
-    RecyclerView gridView;
+    RecyclerView listView;
     HexDumpAdapter adapter;
 
     @AfterViews
@@ -47,76 +47,68 @@ public class HexViewerActivity extends AppCompatActivity {
     @UiThread
     void setTagData(byte[] data) {
         adapter = new HexDumpAdapter(data);
-        GridLayoutManager glm = new GridLayoutManager(this, 18);
-        glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if (position == 0)
-                    return 2;
-
-                switch (adapter.getItemViewType(position)) {
-                    case HexDumpAdapter.VIEW_ROW_HEADER:
-                        return 2;
-                    default:
-                        return 1;
-                }
-            }
-        });
-        gridView.setLayoutManager(glm);
-        gridView.setAdapter(adapter);
+        listView.setLayoutManager(new LinearLayoutManager(this));
+        listView.setAdapter(adapter);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         View view;
-        TextView textView;
+        TextView[] textView = new TextView[17];
 
         ViewHolder(View view) {
             super(view);
 
             this.view = view;
-            this.textView = view.findViewById(R.id.textView1);
+            this.textView[0] = view.findViewById(R.id.textViewRow);
+            this.textView[1] = view.findViewById(R.id.textView1);
+            this.textView[2] = view.findViewById(R.id.textView2);
+            this.textView[3] = view.findViewById(R.id.textView3);
+            this.textView[4] = view.findViewById(R.id.textView4);
+            this.textView[5] = view.findViewById(R.id.textView5);
+            this.textView[6] = view.findViewById(R.id.textView6);
+            this.textView[7] = view.findViewById(R.id.textView7);
+            this.textView[8] = view.findViewById(R.id.textView8);
+            this.textView[9] = view.findViewById(R.id.textView9);
+            this.textView[10] = view.findViewById(R.id.textView10);
+            this.textView[11] = view.findViewById(R.id.textView11);
+            this.textView[12] = view.findViewById(R.id.textView12);
+            this.textView[13] = view.findViewById(R.id.textView13);
+            this.textView[14] = view.findViewById(R.id.textView14);
+            this.textView[15] = view.findViewById(R.id.textView15);
+            this.textView[16] = view.findViewById(R.id.textView16);
         }
     }
 
     class HexDumpAdapter extends RecyclerView.Adapter<ViewHolder> {
-        public static final int VIEW_HEADER = 0;
-        public static final int VIEW_COLUMN_HEADER = 1;
-        public static final int VIEW_ROW_HEADER = 2;
-        public static final int VIEW_HEX = 3;
-
         public static final int HEX = 16;
         public static final int COLUMNS = HEX + 1;
 
-        private final List<String> data;
+        private final List<String[]> data;
 
         public HexDumpAdapter(byte[] data) {
             this.data = new ArrayList<>();
 
-            int size = data.length + COLUMNS + (int) Math.floor(data.length / HEX);
-            for (int i = 0; i < size; i++) {
-                String format;
-                int value;
-                switch (getItemViewType(i)) {
-                    case VIEW_HEADER:
-                        format = "%02X";
-                        value = 0;
-                        break;
-                    case VIEW_COLUMN_HEADER:
-                        format = "%02X";
-                        value = i - 1;
-                        break;
-                    case VIEW_ROW_HEADER:
-                        format = "%04X";
-                        value = (((int) Math.floor(i / COLUMNS)) - 1) * HEX;
-                        break;
-                    case VIEW_HEX:
-                        format = "%02X";
-                        value = Byte.valueOf(data[i - COLUMNS - ((int) Math.floor(i / HEX))]).intValue() & 0xFF;
-                        break;
-                    default:
-                        throw new RuntimeException();
+            for (int i = 0; i < (Math.floor(data.length) / HEX) + 1; i++) {
+                String[] row = new String[COLUMNS];
+                for (int j = 0; j < COLUMNS; j++) {
+                    String text;
+                    if (i == 0 && j == 0) {
+                        text = null;
+                    } else if (i == 0) {
+                        text = String.format("%02X", j - 1);
+                    } else if (j == 0) {
+                        text = String.format("%04X", (i - 1) * HEX);
+                    } else {
+                        int index = ((i - 1) * HEX) + (j - 1);
+                        if (index >= data.length) {
+                            text = null;
+                        } else {
+                            text = String.format("%02X", Byte.valueOf(data[index]).intValue() & 0xFF);
+                        }
+                    }
+                    row[j] = text;
                 }
-                this.data.add(String.format(format, value));
+                this.data.add(row);
             }
             this.setHasStableIds(true);
         }
@@ -131,53 +123,34 @@ public class HexViewerActivity extends AppCompatActivity {
             return i;
         }
 
-        public String getItem(int i) {
+        public String[] getItem(int i) {
             return this.data.get(i);
         }
 
         @Override
-        public int getItemViewType(int position) {
-            if (position == 0)
-                return VIEW_HEADER;
-            else if (position < COLUMNS)
-                return VIEW_COLUMN_HEADER;
-            else if (position % COLUMNS == 0)
-                return VIEW_ROW_HEADER;
-            else
-                return VIEW_HEX;
-        }
-
-        @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            ViewHolder viewHolder = new ViewHolder(LayoutInflater
+            return new ViewHolder(LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.hexdump_line, parent, false));
-
-            if (viewType == VIEW_HEX) {
-                viewHolder.textView.setTypeface(null, Typeface.BOLD);
-                viewHolder.textView.setTextColor(getResources().getColor(android.R.color.black));
-            } else {
-                viewHolder.textView.setTypeface(null, Typeface.NORMAL);
-                viewHolder.textView.setTextColor(getResources().getColor(android.R.color.darker_gray));
-            }
-
-            return viewHolder;
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            int i = 0;
-            if (Math.floor(position / COLUMNS) % 2 == 1) {
-                i += 1;
-            }
-            if (i == 0) {
+            if (position % 2 == 0) {
                 holder.view.setBackgroundColor(Color.WHITE);
-            } else if (i == 1) {
+            } else {
                 holder.view.setBackgroundColor(Color.LTGRAY);
-            } else if (i == 2) {
-                holder.view.setBackgroundColor(Color.DKGRAY);
             }
-            holder.textView.setText(getItem(position));
+
+            String[] row = getItem(position);
+            for (int i = 0; i < holder.textView.length; i++) {
+                if (row[i] == null) {
+                    holder.textView[i].setVisibility(View.INVISIBLE);
+                } else {
+                    holder.textView[i].setText(row[i]);
+                    holder.textView[i].setVisibility(View.VISIBLE);
+                }
+            }
         }
     }
 }

@@ -163,30 +163,28 @@ public class HexViewerActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            if (position % 2 == 0) {
-                holder.view.setBackgroundColor(Color.WHITE);
-            } else {
-                holder.view.setBackgroundColor(Color.LTGRAY);
-            }
-
             String[] row = getItem(position);
             for (int i = 0; i < holder.textView.length; i++) {
                 TextView view = holder.textView[i];
                 if (row[i] == null) {
                     view.setVisibility(View.INVISIBLE);
                 } else {
-                    if (position == 0)
-                        view.setTypeface(Typeface.MONOSPACE, Typeface.NORMAL);
-                    else if (i > 0 && position > 0) {
+                    int textStyle = Typeface.BOLD;
+                    int color = getResources().getColor(android.R.color.background_light);
+                    if (position == 0) {
+                        textStyle = Typeface.NORMAL;
+                    } else if (i > 0 && position > 0) {
                         int pos = ((position - 1) * HEX) + (i-1);
                         for(TagMap t: tagMap) {
                             if (t.startPosition <= pos) {
-                                view.setBackgroundColor(t.color);
+                                color = t.color;
                                 break;
                             }
                         }
                     }
                     view.setText(row[i]);
+                    view.setTypeface(Typeface.MONOSPACE, textStyle);
+                    view.setBackgroundColor(color);
                     view.setVisibility(View.VISIBLE);
                 }
             }

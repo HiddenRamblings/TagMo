@@ -74,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     @ViewById(R.id.txtAmiiboSeries)
     TextView txtAmiiboSeries;
 
+    @ViewById(R.id.btnScanTag)
+    Button btnScanTag;
     @ViewById(R.id.btnSaveTag)
     Button btnSaveTag;
     @ViewById(R.id.btnLoadTag)
@@ -203,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
         else
             txtError.setVisibility(View.GONE);
 
+        btnScanTag.setEnabled(nfcEnabled);
         btnWriteTagAuto.setEnabled(nfcEnabled && hasKeys && hasTag);
         btnRestoreTag.setEnabled(nfcEnabled && hasTag);
         btnSaveTag.setEnabled(nfcEnabled && hasTag);

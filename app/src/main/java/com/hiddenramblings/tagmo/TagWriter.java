@@ -63,9 +63,22 @@ public class TagWriter {
     }
 
     public static void restoreTag(MifareUltralight mifare, byte[] tagData, boolean ignoreUid, KeyManager keyManager) throws Exception {
-        if (ignoreUid)
-            tagData = adjustTag(keyManager, tagData, mifare);
-        validate(mifare, tagData);
+        if (!ignoreUid)
+            validate(mifare, tagData);
+        else {
+            byte[] liveData = readFromTag(mifare);
+            if (!compareRange(liveData, tagData, 0, 9)) {
+                //restoring to different tag: transplant mii and appdata to livedata and re-encrypt
+
+                liveData = TagUtil.decrypt(keyManager, liveData);
+                tagData = TagUtil.decrypt(keyManager, tagData);
+
+                System.arraycopy(tagData, 0x08, liveData, 0x08, 0x1B4-0x08);
+
+                tagData = TagUtil.encrypt(keyManager, liveData);
+            }
+        }
+
         doAuth(mifare);
         byte[][] pages = TagUtil.splitPages(tagData);
         writePages(mifare, 4, 12, pages);

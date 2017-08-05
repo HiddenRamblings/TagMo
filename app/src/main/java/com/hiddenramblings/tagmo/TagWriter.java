@@ -109,10 +109,20 @@ public class TagWriter {
         return TagUtil.patchUid(pages, tagData, keyManager, true);
     }
 
-    static void validate(MifareUltralight mifare, byte[] tagData) throws Exception
-    {
+    static void validate(MifareUltralight mifare, byte[] tagData) throws Exception {
         if (tagData == null)
             throw new Exception("Cannot validate: no source data loaded to compare.");
+
+        try {
+            byte[] versionInfo = mifare.transceive(new byte[]{(byte) 0x60});
+            if (versionInfo == null || versionInfo.length != 8)
+                throw new Exception("Tag version error");
+            if (versionInfo[0x02] != (byte)0x04 || versionInfo[0x06] != (byte)0x11)
+                throw new Exception("Tag is not an NTAG215");
+        } catch (Exception e) {
+            Log.e(TAG, "version information error", e);
+            throw e;
+        }
 
         byte[] pages = mifare.readPages(0);
         if (pages == null || pages.length != TagUtil.PAGE_SIZE * 4)

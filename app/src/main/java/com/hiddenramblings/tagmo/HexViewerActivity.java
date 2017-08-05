@@ -17,20 +17,17 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @EActivity(R.layout.activity_hex_viewer)
 public class HexViewerActivity extends AppCompatActivity {
     private static final String TAG = "HexViewerActivity";
 
-
     static class TagMap {
-        int startPosition;
+        int index;
         int color;
         String label;
-        TagMap(int startPosition, int color, String label) {
-            this.startPosition = startPosition;
+
+        TagMap(int index, int color, String label) {
+            this.index = index;
             this.color = color;
             this.label = label;
         }
@@ -81,7 +78,7 @@ public class HexViewerActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         TextView[] textView = new TextView[17];
 
@@ -109,32 +106,64 @@ public class HexViewerActivity extends AppCompatActivity {
         }
     }
 
-    class HexDumpAdapter extends RecyclerView.Adapter<ViewHolder> {
+    public static class HexItem {
+        String text;
+        int textStyle;
+        int backgroundColor;
+
+        public HexItem(String text, int textStyle, int backgroundColor) {
+            this.text = text;
+            this.textStyle = textStyle;
+            this.backgroundColor = backgroundColor;
+        }
+
+        public HexItem(String text, int backgroundColor) {
+            this(text, Typeface.BOLD, backgroundColor);
+        }
+    }
+
+    public static class HexHeader extends HexItem {
+        public HexHeader(String text, int backgroundColor) {
+            super(text, Typeface.NORMAL, backgroundColor);
+        }
+    }
+
+    static class HexDumpAdapter extends RecyclerView.Adapter<ViewHolder> {
         public static final int HEX = 16;
 
-        private final String[][] data;
+        private final HexItem[][] data;
 
         public HexDumpAdapter(byte[] tagData) {
-            this.data = new String[((int)Math.floor(tagData.length) / HEX) + 2][HEX + 1];
-            for (int i = -1; i < this.data.length - 1; i++) {
-                String[] row = this.data[i + 1];
-                for (int j = -1; j < row.length - 1; j++) {
-                    String text;
-                    if (i == -1 && j == -1) {
-                        text = null;
-                    } else if (i == -1) {
-                        text = String.format("%02X", j);
-                    } else if (j == -1) {
-                        text = String.format("%04X", i * HEX);
+            int rowCount = ((int)Math.floor(tagData.length) / HEX) + 2;
+
+            this.data = new HexItem[rowCount][HEX + 1];
+            for (int rowIndex = -1; rowIndex < this.data.length - 1; rowIndex++) {
+                HexItem[] row = this.data[rowIndex + 1];
+                for (int columnIndex = -1; columnIndex < row.length - 1; columnIndex++) {
+                    HexItem hexItem;
+                    if (rowIndex == -1 && columnIndex == -1) {
+                        hexItem = null;
+                    } else if (rowIndex == -1) {
+                        hexItem = new HexHeader(String.format("%02X", columnIndex), Color.WHITE);
+                    } else if (columnIndex == -1) {
+                        hexItem = new HexHeader(String.format("%04X", rowIndex * HEX), Color.WHITE);
                     } else {
-                        int index = (i * HEX) + j;
+                        int index = (rowIndex * HEX) + columnIndex;
                         if (index >= tagData.length) {
-                            text = null;
+                            hexItem = null;
                         } else {
-                            text = String.format("%02X", Byte.valueOf(tagData[index]).intValue() & 0xFF);
+                            String text = String.format("%02X", Byte.valueOf(tagData[index]).intValue() & 0xFF);
+                            int color = Color.WHITE;
+                            for (TagMap t: tagMap) {
+                                if (t.index <= index) {
+                                    color = t.color;
+                                    break;
+                                }
+                            }
+                            hexItem = new HexItem(text, color);
                         }
                     }
-                    row[j + 1] = text;
+                    row[columnIndex + 1] = hexItem;
                 }
             }
             this.setHasStableIds(true);
@@ -150,7 +179,7 @@ public class HexViewerActivity extends AppCompatActivity {
             return i;
         }
 
-        public String[] getItem(int i) {
+        public HexItem[] getItem(int i) {
             return this.data[i];
         }
 
@@ -163,28 +192,16 @@ public class HexViewerActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            String[] row = getItem(position);
+            HexItem[] row = getItem(position);
             for (int i = 0; i < holder.textView.length; i++) {
+                HexItem hexItem = row[i];
                 TextView view = holder.textView[i];
-                if (row[i] == null) {
+                if (hexItem == null) {
                     view.setVisibility(View.INVISIBLE);
                 } else {
-                    int textStyle = Typeface.BOLD;
-                    int color = getResources().getColor(android.R.color.background_light);
-                    if (position == 0) {
-                        textStyle = Typeface.NORMAL;
-                    } else if (i > 0 && position > 0) {
-                        int pos = ((position - 1) * HEX) + (i-1);
-                        for(TagMap t: tagMap) {
-                            if (t.startPosition <= pos) {
-                                color = t.color;
-                                break;
-                            }
-                        }
-                    }
-                    view.setText(row[i]);
-                    view.setTypeface(Typeface.MONOSPACE, textStyle);
-                    view.setBackgroundColor(color);
+                    view.setText(hexItem.text);
+                    view.setTypeface(Typeface.MONOSPACE, hexItem.textStyle);
+                    view.setBackgroundColor(hexItem.backgroundColor);
                     view.setVisibility(View.VISIBLE);
                 }
             }

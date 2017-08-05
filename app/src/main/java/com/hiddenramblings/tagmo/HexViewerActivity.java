@@ -24,6 +24,36 @@ import java.util.List;
 public class HexViewerActivity extends AppCompatActivity {
     private static final String TAG = "HexViewerActivity";
 
+
+    static class TagMap {
+        int startPosition;
+        int color;
+        String label;
+        TagMap(int startPosition, int color, String label) {
+            this.startPosition = startPosition;
+            this.color = color;
+            this.label = label;
+        }
+    }
+
+    //positions must be sorted in descending order to facilitate lookup
+    static TagMap[] tagMap = new TagMap[] {
+        new TagMap(0x1E4, Color.LTGRAY, "Crypto Seed"),
+        new TagMap(0x1DC, Color.WHITE, "Char. ID"),
+        new TagMap(0x1D4, Color.RED, "NTAG UID"),
+        new TagMap(0x1B4, Color.LTGRAY, "Tag HMAC"),
+        new TagMap(0xDC, Color.CYAN, "App Data"),
+        new TagMap(0xBC, Color.LTGRAY, "Hash"),
+        new TagMap(0xAC, Color.GRAY, "App ID"),
+        new TagMap(0x4C, Color.GREEN, "Mii"),
+        new TagMap(0x38, Color.BLUE, "Nickname"),
+        new TagMap(0x34, Color.YELLOW, "Console #"),
+        new TagMap(0x28, Color.YELLOW, "Timestamp/Counter"),
+        new TagMap(0x08, Color.LTGRAY, "Data HMAC"),
+        new TagMap(0x00, Color.GRAY, "Lock/CC"),
+    };
+
+
     @ViewById(R.id.gridView)
     RecyclerView listView;
     HexDumpAdapter adapter;
@@ -141,11 +171,23 @@ public class HexViewerActivity extends AppCompatActivity {
 
             String[] row = getItem(position);
             for (int i = 0; i < holder.textView.length; i++) {
+                TextView view = holder.textView[i];
                 if (row[i] == null) {
-                    holder.textView[i].setVisibility(View.INVISIBLE);
+                    view.setVisibility(View.INVISIBLE);
                 } else {
-                    holder.textView[i].setText(row[i]);
-                    holder.textView[i].setVisibility(View.VISIBLE);
+                    if (position == 0)
+                        view.setTypeface(Typeface.MONOSPACE, Typeface.NORMAL);
+                    else if (i > 0 && position > 0) {
+                        int pos = ((position - 1) * HEX) + (i-1);
+                        for(TagMap t: tagMap) {
+                            if (t.startPosition <= pos) {
+                                view.setBackgroundColor(t.color);
+                                break;
+                            }
+                        }
+                    }
+                    view.setText(row[i]);
+                    view.setVisibility(View.VISIBLE);
                 }
             }
         }

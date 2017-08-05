@@ -81,41 +81,38 @@ public class HexViewerActivity extends AppCompatActivity {
 
     class HexDumpAdapter extends RecyclerView.Adapter<ViewHolder> {
         public static final int HEX = 16;
-        public static final int COLUMNS = HEX + 1;
 
-        private final List<String[]> data;
+        private final String[][] data;
 
-        public HexDumpAdapter(byte[] data) {
-            this.data = new ArrayList<>();
-
-            for (int i = 0; i < (Math.floor(data.length) / HEX) + 1; i++) {
-                String[] row = new String[COLUMNS];
-                for (int j = 0; j < COLUMNS; j++) {
+        public HexDumpAdapter(byte[] tagData) {
+            this.data = new String[((int)Math.floor(tagData.length) / HEX) + 2][HEX + 1];
+            for (int i = -1; i < this.data.length - 1; i++) {
+                String[] row = this.data[i + 1];
+                for (int j = -1; j < row.length - 1; j++) {
                     String text;
-                    if (i == 0 && j == 0) {
+                    if (i == -1 && j == -1) {
                         text = null;
-                    } else if (i == 0) {
-                        text = String.format("%02X", j - 1);
-                    } else if (j == 0) {
-                        text = String.format("%04X", (i - 1) * HEX);
+                    } else if (i == -1) {
+                        text = String.format("%02X", j);
+                    } else if (j == -1) {
+                        text = String.format("%04X", i * HEX);
                     } else {
-                        int index = ((i - 1) * HEX) + (j - 1);
-                        if (index >= data.length) {
+                        int index = (i * HEX) + j;
+                        if (index >= tagData.length) {
                             text = null;
                         } else {
-                            text = String.format("%02X", Byte.valueOf(data[index]).intValue() & 0xFF);
+                            text = String.format("%02X", Byte.valueOf(tagData[index]).intValue() & 0xFF);
                         }
                     }
-                    row[j] = text;
+                    row[j + 1] = text;
                 }
-                this.data.add(row);
             }
             this.setHasStableIds(true);
         }
 
         @Override
         public int getItemCount() {
-            return data.size();
+            return data.length;
         }
 
         @Override
@@ -124,7 +121,7 @@ public class HexViewerActivity extends AppCompatActivity {
         }
 
         public String[] getItem(int i) {
-            return this.data.get(i);
+            return this.data[i];
         }
 
         @Override

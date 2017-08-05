@@ -106,8 +106,9 @@ public class Util {
         AmiiboManager amiiboManager = null;
         try {
             amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
+        } catch (FileNotFoundException e) {
         } catch (IOException | JSONException | ParseException e) {
-            e.printStackTrace();
+            Log.e(TAG, "amiibo parse error", e);
         }
         if (amiiboManager == null) {
             AssetManager assetManager = context.getAssets();

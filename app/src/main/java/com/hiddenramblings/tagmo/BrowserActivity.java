@@ -265,7 +265,6 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
                     TagUtil.validateTag(data);
                     amiiboFiles.add(new AmiiboFile(file.getAbsolutePath(), TagUtil.amiiboIdFromTag(data)));
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         }

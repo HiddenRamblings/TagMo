@@ -1,37 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<HorizontalScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.hiddenramblings.tagmo.HexViewerActivity">
+    android:layout_height="match_parent">
 
-
-    <ListView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/gridView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/listView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="     00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F"
-        android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/listView"
-        android:layout_alignEnd="@+id/listView"
-        android:typeface="monospace"
-        android:textSize="10dip"
-        android:gravity="center_vertical"
-        android:singleLine="true"
-        android:maxLines="1"
-        android:textColor="@android:color/darker_gray" />
-</RelativeLayout>
+        android:layout_height="wrap_content" />
+</HorizontalScrollView>

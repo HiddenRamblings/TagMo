@@ -134,7 +134,7 @@ public class HexViewerActivity extends AppCompatActivity {
         private final HexItem[][] data;
 
         public HexDumpAdapter(byte[] tagData) {
-            int rowCount = ((int)Math.floor(tagData.length) / HEX) + 2;
+            int rowCount = (int)Math.floor(tagData.length / HEX) + 2;
 
             this.data = new HexItem[rowCount][HEX + 1];
             for (int rowIndex = -1; rowIndex < this.data.length - 1; rowIndex++) {

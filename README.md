@@ -42,7 +42,7 @@ TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC
 # Credits
 This app is a result of work by many others. Thanks go out to (In alphabetical order):
 
-* _Tim_ - The originial idea
+* \_Tim\_ - The originial idea
 * 1RedOne - support/readme
 * azsde - Bug fixes/maintenance
 * Bombastisch - support and motivation

@@ -11,9 +11,9 @@ import java.io.IOException;
 public class TagWriter {
     private static final String TAG = "TagWriter";
 
-    public static void writeToTagRaw(MifareUltralight mifare, byte[] tagData) throws Exception
+    public static void writeToTagRaw(MifareUltralight mifare, byte[] tagData, boolean validateNtag) throws Exception
     {
-        validate(mifare, tagData);
+        validate(mifare, tagData, validateNtag);
 
         validateBlankTag(mifare);
 
@@ -48,12 +48,12 @@ public class TagWriter {
         Log.d(TAG, "not locked");
     }
 
-    public static void writeToTagAuto(MifareUltralight mifare, byte[] tagData, KeyManager keyManager) throws Exception
+    public static void writeToTagAuto(MifareUltralight mifare, byte[] tagData, KeyManager keyManager, boolean validateNtag) throws Exception
     {
         tagData = adjustTag(keyManager, tagData, mifare);
 
         Log.d(TAG, Util.bytesToHex(tagData));
-        validate(mifare, tagData);
+        validate(mifare, tagData, validateNtag);
 
         validateBlankTag(mifare);
 
@@ -78,9 +78,9 @@ public class TagWriter {
         }
     }
 
-    public static void restoreTag(MifareUltralight mifare, byte[] tagData, boolean ignoreUid, KeyManager keyManager) throws Exception {
+    public static void restoreTag(MifareUltralight mifare, byte[] tagData, boolean ignoreUid, KeyManager keyManager, boolean validateNtag) throws Exception {
         if (!ignoreUid)
-            validate(mifare, tagData);
+            validate(mifare, tagData, validateNtag);
         else {
             byte[] liveData = readFromTag(mifare);
             if (!compareRange(liveData, tagData, 0, 9)) {
@@ -109,19 +109,21 @@ public class TagWriter {
         return TagUtil.patchUid(pages, tagData, keyManager, true);
     }
 
-    static void validate(MifareUltralight mifare, byte[] tagData) throws Exception {
+    static void validate(MifareUltralight mifare, byte[] tagData, boolean validateNtag) throws Exception {
         if (tagData == null)
             throw new Exception("Cannot validate: no source data loaded to compare.");
 
-        try {
-            byte[] versionInfo = mifare.transceive(new byte[]{(byte) 0x60});
-            if (versionInfo == null || versionInfo.length != 8)
-                throw new Exception("Tag version error");
-            if (versionInfo[0x02] != (byte)0x04 || versionInfo[0x06] != (byte)0x11)
-                throw new Exception("Tag is not an NTAG215");
-        } catch (Exception e) {
-            Log.e(TAG, "version information error", e);
-            throw e;
+        if (validateNtag) {
+            try {
+                byte[] versionInfo = mifare.transceive(new byte[]{(byte) 0x60});
+                if (versionInfo == null || versionInfo.length != 8)
+                    throw new Exception("Tag version error");
+                if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
+                    throw new Exception("Tag is not an NTAG215");
+            } catch (Exception e) {
+                Log.e(TAG, "version information error", e);
+                throw e;
+            }
         }
 
         byte[] pages = mifare.readPages(0);

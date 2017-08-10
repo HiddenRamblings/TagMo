@@ -14,6 +14,13 @@
             android:title="Enable Amiibo File Browser"/>
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Tag Validation">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/settings_enable_tag_type_validation"
+            android:title="Enable NTAG215 validation"/>
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Amiibo Info">
         <Preference
             android:key="@string/settings_import_info"

@@ -27,6 +27,7 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 @EActivity(R.layout.activity_nfc)
 public class NfcActivity extends AppCompatActivity {
@@ -51,6 +52,9 @@ public class NfcActivity extends AppCompatActivity {
     ImageView imgNfcBar;
     @ViewById(R.id.imgNfcCircle)
     ImageView imgNfcCircle;
+
+    @Pref
+    Preferences_ prefs;
 
     NfcAdapter nfcAdapter;
     KeyManager keyManager;
@@ -162,7 +166,7 @@ public class NfcActivity extends AppCompatActivity {
                         data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
                         if (data == null)
                             throw new Exception("No data to write");
-                        TagWriter.writeToTagRaw(mifare, data);
+                        TagWriter.writeToTagRaw(mifare, data, prefs.enableTagTypeValidation().get());
                         resultCode = Activity.RESULT_OK;
                         showToast("Done");
                         break;
@@ -170,7 +174,7 @@ public class NfcActivity extends AppCompatActivity {
                         data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
                         if (data == null)
                             throw new Exception("No data to write");
-                        TagWriter.writeToTagAuto(mifare, data, this.keyManager);
+                        TagWriter.writeToTagAuto(mifare, data, this.keyManager, prefs.enableTagTypeValidation().get());
                         resultCode = Activity.RESULT_OK;
                         showToast("Done");
                         break;
@@ -179,7 +183,7 @@ public class NfcActivity extends AppCompatActivity {
                         boolean ignoreUid = commandIntent.getBooleanExtra(EXTRA_IGNORE_TAG_ID, false);
                         if (data == null)
                             throw new Exception("No data to write");
-                        TagWriter.restoreTag(mifare, data, ignoreUid, this.keyManager);
+                        TagWriter.restoreTag(mifare, data, ignoreUid, this.keyManager, prefs.enableTagTypeValidation().get());
                         resultCode = Activity.RESULT_OK;
                         showToast("Done");
                         break;

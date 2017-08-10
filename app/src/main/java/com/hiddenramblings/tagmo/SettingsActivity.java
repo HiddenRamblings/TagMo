@@ -58,6 +58,8 @@ public class SettingsActivity extends PreferenceActivity {
     Preference key;
     @PreferenceByKey(R.string.settings_enable_amiibo_browser)
     CheckBoxPreference enableAmiiboBrowser;
+    @PreferenceByKey(R.string.settings_enable_tag_type_validation)
+    CheckBoxPreference enableTagTypeValidation;
     @PreferenceByKey(R.string.settings_info_amiibos)
     Preference amiiboStats;
     @PreferenceByKey(R.string.settings_info_game_series)
@@ -235,6 +237,11 @@ public class SettingsActivity extends PreferenceActivity {
     @PreferenceClick(R.string.settings_enable_amiibo_browser)
     void onEnableAmiiboBrowserClicked() {
         prefs.enableAmiiboBrowser().put(enableAmiiboBrowser.isChecked());
+    }
+
+    @PreferenceClick(R.string.settings_enable_tag_type_validation)
+    void onEnableTagTypeValidationClicked() {
+        prefs.enableTagTypeValidation().put(enableTagTypeValidation.isChecked());
     }
 
     @PreferenceClick(R.string.settings_info_amiibos)

@@ -21,4 +21,7 @@ public interface Preferences {
 
     @DefaultBoolean(keyRes=R.string.settings_enable_amiibo_browser, value=false)
     boolean enableAmiiboBrowser();
+
+    @DefaultBoolean(keyRes=R.string.settings_enable_tag_type_validation, value=true)
+    boolean enableTagTypeValidation();
 }

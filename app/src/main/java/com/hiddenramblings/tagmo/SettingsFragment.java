@@ -466,11 +466,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             amiiboSeriesCount = String.valueOf(amiiboManager.amiiboSeries.size());
             amiiboTypeCount = String.valueOf(amiiboManager.amiiboTypes.size());
         }
-        this.amiiboStats.setSummary(amiiboCount);
-        this.gameSeriesStats.setSummary(gameSeriesCount);
-        this.characterStats.setSummary(characterCount);
-        this.amiiboSeriesStats.setSummary(amiiboSeriesCount);
-        this.amiiboTypeStats.setSummary(amiiboTypeCount);
+        this.amiiboStats.setSummary("Total: " + amiiboCount);
+        this.gameSeriesStats.setSummary("Total: " + gameSeriesCount);
+        this.characterStats.setSummary("Total: " + characterCount);
+        this.amiiboSeriesStats.setSummary("Total: " + amiiboSeriesCount);
+        this.amiiboTypeStats.setSummary("Total: " + amiiboTypeCount);
     }
 
     @Background

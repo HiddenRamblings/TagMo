@@ -923,10 +923,10 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
                 textView.setText("");
             } else if (text.length() == 0) {
                 textView.setText("Unknown");
-                textView.setTextColor(Color.RED);
+                textView.setEnabled(false);
             } else {
                 textView.setText(text);
-                textView.setTextColor(textView.getTextColors().getDefaultColor());
+                textView.setEnabled(true);
             }
         }
 

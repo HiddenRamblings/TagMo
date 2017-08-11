@@ -102,35 +102,31 @@ public class Util {
         }
     }
 
+    public static AmiiboManager loadDefaultAmiiboManager(Context context) throws IOException, JSONException, ParseException {
+        AssetManager assetManager = context.getAssets();
+        return AmiiboManager.parse(assetManager.open(AMIIBO_DATABASE_FILE));
+    }
+
     public static AmiiboManager loadAmiiboManager(Context context) throws IOException, JSONException, ParseException {
         AmiiboManager amiiboManager = null;
         try {
             amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
-        } catch (FileNotFoundException e) {
         } catch (IOException | JSONException | ParseException e) {
             Log.e(TAG, "amiibo parse error", e);
         }
         if (amiiboManager == null) {
-            AssetManager assetManager = context.getAssets();
-            amiiboManager = AmiiboManager.parse(assetManager.open(AMIIBO_DATABASE_FILE));
+            amiiboManager = loadDefaultAmiiboManager(context);
         }
 
         return amiiboManager;
     }
 
-    public static void saveAmiiboInfo(AmiiboManager amiiboManager, OutputStream outputStream) throws AmiiboInfoException {
+    public static void saveAmiiboInfo(AmiiboManager amiiboManager, OutputStream outputStream) throws JSONException, IOException {
         OutputStreamWriter streamWriter = null;
         try {
-            try {
-                streamWriter = new OutputStreamWriter(outputStream);
-                streamWriter.write(amiiboManager.toJSON().toString());
-                outputStream.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new AmiiboInfoException("Failed to update amiibo info");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            streamWriter = new OutputStreamWriter(outputStream);
+            streamWriter.write(amiiboManager.toJSON().toString());
+            outputStream.flush();
         } finally {
             if (streamWriter != null) {
                 try {
@@ -142,7 +138,7 @@ public class Util {
         }
     }
 
-    public static void saveLocalAmiiboInfo(Context context, AmiiboManager amiiboManager) throws AmiiboInfoException, FileNotFoundException {
+    public static void saveLocalAmiiboInfo(Context context, AmiiboManager amiiboManager) throws IOException, JSONException {
         OutputStream outputStream = null;
         try {
             outputStream = context.openFileOutput(Util.AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);

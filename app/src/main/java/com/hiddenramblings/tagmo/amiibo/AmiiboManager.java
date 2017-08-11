@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo.amiibo;
 import android.content.Context;
 import android.net.Uri;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -107,6 +108,53 @@ public class AmiiboManager {
 
             AmiiboSeries amiiboSeries = new AmiiboSeries(manager, key, name);
             manager.amiiboSeries.put(amiiboSeries.id, amiiboSeries);
+        }
+
+        return manager;
+    }
+
+    public static AmiiboManager parseAmiiboAPI(JSONObject json) throws JSONException, ParseException {
+        AmiiboManager manager = new AmiiboManager();
+        JSONArray amiibosJSON = json.getJSONArray("amiibo");
+        for (int i = 0; i < amiibosJSON.length(); i++) {
+            JSONObject amiiboJSON = amiibosJSON.getJSONObject(i);
+
+            String key = "0x" + amiiboJSON.getString("head") + amiiboJSON.getString("tail");
+            String name = amiiboJSON.getString("name");
+
+            JSONObject releaseDatesJSON = amiiboJSON.getJSONObject("release");
+            Date naDate = releaseDatesJSON.isNull("na") ? null : iso8601.parse(releaseDatesJSON.getString("na"));
+            Date jpDate = releaseDatesJSON.isNull("jp") ? null : iso8601.parse(releaseDatesJSON.getString("jp"));
+            Date euDate = releaseDatesJSON.isNull("eu") ? null : iso8601.parse(releaseDatesJSON.getString("eu"));
+            Date auDate = releaseDatesJSON.isNull("au") ? null : iso8601.parse(releaseDatesJSON.getString("au"));
+            AmiiboReleaseDates releaseDates = new AmiiboReleaseDates(naDate, jpDate, euDate, auDate);
+
+            Amiibo amiibo = new Amiibo(manager, key, name, releaseDates);
+            manager.amiibos.put(amiibo.id, amiibo);
+
+            int gameSeriesId = amiibo.getGameSeriesId();
+            if (!manager.gameSeries.containsKey(gameSeriesId)) {
+                GameSeries gameSeries = new GameSeries(manager, gameSeriesId, amiiboJSON.getString("gameSeries"));
+                manager.gameSeries.put(gameSeriesId, gameSeries);
+            }
+
+            int characterId = amiibo.getCharacterId();
+            if (!manager.characters.containsKey(characterId)) {
+                Character character = new Character(manager, characterId, amiiboJSON.getString("character"));
+                manager.characters.put(characterId, character);
+            }
+
+            int amiiboTypeId = amiibo.getAmiiboTypeId();
+            if (!manager.amiiboTypes.containsKey(amiiboTypeId)) {
+                AmiiboType amiiboType = new AmiiboType(manager, amiiboTypeId, amiiboJSON.getString("type"));
+                manager.amiiboTypes.put(amiiboTypeId, amiiboType);
+            }
+
+            int amiiboSeriesId = amiibo.getAmiiboSeriesId();
+            if (!manager.amiiboSeries.containsKey(amiiboSeriesId)) {
+                AmiiboSeries amiiboSeries = new AmiiboSeries(manager, amiiboSeriesId, amiiboJSON.getString("amiiboSeries"));
+                manager.amiiboSeries.put(amiiboSeriesId, amiiboSeries);
+            }
         }
 
         return manager;

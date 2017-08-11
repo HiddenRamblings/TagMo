@@ -240,8 +240,18 @@ public class MainActivity extends AppCompatActivity {
         if (this.currentTagData == null) {
             tagInfo = "<No tag loaded>";
         } else {
+            long amiiboId;
             try {
-                long amiiboId = TagUtil.amiiboIdFromTag(this.currentTagData);
+                amiiboId = TagUtil.amiiboIdFromTag(this.currentTagData);
+            } catch (Exception e) {
+                e.printStackTrace();
+                amiiboId = -1;
+            }
+            if (amiiboId == -1) {
+                tagInfo = "<Error reading tag>";
+            } else if (amiiboId == 0) {
+                tagInfo = "<Blank tag>";
+            } else {
                 Amiibo amiibo = null;
                 if (this.amiiboManager != null) {
                     amiibo = amiiboManager.amiibos.get(amiiboId);
@@ -272,9 +282,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     tagInfo = "<Unknown amiibo id: " + TagUtil.amiiboIdToHex(amiiboId) + ">";
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                tagInfo = "<Error reading tag>";
             }
         }
 

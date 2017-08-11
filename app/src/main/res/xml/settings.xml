@@ -21,7 +21,8 @@
         <android.support.v7.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_enable_tag_type_validation"
-            android:title="Enable NTAG215 validation"/>
+            android:title="Enable NTAG215 validation"
+            android:summary="Not all NFC chipsets correctly identify NFC tags. Disabling tag verification will write to tags that may not be Amiibo compatible."/>
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory

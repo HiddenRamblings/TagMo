@@ -21,7 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/divider1"
-            android:text="NAME"/>
+            android:text="NAME"
+            android:textColor="@color/tag_text"/>
 
         <TextView
             android:id="@+id/txtTagId"
@@ -30,7 +31,8 @@
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@+id/divider1"
             android:gravity="end"
-            android:text="TAGID"/>
+            android:text="TAGID"
+            android:textColor="@color/tag_text"/>
     </RelativeLayout>
 
 
@@ -53,7 +55,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/divider2"
-            android:text="AMIIBO SERIES"/>
+            android:text="AMIIBO SERIES"
+            android:textColor="@color/tag_text"/>
 
         <TextView
             android:id="@+id/txtAmiiboType"
@@ -62,7 +65,8 @@
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@+id/divider2"
             android:gravity="end"
-            android:text="AMIIBO TYPE"/>
+            android:text="AMIIBO TYPE"
+            android:textColor="@color/tag_text"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -84,7 +88,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/divider3"
-            android:text="GAME SERIES"/>
+            android:text="GAME SERIES"
+            android:textColor="@color/tag_text"/>
 
         <TextView
             android:id="@+id/txtCharacter"
@@ -93,7 +98,8 @@
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@+id/divider3"
             android:gravity="end"
-            android:text="CHARACTER"/>
+            android:text="CHARACTER"
+            android:textColor="@color/tag_text"/>
     </RelativeLayout>
 
     <TextView

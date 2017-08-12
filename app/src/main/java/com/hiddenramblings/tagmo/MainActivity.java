@@ -6,11 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -45,7 +47,6 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
 
-
 @EActivity(R.layout.activity_main)
 @OptionsMenu({R.menu.main_menu})
 public class MainActivity extends AppCompatActivity {
@@ -56,8 +57,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int EDIT_TAG = 0x103;
     private static final int SCAN_QR_CODE = 0x104;
 
-    @ViewById(R.id.txtError)
-    TextView txtError;
+    private static final Integer SNACKBAR_KEYS_NOT_LOADED = 0;
+    private static final Integer SNACKBAR_NFC_UNSUPPORTED = 1;
+    private static final Integer SNACKBAR_NFC_DISABLED = 2;
 
     @ViewById(R.id.txtTagInfo)
     TextView txtTagInfo;
@@ -94,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
     Button btnEditDataTP;
     @ViewById(R.id.btnViewHex)
     Button btnViewHex;
+    @ViewById(android.R.id.content)
+    View snackBarContainer;
 
     @ViewById(R.id.cbAutoSaveOnScan)
     CheckBox cbAutoSaveOnScan;
@@ -107,10 +111,10 @@ public class MainActivity extends AppCompatActivity {
 
     AmiiboManager amiiboManager = null;
 
+    Snackbar snackbar;
+
     @Pref
     Preferences_ prefs;
-
-    boolean keyWarningShown;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -190,20 +194,70 @@ public class MainActivity extends AppCompatActivity {
         boolean hasUnfixed = this.keyManager.hasUnFixedKey();
         boolean hasKeys = hasFixed && hasUnfixed;
         boolean hasTag = currentTagData != null;
-        boolean hasError = !hasNfc || !nfcEnabled || !hasKeys;
 
-        if (!hasNfc) {
-            txtError.setText(R.string.nfc_unsupported);
+        if (!hasKeys) {
+            if (snackbar == null || snackbar.getView().getTag() != SNACKBAR_KEYS_NOT_LOADED) {
+                snackbar = Snackbar
+                    .make(snackBarContainer, R.string.keys_missing_warning, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.open_settings_action, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            openSettings();
+                        }
+                    })
+                    .addCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            super.onDismissed(snackbar, event);
+                            MainActivity.this.snackbar = null;
+                        }
+                    });
+                snackbar.getView().setTag(SNACKBAR_KEYS_NOT_LOADED);
+                snackbar.show();
+            }
+        } else if (!hasNfc) {
+            if (snackbar == null || snackbar.getView().getTag() != SNACKBAR_NFC_UNSUPPORTED) {
+                snackbar = Snackbar
+                    .make(snackBarContainer, R.string.nfc_unsupported, Snackbar.LENGTH_INDEFINITE)
+                    .addCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            super.onDismissed(snackbar, event);
+                            MainActivity.this.snackbar = null;
+                        }
+                    });
+                snackbar.getView().setTag(SNACKBAR_NFC_UNSUPPORTED);
+                snackbar.show();
+            }
         } else if (!nfcEnabled) {
-            txtError.setText(R.string.nfc_disabled);
-        } else if (!hasKeys) {
-            txtError.setText("Missing keys!");
+            if (snackbar == null || snackbar.getView().getTag() != SNACKBAR_NFC_DISABLED) {
+                snackbar = Snackbar
+                    .make(snackBarContainer, R.string.nfc_disabled, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.nfc_enable_action, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                                startActivity(intent);
+                            } else {
+                                Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                                startActivity(intent);
+                            }
+                        }
+                    })
+                    .addCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            super.onDismissed(snackbar, event);
+                            MainActivity.this.snackbar = null;
+                        }
+                    });
+                snackbar.getView().setTag(SNACKBAR_NFC_DISABLED);
+                snackbar.show();
+            }
+        } else if (snackbar != null) {
+            snackbar.dismiss();
         }
-
-        if (hasError)
-            txtError.setVisibility(View.VISIBLE);
-        else
-            txtError.setVisibility(View.GONE);
 
         btnScanTag.setEnabled(nfcEnabled);
         btnWriteTagAuto.setEnabled(nfcEnabled && hasKeys && hasTag);
@@ -212,20 +266,6 @@ public class MainActivity extends AppCompatActivity {
         btnShowQRCode.setEnabled(hasTag);
         btnEditDataSSB.setEnabled(hasKeys && hasTag);
         btnViewHex.setEnabled(hasKeys && hasTag);
-
-        if (!hasKeys && !keyWarningShown) {
-            new AlertDialog.Builder(this)
-                .setMessage("To read and write Amiibo tags, encryption keys are required. Would you like to open settings to import them?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        openSettings();
-                    }
-                })
-                .setNegativeButton("No", null)
-                .show();
-            keyWarningShown = true;
-        }
 
         String tagInfo = "";
         String amiiboHexId = "";

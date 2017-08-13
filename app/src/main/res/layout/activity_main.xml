@@ -23,7 +23,7 @@
                 layout="@layout/amiibo_info_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp" />
 
             <Button
                 android:id="@+id/btnLoadTag"
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/amiiboInfoView"
-                android:text="Load Tag"/>
+                android:text="Load Tag" />
 
             <Button
                 android:id="@+id/btnScanTag"
@@ -39,65 +39,67 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/amiiboInfoView"
-                android:text="Scan Tag"/>
+                android:text="Scan Tag" />
 
             <Button
                 android:id="@+id/btnSaveTag"
                 android:layout_width="148dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/btnLoadTag"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:text="Save Tag"/>
+                android:text="Save Tag"
+                android:layout_below="@+id/btnWriteTagAuto"
+                android:layout_toRightOf="@+id/btnCreateTag"
+                android:layout_toEndOf="@+id/btnCreateTag" />
 
             <Button
                 android:id="@+id/btnWriteTagAuto"
                 android:layout_width="148dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/btnScanTag"
-                android:text="Write Tag"/>
+                android:text="Write Tag"
+                android:layout_below="@+id/btnLoadTag"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
             <Button
                 android:id="@+id/btnViewHex"
                 android:layout_width="148dp"
                 android:layout_height="wrap_content"
+                android:text="View Hex"
+                android:layout_below="@+id/btnSaveTag"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@id/btnSaveTag"
-                android:text="View Hex"/>
+                android:layout_alignParentStart="true" />
 
             <Button
                 android:id="@+id/btnRestoreTag"
                 android:layout_width="148dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:text="Restore Tag"
+                android:layout_below="@+id/btnScanTag"
                 android:layout_alignParentRight="true"
-                android:layout_below="@+id/btnWriteTagAuto"
-                android:text="Restore Tag"/>
+                android:layout_alignParentEnd="true" />
 
             <Button
                 android:id="@+id/btnShowQRCode"
                 android:layout_width="148dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/btnViewHex"
-                android:text="Show QR Code"/>
+                android:text="Show QR Code"
+                android:layout_below="@+id/btnScanQRCode"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
 
             <Button
                 android:id="@+id/btnScanQRCode"
                 android:layout_width="148dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/btnRestoreTag"
                 android:layout_alignParentRight="true"
-                android:text="Scan QR Code"/>
+                android:layout_below="@+id/btnRestoreTag"
+                android:text="Scan QR Code" />
 
             <Button
                 android:id="@+id/btnCreateTag"
                 android:layout_width="148dp"
                 android:layout_height="wrap_content"
                 android:text="Create Tag*"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btnWriteTagRaw"
@@ -106,14 +108,16 @@
                 android:layout_alignParentLeft="true"
                 android:layout_below="@+id/btnWriteTagAuto"
                 android:text="Write Tag (Raw)"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <CheckBox
                 android:id="@+id/cbAutoSaveOnScan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/btnScanQRCode"
-                android:text="Auto save scanned tags"/>
+                android:layout_below="@+id/btnViewHex"
+                android:layout_toEndOf="@+id/btnCreateTag"
+                android:layout_toRightOf="@+id/btnCreateTag"
+                android:text="Auto save scanned tags" />
 
             <CheckBox
                 android:id="@+id/cbNoIDValidate"
@@ -121,7 +125,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/cbAutoSaveOnScan"
                 android:layout_toRightOf="@+id/btnCreateTag"
-                android:text="Allow restore to different tag"/>
+                android:text="Allow restore to different tag" />
 
             <Button
                 android:id="@+id/btnEditDataMii"
@@ -130,7 +134,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/cbNoIDValidate"
                 android:text="Edit Mii Data"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btnEditDataSSB"
@@ -139,7 +143,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/cbNoIDValidate"
                 android:text="Edit SSB Data"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btnEditDataTP"
@@ -148,7 +152,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/cbNoIDValidate"
                 android:text="@string/edit_tp_data"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btnFixSig"
@@ -157,7 +161,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/cbNoIDValidate"
                 android:text="Fix Signatures"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </RelativeLayout>
     </ScrollView>

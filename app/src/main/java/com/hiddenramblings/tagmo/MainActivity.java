@@ -19,11 +19,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View;
 
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -33,6 +33,7 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.InstanceState;
+import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
@@ -44,6 +45,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -56,10 +58,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int NFC_ACTIVITY = 0x102;
     private static final int EDIT_TAG = 0x103;
     private static final int SCAN_QR_CODE = 0x104;
-
-    private static final Integer SNACKBAR_KEYS_NOT_LOADED = 0;
-    private static final Integer SNACKBAR_NFC_UNSUPPORTED = 1;
-    private static final Integer SNACKBAR_NFC_DISABLED = 2;
 
     @ViewById(R.id.txtTagInfo)
     TextView txtTagInfo;
@@ -96,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnEditDataTP;
     @ViewById(R.id.btnViewHex)
     Button btnViewHex;
-    @ViewById(android.R.id.content)
+    @ViewById(R.id.coordinator)
     View snackBarContainer;
 
     @ViewById(R.id.cbAutoSaveOnScan)
@@ -111,10 +109,13 @@ public class MainActivity extends AppCompatActivity {
 
     AmiiboManager amiiboManager = null;
 
-    Snackbar snackbar;
-
     @Pref
     Preferences_ prefs;
+
+    ArrayList<Snackbar> snackbarQueue = new ArrayList<>();
+    Snackbar keysNotFoundSnackbar;
+    Snackbar nfcNotSupportedSnackbar;
+    Snackbar nfcNotEnabledSnackbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -176,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
     void startNfcMonitor() {
         if (nfcAdapter == null)
             return;
+
         IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
         this.registerReceiver(mReceiver, filter);
     }
@@ -186,18 +188,47 @@ public class MainActivity extends AppCompatActivity {
         this.unregisterReceiver(mReceiver);
     }
 
+    Snackbar.Callback snackbarCallback = new Snackbar.Callback() {
+        @Override
+        public void onDismissed(Snackbar snackbar, int event) {
+            super.onDismissed(snackbar, event);
+
+            switch (event) {
+                case Snackbar.Callback.DISMISS_EVENT_ACTION:
+                case Snackbar.Callback.DISMISS_EVENT_TIMEOUT:
+                case Snackbar.Callback.DISMISS_EVENT_SWIPE:
+                case Snackbar.Callback.DISMISS_EVENT_MANUAL:
+                    snackbarQueue.remove(snackbar);
+                    if (!snackbarQueue.isEmpty()) {
+                        displaySnackbar(snackbarQueue);
+                    }
+                    break;
+            }
+        }
+    };
+
+    public void displaySnackbar(ArrayList<Snackbar> queue) {
+        if (queue.isEmpty())
+            return;
+
+        queue.get(0)
+            .removeCallback(snackbarCallback)
+            .addCallback(snackbarCallback)
+            .show();
+    }
+
     @UiThread
     void updateStatus() {
         boolean hasNfc = (nfcAdapter != null);
-        boolean nfcEnabled = hasNfc && nfcAdapter.isEnabled();
+        boolean nfcEnabled = !hasNfc || nfcAdapter.isEnabled();
         boolean hasFixed = this.keyManager.hasFixedKey();
         boolean hasUnfixed = this.keyManager.hasUnFixedKey();
         boolean hasKeys = hasFixed && hasUnfixed;
         boolean hasTag = currentTagData != null;
 
         if (!hasKeys) {
-            if (snackbar == null || snackbar.getView().getTag() != SNACKBAR_KEYS_NOT_LOADED) {
-                snackbar = Snackbar
+            if (keysNotFoundSnackbar == null) {
+                keysNotFoundSnackbar = Snackbar
                     .make(snackBarContainer, R.string.keys_missing_warning, Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.open_settings_action, new View.OnClickListener() {
                         @Override
@@ -209,29 +240,47 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onDismissed(Snackbar snackbar, int event) {
                             super.onDismissed(snackbar, event);
-                            MainActivity.this.snackbar = null;
+
+                            if (keysNotFoundSnackbar == snackbar) {
+                                keysNotFoundSnackbar = null;
+                            }
                         }
                     });
-                snackbar.getView().setTag(SNACKBAR_KEYS_NOT_LOADED);
-                snackbar.show();
             }
-        } else if (!hasNfc) {
-            if (snackbar == null || snackbar.getView().getTag() != SNACKBAR_NFC_UNSUPPORTED) {
-                snackbar = Snackbar
+            if (!snackbarQueue.contains(keysNotFoundSnackbar)) {
+                snackbarQueue.add(keysNotFoundSnackbar);
+            }
+        } else if (snackbarQueue.indexOf(keysNotFoundSnackbar) == 0) {
+            keysNotFoundSnackbar.dismiss();
+        } else {
+            snackbarQueue.remove(keysNotFoundSnackbar);
+        }
+        if (!hasNfc) {
+            if (nfcNotSupportedSnackbar == null) {
+                nfcNotSupportedSnackbar = Snackbar
                     .make(snackBarContainer, R.string.nfc_unsupported, Snackbar.LENGTH_INDEFINITE)
                     .addCallback(new Snackbar.Callback() {
                         @Override
                         public void onDismissed(Snackbar snackbar, int event) {
                             super.onDismissed(snackbar, event);
-                            MainActivity.this.snackbar = null;
+
+                            if (nfcNotSupportedSnackbar == snackbar) {
+                                nfcNotSupportedSnackbar = null;
+                            }
                         }
                     });
-                snackbar.getView().setTag(SNACKBAR_NFC_UNSUPPORTED);
-                snackbar.show();
             }
-        } else if (!nfcEnabled) {
-            if (snackbar == null || snackbar.getView().getTag() != SNACKBAR_NFC_DISABLED) {
-                snackbar = Snackbar
+            if (!snackbarQueue.contains(nfcNotSupportedSnackbar)) {
+                snackbarQueue.add(nfcNotSupportedSnackbar);
+            }
+        } else if (snackbarQueue.indexOf(nfcNotSupportedSnackbar) == 0) {
+            nfcNotSupportedSnackbar.dismiss();
+        } else {
+            snackbarQueue.remove(nfcNotSupportedSnackbar);
+        }
+        if (!nfcEnabled) {
+            if (nfcNotEnabledSnackbar == null) {
+                nfcNotEnabledSnackbar = Snackbar
                     .make(snackBarContainer, R.string.nfc_disabled, Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.nfc_enable_action, new View.OnClickListener() {
                         @Override
@@ -249,15 +298,22 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onDismissed(Snackbar snackbar, int event) {
                             super.onDismissed(snackbar, event);
-                            MainActivity.this.snackbar = null;
+
+                            if (nfcNotEnabledSnackbar == snackbar) {
+                                nfcNotEnabledSnackbar = null;
+                            }
                         }
                     });
-                snackbar.getView().setTag(SNACKBAR_NFC_DISABLED);
-                snackbar.show();
             }
-        } else if (snackbar != null) {
-            snackbar.dismiss();
+            if (!snackbarQueue.contains(nfcNotEnabledSnackbar)) {
+                snackbarQueue.add(nfcNotEnabledSnackbar);
+            }
+        } else if (snackbarQueue.indexOf(nfcNotEnabledSnackbar) == 0) {
+            nfcNotEnabledSnackbar.dismiss();
+        } else {
+            snackbarQueue.remove(nfcNotEnabledSnackbar);
         }
+        displaySnackbar(snackbarQueue);
 
         btnScanTag.setEnabled(nfcEnabled);
         btnWriteTagAuto.setEnabled(nfcEnabled && hasKeys && hasTag);
@@ -533,48 +589,54 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK)
+    @OnActivityResult(EDIT_TAG)
+    void onEditTagResult(int resultCode, Intent data) {
+        if (resultCode != RESULT_OK || data == null)
             return;
 
-        Log.d(TAG, "onActivityResult");
+        if (!Actions.ACTION_EDIT_COMPLETE.equals(data.getAction()))
+            return;
 
-        String action;
-        switch (requestCode) {
-            case EDIT_TAG:
-                if (data == null) return;
-                action = data.getAction();
-                if (!Actions.ACTION_EDIT_COMPLETE.equals(action))
-                    return;
-                this.currentTagData = data.getByteArrayExtra(Actions.EXTRA_TAG_DATA);
-                this.updateStatus();
-                if (this.currentTagData == null) {
-                    LogError("Tag data is empty");
-                    return;
-                }
-            case NFC_ACTIVITY:
-                if (data == null) return;
-                action = data.getAction();
-                if (!NfcActivity.ACTION_NFC_SCANNED.equals(action))
-                    return;
-                this.currentTagData = data.getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
-                updateStatus();
-                if (this.currentTagData == null) {
-                    LogError("Tag data is empty");
-                    return;
-                }
-                if (cbAutoSaveOnScan.isChecked())
-                    writeTagToFile(this.currentTagData);
-                break;
-            case FILE_LOAD_TAG:
-                loadTagFile(data.getData());
-                break;
-            case SCAN_QR_CODE:
-                loadQRCode(data.getStringExtra("SCAN_RESULT"));
-                break;
+        this.currentTagData = data.getByteArrayExtra(Actions.EXTRA_TAG_DATA);
+        this.updateStatus();
+
+        if (this.currentTagData == null) {
+            LogError("Tag data is empty");
         }
+    }
+
+    @OnActivityResult(NFC_ACTIVITY)
+    void onNFCResult(int resultCode, Intent data) {
+        if (resultCode != RESULT_OK || data == null)
+            return;
+
+        if (!NfcActivity.ACTION_NFC_SCANNED.equals(data.getAction()))
+            return;
+
+        this.currentTagData = data.getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
+        updateStatus();
+
+        if (this.currentTagData == null) {
+            LogError("Tag data is empty");
+        } else if (cbAutoSaveOnScan.isChecked()) {
+            writeTagToFile(this.currentTagData);
+        }
+    }
+
+    @OnActivityResult(FILE_LOAD_TAG)
+    void onFileLoadResult(int resultCode, Intent data) {
+        if (resultCode != RESULT_OK || data == null)
+            return;
+
+        loadTagFile(data.getData());
+    }
+
+    @OnActivityResult(SCAN_QR_CODE)
+    void onScanQRCodeResult(int resultCode, Intent data) {
+        if (resultCode != RESULT_OK || data == null)
+            return;
+
+        loadQRCode(data.getStringExtra("SCAN_RESULT"));
     }
 
     private void showFileChooser(String title, String mimeType, int resultCode) {

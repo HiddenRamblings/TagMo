@@ -6,9 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -18,11 +19,9 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +37,6 @@ import com.robertlevonyan.views.chip.OnCloseClickListener;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ItemClick;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.OptionsMenuItem;
@@ -63,7 +61,7 @@ import java.util.Set;
 
 @EActivity(R.layout.browser_layout)
 @OptionsMenu({R.menu.search_manu})
-public class BrowserActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
+public class BrowserActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener, RecyclerItemClickListener.OnItemClickListener {
     public static int SORT_ID = 0x0;
     public static int SORT_NAME = 0x1;
     public static int SORT_AMIIBO_SERIES = 0x2;
@@ -75,12 +73,11 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
     @ViewById(R.id.chip_list)
     FlowLayout chipList;
     @ViewById(R.id.list)
-    ListView listView;
+    RecyclerView listView;
     @ViewById(R.id.swiperefresh)
     SwipeRefreshLayout swipeRefreshLayout;
     @ViewById(R.id.internalEmpty)
     TextView emptyText;
-
 
     @OptionsMenuItem(R.id.search)
     MenuItem menuSearch;
@@ -122,8 +119,6 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
     public static class AmiiboFile {
         String filePath;
         long id;
-
-        public AmiiboFile() {}
 
         @ParcelConstructor
         public AmiiboFile(String filePath, long id) {
@@ -169,7 +164,9 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         setAmiiboTypeFilter(getAmiiboTypeFilter());
 
         this.swipeRefreshLayout.setOnRefreshListener(this);
+        this.listView.setLayoutManager(new LinearLayoutManager(this));
         this.listView.setAdapter(new AmiiboFilesAdapter(this));
+        this.listView.addOnItemTouchListener(new RecyclerItemClickListener(this, this.listView, this));
         if (this.amiiboFiles == null) {
             this.onRefresh();
         } else {
@@ -188,13 +185,19 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         return (AmiiboFilesAdapter) this.listView.getAdapter();
     }
 
-    @ItemClick(R.id.list)
-    public void onListItemClicked(AmiiboFile item) {
+    @Override
+    public void onItemClick(View view, int position) {
+        AmiiboFile item = getListAdapter().getItem(position);
+
         Intent returnIntent = new Intent();
         returnIntent.setData(Uri.fromFile(new File(item.filePath)));
+
         this.setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
+
+    @Override
+    public void onLongItemClick(View view, int position) {}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -206,7 +209,7 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         String query = getQuery();
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) MenuItemCompat.getActionView(menuSearch);
+        searchView = (SearchView) menuSearch.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(this);
@@ -263,6 +266,7 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
                     TagUtil.validateTag(data);
                     amiiboFiles.add(new AmiiboFile(file.getAbsolutePath(), TagUtil.amiiboIdFromTag(data)));
                 } catch (Exception e) {
+                    //
                 }
             }
         }
@@ -275,7 +279,7 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         this.getListAdapter().setData(amiiboFiles);
         if (amiiboFiles != null && amiiboFiles.size() == 0) {
             String dirPath = Util.friendlyPath(Util.getDataDir().getAbsolutePath());
-            emptyText.setText("No Amiibo files found in\n" +  dirPath);
+            emptyText.setText("No Amiibo files found in\n" + dirPath);
         } else {
             emptyText.setText("");
         }
@@ -394,12 +398,12 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
     }
 
     public void addFilterItemView(String text, String tag, OnCloseClickListener listener) {
-        FrameLayout chipContainer = (FrameLayout) chipList.findViewWithTag(tag);
+        FrameLayout chipContainer = chipList.findViewWithTag(tag);
         chipList.removeView(chipContainer);
         if (!text.isEmpty()) {
             chipContainer = (FrameLayout) getLayoutInflater().inflate(R.layout.chip_view, null);
             chipContainer.setTag(tag);
-            Chip chip = (Chip) chipContainer.findViewById(R.id.chip);
+            Chip chip = chipContainer.findViewById(R.id.chip);
             chip.setChipText(text);
             chip.setClosable(true);
             chip.setOnCloseClickListener(listener);
@@ -688,7 +692,31 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         return true;
     }
 
-    static class AmiiboFilesAdapter extends BaseAdapter implements Filterable {
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView txtTagInfo;
+        TextView txtName;
+        TextView txtTagId;
+        TextView txtAmiiboSeries;
+        TextView txtAmiiboType;
+        TextView txtGameSeries;
+        TextView txtCharacter;
+        TextView txtPath;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            this.txtTagInfo = itemView.findViewById(R.id.txtTagInfo);
+            this.txtName = itemView.findViewById(R.id.txtName);
+            this.txtTagId = itemView.findViewById(R.id.txtTagId);
+            this.txtAmiiboSeries = itemView.findViewById(R.id.txtAmiiboSeries);
+            this.txtAmiiboType = itemView.findViewById(R.id.txtAmiiboType);
+            this.txtGameSeries = itemView.findViewById(R.id.txtGameSeries);
+            this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
+            this.txtPath = itemView.findViewById(R.id.txtPath);
+        }
+    }
+
+    static class AmiiboFilesAdapter extends RecyclerView.Adapter<ViewHolder> implements Filterable {
         private final BrowserActivity activity;
         private ArrayList<AmiiboFile> data;
         private ArrayList<AmiiboFile> filteredData;
@@ -708,18 +736,72 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         }
 
         @Override
-        public int getCount() {
+        public int getItemCount() {
             return filteredData.size();
-        }
-
-        @Override
-        public AmiiboFile getItem(int i) {
-            return filteredData.get(i);
         }
 
         @Override
         public long getItemId(int i) {
             return filteredData.get(i).id;
+        }
+
+        public AmiiboFile getItem(int i) {
+            return filteredData.get(i);
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new ViewHolder(LayoutInflater
+                .from(parent.getContext())
+                .inflate(R.layout.amiibo_info_view, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            AmiiboFile item = getItem(position);
+            String tagInfo = "";
+            String amiiboHexId = "";
+            String amiiboName = "";
+            String amiiboSeries = "";
+            String amiiboType = "";
+            String gameSeries = "";
+            String character = "";
+
+            long amiiboId = item.id;
+            Amiibo amiibo = null;
+            AmiiboManager amiiboManager = activity.amiiboManager;
+            if (amiiboManager != null) {
+                amiibo = amiiboManager.amiibos.get(amiiboId);
+                if (amiibo == null)
+                    amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
+            }
+            if (amiibo != null) {
+                amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
+                if (amiibo.name != null)
+                    amiiboName = amiibo.name;
+                if (amiibo.getAmiiboSeries() != null)
+                    amiiboSeries = amiibo.getAmiiboSeries().name;
+                if (amiibo.getAmiiboType() != null)
+                    amiiboType = amiibo.getAmiiboType().name;
+                if (amiibo.getGameSeries() != null)
+                    gameSeries = amiibo.getGameSeries().name;
+                if (amiibo.getCharacter() != null)
+                    character = amiibo.getCharacter().name;
+            } else {
+                tagInfo = "<Unknown amiibo id: " + TagUtil.amiiboIdToHex(amiiboId) + ">";
+            }
+
+            String query = activity.getQuery().toLowerCase();
+            holder.txtTagInfo.setText(tagInfo);
+            setAmiiboInfoText(holder.txtName, boldMatchingText(amiiboName, query), !tagInfo.isEmpty());
+            setAmiiboInfoText(holder.txtTagId, boldStartText(amiiboHexId, query), !tagInfo.isEmpty());
+            setAmiiboInfoText(holder.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), !tagInfo.isEmpty());
+            setAmiiboInfoText(holder.txtAmiiboType, boldMatchingText(amiiboType, query), !tagInfo.isEmpty());
+            setAmiiboInfoText(holder.txtGameSeries, boldMatchingText(gameSeries, query), !tagInfo.isEmpty());
+            setAmiiboInfoText(holder.txtCharacter, boldMatchingText(character, query), !tagInfo.isEmpty());
+
+            holder.txtPath.setText(boldMatchingText(Util.friendlyPath(item.filePath), query));
+            holder.txtPath.setVisibility(View.VISIBLE);
         }
 
         class CustomComparator implements Comparator<AmiiboFile> {
@@ -858,64 +940,6 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             return str;
         }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.amiibo_item_view, parent, false);
-                holder = new ViewHolder(convertView);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            AmiiboFile item = getItem(position);
-            String tagInfo = "";
-            String amiiboHexId = "";
-            String amiiboName = "";
-            String amiiboSeries = "";
-            String amiiboType = "";
-            String gameSeries = "";
-            String character = "";
-
-            long amiiboId = item.id;
-            Amiibo amiibo = null;
-            AmiiboManager amiiboManager = activity.amiiboManager;
-            if (amiiboManager != null) {
-                amiibo = amiiboManager.amiibos.get(amiiboId);
-                if (amiibo == null)
-                    amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
-            }
-            if (amiibo != null) {
-                amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
-                if (amiibo.name != null)
-                    amiiboName = amiibo.name;
-                if (amiibo.getAmiiboSeries() != null)
-                    amiiboSeries = amiibo.getAmiiboSeries().name;
-                if (amiibo.getAmiiboType() != null)
-                    amiiboType = amiibo.getAmiiboType().name;
-                if (amiibo.getGameSeries() != null)
-                    gameSeries = amiibo.getGameSeries().name;
-                if (amiibo.getCharacter() != null)
-                    character = amiibo.getCharacter().name;
-            } else {
-                tagInfo = "<Unknown amiibo id: " + TagUtil.amiiboIdToHex(amiiboId) + ">";
-            }
-
-            String query = activity.getQuery().toLowerCase();
-            holder.txtTagInfo.setText(tagInfo);
-            setAmiiboInfoText(holder.txtName, boldMatchingText(amiiboName, query), !tagInfo.isEmpty());
-            setAmiiboInfoText(holder.txtTagId, boldStartText(amiiboHexId, query), !tagInfo.isEmpty());
-            setAmiiboInfoText(holder.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), !tagInfo.isEmpty());
-            setAmiiboInfoText(holder.txtAmiiboType, boldMatchingText(amiiboType, query), !tagInfo.isEmpty());
-            setAmiiboInfoText(holder.txtGameSeries, boldMatchingText(gameSeries, query), !tagInfo.isEmpty());
-            setAmiiboInfoText(holder.txtCharacter, boldMatchingText(character, query), !tagInfo.isEmpty());
-
-            holder.txtPath.setText(boldMatchingText(Util.friendlyPath(item.filePath), query));
-            holder.txtPath.setVisibility(View.VISIBLE);
-
-            return convertView;
-        }
-
         void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
             if (hasTagInfo) {
                 textView.setText("");
@@ -925,30 +949,6 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             } else {
                 textView.setText(text);
                 textView.setEnabled(true);
-            }
-        }
-
-        static class ViewHolder {
-            TextView txtTagInfo;
-            TextView txtName;
-            TextView txtTagId;
-            TextView txtAmiiboSeries;
-            TextView txtAmiiboType;
-            TextView txtGameSeries;
-            TextView txtCharacter;
-            TextView txtPath;
-
-            public ViewHolder(View view) {
-                this.txtTagInfo = ((TextView) view.findViewById(R.id.txtTagInfo));
-                this.txtName = ((TextView) view.findViewById(R.id.txtName));
-                this.txtTagId = ((TextView) view.findViewById(R.id.txtTagId));
-                this.txtAmiiboSeries = ((TextView) view.findViewById(R.id.txtAmiiboSeries));
-                this.txtAmiiboType = ((TextView) view.findViewById(R.id.txtAmiiboType));
-                this.txtGameSeries = ((TextView) view.findViewById(R.id.txtGameSeries));
-                this.txtCharacter = ((TextView) view.findViewById(R.id.txtCharacter));
-                this.txtPath = ((TextView) view.findViewById(R.id.txtPath));
-
-                view.setTag(this);
             }
         }
 

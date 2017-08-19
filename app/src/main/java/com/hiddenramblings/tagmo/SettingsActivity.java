@@ -16,7 +16,7 @@ public class SettingsActivity extends AppCompatActivity {
             SettingsFragment fragment = new SettingsFragment_();
             getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.list_container, fragment)
+                .replace(R.id.coordinator, fragment)
                 .commit();
         }
     }

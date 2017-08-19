@@ -185,7 +185,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 public View getView(int position, View convertView, ViewGroup parent) {
                     ViewHolder holder;
                     if (convertView == null) {
-                        convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.amiibo_item_view, parent, false);
+                        convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.amiibo_info_view, parent, false);
                         holder = new ViewHolder(convertView);
                     } else {
                         holder = (ViewHolder) convertView.getTag();
@@ -547,7 +547,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @UiThread
     public void showSnackbar(String msg, int length) {
-        Snackbar snackbar = Snackbar.make(getActivity().findViewById(android.R.id.content), msg, length);
+        Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.coordinator), msg, length);
         snackbar.show();
     }
 

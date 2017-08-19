@@ -61,15 +61,18 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile "com.android.support:design:$AndroidSupportVersion"
     compile "com.android.support:appcompat-v7:$AndroidSupportVersion"
     compile "com.android.support:recyclerview-v7:$AndroidSupportVersion"
-    compile "com.android.support:design:$AndroidSupportVersion"
     compile "com.android.support:preference-v7:$AndroidSupportVersion"
     compile "com.android.support:preference-v14:$AndroidSupportVersion"
+    compile "com.android.support:cardview-v7:$AndroidSupportVersion"
+
     annotationProcessor "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"
     annotationProcessor 'org.parceler:parceler:1.1.9'
     compile 'org.parceler:parceler-api:1.1.9'
+
     compile 'com.robertlevonyan.view:MaterialChipView:1.0.1'
     compile 'org.apmem.tools:layouts:1.10@aar'
 }

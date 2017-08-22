@@ -30,7 +30,10 @@ public class Util {
     public static final String DATA_DIR = "tagmo";
     public static final String AMIIBO_DATABASE_FILE = "amiibo.json";
 
+    public static final int RESIZE_SIZE_PX = 100;
+
     public static final char[] hexArray = "0123456789ABCDEF".toCharArray();
+
 
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];

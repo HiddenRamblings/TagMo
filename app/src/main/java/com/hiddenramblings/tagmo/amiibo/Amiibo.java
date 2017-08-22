@@ -13,7 +13,8 @@ public class Amiibo implements Comparable<Amiibo> {
     public static int AMIIBO_MODEL_MASK = 0xFFFF0000;
     public static int UNKNOWN_MASK = 0x000000FF;
 
-    public static String AMIIBO_API_IMAGE_URL = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08X-%18X.png";
+    public static String AMIIBO_API_IMAGE_URL = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08X-%08X.png";
+
 
     public AmiiboManager manager;
     public final long id;

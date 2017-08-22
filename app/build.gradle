@@ -75,4 +75,6 @@ dependencies {
 
     compile 'com.robertlevonyan.view:MaterialChipView:1.0.1'
     compile 'org.apmem.tools:layouts:1.10@aar'
+
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

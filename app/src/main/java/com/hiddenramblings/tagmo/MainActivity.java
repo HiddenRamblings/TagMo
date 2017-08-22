@@ -22,11 +22,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.squareup.picasso.Picasso;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -49,6 +51,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
+import static com.hiddenramblings.tagmo.Util.RESIZE_SIZE_PX;
+
 @EActivity(R.layout.activity_main)
 @OptionsMenu({R.menu.main_menu})
 public class MainActivity extends AppCompatActivity {
@@ -58,6 +62,16 @@ public class MainActivity extends AppCompatActivity {
     private static final int NFC_ACTIVITY = 0x102;
     private static final int EDIT_TAG = 0x103;
     private static final int SCAN_QR_CODE = 0x104;
+
+    private static Context context;
+
+    public static Context getAppContext() {
+        return context;
+    }
+
+    public static void setContext(Context context) {
+        MainActivity.context = context;
+    }
 
     @ViewById(R.id.txtTagInfo)
     TextView txtTagInfo;
@@ -73,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
     TextView txtAmiiboType;
     @ViewById(R.id.txtAmiiboSeries)
     TextView txtAmiiboSeries;
+    @ViewById(R.id.imageAmiibo)
+    ImageView imageAmiibo;
 
     @ViewById(R.id.btnScanTag)
     Button btnScanTag;
@@ -121,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.verifyStoragePermissions();
+        MainActivity.context = getApplicationContext();
     }
 
     @AfterViews
@@ -212,9 +229,9 @@ public class MainActivity extends AppCompatActivity {
             return;
 
         queue.get(0)
-            .removeCallback(snackbarCallback)
-            .addCallback(snackbarCallback)
-            .show();
+                .removeCallback(snackbarCallback)
+                .addCallback(snackbarCallback)
+                .show();
     }
 
     @UiThread
@@ -229,23 +246,23 @@ public class MainActivity extends AppCompatActivity {
         if (!hasKeys) {
             if (keysNotFoundSnackbar == null) {
                 keysNotFoundSnackbar = Snackbar
-                    .make(snackBarContainer, R.string.keys_missing_warning, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.open_settings_action, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            openSettings();
-                        }
-                    })
-                    .addCallback(new Snackbar.Callback() {
-                        @Override
-                        public void onDismissed(Snackbar snackbar, int event) {
-                            super.onDismissed(snackbar, event);
-
-                            if (keysNotFoundSnackbar == snackbar) {
-                                keysNotFoundSnackbar = null;
+                        .make(snackBarContainer, R.string.keys_missing_warning, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.open_settings_action, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                openSettings();
                             }
-                        }
-                    });
+                        })
+                        .addCallback(new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar snackbar, int event) {
+                                super.onDismissed(snackbar, event);
+
+                                if (keysNotFoundSnackbar == snackbar) {
+                                    keysNotFoundSnackbar = null;
+                                }
+                            }
+                        });
             }
             if (!snackbarQueue.contains(keysNotFoundSnackbar)) {
                 snackbarQueue.add(keysNotFoundSnackbar);
@@ -258,17 +275,17 @@ public class MainActivity extends AppCompatActivity {
         if (!hasNfc) {
             if (nfcNotSupportedSnackbar == null) {
                 nfcNotSupportedSnackbar = Snackbar
-                    .make(snackBarContainer, R.string.nfc_unsupported, Snackbar.LENGTH_INDEFINITE)
-                    .addCallback(new Snackbar.Callback() {
-                        @Override
-                        public void onDismissed(Snackbar snackbar, int event) {
-                            super.onDismissed(snackbar, event);
+                        .make(snackBarContainer, R.string.nfc_unsupported, Snackbar.LENGTH_INDEFINITE)
+                        .addCallback(new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar snackbar, int event) {
+                                super.onDismissed(snackbar, event);
 
-                            if (nfcNotSupportedSnackbar == snackbar) {
-                                nfcNotSupportedSnackbar = null;
+                                if (nfcNotSupportedSnackbar == snackbar) {
+                                    nfcNotSupportedSnackbar = null;
+                                }
                             }
-                        }
-                    });
+                        });
             }
             if (!snackbarQueue.contains(nfcNotSupportedSnackbar)) {
                 snackbarQueue.add(nfcNotSupportedSnackbar);
@@ -281,29 +298,29 @@ public class MainActivity extends AppCompatActivity {
         if (!nfcEnabled) {
             if (nfcNotEnabledSnackbar == null) {
                 nfcNotEnabledSnackbar = Snackbar
-                    .make(snackBarContainer, R.string.nfc_disabled, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.nfc_enable_action, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                                Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
-                                startActivity(intent);
-                            } else {
-                                Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-                                startActivity(intent);
+                        .make(snackBarContainer, R.string.nfc_disabled, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.nfc_enable_action, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                    Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                                    startActivity(intent);
+                                } else {
+                                    Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                                    startActivity(intent);
+                                }
                             }
-                        }
-                    })
-                    .addCallback(new Snackbar.Callback() {
-                        @Override
-                        public void onDismissed(Snackbar snackbar, int event) {
-                            super.onDismissed(snackbar, event);
+                        })
+                        .addCallback(new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar snackbar, int event) {
+                                super.onDismissed(snackbar, event);
 
-                            if (nfcNotEnabledSnackbar == snackbar) {
-                                nfcNotEnabledSnackbar = null;
+                                if (nfcNotEnabledSnackbar == snackbar) {
+                                    nfcNotEnabledSnackbar = null;
+                                }
                             }
-                        }
-                    });
+                        });
             }
             if (!snackbarQueue.contains(nfcNotEnabledSnackbar)) {
                 snackbarQueue.add(nfcNotEnabledSnackbar);
@@ -330,6 +347,7 @@ public class MainActivity extends AppCompatActivity {
         String amiiboType = "";
         String gameSeries = "";
         String character = "";
+        String imageAmiiboUrl = null;
         int ssbVisibility = View.GONE;
         int tpVisibility = View.GONE;
 
@@ -356,6 +374,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (amiibo != null) {
                     amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
+                    imageAmiiboUrl = amiibo.getImageUrl();
                     if (amiibo.name != null)
                         amiiboName = amiibo.name;
                     if (amiibo.getAmiiboSeries() != null)
@@ -390,6 +409,7 @@ public class MainActivity extends AppCompatActivity {
         setAmiiboInfoText(txtCharacter, character, !tagInfo.isEmpty());
         btnEditDataSSB.setVisibility(ssbVisibility);
         btnEditDataTP.setVisibility(tpVisibility);
+        Picasso.with(getAppContext()).load(imageAmiiboUrl).resize(RESIZE_SIZE_PX, RESIZE_SIZE_PX).centerInside().error(android.R.drawable.presence_offline).into(imageAmiibo);
     }
 
     void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
@@ -511,17 +531,17 @@ public class MainActivity extends AppCompatActivity {
             this.startActivityForResult(intent, resultCode);
         } else {
             new AlertDialog.Builder(this)
-                .setMessage("Barcode Scanner is required to use QR Codes. Would you like to install it from the Play Store?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
-                        Intent marketIntent = new Intent(Intent.ACTION_VIEW, marketUri);
-                        startActivity(marketIntent);
-                    }
-                })
-                .setNegativeButton("No", null)
-                .show();
+                    .setMessage("Barcode Scanner is required to use QR Codes. Would you like to install it from the Play Store?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
+                            Intent marketIntent = new Intent(Intent.ACTION_VIEW, marketUri);
+                            startActivity(marketIntent);
+                        }
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
         }
     }
 
@@ -656,8 +676,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
     private static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
     private static String[] PERMISSIONS_STORAGE = {
-        READ_EXTERNAL_STORAGE,
-        WRITE_EXTERNAL_STORAGE
+            READ_EXTERNAL_STORAGE,
+            WRITE_EXTERNAL_STORAGE
     };
 
     void verifyStoragePermissions() {
@@ -760,26 +780,26 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     void LogMessage(String msg) {
         new AlertDialog.Builder(this)
-            .setMessage(msg)
-            .setPositiveButton("Close", null)
-            .show();
+                .setMessage(msg)
+                .setPositiveButton("Close", null)
+                .show();
     }
 
     @UiThread
     void LogError(String msg, Throwable e) {
         new AlertDialog.Builder(this)
-            .setTitle("Error")
-            .setMessage(msg)
-            .setPositiveButton("Close", null)
-            .show();
+                .setTitle("Error")
+                .setMessage(msg)
+                .setPositiveButton("Close", null)
+                .show();
     }
 
     @UiThread
     void LogError(String msg) {
         new AlertDialog.Builder(this)
-            .setTitle("Error")
-            .setMessage(msg)
-            .setPositiveButton("Close", null)
-            .show();
+                .setTitle("Error")
+                .setMessage(msg)
+                .setPositiveButton("Close", null)
+                .show();
     }
 }

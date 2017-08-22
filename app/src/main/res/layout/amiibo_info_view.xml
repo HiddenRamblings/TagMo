@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -17,16 +16,25 @@
         android:layout_height="wrap_content"
         android:padding="8dp">
 
+        <ImageView
+            android:id="@+id/imageAmiibo"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/group3"
+            android:layout_alignTop="@+id/group1"
+            android:gravity="left" />
+
         <RelativeLayout
             android:id="@+id/group1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/imageAmiibo">
 
             <View
                 android:id="@+id/divider1"
                 android:layout_width="4dp"
                 android:layout_height="0dp"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true" />
 
             <TextView
                 android:id="@+id/txtName"
@@ -35,7 +43,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@+id/divider1"
                 android:text="NAME"
-                android:textColor="@color/tag_text"/>
+                android:textColor="@color/tag_text" />
 
             <TextView
                 android:id="@+id/txtTagId"
@@ -45,21 +53,21 @@
                 android:layout_toRightOf="@+id/divider1"
                 android:gravity="end"
                 android:text="TAGID"
-                android:textColor="@color/tag_text"/>
+                android:textColor="@color/tag_text" />
         </RelativeLayout>
 
-        <RelativeLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/group2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/imageAmiibo"
             android:layout_below="@id/group1">
 
             <View
                 android:id="@+id/divider2"
                 android:layout_width="4dp"
                 android:layout_height="0dp"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true" />
 
             <TextView
                 android:id="@+id/txtAmiiboSeries"
@@ -68,7 +76,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@+id/divider2"
                 android:text="AMIIBO SERIES"
-                android:textColor="@color/tag_text"/>
+                android:textColor="@color/tag_text" />
 
             <TextView
                 android:id="@+id/txtAmiiboType"
@@ -78,21 +86,21 @@
                 android:layout_toRightOf="@+id/divider2"
                 android:gravity="end"
                 android:text="AMIIBO TYPE"
-                android:textColor="@color/tag_text"/>
+                android:textColor="@color/tag_text" />
         </RelativeLayout>
 
-        <RelativeLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/group3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/imageAmiibo"
             android:layout_below="@id/group2">
 
             <View
                 android:id="@+id/divider3"
                 android:layout_width="4dp"
                 android:layout_height="0dp"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true" />
 
             <TextView
                 android:id="@+id/txtGameSeries"
@@ -101,7 +109,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@+id/divider3"
                 android:text="GAME SERIES"
-                android:textColor="@color/tag_text"/>
+                android:textColor="@color/tag_text" />
 
             <TextView
                 android:id="@+id/txtCharacter"
@@ -111,7 +119,7 @@
                 android:layout_toRightOf="@+id/divider3"
                 android:gravity="end"
                 android:text="CHARACTER"
-                android:textColor="@color/tag_text"/>
+                android:textColor="@color/tag_text" />
         </RelativeLayout>
 
         <TextView
@@ -121,15 +129,16 @@
             android:layout_alignBottom="@+id/group3"
             android:layout_alignTop="@+id/group1"
             android:layout_centerHorizontal="true"
+            android:layout_below="@id/imageAmiibo"
             android:gravity="center"
-            android:text=""/>
+            android:text="" />
 
         <TextView
             android:id="@+id/txtPath"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/group3"
+            android:layout_below="@id/imageAmiibo"
             android:text="PATH"
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

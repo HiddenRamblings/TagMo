@@ -386,13 +386,17 @@ public class MainActivity extends AppCompatActivity {
                     if (amiibo.getCharacter() != null)
                         character = amiibo.getCharacter().name;
 
-                    switch (amiibo.getHead()) {
-                        case EditorTP.WOLF_LINK_ID:
-                            tpVisibility = View.VISIBLE;
-                            break;
-                        default:
-                            ssbVisibility = View.VISIBLE;
-                            break;
+                    if (this.currentTagData[221] == 00 && this.currentTagData[223] == 00) {
+                        ssbVisibility = View.VISIBLE;
+                    } else {
+                        switch (amiibo.getHead()) {
+                            case EditorTP.WOLF_LINK_ID:
+                                tpVisibility = View.VISIBLE;
+                                break;
+                            default:
+                                ssbVisibility = View.GONE;
+                                break;
+                        }
                     }
                 } else {
                     tagInfo = "<Unknown amiibo id: " + TagUtil.amiiboIdToHex(amiiboId) + ">";

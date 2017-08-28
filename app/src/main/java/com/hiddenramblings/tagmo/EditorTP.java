@@ -17,7 +17,7 @@ import org.androidannotations.annotations.ViewById;
 @EActivity(R.layout.activity_editor_tp)
 @OptionsMenu({R.menu.editor_menu})
 public class EditorTP extends AppCompatActivity {
-    public static final int WOLF_LINK_ID = 0x01030000;
+    public static final long WOLF_LINK_ID = 0x01030000024F0902L;
 
     private static final String TAG = "EditorTP";
 

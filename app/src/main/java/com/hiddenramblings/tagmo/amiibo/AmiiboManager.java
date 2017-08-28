@@ -21,10 +21,10 @@ public class AmiiboManager {
     public static final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd");
 
     public final HashMap<Long, Amiibo> amiibos = new HashMap<>();
-    public final HashMap<Integer, GameSeries> gameSeries = new HashMap<>();
-    public final HashMap<Integer, Character> characters = new HashMap<>();
-    public final HashMap<Integer, AmiiboType> amiiboTypes = new HashMap<>();
-    public final HashMap<Integer, AmiiboSeries> amiiboSeries = new HashMap<>();
+    public final HashMap<Long, GameSeries> gameSeries = new HashMap<>();
+    public final HashMap<Long, Character> characters = new HashMap<>();
+    public final HashMap<Long, AmiiboType> amiiboTypes = new HashMap<>();
+    public final HashMap<Long, AmiiboSeries> amiiboSeries = new HashMap<>();
 
     public static AmiiboManager parse(Context context, Uri uri) throws IOException, JSONException, ParseException {
         InputStream inputSteam = null;
@@ -132,25 +132,25 @@ public class AmiiboManager {
             Amiibo amiibo = new Amiibo(manager, key, name, releaseDates);
             manager.amiibos.put(amiibo.id, amiibo);
 
-            int gameSeriesId = amiibo.getGameSeriesId();
+            long gameSeriesId = amiibo.getGameSeriesId();
             if (!manager.gameSeries.containsKey(gameSeriesId)) {
                 GameSeries gameSeries = new GameSeries(manager, gameSeriesId, amiiboJSON.getString("gameSeries"));
                 manager.gameSeries.put(gameSeriesId, gameSeries);
             }
 
-            int characterId = amiibo.getCharacterId();
+            long characterId = amiibo.getCharacterId();
             if (!manager.characters.containsKey(characterId)) {
                 Character character = new Character(manager, characterId, amiiboJSON.getString("character"));
                 manager.characters.put(characterId, character);
             }
 
-            int amiiboTypeId = amiibo.getAmiiboTypeId();
+            long amiiboTypeId = amiibo.getAmiiboTypeId();
             if (!manager.amiiboTypes.containsKey(amiiboTypeId)) {
                 AmiiboType amiiboType = new AmiiboType(manager, amiiboTypeId, amiiboJSON.getString("type"));
                 manager.amiiboTypes.put(amiiboTypeId, amiiboType);
             }
 
-            int amiiboSeriesId = amiibo.getAmiiboSeriesId();
+            long amiiboSeriesId = amiibo.getAmiiboSeriesId();
             if (!manager.amiiboSeries.containsKey(amiiboSeriesId)) {
                 AmiiboSeries amiiboSeries = new AmiiboSeries(manager, amiiboSeriesId, amiiboJSON.getString("amiiboSeries"));
                 manager.amiiboSeries.put(amiiboSeriesId, amiiboSeries);
@@ -182,28 +182,28 @@ public class AmiiboManager {
         outputJSON.put("amiibos", amiibosJSON);
 
         JSONObject gameSeriesJSON = new JSONObject();
-        for (Map.Entry<Integer, GameSeries> entry : this.gameSeries.entrySet()) {
+        for (Map.Entry<Long, GameSeries> entry : this.gameSeries.entrySet()) {
             GameSeries gameSeries = entry.getValue();
             gameSeriesJSON.put(String.format("0x%03X", gameSeries.id >> GameSeries.BITSHIFT), gameSeries.name);
         }
         outputJSON.put("game_series", gameSeriesJSON);
 
         JSONObject charactersJSON = new JSONObject();
-        for (Map.Entry<Integer, Character> entry : this.characters.entrySet()) {
+        for (Map.Entry<Long, Character> entry : this.characters.entrySet()) {
             Character characters = entry.getValue();
             charactersJSON.put(String.format("0x%04X", characters.id >> Character.BITSHIFT), characters.name);
         }
         outputJSON.put("characters", charactersJSON);
 
         JSONObject amiiboTypesJSON = new JSONObject();
-        for (Map.Entry<Integer, AmiiboType> entry : this.amiiboTypes.entrySet()) {
+        for (Map.Entry<Long, AmiiboType> entry : this.amiiboTypes.entrySet()) {
             AmiiboType amiiboType = entry.getValue();
             amiiboTypesJSON.put(String.format("0x%02X", amiiboType.id >> AmiiboType.BITSHIFT), amiiboType.name);
         }
         outputJSON.put("types", amiiboTypesJSON);
 
         JSONObject amiiboSeriesJSON = new JSONObject();
-        for (Map.Entry<Integer, AmiiboSeries> entry : this.amiiboSeries.entrySet()) {
+        for (Map.Entry<Long, AmiiboSeries> entry : this.amiiboSeries.entrySet()) {
             AmiiboSeries amiiboSeries = entry.getValue();
             amiiboSeriesJSON.put(String.format("0x%02X", amiiboSeries.id >> AmiiboSeries.BITSHIFT), amiiboSeries.name);
         }

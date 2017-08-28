@@ -40,74 +40,70 @@
                 android:textColor="@color/tag_text"
                 android:textSize="16dp"/>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/group1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/txtName">
-
-                <View
-                    android:id="@+id/divider1"
-                    android:layout_width="4dp"
-                    android:layout_height="0dp"
-                    android:layout_centerHorizontal="true"/>
+                android:layout_below="@+id/txtName"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/txtTagId"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_toRightOf="@+id/divider1"
-                    android:gravity="end"
+                    android:layout_weight="1"
+                    android:gravity="start"
                     android:text="TAGID"
                     android:textColor="@color/tag_text"
                     android:textSize="10dp"/>
 
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="match_parent"/>
+
                 <TextView
                     android:id="@+id/txtAmiiboType"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_toLeftOf="@+id/divider1"
+                    android:layout_weight="1"
                     android:gravity="end"
                     android:text="AMIIBO TYPE"
                     android:textColor="@color/tag_text"
                     android:textSize="10dp"/>
-            </RelativeLayout>
+            </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/group2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/group1">
-
-                <View
-                    android:id="@+id/divider2"
-                    android:layout_width="4dp"
-                    android:layout_height="0dp"
-                    android:layout_centerHorizontal="true"/>
+                android:layout_below="@+id/group1"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/txtGameSeries"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_toRightOf="@+id/divider2"
+                    android:layout_weight="1"
+                    android:gravity="start"
                     android:text="GAME SERIES"
                     android:textColor="@color/tag_text"
                     android:textSize="10dp"/>
 
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="match_parent"/>
+
                 <TextView
                     android:id="@+id/txtAmiiboSeries"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_toLeftOf="@+id/divider2"
+                    android:layout_weight="1"
+                    android:gravity="end"
                     android:text="AMIIBO SERIES"
                     android:textColor="@color/tag_text"
                     android:textSize="10dp"/>
-            </RelativeLayout>
-
+            </LinearLayout>
+            
             <TextView
                 android:id="@+id/txtTagInfo"
                 android:layout_width="match_parent"

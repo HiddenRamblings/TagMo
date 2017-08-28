@@ -8,7 +8,7 @@ import org.androidannotations.annotations.sharedpreferences.SharedPref;
 public interface Preferences {
     String query();
 
-    @DefaultInt(0x1)
+    @DefaultInt(BrowserActivity.SORT_NAME)
     int sort();
 
     String filterGameSeries();
@@ -24,4 +24,10 @@ public interface Preferences {
 
     @DefaultBoolean(keyRes=R.string.settings_enable_tag_type_validation, value=true)
     boolean enableTagTypeValidation();
+
+    @DefaultInt(BrowserActivity.VIEW_TYPE_COMPACT)
+    int browserView();
+
+    @DefaultInt(MainActivity.VIEW_TYPE_COMPACT)
+    int mainView();
 }

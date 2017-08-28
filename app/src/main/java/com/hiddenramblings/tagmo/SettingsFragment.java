@@ -185,7 +185,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 public View getView(int position, View convertView, ViewGroup parent) {
                     ViewHolder holder;
                     if (convertView == null) {
-                        convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.amiibo_info_view, parent, false);
+                        convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.amiibo_compact_card, parent, false);
                         holder = new ViewHolder(convertView);
                     } else {
                         holder = (ViewHolder) convertView.getTag();

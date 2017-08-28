@@ -9,11 +9,11 @@ public class Amiibo implements Comparable<Amiibo> {
     public static int HEAD_BITSHIFT = 4 * 8;
     public static int TAIL_BITSHIFT = 4 * 0;
 
-    public static String AMIIBO_API_IMAGE_URL = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08X-%08X.png";
     public static long VARIANT_MASK = 0xFFFFFF0000000000L;
     public static long AMIIBO_MODEL_MASK = 0x00000000FFFF0000L;
     public static long UNKNOWN_MASK = 0x00000000000000FFL;
 
+    public static String AMIIBO_API_IMAGE_URL = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08x-%08x.png";
 
     public AmiiboManager manager;
     public final long id;

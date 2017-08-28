@@ -586,6 +586,16 @@ public class MainActivity extends AppCompatActivity {
 
         int ssbVisibility = View.GONE;
         int tpVisibility = View.GONE;
+        try {
+            long amiiboId = TagUtil.amiiboIdFromTag(currentTagData);
+            if (amiiboId == EditorTP.WOLF_LINK_ID) {
+                tpVisibility = View.VISIBLE;
+            } else {
+                ssbVisibility = View.VISIBLE;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         AmiiboView fragment = (AmiiboView) getSupportFragmentManager().findFragmentById(R.id.amiiboInfoView);
         if (fragment != null) {

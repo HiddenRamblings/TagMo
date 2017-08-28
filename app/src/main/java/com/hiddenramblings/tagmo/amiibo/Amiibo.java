@@ -9,11 +9,10 @@ public class Amiibo implements Comparable<Amiibo> {
     public static int HEAD_BITSHIFT = 4 * 8;
     public static int TAIL_BITSHIFT = 4 * 0;
 
-    public static int VARIANT_MASK = 0xFFFFFF00;
-    public static int AMIIBO_MODEL_MASK = 0xFFFF0000;
-    public static int UNKNOWN_MASK = 0x000000FF;
-
     public static String AMIIBO_API_IMAGE_URL = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08X-%08X.png";
+    public static long VARIANT_MASK = 0xFFFFFF0000000000L;
+    public static long AMIIBO_MODEL_MASK = 0x00000000FFFF0000L;
+    public static long UNKNOWN_MASK = 0x00000000000000FFL;
 
 
     public AmiiboManager manager;
@@ -44,48 +43,48 @@ public class Amiibo implements Comparable<Amiibo> {
         return (int)((this.id & TAIL_MASK) >> TAIL_BITSHIFT);
     }
 
-    public int getGameSeriesId() {
-        return this.getHead() & GameSeries.MASK;
+    public long getGameSeriesId() {
+        return this.id & GameSeries.MASK;
     }
 
     public GameSeries getGameSeries() {
         return this.manager.gameSeries.get(this.getGameSeriesId());
     }
 
-    public int getCharacterId() {
-        return this.getHead() & Character.MASK;
+    public long getCharacterId() {
+        return this.id & Character.MASK;
     }
 
     public Character getCharacter() {
         return this.manager.characters.get(this.getCharacterId());
     }
 
-    public int getVariantId() {
-        return this.getHead() & VARIANT_MASK;
+    public long getVariantId() {
+        return this.id & VARIANT_MASK;
     }
 
-    public int getAmiiboTypeId() {
-        return this.getHead() & AmiiboType.MASK;
+    public long getAmiiboTypeId() {
+        return this.id & AmiiboType.MASK;
     }
 
     public AmiiboType getAmiiboType() {
         return this.manager.amiiboTypes.get(this.getAmiiboTypeId());
     }
 
-    public int getAmiiboModelId() {
-        return this.getTail() & AMIIBO_MODEL_MASK;
+    public long getAmiiboModelId() {
+        return this.id & AMIIBO_MODEL_MASK;
     }
 
-    public int getAmiiboSeriesId() {
-        return this.getTail() & AmiiboSeries.MASK;
+    public long getAmiiboSeriesId() {
+        return this.id & AmiiboSeries.MASK;
     }
 
     public AmiiboSeries getAmiiboSeries() {
         return this.manager.amiiboSeries.get(this.getAmiiboSeriesId());
     }
 
-    public int getUnknownId() {
-        return this.getTail() & UNKNOWN_MASK;
+    public long getUnknownId() {
+        return this.id & UNKNOWN_MASK;
     }
 
     public static long hexToId(String value) {

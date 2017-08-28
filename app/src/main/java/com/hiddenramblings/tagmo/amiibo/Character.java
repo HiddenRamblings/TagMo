@@ -3,14 +3,14 @@ package com.hiddenramblings.tagmo.amiibo;
 import android.support.annotation.NonNull;
 
 public class Character implements Comparable<Character> {
-    public static final int MASK = 0xFFFF0000;
-    public static final int BITSHIFT = 4 * 4;
+    public static final long MASK = 0xFFFF000000000000L;
+    public static final int BITSHIFT = 4 * 12;
 
     public final AmiiboManager manager;
-    public final int id;
+    public final long id;
     public final String name;
 
-    public Character(AmiiboManager manager, int id, String name) {
+    public Character(AmiiboManager manager, long id, String name) {
         this.manager = manager;
         this.id = id;
         this.name = name;
@@ -20,7 +20,7 @@ public class Character implements Comparable<Character> {
         this(manager, hexToId(id), name);
     }
 
-    public int getGameSeriesId() {
+    public long getGameSeriesId() {
         return this.id & GameSeries.MASK;
     }
 
@@ -28,8 +28,8 @@ public class Character implements Comparable<Character> {
         return this.manager.gameSeries.get(this.getGameSeriesId());
     }
 
-    public static int hexToId(String value) {
-        return (Integer.decode(value) << BITSHIFT) & MASK;
+    public static long hexToId(String value) {
+        return (Long.decode(value) << BITSHIFT) & MASK;
     }
 
     @Override

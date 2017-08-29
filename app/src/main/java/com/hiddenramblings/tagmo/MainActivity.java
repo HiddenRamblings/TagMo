@@ -39,6 +39,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -591,7 +592,9 @@ public class MainActivity extends AppCompatActivity {
             if (amiiboId == EditorTP.WOLF_LINK_ID) {
                 tpVisibility = View.VISIBLE;
             } else {
-                ssbVisibility = View.VISIBLE;
+                if ((amiiboId & AmiiboSeries.MASK)== 0x0000000000000000L){
+                    ssbVisibility = View.VISIBLE;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

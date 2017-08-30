@@ -588,13 +588,11 @@ public class MainActivity extends AppCompatActivity {
         int ssbVisibility = View.GONE;
         int tpVisibility = View.GONE;
         try {
-            long amiiboId = TagUtil.amiiboIdFromTag(currentTagData);
-            if (amiiboId == EditorTP.WOLF_LINK_ID) {
+            long amiiboSeriesIndentifier = (TagUtil.amiiboIdFromTag(currentTagData) & AmiiboSeries.MASK);
+            if (amiiboSeriesIndentifier == EditorTP.TP_IDENTIFIER) {
                 tpVisibility = View.VISIBLE;
-            } else {
-                if ((amiiboId & AmiiboSeries.MASK)== 0x0000000000000000L){
+            }else if(amiiboSeriesIndentifier == EditorSSB.SSB_IDENTIFIER) {
                     ssbVisibility = View.VISIBLE;
-                }
             }
         } catch (Exception e) {
             e.printStackTrace();

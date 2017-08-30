@@ -18,6 +18,8 @@ import org.androidannotations.annotations.ViewById;
 @EActivity(R.layout.activity_editor_ssb)
 @OptionsMenu({R.menu.editor_menu})
 public class EditorSSB extends AppCompatActivity {
+    public static final long SSB_IDENTIFIER = 0x0000000000000000L;
+
     private static final String TAG = "EditorSSB";
 
     @ViewById(R.id.spnAppearance)

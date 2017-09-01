@@ -124,32 +124,36 @@
                     android:layout_toRightOf="@+id/btnCreateTag"
                     android:text="Allow restore to different tag"/>
 
-                <Button
-                    android:id="@+id/btnEditDataMii"
-                    android:layout_width="@dimen/main_buttons_width"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_below="@id/cbNoIDValidate"
-                    android:text="Edit Mii Data"
-                    android:visibility="gone"/>
+                    android:layout_below="@id/cbNoIDValidate">
 
-                <Button
-                    android:id="@+id/btnEditDataSSB"
-                    android:layout_width="@dimen/main_buttons_width"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_below="@id/cbNoIDValidate"
-                    android:text="Edit SSB Data"
-                    android:visibility="gone"/>
+                    <Button
+                        android:id="@+id/btnEditDataMii"
+                        android:layout_width="@dimen/main_buttons_width"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:text="@string/edit_mii_data"
+                        android:visibility="gone"/>
 
-                <Button
-                    android:id="@+id/btnEditDataTP"
-                    android:layout_width="@dimen/main_buttons_width"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_below="@id/cbNoIDValidate"
-                    android:text="@string/edit_tp_data"
-                    android:visibility="gone"/>
+                    <Button
+                        android:id="@+id/btnEditDataSSB"
+                        android:layout_width="@dimen/main_buttons_width"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:text="@string/edit_ssb_data"
+                        android:visibility="gone"/>
+
+                    <Button
+                        android:id="@+id/btnEditDataTP"
+                        android:layout_width="@dimen/main_buttons_width"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:text="@string/edit_tp_data"
+                        android:visibility="gone"/>
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/btnFixSig"

@@ -31,4 +31,6 @@
     <string name="keys_missing_warning">Amiibo keys not found</string>
     <string name="nfc_enable_action">Enable</string>
     <string name="open_settings_action">Settings</string>
+    <string name="edit_ssb_data">Edit SSB Data</string>
+    <string name="edit_mii_data">Edit Mii Data</string>
 </resources>

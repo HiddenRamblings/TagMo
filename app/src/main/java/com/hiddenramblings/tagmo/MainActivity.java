@@ -592,9 +592,10 @@ public class MainActivity extends AppCompatActivity {
         int tpVisibility = View.GONE;
         try {
             long amiiboId = TagUtil.amiiboIdFromTag(currentTagData);
-            if (amiiboId == EditorTP.WOLF_LINK_ID) {
+            if (EditorTP.canEditAmiibo(amiiboId)) {
                 tpVisibility = View.VISIBLE;
-            } else {
+            }
+            if (EditorSSB.canEditAmiibo(amiiboId)) {
                 ssbVisibility = View.VISIBLE;
             }
         } catch (Exception e) {

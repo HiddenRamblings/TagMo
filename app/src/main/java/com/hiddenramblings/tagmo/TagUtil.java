@@ -1,16 +1,15 @@
 package com.hiddenramblings.tagmo;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class TagUtil {
     public static final int TAG_FILE_SIZE = 532;
     public static final int PAGE_SIZE = 4;
     public static final int AMIIBO_ID_OFFSET = 0x54;
+    public static final int APP_ID_OFFSET = 0xB6;
+    public static final int APP_ID_LENGTH = 4;
 
     public static byte[] keygen(byte[] uuid) {
         //from AmiiManage (GPL)
@@ -53,7 +52,7 @@ public class TagUtil {
         if (data.length < TAG_FILE_SIZE)
             throw new Exception("Invalid tag data");
 
-        byte[] amiiboId = new byte[4*2];
+        byte[] amiiboId = new byte[4 * 2];
         System.arraycopy(data, AMIIBO_ID_OFFSET, amiiboId, 0, amiiboId.length);
         return ByteBuffer.wrap(amiiboId).getLong();
     }
@@ -102,7 +101,7 @@ public class TagUtil {
         AmiiTool tool = new AmiiTool();
         if (tool.setKeysFixed(keyManager.fixedKey, keyManager.fixedKey.length) == 0)
             throw new Exception("Failed to initialise amiitool");
-        if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length)== 0)
+        if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length) == 0)
             throw new Exception("Failed to initialise amiitool");
         byte[] decrypted = new byte[TagUtil.TAG_FILE_SIZE];
         if (tool.unpack(tagData, tagData.length, decrypted, decrypted.length) == 0)
@@ -118,7 +117,7 @@ public class TagUtil {
         AmiiTool tool = new AmiiTool();
         if (tool.setKeysFixed(keyManager.fixedKey, keyManager.fixedKey.length) == 0)
             throw new Exception("Failed to initialise amiitool");
-        if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length)== 0)
+        if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length) == 0)
             throw new Exception("Failed to initialise amiitool");
         byte[] encrypted = new byte[TagUtil.TAG_FILE_SIZE];
         if (tool.pack(tagData, tagData.length, encrypted, encrypted.length) == 0)

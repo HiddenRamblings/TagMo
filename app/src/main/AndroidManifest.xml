@@ -36,6 +36,9 @@
                 android:resource="@xml/searchable"/>
         </activity>
         <activity
+            android:name=".ImageActivity_"
+            android:theme="@style/AppTheme"/>
+        <activity
             android:name=".SettingsActivity_"
             android:theme="@style/AppTheme"/>
     </application>

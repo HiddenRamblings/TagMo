@@ -3,6 +3,8 @@ package com.hiddenramblings.tagmo.amiibo;
 
 import android.support.annotation.NonNull;
 
+import com.hiddenramblings.tagmo.TagUtil;
+
 public class Amiibo implements Comparable<Amiibo> {
     public static long HEAD_MASK = 0xFFFFFFFF00000000L;
     public static long TAIL_MASK = 0x00000000FFFFFFFFL;
@@ -93,6 +95,12 @@ public class Amiibo implements Comparable<Amiibo> {
 
     public String getImageUrl() {
         return String.format(AMIIBO_API_IMAGE_URL, getHead(), getTail());
+    }
+
+    public static String getImageUrl(long amiiboId) {
+        int head = (int)((amiiboId & HEAD_MASK) >> HEAD_BITSHIFT);
+        int tail = (int)((amiiboId & TAIL_MASK) >> TAIL_BITSHIFT);;
+        return String.format(AMIIBO_API_IMAGE_URL, head, tail);
     }
 
     @Override

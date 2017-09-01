@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int VIEW_TYPE_COMPACT = 1;
     public static final int VIEW_TYPE_LARGE = 2;
 
-    public static abstract class AmiiboView extends Fragment {
+    public static abstract class AmiiboView extends Fragment implements View.OnClickListener {
         TextView txtTagInfo;
         TextView txtTagId;
         TextView txtName;
@@ -204,6 +204,25 @@ public class MainActivity extends AppCompatActivity {
                 textView.setEnabled(true);
             }
         }
+
+        @Override
+        public void onClick(View view) {
+            long amiiboId;
+            try {
+                amiiboId = TagUtil.amiiboIdFromTag(this.tagData);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+
+            Bundle bundle = new Bundle();
+            bundle.putLong(ImageActivity.INTENT_EXTRA_AMIIBO_ID, amiiboId);
+
+            Intent intent = new Intent(this.getContext(), ImageActivity_.class);
+            intent.putExtras(bundle);
+
+            this.startActivity(intent);
+        }
     }
 
     @EFragment(R.layout.amiibo_simple_card)
@@ -225,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
             txtAmiiboType = this.getView().findViewById(R.id.txtAmiiboType);
             txtAmiiboSeries = this.getView().findViewById(R.id.txtAmiiboSeries);
             imageAmiibo = this.getView().findViewById(R.id.imageAmiibo);
+            imageAmiibo.setOnClickListener(this);
 
             updateView();
         }
@@ -249,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
             txtAmiiboType = this.getView().findViewById(R.id.txtAmiiboType);
             txtAmiiboSeries = this.getView().findViewById(R.id.txtAmiiboSeries);
             imageAmiibo = this.getView().findViewById(R.id.imageAmiibo);
+            imageAmiibo.setOnClickListener(this);
 
             updateView();
         }
@@ -273,6 +294,7 @@ public class MainActivity extends AppCompatActivity {
             txtAmiiboType = this.getView().findViewById(R.id.txtAmiiboType);
             txtAmiiboSeries = this.getView().findViewById(R.id.txtAmiiboSeries);
             imageAmiibo = this.getView().findViewById(R.id.imageAmiibo);
+            imageAmiibo.setOnClickListener(this);
 
             updateView();
         }

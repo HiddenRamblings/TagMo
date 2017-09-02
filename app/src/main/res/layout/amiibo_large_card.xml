@@ -22,6 +22,7 @@
             android:id="@+id/imageAmiibo"
             android:layout_width="match_parent"
             android:layout_height="150dp"
+            android:foreground="@drawable/card_foreground"
             android:visibility="gone"/>
 
         <RelativeLayout

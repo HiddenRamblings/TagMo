@@ -364,9 +364,10 @@ public class MainActivity extends AppCompatActivity {
         btnScanTag.setEnabled(nfcEnabled);
         btnWriteTagAuto.setEnabled(nfcEnabled && hasKeys && hasTag);
         btnRestoreTag.setEnabled(nfcEnabled && hasTag);
-        btnSaveTag.setEnabled(nfcEnabled && hasTag);
+        btnSaveTag.setEnabled(hasTag);
         btnShowQRCode.setEnabled(hasTag);
         btnEditDataSSB.setEnabled(hasKeys && hasTag);
+        btnEditDataTP.setEnabled(hasKeys && hasTag);
         btnViewHex.setEnabled(hasKeys && hasTag);
 
         int ssbVisibility = View.GONE;

@@ -68,7 +68,7 @@ import java.util.Set;
 
 @EActivity(R.layout.browser_layout)
 @OptionsMenu({R.menu.browser_menu})
-public class BrowserActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener, RecyclerItemClickListener.OnItemClickListener {
+public class BrowserActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     public static final int SORT_ID = 0x0;
     public static final int SORT_NAME = 0x1;
     public static final int SORT_AMIIBO_SERIES = 0x2;
@@ -183,7 +183,6 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.listView.setLayoutManager(new LinearLayoutManager(this));
         this.listView.setAdapter(new AmiiboFilesAdapter(this));
-        this.listView.addOnItemTouchListener(new RecyclerItemClickListener(this, this.listView, this));
         if (this.amiiboFiles == null) {
             this.onRefresh();
         } else {
@@ -200,21 +199,6 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
 
     protected AmiiboFilesAdapter getListAdapter() {
         return (AmiiboFilesAdapter) this.listView.getAdapter();
-    }
-
-    @Override
-    public void onItemClick(View view, int position) {
-        AmiiboFile item = getListAdapter().getItem(position);
-
-        Intent returnIntent = new Intent();
-        returnIntent.setData(Uri.fromFile(new File(item.filePath)));
-
-        this.setResult(Activity.RESULT_OK, returnIntent);
-        finish();
-    }
-
-    @Override
-    public void onLongItemClick(View view, int position) {
     }
 
     @Override
@@ -754,6 +738,8 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         TextView txtCharacter;
         TextView txtPath;
         ImageView imageAmiibo;
+        AmiiboFile amiiboFile = null;
+        BrowserActivity activity;
 
         SimpleTarget<Bitmap> target = new SimpleTarget<Bitmap>() {
             @Override
@@ -776,6 +762,17 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
         public AmiiboVewHolder(View itemView) {
             super(itemView);
 
+            this.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent returnIntent = new Intent();
+                    returnIntent.setData(Uri.fromFile(new File(amiiboFile.filePath)));
+
+                    activity.setResult(Activity.RESULT_OK, returnIntent);
+                    activity.finish();
+                }
+            });
+
             this.txtTagInfo = itemView.findViewById(R.id.txtTagInfo);
             this.txtName = itemView.findViewById(R.id.txtName);
             this.txtTagId = itemView.findViewById(R.id.txtTagId);
@@ -785,9 +782,24 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
             this.txtPath = itemView.findViewById(R.id.txtPath);
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
+            this.imageAmiibo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Bundle bundle = new Bundle();
+                    bundle.putLong(ImageActivity.INTENT_EXTRA_AMIIBO_ID, amiiboFile.id);
+
+                    Intent intent = new Intent(activity, ImageActivity_.class);
+                    intent.putExtras(bundle);
+
+                    activity.startActivity(intent);
+                }
+            });
         }
 
-        void bind(BrowserActivity activity, AmiiboFile item) {
+        void bind(BrowserActivity activity, final AmiiboFile item) {
+            this.activity = activity;
+            this.amiiboFile = item;
+
             String tagInfo = "";
             String amiiboHexId = "";
             String amiiboName = "";

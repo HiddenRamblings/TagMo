@@ -109,6 +109,24 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        void afterViews() {
+            isAfterViews = true;
+
+            txtTagInfo = this.getView().findViewById(R.id.txtTagInfo);
+            txtTagId = this.getView().findViewById(R.id.txtTagId);
+            txtName = this.getView().findViewById(R.id.txtName);
+            txtGameSeries = this.getView().findViewById(R.id.txtGameSeries);
+            txtCharacter = this.getView().findViewById(R.id.txtCharacter);
+            txtAmiiboType = this.getView().findViewById(R.id.txtAmiiboType);
+            txtAmiiboSeries = this.getView().findViewById(R.id.txtAmiiboSeries);
+            imageAmiibo = this.getView().findViewById(R.id.imageAmiibo);
+            if (imageAmiibo != null) {
+                imageAmiibo.setOnClickListener(this);
+            }
+
+            updateView();
+        }
+
         public void setAmiiboManager(AmiiboManager amiiboManager) {
             this.amiiboManager = amiiboManager;
         }
@@ -234,19 +252,7 @@ public class MainActivity extends AppCompatActivity {
 
         @AfterViews
         void afterViews() {
-            isAfterViews = true;
-
-            txtTagInfo = this.getView().findViewById(R.id.txtTagInfo);
-            txtTagId = this.getView().findViewById(R.id.txtTagId);
-            txtName = this.getView().findViewById(R.id.txtName);
-            txtGameSeries = this.getView().findViewById(R.id.txtGameSeries);
-            txtCharacter = this.getView().findViewById(R.id.txtCharacter);
-            txtAmiiboType = this.getView().findViewById(R.id.txtAmiiboType);
-            txtAmiiboSeries = this.getView().findViewById(R.id.txtAmiiboSeries);
-            imageAmiibo = this.getView().findViewById(R.id.imageAmiibo);
-            imageAmiibo.setOnClickListener(this);
-
-            updateView();
+            super.afterViews();
         }
     }
 
@@ -259,19 +265,7 @@ public class MainActivity extends AppCompatActivity {
 
         @AfterViews
         void afterViews() {
-            isAfterViews = true;
-
-            txtTagInfo = this.getView().findViewById(R.id.txtTagInfo);
-            txtTagId = this.getView().findViewById(R.id.txtTagId);
-            txtName = this.getView().findViewById(R.id.txtName);
-            txtGameSeries = this.getView().findViewById(R.id.txtGameSeries);
-            txtCharacter = this.getView().findViewById(R.id.txtCharacter);
-            txtAmiiboType = this.getView().findViewById(R.id.txtAmiiboType);
-            txtAmiiboSeries = this.getView().findViewById(R.id.txtAmiiboSeries);
-            imageAmiibo = this.getView().findViewById(R.id.imageAmiibo);
-            imageAmiibo.setOnClickListener(this);
-
-            updateView();
+            super.afterViews();
         }
     }
 
@@ -284,19 +278,7 @@ public class MainActivity extends AppCompatActivity {
 
         @AfterViews
         void afterViews() {
-            isAfterViews = true;
-
-            txtTagInfo = this.getView().findViewById(R.id.txtTagInfo);
-            txtTagId = this.getView().findViewById(R.id.txtTagId);
-            txtName = this.getView().findViewById(R.id.txtName);
-            txtGameSeries = this.getView().findViewById(R.id.txtGameSeries);
-            txtCharacter = this.getView().findViewById(R.id.txtCharacter);
-            txtAmiiboType = this.getView().findViewById(R.id.txtAmiiboType);
-            txtAmiiboSeries = this.getView().findViewById(R.id.txtAmiiboSeries);
-            imageAmiibo = this.getView().findViewById(R.id.imageAmiibo);
-            imageAmiibo.setOnClickListener(this);
-
-            updateView();
+            super.afterViews();
         }
     }
 

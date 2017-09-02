@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.preference.CheckBoxPreference;
+import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.text.Spannable;
@@ -35,6 +36,7 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.PreferenceByKey;
+import org.androidannotations.annotations.PreferenceChange;
 import org.androidannotations.annotations.PreferenceClick;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.sharedpreferences.Pref;
@@ -56,6 +58,10 @@ import java.util.Collections;
 
 @EFragment
 public class SettingsFragment extends PreferenceFragmentCompat {
+    public static final String IMAGE_NETWORK_NEVER = "NEVER";
+    public static final String IMAGE_NETWORK_WIFI = "WIFI_ONLY";
+    public static final String IMAGE_NETWORK_ALWAYS = "ALWAYS";
+
     private static final int RESULT_KEYS = 0;
     private static final int RESULT_IMPORT_AMIIBO_DATABASE = 1;
 
@@ -78,6 +84,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     Preference amiiboSeriesStats;
     @PreferenceByKey(R.string.settings_info_amiibo_types)
     Preference amiiboTypeStats;
+    @PreferenceByKey(R.string.image_network_settings)
+    ListPreference imageNetworkSetting;
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -97,6 +105,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         loadAmiiboManager();
         updateKeySummary();
         updateAmiiboStats();
+        onImageNetworkChange(prefs.imageNetworkSetting().get());
     }
 
     @PreferenceClick(R.string.settings_import_keys)
@@ -277,6 +286,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             .setAdapter(new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, items), null)
             .setPositiveButton("Close", null)
             .show();
+    }
+
+    @PreferenceChange(R.string.image_network_settings)
+    void onImageNetworkChange(String newValue) {
+        int index = imageNetworkSetting.findIndexOfValue(newValue);
+        if (index == -1) {
+            onImageNetworkChange(IMAGE_NETWORK_ALWAYS);
+        } else {
+            prefs.imageNetworkSetting().put(newValue);
+            imageNetworkSetting.setValue(newValue);
+            imageNetworkSetting.setSummary(imageNetworkSetting.getEntries()[index]);
+        }
     }
 
     @PreferenceClick(R.string.settings_info_characters)

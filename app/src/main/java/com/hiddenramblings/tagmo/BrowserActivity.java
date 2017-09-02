@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -325,11 +328,11 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
     }
 
     public int getView() {
-        return this.prefs.browserView().get();
+        return this.prefs.browserAmiiboView().get();
     }
 
     public void setView(int view) {
-        this.prefs.browserView().put(view);
+        this.prefs.browserAmiiboView().put(view);
         if (view == VIEW_TYPE_SIMPLE) {
             menuViewSimple.setChecked(true);
         } else if (view == VIEW_TYPE_COMPACT) {
@@ -782,18 +785,20 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
             this.txtPath = itemView.findViewById(R.id.txtPath);
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
-            this.imageAmiibo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Bundle bundle = new Bundle();
-                    bundle.putLong(ImageActivity.INTENT_EXTRA_AMIIBO_ID, amiiboFile.id);
+            if (this.imageAmiibo != null) {
+                this.imageAmiibo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Bundle bundle = new Bundle();
+                        bundle.putLong(ImageActivity.INTENT_EXTRA_AMIIBO_ID, amiiboFile.id);
 
-                    Intent intent = new Intent(activity, ImageActivity_.class);
-                    intent.putExtras(bundle);
+                        Intent intent = new Intent(activity, ImageActivity_.class);
+                        intent.putExtras(bundle);
 
-                    activity.startActivity(intent);
-                }
-            });
+                        activity.startActivity(intent);
+                    }
+                });
+            }
         }
 
         void bind(BrowserActivity activity, final AmiiboFile item) {
@@ -852,13 +857,29 @@ public class BrowserActivity extends AppCompatActivity implements SearchView.OnQ
             this.txtPath.setVisibility(View.VISIBLE);
 
             if (this.imageAmiibo != null) {
+                this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(activity).clear(target);
                 if (amiiboImageUrl != null) {
                     Glide.with(activity)
+                        .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache(activity)))
                         .asBitmap()
                         .load(amiiboImageUrl)
                         .into(target);
                 }
+            }
+        }
+
+        boolean onlyRetrieveFromCache(BrowserActivity activity) {
+            String imageNetworkSetting = activity.prefs.imageNetworkSetting().get();
+            if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
+                return true;
+            } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
+                ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                return activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI;
+            } else {
+                return false;
             }
         }
 

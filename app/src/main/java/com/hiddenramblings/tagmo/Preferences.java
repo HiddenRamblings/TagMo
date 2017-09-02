@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import org.androidannotations.annotations.sharedpreferences.DefaultBoolean;
 import org.androidannotations.annotations.sharedpreferences.DefaultInt;
+import org.androidannotations.annotations.sharedpreferences.DefaultString;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
 
 @SharedPref(value=SharedPref.Scope.UNIQUE)
@@ -26,8 +27,11 @@ public interface Preferences {
     boolean enableTagTypeValidation();
 
     @DefaultInt(BrowserActivity.VIEW_TYPE_COMPACT)
-    int browserView();
+    int browserAmiiboView();
 
     @DefaultInt(MainActivity.VIEW_TYPE_COMPACT)
-    int mainView();
+    int mainAmiiboView();
+
+    @DefaultString(keyRes=R.string.image_network_settings, value=SettingsFragment.IMAGE_NETWORK_ALWAYS)
+    String imageNetworkSetting();
 }

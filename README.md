@@ -47,6 +47,7 @@ This app is a result of work by many others. Thanks go out to (In alphabetical o
 * azsde - Bug fixes/maintenance
 * Bombastisch - support and motivation
 * FinalDoom - Bug fixes/maintenance
+* H3llK33p3r - Images for browser and main screen.
 * javiMaD - Encryption algo help
 * Kidel - Bug Fixes
 * N3evin - AmiiboAPI data

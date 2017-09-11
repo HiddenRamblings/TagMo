@@ -40,6 +40,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.ptag.PTagKeyManager;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -156,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         startNfcMonitor();
         keyManager = new KeyManager(this);
         this.loadAmiiboManager();
+        this.loadPTagKeyManager();
     }
 
     @Override
@@ -171,6 +173,21 @@ public class MainActivity extends AppCompatActivity {
         setView(getView());
 
         return result;
+    }
+
+    @Background
+    void loadPTagKeyManager() {
+        if (!prefs.enablePowerTagSupport().get()) {
+            Log.d(TAG, "PowerTag support not enabled.");
+            return;
+        }
+        try {
+            Log.d(TAG, "Loading PowerTag keyset.");
+            PTagKeyManager.load(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showToast("Failed to load PowerTag keys");
+        }
     }
 
     @Background
@@ -372,16 +389,18 @@ public class MainActivity extends AppCompatActivity {
 
         int ssbVisibility = View.GONE;
         int tpVisibility = View.GONE;
-        try {
-            long amiiboId = TagUtil.amiiboIdFromTag(currentTagData);
-            if (EditorTP.canEditAmiibo(amiiboId)) {
-                tpVisibility = View.VISIBLE;
+        if (currentTagData != null) {
+            try {
+                long amiiboId = TagUtil.amiiboIdFromTag(currentTagData);
+                if (EditorTP.canEditAmiibo(amiiboId)) {
+                    tpVisibility = View.VISIBLE;
+                }
+                if (EditorSSB.canEditAmiibo(amiiboId)) {
+                    ssbVisibility = View.VISIBLE;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            if (EditorSSB.canEditAmiibo(amiiboId)) {
-                ssbVisibility = View.VISIBLE;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         updateAmiiboView();

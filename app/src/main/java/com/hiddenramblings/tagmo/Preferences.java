@@ -26,6 +26,9 @@ public interface Preferences {
     @DefaultBoolean(keyRes=R.string.settings_enable_tag_type_validation, value=true)
     boolean enableTagTypeValidation();
 
+    @DefaultBoolean(keyRes=R.string.settings_enable_power_tag_support, value=false)
+    boolean enablePowerTagSupport();
+
     @DefaultInt(BrowserActivity.VIEW_TYPE_COMPACT)
     int browserAmiiboView();
 

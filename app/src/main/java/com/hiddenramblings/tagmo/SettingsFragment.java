@@ -154,7 +154,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             Util.saveAmiiboInfo(this.amiiboManager, fileOutputStream);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
-            showToast("Failed to export amiibo info to " + Util.friendlyPath(file.getAbsolutePath()), Toast.LENGTH_SHORT);
+            showToast("Failed to export amiibo info to " + Util.friendlyPath(file), Toast.LENGTH_SHORT);
             return;
         } finally {
             if (fileOutputStream != null) {
@@ -166,7 +166,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         }
 
-        showSnackbar("Exported amiibo info to " + Util.friendlyPath(file.getAbsolutePath()), Snackbar.LENGTH_LONG);
+        showSnackbar("Exported amiibo info to " + Util.friendlyPath(file), Snackbar.LENGTH_LONG);
     }
 
     @PreferenceClick(R.string.settings_reset_info)
@@ -207,7 +207,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         holder = (ViewHolder) convertView.getTag();
                     }
 
-                    String tagInfo = "";
+                    String tagInfo = null;
                     String amiiboHexId = "";
                     String amiiboName = "";
                     String amiiboSeries = "";
@@ -228,13 +228,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     if (amiibo.getCharacter() != null)
                         character = amiibo.getCharacter().name;
 
-                    holder.txtTagInfo.setText(tagInfo);
-                    setAmiiboInfoText(holder.txtName, amiiboName, !tagInfo.isEmpty());
-                    setAmiiboInfoText(holder.txtTagId, amiiboHexId, !tagInfo.isEmpty());
-                    setAmiiboInfoText(holder.txtAmiiboSeries, amiiboSeries, !tagInfo.isEmpty());
-                    setAmiiboInfoText(holder.txtAmiiboType, amiiboType, !tagInfo.isEmpty());
-                    setAmiiboInfoText(holder.txtGameSeries, gameSeries, !tagInfo.isEmpty());
-                    setAmiiboInfoText(holder.txtCharacter, character, !tagInfo.isEmpty());
+
+                    if (tagInfo == null) {
+                        setAmiiboInfoText(holder.txtName, amiiboName, false);
+                    } else {
+                        setAmiiboInfoText(holder.txtName, tagInfo, false);
+                    }
+                    setAmiiboInfoText(holder.txtTagId, amiiboHexId, tagInfo != null);
+                    setAmiiboInfoText(holder.txtAmiiboSeries, amiiboSeries, tagInfo != null);
+                    setAmiiboInfoText(holder.txtAmiiboType, amiiboType, tagInfo != null);
+                    setAmiiboInfoText(holder.txtGameSeries, gameSeries, tagInfo != null);
+                    //setAmiiboInfoText(this.txtCharacter, character, tagInfo != null);
 
                     return convertView;
                 }

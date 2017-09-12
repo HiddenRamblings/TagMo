@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int VIEW_TYPE_COMPACT = 1;
     public static final int VIEW_TYPE_LARGE = 2;
 
-    TextView txtTagInfo;
     TextView txtTagId;
     TextView txtName;
     TextView txtGameSeries;
@@ -429,7 +428,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         amiiboInfoView.addView(amiiboView);
-        txtTagInfo = amiiboView.findViewById(R.id.txtTagInfo);
         txtTagId = amiiboView.findViewById(R.id.txtTagId);
         txtName = amiiboView.findViewById(R.id.txtName);
         txtGameSeries = amiiboView.findViewById(R.id.txtGameSeries);
@@ -485,7 +483,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void updateAmiiboView() {
-        String tagInfo = "";
+        String tagInfo = null;
         String amiiboHexId = "";
         String amiiboName = "";
         String amiiboSeries = "";
@@ -495,7 +493,7 @@ public class MainActivity extends AppCompatActivity {
         final String amiiboImageUrl;
 
         if (this.currentTagData == null) {
-            tagInfo = "<No tag loaded>";
+            tagInfo = "<No Tag Loaded>";
             amiiboImageUrl = null;
         } else {
             long amiiboId;
@@ -506,10 +504,10 @@ public class MainActivity extends AppCompatActivity {
                 amiiboId = -1;
             }
             if (amiiboId == -1) {
-                tagInfo = "<Error reading tag>";
+                tagInfo = "<Error Reading Tag>";
                 amiiboImageUrl = null;
             } else if (amiiboId == 0) {
-                tagInfo = "<Blank tag>";
+                tagInfo = "<Blank Tag>";
                 amiiboImageUrl = null;
             } else {
                 Amiibo amiibo = null;
@@ -532,19 +530,22 @@ public class MainActivity extends AppCompatActivity {
                     if (amiibo.getCharacter() != null)
                         character = amiibo.getCharacter().name;
                 } else {
-                    tagInfo = "<Unknown amiibo id: " + TagUtil.amiiboIdToHex(amiiboId) + ">";
-                    amiiboImageUrl = null;
+                    tagInfo = "ID: " + TagUtil.amiiboIdToHex(amiiboId);
+                    amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
                 }
             }
         }
 
-        txtTagInfo.setText(tagInfo);
-        setAmiiboInfoText(txtName, amiiboName, !tagInfo.isEmpty());
-        setAmiiboInfoText(txtTagId, amiiboHexId, !tagInfo.isEmpty());
-        setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, !tagInfo.isEmpty());
-        setAmiiboInfoText(txtAmiiboType, amiiboType, !tagInfo.isEmpty());
-        setAmiiboInfoText(txtGameSeries, gameSeries, !tagInfo.isEmpty());
-        setAmiiboInfoText(txtCharacter, character, !tagInfo.isEmpty());
+        if (tagInfo == null) {
+            setAmiiboInfoText(txtName, amiiboName, false);
+        } else {
+            setAmiiboInfoText(txtName, tagInfo, false);
+        }
+        setAmiiboInfoText(txtTagId, amiiboHexId, tagInfo != null);
+        setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, tagInfo != null);
+        setAmiiboInfoText(txtAmiiboType, amiiboType, tagInfo != null);
+        setAmiiboInfoText(txtGameSeries, gameSeries, tagInfo != null);
+        //setAmiiboInfoText(txtCharacter, character, tagInfo != null);
 
         if (imageAmiibo != null) {
             imageAmiibo.setVisibility(View.GONE);
@@ -561,13 +562,16 @@ public class MainActivity extends AppCompatActivity {
 
     void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
         if (hasTagInfo) {
-            textView.setText("");
-        } else if (text.length() == 0) {
-            textView.setText("Unknown");
-            textView.setEnabled(false);
+            textView.setVisibility(View.GONE);
         } else {
-            textView.setText(text);
-            textView.setEnabled(true);
+            textView.setVisibility(View.VISIBLE);
+            if (text.length() == 0) {
+                textView.setText("Unknown");
+                textView.setEnabled(false);
+            } else {
+                textView.setText(text);
+                textView.setEnabled(true);
+            }
         }
     }
 

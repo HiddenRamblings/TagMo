@@ -178,4 +178,36 @@ public class Amiibo implements Comparable<Amiibo> {
         }
         return value;
     }
+
+    public static boolean matchesGameSeriesFilter(GameSeries gameSeries, String gameSeriesFilter) {
+        if (gameSeries != null) {
+            if (!gameSeriesFilter.isEmpty() && !gameSeries.name.equals(gameSeriesFilter))
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean matchesCharacterFilter(Character character, String characterFilter) {
+        if (character != null) {
+            if (!characterFilter.isEmpty() && !character.name.equals(characterFilter))
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean matchesAmiiboSeriesFilter(AmiiboSeries amiiboSeries, String amiiboSeriesFilter) {
+        if (amiiboSeries != null) {
+            if (!amiiboSeriesFilter.isEmpty() && !amiiboSeries.name.equals(amiiboSeriesFilter))
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean matchesAmiiboTypeFilter(AmiiboType amiiboType, String amiiboTypeFilter) {
+        if (amiiboType != null) {
+            if (!amiiboTypeFilter.isEmpty() && !amiiboType.name.equals(amiiboTypeFilter))
+                return false;
+        }
+        return true;
+    }
 }

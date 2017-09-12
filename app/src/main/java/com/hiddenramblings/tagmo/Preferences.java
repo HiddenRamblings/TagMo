@@ -20,7 +20,7 @@ public interface Preferences {
 
     String filterAmiiboType();
 
-    @DefaultBoolean(keyRes=R.string.settings_enable_amiibo_browser, value=false)
+    @DefaultBoolean(keyRes=R.string.settings_enable_amiibo_browser, value=true)
     boolean enableAmiiboBrowser();
 
     @DefaultBoolean(keyRes=R.string.settings_enable_tag_type_validation, value=true)
@@ -37,4 +37,6 @@ public interface Preferences {
 
     @DefaultString(keyRes=R.string.image_network_settings, value=SettingsFragment.IMAGE_NETWORK_ALWAYS)
     String imageNetworkSetting();
+
+    String browserRootFolder();
 }

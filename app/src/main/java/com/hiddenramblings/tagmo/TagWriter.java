@@ -17,6 +17,7 @@ public class TagWriter {
     private static final byte[] POWERTAG_IDPAGES = Util.hexStringToByteArray("04070883091012131800000000000000");
     private static final String POWERTAG_KEY = "FFFFFFFFFFFFFFFF0000000000000000";
     private static final byte[] COMP_WRITE_CMD = Util.hexStringToByteArray("a000");
+    private static final byte[] SIG_CMD = Util.hexStringToByteArray("3c00");
 
     public static void writeToTagRaw(MifareUltralight mifare, byte[] tagData, boolean validateNtag) throws Exception
     {
@@ -62,7 +63,7 @@ public class TagWriter {
 
         boolean isPowerTag = false;
         if (supportPowerTag) {
-            byte[] sig = mifare.transceive(Util.hexStringToByteArray("3c00"));
+            byte[] sig = mifare.transceive(SIG_CMD);
             isPowerTag = compareRange(sig, POWERTAG_SIGNATURE, 0, POWERTAG_SIGNATURE.length);
         }
 

@@ -19,8 +19,7 @@ public class TagWriter {
     private static final byte[] COMP_WRITE_CMD = Util.hexStringToByteArray("a000");
     private static final byte[] SIG_CMD = Util.hexStringToByteArray("3c00");
 
-    public static void writeToTagRaw(MifareUltralight mifare, byte[] tagData, boolean validateNtag) throws Exception
-    {
+    public static void writeToTagRaw(MifareUltralight mifare, byte[] tagData, boolean validateNtag) throws Exception {
         validate(mifare, tagData, validateNtag);
 
         validateBlankTag(mifare);
@@ -49,7 +48,7 @@ public class TagWriter {
     private static void validateBlankTag(MifareUltralight mifare) throws Exception {
         byte[] lockPage = mifare.readPages(0x02);
         Log.d(TAG, Util.bytesToHex(lockPage));
-        if (lockPage[2] == (byte)0x0F && lockPage[3] == (byte)0xE0) {
+        if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {
             Log.d(TAG, "locked");
             throw new Exception("Tag already an amiibo. Use 'Restore Tag' to write data");
         }
@@ -149,7 +148,7 @@ public class TagWriter {
                 liveData = TagUtil.decrypt(keyManager, liveData);
                 tagData = TagUtil.decrypt(keyManager, tagData);
 
-                System.arraycopy(tagData, 0x08, liveData, 0x08, 0x1B4-0x08);
+                System.arraycopy(tagData, 0x08, liveData, 0x08, 0x1B4 - 0x08);
 
                 tagData = TagUtil.encrypt(keyManager, liveData);
             }
@@ -189,7 +188,7 @@ public class TagWriter {
     }
 
     static boolean compareRange(byte[] data, byte[] data2, int data2offset, int len) {
-        for(int i=data2offset, j=0; j<len; i++, j++) {
+        for (int i = data2offset, j = 0; j < len; i++, j++) {
             if (data[j] != data2[i])
                 return false;
         }
@@ -197,17 +196,17 @@ public class TagWriter {
     }
 
     public static final int BULK_READ_PAGE_COUNT = 4;
-    public static byte[] readFromTag(MifareUltralight tag) throws Exception
-    {
+
+    public static byte[] readFromTag(MifareUltralight tag) throws Exception {
         byte[] tagData = new byte[TagUtil.TAG_FILE_SIZE];
         int pageCount = TagUtil.TAG_FILE_SIZE / TagUtil.PAGE_SIZE;
 
-        for(int i=0; i < pageCount;  i+=BULK_READ_PAGE_COUNT) {
+        for (int i = 0; i < pageCount; i += BULK_READ_PAGE_COUNT) {
             byte[] pages = tag.readPages(i);
             if (pages == null || pages.length != TagUtil.PAGE_SIZE * BULK_READ_PAGE_COUNT)
                 throw new Exception("Invalid read result size");
 
-            int dstIndex = i*TagUtil.PAGE_SIZE;
+            int dstIndex = i * TagUtil.PAGE_SIZE;
             int dstCount = Math.min(BULK_READ_PAGE_COUNT * TagUtil.PAGE_SIZE, tagData.length - dstIndex);
 
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount);
@@ -218,7 +217,7 @@ public class TagWriter {
     }
 
     static void writePages(MifareUltralight tag, int pagestart, int pageend, byte[][] data) throws IOException {
-        for(int i = pagestart; i <= pageend; i++) {
+        for (int i = pagestart; i <= pageend; i++) {
             tag.writePage(i, data[i]);
             Log.d(TAG, "Wrote to page " + i);
         }
@@ -236,7 +235,7 @@ public class TagWriter {
         Log.d(TAG, "Password: " + Util.bytesToHex(password));
 
         Log.d(TAG, "Writing PACK");
-        tag.writePage(0x86, new byte[]{(byte) 0x80, (byte) 0x80, (byte) 0, (byte)0});
+        tag.writePage(0x86, new byte[]{(byte) 0x80, (byte) 0x80, (byte) 0, (byte) 0});
 
         Log.d(TAG, "Writing PWD");
         tag.writePage(0x85, password);
@@ -251,7 +250,7 @@ public class TagWriter {
 
         tag.writePage(2, new byte[]{pages[2 * TagUtil.PAGE_SIZE], pages[(2 * TagUtil.PAGE_SIZE) + 1], (byte) 0x0F, (byte) 0xE0}); //lock bits
         tag.writePage(130, new byte[]{(byte) 0x01, (byte) 0x00, (byte) 0x0F, (byte) 0x00}); //dynamic lock bits. should the last bit be 0xBD accoridng to the nfc docs though: //Remark: Set all bits marked with RFUI to 0, when writing to the dynamic lock bytes.
-        tag.writePage(131, new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x04}); //config
+        tag.writePage(131, new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x04}); //config
         tag.writePage(132, new byte[]{(byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00}); //config
     }
 

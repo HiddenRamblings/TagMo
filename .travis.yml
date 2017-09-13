@@ -1,4 +1,5 @@
 language: android
+jdk: oraclejdk8
 android:
   components:
     # Uncomment the lines below if you want to
@@ -6,6 +7,7 @@ android:
     - tools
     - platform-tools
     - tools
+    - android-ndk-r15c
 
     # The BuildTools version used by your project
     - build-tools-26.0.1
@@ -29,3 +31,6 @@ before_install:
     - export PATH=$PATH:$ANDROID_NDK_HOME
     - echo $PATH
     - popd
+
+#script:
+#    - ./gradlew build

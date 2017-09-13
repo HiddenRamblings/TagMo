@@ -18,3 +18,13 @@ android:
     - extra-android-m2repository
 before_script:
     - chmod +x gradlew
+
+before_install:
+    - cd $TRAVIS_BUILD_DIR/..
+    - wget https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip -O ndk.zip
+    - chmod a+x ndk.zip
+    - unzip ndk.zip > /dev/null
+    - rm ndk.zip
+    - export ANDROID_NDK_HOME=`pwd`/android-ndk-r15
+    - export PATH=$PATH:$ANDROID_NDK_HOME
+    - echo $PATH

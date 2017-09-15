@@ -102,6 +102,11 @@
         </menu>
     </item>
     <item
+        android:id="@+id/recursive_files"
+        android:title="Find Files Recursively"
+        app:showAsAction="ifRoom"
+        android:checkable="true"/>
+    <item
         android:id="@+id/refresh"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:title="Refresh"

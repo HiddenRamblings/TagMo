@@ -123,6 +123,8 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuViewCompact;
     @OptionsMenuItem(R.id.view_large)
     MenuItem menuViewLarge;
+    @OptionsMenuItem(R.id.recursive_files)
+    MenuItem menuRecursiveFiles;
     @OptionsMenuItem(R.id.refresh)
     MenuItem menuRefresh;
 
@@ -173,14 +175,14 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.setGameSeriesFilter(prefs.filterGameSeries().get());
             this.settings.setAmiiboView(prefs.browserAmiiboView().get());
             this.settings.setImageNetworkSettings(prefs.imageNetworkSetting().get());
+            this.settings.setRecursiveFiles(prefs.recursiveFiles().get());
         } else {
             this.currentFolderView.setText(Util.friendlyPath(settings.getBrowserRootFolder()));
-            this.onSortChanged();
             this.onFilterGameSeriesChanged();
             this.onFilterCharacterChanged();
             this.onFilterAmiiboSeriesChanged();
             this.onFilterAmiiboTypeChanged();
-            this.onViewChanged();
+            this.onAmiiboFilesChanged();
         }
         this.settings.addChangeListener(this);
 
@@ -209,11 +211,8 @@ public class BrowserActivity extends AppCompatActivity implements
         boolean result = super.onCreateOptionsMenu(menu);
 
         this.onSortChanged();
-        this.onFilterGameSeriesChanged();
-        this.onFilterCharacterChanged();
-        this.onFilterAmiiboSeriesChanged();
-        this.onFilterAmiiboTypeChanged();
         this.onViewChanged();
+        this.onRecursiveFilesChanged();
 
         // setOnQueryTextListener will clear this, so make a copy
         String query = settings.getQuery();
@@ -301,6 +300,12 @@ public class BrowserActivity extends AppCompatActivity implements
     void onViewLargeClick() {
         settings.setAmiiboView(VIEW_TYPE_LARGE);
         settings.notifyChanges();
+    }
+
+    @OptionsItem(R.id.recursive_files)
+    void onRecursiveFilesClicked() {
+        this.settings.setRecursiveFiles(!this.settings.isRecursiveFiles());
+        this.settings.notifyChanges();
     }
 
     @OptionsItem(R.id.refresh)
@@ -493,10 +498,8 @@ public class BrowserActivity extends AppCompatActivity implements
     };
 
     void refresh() {
-        File rootFolder = settings.getBrowserRootFolder();
         this.loadAmiiboManager();
-        this.loadFolders(rootFolder);
-        this.loadAmiiboFiles(rootFolder);
+        this.onRootFolderChanged();
     }
 
     @Override
@@ -599,9 +602,9 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @Background
-    void loadAmiiboFiles(File rootFolder) {
+    void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
         this.setAmiiboFilesLoadingBarVisibility(true);
-        final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder);
+        final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
         this.setAmiiboFilesLoadingBarVisibility(false);
 
         this.runOnUiThread(new Runnable() {
@@ -613,7 +616,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    ArrayList<AmiiboFile> listAmiibos(File rootFolder) {
+    ArrayList<AmiiboFile> listAmiibos(File rootFolder, boolean recursiveFiles) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
 
         File[] files = rootFolder.listFiles();
@@ -621,8 +624,8 @@ public class BrowserActivity extends AppCompatActivity implements
             return amiiboFiles;
 
         for (File file : files) {
-            if (file.isDirectory()) {
-                amiiboFiles.addAll(listAmiibos(file));
+            if (file.isDirectory() && recursiveFiles) {
+                amiiboFiles.addAll(listAmiibos(file, true));
             } else {
                 try {
                     byte[] data = TagUtil.readTag(new FileInputStream(file));
@@ -638,9 +641,18 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
+        boolean folderChanged = false;
         if (!Util.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
+            folderChanged = true;
+        }
+        if (newBrowserSettings.isRecursiveFiles() != oldBrowserSettings.isRecursiveFiles()) {
+            folderChanged = true;
+            onRecursiveFilesChanged();
+        }
+        if (folderChanged) {
             onRootFolderChanged();
         }
+
         if (newBrowserSettings.getSort() != oldBrowserSettings.getSort()) {
             onSortChanged();
         }
@@ -659,6 +671,9 @@ public class BrowserActivity extends AppCompatActivity implements
         if (newBrowserSettings.getAmiiboView() != oldBrowserSettings.getAmiiboView()) {
             onViewChanged();
         }
+        if (!Util.equals(newBrowserSettings.getAmiiboFiles(), oldBrowserSettings.getAmiiboFiles())) {
+            onAmiiboFilesChanged();
+        }
 
         this.prefs.edit()
             .browserRootFolder().put(Util.friendlyPath(newBrowserSettings.getBrowserRootFolder()))
@@ -670,7 +685,17 @@ public class BrowserActivity extends AppCompatActivity implements
             .filterAmiiboType().put(newBrowserSettings.getAmiiboTypeFilter())
             .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
             .imageNetworkSetting().put(newBrowserSettings.getImageNetworkSettings())
+            .recursiveFiles().put(newBrowserSettings.isRecursiveFiles())
             .apply();
+    }
+
+    private void onAmiiboFilesChanged() {
+        if (settings.getAmiiboFiles() == null || settings.getAmiiboFiles().size() == 0) {
+            emptyText.setVisibility(View.VISIBLE);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        } else {
+            emptyText.setVisibility(View.GONE);
+        }
     }
 
     void onSortChanged() {
@@ -712,7 +737,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void onRootFolderChanged() {
         File rootFolder = settings.getBrowserRootFolder();
         this.currentFolderView.setText(Util.friendlyPath(rootFolder));
-        this.loadAmiiboFiles(rootFolder);
+        this.loadAmiiboFiles(rootFolder, settings.isRecursiveFiles());
         this.loadFolders(rootFolder);
     }
 
@@ -754,6 +779,13 @@ public class BrowserActivity extends AppCompatActivity implements
 
     void onFilterAmiiboTypeChanged() {
         addFilterItemView(settings.getAmiiboTypeFilter(), "filter_amiibo_type", onAmiiboTypeChipCloseClick);
+    }
+
+    void onRecursiveFilesChanged() {
+        if (menuRecursiveFiles == null)
+            return;
+
+        menuRecursiveFiles.setChecked(settings.isRecursiveFiles());
     }
 
     OnCloseClickListener onAmiiboTypeChipCloseClick = new OnCloseClickListener() {

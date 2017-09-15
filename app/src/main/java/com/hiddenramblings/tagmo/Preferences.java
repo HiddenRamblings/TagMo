@@ -39,4 +39,7 @@ public interface Preferences {
     String imageNetworkSetting();
 
     String browserRootFolder();
+
+    @DefaultBoolean(true)
+    boolean recursiveFiles();
 }

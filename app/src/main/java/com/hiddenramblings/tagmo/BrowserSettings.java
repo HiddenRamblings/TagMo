@@ -29,6 +29,7 @@ public class BrowserSettings {
     protected String filterAmiiboType;
     protected int browserAmiiboView;
     protected String imageNetworkSettings;
+    protected boolean recursiveFiles;
 
     public BrowserSettings() {
         oldBrowserSettings = new BrowserSettings(false);
@@ -39,7 +40,7 @@ public class BrowserSettings {
         ArrayList<AmiiboFile> amiiboFiles, ArrayList<File> folders, File browserFolder,
         String query, int sort, String filterGameSeries, String filterCharacter,
         String filterAmiiboSeries, String filterAmiiboType, int browserAmiiboView,
-        String imageNetworkSettings
+        String imageNetworkSettings, boolean recursiveFiles
     ) {
         super();
 
@@ -54,6 +55,7 @@ public class BrowserSettings {
         this.filterAmiiboType = filterAmiiboType;
         this.browserAmiiboView = browserAmiiboView;
         this.imageNetworkSettings = imageNetworkSettings;
+        this.recursiveFiles = recursiveFiles;
     }
 
     private BrowserSettings(boolean duplicate) {
@@ -160,6 +162,14 @@ public class BrowserSettings {
         this.imageNetworkSettings = imageNetworkSettings;
     }
 
+    public boolean isRecursiveFiles() {
+        return recursiveFiles;
+    }
+
+    public void setRecursiveFiles(boolean recursiveFiles) {
+        this.recursiveFiles = recursiveFiles;
+    }
+
     public void notifyChanges() {
         for (BrowserSettingsListener listener : this.listeners) {
             listener.onBrowserSettingsChanged(this, this.oldBrowserSettings);
@@ -193,6 +203,7 @@ public class BrowserSettings {
         copy.setAmiiboView(this.getAmiiboView());
         copy.setBrowserRootFolder(this.getBrowserRootFolder());
         copy.setImageNetworkSettings(this.getImageNetworkSettings());
+        copy.setRecursiveFiles(this.isRecursiveFiles());
 
         return copy;
     }

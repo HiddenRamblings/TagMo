@@ -215,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     void setAmiiboManager(AmiiboManager amiiboManager) {
         this.amiiboManager = amiiboManager;
-        Log.d(TAG, "setAmiiboManager");
         this.updateStatus();
     }
 

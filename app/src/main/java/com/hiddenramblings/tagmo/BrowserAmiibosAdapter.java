@@ -52,7 +52,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         this.data = new ArrayList<>();
         this.filteredData = this.data;
 
-        this.onBrowserSettingsChanged(settings, null);
+        this.settings.notifyChanges();
     }
 
     @Override

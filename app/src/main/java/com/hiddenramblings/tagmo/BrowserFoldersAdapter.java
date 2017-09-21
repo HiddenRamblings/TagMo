@@ -22,7 +22,7 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
     public BrowserFoldersAdapter(BrowserSettings settings) {
         this.settings = settings;
         this.settings.addChangeListener(this);
-        this.onBrowserSettingsChanged(settings, null);
+        this.settings.notifyChanges();
     }
 
     @Override

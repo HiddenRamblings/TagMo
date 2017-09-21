@@ -43,6 +43,7 @@ import org.androidannotations.annotations.OptionsMenuItem;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
+import org.androidannotations.api.BackgroundExecutor;
 import org.apmem.tools.layouts.FlowLayout;
 import org.json.JSONException;
 
@@ -64,6 +65,11 @@ public class BrowserActivity extends AppCompatActivity implements
     BrowserSettings.BrowserSettingsListener,
     BrowserAmiibosAdapter.OnAmiiboClickListener
 {
+    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+    public static final String BACKGROUND_FOLDERS = "folders";
+    public static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
+
+
     public static final int SORT_ID = 0x0;
     public static final int SORT_NAME = 0x1;
     public static final int SORT_AMIIBO_SERIES = 0x2;
@@ -546,8 +552,13 @@ public class BrowserActivity extends AppCompatActivity implements
         this.swipeRefreshLayout.setRefreshing(visible);
     }
 
-    @Background
     void loadAmiiboManager() {
+        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
+        loadAmiiboManagerTask();
+    }
+
+    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
             amiiboManager = Util.loadAmiiboManager(this);
@@ -556,6 +567,8 @@ public class BrowserActivity extends AppCompatActivity implements
             amiiboManager = null;
             showToast("Unable to parse amiibo info");
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
 
         final AmiiboManager amiiboManager1 = amiiboManager;
         this.runOnUiThread(new Runnable() {
@@ -567,8 +580,13 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    @Background
     void loadFolders(File rootFolder) {
+        BackgroundExecutor.cancelAll(BACKGROUND_FOLDERS, true);
+        loadFoldersTask(rootFolder);
+    }
+
+    @Background(id=BACKGROUND_FOLDERS)
+    void loadFoldersTask(File rootFolder) {
         final ArrayList<File> folders = listFolders(rootFolder);
         Collections.sort(folders, new Comparator<File>() {
             @Override
@@ -576,6 +594,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 return file1.getPath().compareToIgnoreCase(file2.getPath());
             }
         });
+        if (Thread.currentThread().isInterrupted())
+            return;
 
         this.runOnUiThread(new Runnable() {
             @Override
@@ -601,10 +621,18 @@ public class BrowserActivity extends AppCompatActivity implements
         return folders;
     }
 
-    @Background
     void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
+        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
+        loadAmiiboFilesTask(rootFolder, recursiveFiles);
+    }
+
+    @Background(id=BACKGROUND_AMIIBO_FILES)
+    void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         this.setAmiiboFilesLoadingBarVisibility(true);
         final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
+        if (Thread.currentThread().isInterrupted())
+            return;
+
         this.setAmiiboFilesLoadingBarVisibility(false);
 
         this.runOnUiThread(new Runnable() {

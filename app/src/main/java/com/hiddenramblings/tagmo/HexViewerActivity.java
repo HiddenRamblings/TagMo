@@ -60,7 +60,6 @@ public class HexViewerActivity extends AppCompatActivity {
         decryptTagData(getIntent().getByteArrayExtra(Actions.EXTRA_TAG_DATA));
     }
 
-    @Background
     void decryptTagData(byte[] data) {
         KeyManager keyManager = new KeyManager(this);
         try {
@@ -71,7 +70,6 @@ public class HexViewerActivity extends AppCompatActivity {
         }
     }
 
-    @UiThread
     void setTagData(byte[] data) {
         adapter = new HexDumpAdapter(data);
         listView.setLayoutManager(new LinearLayoutManager(this));

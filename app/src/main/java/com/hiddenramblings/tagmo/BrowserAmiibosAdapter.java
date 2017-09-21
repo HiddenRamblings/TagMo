@@ -71,7 +71,10 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                 this.data.addAll(newBrowserSettings.getAmiiboFiles());
             refresh = true;
         }
-        if (firstRun || !Util.equals(newBrowserSettings.getAmiiboView(), oldBrowserSettings.getAmiiboView())) {
+        if (!Util.equals(newBrowserSettings.getAmiiboManager(), oldBrowserSettings.getAmiiboManager())) {
+            refresh = true;
+        }
+        if (!Util.equals(newBrowserSettings.getAmiiboView(), oldBrowserSettings.getAmiiboView())) {
             refresh = true;
         }
         if (refresh) {

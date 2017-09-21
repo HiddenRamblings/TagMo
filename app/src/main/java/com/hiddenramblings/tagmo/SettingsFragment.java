@@ -40,6 +40,7 @@ import org.androidannotations.annotations.PreferenceChange;
 import org.androidannotations.annotations.PreferenceClick;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.sharedpreferences.Pref;
+import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -64,6 +65,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private static final int RESULT_KEYS = 0;
     private static final int RESULT_IMPORT_AMIIBO_DATABASE = 1;
+    private static final String BACKGROUND_LOAD_KEYS = "load_keys";
+    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+    private static final String BACKGROUND_SYNC_AMIIBO_MANAGER = "sync_amiibo_manager";
 
     @Pref
     Preferences_ prefs;
@@ -377,14 +381,22 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             .show();
     }
 
-    @Background
     void updateKeys(Uri data) {
+        BackgroundExecutor.cancelAll(BACKGROUND_LOAD_KEYS, true);
+        updateKeysTask(data);
+    }
+
+    @Background(id=BACKGROUND_LOAD_KEYS)
+    void updateKeysTask(Uri data) {
         try {
             this.keyManager.loadKey(data);
         } catch (Exception e) {
             e.printStackTrace();
             showSnackbar(e.getMessage(), Snackbar.LENGTH_SHORT);
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
+
         updateKeySummary();
     }
 
@@ -422,8 +434,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         key.setSummary(keySummary);
     }
 
-    @Background
     void loadAmiiboManager() {
+        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
+        loadAmiiboManagerTask();
+    }
+
+    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
             amiiboManager = Util.loadAmiiboManager(this.getContext());
@@ -432,12 +449,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             showToast("Failed to load amiibo info", Toast.LENGTH_SHORT);
             return;
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
 
         setAmiiboManager(amiiboManager);
     }
 
-    @Background
     void updateAmiiboManager(Uri data) {
+        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
+        updateAmiiboManagerTask(data);
+    }
+
+    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    void updateAmiiboManagerTask(Uri data) {
         AmiiboManager amiiboManager;
         try {
             amiiboManager = AmiiboManager.parse(this.getContext(), data);
@@ -450,6 +474,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             showToast("Failed to read amiibo info", Toast.LENGTH_SHORT);
             return;
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
 
         try {
             Util.saveLocalAmiiboInfo(this.getContext(), amiiboManager);
@@ -458,13 +484,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             showToast("Failed to update amiibo info", Toast.LENGTH_SHORT);
             return;
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
 
         setAmiiboManager(amiiboManager);
         showSnackbar("Updated amiibo info", Snackbar.LENGTH_SHORT);
     }
 
-    @Background
     void resetAmiiboManager() {
+        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
+        resetAmiiboManagerTask();
+    }
+
+    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    void resetAmiiboManagerTask() {
         this.getContext().deleteFile(Util.AMIIBO_DATABASE_FILE);
 
         AmiiboManager amiiboManager = null;
@@ -474,6 +507,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             e.printStackTrace();
             showToast("Failed to parse default amiibo info", Snackbar.LENGTH_SHORT);
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
 
         setAmiiboManager(amiiboManager);
         showSnackbar("Reset amiibo info", Snackbar.LENGTH_SHORT);
@@ -505,8 +540,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.amiiboTypeStats.setSummary("Total: " + amiiboTypeCount);
     }
 
-    @Background
+
     void downloadAmiiboAPIData() {
+        BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
+        downloadAmiiboAPIDataTask();
+    }
+
+    @Background(id=BACKGROUND_SYNC_AMIIBO_MANAGER)
+    void downloadAmiiboAPIDataTask() {
         showSnackbar("Syncing Amiibo Info from AmiiboAPI...", Snackbar.LENGTH_INDEFINITE);
         try {
             URL url = new URL("http://www.amiiboapi.com/api/amiibo/");
@@ -537,6 +578,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                 String json = response.toString();
                 AmiiboManager amiiboManager = AmiiboManager.parseAmiiboAPI(new JSONObject(json));
+                if (Thread.currentThread().isInterrupted())
+                    return;
+
                 Util.saveLocalAmiiboInfo(this.getContext(), amiiboManager);
                 setAmiiboManager(amiiboManager);
                 showSnackbar("Syncing Amiibo Info from AmiiboAPI successful!", Snackbar.LENGTH_SHORT);
@@ -545,6 +589,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            if (Thread.currentThread().isInterrupted())
+                return;
             showSnackbar("Syncing Amiibo Info from AmiiboAPI failed", Snackbar.LENGTH_SHORT);
         }
     }

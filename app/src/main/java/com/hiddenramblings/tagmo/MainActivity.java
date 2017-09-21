@@ -54,6 +54,7 @@ import org.androidannotations.annotations.OptionsMenuItem;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
+import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
 import java.io.File;
@@ -68,6 +69,8 @@ import java.util.Calendar;
 @OptionsMenu({R.menu.main_menu})
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+
+    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
     private static final int FILE_LOAD_TAG = 0x100;
     private static final int NFC_ACTIVITY = 0x102;
@@ -189,8 +192,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Background
     void loadAmiiboManager() {
+        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
+        loadAmiiboManagerTask();
+    }
+
+    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
             amiiboManager = Util.loadAmiiboManager(this);
@@ -199,6 +207,8 @@ public class MainActivity extends AppCompatActivity {
             showToast("Unable to parse amiibo info");
         }
 
+        if (Thread.currentThread().isInterrupted())
+            return;
         setAmiiboManager(amiiboManager);
     }
 

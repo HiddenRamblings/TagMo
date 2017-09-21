@@ -27,6 +27,7 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
 import java.io.File;
@@ -38,6 +39,8 @@ import java.text.ParseException;
 @EActivity(R.layout.activity_image)
 @OptionsMenu({R.menu.image_menu})
 public class ImageActivity extends AppCompatActivity {
+    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+
     public static final String INTENT_EXTRA_AMIIBO_ID = "AMIIBO_ID";
 
     @ViewById(R.id.imageAmiibo)
@@ -110,14 +113,21 @@ public class ImageActivity extends AppCompatActivity {
         }
     }
 
-    @Background
     void loadAmiiboManager() {
+        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
+        loadAmiiboManagerTask();
+    }
+
+    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
             amiiboManager = Util.loadAmiiboManager(this);
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
 
         setAmiiboManager(amiiboManager);
     }

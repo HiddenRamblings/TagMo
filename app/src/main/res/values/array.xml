@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="imageNetworkSettings">
+        <item>Always</item>
+        <item>WiFi Only</item>
+        <item>Never</item>
+    </string-array>
+
+    <string-array name="imageNetworkSettingValues">
+        <item>ALWAYS</item>
+        <item>WIFI_ONLY</item>
+        <item>NEVER</item>
+    </string-array>
+</resources>

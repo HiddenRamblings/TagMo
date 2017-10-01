@@ -14,18 +14,33 @@
         <android.support.v7.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_enable_amiibo_browser"
-            android:title="Enable Amiibo File Browser"
-            android:summary="The built in amiibo file browser lists and allows filtering of all of the amiibos in the tagmo folder on the sd card."/>
+            android:summary="The built in amiibo file browser lists and allows filtering of all of the amiibos in the tagmo folder on the sd card."
+            android:title="Enable Amiibo File Browser"/>
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Image Loading">
+        <android.support.v7.preference.ListPreference
+            android:entries="@array/imageNetworkSettings"
+            android:entryValues="@array/imageNetworkSettingValues"
+            android:key="@string/image_network_settings"
+            android:title="Load images"/>
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory android:title="Tag Validation">
         <android.support.v7.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_enable_tag_type_validation"
-            android:title="Enable NTAG215 validation"
-            android:summary="Not all NFC chipsets correctly identify NFC tags. Disabling tag verification will write to tags that may not be Amiibo compatible or may fail in unexpected ways."/>
+            android:summary="Not all NFC chipsets correctly identify NFC tags. Disabling tag verification will write to tags that may not be Amiibo compatible or may fail in unexpected ways."
+            android:title="Enable NTAG215 validation"/>
     </android.support.v7.preference.PreferenceCategory>
-
+    <android.support.v7.preference.PreferenceCategory android:title="PowerTag">
+        <android.support.v7.preference.CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/settings_enable_power_tag_support"
+            android:summary="Support is currently under development. See the Wiki on github for limitations and use."
+            android:title="Enable PowerTag support"/>
+    </android.support.v7.preference.PreferenceCategory>
     <android.support.v7.preference.PreferenceCategory
         android:title="Amiibo Info">
         <android.support.v7.preference.Preference

@@ -11,7 +11,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import org.json.JSONException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,8 +28,6 @@ public class Util {
 
     public static final String DATA_DIR = "tagmo";
     public static final String AMIIBO_DATABASE_FILE = "amiibo.json";
-
-    public static final int RESIZE_SIZE_PX = 100;
 
     public static final char[] hexArray = "0123456789ABCDEF".toCharArray();
 
@@ -95,8 +92,12 @@ public class Util {
         }
     }
 
+    public static File getSDCardDir() {
+        return Environment.getExternalStorageDirectory();
+    }
+
     public static File getDataDir() {
-        return new File(Environment.getExternalStorageDirectory(), DATA_DIR);
+        return new File(getSDCardDir(), DATA_DIR);
     }
 
     public static class AmiiboInfoException extends Exception {
@@ -157,13 +158,23 @@ public class Util {
         }
     }
 
-    public static String friendlyPath(String filePath) {
-        String dirPath = filePath;
-        String sdcardPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+    public static String friendlyPath(File file) {
+        String dirPath = file.getAbsolutePath();
+        String sdcardPath = getSDCardDir().getAbsolutePath();
         if (dirPath.startsWith(sdcardPath)) {
-            filePath = filePath.substring(sdcardPath.length());
+            dirPath = dirPath.substring(sdcardPath.length());
         }
 
-        return filePath;
+        return dirPath;
+    }
+
+    public static boolean equals(Object o1, Object o2) {
+        if (o1 == o2) {
+            return true;
+        } else if (o1 == null || o2 == null) {
+            return false;
+        } else {
+            return o1.equals(o2);
+        }
     }
 }

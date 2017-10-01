@@ -173,7 +173,7 @@ public class NfcActivity extends AppCompatActivity {
                         data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
                         if (data == null)
                             throw new Exception("No data to write");
-                        TagWriter.writeToTagAuto(mifare, data, this.keyManager, prefs.enableTagTypeValidation().get());
+                        TagWriter.writeToTagAuto(mifare, data, this.keyManager, prefs.enableTagTypeValidation().get(), prefs.enablePowerTagSupport().get());
                         resultCode = Activity.RESULT_OK;
                         showToast("Done");
                         break;

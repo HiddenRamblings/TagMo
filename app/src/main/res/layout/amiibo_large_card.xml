@@ -22,6 +22,7 @@
             android:id="@+id/imageAmiibo"
             android:layout_width="match_parent"
             android:layout_height="150dp"
+            android:foreground="@drawable/card_foreground"
             android:visibility="gone"/>
 
         <RelativeLayout
@@ -100,15 +101,6 @@
                     android:textColor="@color/tag_text"
                     android:textSize="10dp"/>
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/txtTagInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/group2"
-                android:layout_alignTop="@id/txtName"
-                android:gravity="center"
-                android:text=""/>
 
             <TextView
                 android:id="@+id/txtPath"

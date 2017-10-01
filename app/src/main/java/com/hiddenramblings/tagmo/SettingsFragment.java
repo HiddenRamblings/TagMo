@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.preference.CheckBoxPreference;
+import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.text.Spannable;
@@ -35,9 +36,11 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.PreferenceByKey;
+import org.androidannotations.annotations.PreferenceChange;
 import org.androidannotations.annotations.PreferenceClick;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.sharedpreferences.Pref;
+import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,8 +59,15 @@ import java.util.Collections;
 
 @EFragment
 public class SettingsFragment extends PreferenceFragmentCompat {
+    public static final String IMAGE_NETWORK_NEVER = "NEVER";
+    public static final String IMAGE_NETWORK_WIFI = "WIFI_ONLY";
+    public static final String IMAGE_NETWORK_ALWAYS = "ALWAYS";
+
     private static final int RESULT_KEYS = 0;
     private static final int RESULT_IMPORT_AMIIBO_DATABASE = 1;
+    private static final String BACKGROUND_LOAD_KEYS = "load_keys";
+    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+    private static final String BACKGROUND_SYNC_AMIIBO_MANAGER = "sync_amiibo_manager";
 
     @Pref
     Preferences_ prefs;
@@ -68,6 +78,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference enableAmiiboBrowser;
     @PreferenceByKey(R.string.settings_enable_tag_type_validation)
     CheckBoxPreference enableTagTypeValidation;
+    @PreferenceByKey(R.string.settings_enable_power_tag_support)
+    CheckBoxPreference enablePowerTagSupport;
     @PreferenceByKey(R.string.settings_info_amiibos)
     Preference amiiboStats;
     @PreferenceByKey(R.string.settings_info_game_series)
@@ -78,6 +90,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     Preference amiiboSeriesStats;
     @PreferenceByKey(R.string.settings_info_amiibo_types)
     Preference amiiboTypeStats;
+    @PreferenceByKey(R.string.image_network_settings)
+    ListPreference imageNetworkSetting;
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -97,6 +111,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         loadAmiiboManager();
         updateKeySummary();
         updateAmiiboStats();
+        onImageNetworkChange(prefs.imageNetworkSetting().get());
     }
 
     @PreferenceClick(R.string.settings_import_keys)
@@ -112,6 +127,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_enable_tag_type_validation)
     void onEnableTagTypeValidationClicked() {
         prefs.enableTagTypeValidation().put(enableTagTypeValidation.isChecked());
+    }
+
+    @PreferenceClick(R.string.settings_enable_power_tag_support)
+    void onEnablePowerTagSupportClicked() {
+        prefs.enablePowerTagSupport().put(enablePowerTagSupport.isChecked());
     }
 
     @PreferenceClick(R.string.settings_import_info_amiiboapi)
@@ -138,7 +158,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             Util.saveAmiiboInfo(this.amiiboManager, fileOutputStream);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
-            showToast("Failed to export amiibo info to " + Util.friendlyPath(file.getAbsolutePath()), Toast.LENGTH_SHORT);
+            showToast("Failed to export amiibo info to " + Util.friendlyPath(file), Toast.LENGTH_SHORT);
             return;
         } finally {
             if (fileOutputStream != null) {
@@ -150,7 +170,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         }
 
-        showSnackbar("Exported amiibo info to " + Util.friendlyPath(file.getAbsolutePath()), Snackbar.LENGTH_LONG);
+        showSnackbar("Exported amiibo info to " + Util.friendlyPath(file), Snackbar.LENGTH_LONG);
     }
 
     @PreferenceClick(R.string.settings_reset_info)
@@ -191,7 +211,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         holder = (ViewHolder) convertView.getTag();
                     }
 
-                    String tagInfo = "";
+                    String tagInfo = null;
                     String amiiboHexId = "";
                     String amiiboName = "";
                     String amiiboSeries = "";
@@ -212,13 +232,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     if (amiibo.getCharacter() != null)
                         character = amiibo.getCharacter().name;
 
-                    holder.txtTagInfo.setText(tagInfo);
-                    setAmiiboInfoText(holder.txtName, amiiboName, !tagInfo.isEmpty());
-                    setAmiiboInfoText(holder.txtTagId, amiiboHexId, !tagInfo.isEmpty());
-                    setAmiiboInfoText(holder.txtAmiiboSeries, amiiboSeries, !tagInfo.isEmpty());
-                    setAmiiboInfoText(holder.txtAmiiboType, amiiboType, !tagInfo.isEmpty());
-                    setAmiiboInfoText(holder.txtGameSeries, gameSeries, !tagInfo.isEmpty());
-                    setAmiiboInfoText(holder.txtCharacter, character, !tagInfo.isEmpty());
+
+                    if (tagInfo == null) {
+                        setAmiiboInfoText(holder.txtName, amiiboName, false);
+                    } else {
+                        setAmiiboInfoText(holder.txtName, tagInfo, false);
+                    }
+                    setAmiiboInfoText(holder.txtTagId, amiiboHexId, tagInfo != null);
+                    setAmiiboInfoText(holder.txtAmiiboSeries, amiiboSeries, tagInfo != null);
+                    setAmiiboInfoText(holder.txtAmiiboType, amiiboType, tagInfo != null);
+                    setAmiiboInfoText(holder.txtGameSeries, gameSeries, tagInfo != null);
+                    //setAmiiboInfoText(this.txtCharacter, character, tagInfo != null);
 
                     return convertView;
                 }
@@ -277,6 +301,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             .setAdapter(new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, items), null)
             .setPositiveButton("Close", null)
             .show();
+    }
+
+    @PreferenceChange(R.string.image_network_settings)
+    void onImageNetworkChange(String newValue) {
+        int index = imageNetworkSetting.findIndexOfValue(newValue);
+        if (index == -1) {
+            onImageNetworkChange(IMAGE_NETWORK_ALWAYS);
+        } else {
+            prefs.imageNetworkSetting().put(newValue);
+            imageNetworkSetting.setValue(newValue);
+            imageNetworkSetting.setSummary(imageNetworkSetting.getEntries()[index]);
+        }
     }
 
     @PreferenceClick(R.string.settings_info_characters)
@@ -345,14 +381,22 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             .show();
     }
 
-    @Background
     void updateKeys(Uri data) {
+        BackgroundExecutor.cancelAll(BACKGROUND_LOAD_KEYS, true);
+        updateKeysTask(data);
+    }
+
+    @Background(id=BACKGROUND_LOAD_KEYS)
+    void updateKeysTask(Uri data) {
         try {
             this.keyManager.loadKey(data);
         } catch (Exception e) {
             e.printStackTrace();
             showSnackbar(e.getMessage(), Snackbar.LENGTH_SHORT);
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
+
         updateKeySummary();
     }
 
@@ -390,8 +434,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         key.setSummary(keySummary);
     }
 
-    @Background
     void loadAmiiboManager() {
+        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
+        loadAmiiboManagerTask();
+    }
+
+    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
             amiiboManager = Util.loadAmiiboManager(this.getContext());
@@ -400,12 +449,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             showToast("Failed to load amiibo info", Toast.LENGTH_SHORT);
             return;
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
 
         setAmiiboManager(amiiboManager);
     }
 
-    @Background
     void updateAmiiboManager(Uri data) {
+        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
+        updateAmiiboManagerTask(data);
+    }
+
+    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    void updateAmiiboManagerTask(Uri data) {
         AmiiboManager amiiboManager;
         try {
             amiiboManager = AmiiboManager.parse(this.getContext(), data);
@@ -418,6 +474,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             showToast("Failed to read amiibo info", Toast.LENGTH_SHORT);
             return;
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
 
         try {
             Util.saveLocalAmiiboInfo(this.getContext(), amiiboManager);
@@ -426,13 +484,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             showToast("Failed to update amiibo info", Toast.LENGTH_SHORT);
             return;
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
 
         setAmiiboManager(amiiboManager);
         showSnackbar("Updated amiibo info", Snackbar.LENGTH_SHORT);
     }
 
-    @Background
     void resetAmiiboManager() {
+        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
+        resetAmiiboManagerTask();
+    }
+
+    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    void resetAmiiboManagerTask() {
         this.getContext().deleteFile(Util.AMIIBO_DATABASE_FILE);
 
         AmiiboManager amiiboManager = null;
@@ -442,6 +507,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             e.printStackTrace();
             showToast("Failed to parse default amiibo info", Snackbar.LENGTH_SHORT);
         }
+        if (Thread.currentThread().isInterrupted())
+            return;
 
         setAmiiboManager(amiiboManager);
         showSnackbar("Reset amiibo info", Snackbar.LENGTH_SHORT);
@@ -473,8 +540,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.amiiboTypeStats.setSummary("Total: " + amiiboTypeCount);
     }
 
-    @Background
+
     void downloadAmiiboAPIData() {
+        BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
+        downloadAmiiboAPIDataTask();
+    }
+
+    @Background(id=BACKGROUND_SYNC_AMIIBO_MANAGER)
+    void downloadAmiiboAPIDataTask() {
         showSnackbar("Syncing Amiibo Info from AmiiboAPI...", Snackbar.LENGTH_INDEFINITE);
         try {
             URL url = new URL("http://www.amiiboapi.com/api/amiibo/");
@@ -505,6 +578,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                 String json = response.toString();
                 AmiiboManager amiiboManager = AmiiboManager.parseAmiiboAPI(new JSONObject(json));
+                if (Thread.currentThread().isInterrupted())
+                    return;
+
                 Util.saveLocalAmiiboInfo(this.getContext(), amiiboManager);
                 setAmiiboManager(amiiboManager);
                 showSnackbar("Syncing Amiibo Info from AmiiboAPI successful!", Snackbar.LENGTH_SHORT);
@@ -513,6 +589,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            if (Thread.currentThread().isInterrupted())
+                return;
             showSnackbar("Syncing Amiibo Info from AmiiboAPI failed", Snackbar.LENGTH_SHORT);
         }
     }

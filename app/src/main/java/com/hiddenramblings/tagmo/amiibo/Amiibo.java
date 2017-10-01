@@ -3,6 +3,8 @@ package com.hiddenramblings.tagmo.amiibo;
 
 import android.support.annotation.NonNull;
 
+import com.hiddenramblings.tagmo.TagUtil;
+
 public class Amiibo implements Comparable<Amiibo> {
     public static long HEAD_MASK = 0xFFFFFFFF00000000L;
     public static long TAIL_MASK = 0x00000000FFFFFFFFL;
@@ -95,6 +97,12 @@ public class Amiibo implements Comparable<Amiibo> {
         return String.format(AMIIBO_API_IMAGE_URL, getHead(), getTail());
     }
 
+    public static String getImageUrl(long amiiboId) {
+        int head = (int)((amiiboId & HEAD_MASK) >> HEAD_BITSHIFT);
+        int tail = (int)((amiiboId & TAIL_MASK) >> TAIL_BITSHIFT);;
+        return String.format(AMIIBO_API_IMAGE_URL, head, tail);
+    }
+
     @Override
     public int compareTo(@NonNull Amiibo amiibo) {
         if (this.id == amiibo.id)
@@ -169,5 +177,37 @@ public class Amiibo implements Comparable<Amiibo> {
             value = name1.compareTo(name2);
         }
         return value;
+    }
+
+    public static boolean matchesGameSeriesFilter(GameSeries gameSeries, String gameSeriesFilter) {
+        if (gameSeries != null) {
+            if (!gameSeriesFilter.isEmpty() && !gameSeries.name.equals(gameSeriesFilter))
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean matchesCharacterFilter(Character character, String characterFilter) {
+        if (character != null) {
+            if (!characterFilter.isEmpty() && !character.name.equals(characterFilter))
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean matchesAmiiboSeriesFilter(AmiiboSeries amiiboSeries, String amiiboSeriesFilter) {
+        if (amiiboSeries != null) {
+            if (!amiiboSeriesFilter.isEmpty() && !amiiboSeries.name.equals(amiiboSeriesFilter))
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean matchesAmiiboTypeFilter(AmiiboType amiiboType, String amiiboTypeFilter) {
+        if (amiiboType != null) {
+            if (!amiiboTypeFilter.isEmpty() && !amiiboType.name.equals(amiiboTypeFilter))
+                return false;
+        }
+        return true;
     }
 }

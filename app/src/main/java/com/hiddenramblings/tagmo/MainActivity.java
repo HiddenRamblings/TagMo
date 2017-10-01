@@ -40,7 +40,9 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+
 import com.hiddenramblings.tagmo.ptag.PTagKeyManager;
+
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -397,6 +399,7 @@ public class MainActivity extends AppCompatActivity {
 
         int ssbVisibility = View.GONE;
         int tpVisibility = View.GONE;
+
         if (currentTagData != null) {
             try {
                 long amiiboId = TagUtil.amiiboIdFromTag(currentTagData);

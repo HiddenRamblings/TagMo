@@ -21,8 +21,10 @@ import java.nio.ByteBuffer;
 @EActivity(R.layout.activity_editor_tp)
 @OptionsMenu({R.menu.editor_menu})
 public class EditorTP extends AppCompatActivity {
+
     public static final long WOLF_LINK_ID = 0x01030000024F0902L;
     public static final int APP_ID = 0x1019C800;
+
 
     private static final String TAG = "EditorTP";
 

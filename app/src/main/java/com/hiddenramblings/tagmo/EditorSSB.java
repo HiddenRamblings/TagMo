@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 @EActivity(R.layout.activity_editor_ssb)
 @OptionsMenu({R.menu.editor_menu})
 public class EditorSSB extends AppCompatActivity {
+
     public static final long SSB_AMIIBO_SERIES = 0x0000000000000000L;
     public static final int APP_ID = 0x10110E00;
 

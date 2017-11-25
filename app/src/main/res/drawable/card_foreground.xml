@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<inset
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/card_foreground_selector"
-    android:insetBottom="4dp"
-    android:insetLeft="2dp"
-    android:insetRight="2dp"
-    android:insetTop="4dp"/>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false">
+        <shape>
+            <solid android:color="#18000000" />
+        </shape>
+    </item>
+    <item>
+        <inset
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:drawable="@drawable/card_foreground_selector"
+            android:insetBottom="4dp"
+            android:insetLeft="2dp"
+            android:insetRight="2dp"
+            android:insetTop="4dp"/>
+    </item>
+</selector>

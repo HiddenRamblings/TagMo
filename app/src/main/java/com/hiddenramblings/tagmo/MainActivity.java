@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int VIEW_TYPE_COMPACT = 1;
     public static final int VIEW_TYPE_LARGE = 2;
 
+    TextView txtError;
     TextView txtTagId;
     TextView txtName;
     TextView txtGameSeries;
@@ -442,6 +443,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         amiiboInfoView.addView(amiiboView);
+        txtError = amiiboView.findViewById(R.id.txtError);
         txtTagId = amiiboView.findViewById(R.id.txtTagId);
         txtName = amiiboView.findViewById(R.id.txtName);
         txtGameSeries = amiiboView.findViewById(R.id.txtGameSeries);
@@ -551,10 +553,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (tagInfo == null) {
-            setAmiiboInfoText(txtName, amiiboName, false);
+            txtError.setVisibility(View.GONE);
         } else {
-            setAmiiboInfoText(txtName, tagInfo, false);
+            setAmiiboInfoText(txtError, tagInfo, false);
         }
+        setAmiiboInfoText(txtName, amiiboName, tagInfo != null);
         setAmiiboInfoText(txtTagId, amiiboHexId, tagInfo != null);
         setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, tagInfo != null);
         setAmiiboInfoText(txtAmiiboType, amiiboType, tagInfo != null);

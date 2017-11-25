@@ -129,8 +129,10 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuViewCompact;
     @OptionsMenuItem(R.id.view_large)
     MenuItem menuViewLarge;
-    @OptionsMenuItem(R.id.recursive_files)
+    @OptionsMenuItem(R.id.scan_subfolders)
     MenuItem menuRecursiveFiles;
+    @OptionsMenuItem(R.id.show_missing)
+    MenuItem menuShowMissing;
     @OptionsMenuItem(R.id.refresh)
     MenuItem menuRefresh;
 
@@ -181,7 +183,8 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.setGameSeriesFilter(prefs.filterGameSeries().get());
             this.settings.setAmiiboView(prefs.browserAmiiboView().get());
             this.settings.setImageNetworkSettings(prefs.imageNetworkSetting().get());
-            this.settings.setRecursiveFiles(prefs.recursiveFiles().get());
+            this.settings.setScanSubfoldersEnabled(prefs.scanSubfoldersEnabled().get());
+            this.settings.setMissingAmiibosShown(prefs.missingAmiibosShown().get());
         } else {
             this.currentFolderView.setText(Util.friendlyPath(settings.getBrowserRootFolder()));
             this.onFilterGameSeriesChanged();
@@ -204,6 +207,14 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onPause() {
+        if (this.settings != null) {
+            this.settings.removeAllChangeListeners();
+        }
+        super.onPause();
+    }
+
+    @Override
     public void onBackPressed() {
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -219,6 +230,7 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onSortChanged();
         this.onViewChanged();
         this.onRecursiveFilesChanged();
+        this.onShowMissingChanged();
 
         // setOnQueryTextListener will clear this, so make a copy
         String query = settings.getQuery();
@@ -308,9 +320,15 @@ public class BrowserActivity extends AppCompatActivity implements
         settings.notifyChanges();
     }
 
-    @OptionsItem(R.id.recursive_files)
+    @OptionsItem(R.id.scan_subfolders)
     void onRecursiveFilesClicked() {
-        this.settings.setRecursiveFiles(!this.settings.isRecursiveFiles());
+        this.settings.setScanSubfoldersEnabled(!this.settings.isScanSubfoldersEnabled());
+        this.settings.notifyChanges();
+    }
+
+    @OptionsItem(R.id.show_missing)
+    void OnShowMissingCicked() {
+        this.settings.setMissingAmiibosShown(!this.settings.isMissingAmiibosShown());
         this.settings.notifyChanges();
     }
 
@@ -515,6 +533,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onAmiiboClicked(AmiiboFile amiiboFile) {
+        if (amiiboFile.filePath == null)
+            return;
+
         Intent returnIntent = new Intent();
         returnIntent.setData(Uri.fromFile(amiiboFile.getFilePath()));
 
@@ -673,9 +694,13 @@ public class BrowserActivity extends AppCompatActivity implements
         if (!Util.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
             folderChanged = true;
         }
-        if (newBrowserSettings.isRecursiveFiles() != oldBrowserSettings.isRecursiveFiles()) {
+        if (newBrowserSettings.isScanSubfoldersEnabled() != oldBrowserSettings.isScanSubfoldersEnabled()) {
             folderChanged = true;
             onRecursiveFilesChanged();
+        }
+        if (newBrowserSettings.isMissingAmiibosShown() != oldBrowserSettings.isMissingAmiibosShown()) {
+            folderChanged = true;
+            onShowMissingChanged();
         }
         if (folderChanged) {
             onRootFolderChanged();
@@ -713,7 +738,8 @@ public class BrowserActivity extends AppCompatActivity implements
             .filterAmiiboType().put(newBrowserSettings.getAmiiboTypeFilter())
             .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
             .imageNetworkSetting().put(newBrowserSettings.getImageNetworkSettings())
-            .recursiveFiles().put(newBrowserSettings.isRecursiveFiles())
+            .scanSubfoldersEnabled().put(newBrowserSettings.isScanSubfoldersEnabled())
+            .missingAmiibosShown().put(newBrowserSettings.isMissingAmiibosShown())
             .apply();
     }
 
@@ -765,7 +791,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void onRootFolderChanged() {
         File rootFolder = settings.getBrowserRootFolder();
         this.currentFolderView.setText(Util.friendlyPath(rootFolder));
-        this.loadAmiiboFiles(rootFolder, settings.isRecursiveFiles());
+        this.loadAmiiboFiles(rootFolder, settings.isScanSubfoldersEnabled());
         this.loadFolders(rootFolder);
     }
 
@@ -813,7 +839,14 @@ public class BrowserActivity extends AppCompatActivity implements
         if (menuRecursiveFiles == null)
             return;
 
-        menuRecursiveFiles.setChecked(settings.isRecursiveFiles());
+        menuRecursiveFiles.setChecked(settings.isScanSubfoldersEnabled());
+    }
+
+    void onShowMissingChanged() {
+        if (menuShowMissing == null)
+            return;
+
+        menuShowMissing.setChecked(settings.isMissingAmiibosShown());
     }
 
     OnCloseClickListener onAmiiboTypeChipCloseClick = new OnCloseClickListener() {

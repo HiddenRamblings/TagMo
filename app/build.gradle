@@ -1,19 +1,16 @@
 apply plugin: 'com.android.application'
-def AAVersion = '4.3.1'
-def AndroidSupportVersion = '26.0.0'
+def AAVersion = '4.5.0-SNAPSHOT'
+def AndroidSupportVersion = '26.1.0'
 
 buildscript {
     repositories {
         jcenter()
-        maven {
-            url "https://jitpack.io"
-        }
     }
 }
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.1'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "com.hiddenramblings.tagmo"
@@ -22,6 +19,7 @@ android {
         versionCode 5
         versionName "2.6.1"
     }
+    flavorDimensions "abi"
     buildTypes {
         release {
             minifyEnabled false

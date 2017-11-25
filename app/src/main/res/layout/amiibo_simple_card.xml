@@ -19,6 +19,17 @@
         android:padding="8dp">
 
         <TextView
+            android:id="@+id/txtError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:padding="8dp"
+            android:text="ERROR"
+            android:textAlignment="center"
+            android:textColor="@color/tag_text"
+            android:textSize="16dp"/>
+
+        <TextView
             android:id="@+id/txtName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -96,6 +107,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/group2"
             android:text="PATH"
+            android:textColor="@color/tag_text"
             android:textSize="10dp"
             android:visibility="gone"/>
     </RelativeLayout>

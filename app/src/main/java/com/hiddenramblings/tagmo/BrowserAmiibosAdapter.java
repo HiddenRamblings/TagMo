@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -32,6 +33,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 
 class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.AmiiboVewHolder> implements
     Filterable,
@@ -63,7 +65,8 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             !Util.equals(newBrowserSettings.getGameSeriesFilter(), oldBrowserSettings.getGameSeriesFilter()) ||
             !Util.equals(newBrowserSettings.getCharacterFilter(), oldBrowserSettings.getCharacterFilter()) ||
             !Util.equals(newBrowserSettings.getAmiiboSeriesFilter(), oldBrowserSettings.getAmiiboSeriesFilter()) ||
-            !Util.equals(newBrowserSettings.getAmiiboTypeFilter(), oldBrowserSettings.getAmiiboTypeFilter());
+            !Util.equals(newBrowserSettings.getAmiiboTypeFilter(), oldBrowserSettings.getAmiiboTypeFilter()) ||
+            !Util.equals(newBrowserSettings.isMissingAmiibosShown(), oldBrowserSettings.isMissingAmiibosShown());
 
         if (firstRun || !Util.equals(newBrowserSettings.getAmiiboFiles(), oldBrowserSettings.getAmiiboFiles())) {
             this.data.clear();
@@ -124,19 +127,19 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
     class AmiiboComparator implements Comparator<AmiiboFile> {
         @Override
         public int compare(AmiiboFile amiiboFile1, AmiiboFile amiiboFile2) {
+            int value = 0;
+            int sort = settings.getSort();
+
             File filePath1 = amiiboFile1.getFilePath();
             File filePath2 = amiiboFile2.getFilePath();
+            if (sort == BrowserActivity.SORT_FILE_PATH && !(filePath1 == null && filePath2 == null))
+                value = compareFilePath(filePath1, filePath2);
 
-            int sort = settings.getSort();
-            if (sort == BrowserActivity.SORT_FILE_PATH)
-                return filePath1.compareTo(filePath2);
-
-            int value = 0;
             long amiiboId1 = amiiboFile1.getId();
             long amiiboId2 = amiiboFile2.getId();
             if (sort == BrowserActivity.SORT_ID) {
                 value = compareAmiiboId(amiiboId1, amiiboId2);
-            } else {
+            } else if (value == 0) {
                 AmiiboManager amiiboManager = settings.getAmiiboManager();
                 if (amiiboManager != null) {
                     Amiibo amiibo1 = amiiboManager.amiibos.get(amiiboId1);
@@ -164,9 +167,19 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             }
 
             if (value == 0)
-                value = filePath1.compareTo(filePath2);
+                value = compareFilePath(filePath1, filePath2);
 
             return value;
+        }
+
+        int compareFilePath(File filePath1, File filePath2) {
+            if (filePath1 == null) {
+                return 1;
+            } else if (filePath2 == null) {
+                return -1;
+            } else {
+                return filePath1.compareTo(filePath2);
+            }
         }
 
         int compareAmiiboId(long amiiboId1, long amiiboId2) {
@@ -248,17 +261,30 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             String query = constraint != null ? constraint.toString() : "";
             settings.setQuery(query);
 
-            FilterResults filterResults = new FilterResults();
-            ArrayList<AmiiboFile> tempList = new ArrayList<>();
-            String queryText = query.trim().toLowerCase();
             ArrayList<AmiiboFile> data = new ArrayList<>();
             if (settings.getAmiiboFiles() != null) {
                 data.addAll(settings.getAmiiboFiles());
             }
+
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
+            if (amiiboManager != null && settings.isMissingAmiibosShown()) {
+                HashSet<Long> amiiboIds = new HashSet<>();
+                for (AmiiboFile amiiboFile : data) {
+                    amiiboIds.add(amiiboFile.getId());
+                }
+                for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                    if (!amiiboIds.contains(amiibo.id)) {
+                        data.add(new AmiiboFile(null, amiibo.id));
+                    }
+                }
+            }
+
+            FilterResults filterResults = new FilterResults();
+            ArrayList<AmiiboFile> tempList = new ArrayList<>();
+            String queryText = query.trim().toLowerCase();
             for (AmiiboFile amiiboFile : data) {
                 boolean add;
 
-                AmiiboManager amiiboManager = settings.getAmiiboManager();
                 if (amiiboManager != null) {
                     Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
                     if (amiibo == null)
@@ -267,7 +293,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                 } else {
                     add = queryText.isEmpty();
                 }
-                if (!add)
+                if (!add && amiiboFile.getFilePath() != null)
                     add = pathContainsQuery(amiiboFile.getFilePath().getAbsolutePath(), queryText);
                 if (add)
                     tempList.add(amiiboFile);
@@ -335,6 +361,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         private final BrowserSettings settings;
         private final OnAmiiboClickListener listener;
 
+        public final TextView txtError;
         public final TextView txtName;
         public final TextView txtTagId;
         public final TextView txtAmiiboSeries;
@@ -378,6 +405,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                 }
             });
 
+            this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
             this.txtTagId = itemView.findViewById(R.id.txtTagId);
             this.txtAmiiboSeries = itemView.findViewById(R.id.txtAmiiboSeries);
@@ -437,16 +465,25 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             String query = settings.getQuery().toLowerCase();
 
             if (tagInfo == null) {
-                setAmiiboInfoText(this.txtName, boldMatchingText(amiiboName, query), false);
+                txtError.setVisibility(View.GONE);
             } else {
-                setAmiiboInfoText(this.txtName, tagInfo, false);
+                setAmiiboInfoText(this.txtError, tagInfo, false);
             }
+            setAmiiboInfoText(this.txtName, amiiboName, false);
             setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query), tagInfo != null);
             setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), tagInfo != null);
             setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query), tagInfo != null);
             setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query), tagInfo != null);
             //setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), tagInfo != null);
-            this.txtPath.setText(boldMatchingText(Util.friendlyPath(item.getFilePath()), query));
+            if (item.getFilePath() != null) {
+                this.itemView.setEnabled(true);
+                this.txtPath.setText(boldMatchingText(Util.friendlyPath(item.getFilePath()), query));
+                this.txtPath.setTextColor(this.txtPath.getResources().getColor(R.color.tag_text));
+            } else {
+                this.itemView.setEnabled(false);
+                this.txtPath.setText("No files for this Amiibo found");
+                this.txtPath.setTextColor(Color.RED);
+            }
             this.txtPath.setVisibility(View.VISIBLE);
 
             if (this.imageAmiibo != null) {

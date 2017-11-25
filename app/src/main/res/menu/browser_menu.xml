@@ -102,10 +102,15 @@
         </menu>
     </item>
     <item
-        android:id="@+id/recursive_files"
-        android:title="Find Files Recursively"
-        app:showAsAction="ifRoom"
-        android:checkable="true"/>
+        android:id="@+id/scan_subfolders"
+        android:checkable="true"
+        android:title="Scan Subfolders"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/show_missing"
+        android:checkable="true"
+        android:title="Show Missing Amiibos"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/refresh"
         android:icon="@drawable/ic_refresh_white_24dp"

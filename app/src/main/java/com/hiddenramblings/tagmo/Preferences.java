@@ -41,5 +41,8 @@ public interface Preferences {
     String browserRootFolder();
 
     @DefaultBoolean(true)
-    boolean recursiveFiles();
+    boolean scanSubfoldersEnabled();
+
+    @DefaultBoolean(false)
+    boolean missingAmiibosShown();
 }

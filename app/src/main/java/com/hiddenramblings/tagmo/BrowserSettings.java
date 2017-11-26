@@ -29,7 +29,8 @@ public class BrowserSettings {
     protected String filterAmiiboType;
     protected int browserAmiiboView;
     protected String imageNetworkSettings;
-    protected boolean recursiveFiles;
+    protected boolean scanSubfoldersEnabled;
+    protected boolean missingAmiibosShown;
 
     public BrowserSettings() {
         oldBrowserSettings = new BrowserSettings(false);
@@ -40,7 +41,7 @@ public class BrowserSettings {
         ArrayList<AmiiboFile> amiiboFiles, ArrayList<File> folders, File browserFolder,
         String query, int sort, String filterGameSeries, String filterCharacter,
         String filterAmiiboSeries, String filterAmiiboType, int browserAmiiboView,
-        String imageNetworkSettings, boolean recursiveFiles
+        String imageNetworkSettings, boolean scanSubfoldersEnabled, boolean missingAmiibosShown
     ) {
         super();
 
@@ -55,7 +56,8 @@ public class BrowserSettings {
         this.filterAmiiboType = filterAmiiboType;
         this.browserAmiiboView = browserAmiiboView;
         this.imageNetworkSettings = imageNetworkSettings;
-        this.recursiveFiles = recursiveFiles;
+        this.scanSubfoldersEnabled = scanSubfoldersEnabled;
+        this.missingAmiibosShown = missingAmiibosShown;
     }
 
     private BrowserSettings(boolean duplicate) {
@@ -162,12 +164,20 @@ public class BrowserSettings {
         this.imageNetworkSettings = imageNetworkSettings;
     }
 
-    public boolean isRecursiveFiles() {
-        return recursiveFiles;
+    public boolean isScanSubfoldersEnabled() {
+        return scanSubfoldersEnabled;
     }
 
-    public void setRecursiveFiles(boolean recursiveFiles) {
-        this.recursiveFiles = recursiveFiles;
+    public void setScanSubfoldersEnabled(boolean scanSubfoldersEnabled) {
+        this.scanSubfoldersEnabled = scanSubfoldersEnabled;
+    }
+
+    public boolean isMissingAmiibosShown() {
+        return missingAmiibosShown;
+    }
+
+    public void setMissingAmiibosShown(boolean missingAmiibosShown) {
+        this.missingAmiibosShown = missingAmiibosShown;
     }
 
     public void notifyChanges() {
@@ -183,6 +193,10 @@ public class BrowserSettings {
 
     public void removeChangeListener(BrowserSettingsListener listener) {
         this.listeners.remove(listener);
+    }
+
+    public void removeAllChangeListeners() {
+        this.listeners.clear();
     }
 
     interface BrowserSettingsListener {
@@ -203,7 +217,8 @@ public class BrowserSettings {
         copy.setAmiiboView(this.getAmiiboView());
         copy.setBrowserRootFolder(this.getBrowserRootFolder());
         copy.setImageNetworkSettings(this.getImageNetworkSettings());
-        copy.setRecursiveFiles(this.isRecursiveFiles());
+        copy.setScanSubfoldersEnabled(this.isScanSubfoldersEnabled());
+        copy.setMissingAmiibosShown(this.isMissingAmiibosShown());
 
         return copy;
     }

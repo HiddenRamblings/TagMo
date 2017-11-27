@@ -32,9 +32,6 @@ public interface Preferences {
     @DefaultInt(BrowserActivity.VIEW_TYPE_COMPACT)
     int browserAmiiboView();
 
-    @DefaultInt(MainActivity.VIEW_TYPE_COMPACT)
-    int mainAmiiboView();
-
     @DefaultString(keyRes=R.string.image_network_settings, value=SettingsFragment.IMAGE_NETWORK_ALWAYS)
     String imageNetworkSetting();
 

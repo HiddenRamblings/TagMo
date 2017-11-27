@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".MainActivity">
+    <item
+        android:id="@+id/mnu_save"
+        android:title="Save"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_write"
+        android:title="Write"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_restore"
+        android:title="Restore"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_view_hex"
+        android:title="View Hex"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mnu_edit_ssb"
+        android:showAsAction="ifRoom"
+        android:title="Edit SSB Data"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mnu_edit_tp"
+        android:showAsAction="ifRoom"
+        android:title="Edit TP Data"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mnu_ignore_tag_id"
+        android:checkable="true"
+        android:showAsAction="ifRoom"
+        android:title="Ignore tag restrictions"
+        app:showAsAction="ifRoom"/>
+</menu>

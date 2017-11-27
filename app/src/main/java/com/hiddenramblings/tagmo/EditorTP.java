@@ -21,10 +21,8 @@ import java.nio.ByteBuffer;
 @EActivity(R.layout.activity_editor_tp)
 @OptionsMenu({R.menu.editor_menu})
 public class EditorTP extends AppCompatActivity {
-
     public static final long WOLF_LINK_ID = 0x01030000024F0902L;
     public static final int APP_ID = 0x1019C800;
-
 
     private static final String TAG = "EditorTP";
 
@@ -34,6 +32,8 @@ public class EditorTP extends AppCompatActivity {
     Spinner spnHearts;
 
     KeyManager keyManager;
+
+    byte[] tagData;
 
     @AfterViews
     void afterViews() {
@@ -45,7 +45,7 @@ public class EditorTP extends AppCompatActivity {
         keyManager = new KeyManager(this);
 
         try {
-            byte[] tagData = getIntent().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
+            this.tagData = getIntent().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
 
             long amiiboId;
             try {
@@ -61,7 +61,7 @@ public class EditorTP extends AppCompatActivity {
                 return;
             }
 
-            tagData = TagUtil.decrypt(keyManager, tagData);
+            this.tagData = TagUtil.decrypt(keyManager, tagData);
             this.loadData(tagData);
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,8 +79,28 @@ public class EditorTP extends AppCompatActivity {
     private static final int OFFSET_LEVEL = OFFSET_APP_DATA;
     private static final int OFFSET_HEARTS = OFFSET_APP_DATA + 0x01;
 
-    void loadData(final byte[] data) {
-        int appId = ByteBuffer.wrap(data, TagUtil.APP_ID_OFFSET, TagUtil.APP_ID_LENGTH).getInt();
+    void loadData(byte[] data) {
+        ByteBuffer bb = ByteBuffer.wrap(data);
+        int appId = bb.getInt(TagUtil.APP_ID_OFFSET);
+        bb.putInt(TagUtil.APP_ID_OFFSET, APP_ID);
+        bb.put(OFFSET_LEVEL, (byte)0);
+        bb.put(OFFSET_HEARTS, (byte)0);
+        bb.putInt(0xAC, 0x00050000);
+        bb.putInt(0xB0, 0x1019e600);
+        bb.putInt(0xB4, 0x00031019);
+        bb.putInt(0xB8, 0xc80045c9);
+
+        bb.putInt(0xDC, 0x00000000);
+        bb.putInt(0xE0, 0x00000000);
+        bb.putInt(0xE4, 0x00000000);
+        bb.putInt(0xE8, 0x00000000);
+        bb.putInt(0xEC, 0xff285064);
+        bb.putInt(0xF0, 0x00000000);
+        bb.putInt(0xF4, 0x00000000);
+        bb.putInt(0xF8, 0x00000000);
+        bb.putInt(0xFC, 0x00000000);
+        data = bb.array();
+        appId = bb.getInt(TagUtil.APP_ID_OFFSET);
         if (appId != APP_ID) {
             LogError("This Amiibo's app data is not formatted for The Legend of Zelda: Twilight Princess HD HD Cave of Shadows.");
             return;
@@ -101,6 +121,7 @@ public class EditorTP extends AppCompatActivity {
 
             LogError("Error parsing data");
         }
+        this.tagData = data;
     }
 
     void updateData(byte[] data) {
@@ -118,10 +139,8 @@ public class EditorTP extends AppCompatActivity {
     @OptionsItem(R.id.mnu_save)
     void save() {
         try {
-            byte[] tagData = getIntent().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
-            tagData = TagUtil.decrypt(keyManager, tagData);
-            this.updateData(tagData);
-            tagData = TagUtil.encrypt(keyManager, tagData);
+            this.updateData(this.tagData);
+            byte[] tagData = TagUtil.encrypt(keyManager, this.tagData);
             Intent intent = new Intent(Actions.ACTION_EDIT_COMPLETE);
             intent.putExtra(Actions.EXTRA_TAG_DATA, tagData);
             setResult(Activity.RESULT_OK, intent);

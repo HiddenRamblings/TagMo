@@ -35,4 +35,7 @@
     <string name="edit_ssb_data">Edit SSB Data</string>
     <string name="edit_mii_data">Edit Mii Data</string>
     <string name="image_network_settings">\@string/image_network_settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

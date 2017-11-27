@@ -93,7 +93,7 @@ public class NfcActivity extends AppCompatActivity {
                 setTitle("Write to Tag (Auto)");
                 break;
             case ACTION_WRITE_TAG_DATA:
-                setTitle("Update Data on Tag");
+                setTitle("Restore Tag");
                 break;
             case ACTION_SCAN_TAG:
                 setTitle("Scan Tag");

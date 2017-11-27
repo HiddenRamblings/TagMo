@@ -8,10 +8,15 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="collapseActionView|always"/>
     <item
+        android:id="@+id/settings"
+        android:title="Settings"
+        android:icon="@drawable/ic_settings_white_24dp"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/filter"
         android:icon="@drawable/ic_filter_list_white_24dp"
         android:title="Filter"
-        app:showAsAction="ifRoom">
+        app:showAsAction="always">
         <menu>
             <item
                 android:id="@+id/filter_game_series"

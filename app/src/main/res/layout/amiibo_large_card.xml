@@ -15,114 +15,135 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imageAmiibo"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:foreground="@drawable/card_foreground"
-            android:visibility="gone"/>
-
-        <TextView
-            android:id="@+id/txtError"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textAlignment="center"
-            android:text="ERROR"
-            android:textColor="@color/tag_text"
-            android:padding="8dp"
-            android:textSize="16dp"/>
+            android:orientation="vertical"
+            android:padding="8dp">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/imageAmiibo"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginBottom="4dp"
+                android:foreground="@drawable/card_foreground"
+                android:visibility="gone"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@drawable/bottom_divider"/>
 
             <TextView
-                android:id="@+id/txtName"
+                android:id="@+id/txtError"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="NAME"
+                android:layout_centerInParent="true"
+                android:padding="8dp"
+                android:text="ERROR"
+                android:textAlignment="center"
                 android:textColor="@color/tag_text"
                 android:textSize="16dp"/>
 
-            <LinearLayout
-                android:id="@+id/group1"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/txtName"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/txtTagId"
-                    android:layout_width="0dp"
+                    android:id="@+id/txtName"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="start"
-                    android:text="TAGID"
+                    android:text="NAME"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
+                    android:textSize="16dp"/>
 
-                <View
-                    android:layout_width="4dp"
-                    android:layout_height="match_parent"/>
+                <LinearLayout
+                    android:id="@+id/group1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txtName"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtTagId"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:text="TAGID"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10dp"/>
+
+                    <View
+                        android:layout_width="4dp"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:id="@+id/txtAmiiboType"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="AMIIBO TYPE"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/group2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/group1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtGameSeries"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:text="GAME SERIES"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10dp"/>
+
+                    <View
+                        android:layout_width="4dp"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:id="@+id/txtAmiiboSeries"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="AMIIBO SERIES"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10dp"/>
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/txtAmiiboType"
-                    android:layout_width="0dp"
+                    android:id="@+id/txtPath"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="AMIIBO TYPE"
+                    android:layout_below="@id/group2"
+                    android:text="PATH"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
-            </LinearLayout>
+                    android:textSize="10dp"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+        </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/group2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/group1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/txtGameSeries"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="start"
-                    android:text="GAME SERIES"
-                    android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
-
-                <View
-                    android:layout_width="4dp"
-                    android:layout_height="match_parent"/>
-
-                <TextView
-                    android:id="@+id/txtAmiiboSeries"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="AMIIBO SERIES"
-                    android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txtPath"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/group2"
-                android:text="PATH"
-                android:textColor="@color/tag_text"
-                android:textSize="10dp"
-                android:visibility="gone"/>
-        </RelativeLayout>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            app:popupTheme="@style/PopupTheme"
+            app:theme="@style/PopupThemeOverlay"/>
     </LinearLayout>
 
     <TextView

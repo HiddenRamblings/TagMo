@@ -1,13 +1,15 @@
 package com.hiddenramblings.tagmo;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +39,7 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.InstanceState;
+import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.OptionsMenuItem;
@@ -63,8 +66,7 @@ public class BrowserActivity extends AppCompatActivity implements
     SearchView.OnQueryTextListener,
     SwipeRefreshLayout.OnRefreshListener,
     BrowserSettings.BrowserSettingsListener,
-    BrowserAmiibosAdapter.OnAmiiboClickListener
-{
+    BrowserAmiibosAdapter.OnAmiiboClickListener {
     public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
     public static final String BACKGROUND_FOLDERS = "folders";
     public static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
@@ -147,6 +149,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        verifyStoragePermissions();
     }
 
     public void onSaveInstanceState(Bundle outState) {
@@ -193,16 +196,46 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onFilterAmiiboTypeChanged();
             this.onAmiiboFilesChanged();
         }
-        this.settings.addChangeListener(this);
-
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
         this.amiibosView.setAdapter(new BrowserAmiibosAdapter(settings, this));
-
         this.foldersView.setLayoutManager(new LinearLayoutManager(this));
         this.foldersView.setAdapter(new BrowserFoldersAdapter(settings));
 
         this.loadAmiiboManager();
+    }
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
+    private static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
+    private static String[] PERMISSIONS_STORAGE = {
+        READ_EXTERNAL_STORAGE,
+        WRITE_EXTERNAL_STORAGE
+    };
+
+    void verifyStoragePermissions() {
+        int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        this.settings.addChangeListener(this);
+        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) this.amiibosView.getAdapter());
+        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) this.foldersView.getAdapter());
+
         this.settings.notifyChanges();
     }
 
@@ -240,6 +273,25 @@ public class BrowserActivity extends AppCompatActivity implements
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(this);
+        menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    onBackPressed();
+                    return false;
+                } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    onBackPressed();
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        });
 
         //focus the SearchView
         if (!query.isEmpty()) {
@@ -521,6 +573,12 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
+    @OptionsItem(R.id.settings)
+    void openSettings() {
+        Intent i = new Intent(this, SettingsActivity_.class);
+        startActivity(i);
+    }
+
     void refresh() {
         this.loadAmiiboManager();
         this.onRootFolderChanged();
@@ -531,16 +589,54 @@ public class BrowserActivity extends AppCompatActivity implements
         this.refresh();
     }
 
+    private static final int NFC_ACTIVITY = 0x102;
+
+    @Click(R.id.fab)
+    public void onFabClicked() {
+        Intent intent = new Intent(this, NfcActivity_.class);
+        intent.setAction(NfcActivity.ACTION_SCAN_TAG);
+        startActivityForResult(intent, NFC_ACTIVITY);
+    }
+
+    @OnActivityResult(NFC_ACTIVITY)
+    void onNFCResult(int resultCode, Intent data) {
+        if (resultCode != RESULT_OK || data == null)
+            return;
+
+        if (!NfcActivity.ACTION_NFC_SCANNED.equals(data.getAction()))
+            return;
+
+        byte[] tagData = data.getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
+
+        Bundle args = new Bundle();
+        args.putByteArray(AmiiboActivity.ARG_TAG_DATA, tagData);
+
+        Intent intent = new Intent(this, AmiiboActivity_.class);
+        intent.putExtras(args);
+
+        startActivity(intent);
+    }
+
     @Override
     public void onAmiiboClicked(AmiiboFile amiiboFile) {
         if (amiiboFile.filePath == null)
             return;
 
-        Intent returnIntent = new Intent();
-        returnIntent.setData(Uri.fromFile(amiiboFile.getFilePath()));
+        byte[] tagData;
+        try {
+            tagData = TagUtil.readTag(getContentResolver().openInputStream(Uri.fromFile(amiiboFile.filePath)));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
 
-        this.setResult(Activity.RESULT_OK, returnIntent);
-        this.finish();
+        Bundle args = new Bundle();
+        args.putByteArray(AmiiboActivity.ARG_TAG_DATA, tagData);
+
+        Intent intent = new Intent(this, AmiiboActivity_.class);
+        intent.putExtras(args);
+
+        startActivity(intent);
     }
 
     @Override
@@ -558,7 +654,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public boolean onQueryTextSubmit(String query) {
         settings.setQuery(query);
         settings.notifyChanges();
-        return true;
+        return false;
     }
 
     @Override
@@ -578,7 +674,7 @@ public class BrowserActivity extends AppCompatActivity implements
         loadAmiiboManagerTask();
     }
 
-    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    @Background(id = BACKGROUND_AMIIBO_MANAGER)
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
@@ -606,7 +702,7 @@ public class BrowserActivity extends AppCompatActivity implements
         loadFoldersTask(rootFolder);
     }
 
-    @Background(id=BACKGROUND_FOLDERS)
+    @Background(id = BACKGROUND_FOLDERS)
     void loadFoldersTask(File rootFolder) {
         final ArrayList<File> folders = listFolders(rootFolder);
         Collections.sort(folders, new Comparator<File>() {
@@ -647,7 +743,7 @@ public class BrowserActivity extends AppCompatActivity implements
         loadAmiiboFilesTask(rootFolder, recursiveFiles);
     }
 
-    @Background(id=BACKGROUND_AMIIBO_FILES)
+    @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         this.setAmiiboFilesLoadingBarVisibility(true);
         final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);

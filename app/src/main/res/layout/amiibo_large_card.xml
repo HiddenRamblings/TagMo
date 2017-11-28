@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_gravity="center"
     android:layout_marginBottom="8dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
@@ -18,33 +19,42 @@
         android:orientation="vertical"
         android:padding="8dp">
 
-        <ImageView
-            android:id="@+id/imageAmiibo"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:foreground="@drawable/card_foreground"
-            android:visibility="gone"/>
-
         <TextView
             android:id="@+id/txtError"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textAlignment="center"
-            android:text="ERROR"
-            android:textColor="@color/tag_text"
+            android:layout_gravity="center"
             android:padding="8dp"
+            android:text="ERROR"
+            android:textAlignment="center"
+            android:textColor="@color/tag_text"
             android:textSize="16dp"/>
 
         <RelativeLayout
+            android:id="@+id/amiiboInfo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imageAmiibo"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginBottom="4dp"
+                android:foreground="@drawable/card_foreground"
+                android:visibility="gone"/>
+
+            <View
+                android:id="@+id/imageDivider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/imageAmiibo"
+                android:background="@drawable/bottom_divider"/>
 
             <TextView
                 android:id="@+id/txtName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/imageDivider"
                 android:text="NAME"
                 android:textColor="@color/tag_text"
                 android:textSize="16dp"/>
@@ -68,7 +78,7 @@
 
                 <View
                     android:layout_width="4dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="1dp"/>
 
                 <TextView
                     android:id="@+id/txtAmiiboType"
@@ -100,7 +110,7 @@
 
                 <View
                     android:layout_width="4dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="1dp"/>
 
                 <TextView
                     android:id="@+id/txtAmiiboSeries"
@@ -122,16 +132,16 @@
                 android:textColor="@color/tag_text"
                 android:textSize="10dp"
                 android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/txtCharacter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="CHARACTER"
+                android:textColor="@color/tag_text"
+                android:textSize="10dp"
+                android:visibility="gone"/>
         </RelativeLayout>
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/txtCharacter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        android:text="CHARACTER"
-        android:textColor="@color/tag_text"
-        android:textSize="10dp"
-        android:visibility="gone"/>
 </androidx.cardview.widget.CardView>

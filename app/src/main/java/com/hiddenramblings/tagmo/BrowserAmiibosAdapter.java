@@ -49,12 +49,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
     public BrowserAmiibosAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
-        this.settings.addChangeListener(this);
 
         this.data = new ArrayList<>();
         this.filteredData = this.data;
-
-        this.settings.notifyChanges();
     }
 
     @Override

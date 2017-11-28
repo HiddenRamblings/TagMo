@@ -67,12 +67,14 @@ public class TagWriter {
 
         Log.d(TAG, "is power tag : " + isPowerTag);
 
+        tagData = TagUtil.decrypt(keyManager, tagData);
         if (isPowerTag) {
             //use a pre-determined static id for powertag
-            tagData = TagUtil.patchUid(POWERTAG_IDPAGES, tagData, keyManager, true);
+            tagData = TagUtil.patchUid(POWERTAG_IDPAGES, tagData);
         } else {
-            tagData = TagUtil.patchUid(idPages, tagData, keyManager, true);
+            tagData = TagUtil.patchUid(idPages, tagData);
         }
+        tagData = TagUtil.encrypt(keyManager, tagData);
 
         Log.d(TAG, Util.bytesToHex(tagData));
 

@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            style="@style/TagEditor.Header"
+            android:text="Amiibo"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="6dp">
+
+            <TextView
+                android:id="@+id/txtError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="8dp"
+                android:text="ERROR"
+                android:textAlignment="center"
+                android:textColor="@color/tag_text"
+                android:textSize="16dp"/>
+
+            <RelativeLayout
+                android:id="@+id/amiiboInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/imageAmiibo"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginBottom="4dp"
+                    android:foreground="@drawable/card_foreground"
+                    android:visibility="gone"/>
+
+                <View
+                    android:id="@+id/imageDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/imageAmiibo"
+                    android:background="@drawable/bottom_divider"/>
+
+                <TextView
+                    android:id="@+id/txtName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/imageDivider"
+                    android:text="NAME"
+                    android:textColor="@color/tag_text"
+                    android:textSize="16dp"/>
+
+                <LinearLayout
+                    android:id="@+id/group1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txtName"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtTagId"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:text="TAGID"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10dp"/>
+
+                    <View
+                        android:layout_width="4dp"
+                        android:layout_height="1dp"/>
+
+                    <TextView
+                        android:id="@+id/txtAmiiboType"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="AMIIBO TYPE"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/group2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/group1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtGameSeries"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:text="GAME SERIES"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10dp"/>
+
+                    <View
+                        android:layout_width="4dp"
+                        android:layout_height="1dp"/>
+
+                    <TextView
+                        android:id="@+id/txtAmiiboSeries"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="AMIIBO SERIES"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10dp"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtPath"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/group2"
+                    android:text="PATH"
+                    android:textColor="@color/tag_text"
+                    android:textSize="10dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/txtCharacter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="CHARACTER"
+                    android:textColor="@color/tag_text"
+                    android:textSize="10dp"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <TextView
+            style="@style/TagEditor.Header"
+            android:text="UID"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="2dp"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="UID"/>
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/txtUID"
+                style="@style/TagEditor.EditHex"
+                android:layout_width="match_parent"
+                app:mask="HH HH HH HH HH HH HH HH HH"/>
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/TagEditor.Header">
+
+            <TextView
+                style="@style/TagEditor.Header.NoBackground"
+                android:text="Settings"/>
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/userDataSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TagEditor.InputHint"
+                    android:text="Country Code"/>
+
+                <Spinner
+                    android:id="@+id/txtCountryCode"
+                    style="@style/TagEditor.Spinner"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TagEditor.InputHint"
+                        android:text="Initialized Date"/>
+
+                    <EditText
+                        android:id="@+id/txtInitDate"
+                        style="@style/TagEditor.EditDate"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TagEditor.InputHint"
+                        android:text="Modified Date"/>
+
+                    <EditText
+                        android:id="@+id/txtModifiedDate"
+                        style="@style/TagEditor.EditDate"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TagEditor.InputHint"
+                    android:text="Nickname"/>
+
+                <EditText
+                    android:id="@+id/txtNickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLength="10"
+                    android:maxLines="1"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TagEditor.InputHint"
+                        android:text="Write Counter"/>
+
+                    <EditText
+                        android:id="@+id/txtWriteCounter"
+                        style="@style/TagEditor.EditNumber"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            style="@style/TagEditor.Header"
+            android:text="Mii"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="2dp">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="Mii Name"/>
+
+            <EditText
+                android:id="@+id/txtMiiName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="10"
+                android:maxLines="1"/>
+        </LinearLayout>
+
+        <TextView
+            style="@style/TagEditor.Header"
+            android:text="App"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="2dp">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="App ID"/>
+
+            <Spinner
+                android:id="@+id/txtAppName"
+                style="@style/TagEditor.Spinner"/>
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/txtAppId"
+                style="@style/TagEditor.EditHex"
+                app:mask="HH HH HH HH"/>
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/TagEditor.Header">
+
+            <TextView
+                style="@style/TagEditor.Header.NoBackground"
+                android:text="App Data"/>
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/appDataSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/appData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"/>
+    </LinearLayout>
+</ScrollView>

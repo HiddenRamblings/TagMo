@@ -15,11 +15,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 public class AmiiboManager {
-    public static final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd");
-
     public final HashMap<Long, Amiibo> amiibos = new HashMap<>();
     public final HashMap<Long, GameSeries> gameSeries = new HashMap<>();
     public final HashMap<Long, Character> characters = new HashMap<>();
@@ -55,6 +54,8 @@ public class AmiiboManager {
     }
 
     public static AmiiboManager parse(JSONObject json) throws JSONException, ParseException {
+        final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
         AmiiboManager manager = new AmiiboManager();
         JSONObject amiibosJSON = json.getJSONObject("amiibos");
         for (Iterator iterator = amiibosJSON.keys(); iterator.hasNext(); ) {
@@ -114,6 +115,8 @@ public class AmiiboManager {
     }
 
     public static AmiiboManager parseAmiiboAPI(JSONObject json) throws JSONException, ParseException {
+        final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd");
+
         AmiiboManager manager = new AmiiboManager();
         JSONArray amiibosJSON = json.getJSONArray("amiibo");
         for (int i = 0; i < amiibosJSON.length(); i++) {
@@ -161,6 +164,8 @@ public class AmiiboManager {
     }
 
     public JSONObject toJSON() throws JSONException {
+        final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd");
+
         JSONObject outputJSON = new JSONObject();
 
         JSONObject amiibosJSON = new JSONObject();

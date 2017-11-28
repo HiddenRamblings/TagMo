@@ -17,14 +17,17 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
 import java.nio.ByteBuffer;
+import java.util.Date;
 
 @EActivity(R.layout.activity_editor_tp)
 @OptionsMenu({R.menu.editor_menu})
 public class EditorTP extends AppCompatActivity {
-
     public static final long WOLF_LINK_ID = 0x01030000024F0902L;
     public static final int APP_ID = 0x1019C800;
 
+    //all offsets for decrypted (internal) format of tags
+    private static final int OFFSET_LEVEL = TagUtil.OFFSET_APP_DATA;
+    private static final int OFFSET_HEARTS = OFFSET_LEVEL + 0x01;
 
     private static final String TAG = "EditorTP";
 
@@ -35,6 +38,8 @@ public class EditorTP extends AppCompatActivity {
 
     KeyManager keyManager;
 
+    byte[] tagData;
+
     @AfterViews
     void afterViews() {
         setListForSpinners(new Spinner[]{spnShadowCaveLevel},
@@ -44,29 +49,36 @@ public class EditorTP extends AppCompatActivity {
 
         keyManager = new KeyManager(this);
 
+        byte[] tagData = getIntent().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
+
+        long amiiboId;
         try {
-            byte[] tagData = getIntent().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
+            amiiboId = TagUtil.amiiboIdFromTag(tagData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogError("Unable to read Amiibo ID");
+            return;
+        }
 
-            long amiiboId;
-            try {
-                amiiboId = TagUtil.amiiboIdFromTag(tagData);
-            } catch (Exception e) {
-                e.printStackTrace();
-                LogError("Unable read Amiibo ID");
-                return;
-            }
+        if (!canEditAmiibo(amiiboId)) {
+            LogError("This Amiibo is not compatible with this editor");
+            return;
+        }
 
-            if (!canEditAmiibo(amiiboId)) {
-                LogError("This Amiibo is not compatible with this editor");
-                return;
-            }
-
+        try {
             tagData = TagUtil.decrypt(keyManager, tagData);
-            this.loadData(tagData);
         } catch (Exception e) {
             e.printStackTrace();
 
             LogError("Error decyrpting data");
+        }
+
+        try {
+            this.tagData = loadData(tagData, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            LogError("Error loading data");
         }
     }
 
@@ -74,33 +86,72 @@ public class EditorTP extends AppCompatActivity {
         return amiiboId == WOLF_LINK_ID;
     }
 
-    //all offsets for decrypted (internal) format of tags
-    private static final int OFFSET_APP_DATA = 0xED;
-    private static final int OFFSET_LEVEL = OFFSET_APP_DATA;
-    private static final int OFFSET_HEARTS = OFFSET_APP_DATA + 0x01;
+    byte[] loadData(byte[] data, boolean setDefaults) throws Exception {
+        ByteBuffer bb = ByteBuffer.wrap(data);
 
-    void loadData(final byte[] data) {
-        int appId = ByteBuffer.wrap(data, TagUtil.APP_ID_OFFSET, TagUtil.APP_ID_LENGTH).getInt();
-        if (appId != APP_ID) {
-            LogError("This Amiibo's app data is not formatted for The Legend of Zelda: Twilight Princess HD HD Cave of Shadows.");
-            return;
-        }
+        Date today = new Date();
 
+        Date createDate;
         try {
-            if (data[OFFSET_LEVEL] < 0 || data[OFFSET_LEVEL] > spnShadowCaveLevel.getAdapter().getCount()) {
-                throw new IndexOutOfBoundsException("OFFSET_LEVEL Value invalid: " + data[OFFSET_LEVEL]);
-            }
-            if (data[OFFSET_HEARTS] < 0 || data[OFFSET_HEARTS] > spnHearts.getAdapter().getCount()) {
-                throw new IndexOutOfBoundsException("OFFSET_HEARTS Value invalid: " + data[OFFSET_HEARTS]);
-            }
-
-            spnShadowCaveLevel.setSelection(data[OFFSET_LEVEL]);
-            spnHearts.setSelection(data[OFFSET_HEARTS]);
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-
-            LogError("Error parsing data");
+            createDate = TagUtil.fromAmiiboDate(bb.getShort(TagUtil.OFFSET_CREATE_DATE));
+        } catch (Exception e) {
+            createDate = null;
         }
+        if (createDate == null || createDate.after(today)) {
+            if (setDefaults) {
+                bb.putShort(TagUtil.OFFSET_CREATE_DATE, TagUtil.toAmiiboDate(today));
+            } else {
+                throw new Exception("OFFSET_CREATE_DATE Value invalid" + createDate);
+            }
+        }
+
+        Date modifiedDate;
+        try {
+            modifiedDate = TagUtil.fromAmiiboDate(bb.getShort(TagUtil.OFFSET_MODIFIED_DATE));
+        } catch (Exception e) {
+            modifiedDate = null;
+        }
+        if (modifiedDate == null || modifiedDate.after(today)) {
+            if (setDefaults) {
+                bb.putShort(TagUtil.OFFSET_MODIFIED_DATE, TagUtil.toAmiiboDate(today));
+            } else {
+                throw new Exception("OFFSET_MODIFIED_DATE Value invalid" + createDate);
+            }
+        }
+
+        int appId = bb.getInt(TagUtil.APP_ID_OFFSET);
+        if (appId != APP_ID) {
+            if (setDefaults) {
+                bb.putInt(TagUtil.APP_ID_OFFSET, APP_ID);
+            } else {
+                throw new Exception("APP_ID_OFFSET Value invalid: " + appId);
+            }
+        }
+
+        byte level = bb.get(OFFSET_LEVEL);
+        if (level < 0 || level > spnShadowCaveLevel.getAdapter().getCount()) {
+            if (setDefaults) {
+                level = 0;
+                bb.put(OFFSET_LEVEL, level);
+            } else {
+                throw new IndexOutOfBoundsException("OFFSET_LEVEL Value invalid: " + level);
+            }
+        }
+
+        byte hearts = bb.get(OFFSET_HEARTS);
+        if (hearts < 0 || hearts > spnHearts.getAdapter().getCount()) {
+            if (setDefaults) {
+                hearts = 0;
+                bb.put(OFFSET_HEARTS, hearts);
+            } else {
+                throw new IndexOutOfBoundsException("OFFSET_HEARTS Value invalid: " + hearts);
+            }
+        }
+
+        spnShadowCaveLevel.setSelection(level);
+        spnHearts.setSelection(hearts);
+
+        return bb.array();
     }
 
     void updateData(byte[] data) {
@@ -118,10 +169,8 @@ public class EditorTP extends AppCompatActivity {
     @OptionsItem(R.id.mnu_save)
     void save() {
         try {
-            byte[] tagData = getIntent().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
-            tagData = TagUtil.decrypt(keyManager, tagData);
-            this.updateData(tagData);
-            tagData = TagUtil.encrypt(keyManager, tagData);
+            this.updateData(this.tagData);
+            byte[] tagData = TagUtil.encrypt(keyManager, this.tagData);
             Intent intent = new Intent(Actions.ACTION_EDIT_COMPLETE);
             intent.putExtra(Actions.EXTRA_TAG_DATA, tagData);
             setResult(Activity.RESULT_OK, intent);

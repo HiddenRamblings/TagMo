@@ -3,6 +3,9 @@ package com.hiddenramblings.tagmo;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class TagUtil {
     public static final int TAG_FILE_SIZE = 532;
@@ -10,6 +13,9 @@ public class TagUtil {
     public static final int AMIIBO_ID_OFFSET = 0x54;
     public static final int APP_ID_OFFSET = 0xB6;
     public static final int APP_ID_LENGTH = 4;
+    public static final int OFFSET_APP_DATA = 0xED;
+    public static final int OFFSET_CREATE_DATE = 0x2A;
+    public static final int OFFSET_MODIFIED_DATE = OFFSET_CREATE_DATE + 0x02;
 
     public static byte[] keygen(byte[] uuid) {
         //from AmiiManage (GPL)
@@ -157,5 +163,32 @@ public class TagUtil {
         } finally {
             inputStream.close();
         }
+    }
+
+    static short toAmiiboDate(Date date) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        ByteBuffer bb = ByteBuffer.allocate(2);
+        bb.putShort((short) (((year - 2000) << 9) | (month << 5) | day));
+
+        return bb.getShort(0);
+    }
+
+    static Date fromAmiiboDate(short date) {
+        int year = 2000 + ((date & 0xFE00) >> 9);
+        int month = (date & 0x01E0) >> 5;
+        int day = date & 0x1F;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setLenient(false);
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        return calendar.getTime();
     }
 }

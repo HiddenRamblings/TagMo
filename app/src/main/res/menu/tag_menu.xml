@@ -20,19 +20,12 @@
         android:title="View Hex"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/mnu_edit_ssb"
-        android:showAsAction="ifRoom"
-        android:title="Edit SSB Data"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/mnu_edit_tp"
-        android:showAsAction="ifRoom"
-        android:title="Edit TP Data"
+        android:id="@+id/mnu_edit"
+        android:title="Edit Tag Data"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_ignore_tag_id"
         android:checkable="true"
-        android:showAsAction="ifRoom"
         android:title="Ignore tag restrictions"
         app:showAsAction="ifRoom"/>
 </menu>

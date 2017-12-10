@@ -226,8 +226,7 @@ public class NfcActivity extends AppCompatActivity {
     }
 
     void startNfcMonitor() {
-        if (nfcAdapter == null)
-        {
+        if (nfcAdapter == null) {
             showError("NFC support not detected.");
             return;
         }
@@ -235,7 +234,7 @@ public class NfcActivity extends AppCompatActivity {
         if (!nfcAdapter.isEnabled()) {
             showError("NFC Disabled.");
             new AlertDialog.Builder(this)
-                .setMessage("NFC adapter is currently disabled. Enable NFC?")
+                .setMessage("NFC countryCodeAdapter is currently disabled. Enable NFC?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -264,6 +263,7 @@ public class NfcActivity extends AppCompatActivity {
         nfcAdapter.disableForegroundDispatch(this);
         this.unregisterReceiver(mReceiver);
     }
+
     void listenForTags() {
         Intent intent = new Intent(this.getApplicationContext(), this.getClass());
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -295,6 +295,4 @@ public class NfcActivity extends AppCompatActivity {
             }
         }
     };
-
-
 }

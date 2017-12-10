@@ -75,4 +75,5 @@ dependencies {
     compile 'org.apmem.tools:layouts:1.10@aar'
     compile 'com.github.bumptech.glide:glide:4.0.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
+    compile 'com.vicmikhailau:MaskedEditText:2.0.4'
 }

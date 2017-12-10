@@ -10,15 +10,6 @@
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory
-        android:title="File Browser">
-        <android.support.v7.preference.CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/settings_enable_amiibo_browser"
-            android:summary="The built in amiibo file browser lists and allows filtering of all of the amiibos in the tagmo folder on the sd card."
-            android:title="Enable Amiibo File Browser"/>
-    </android.support.v7.preference.PreferenceCategory>
-
-    <android.support.v7.preference.PreferenceCategory
         android:title="Image Loading">
         <android.support.v7.preference.ListPreference
             android:entries="@array/imageNetworkSettings"

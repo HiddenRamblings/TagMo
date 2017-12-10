@@ -103,7 +103,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @AfterPreferences
     protected void afterViews() {
-        this.enableAmiiboBrowser.setChecked(prefs.enableAmiiboBrowser().get());
         this.enableTagTypeValidation.setChecked(prefs.enableTagTypeValidation().get());
 
         this.keyManager = new KeyManager(this.getContext());
@@ -117,11 +116,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_import_keys)
     void onKeysClicked() {
         showFileChooser("Fixed Key", "*/*", RESULT_KEYS);
-    }
-
-    @PreferenceClick(R.string.settings_enable_amiibo_browser)
-    void onEnableAmiiboBrowserClicked() {
-        prefs.enableAmiiboBrowser().put(enableAmiiboBrowser.isChecked());
     }
 
     @PreferenceClick(R.string.settings_enable_tag_type_validation)
@@ -386,7 +380,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         updateKeysTask(data);
     }
 
-    @Background(id=BACKGROUND_LOAD_KEYS)
+    @Background(id = BACKGROUND_LOAD_KEYS)
     void updateKeysTask(Uri data) {
         try {
             this.keyManager.loadKey(data);
@@ -439,7 +433,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         loadAmiiboManagerTask();
     }
 
-    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    @Background(id = BACKGROUND_AMIIBO_MANAGER)
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
@@ -460,7 +454,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         updateAmiiboManagerTask(data);
     }
 
-    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    @Background(id = BACKGROUND_AMIIBO_MANAGER)
     void updateAmiiboManagerTask(Uri data) {
         AmiiboManager amiiboManager;
         try {
@@ -496,7 +490,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         resetAmiiboManagerTask();
     }
 
-    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    @Background(id = BACKGROUND_AMIIBO_MANAGER)
     void resetAmiiboManagerTask() {
         this.getContext().deleteFile(Util.AMIIBO_DATABASE_FILE);
 
@@ -546,7 +540,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         downloadAmiiboAPIDataTask();
     }
 
-    @Background(id=BACKGROUND_SYNC_AMIIBO_MANAGER)
+    @Background(id = BACKGROUND_SYNC_AMIIBO_MANAGER)
     void downloadAmiiboAPIDataTask() {
         showSnackbar("Syncing Amiibo Info from AmiiboAPI...", Snackbar.LENGTH_INDEFINITE);
         try {

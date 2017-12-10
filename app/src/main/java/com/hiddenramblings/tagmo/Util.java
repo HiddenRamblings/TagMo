@@ -29,17 +29,12 @@ public class Util {
     public static final String DATA_DIR = "tagmo";
     public static final String AMIIBO_DATABASE_FILE = "amiibo.json";
 
-    public static final char[] hexArray = "0123456789ABCDEF".toCharArray();
-
-
     public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02X", b));
         }
-        return new String(hexChars);
+        return sb.toString();
     }
 
     public static byte[] hexStringToByteArray(String s) {

@@ -31,10 +31,6 @@
             android:name=".NfcActivity_"
             android:launchMode="singleTop"/>
         <activity
-            android:name=".EditorSSB_"/>
-        <activity
-            android:name=".EditorTP_"/>
-        <activity
             android:name=".HexViewerActivity_"/>
         <activity
             android:name=".ImageActivity_"/>
@@ -43,6 +39,8 @@
         <activity
             android:name=".AmiiboActivity_"
             android:theme="@style/AppTheme2"/>
+        <activity
+            android:name=".TagDataActivity_"/>
     </application>
 
 </manifest>

@@ -61,6 +61,8 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
+    @ViewById(R.id.amiiboInfo)
+    View amiiboInfo;
     @ViewById(R.id.txtError)
     TextView txtError;
     @ViewById(R.id.txtTagId)
@@ -112,11 +114,8 @@ public class AmiiboActivity extends AppCompatActivity {
                         ignoreTagTd = !item.isChecked();
                         item.setChecked(ignoreTagTd);
                         return true;
-                    case R.id.mnu_edit_ssb:
-                        openSSBEditor();
-                        return true;
-                    case R.id.mnu_edit_tp:
-                        openTPEditor();
+                    case R.id.mnu_edit:
+                        openTagEditor();
                         return true;
                 }
                 return false;
@@ -132,15 +131,8 @@ public class AmiiboActivity extends AppCompatActivity {
         finish();
     }
 
-    void openSSBEditor() {
-        Intent intent = new Intent(this, EditorSSB_.class);
-        intent.setAction(Actions.ACTION_EDIT_DATA);
-        intent.putExtra(Actions.EXTRA_TAG_DATA, this.tagData);
-        startActivityForResult(intent, EDIT_TAG);
-    }
-
-    void openTPEditor() {
-        Intent intent = new Intent(this, EditorTP_.class);
+    void openTagEditor() {
+        Intent intent = new Intent(this, TagDataActivity_.class);
         intent.setAction(Actions.ACTION_EDIT_DATA);
         intent.putExtra(Actions.EXTRA_TAG_DATA, this.tagData);
         startActivityForResult(intent, EDIT_TAG);
@@ -148,12 +140,15 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @OnActivityResult(EDIT_TAG)
     void onEditTagResult(int resultCode, Intent data) {
+        Log.d(TAG, "tagData");
         if (resultCode != Activity.RESULT_OK || data == null)
             return;
 
+        Log.d(TAG, "tagData");
         if (!Actions.ACTION_EDIT_COMPLETE.equals(data.getAction()))
             return;
 
+        Log.d(TAG, "tagData");
         this.tagData = data.getByteArrayExtra(Actions.EXTRA_TAG_DATA);
         this.updateAmiiboView();
     }
@@ -314,9 +309,6 @@ public class AmiiboActivity extends AppCompatActivity {
         String character = "";
         final String amiiboImageUrl;
 
-        boolean ssbVisibility = false;
-        boolean tpVisibility = false;
-
         if (this.tagData == null) {
             tagInfo = "<No Tag Loaded>";
             amiiboImageUrl = null;
@@ -358,27 +350,15 @@ public class AmiiboActivity extends AppCompatActivity {
                     tagInfo = "ID: " + TagUtil.amiiboIdToHex(amiiboId);
                     amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
                 }
-                if (EditorTP.canEditAmiibo(amiiboId)) {
-                    tpVisibility = true;
-                }
-                if (EditorSSB.canEditAmiibo(amiiboId)) {
-                    ssbVisibility = true;
-                }
-            }
-        }
-        for (int i = 0; i < toolbar.getMenu().size(); i++) {
-            MenuItem menuItem = toolbar.getMenu().getItem(i);
-            if (menuItem.getItemId() == R.id.mnu_edit_ssb) {
-                menuItem.setVisible(ssbVisibility);
-            } else if (menuItem.getItemId() == R.id.mnu_edit_tp) {
-                menuItem.setVisible(tpVisibility);
             }
         }
 
         if (tagInfo == null) {
             txtError.setVisibility(View.GONE);
+            amiiboInfo.setVisibility(View.VISIBLE);
         } else {
             setAmiiboInfoText(txtError, tagInfo, false);
+            amiiboInfo.setVisibility(View.GONE);
         }
         setAmiiboInfoText(txtName, amiiboName, tagInfo != null);
         setAmiiboInfoText(txtTagId, amiiboHexId, tagInfo != null);

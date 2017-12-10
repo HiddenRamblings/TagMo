@@ -1,21 +1,20 @@
 package com.hiddenramblings.tagmo;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Random;
 
 public class TagUtil {
     public static final int TAG_FILE_SIZE = 532;
     public static final int PAGE_SIZE = 4;
-    public static final int AMIIBO_ID_OFFSET = 0x54;
-    public static final int APP_ID_OFFSET = 0xB6;
-    public static final int APP_ID_LENGTH = 4;
-    public static final int OFFSET_APP_DATA = 0xED;
-    public static final int OFFSET_CREATE_DATE = 0x2A;
-    public static final int OFFSET_MODIFIED_DATE = OFFSET_CREATE_DATE + 0x02;
+
 
     public static byte[] keygen(byte[] uuid) {
         //from AmiiManage (GPL)
@@ -55,12 +54,7 @@ public class TagUtil {
     }
 
     public static long amiiboIdFromTag(byte[] data) throws Exception {
-        if (data.length < TAG_FILE_SIZE)
-            throw new Exception("Invalid tag data");
-
-        byte[] amiiboId = new byte[4 * 2];
-        System.arraycopy(data, AMIIBO_ID_OFFSET, amiiboId, 0, amiiboId.length);
-        return ByteBuffer.wrap(amiiboId).getLong();
+        return new TagData(data).getAmiiboID();
     }
 
     public static String amiiboIdToHex(long amiiboId) {
@@ -127,16 +121,13 @@ public class TagUtil {
             throw new Exception("Failed to initialise amiitool");
         byte[] encrypted = new byte[TagUtil.TAG_FILE_SIZE];
         if (tool.pack(tagData, tagData.length, encrypted, encrypted.length) == 0)
-            throw new Exception("Failed to decrypt tag");
+            throw new Exception("Failed to encrypt tag");
 
         return encrypted;
     }
 
 
-    public static byte[] patchUid(byte[] uid, byte[] tagData, KeyManager keyManager, boolean encrypted) throws Exception {
-        if (encrypted)
-            tagData = decrypt(keyManager, tagData);
-
+    public static byte[] patchUid(byte[] uid, byte[] tagData) throws Exception {
         if (uid.length < 9) throw new Exception("Invalid uid length");
 
         byte[] patched = Arrays.copyOf(tagData, tagData.length);
@@ -144,12 +135,11 @@ public class TagUtil {
         System.arraycopy(uid, 0, patched, 0x1d4, 8);
         patched[0] = uid[8];
 
-        AmiiTool tool = new AmiiTool();
-        byte[] result = new byte[TagUtil.TAG_FILE_SIZE];
-        if (tool.pack(patched, patched.length, result, result.length) == 0)
-            throw new Exception("Failed to encrypt tag");
+        return patched;
+    }
 
-        return result;
+    public static boolean isEncrypted(byte[] tagData) {
+        return tagData[10] == 0x0F && tagData[11] == 0xE0;
     }
 
     public static byte[] readTag(InputStream inputStream) throws Exception {
@@ -165,23 +155,26 @@ public class TagUtil {
         }
     }
 
-    static short toAmiiboDate(Date date) {
+    static byte[] toAmiiboDate(Date date) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
 
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
+        int year = calendar.get(Calendar.YEAR) - 2000;
+        int month = calendar.get(Calendar.MONTH) + 1;
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         ByteBuffer bb = ByteBuffer.allocate(2);
-        bb.putShort((short) (((year - 2000) << 9) | (month << 5) | day));
+        bb.putShort((short) ((year << 9) | (month << 5) | day));
 
-        return bb.getShort(0);
+        return bb.array();
     }
 
-    static Date fromAmiiboDate(short date) {
-        int year = 2000 + ((date & 0xFE00) >> 9);
-        int month = (date & 0x01E0) >> 5;
+    static Date fromAmiiboDate(byte[] bytes) throws IllegalArgumentException {
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        int date = bb.getShort();
+
+        int year = ((date & 0xFE00) >> 9) + 2000;
+        int month = ((date & 0x01E0) >> 5) - 1;
         int day = date & 0x1F;
 
         Calendar calendar = Calendar.getInstance();
@@ -190,5 +183,77 @@ public class TagUtil {
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, day);
         return calendar.getTime();
+    }
+
+    public static byte[] generateRandomUID() {
+        byte[] uid = new byte[9];
+        Random Random = new Random();
+        Random.nextBytes(uid);
+
+        uid[3] = (byte) (0x88 ^ uid[0] ^ uid[1] ^ uid[2]);
+        uid[8] = (byte) (uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
+
+        return uid;
+    }
+
+    public static byte[] getBytes(ByteBuffer bb, int offset, int length) {
+        byte[] bytes = new byte[length];
+        bb.position(offset);
+        bb.get(bytes);
+        return bytes;
+    }
+
+    public static void putBytes(ByteBuffer bb, int offset, byte[] bytes) {
+        bb.position(offset);
+        bb.put(bytes);
+    }
+
+    public static ByteBuffer getByteBuffer(ByteBuffer bb, int offset, int length) {
+        return ByteBuffer.wrap(getBytes(bb, offset, length));
+    }
+
+    public static Date getDate(ByteBuffer bb, int offset) {
+        return TagUtil.fromAmiiboDate(getBytes(bb, offset, 0x2));
+    }
+
+    public static void putDate(ByteBuffer bb, int offset, Date date) {
+        putBytes(bb, offset, TagUtil.toAmiiboDate(date));
+    }
+
+    static Charset UTF16BE = Charset.forName("UTF-16BE");
+    static Charset UTF16LE = Charset.forName("UTF-16LE");
+
+    public static String getString(ByteBuffer bb, int offset, int length, Charset charset) throws UnsupportedEncodingException {
+        return charset.decode(getByteBuffer(bb, offset, length)).toString();
+    }
+
+    public static void putString(ByteBuffer bb, int offset, int length, Charset charset, String text) {
+        byte[] bytes = new byte[length];
+        byte[] bytes2 = charset.encode(text).array();
+        System.arraycopy(bytes2, 0, bytes, 0, bytes2.length);
+
+        putBytes(bb, offset, bytes);
+    }
+
+    public static BitSet getBitSet(ByteBuffer bb, int offset, int length) {
+        BitSet bitSet = new BitSet(length * 8);
+        byte[] bytes = getBytes(bb, offset, length);
+        for (int i = 0; i < bytes.length; i++) {
+            for (int j = 0; j < 8; j++) {
+                bitSet.set((i * 8) + j, ((bytes[i] >> j) & 1) == 1);
+            }
+        }
+        return bitSet;
+    }
+
+    public static void putBitSet(ByteBuffer bb, int offset, int length, BitSet bitSet) {
+        byte[] bytes = new byte[length];
+        for (int i = 0; i < bytes.length; i++) {
+            for (int j = 0; j < 8; j++) {
+                boolean set = bitSet.get((i * 8) + j);
+                bytes[i] = (byte) (set ? bytes[i] | (1 << j) : bytes[i] & ~(1 << j));
+            }
+        }
+        putBytes(bb, offset, bytes);
     }
 }

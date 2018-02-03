@@ -82,8 +82,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
+                android:singleLine="true"
                 android:ellipsize="middle"
-                android:maxLines="1"
                 android:textColor="@android:color/white"
                 android:textSize="16dp"/>
 

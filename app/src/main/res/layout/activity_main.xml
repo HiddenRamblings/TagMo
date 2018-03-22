@@ -33,14 +33,14 @@
                     android:layout_width="@dimen/main_buttons_width"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:text="Load Tag"/>
+                    android:text="@string/load_tag"/>
 
                 <Button
                     android:id="@+id/btnScanTag"
                     android:layout_width="@dimen/main_buttons_width"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:text="Scan Tag"
+                    android:text="@string/scan_tag"
                     android:enabled="false"/>
 
                 <Button
@@ -50,7 +50,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/btnLoadTag"
-                    android:text="Save Tag"
+                    android:text="@string/save_tag"
                     android:enabled="false"/>
 
                 <Button
@@ -60,7 +60,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_below="@+id/btnScanTag"
-                    android:text="Write Tag"
+                    android:text="@string/write_tag"
                     android:enabled="false"/>
 
                 <Button
@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@id/btnSaveTag"
-                    android:text="View Hex"
+                    android:text="@string/view_hex"
                     android:enabled="false"/>
 
                 <Button
@@ -79,7 +79,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_below="@+id/btnWriteTagAuto"
-                    android:text="Restore Tag"
+                    android:text="@string/restore_tag"
                     android:enabled="false"/>
 
                 <Button
@@ -88,7 +88,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@id/btnViewHex"
-                    android:text="Show QR Code"
+                    android:text="@string/show_qr_code"
                     android:enabled="false"/>
 
                 <Button
@@ -97,13 +97,13 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_below="@+id/btnRestoreTag"
-                    android:text="Scan QR Code"/>
+                    android:text="@string/scan_qr_code"/>
 
                 <Button
                     android:id="@+id/btnCreateTag"
                     android:layout_width="@dimen/main_buttons_width"
                     android:layout_height="wrap_content"
-                    android:text="Create Tag*"
+                    android:text="@string/create_tag"
                     android:visibility="gone"
                     android:enabled="false"/>
 
@@ -113,7 +113,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@+id/btnWriteTagAuto"
-                    android:text="Write Tag (Raw)"
+                    android:text="@string/write_tag_raw"
                     android:visibility="gone"
                     android:enabled="false"/>
 
@@ -122,7 +122,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/btnScanQRCode"
-                    android:text="Auto save scanned tags"/>
+                    android:text="@string/auto_save_scanned_tags"/>
 
                 <CheckBox
                     android:id="@+id/cbNoIDValidate"
@@ -130,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/cbAutoSaveOnScan"
                     android:layout_toRightOf="@+id/btnCreateTag"
-                    android:text="Allow restore to different tag"/>
+                    android:text="@string/allow_restore_to_different_tag"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -172,7 +172,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@id/cbNoIDValidate"
-                    android:text="Fix Signatures"
+                    android:text="@string/fix_signatures"
                     android:visibility="gone"/>
 
             </RelativeLayout>

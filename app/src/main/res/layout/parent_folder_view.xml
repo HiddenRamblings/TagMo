@@ -22,7 +22,7 @@
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Parent"
+        android:text="@string/parent"
         android:textColor="@android:color/white"
         android:layout_gravity="center_vertical"
         android:textSize="16dp"/>

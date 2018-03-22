@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TagMo</string>
+    <string name="topCenterTextMessage">放置标签到手机NFC位置</string>
+    <string name="nfcIconDescription">NFC图标</string>
+    <string name="movingBarDescription">移动条表示扫描进度</string>
+    <string name="load_tag">载入标签</string>
+    <string name="scan_tag">扫描标签</string>
+    <string name="write_tag">写入标签</string>
+    <string name="save_tag">保存标签</string>
+    <string name="view_hex">查看十六进制</string>
+    <string name="restore_tag">恢复标签</string>
+    <string name="show_qr_code">显示二维码</string>
+    <string name="scan_qr_code">扫描二维码</string>
+    <string name="create_tag">创建标签</string>
+    <string name="write_tag_raw">(强行)写入标签</string>
+    <string name="auto_save_scanned_tags">自动保存扫描到的标签</string>
+    <string name="fix_signatures">修复签名</string>
+    <string name="allow_restore_to_different_tag" translatable="false">允许恢复到不同的标签</string>
+    <string name="editor_error_outofbounds" translatable="false">Amiibo包含了一个无效的当前状态</string>
+    <string name="edit_tp_data" translatable="false">编辑TP数据</string>
+    <string name="nfc_unsupported" translatable="false">不支持NFC功能!</string>
+    <string name="nfc_disabled" translatable="false">未开启NFC功能!</string>
+    <string name="nfc_enabled" translatable="false">NFC功能已开启!</string>
+    <string name="keys_missing_warning" translatable="false">未找到Amiibo keys</string>
+    <string name="nfc_enable_action" translatable="false">开启</string>
+    <string name="open_settings_action" translatable="false">设置</string>
+    <string name="edit_ssb_data" translatable="false">编辑SSB数据</string>
+    <string name="edit_mii_data">编辑Mii数据</string>
+    <string name="no_amiibos_found" translatable="false">未找到Amiibos</string>
+</resources>

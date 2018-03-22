@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="密钥">
+        <android.support.v7.preference.Preference
+            android:key="@string/settings_import_keys"
+            android:title="导入 Keys"/>
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="浏览文件">
+        <android.support.v7.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/settings_enable_amiibo_browser"
+            android:summary="内置的amiibo文件浏览器可列出并允许过滤SD卡tagmo文件夹中的所有amiibos文件"
+            android:title="开启amiibo文件浏览器"/>
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="镜像载入">
+        <android.support.v7.preference.ListPreference
+            android:entries="@array/imageNetworkSettings"
+            android:entryValues="@array/imageNetworkSettingValues"
+            android:key="@string/image_network_settings"
+            android:title="载入镜像"/>
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory android:title="验证标签">
+        <android.support.v7.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/settings_enable_tag_type_validation"
+            android:summary="并非所有NFC芯片组都能正确识别NFC标签。 禁用标签验证将可能写入Amiibo不兼容的标签，或可能出现不可预期的错误。"
+            android:title="开启NTAG215验证"/>
+    </android.support.v7.preference.PreferenceCategory>
+    <android.support.v7.preference.PreferenceCategory android:title="PowerTag">
+        <android.support.v7.preference.CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/settings_enable_power_tag_support"
+            android:summary="功能目前正在开发。 请参阅Github上的Wiki了解限制和使用。"
+            android:title="开启PowerTag支持"/>
+    </android.support.v7.preference.PreferenceCategory>
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Amiibo信息">
+        <android.support.v7.preference.Preference
+            android:key="@string/settings_import_info_amiiboapi"
+            android:summary="和amiiboapi.com同步Amiibo信息"
+            android:title="和AmiiboAPI同步Amiibo信息"/>
+        <android.support.v7.preference.Preference
+            android:key="@string/settings_import_info"
+            android:summary="导入Amiibo信息从JSON文件"
+            android:title="导入Amiibo信息"/>
+        <android.support.v7.preference.Preference
+            android:key="@string/settings_export_info"
+            android:summary="导出Amiibo信息到JSON文件"
+            android:title="导出Amiibo信息"/>
+        <android.support.v7.preference.Preference
+            android:key="@string/settings_reset_info"
+            android:title="重置Amiibo信息"/>
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Amiibo信息统计">
+        <android.support.v7.preference.Preference
+            android:key="@string/settings_info_amiibos"
+            android:title="Amiibos"/>
+        <android.support.v7.preference.Preference
+            android:key="@string/settings_info_game_series"
+            android:title="游戏系列"/>
+        <android.support.v7.preference.Preference
+            android:key="@string/settings_info_characters"
+            android:title="游戏角色"/>
+        <android.support.v7.preference.Preference
+            android:key="@string/settings_info_amiibo_series"
+            android:title="Amiibo系列"/>
+        <android.support.v7.preference.Preference
+            android:key="@string/settings_info_amiibo_types"
+            android:title="Amiibo类型"/>
+    </android.support.v7.preference.PreferenceCategory>
+</android.support.v7.preference.PreferenceScreen>

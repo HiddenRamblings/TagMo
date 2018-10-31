@@ -4,52 +4,54 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.hiddenramblings.tagmo.NfcActivity">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/topCenterTextMessage"
         android:id="@+id/txtMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:text="@string/topCenterTextMessage"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="16.5sp" />
 
     <TextView
+        android:id="@+id/txtError"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/middleCenterError"
-        android:id="@+id/txtError"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/middleCenterError"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#fa0505" />
 
     <ImageView
-        android:contentDescription="@string/nfcIconDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/imgNfcCircle"
-        android:src="@drawable/ic_nfc_24dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/nfcIconDescription"
         android:minWidth="100dip"
         android:minHeight="100dip"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:src="@drawable/ic_nfc_24dp" />
 
     <ImageView
-        android:contentDescription="@string/movingBarDescription"
+        android:id="@+id/imgNfcBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imgNfcBar"
-        android:src="@drawable/ic_bar_24dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/movingBarDescription"
         android:minWidth="100dip"
-        android:minHeight="10dip"
-        android:layout_alignTop="@+id/imgNfcCircle"
-        android:layout_alignLeft="@+id/imgNfcCircle"
-        android:layout_alignStart="@+id/imgNfcCircle" />
+        android:minHeight="100dip"
+        android:padding="5dp"
+        android:src="@drawable/ic_bar_24dp" />
 
 </RelativeLayout>

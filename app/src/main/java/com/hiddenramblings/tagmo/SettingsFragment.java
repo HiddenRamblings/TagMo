@@ -550,7 +550,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void downloadAmiiboAPIDataTask() {
         showSnackbar("Syncing Amiibo Info from AmiiboAPI...", Snackbar.LENGTH_INDEFINITE);
         try {
-            URL url = new URL("http://www.amiiboapi.com/api/amiibo/");
+            URL url = new URL("https://www.amiiboapi.com/api/amiibo/");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
 

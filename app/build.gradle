@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-def AAVersion = '4.5.0-SNAPSHOT'
+def AAVersion = '4.6.0'
 def AndroidSupportVersion = '26.1.0'
 
 buildscript {
@@ -10,7 +10,6 @@ buildscript {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "com.hiddenramblings.tagmo"
@@ -31,8 +30,7 @@ android {
         fat {
             dimension "abi"
             ndk {
-                abiFilters "x86", "armeabi-v7a", "armeabi"
-                versionCode = 0
+                abiFilters "x86", "armeabi-v7a"
             }
         }
 
@@ -51,8 +49,8 @@ android {
         jniLibs.srcDir '../ndk/libs'
     }
     externalNativeBuild {
-        ndkBuild {
-            path '../ndk/jni/Android.mk'
+        cmake {
+            path "CMakeLists.txt"
         }
     }
     compileOptions {

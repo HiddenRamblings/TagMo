@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.nfc.tech.MifareUltralight;
 import android.util.Log;
 
 import com.hiddenramblings.tagmo.ptag.PTagKeyManager;
@@ -19,7 +18,7 @@ public class TagWriter {
     private static final byte[] COMP_WRITE_CMD = Util.hexStringToByteArray("a000");
     private static final byte[] SIG_CMD = Util.hexStringToByteArray("3c00");
 
-    public static void writeToTagRaw(MifareUltralight mifare, byte[] tagData, boolean validateNtag) throws Exception {
+    public static void writeToTagRaw(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
         validate(mifare, tagData, validateNtag);
 
         validateBlankTag(mifare);
@@ -45,7 +44,7 @@ public class TagWriter {
         }
     }
 
-    private static void validateBlankTag(MifareUltralight mifare) throws Exception {
+    private static void validateBlankTag(NTAG215 mifare) throws Exception {
         byte[] lockPage = mifare.readPages(0x02);
         Log.d(TAG, Util.bytesToHex(lockPage));
         if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {
@@ -55,7 +54,7 @@ public class TagWriter {
         Log.d(TAG, "not locked");
     }
 
-    public static void writeToTagAuto(MifareUltralight mifare, byte[] tagData, KeyManager keyManager, boolean validateNtag, boolean supportPowerTag) throws Exception {
+    public static void writeToTagAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager, boolean validateNtag, boolean supportPowerTag) throws Exception {
         byte[] idPages = mifare.readPages(0);
         if (idPages == null || idPages.length != TagUtil.PAGE_SIZE * 4)
             throw new Exception("Read failed! Unexpected read size.");
@@ -137,7 +136,7 @@ public class TagWriter {
         }
     }
 
-    public static void restoreTag(MifareUltralight mifare, byte[] tagData, boolean ignoreUid, KeyManager keyManager, boolean validateNtag) throws Exception {
+    public static void restoreTag(NTAG215 mifare, byte[] tagData, boolean ignoreUid, KeyManager keyManager, boolean validateNtag) throws Exception {
         if (!ignoreUid)
             validate(mifare, tagData, validateNtag);
         else {
@@ -160,7 +159,7 @@ public class TagWriter {
         writePages(mifare, 32, 129, pages);
     }
 
-    static void validate(MifareUltralight mifare, byte[] tagData, boolean validateNtag) throws Exception {
+    static void validate(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
         if (tagData == null)
             throw new Exception("Cannot validate: no source data loaded to compare.");
 
@@ -197,7 +196,7 @@ public class TagWriter {
 
     public static final int BULK_READ_PAGE_COUNT = 4;
 
-    public static byte[] readFromTag(MifareUltralight tag) throws Exception {
+    public static byte[] readFromTag(NTAG215 tag) throws Exception {
         byte[] tagData = new byte[TagUtil.TAG_FILE_SIZE];
         int pageCount = TagUtil.TAG_FILE_SIZE / TagUtil.PAGE_SIZE;
 
@@ -216,14 +215,14 @@ public class TagWriter {
         return tagData;
     }
 
-    static void writePages(MifareUltralight tag, int pagestart, int pageend, byte[][] data) throws IOException {
+    static void writePages(NTAG215 tag, int pagestart, int pageend, byte[][] data) throws IOException {
         for (int i = pagestart; i <= pageend; i++) {
             tag.writePage(i, data[i]);
             Log.d(TAG, "Wrote to page " + i);
         }
     }
 
-    static void writePassword(MifareUltralight tag) throws IOException {
+    static void writePassword(NTAG215 tag) throws IOException {
         byte[] pages0_1 = tag.readPages(0);
 
         if (pages0_1 == null || pages0_1.length != TagUtil.PAGE_SIZE * 4)
@@ -242,7 +241,7 @@ public class TagWriter {
         Log.d(TAG, "pwd done");
     }
 
-    static void writeLockInfo(MifareUltralight tag) throws IOException {
+    static void writeLockInfo(NTAG215 tag) throws IOException {
         byte[] pages = tag.readPages(0);
 
         if (pages == null || pages.length != TagUtil.PAGE_SIZE * 4)
@@ -254,7 +253,7 @@ public class TagWriter {
         tag.writePage(132, new byte[]{(byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00}); //config
     }
 
-    static void doAuth(MifareUltralight tag) throws Exception {
+    static void doAuth(NTAG215 tag) throws Exception {
         byte[] pages0_1 = tag.readPages(0);
 
         if (pages0_1 == null || pages0_1.length != TagUtil.PAGE_SIZE * 4)

@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.MifareUltralight;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
@@ -151,7 +150,7 @@ public class NfcActivity extends AppCompatActivity {
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             Log.d(TAG, tag.toString());
-            MifareUltralight mifare = MifareUltralight.get(tag);
+            NTAG215 mifare = NTAG215.get(tag);
             if (mifare == null)
                 throw new Exception("Error getting tag data. Possibly not a NTAG215");
             mifare.connect();
@@ -212,6 +211,7 @@ public class NfcActivity extends AppCompatActivity {
                 error = error + "\n" + e.getCause().toString();
             showError(error);
         }
+
     }
 
     @UiThread

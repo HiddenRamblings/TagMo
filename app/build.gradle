@@ -16,7 +16,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 5
-        versionName "2.6.1"
+        versionName "2.7.0"
     }
     flavorDimensions "abi"
     buildTypes {

@@ -34,7 +34,7 @@
                 android:id="@+id/txtName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="NAME"
+                android:text="@string/name"
                 android:textColor="@color/tag_text"
                 android:textSize="16dp"/>
 
@@ -51,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:text="TAGID"
+                    android:text="@string/tagid"
                     android:textColor="@color/tag_text"
                     android:textSize="10dp"/>
 
@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="end"
-                    android:text="AMIIBO TYPE"
+                    android:text="@string/amiibo_type"
                     android:textColor="@color/tag_text"
                     android:textSize="10dp"/>
             </LinearLayout>
@@ -83,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:text="GAME SERIES"
+                    android:text="@string/game_series"
                     android:textColor="@color/tag_text"
                     android:textSize="10dp"/>
 
@@ -97,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="end"
-                    android:text="AMIIBO SERIES"
+                    android:text="@string/amiibo_series"
                     android:textColor="@color/tag_text"
                     android:textSize="10dp"/>
             </LinearLayout>
@@ -107,7 +107,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/group2"
-                android:text="PATH"
+                android:text="@string/path"
                 android:textSize="10dp"
                 android:visibility="gone"/>
         </RelativeLayout>
@@ -118,7 +118,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="end"
-        android:text="CHARACTER"
+        android:text="@string/character"
         android:textColor="@color/tag_text"
         android:textSize="10dp"
         android:visibility="gone"/>

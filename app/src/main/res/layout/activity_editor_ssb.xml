@@ -24,7 +24,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Appearance"
+                    android:text="@string/appearance"
                     android:id="@+id/txtAppearance"
                     android:layout_gravity="center|left" />
 
@@ -40,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Level"
+                    android:text="@string/level"
                     android:id="@+id/txtLevel"
                     android:layout_gravity="center|left" />
 
@@ -57,7 +57,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Special ."
+                    android:text="@string/special"
                     android:id="@+id/txtSpecial1"
                     android:layout_gravity="center|left" />
 
@@ -74,7 +74,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Special &lt; >"
+                    android:text="@string/special_lt"
                     android:id="@+id/txtSpecial2"
                     android:layout_gravity="left|center" />
 
@@ -91,7 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Special ^"
+                    android:text="@string/special_u"
                     android:id="@+id/txtSpecial3"
                     android:layout_gravity="left|center" />
 
@@ -108,7 +108,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Special v"
+                    android:text="@string/special_v"
                     android:id="@+id/txtSpecial4"
                     android:layout_gravity="center|left" />
 
@@ -125,7 +125,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Attack"
+                    android:text="@string/attack"
                     android:id="@+id/txtStatAttack"
                     android:layout_gravity="center|left" />
 
@@ -144,7 +144,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Defense"
+                    android:text="@string/defense"
                     android:id="@+id/txtStatDefense"
                     android:layout_gravity="center|left" />
 
@@ -163,7 +163,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Speed"
+                    android:text="@string/speed"
                     android:id="@+id/txtStatSpeed"
                     android:layout_below="@+id/txtStatDefense"
                     android:layout_gravity="center|left" />
@@ -183,7 +183,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Effect 1"
+                    android:text="@string/effect_1"
                     android:id="@+id/txtEffect1"
                     android:layout_below="@+id/sbStatSpeed"
                     android:layout_gravity="center|left" />
@@ -201,7 +201,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Effect 2"
+                    android:text="@string/effect_2"
                     android:id="@+id/txtEffect2"
                     android:layout_gravity="center|left" />
 
@@ -217,7 +217,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Effect 3"
+                    android:text="@string/effect_3"
                     android:id="@+id/txtEffect3"
                     android:layout_gravity="center|left" />
 

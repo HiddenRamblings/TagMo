@@ -46,7 +46,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingBottom="40dp"
-        android:text="No Amiibos Found"
+        android:text="@string/no_amiibos_found"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
 
     <LinearLayout

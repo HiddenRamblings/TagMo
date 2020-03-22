@@ -1,9 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo;
 
 
-import android.support.annotation.NonNull;
-
-import com.hiddenramblings.tagmo.TagUtil;
+import androidx.annotation.NonNull;
 
 public class Amiibo implements Comparable<Amiibo> {
     public static long HEAD_MASK = 0xFFFFFFFF00000000L;

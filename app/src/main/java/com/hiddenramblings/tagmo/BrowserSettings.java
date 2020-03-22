@@ -1,21 +1,17 @@
 package com.hiddenramblings.tagmo;
 
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import org.parceler.Parcel;
-import org.parceler.ParcelConstructor;
-import org.parceler.Transient;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import java.io.File;
 import java.util.ArrayList;
 
-@Parcel
-public class BrowserSettings {
-    @Transient
+public class BrowserSettings
+        implements Parcelable {
     protected ArrayList<BrowserSettingsListener> listeners = new ArrayList<>();
-    @Transient
     protected AmiiboManager amiiboManager;
-    @Transient
     protected BrowserSettings oldBrowserSettings;
 
     protected ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
@@ -35,7 +31,6 @@ public class BrowserSettings {
         oldBrowserSettings = new BrowserSettings(false);
     }
 
-    @ParcelConstructor
     public BrowserSettings(
         ArrayList<AmiiboFile> amiiboFiles, ArrayList<File> folders, File browserFolder,
         String query, int sort, String filterGameSeries, String filterCharacter,
@@ -207,4 +202,54 @@ public class BrowserSettings {
 
         return copy;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(this.amiiboFiles);
+        dest.writeList(this.folders);
+        dest.writeSerializable(this.browserFolder);
+        dest.writeString(this.query);
+        dest.writeInt(this.sort);
+        dest.writeString(this.filterGameSeries);
+        dest.writeString(this.filterCharacter);
+        dest.writeString(this.filterAmiiboSeries);
+        dest.writeString(this.filterAmiiboType);
+        dest.writeInt(this.browserAmiiboView);
+        dest.writeString(this.imageNetworkSettings);
+        dest.writeByte(this.recursiveFiles ? (byte) 1 : (byte) 0);
+    }
+
+    protected BrowserSettings(Parcel in) {
+        this.amiiboFiles = in.createTypedArrayList(AmiiboFile.CREATOR);
+        this.folders = new ArrayList<File>();
+        in.readList(this.folders, File.class.getClassLoader());
+        this.browserFolder = (File) in.readSerializable();
+        this.query = in.readString();
+        this.sort = in.readInt();
+        this.filterGameSeries = in.readString();
+        this.filterCharacter = in.readString();
+        this.filterAmiiboSeries = in.readString();
+        this.filterAmiiboType = in.readString();
+        this.browserAmiiboView = in.readInt();
+        this.imageNetworkSettings = in.readString();
+        this.recursiveFiles = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<BrowserSettings> CREATOR = new Parcelable.Creator<BrowserSettings>() {
+        @Override
+        public BrowserSettings createFromParcel(Parcel source) {
+            return new BrowserSettings(source);
+        }
+
+        @Override
+        public BrowserSettings[] newArray(int size) {
+            return new BrowserSettings[size];
+        }
+    };
 }

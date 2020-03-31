@@ -1,6 +1,6 @@
 package com.hiddenramblings.tagmo.amiibo;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public class Character implements Comparable<Character> {
     public static final long MASK = 0xFFFF000000000000L;

@@ -1,0 +1,18 @@
+                Executable : /home/seth/Android/Sdk/ndk/22.0.7026061/ndk-build
+arguments : 
+NDK_PROJECT_PATH=null
+APP_BUILD_SCRIPT=/home/seth/Development/TagMo/ndk/jni/Android.mk
+NDK_APPLICATION_MK=/home/seth/Development/TagMo/ndk/jni/Application.mk
+APP_ABI=x86_64
+NDK_ALL_ABIS=x86_64
+NDK_DEBUG=1
+APP_PLATFORM=android-29
+NDK_OUT=/home/seth/Development/TagMo/app/build/intermediates/ndkBuild/fatDebug/obj
+NDK_LIBS_OUT=/home/seth/Development/TagMo/app/build/intermediates/ndkBuild/fatDebug/lib
+APP_SHORT_COMMANDS=false
+LOCAL_SHORT_COMMANDS=false
+-B
+-n
+jvmArgs : 
+
+Build command args:

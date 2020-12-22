@@ -27,3 +27,6 @@ local.properties
 ehthumbs.db
 Thumbs.db
 TagMo.zip
+
+*.cxx
+app/.cxx/*

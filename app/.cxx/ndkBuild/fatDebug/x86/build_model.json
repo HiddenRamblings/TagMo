@@ -95,6 +95,7 @@
       "project": {
         "compilerSettingsCacheFolder": "/home/seth/Development/TagMo/.cxx",
         "cxxFolder": "/home/seth/Development/TagMo/.cxx",
+        "ideBuildTargetAbi": "x86",
         "isBuildOnlyTargetAbiEnabled": true,
         "isCmakeBuildCohabitationEnabled": false,
         "isNativeCompilerSettingsCacheEnabled": false,

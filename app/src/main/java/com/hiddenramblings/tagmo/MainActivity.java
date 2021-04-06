@@ -162,6 +162,8 @@ public class MainActivity extends AppCompatActivity {
         keyManager = new KeyManager(this);
         this.loadAmiiboManager();
         this.loadPTagKeyManager();
+
+        Util.setFileStorage(MainActivity.this);
     }
 
     @Override

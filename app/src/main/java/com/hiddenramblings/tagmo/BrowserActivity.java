@@ -130,7 +130,7 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuViewCompact;
     @OptionsMenuItem(R.id.view_large)
     MenuItem menuViewLarge;
-    @OptionsMenuItem(R.id.scan_subfolders)
+    @OptionsMenuItem(R.id.recursive)
     MenuItem menuRecursiveFiles;
     @OptionsMenuItem(R.id.show_missing)
     MenuItem menuShowMissing;
@@ -184,8 +184,8 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.setGameSeriesFilter(prefs.filterGameSeries().get());
             this.settings.setAmiiboView(prefs.browserAmiiboView().get());
             this.settings.setImageNetworkSettings(prefs.imageNetworkSetting().get());
-            this.settings.setScanSubfoldersEnabled(prefs.scanSubfoldersEnabled().get());
-            this.settings.setMissingAmiibosShown(prefs.missingAmiibosShown().get());
+            this.settings.setRecursiveEnabled(prefs.recursiveFolders().get());
+            this.settings.setShowMissingFiles(prefs.showMissingFiles().get());
         } else {
             this.currentFolderView.setText(Util.friendlyPath(settings.getBrowserRootFolder()));
             this.onFilterGameSeriesChanged();
@@ -321,15 +321,15 @@ public class BrowserActivity extends AppCompatActivity implements
         settings.notifyChanges();
     }
 
-    @OptionsItem(R.id.scan_subfolders)
+    @OptionsItem(R.id.recursive)
     void onRecursiveFilesClicked() {
-        this.settings.setScanSubfoldersEnabled(!this.settings.isScanSubfoldersEnabled());
+        this.settings.setRecursiveEnabled(!this.settings.isRecursiveEnabled());
         this.settings.notifyChanges();
     }
 
     @OptionsItem(R.id.show_missing)
     void OnShowMissingCicked() {
-        this.settings.setMissingAmiibosShown(!this.settings.isMissingAmiibosShown());
+        this.settings.setShowMissingFiles(!this.settings.isShowingMissingFiles());
         this.settings.notifyChanges();
     }
 
@@ -695,11 +695,11 @@ public class BrowserActivity extends AppCompatActivity implements
         if (!Util.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
             folderChanged = true;
         }
-        if (newBrowserSettings.isScanSubfoldersEnabled() != oldBrowserSettings.isScanSubfoldersEnabled()) {
+        if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
             folderChanged = true;
             onRecursiveFilesChanged();
         }
-        if (newBrowserSettings.isMissingAmiibosShown() != oldBrowserSettings.isMissingAmiibosShown()) {
+        if (newBrowserSettings.isShowingMissingFiles() != oldBrowserSettings.isShowingMissingFiles()) {
             folderChanged = true;
             onShowMissingChanged();
         }
@@ -739,8 +739,8 @@ public class BrowserActivity extends AppCompatActivity implements
             .filterAmiiboType().put(newBrowserSettings.getAmiiboTypeFilter())
             .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
             .imageNetworkSetting().put(newBrowserSettings.getImageNetworkSettings())
-            .scanSubfoldersEnabled().put(newBrowserSettings.isScanSubfoldersEnabled())
-            .missingAmiibosShown().put(newBrowserSettings.isMissingAmiibosShown())
+            .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
+            .showMissingFiles().put(newBrowserSettings.isShowingMissingFiles())
             .apply();
     }
 
@@ -792,7 +792,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void onRootFolderChanged() {
         File rootFolder = settings.getBrowserRootFolder();
         this.currentFolderView.setText(Util.friendlyPath(rootFolder));
-        this.loadAmiiboFiles(rootFolder, settings.isScanSubfoldersEnabled());
+        this.loadAmiiboFiles(rootFolder, settings.isRecursiveEnabled());
         this.loadFolders(rootFolder);
     }
 
@@ -840,14 +840,14 @@ public class BrowserActivity extends AppCompatActivity implements
         if (menuRecursiveFiles == null)
             return;
 
-        menuRecursiveFiles.setChecked(settings.isScanSubfoldersEnabled());
+        menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
     }
 
     void onShowMissingChanged() {
         if (menuShowMissing == null)
             return;
 
-        menuShowMissing.setChecked(settings.isMissingAmiibosShown());
+        menuShowMissing.setChecked(settings.isShowingMissingFiles());
     }
 
     OnCloseClickListener onAmiiboTypeChipCloseClick = new OnCloseClickListener() {

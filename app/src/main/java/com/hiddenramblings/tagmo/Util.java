@@ -201,7 +201,6 @@ public class Util {
         } catch (IOException | JSONException | ParseException e) {
             amiiboManager = null;
             Log.e(TAG, "amiibo parse error", e);
-
         }
         if (amiiboManager == null) {
             amiiboManager = loadDefaultAmiiboManager(context);

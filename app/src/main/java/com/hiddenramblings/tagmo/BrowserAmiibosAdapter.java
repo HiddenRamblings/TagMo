@@ -66,7 +66,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             !Util.equals(newBrowserSettings.getCharacterFilter(), oldBrowserSettings.getCharacterFilter()) ||
             !Util.equals(newBrowserSettings.getAmiiboSeriesFilter(), oldBrowserSettings.getAmiiboSeriesFilter()) ||
             !Util.equals(newBrowserSettings.getAmiiboTypeFilter(), oldBrowserSettings.getAmiiboTypeFilter()) ||
-            !Util.equals(newBrowserSettings.isMissingAmiibosShown(), oldBrowserSettings.isMissingAmiibosShown());
+            !Util.equals(newBrowserSettings.isShowingMissingFiles(), oldBrowserSettings.isShowingMissingFiles());
 
         if (firstRun || !Util.equals(newBrowserSettings.getAmiiboFiles(), oldBrowserSettings.getAmiiboFiles())) {
             this.data.clear();
@@ -267,7 +267,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             }
 
             AmiiboManager amiiboManager = settings.getAmiiboManager();
-            if (amiiboManager != null && settings.isMissingAmiibosShown()) {
+            if (amiiboManager != null && settings.isShowingMissingFiles()) {
                 HashSet<Long> amiiboIds = new HashSet<>();
                 for (AmiiboFile amiiboFile : data) {
                     amiiboIds.add(amiiboFile.getId());
@@ -481,7 +481,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                 this.txtPath.setTextColor(this.txtPath.getResources().getColor(R.color.tag_text));
             } else {
                 this.itemView.setEnabled(false);
-                this.txtPath.setText("No files for this Amiibo found");
+                this.txtPath.setText("");
                 this.txtPath.setTextColor(Color.RED);
             }
             this.txtPath.setVisibility(View.VISIBLE);

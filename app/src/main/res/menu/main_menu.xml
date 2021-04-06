@@ -4,31 +4,31 @@
     <item
         android:id="@+id/view"
         android:icon="@drawable/ic_view_array_white_24dp"
-        android:title="Change View"
+        android:title="@string/change_view"
         app:showAsAction="ifRoom">
         <menu>
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/view_simple"
-                    android:title="Simple" />
+                    android:title="@string/simple" />
                 <item
                     android:id="@+id/view_compact"
-                    android:title="Compact" />
+                    android:title="@string/compact" />
                 <item
                     android:id="@+id/view_large"
-                    android:title="Large" />
+                    android:title="@string/large" />
             </group>
         </menu>
     </item>
     <item
         android:id="@+id/settings"
-        android:title="Settings"
+        android:title="@string/settings"
         android:icon="@drawable/ic_settings_white_24dp"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/mnu_dump_logcat"
-        android:title="Dump Logcat (for bug reporting)" />
+        android:title="@string/logcat" />
     <item
         android:id="@+id/mnu_write_raw"
-        android:title="Write Tag (Raw mode)" />
+        android:title="@string/write_raw" />
 </menu>

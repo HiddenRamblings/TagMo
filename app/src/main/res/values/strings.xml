@@ -35,4 +35,35 @@
     <string name="edit_ssb_data">Edit SSB Data</string>
     <string name="edit_mii_data">Edit Mii Data</string>
     <string name="image_network_settings">\@string/image_network_settings</string>
+
+    <string name="search">Search</string>
+    <string name="filter">Filter</string>
+    <string name="sorting">Sorting</string>
+    <string name="layout">Layout</string>
+    <string name="content">Content</string>
+    <string name="refresh">Refresh</string>
+
+    <string name="amiibo_id">ID</string>
+    <string name="amiibo_name">Name</string>
+    <string name="amiibo_game">Game Series</string>
+    <string name="amiibo_character">Character</string>
+    <string name="amiibo_series">Amiibo Series</string>
+    <string name="amiibo_type">Amiibo Type</string>
+    <string name="amiibo_path">File Path</string>
+
+    <string name="simple">Simple</string>
+    <string name="compact">Compact</string>
+    <string name="large">Large</string>
+
+    <string name="recurse">Recursive Folders</string>
+    <string name="missing">Show Missing Bins</string>
+
+    <string name="missing_amiibo">Amiibo bin not available</string>
+
+    <string name="save">Save</string>
+
+    <string name="change_view">Change View</string>
+    <string name="settings">Settings</string>
+    <string name="logcat">Save Logcat (Logging)</string>
+    <string name="write_raw">Write Tag (Raw Mode)</string>
 </resources>

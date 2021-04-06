@@ -10,15 +10,20 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import org.json.JSONException;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
+
+import androidx.core.content.ContextCompat;
+
+import static android.os.Environment.isExternalStorageEmulated;
 
 /**
  * Created by MAS on 31/01/2016.
@@ -31,6 +36,7 @@ public class Util {
 
     public static final char[] hexArray = "0123456789ABCDEF".toCharArray();
 
+    private static File storagePath;
 
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
@@ -66,38 +72,115 @@ public class Util {
     public static void dumpLogcat(String fileName) throws Exception {
         File file = new File(fileName);
 
-        Process process = Runtime.getRuntime().exec("logcat -d");
-        InputStream logStream = process.getInputStream();
+        Process mLogcatProc;
+        BufferedReader reader;
+        final StringBuilder log = new StringBuilder();
+        String separator = System.getProperty("line.separator");
+        log.append(android.os.Build.MANUFACTURER);
+        log.append(" ");
+        log.append(android.os.Build.MODEL);
+        log.append(separator);
+        log.append("Android SDK ");
+        log.append(Build.VERSION.SDK_INT);
+        log.append(" (");
+        log.append(Build.VERSION.RELEASE);
+        log.append(")");
+        log.append(separator);
+        log.append("TagMo Version " + BuildConfig.VERSION_NAME);
+
         try {
-            FileOutputStream fos = new FileOutputStream(file);
-            try {
-                String phoneDetails = String.format("Manufacturer: %s - Model: %s\nAndroid Ver: %s\nTagMo Version: %s\n",
-                    Build.MANUFACTURER, Build.MODEL,
-                    Build.VERSION.RELEASE,
-                    BuildConfig.VERSION_NAME);
-
-                fos.write(phoneDetails.getBytes());
-
-                byte[] buf = new byte[1024];
-                int read = logStream.read(buf);
-                while (read >= 0) {
-                    fos.write(buf, 0, read);
-                    read = logStream.read(buf);
-                }
-            } finally {
-                fos.close();
+            String line;
+            mLogcatProc = Runtime.getRuntime().exec(
+                    new String[] { "logcat", "-ds", "AndroidRuntime:E" });
+            reader = new BufferedReader(new InputStreamReader(
+                    mLogcatProc.getInputStream()));
+            log.append(separator);
+            log.append(separator);
+            log.append("AndroidRuntime Logs");
+            log.append(separator);
+            log.append(separator);
+            while ((line = reader.readLine()) != null) {
+                log.append(line);
+                log.append(separator);
             }
+            reader.close();
+
+            mLogcatProc = Runtime.getRuntime().exec(
+                    new String[] { "logcat", "-d", "com.hiddenramblings.tagmo" });
+            reader = new BufferedReader(new InputStreamReader(
+                    mLogcatProc.getInputStream()));
+            log.append(separator);
+            log.append(separator);
+            log.append("TagMo Verbose Logs");
+            log.append(separator);
+            log.append(separator);
+            while ((line = reader.readLine()) != null) {
+                log.append(line);
+                log.append(separator);
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        FileOutputStream fos = new FileOutputStream(file);
+        try {
+            fos.write(log.toString().getBytes());
         } finally {
-            logStream.close();
+            fos.close();
         }
     }
 
+//    public static void dumpLogcat(String fileName) throws Exception {
+//        File file = new File(fileName);
+//
+//        Process process = Runtime.getRuntime().exec("logcat -d");
+//        InputStream logStream = process.getInputStream();
+//        try {
+//            FileOutputStream fos = new FileOutputStream(file);
+//            try {
+//                String phoneDetails = String.format("Manufacturer: %s - Model: %s\nAndroid Ver: %s\nTagMo Version: %s\n",
+//                    Build.MANUFACTURER, Build.MODEL,
+//                    Build.VERSION.RELEASE,
+//                    BuildConfig.VERSION_NAME);
+//
+//                fos.write(phoneDetails.getBytes());
+//
+//                byte[] buf = new byte[1024];
+//                int read = logStream.read(buf);
+//                while (read >= 0) {
+//                    fos.write(buf, 0, read);
+//                    read = logStream.read(buf);
+//                }
+//            } finally {
+//                fos.close();
+//            }
+//        } finally {
+//            logStream.close();
+//        }
+//    }
+
+    public static void setFileStorage(Context mContext) {
+        File[] storage = ContextCompat.getExternalFilesDirs(mContext, null);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            try {
+                storagePath = storage.length > 1 && storage[1] != null
+                        && !isExternalStorageEmulated(storage[1]) ? storage[1] : storage[0];
+            } catch (IllegalArgumentException | NullPointerException e) {
+                // Fallback to internal storage
+            }
+        }
+        storagePath = storage.length > 1 ? storage[1] : storage[0];
+    }
+
     public static File getSDCardDir() {
-        return Environment.getExternalStorageDirectory();
+        if (storagePath != null && storagePath.canRead())
+            return storagePath.getParentFile().getParentFile().getParentFile().getParentFile();
+        else
+            return Environment.getExternalStorageDirectory();
     }
 
     public static File getDataDir() {
-        return new File(getSDCardDir(), DATA_DIR);
+        return new File(Environment.getExternalStorageDirectory(), DATA_DIR);
     }
 
     public static class AmiiboInfoException extends Exception {
@@ -116,7 +199,9 @@ public class Util {
         try {
             amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
         } catch (IOException | JSONException | ParseException e) {
+            amiiboManager = null;
             Log.e(TAG, "amiibo parse error", e);
+
         }
         if (amiiboManager == null) {
             amiiboManager = loadDefaultAmiiboManager(context);

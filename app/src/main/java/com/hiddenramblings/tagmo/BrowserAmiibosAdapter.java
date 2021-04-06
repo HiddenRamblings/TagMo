@@ -170,9 +170,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         }
 
         int compareAmiiboId(long amiiboId1, long amiiboId2) {
-            if (amiiboId1 == amiiboId2)
-                return 0;
-            return amiiboId1 < amiiboId2 ? -1 : 1;
+            return Long.compare(amiiboId1, amiiboId2);
         }
 
         int compareAmiiboName(Amiibo amiibo1, Amiibo amiibo2) {

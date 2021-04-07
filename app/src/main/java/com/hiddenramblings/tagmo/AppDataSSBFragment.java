@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import android.widget.ArrayAdapter;
@@ -13,6 +14,7 @@ import org.androidannotations.annotations.ViewById;
 
 import androidx.annotation.Nullable;
 
+@SuppressLint("NonConstantResourceId")
 @EFragment(R.layout.fragment_app_data_ssb)
 public class AppDataSSBFragment extends AppDataFragment {
     public static final int APP_ID = 0x10110E00;
@@ -228,10 +230,10 @@ public class AppDataSSBFragment extends AppDataFragment {
                 appData.checkStat(level);
                 txtStatAttack.setError(null);
             } catch (Exception e) {
-                txtStatAttack.setError("Must be between -200 and 200");
+                txtStatAttack.setError(getString(R.string.stat_error));
             }
         } catch (NumberFormatException e) {
-            txtStatAttack.setError("Must be between -200 and 200");
+            txtStatAttack.setError(getString(R.string.stat_error));
         }
     }
 
@@ -257,10 +259,10 @@ public class AppDataSSBFragment extends AppDataFragment {
                 appData.checkStat(level);
                 txtStatDefense.setError(null);
             } catch (Exception e) {
-                txtStatDefense.setError("Must be between -200 and 200");
+                txtStatDefense.setError(getString(R.string.stat_error));
             }
         } catch (NumberFormatException e) {
-            txtStatDefense.setError("Must be between -200 and 200");
+            txtStatDefense.setError(getString(R.string.stat_error));
         }
     }
 
@@ -286,10 +288,10 @@ public class AppDataSSBFragment extends AppDataFragment {
                 appData.checkStat(level);
                 txtStatSpeed.setError(null);
             } catch (Exception e) {
-                txtStatSpeed.setError("Must be between -200 and 200");
+                txtStatSpeed.setError(getString(R.string.stat_error));
             }
         } catch (NumberFormatException e) {
-            txtStatSpeed.setError("Must be between -200 and 200");
+            txtStatSpeed.setError(getString(R.string.stat_error));
         }
     }
 

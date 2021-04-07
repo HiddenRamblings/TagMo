@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -42,13 +43,14 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Locale;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-
+@SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_amiibo)
 public class AmiiboActivity extends AppCompatActivity {
     private static final String TAG = "AmiiboActivity";
@@ -95,32 +97,29 @@ public class AmiiboActivity extends AppCompatActivity {
     @AfterViews
     void afterViews() {
         toolbar.inflateMenu(R.menu.tag_menu);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.mnu_save:
-                        saveTag();
-                        return true;
-                    case R.id.mnu_write:
-                        writeTag();
-                        return true;
-                    case R.id.mnu_restore:
-                        restoreTag();
-                        return true;
-                    case R.id.mnu_view_hex:
-                        viewHex();
-                        return true;
-                    case R.id.mnu_ignore_tag_id:
-                        ignoreTagTd = !item.isChecked();
-                        item.setChecked(ignoreTagTd);
-                        return true;
-                    case R.id.mnu_edit:
-                        openTagEditor();
-                        return true;
-                }
-                return false;
+        toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.mnu_save:
+                    saveTag();
+                    return true;
+                case R.id.mnu_write:
+                    writeTag();
+                    return true;
+                case R.id.mnu_restore:
+                    restoreTag();
+                    return true;
+                case R.id.mnu_view_hex:
+                    viewHex();
+                    return true;
+                case R.id.mnu_ignore_tag_id:
+                    ignoreTagTd = !item.isChecked();
+                    item.setChecked(ignoreTagTd);
+                    return true;
+                case R.id.mnu_edit:
+                    openTagEditor();
+                    return true;
             }
+            return false;
         });
 
         loadAmiiboManager();
@@ -141,15 +140,15 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @OnActivityResult(EDIT_TAG)
     void onEditTagResult(int resultCode, Intent data) {
-        Log.d(TAG, "tagData");
+        Log.d(TAG, getString(R.string.tag_data));
         if (resultCode != Activity.RESULT_OK || data == null)
             return;
 
-        Log.d(TAG, "tagData");
+        Log.d(TAG, getString(R.string.tag_data));
         if (!Actions.ACTION_EDIT_COMPLETE.equals(data.getAction()))
             return;
 
-        Log.d(TAG, "tagData");
+        Log.d(TAG, getString(R.string.tag_data));
         this.tagData = data.getByteArrayExtra(Actions.EXTRA_TAG_DATA);
         this.updateAmiiboView();
     }
@@ -184,7 +183,7 @@ public class AmiiboActivity extends AppCompatActivity {
             amiiboManager = Util.loadAmiiboManager(this);
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast("Unable to parse amiibo info");
+            showToast(getString(R.string.parse_error));
         }
 
         if (Thread.currentThread().isInterrupted())
@@ -204,7 +203,7 @@ public class AmiiboActivity extends AppCompatActivity {
             TagUtil.validateTag(tagData);
             valid = true;
         } catch (Exception e) {
-            LogError("Warning tag is not valid");
+            LogError(getString(R.string.tag_invalid));
         }
 
         try {
@@ -221,7 +220,10 @@ public class AmiiboActivity extends AppCompatActivity {
 
             byte[] uId = Arrays.copyOfRange(tagData, 0, 9);
             String uIds = Util.bytesToHex(uId);
-            String fileName = String.format("%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin", name, uIds, Calendar.getInstance(), (valid ? "" : "_corrupted_"));
+            String fileName = String.format(Locale.ENGLISH,
+                    "%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin",
+                    name, uIds, Calendar.getInstance(), (valid ? "" : "_corrupted_")
+            );
 
             File dir = new File(Util.getSDCardDir(), prefs.browserRootFolder().get());
             if (!dir.isDirectory())
@@ -230,20 +232,17 @@ public class AmiiboActivity extends AppCompatActivity {
             File file = new File(dir.getAbsolutePath(), fileName);
 
             Log.d(TAG, file.toString());
-            FileOutputStream fos = new FileOutputStream(file);
-            try {
+            try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(tagData);
-            } finally {
-                fos.close();
             }
             try {
                 MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
             } catch (Exception e) {
-                Log.e(TAG, "Failed to refresh media scanner", e);
+                Log.e(TAG, getString(R.string.media_scan_fail), e);
             }
-            LogMessage("Wrote to file " + fileName + " in tagmo directory.");
+            LogMessage(getString(R.string.wrote_file, fileName));
         } catch (Exception e) {
-            LogError("Error writing to file: " + e.getMessage());
+            LogError(getString(R.string.write_error, e.getMessage()));
         }
     }
 
@@ -311,7 +310,7 @@ public class AmiiboActivity extends AppCompatActivity {
         final String amiiboImageUrl;
 
         if (this.tagData == null) {
-            tagInfo = "<No Tag Loaded>";
+            tagInfo = getString(R.string.no_tag_loaded);
             amiiboImageUrl = null;
         } else {
             long amiiboId;
@@ -322,10 +321,10 @@ public class AmiiboActivity extends AppCompatActivity {
                 amiiboId = -1;
             }
             if (amiiboId == -1) {
-                tagInfo = "<Error Reading Tag>";
+                tagInfo = getString(R.string.read_error);
                 amiiboImageUrl = null;
             } else if (amiiboId == 0) {
-                tagInfo = "<Blank Tag>";
+                tagInfo = getString(R.string.blank_tag);
                 amiiboImageUrl = null;
             } else {
                 Amiibo amiibo = null;
@@ -387,7 +386,7 @@ public class AmiiboActivity extends AppCompatActivity {
         } else {
             textView.setVisibility(View.VISIBLE);
             if (text.length() == 0) {
-                textView.setText("Unknown");
+                textView.setText(getString(R.string.unknown));
                 textView.setEnabled(false);
             } else {
                 textView.setText(text);
@@ -419,25 +418,25 @@ public class AmiiboActivity extends AppCompatActivity {
     void LogMessage(String msg) {
         new AlertDialog.Builder(this)
             .setMessage(msg)
-            .setPositiveButton("Close", null)
+            .setPositiveButton(R.string.close, null)
             .show();
     }
 
     @UiThread
     void LogError(String msg, Throwable e) {
         new AlertDialog.Builder(this)
-            .setTitle("Error")
+            .setTitle(R.string.error)
             .setMessage(msg)
-            .setPositiveButton("Close", null)
+            .setPositiveButton(R.string.close, null)
             .show();
     }
 
     @UiThread
     void LogError(String msg) {
         new AlertDialog.Builder(this)
-            .setTitle("Error")
+            .setTitle(R.string.error)
             .setMessage(msg)
-            .setPositiveButton("Close", null)
+            .setPositiveButton(R.string.close, null)
             .show();
     }
 }

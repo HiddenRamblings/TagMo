@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:text="NAME"
+                android:text="@string/amiibo_name_caps"
                 android:textColor="@android:color/white"
                 android:textSize="16dp"/>
 
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:text="TAGID"
+                android:text="@string/amiibo_id_caps"
                 android:textColor="@android:color/white"
                 android:textSize="10dp"/>
 
@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:text="AMIIBO TYPE"
+                android:text="@string/amiibo_type_caps"
                 android:textColor="@android:color/white"
                 android:textSize="10dp"/>
         </LinearLayout>
@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:text="GAME SERIES"
+                android:text="@string/amiibo_game_caps"
                 android:textColor="@android:color/white"
                 android:textSize="10dp"/>
 
@@ -107,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:text="AMIIBO SERIES"
+                android:text="@string/amiibo_series_caps"
                 android:textColor="@android:color/white"
                 android:textSize="10dp"/>
         </LinearLayout>
@@ -127,7 +127,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/group2"
-            android:text="PATH"
+            android:text="@string/amiibo_path_caps"
             android:textColor="@android:color/white"
             android:textSize="10dp"
             android:visibility="gone"/>

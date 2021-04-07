@@ -6,4 +6,4 @@
     android:layout_height="wrap_content"
     android:maxLines="1"
     android:textColor="?editTextColor"
-    android:text="Unknown"/>
+    android:text="@string/unknown"/>

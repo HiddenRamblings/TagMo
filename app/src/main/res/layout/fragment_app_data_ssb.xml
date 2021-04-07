@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -8,7 +9,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -18,7 +20,7 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="Appearence"/>
+                android:text="@string/appearance"/>
 
             <Spinner
                 android:id="@+id/spnAppearance"
@@ -33,18 +35,21 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="Level"/>
+                android:text="@string/level"/>
 
             <EditText
                 android:id="@+id/txtLevel"
-                style="@style/TagEditor.EditNumber"/>
+                style="@style/TagEditor.EditNumber"
+                android:importantForAutofill="no"
+                tools:ignore="LabelFor" />
         </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -54,7 +59,7 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="Special Neutral"/>
+                android:text="@string/special_neutral"/>
 
             <Spinner
                 android:id="@+id/spnSpecial1"
@@ -69,7 +74,7 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="Special Side"/>
+                android:text="@string/special_side"/>
 
             <Spinner
                 android:id="@+id/spnSpecial2"
@@ -80,7 +85,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -90,7 +96,7 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="Special Up"/>
+                android:text="@string/special_up"/>
 
             <Spinner
                 android:id="@+id/spnSpecial3"
@@ -105,7 +111,7 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="Special Down"/>
+                android:text="@string/special_down"/>
 
             <Spinner
                 android:id="@+id/spnSpecial4"
@@ -117,7 +123,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="4">
+        android:weightSum="4"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -127,12 +134,14 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="Attack"/>
+                android:text="@string/attack"/>
 
             <EditText
                 android:id="@+id/txtStatAttack"
                 style="@style/TagEditor.EditNumber"
-                android:inputType="numberDecimal|numberSigned"/>
+                android:inputType="numberDecimal|numberSigned"
+                android:importantForAutofill="no"
+                tools:ignore="LabelFor" />
         </LinearLayout>
 
         <LinearLayout
@@ -143,12 +152,14 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="Defense"/>
+                android:text="@string/defense"/>
 
             <EditText
                 android:id="@+id/txtStatDefense"
                 style="@style/TagEditor.EditNumber"
-                android:inputType="numberDecimal|numberSigned"/>
+                android:inputType="numberDecimal|numberSigned"
+                android:importantForAutofill="no"
+                tools:ignore="LabelFor" />
         </LinearLayout>
 
         <LinearLayout
@@ -159,18 +170,20 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="Speed"/>
+                android:text="@string/speed"/>
 
             <EditText
                 android:id="@+id/txtStatSpeed"
                 style="@style/TagEditor.EditNumber"
-                android:inputType="numberDecimal|numberSigned"/>
+                android:inputType="numberDecimal|numberSigned"
+                android:importantForAutofill="no"
+                tools:ignore="LabelFor" />
         </LinearLayout>
     </LinearLayout>
 
     <TextView
         style="@style/TagEditor.InputHint"
-        android:text="Bonus Effect 1"/>
+        android:text="@string/bonus_one"/>
 
     <Spinner
         android:id="@+id/spnEffect1"
@@ -178,7 +191,7 @@
 
     <TextView
         style="@style/TagEditor.InputHint"
-        android:text="Bonus Effect 2"/>
+        android:text="@string/bonus_two"/>
 
     <Spinner
         android:id="@+id/spnEffect2"
@@ -186,7 +199,7 @@
 
     <TextView
         style="@style/TagEditor.InputHint"
-        android:text="Bonus Effect 3"/>
+        android:text="@string/bonus_three"/>
 
     <Spinner
         android:id="@+id/spnEffect3"

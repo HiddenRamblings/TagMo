@@ -11,7 +11,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Series"
+            android:text="@string/series"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/textView2"
             android:layout_column="5" />
@@ -30,7 +30,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Character"
+            android:text="@string/amiibo_character"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/textView3"
             android:layout_column="5" />
@@ -49,7 +49,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Variation"
+            android:text="@string/variant"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/textView4"
             android:layout_column="5" />
@@ -68,7 +68,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Form"
+            android:text="@string/form"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/textView5"
             android:layout_column="5" />
@@ -87,7 +87,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ID #"
+            android:text="@string/id_number"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/textView6"
             android:layout_column="5" />
@@ -112,7 +112,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Set"
+            android:text="@string/set"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/textView7"
             android:layout_column="5" />

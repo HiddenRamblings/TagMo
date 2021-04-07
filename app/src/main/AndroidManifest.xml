@@ -38,7 +38,7 @@
             android:name=".SettingsActivity_"/>
         <activity
             android:name=".AmiiboActivity_"
-            android:theme="@style/AppTheme2"/>
+            android:theme="@style/AppTheme2.NoActionBar"/>
         <activity
             android:name=".TagDataActivity_"/>
     </application>

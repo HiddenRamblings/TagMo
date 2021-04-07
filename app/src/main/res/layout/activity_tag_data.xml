@@ -15,7 +15,7 @@
 
         <TextView
             style="@style/TagEditor.Header"
-            android:text="Amiibo"/>
+            android:text="@string/amiibo"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="8dp"
-                android:text="ERROR"
+                android:text="@string/error"
                 android:textAlignment="center"
                 android:textColor="@color/tag_text"
                 android:textSize="16dp"/>
@@ -59,7 +59,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/imageDivider"
-                    android:text="NAME"
+                    android:text="@string/amiibo_name_caps"
                     android:textColor="@color/tag_text"
                     android:textSize="16dp"/>
 
@@ -76,7 +76,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="start"
-                        android:text="TAGID"
+                        android:text="@string/amiibo_id_caps"
                         android:textColor="@color/tag_text"
                         android:textSize="10dp"/>
 
@@ -90,7 +90,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="end"
-                        android:text="AMIIBO TYPE"
+                        android:text="@string/amiibo_type_caps"
                         android:textColor="@color/tag_text"
                         android:textSize="10dp"/>
                 </LinearLayout>
@@ -108,7 +108,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="start"
-                        android:text="GAME SERIES"
+                        android:text="@string/amiibo_game_caps"
                         android:textColor="@color/tag_text"
                         android:textSize="10dp"/>
 
@@ -122,7 +122,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="end"
-                        android:text="AMIIBO SERIES"
+                        android:text="@string/amiibo_series_caps"
                         android:textColor="@color/tag_text"
                         android:textSize="10dp"/>
                 </LinearLayout>
@@ -132,7 +132,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/group2"
-                    android:text="PATH"
+                    android:text="@string/amiibo_path_caps"
                     android:textColor="@color/tag_text"
                     android:textSize="10dp"
                     android:visibility="gone"/>
@@ -142,7 +142,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:text="CHARACTER"
+                    android:text="@string/amiibo_character_caps"
                     android:textColor="@color/tag_text"
                     android:textSize="10dp"
                     android:visibility="gone"/>
@@ -151,7 +151,7 @@
 
         <TextView
             style="@style/TagEditor.Header"
-            android:text="UID"
+            android:text="@string/uid"
             android:visibility="gone"/>
 
         <LinearLayout
@@ -163,7 +163,7 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="UID"/>
+                android:text="@string/uid"/>
 
             <com.vicmikhailau.maskededittext.MaskedEditText
                 android:id="@+id/txtUID"
@@ -177,9 +177,9 @@
 
             <TextView
                 style="@style/TagEditor.Header.NoBackground"
-                android:text="Settings"/>
+                android:text="@string/settings"/>
 
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/userDataSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -198,7 +198,7 @@
 
                 <TextView
                     style="@style/TagEditor.InputHint"
-                    android:text="Country Code"/>
+                    android:text="@string/country_code"/>
 
                 <Spinner
                     android:id="@+id/txtCountryCode"
@@ -218,7 +218,7 @@
 
                     <TextView
                         style="@style/TagEditor.InputHint"
-                        android:text="Initialized Date"/>
+                        android:text="@string/init_date"/>
 
                     <EditText
                         android:id="@+id/txtInitDate"
@@ -233,7 +233,7 @@
 
                     <TextView
                         style="@style/TagEditor.InputHint"
-                        android:text="Modified Date"/>
+                        android:text="@string/mod_date"/>
 
                     <EditText
                         android:id="@+id/txtModifiedDate"
@@ -248,7 +248,7 @@
 
                 <TextView
                     style="@style/TagEditor.InputHint"
-                    android:text="Nickname"/>
+                    android:text="@string/nickname"/>
 
                 <EditText
                     android:id="@+id/txtNickname"
@@ -272,7 +272,7 @@
 
                     <TextView
                         style="@style/TagEditor.InputHint"
-                        android:text="Write Counter"/>
+                        android:text="@string/write_count"/>
 
                     <EditText
                         android:id="@+id/txtWriteCounter"
@@ -283,7 +283,7 @@
 
         <TextView
             style="@style/TagEditor.Header"
-            android:text="Mii"/>
+            android:text="@string/mii"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -293,7 +293,7 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="Mii Name"/>
+                android:text="@string/mii_name"/>
 
             <EditText
                 android:id="@+id/txtMiiName"
@@ -305,7 +305,7 @@
 
         <TextView
             style="@style/TagEditor.Header"
-            android:text="App"/>
+            android:text="@string/app"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -315,7 +315,7 @@
 
             <TextView
                 style="@style/TagEditor.InputHint"
-                android:text="App ID"/>
+                android:text="@string/app_id"/>
 
             <Spinner
                 android:id="@+id/txtAppName"
@@ -332,9 +332,9 @@
 
             <TextView
                 style="@style/TagEditor.Header.NoBackground"
-                android:text="App Data"/>
+                android:text="@string/app_data"/>
 
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/appDataSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>

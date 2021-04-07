@@ -50,6 +50,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginTop="16dp"
             android:clickable="true"
+            android:focusable="true"
             android:src="@drawable/ic_nfc_white_24dp"
             app:fabSize="normal"/>
     </RelativeLayout>
@@ -60,7 +61,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingBottom="40dp"
-        android:text="No Amiibos Found"
+        android:text="@string/not_found"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
 
     <LinearLayout
@@ -69,6 +70,7 @@
         android:layout_height="match_parent"
         android:background="#A9333333"
         android:clickable="true"
+        android:focusable="true"
         android:orientation="vertical"
         app:behavior_peekHeight="40dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">

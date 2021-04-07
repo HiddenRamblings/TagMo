@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
+    android:focusable="true"
     android:padding="16dp">
 
-    <android.support.v7.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.cardview.widget.CardView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,6 +17,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
         android:clickable="true"
+        android:focusable="true"
         android:foreground="@drawable/card_foreground"
         app:cardCornerRadius="@dimen/card_radius">
 
@@ -36,7 +37,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="ERROR"
+                    android:text="@string/error"
                     android:layout_gravity="center"
                     android:textAlignment="center"
                     android:textColor="@color/tag_text"
@@ -66,7 +67,7 @@
                         android:id="@+id/txtName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="NAME"
+                        android:text="@string/amiibo_name_caps"
                         android:textColor="@color/tag_text"
                         android:layout_below="@+id/imageDivider"
                         android:textSize="16dp"/>
@@ -84,7 +85,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="start"
-                            android:text="TAGID"
+                            android:text="@string/amiibo_id_caps"
                             android:textColor="@color/tag_text"
                             android:textSize="10dp"/>
 
@@ -98,7 +99,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="end"
-                            android:text="AMIIBO TYPE"
+                            android:text="@string/amiibo_type_caps"
                             android:textColor="@color/tag_text"
                             android:textSize="10dp"/>
                     </LinearLayout>
@@ -116,7 +117,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="start"
-                            android:text="GAME SERIES"
+                            android:text="@string/amiibo_game_caps"
                             android:textColor="@color/tag_text"
                             android:textSize="10dp"/>
 
@@ -130,7 +131,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="end"
-                            android:text="AMIIBO SERIES"
+                            android:text="@string/amiibo_series_caps"
                             android:textColor="@color/tag_text"
                             android:textSize="10dp"/>
                     </LinearLayout>
@@ -140,7 +141,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/group2"
-                        android:text="PATH"
+                        android:text="@string/amiibo_path_caps"
                         android:textColor="@color/tag_text"
                         android:textSize="10dp"
                         android:visibility="gone"/>
@@ -150,14 +151,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:text="CHARACTER"
+                        android:text="@string/amiibo_character_caps"
                         android:textColor="@color/tag_text"
                         android:textSize="10dp"
                         android:visibility="gone"/>
                 </RelativeLayout>
             </LinearLayout>
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -166,5 +167,5 @@
                 app:popupTheme="@style/PopupTheme"
                 app:theme="@style/PopupThemeOverlay"/>
         </LinearLayout>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </FrameLayout>

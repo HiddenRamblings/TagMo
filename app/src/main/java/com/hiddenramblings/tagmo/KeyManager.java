@@ -59,7 +59,9 @@ public class KeyManager {
         return unfixedKey != null;
     }
 
-    public boolean hasBothKeys() { return fixedKey != null && unfixedKey != null; }
+    public boolean hasBothKeys() {
+        return fixedKey != null && unfixedKey != null;
+    }
 
     private byte[] loadKeyFromStorage(String file) throws Exception {
         try {
@@ -68,7 +70,7 @@ public class KeyManager {
                 if (fs.read(key) != KEY_FILE_SIZE) throw new Exception("Invalid file size");
                 return key;
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Error reading key from local storage", e);
         }
         return null;

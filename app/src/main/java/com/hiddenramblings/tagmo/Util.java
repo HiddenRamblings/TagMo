@@ -6,6 +6,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import org.json.JSONException;
@@ -20,8 +22,6 @@ import java.io.OutputStreamWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-
-import androidx.core.content.ContextCompat;
 
 import static android.os.Environment.isExternalStorageEmulated;
 
@@ -49,7 +49,7 @@ public class Util {
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
             data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                + Character.digit(s.charAt(i + 1), 16));
+                    + Character.digit(s.charAt(i + 1), 16));
         }
         return data;
     }
@@ -87,7 +87,7 @@ public class Util {
         try {
             String line;
             mLogcatProc = Runtime.getRuntime().exec(
-                    new String[] { "logcat", "-ds", "AndroidRuntime:E" });
+                    new String[]{"logcat", "-ds", "AndroidRuntime:E"});
             reader = new BufferedReader(new InputStreamReader(
                     mLogcatProc.getInputStream()));
             log.append(separator);
@@ -102,7 +102,7 @@ public class Util {
             reader.close();
 
             mLogcatProc = Runtime.getRuntime().exec(
-                    new String[] { "logcat", "-d", "com.hiddenramblings.tagmo" });
+                    new String[]{"logcat", "-d", "com.hiddenramblings.tagmo"});
             reader = new BufferedReader(new InputStreamReader(
                     mLogcatProc.getInputStream()));
             log.append(separator);
@@ -152,24 +152,24 @@ public class Util {
 //        }
 //    }
 
-    public static void setFileStorage() {
+    public static File setFileStorage() {
         File[] storage = ContextCompat.getExternalFilesDirs(TagMo.getContext(), null);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
-                storagePath = storage.length > 1 && storage[1] != null
+                File sdcard = storage.length > 1 && storage[1] != null
                         && !isExternalStorageEmulated(storage[1]) ? storage[1] : storage[0];
+                return storagePath = sdcard.canRead()
+                        ? sdcard.getParentFile().getParentFile().getParentFile().getParentFile()
+                        : Environment.getExternalStorageDirectory();
             } catch (IllegalArgumentException | NullPointerException e) {
-                // Fallback to internal storage
+                return storagePath = Environment.getExternalStorageDirectory();
             }
         }
-        storagePath = storage.length > 1 ? storage[1] : storage[0];
+        return storagePath = storage.length > 1 ? storage[1] : storage[0];
     }
 
     public static File getSDCardDir() {
-        if (storagePath != null && storagePath.canRead())
-            return storagePath.getParentFile().getParentFile().getParentFile().getParentFile();
-        else
-            return Environment.getExternalStorageDirectory();
+        return storagePath != null ? storagePath : setFileStorage();
     }
 
     public static File getDataDir() {

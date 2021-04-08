@@ -3,19 +3,14 @@ package com.hiddenramblings.tagmo.ptag;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Base64;
-import android.util.Log;
 
 import com.hiddenramblings.tagmo.Util;
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 public class PTagKeyManager {
@@ -69,13 +64,13 @@ public class PTagKeyManager {
 
         byte[] uidc = new byte[7];
 
-        uidc[0] = (byte)(uid[0] & 0xFE);
-        uidc[1] = (byte)(uid[1] & 0xFE);
-        uidc[2] = (byte)(uid[2] & 0xFE);
-        uidc[3] = (byte)(uid[3] & 0xFE);
-        uidc[4] = (byte)(uid[4] & 0xFE);
-        uidc[5] = (byte)(uid[5] & 0xFE);
-        uidc[6] = (byte)(uid[6] & 0xFE);
+        uidc[0] = (byte) (uid[0] & 0xFE);
+        uidc[1] = (byte) (uid[1] & 0xFE);
+        uidc[2] = (byte) (uid[2] & 0xFE);
+        uidc[3] = (byte) (uid[3] & 0xFE);
+        uidc[4] = (byte) (uid[4] & 0xFE);
+        uidc[5] = (byte) (uid[5] & 0xFE);
+        uidc[6] = (byte) (uid[6] & 0xFE);
 
         String uidStr = Util.bytesToHex(uidc);
 

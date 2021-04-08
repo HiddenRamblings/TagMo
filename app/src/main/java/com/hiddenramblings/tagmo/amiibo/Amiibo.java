@@ -36,11 +36,11 @@ public class Amiibo implements Comparable<Amiibo> {
     }
 
     public int getHead() {
-        return (int)((this.id & HEAD_MASK) >> HEAD_BITSHIFT);
+        return (int) ((this.id & HEAD_MASK) >> HEAD_BITSHIFT);
     }
 
     public int getTail() {
-        return (int)((this.id & TAIL_MASK) >> TAIL_BITSHIFT);
+        return (int) ((this.id & TAIL_MASK) >> TAIL_BITSHIFT);
     }
 
     public long getGameSeriesId() {
@@ -96,8 +96,9 @@ public class Amiibo implements Comparable<Amiibo> {
     }
 
     public static String getImageUrl(long amiiboId) {
-        int head = (int)((amiiboId & HEAD_MASK) >> HEAD_BITSHIFT);
-        int tail = (int)((amiiboId & TAIL_MASK) >> TAIL_BITSHIFT);;
+        int head = (int) ((amiiboId & HEAD_MASK) >> HEAD_BITSHIFT);
+        int tail = (int) ((amiiboId & TAIL_MASK) >> TAIL_BITSHIFT);
+        ;
         return String.format(AMIIBO_API_IMAGE_URL, head, tail);
     }
 

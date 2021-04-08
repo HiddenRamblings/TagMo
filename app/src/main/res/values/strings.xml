@@ -76,12 +76,14 @@
     <string name="recurse">Recursive Folders</string>
     <string name="missing">Show Missing Bins</string>
 
+    <string name="config_required">Please configure keys and sync API</string>
     <string name="missing_amiibo">Amiibo bin not available</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="done">Done</string>
     <string name="save">Save</string>
+    <string name="write">Write</string>
     <string name="cancel">Cancel</string>
     <string name="parent">Parent</string>
     <string name="unknown">Unknown</string>
@@ -89,7 +91,7 @@
 
     <string name="change_view">Change View</string>
     <string name="settings">Settings</string>
-    <string name="dump_logcat">Save Logcat (Logging)</string>
+    <string name="dump_logcat">Print Logcat</string>
     <string name="mnu_write_raw">Write Tag (Raw Mode)</string>
 
     <string name="not_found">No Amiibos Found</string>
@@ -100,10 +102,15 @@
     <string name="mod_date">Modified Date</string>
     <string name="nickname">Nickname</string>
     <string name="write_count">Write Counter</string>
+    <string name="view_hex">View Hex Code</string>
+    <string name="restore">Restore</string>
+    <string name="edit_tag">Edit Tag Data</string>
+    <string name="ignore_restrictions">Ignore Restrictions</string>
 
+    <string name="properties">Properties</string>
     <string name="mii">Mii</string>
     <string name="mii_name">Mii Name</string>
-    <string name="app">App</string>
+    <string name="app">Application</string>
     <string name="app_id">App ID</string>
     <string name="app_data">App Data</string>
 

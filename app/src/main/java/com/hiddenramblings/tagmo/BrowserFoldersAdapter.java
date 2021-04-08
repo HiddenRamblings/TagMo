@@ -1,11 +1,12 @@
 package com.hiddenramblings.tagmo;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -106,8 +107,8 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
 
         public ParentFolderViewHolder(ViewGroup parent) {
             this(LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.parent_folder_view, parent, false));
+                    .from(parent.getContext())
+                    .inflate(R.layout.parent_folder_view, parent, false));
         }
 
         public ParentFolderViewHolder(View itemView) {
@@ -136,8 +137,8 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
 
         public ChildFolderViewHolder(ViewGroup parent) {
             this(LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.child_folder_view, parent, false));
+                    .from(parent.getContext())
+                    .inflate(R.layout.child_folder_view, parent, false));
         }
 
         public ChildFolderViewHolder(View itemView) {

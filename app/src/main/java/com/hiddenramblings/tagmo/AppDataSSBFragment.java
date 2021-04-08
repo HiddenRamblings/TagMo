@@ -2,17 +2,16 @@ package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import androidx.annotation.Nullable;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.TextChange;
 import org.androidannotations.annotations.ViewById;
-
-import androidx.annotation.Nullable;
 
 @SuppressLint("NonConstantResourceId")
 @EFragment(R.layout.fragment_app_data_ssb)
@@ -81,11 +80,11 @@ public class AppDataSSBFragment extends AppDataFragment {
     @AfterViews
     void afterViews() {
         setListForSpinners(new Spinner[]{spnAppearance},
-            R.array.ssb_appearance_values, R.layout.spinner_text);
+                R.array.ssb_appearance_values, R.layout.spinner_text);
         setListForSpinners(new Spinner[]{spnSpecialNeutral, spnSpecialSide, spnSpecialUp, spnSpecialDown},
-            R.array.ssb_specials_values, R.layout.spinner_text);
+                R.array.ssb_specials_values, R.layout.spinner_text);
         setListForSpinners(new Spinner[]{spnEffect1, spnEffect2, spnEffect3},
-            R.array.ssb_bonus_effects, R.layout.spinner_text);
+                R.array.ssb_bonus_effects, R.layout.spinner_text);
 
         this.loadData();
 

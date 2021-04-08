@@ -177,7 +177,7 @@
 
             <TextView
                 style="@style/TagEditor.Header.NoBackground"
-                android:text="@string/settings"/>
+                android:text="@string/properties"/>
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/userDataSwitch"

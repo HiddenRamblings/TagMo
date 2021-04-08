@@ -2,30 +2,30 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context=".MainActivity">
+      tools:context=".AmiiboActivity">
     <item
         android:id="@+id/mnu_save"
-        android:title="Save"
+        android:title="@string/save"
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_write"
-        android:title="Write"
+        android:title="@string/write"
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_restore"
-        android:title="Restore"
+        android:title="@string/restore"
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_view_hex"
-        android:title="View Hex"
+        android:title="@string/view_hex"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_edit"
-        android:title="Edit Tag Data"
+        android:title="@string/edit_tag"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_ignore_tag_id"
         android:checkable="true"
-        android:title="Ignore tag restrictions"
+        android:title="@string/ignore_restrictions"
         app:showAsAction="ifRoom"/>
 </menu>

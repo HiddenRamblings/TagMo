@@ -18,12 +18,13 @@ android:
     # Additional components
     - extra-google-m2repository
     - extra-android-m2repository
+
 #before_script:
 
 before_install:
     - chmod +x gradlew
     - pushd $TRAVIS_BUILD_DIR/..
-    - wget https://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip
+    - wget https://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip -O ndk.zip
     - chmod a+x ndk.zip
     - unzip ndk.zip > /dev/null
     - rm ndk.zip

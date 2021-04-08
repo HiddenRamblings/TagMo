@@ -15,7 +15,7 @@ public class TagMo extends Application {
         mContext = new WeakReference<Context>(this);
     }
 
-    public static Context getContext(){
+    public static Context getContext() {
         return mContext.get();
     }
 }

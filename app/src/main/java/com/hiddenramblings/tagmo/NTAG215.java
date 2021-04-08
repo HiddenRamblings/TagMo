@@ -7,8 +7,8 @@ import android.nfc.tech.NfcA;
 import java.io.IOException;
 
 public class NTAG215 {
-    private MifareUltralight m_mifare;
-    private NfcA m_nfcA;
+    private final MifareUltralight m_mifare;
+    private final NfcA m_nfcA;
     public static final int PAGE_SIZE = 4;
 
     private static final int NXP_MANUFACTURER_ID = 0x04;
@@ -28,6 +28,7 @@ public class NTAG215 {
         m_nfcA = null;
         m_mifare = mifare;
     }
+
     public NTAG215(NfcA nfcA) {
         m_nfcA = nfcA;
         m_mifare = null;
@@ -35,10 +36,10 @@ public class NTAG215 {
 
     public static NTAG215 get(Tag tag) {
         MifareUltralight mifare = MifareUltralight.get(tag);
-        if (mifare!=null)
+        if (mifare != null)
             return new NTAG215(mifare);
         NfcA nfcA = NfcA.get(tag);
-        if ( nfcA!=null) {
+        if (nfcA != null) {
             if (nfcA.getSak() == 0x00 && tag.getId()[0] == NXP_MANUFACTURER_ID)
                 return new NTAG215(nfcA);
         }
@@ -47,9 +48,9 @@ public class NTAG215 {
     }
 
     public byte[] readPages(int pageOffset) throws IOException {
-        if ( m_mifare!=null)
+        if (m_mifare != null)
             return m_mifare.readPages(pageOffset);
-        else if ( m_nfcA!=null) {
+        else if (m_nfcA != null) {
             validatePageIndex(pageOffset);
             //checkConnected();
 
@@ -60,11 +61,9 @@ public class NTAG215 {
     }
 
     public void writePage(int pageOffset, byte[] data) throws IOException {
-        if (m_mifare!=null) {
-            m_mifare.writePage(pageOffset,data);
-            return;
-        }
-        else if ( m_nfcA!=null ) {
+        if (m_mifare != null) {
+            m_mifare.writePage(pageOffset, data);
+        } else if (m_nfcA != null) {
             validatePageIndex(pageOffset);
             //m_nfcA.checkConnected();
 
@@ -74,17 +73,13 @@ public class NTAG215 {
             System.arraycopy(data, 0, cmd, 2, data.length);
 
             m_nfcA.transceive(cmd);
-            return ;
         }
-
-        return;
     }
 
     public byte[] transceive(byte[] data) throws IOException {
-        if ( m_mifare!=null) {
+        if (m_mifare != null) {
             return m_mifare.transceive(data);
-        }
-        else if ( m_nfcA!=null) {
+        } else if (m_nfcA != null) {
             return m_nfcA.transceive(data);
         }
         return null;
@@ -102,28 +97,25 @@ public class NTAG215 {
     }
 
     public void connect() throws IOException {
-        if ( m_mifare!=null) {
+        if (m_mifare != null) {
             m_mifare.connect();
-        }
-        else if ( m_nfcA!=null) {
+        } else if (m_nfcA != null) {
             m_nfcA.connect();
         }
     }
 
     public void close() throws IOException {
-        if ( m_mifare!=null) {
+        if (m_mifare != null) {
             m_mifare.close();
-        }
-        else if ( m_nfcA!=null) {
+        } else if (m_nfcA != null) {
             m_nfcA.close();
         }
     }
 
     public Tag getTag() {
-        if ( m_mifare!=null) {
+        if (m_mifare != null) {
             return m_mifare.getTag();
-        }
-        else if ( m_nfcA!=null) {
+        } else if (m_nfcA != null) {
             return m_nfcA.getTag();
         }
         return null;

@@ -11,11 +11,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -44,11 +48,6 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_amiibo)
@@ -372,10 +371,10 @@ public class AmiiboActivity extends AppCompatActivity {
             Glide.with(this).clear(amiiboImageTarget);
             if (amiiboImageUrl != null) {
                 Glide.with(this)
-                    .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
-                    .asBitmap()
-                    .load(amiiboImageUrl)
-                    .into(amiiboImageTarget);
+                        .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
+                        .asBitmap()
+                        .load(amiiboImageUrl)
+                        .into(amiiboImageTarget);
             }
         }
     }
@@ -417,26 +416,26 @@ public class AmiiboActivity extends AppCompatActivity {
     @UiThread
     void LogMessage(String msg) {
         new AlertDialog.Builder(this)
-            .setMessage(msg)
-            .setPositiveButton(R.string.close, null)
-            .show();
+                .setMessage(msg)
+                .setPositiveButton(R.string.close, null)
+                .show();
     }
 
     @UiThread
     void LogError(String msg, Throwable e) {
         new AlertDialog.Builder(this)
-            .setTitle(R.string.error)
-            .setMessage(msg)
-            .setPositiveButton(R.string.close, null)
-            .show();
+                .setTitle(R.string.error)
+                .setMessage(msg)
+                .setPositiveButton(R.string.close, null)
+                .show();
     }
 
     @UiThread
     void LogError(String msg) {
         new AlertDialog.Builder(this)
-            .setTitle(R.string.error)
-            .setMessage(msg)
-            .setPositiveButton(R.string.close, null)
-            .show();
+                .setTitle(R.string.error)
+                .setMessage(msg)
+                .setPositiveButton(R.string.close, null)
+                .show();
     }
 }

@@ -50,14 +50,14 @@ public class AmiiboFile
 
     public static final Parcelable.Creator<AmiiboFile> CREATOR =
             new Parcelable.Creator<AmiiboFile>() {
-        @Override
-        public AmiiboFile createFromParcel(Parcel source) {
-            return new AmiiboFile(source);
-        }
+                @Override
+                public AmiiboFile createFromParcel(Parcel source) {
+                    return new AmiiboFile(source);
+                }
 
-        @Override
-        public AmiiboFile[] newArray(int size) {
-            return new AmiiboFile[size];
-        }
-    };
+                @Override
+                public AmiiboFile[] newArray(int size) {
+                    return new AmiiboFile[size];
+                }
+            };
 }

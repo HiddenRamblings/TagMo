@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -243,10 +242,10 @@ public class NfcActivity extends AppCompatActivity {
         if (!nfcAdapter.isEnabled()) {
             showError(getString(R.string.nfc_disabled));
             new AlertDialog.Builder(this)
-                .setMessage(R.string.nfc_query)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    .setMessage(R.string.nfc_query)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
 //                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 //                            Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
 //                            startActivity(intent);
@@ -254,10 +253,10 @@ public class NfcActivity extends AppCompatActivity {
                             Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
                             startActivity(intent);
 //                        }
-                    }
-                })
-                .setNegativeButton(R.string.no, null)
-                .show();
+                        }
+                    })
+                    .setNegativeButton(R.string.no, null)
+                    .show();
         }
 
         //monitor nfc status

@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,9 +16,9 @@ public class SettingsActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             SettingsFragment fragment = new SettingsFragment_();
             getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.coordinator, fragment)
-                .commit();
+                    .beginTransaction()
+                    .replace(R.id.coordinator, fragment)
+                    .commit();
         }
     }
 }

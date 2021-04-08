@@ -3,16 +3,16 @@ package com.hiddenramblings.tagmo;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.Typeface;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -36,26 +36,26 @@ public class HexViewerActivity extends AppCompatActivity {
     }
 
     //positions must be sorted in descending order to facilitate lookup
-    static TagMap[] tagMap = new TagMap[] {
-        new TagMap(0x1E4, Color.parseColor("#F0E68C"), "Crypto Seed"),
-        new TagMap(0x1DC, Color.parseColor("#F0F8FF"), "Char. ID"),
-        new TagMap(0x1D4, Color.parseColor("#FA8072"), "NTAG UID"),
-        new TagMap(0x1B4, Color.parseColor("#CD853F"), "Tag HMAC"),
-        new TagMap(0xDC, Color.parseColor("#40E0D0"), "App Data"),
-        new TagMap(0xBC, Color.parseColor("#D2B48C"), "Hash"),
-        new TagMap(0xB6, Color.parseColor("#FF7F50"), "App ID"),
-        new TagMap(0xB4, Color.parseColor("#FF7F50"), "Write Counter"),
-        new TagMap(0x4C, Color.parseColor("#98FB98"), "Mii"),
-        new TagMap(0x38, Color.parseColor("#00BFFF"), "Nickname"),
-        new TagMap(0x34, Color.parseColor("#DDA0DD"), "Console #"),
-        new TagMap(0x2E, Color.parseColor("#F08080"), "Hash?"),
-        new TagMap(0x2C, Color.parseColor("#32CD32"), "Modified Date"),
-        new TagMap(0x2A, Color.parseColor("#FFA07A"), "Init Date"),
-        new TagMap(0x28, Color.YELLOW, "Counter"),
-        new TagMap(0x27, Color.parseColor("#BC8F8F"), "Country Code"),
-        new TagMap(0x26, Color.parseColor("#FFDEAD"), "Flags"),
-        new TagMap(0x08, Color.LTGRAY, "Data HMAC"),
-        new TagMap(0x00, Color.GRAY, "Lock/CC"),
+    static TagMap[] tagMap = new TagMap[]{
+            new TagMap(0x1E4, Color.parseColor("#F0E68C"), "Crypto Seed"),
+            new TagMap(0x1DC, Color.parseColor("#F0F8FF"), "Char. ID"),
+            new TagMap(0x1D4, Color.parseColor("#FA8072"), "NTAG UID"),
+            new TagMap(0x1B4, Color.parseColor("#CD853F"), "Tag HMAC"),
+            new TagMap(0xDC, Color.parseColor("#40E0D0"), "App Data"),
+            new TagMap(0xBC, Color.parseColor("#D2B48C"), "Hash"),
+            new TagMap(0xB6, Color.parseColor("#FF7F50"), "App ID"),
+            new TagMap(0xB4, Color.parseColor("#FF7F50"), "Write Counter"),
+            new TagMap(0x4C, Color.parseColor("#98FB98"), "Mii"),
+            new TagMap(0x38, Color.parseColor("#00BFFF"), "Nickname"),
+            new TagMap(0x34, Color.parseColor("#DDA0DD"), "Console #"),
+            new TagMap(0x2E, Color.parseColor("#F08080"), "Hash?"),
+            new TagMap(0x2C, Color.parseColor("#32CD32"), "Modified Date"),
+            new TagMap(0x2A, Color.parseColor("#FFA07A"), "Init Date"),
+            new TagMap(0x28, Color.YELLOW, "Counter"),
+            new TagMap(0x27, Color.parseColor("#BC8F8F"), "Country Code"),
+            new TagMap(0x26, Color.parseColor("#FFDEAD"), "Flags"),
+            new TagMap(0x08, Color.LTGRAY, "Data HMAC"),
+            new TagMap(0x00, Color.GRAY, "Lock/CC"),
     };
 
 
@@ -86,7 +86,7 @@ public class HexViewerActivity extends AppCompatActivity {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         View view;
-        TextView[] textView = new TextView[16+1];
+        TextView[] textView = new TextView[16 + 1];
 
         ViewHolder(View view) {
             super(view);
@@ -160,7 +160,7 @@ public class HexViewerActivity extends AppCompatActivity {
                         } else {
                             String text = String.format("%02X", Byte.valueOf(tagData[index]).intValue() & 0xFF);
                             int color = Color.WHITE;
-                            for (TagMap t: tagMap) {
+                            for (TagMap t : tagMap) {
                                 if (t.index <= index) {
                                     color = t.color;
                                     break;
@@ -193,8 +193,8 @@ public class HexViewerActivity extends AppCompatActivity {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new ViewHolder(LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.hexdump_line, parent, false));
+                    .from(parent.getContext())
+                    .inflate(R.layout.hexdump_line, parent, false));
         }
 
         @Override

@@ -3,19 +3,20 @@ package com.hiddenramblings.tagmo;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import androidx.annotation.NonNull;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
@@ -120,7 +121,7 @@ public class ImageActivity extends AppCompatActivity {
         loadAmiiboManagerTask();
     }
 
-    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    @Background(id = BACKGROUND_AMIIBO_MANAGER)
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
@@ -142,8 +143,8 @@ public class ImageActivity extends AppCompatActivity {
 
     void updateImage() {
         Glide.with(this)
-            .load(getImageUrl())
-            .into(imageView);
+                .load(getImageUrl())
+                .into(imageView);
     }
 
     void updateView() {
@@ -216,46 +217,46 @@ public class ImageActivity extends AppCompatActivity {
         }
 
         (new AlertDialog.Builder(this))
-            .setTitle(R.string.save_image)
-            .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    File dir = Util.getDataDir();
-                    if (!dir.isDirectory())
-                        dir.mkdir();
+                .setTitle(R.string.save_image)
+                .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        File dir = Util.getDataDir();
+                        if (!dir.isDirectory())
+                            dir.mkdir();
 
-                    final File file = new File(dir.getAbsolutePath(), editText.getText().toString() + ".png");
+                        final File file = new File(dir.getAbsolutePath(), editText.getText().toString() + ".png");
 
-                    Glide.with(ImageActivity.this)
-                        .asBitmap()
-                        .load(getImageUrl())
-                        .into(new SimpleTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(Bitmap resource, Transition transition) {
-                                FileOutputStream fos = null;
-                                try {
-                                    fos = new FileOutputStream(file);
-                                    resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
-
-                                    String text = "Saved file as " + Util.friendlyPath(file);
-                                    Toast.makeText(ImageActivity.this, text, Toast.LENGTH_SHORT).show();
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    if (fos != null) {
+                        Glide.with(ImageActivity.this)
+                                .asBitmap()
+                                .load(getImageUrl())
+                                .into(new SimpleTarget<Bitmap>() {
+                                    @Override
+                                    public void onResourceReady(Bitmap resource, Transition transition) {
+                                        FileOutputStream fos = null;
                                         try {
-                                            fos.close();
-                                        } catch (IOException e) {
+                                            fos = new FileOutputStream(file);
+                                            resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+                                            String text = "Saved file as " + Util.friendlyPath(file);
+                                            Toast.makeText(ImageActivity.this, text, Toast.LENGTH_SHORT).show();
+                                        } catch (FileNotFoundException e) {
                                             e.printStackTrace();
+                                        } finally {
+                                            if (fos != null) {
+                                                try {
+                                                    fos.close();
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
                                         }
                                     }
-                                }
-                            }
-                        });
-                }
-            })
-            .setNegativeButton(R.string.cancel, null)
-            .setView(view)
-            .show();
+                                });
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .setView(view)
+                .show();
     }
 }

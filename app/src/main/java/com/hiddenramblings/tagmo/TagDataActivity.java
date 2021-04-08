@@ -1,20 +1,16 @@
 package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +25,13 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -60,18 +63,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.fragment.app.FragmentManager;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_tag_data)
@@ -155,10 +150,10 @@ public class TagDataActivity extends AppCompatActivity {
         keyManager = new KeyManager(this);
         if (!keyManager.hasBothKeys()) {
             new AlertDialog.Builder(this)
-                .setTitle(R.string.error)
-                .setMessage(R.string.no_decrypt_key)
-                .setPositiveButton(R.string.close, (dialogInterface, i) -> finish())
-                .show();
+                    .setTitle(R.string.error)
+                    .setMessage(R.string.no_decrypt_key)
+                    .setPositiveButton(R.string.close, (dialogInterface, i) -> finish())
+                    .show();
             return;
         }
         try {
@@ -166,10 +161,10 @@ public class TagDataActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
             new AlertDialog.Builder(this)
-                .setTitle(R.string.error)
-                .setMessage(R.string.failed_decrypt)
-                .setPositiveButton(R.string.close, (dialogInterface, i) -> finish())
-                .show();
+                    .setTitle(R.string.error)
+                    .setMessage(R.string.failed_decrypt)
+                    .setPositiveButton(R.string.close, (dialogInterface, i) -> finish())
+                    .show();
             return;
         }
 
@@ -246,7 +241,7 @@ public class TagDataActivity extends AppCompatActivity {
         final String amiiboImageUrl;
 
         if (this.tagData == null) {
-            tagInfo = "<No Tag Loaded>";
+            tagInfo = getString(R.string.no_tag_loaded);
             amiiboImageUrl = null;
         } else {
             long amiiboId;
@@ -257,7 +252,7 @@ public class TagDataActivity extends AppCompatActivity {
                 amiiboId = -1;
             }
             if (amiiboId == 0) {
-                tagInfo = "<Blank Tag>";
+                tagInfo = getString(R.string.blank_tag);
                 amiiboImageUrl = null;
             } else {
                 Amiibo amiibo = null;
@@ -303,10 +298,10 @@ public class TagDataActivity extends AppCompatActivity {
             Glide.with(this).clear(amiiboImageTarget);
             if (amiiboImageUrl != null) {
                 Glide.with(this)
-                    .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
-                    .asBitmap()
-                    .load(amiiboImageUrl)
-                    .into(amiiboImageTarget);
+                        .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
+                        .asBitmap()
+                        .load(amiiboImageUrl)
+                        .into(amiiboImageTarget);
             }
         }
     }
@@ -557,11 +552,11 @@ public class TagDataActivity extends AppCompatActivity {
         c.setTime(initializedDate);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-            this,
-            onInitDateSet,
-            c.get(Calendar.YEAR),
-            c.get(Calendar.MONTH),
-            c.get(Calendar.DAY_OF_MONTH)
+                this,
+                onInitDateSet,
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH)
         );
         datePickerDialog.show();
     }
@@ -608,11 +603,11 @@ public class TagDataActivity extends AppCompatActivity {
         c.setTime(modifiedDate);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-            this,
-            onModifiedDateSet,
-            c.get(Calendar.YEAR),
-            c.get(Calendar.MONTH),
-            c.get(Calendar.DAY_OF_MONTH)
+                this,
+                onModifiedDateSet,
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH)
         );
         datePickerDialog.show();
     }
@@ -767,9 +762,9 @@ public class TagDataActivity extends AppCompatActivity {
             }
             if (fragment != null) {
                 fm.beginTransaction()
-                    .replace(R.id.appData, fragment, tag)
-                    .attach(fragment)
-                    .commit();
+                        .replace(R.id.appData, fragment, tag)
+                        .attach(fragment)
+                        .commit();
                 return;
             }
         }
@@ -777,8 +772,8 @@ public class TagDataActivity extends AppCompatActivity {
         fragment = (AppDataFragment) fm.findFragmentById(R.id.appData);
         if (fragment != null) {
             fm.beginTransaction()
-                .detach(fragment)
-                .commit();
+                    .detach(fragment)
+                    .commit();
         }
     }
 
@@ -813,7 +808,7 @@ public class TagDataActivity extends AppCompatActivity {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
 //            dateFormat = new SimpleDateFormat(getDateFormat(locale), locale);
 //        } else {
-            dateFormat = new SimpleDateFormat("dd/MM/yyyy", locale);
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy", locale);
 //        }
 
         return dateFormat.format(date);
@@ -851,8 +846,8 @@ public class TagDataActivity extends AppCompatActivity {
         public View getDropDownView(int position, View view, ViewGroup parent) {
             if (view == null) {
                 view = LayoutInflater
-                    .from(parent.getContext())
-                    .inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
+                        .from(parent.getContext())
+                        .inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
             }
             ((TextView) view.findViewById(android.R.id.text1)).setText(this.getItem(position).getValue());
             return view;
@@ -862,8 +857,8 @@ public class TagDataActivity extends AppCompatActivity {
         public View getView(int position, View view, ViewGroup parent) {
             if (view == null) {
                 view = LayoutInflater
-                    .from(parent.getContext())
-                    .inflate(R.layout.spinner_text, parent, false);
+                        .from(parent.getContext())
+                        .inflate(R.layout.spinner_text, parent, false);
             }
             ((TextView) view).setText(this.getItem(position).getValue());
             return view;
@@ -916,8 +911,8 @@ public class TagDataActivity extends AppCompatActivity {
         public View getDropDownView(int position, View view, ViewGroup parent) {
             if (view == null) {
                 view = LayoutInflater
-                    .from(parent.getContext())
-                    .inflate(R.layout.spinner_text2, parent, false);
+                        .from(parent.getContext())
+                        .inflate(R.layout.spinner_text2, parent, false);
             }
             ((TextView) view.findViewById(R.id.text1)).setText(this.getItem(position).getValue());
             ((TextView) view.findViewById(R.id.text2)).setText(String.format("%08X", this.getItem(position).getKey()));
@@ -928,8 +923,8 @@ public class TagDataActivity extends AppCompatActivity {
         public View getView(int position, View view, ViewGroup parent) {
             if (view == null) {
                 view = LayoutInflater
-                    .from(parent.getContext())
-                    .inflate(R.layout.spinner_text, parent, false);
+                        .from(parent.getContext())
+                        .inflate(R.layout.spinner_text, parent, false);
             }
             ((TextView) view).setText(this.getItem(position).getValue());
             return view;
@@ -939,9 +934,9 @@ public class TagDataActivity extends AppCompatActivity {
     @UiThread
     void LogError(String msg) {
         new AlertDialog.Builder(this)
-            .setTitle(R.string.error)
-            .setMessage(msg)
-            .setPositiveButton("Close", null)
-            .show();
+                .setTitle(R.string.error)
+                .setMessage(msg)
+                .setPositiveButton("Close", null)
+                .show();
     }
 }

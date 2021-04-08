@@ -6,8 +6,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
@@ -35,13 +33,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.AmiiboVewHolder> implements
     Filterable,
     BrowserSettings.BrowserSettingsListener
 {
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
-    private ArrayList<AmiiboFile> data;
+    private final ArrayList<AmiiboFile> data;
     private ArrayList<AmiiboFile> filteredData;
     private AmiiboFilter filter;
     boolean firstRun = true;
@@ -103,8 +105,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         return settings.getAmiiboView();
     }
 
+    @NonNull
     @Override
-    public AmiiboVewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case BrowserActivity.VIEW_TYPE_COMPACT:
                 return new CompactViewHolder(parent, settings, listener);
@@ -338,10 +341,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                     return true;
                 else if (amiiboSeries != null && amiiboSeries.name.toLowerCase().contains(query))
                     return true;
-                else if (amiiboType != null && amiiboType.name.toLowerCase().contains(query))
-                    return true;
-
-                return false;
+                else return amiiboType != null && amiiboType.name.toLowerCase().contains(query);
             }
             return true;
         }
@@ -382,7 +382,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             }
 
             @Override
-            public void onResourceReady(Bitmap resource, Transition transition) {
+            public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
                 imageAmiibo.setImageBitmap(resource);
                 imageAmiibo.setVisibility(View.VISIBLE);
             }
@@ -393,12 +393,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
 
             this.settings = settings;
             this.listener = listener;
-            this.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (AmiiboVewHolder.this.listener != null) {
-                        AmiiboVewHolder.this.listener.onAmiiboClicked(amiiboFile);
-                    }
+            this.itemView.setOnClickListener(view -> {
+                if (AmiiboVewHolder.this.listener != null) {
+                    AmiiboVewHolder.this.listener.onAmiiboClicked(amiiboFile);
                 }
             });
 
@@ -412,12 +409,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             this.txtPath = itemView.findViewById(R.id.txtPath);
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
             if (this.imageAmiibo != null) {
-                this.imageAmiibo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (AmiiboVewHolder.this.listener != null) {
-                            AmiiboVewHolder.this.listener.onAmiiboImageClicked(amiiboFile);
-                        }
+                this.imageAmiibo.setOnClickListener(view -> {
+                    if (AmiiboVewHolder.this.listener != null) {
+                        AmiiboVewHolder.this.listener.onAmiiboImageClicked(amiiboFile);
                     }
                 });
             }
@@ -542,7 +536,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             } else {
                 textView.setVisibility(View.VISIBLE);
                 if (text.length() == 0) {
-                    textView.setText("Unknown");
+                    textView.setText(R.string.unknown);
                     textView.setEnabled(false);
                 } else {
                     textView.setText(text);

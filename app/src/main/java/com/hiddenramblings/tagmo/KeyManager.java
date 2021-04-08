@@ -63,13 +63,10 @@ public class KeyManager {
 
     private byte[] loadKeyFromStorage(String file) throws Exception {
         try {
-            FileInputStream fs = context.openFileInput(file);
-            try {
+            try (FileInputStream fs = context.openFileInput(file)) {
                 byte[] key = new byte[KEY_FILE_SIZE];
                 if (fs.read(key) != KEY_FILE_SIZE) throw new Exception("Invalid file size");
                 return key;
-            } finally {
-                fs.close();
             }
         } catch(Exception e) {
             Log.e(TAG, "Error reading key from local storage", e);
@@ -78,11 +75,8 @@ public class KeyManager {
     }
 
     void saveKeyFile(String file, byte[] key) throws IOException {
-        FileOutputStream fos = context.openFileOutput(file, context.MODE_PRIVATE);
-        try {
+        try (FileOutputStream fos = context.openFileOutput(file, Context.MODE_PRIVATE)) {
             fos.write(key);
-        } finally {
-            fos.close();
         }
     }
 
@@ -108,13 +102,10 @@ public class KeyManager {
     }
 
     public void loadKey(Uri file) throws Exception {
-        InputStream strm = context.getContentResolver().openInputStream(file);
-        try {
+        try (InputStream strm = context.getContentResolver().openInputStream(file)) {
             if (!readKey(strm))
                 throw new Exception("No valid key in file."); //if we can't even read one key then it's completely wrong
             readKey(strm);
-        } finally {
-            strm.close();
         }
     }
 }

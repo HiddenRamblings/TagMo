@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
@@ -36,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 
+@SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_image)
 @OptionsMenu({R.menu.image_menu})
 public class ImageActivity extends AppCompatActivity {
@@ -214,8 +216,8 @@ public class ImageActivity extends AppCompatActivity {
         }
 
         (new AlertDialog.Builder(this))
-            .setTitle("Save Image")
-            .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            .setTitle(R.string.save_image)
+            .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     File dir = Util.getDataDir();
@@ -252,7 +254,7 @@ public class ImageActivity extends AppCompatActivity {
                         });
                 }
             })
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.cancel, null)
             .setView(view)
             .show();
     }

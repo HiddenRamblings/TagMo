@@ -50,6 +50,7 @@ public class TagData {
         bytes[8] = tagData.get(0x0);
         return bytes;
     }
+
     /*
     public void setUID(byte[] value) throws Exception {
         if (value.length != UID_LENGTH)

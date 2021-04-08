@@ -33,10 +33,10 @@ public class BrowserSettings
     }
 
     public BrowserSettings(
-        ArrayList<AmiiboFile> amiiboFiles, ArrayList<File> folders, File browserFolder,
-        String query, int sort, String filterGameSeries, String filterCharacter,
-        String filterAmiiboSeries, String filterAmiiboType, int browserAmiiboView,
-        String imageNetworkSettings, boolean recursiveFolders, boolean showMissingFiles
+            ArrayList<AmiiboFile> amiiboFiles, ArrayList<File> folders, File browserFolder,
+            String query, int sort, String filterGameSeries, String filterCharacter,
+            String filterAmiiboSeries, String filterAmiiboType, int browserAmiiboView,
+            String imageNetworkSettings, boolean recursiveFolders, boolean showMissingFiles
     ) {
         super();
 
@@ -195,7 +195,7 @@ public class BrowserSettings
     }
 
     interface BrowserSettingsListener {
-        void onBrowserSettingsChanged (BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings);
+        void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings);
     }
 
     private BrowserSettings copy() {

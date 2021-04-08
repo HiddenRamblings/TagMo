@@ -1,4 +1,8 @@
-# TagMo's development is currently stagnant. If you want to contribute, please make sure to adress your PRs to the 'master2' branch, in order to keep it seperate from the original master. TagMo itself still works in it's current state. Thank you.
+# TagMo's development is currently stagnant. 
+If you want to contribute, please make sure to adress your PRs to the 'master2' branch in order to keep them seperate from the original 'master' branch. Thank you.
+
+# README applies to the 'master' branch. 
+The master branch is an archival copy of the original source. TagMo, itself, is still functional. All documentation of functionality should be assumed relelvant, unless otherwise documented by the UI or source.
 
 
 # What is TagMo?
@@ -46,20 +50,21 @@ TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC
 This app is a result of work by many others. Thanks go out to (In alphabetical order):
 
 * \_Tim\_ - The originial idea
-* 1RedOne - support/readme
-* azsde - Bug fixes/maintenance
-* Bombastisch - support and motivation
-* brunomarchand - Change amiiboapi to https and upgrade to cmake
-* FinalDoom - Bug fixes/maintenance
-* H3llK33p3r - Images for browser and main screen.
-* javiMaD - Encryption algo help
+* 1RedOne - Support / README
+* AbandonedCart - General modernization and compatibility updates
+* azsde - Bug fixes / maintenance
+* Bombastisch - Support and motivation
+* brunomarchand - Change AmiiboAPI to https and upgrade to cmake
+* FinalDoom - Bug fixes / maintenance
+* H3llK33p3r - Images for browser and main screen
+* javiMaD - Encryption algorithm help
 * Kidel - Bug Fixes
 * N3evin - AmiiboAPI data
 * NevetsTheSteve - Compatibility layer for Xperia phones
-* North101 - File browser, Extended amiibo info, QR Code, general cleanup
-* masterchan-777 - Bug fixes/maintenance
+* North101 - File browser, extended Amiibo info, QR code, general cleanup
+* masterchan-777 - Bug fixes / maintenance
 * possi - Wolf link editor
-* socram8888 - Decryotion encryption code
-* Supercool330 - Encryption algo help
-* Others who preferred to remain anonymous.
-* Many more who helped in testing.
+* socram8888 - Decryption / encryption code
+* Supercool330 - Encryption algorithm help
+* Others who preferred to remain anonymous
+* Many more who helped in testing

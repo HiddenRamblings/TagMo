@@ -5,7 +5,7 @@ import org.androidannotations.annotations.sharedpreferences.DefaultInt;
 import org.androidannotations.annotations.sharedpreferences.DefaultString;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
 
-@SharedPref(value=SharedPref.Scope.UNIQUE)
+@SharedPref(value = SharedPref.Scope.UNIQUE)
 public interface Preferences {
     String query();
 
@@ -20,16 +20,16 @@ public interface Preferences {
 
     String filterAmiiboType();
 
-    @DefaultBoolean(keyRes=R.string.settings_enable_tag_type_validation, value=true)
+    @DefaultBoolean(keyRes = R.string.settings_enable_tag_type_validation, value = true)
     boolean enableTagTypeValidation();
 
-    @DefaultBoolean(keyRes=R.string.settings_enable_power_tag_support, value=false)
+    @DefaultBoolean(keyRes = R.string.settings_enable_power_tag_support, value = false)
     boolean enablePowerTagSupport();
 
     @DefaultInt(BrowserActivity.VIEW_TYPE_COMPACT)
     int browserAmiiboView();
 
-    @DefaultString(keyRes=R.string.image_network_settings, value=SettingsFragment.IMAGE_NETWORK_ALWAYS)
+    @DefaultString(keyRes = R.string.image_network_settings, value = SettingsFragment.IMAGE_NETWORK_ALWAYS)
     String imageNetworkSetting();
 
     String browserRootFolder();

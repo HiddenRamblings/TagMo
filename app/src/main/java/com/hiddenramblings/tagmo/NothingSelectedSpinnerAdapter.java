@@ -26,8 +26,8 @@ public class NothingSelectedSpinnerAdapter implements SpinnerAdapter, ListAdapte
      *                              you want text grayed out like a prompt...
      */
     public NothingSelectedSpinnerAdapter(
-        SpinnerAdapter spinnerAdapter,
-        int nothingSelectedLayout) {
+            SpinnerAdapter spinnerAdapter,
+            int nothingSelectedLayout) {
 
         this(spinnerAdapter, nothingSelectedLayout, -1);
     }
@@ -45,8 +45,8 @@ public class NothingSelectedSpinnerAdapter implements SpinnerAdapter, ListAdapte
      *                                      the dropdown.
      */
     public NothingSelectedSpinnerAdapter(
-        SpinnerAdapter spinnerAdapter, int nothingSelectedLayout,
-        int nothingSelectedDropdownLayout
+            SpinnerAdapter spinnerAdapter, int nothingSelectedLayout,
+            int nothingSelectedDropdownLayout
     ) {
         this.adapter = spinnerAdapter;
         this.nothingSelectedLayout = nothingSelectedLayout;
@@ -77,7 +77,7 @@ public class NothingSelectedSpinnerAdapter implements SpinnerAdapter, ListAdapte
      */
     protected View getNothingSelectedView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
-            .inflate(nothingSelectedLayout, parent, false);
+                .inflate(nothingSelectedLayout, parent, false);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class NothingSelectedSpinnerAdapter implements SpinnerAdapter, ListAdapte
      */
     protected View getNothingSelectedDropdownView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
-            .inflate(nothingSelectedDropdownLayout, parent, false);
+                .inflate(nothingSelectedDropdownLayout, parent, false);
     }
 
     @Override

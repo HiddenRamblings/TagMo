@@ -16,6 +16,10 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -33,14 +37,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
 class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.AmiiboVewHolder> implements
-    Filterable,
-    BrowserSettings.BrowserSettingsListener
-{
+        Filterable,
+        BrowserSettings.BrowserSettingsListener {
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
     private final ArrayList<AmiiboFile> data;
@@ -59,13 +58,13 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
         boolean refresh = firstRun ||
-            !Util.equals(newBrowserSettings.getQuery(), oldBrowserSettings.getQuery()) ||
-            !Util.equals(newBrowserSettings.getSort(), oldBrowserSettings.getSort()) ||
-            !Util.equals(newBrowserSettings.getGameSeriesFilter(), oldBrowserSettings.getGameSeriesFilter()) ||
-            !Util.equals(newBrowserSettings.getCharacterFilter(), oldBrowserSettings.getCharacterFilter()) ||
-            !Util.equals(newBrowserSettings.getAmiiboSeriesFilter(), oldBrowserSettings.getAmiiboSeriesFilter()) ||
-            !Util.equals(newBrowserSettings.getAmiiboTypeFilter(), oldBrowserSettings.getAmiiboTypeFilter()) ||
-            !Util.equals(newBrowserSettings.isShowingMissingFiles(), oldBrowserSettings.isShowingMissingFiles());
+                !Util.equals(newBrowserSettings.getQuery(), oldBrowserSettings.getQuery()) ||
+                !Util.equals(newBrowserSettings.getSort(), oldBrowserSettings.getSort()) ||
+                !Util.equals(newBrowserSettings.getGameSeriesFilter(), oldBrowserSettings.getGameSeriesFilter()) ||
+                !Util.equals(newBrowserSettings.getCharacterFilter(), oldBrowserSettings.getCharacterFilter()) ||
+                !Util.equals(newBrowserSettings.getAmiiboSeriesFilter(), oldBrowserSettings.getAmiiboSeriesFilter()) ||
+                !Util.equals(newBrowserSettings.getAmiiboTypeFilter(), oldBrowserSettings.getAmiiboTypeFilter()) ||
+                !Util.equals(newBrowserSettings.isShowingMissingFiles(), oldBrowserSettings.isShowingMissingFiles());
 
         if (firstRun || !Util.equals(newBrowserSettings.getAmiiboFiles(), oldBrowserSettings.getAmiiboFiles())) {
             this.data.clear();
@@ -306,11 +305,11 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
 
         public boolean pathContainsQuery(String path, String query) {
             return !query.isEmpty() &&
-                settings.getGameSeriesFilter().isEmpty() &&
-                settings.getCharacterFilter().isEmpty() &&
-                settings.getAmiiboSeriesFilter().isEmpty() &&
-                settings.getAmiiboTypeFilter().isEmpty() &&
-                path.toLowerCase().contains(query);
+                    settings.getGameSeriesFilter().isEmpty() &&
+                    settings.getCharacterFilter().isEmpty() &&
+                    settings.getAmiiboSeriesFilter().isEmpty() &&
+                    settings.getAmiiboTypeFilter().isEmpty() &&
+                    path.toLowerCase().contains(query);
         }
 
         public boolean amiiboContainsQuery(Amiibo amiibo, String query) {
@@ -482,10 +481,10 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                 Glide.with(itemView).clear(target);
                 if (amiiboImageUrl != null) {
                     Glide.with(itemView)
-                        .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
-                        .asBitmap()
-                        .load(amiiboImageUrl)
-                        .into(target);
+                            .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
+                            .asBitmap()
+                            .load(amiiboImageUrl)
+                            .into(target);
                 }
             }
         }
@@ -549,10 +548,10 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
     static class SimpleViewHolder extends AmiiboVewHolder {
         public SimpleViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(
-                LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.amiibo_simple_card, parent, false),
-                settings,
-                listener
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.amiibo_simple_card, parent, false),
+                    settings,
+                    listener
             );
         }
     }
@@ -560,10 +559,10 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
     static class CompactViewHolder extends AmiiboVewHolder {
         public CompactViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(
-                LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.amiibo_compact_card, parent, false),
-                settings,
-                listener
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.amiibo_compact_card, parent, false),
+                    settings,
+                    listener
             );
         }
     }
@@ -571,10 +570,10 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
     static class LargeViewHolder extends AmiiboVewHolder {
         public LargeViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(
-                LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.amiibo_large_card, parent, false),
-                settings,
-                listener
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.amiibo_large_card, parent, false),
+                    settings,
+                    listener
             );
         }
     }

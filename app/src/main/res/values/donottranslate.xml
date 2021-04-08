@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="imageview_icon">Icon</string>
+    <string name="imageview_icon">Amiibo Icon</string>
+    <string name="imageview_amiibo">Amiibo Image</string>
 
     <string name="hex_ff">FF</string>
     <string name="hex_ffff">FFFF</string>

@@ -6,14 +6,14 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.TextChange;
 import org.androidannotations.annotations.ViewById;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 @EFragment(R.layout.fragment_app_data_tp)
 public class AppDataTPFragment extends AppDataFragment {

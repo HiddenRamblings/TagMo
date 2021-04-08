@@ -155,8 +155,8 @@ public class Util {
 //        }
 //    }
 
-    public static void setFileStorage(Context mContext) {
-        File[] storage = ContextCompat.getExternalFilesDirs(mContext, null);
+    public static void setFileStorage() {
+        File[] storage = ContextCompat.getExternalFilesDirs(TagMo.getContext(), null);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
                 storagePath = storage.length > 1 && storage[1] != null

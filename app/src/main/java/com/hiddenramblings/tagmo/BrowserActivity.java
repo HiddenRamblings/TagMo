@@ -151,8 +151,6 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         verifyStoragePermissions();
-
-        Util.setFileStorage(BrowserActivity.this);
     }
 
     public void onSaveInstanceState(Bundle outState) {
@@ -223,6 +221,8 @@ public class BrowserActivity extends AppCompatActivity implements
         int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+        } else {
+            Util.setFileStorage();
         }
     }
 
@@ -231,6 +231,8 @@ public class BrowserActivity extends AppCompatActivity implements
         int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+        } else {
+            Util.setFileStorage();
         }
     }
 

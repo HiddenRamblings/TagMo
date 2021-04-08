@@ -12,6 +12,7 @@ import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.TextChange;
 import org.androidannotations.annotations.ViewById;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 @EFragment(R.layout.fragment_app_data_tp)
@@ -66,7 +67,7 @@ public class AppDataTPFragment extends AppDataFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         onAppDataChecked(((TagDataActivity) context).isAppDataInitialized);

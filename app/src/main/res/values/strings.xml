@@ -126,4 +126,7 @@
     <string name="write_error">Error writing to file: %1$s</string>
 
     <string name="stat_error">Must be between -200 and 200</string>
+
+    <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
+    <string name="super_smash">Super Smash Bros. for Nintendo 3DS and Wii U</string>
 </resources>

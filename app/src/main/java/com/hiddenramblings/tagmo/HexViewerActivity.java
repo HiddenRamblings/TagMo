@@ -1,7 +1,10 @@
 package com.hiddenramblings.tagmo;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.Typeface;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +18,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
+@SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_hex_viewer)
 public class HexViewerActivity extends AppCompatActivity {
     private static final String TAG = "HexViewerActivity";
@@ -69,7 +73,7 @@ public class HexViewerActivity extends AppCompatActivity {
         try {
             setTagData(TagUtil.decrypt(keyManager, data));
         } catch (Exception e) {
-            Log.d(TAG, "Error decyrpting data", e);
+            Log.d(TAG, getString(R.string.failed_decrypt), e);
             finish();
         }
     }
@@ -185,6 +189,7 @@ public class HexViewerActivity extends AppCompatActivity {
             return this.data[i];
         }
 
+        @NonNull
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new ViewHolder(LayoutInflater

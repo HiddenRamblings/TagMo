@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,8 +38,9 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
         firstRun = false;
     }
 
+    @NonNull
     @Override
-    public FolderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FolderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case PARENT_FOLDER_VIEW_TYPE:
                 return new ParentFolderViewHolder(parent);
@@ -50,7 +52,7 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
     }
 
     @Override
-    public void onBindViewHolder(FolderViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FolderViewHolder holder, int position) {
         File folder;
         if (holder instanceof ParentFolderViewHolder) {
             folder = this.rootFolder.getParentFile();
@@ -142,12 +144,9 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
             super(itemView);
 
             this.txtFolderName = itemView.findViewById(R.id.text);
-            this.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    settings.setBrowserRootFolder(folder);
-                    settings.notifyChanges();
-                }
+            this.itemView.setOnClickListener(view -> {
+                settings.setBrowserRootFolder(folder);
+                settings.notifyChanges();
             });
         }
 

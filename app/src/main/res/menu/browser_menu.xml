@@ -9,7 +9,7 @@
         app:showAsAction="collapseActionView|always"/>
     <item
         android:id="@+id/settings"
-        android:title="Settings"
+        android:title="@string/settings"
         android:icon="@drawable/ic_settings_white_24dp"
         app:showAsAction="always" />
     <item
@@ -128,5 +128,9 @@
         android:id="@+id/refresh"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:title="@string/refresh"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/dump_logcat"
+        android:title="@string/dump_logcat"
         app:showAsAction="ifRoom"/>
 </menu>

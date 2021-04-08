@@ -118,11 +118,8 @@ public class Util {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        FileOutputStream fos = new FileOutputStream(file);
-        try {
+        try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(log.toString().getBytes());
-        } finally {
-            fos.close();
         }
     }
 
@@ -196,7 +193,7 @@ public class Util {
             amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
         } catch (IOException | JSONException | ParseException e) {
             amiiboManager = null;
-            Log.e(TAG, "amiibo parse error", e);
+            Log.e(TAG, "Amiibo parse error", e);
         }
         if (amiiboManager == null) {
             amiiboManager = loadDefaultAmiiboManager(context);

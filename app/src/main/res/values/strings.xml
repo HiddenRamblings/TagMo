@@ -7,13 +7,14 @@
     <string name="shadow_cave_progress">Shadow Cave progress</string>
     <string name="edit_tp_data">Edit TP Data</string>
     <string name="editor_error_outofbounds">Amiibo contains an invalid current state.</string>
-    <string name="fixed_key_found">Locked key OK.</string>
-    <string name="fixed_key_missing">No Locked key!</string>
-    <string name="unfixed_key_found">Unfixed key OK.</string>
-    <string name="unfixed_key_missing">No Unfixed key!</string>
-    <string name="nfc_unsupported">NFC not supported!</string>
-    <string name="nfc_disabled">NFC not enabled!</string>
-    <string name="nfc_enabled">NFC enabled!</string>
+    <string name="fixed_key_found">Locked Key OK.</string>
+    <string name="fixed_key_missing">No Locked Key!</string>
+    <string name="unfixed_key_found">Unfixed Key OK.</string>
+    <string name="unfixed_key_missing">No Unfixed Key!</string>
+    <string name="nfc_unsupported">NFC Not Supported!</string>
+    <string name="nfc_disabled">NFC Disabled!</string>
+    <string name="nfc_enabled">NFC Enabled!</string>
+    <string name="nfc_query">NFC countryCodeAdapter is currently disabled. Enable NFC?</string>
 
     <string name="settings_import_keys">import_keys</string>
     <string name="settings_import_info">import_info</string>
@@ -29,6 +30,7 @@
     <string name="settings_info_amiibo_types">settings_info_amiibo_types</string>
     <string name="settings_import_info_amiiboapi">settings_sync_info_amiiboapi</string>
     <string name="keys_missing_warning">Amiibo keys not found</string>
+    <string name="no_decrypt_key">Decryption keys not imported</string>
     <string name="nfc_enable_action">Enable</string>
     <string name="open_settings_action">Settings</string>
     <string name="edit_ssb_data">Edit SSB Data</string>
@@ -76,15 +78,19 @@
 
     <string name="missing_amiibo">Amiibo bin not available</string>
 
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="done">Done</string>
     <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
     <string name="parent">Parent</string>
     <string name="unknown">Unknown</string>
     <string name="error">ERROR</string>
 
     <string name="change_view">Change View</string>
     <string name="settings">Settings</string>
-    <string name="logcat">Save Logcat (Logging)</string>
-    <string name="write_raw">Write Tag (Raw Mode)</string>
+    <string name="dump_logcat">Save Logcat (Logging)</string>
+    <string name="mnu_write_raw">Write Tag (Raw Mode)</string>
 
     <string name="not_found">No Amiibos Found</string>
 
@@ -121,12 +127,26 @@
     <string name="no_tag_loaded">&lt;No Tag Loaded&gt;</string>
     <string name="read_error">&lt;Error Reading Tag&gt;</string>
     <string name="blank_tag">&lt;Blank Tag&gt;</string>
+    <string name="tag_close_error">Error closing tag %1$s</string>
+    <string name="state_error">State error. Invalid action: %1$s</string>
 
     <string name="wrote_file">Wrote to file %1$s in TagMo directory.</string>
     <string name="write_error">Error writing to file: %1$s</string>
+    <string name="no_data">No data to write</string>
+    <string name="tag_type_error">Error getting tag data. Possibly not a NTAG215</string>
+    <string name="tag_detected">Tag detected&#8230;</string>
+    <string name="failed_decrypt">Failed to decrypt tag data</string>
 
     <string name="stat_error">Must be between -200 and 200</string>
+    <string name="min_max_error">Must be between %d and %d</string>
 
     <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
     <string name="super_smash">Super Smash Bros. for Nintendo 3DS and Wii U</string>
+
+    <string name="save_image">Save Image</string>
+
+    <string name="write_raw">Write to Tag (Raw)</string>
+    <string name="write_auto">Write to Tag (Auto)</string>
+    <string name="restore_tag">Restore Tag</string>
+    <string name="scan_tag">Scan Tag</string>
 </resources>

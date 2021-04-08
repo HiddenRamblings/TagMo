@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -20,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Filter;
@@ -66,12 +66,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.FragmentManager;
 
+@SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_tag_data)
 @OptionsMenu(R.menu.image_menu)
 public class TagDataActivity extends AppCompatActivity {
@@ -153,14 +155,9 @@ public class TagDataActivity extends AppCompatActivity {
         keyManager = new KeyManager(this);
         if (!keyManager.hasBothKeys()) {
             new AlertDialog.Builder(this)
-                .setTitle("Error")
-                .setMessage("Decryption keys not imported")
-                .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        finish();
-                    }
-                })
+                .setTitle(R.string.error)
+                .setMessage(R.string.no_decrypt_key)
+                .setPositiveButton(R.string.close, (dialogInterface, i) -> finish())
                 .show();
             return;
         }
@@ -169,14 +166,9 @@ public class TagDataActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
             new AlertDialog.Builder(this)
-                .setTitle("Error")
-                .setMessage("Failed to decrypt tag data")
-                .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        finish();
-                    }
-                })
+                .setTitle(R.string.error)
+                .setMessage(R.string.failed_decrypt)
+                .setPositiveButton(R.string.close, (dialogInterface, i) -> finish())
                 .show();
             return;
         }
@@ -193,18 +185,8 @@ public class TagDataActivity extends AppCompatActivity {
         appIdAdapter = new NothingSelectedSpinnerAdapter(new AppIdAdapter(AppIds.appIds), R.layout.nothing_spinner_text);
         txtAppName.setAdapter(appIdAdapter);
 
-        userDataSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                onUserDataSwitchClicked(b);
-            }
-        });
-        appDataSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                onAppDataSwitchClicked(b);
-            }
-        });
+        userDataSwitch.setOnCheckedChangeListener((compoundButton, b) -> onUserDataSwitchClicked(b));
+        appDataSwitch.setOnCheckedChangeListener((compoundButton, b) -> onAppDataSwitchClicked(b));
 
         loadData();
     }
@@ -221,7 +203,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onResourceReady(Bitmap resource, Transition transition) {
+        public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
             imageAmiibo.setImageBitmap(resource);
             imageAmiibo.setVisibility(View.VISIBLE);
         }
@@ -239,7 +221,7 @@ public class TagDataActivity extends AppCompatActivity {
             amiiboManager = Util.loadAmiiboManager(this);
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast("Unable to parse amiibo info");
+            showToast(getString(R.string.parse_error));
         }
 
         if (Thread.currentThread().isInterrupted())
@@ -335,7 +317,7 @@ public class TagDataActivity extends AppCompatActivity {
         } else {
             textView.setVisibility(View.VISIBLE);
             if (text.length() == 0) {
-                textView.setText("Unknown");
+                textView.setText(R.string.unknown);
                 textView.setEnabled(false);
             } else {
                 textView.setText(text);
@@ -773,7 +755,7 @@ public class TagDataActivity extends AppCompatActivity {
 
         AppDataFragment fragment;
         if (appId != null) {
-            String tag = "app_data:" + String.valueOf(appId);
+            String tag = "app_data:" + appId;
             fragment = (AppDataFragment) fm.findFragmentByTag(tag);
             if (fragment == null) {
                 boolean initialAppDataInitialized = this.initialAppDataInitialized && tagData.getAppId() == appId;
@@ -817,7 +799,7 @@ public class TagDataActivity extends AppCompatActivity {
             tagData.checkWriteCount(writeCounter);
             txtWriteCounter.setError(null);
         } catch (Exception e) {
-            txtWriteCounter.setError(String.format("Must be between %d and %d", TagData.WRITE_COUNT_MIN_VALUE, TagData.WRITE_COUNT_MAX_VALUE));
+            txtWriteCounter.setError(getString(R.string.min_max_error, TagData.WRITE_COUNT_MIN_VALUE, TagData.WRITE_COUNT_MAX_VALUE));
         }
     }
 
@@ -828,31 +810,26 @@ public class TagDataActivity extends AppCompatActivity {
     public static String getDateString(Locale locale, Date date) {
         SimpleDateFormat dateFormat;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            dateFormat = new SimpleDateFormat(getDateFormat(locale), locale);
-        } else {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+//            dateFormat = new SimpleDateFormat(getDateFormat(locale), locale);
+//        } else {
             dateFormat = new SimpleDateFormat("dd/MM/yyyy", locale);
-        }
+//        }
 
         return dateFormat.format(date);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public static String getDateFormat(Locale locale) {
-        return DateFormat.getBestDateTimePattern(locale, "dd/MM/yyyy");
-    }
+//    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+//    public static String getDateFormat(Locale locale) {
+//        return DateFormat.getBestDateTimePattern(locale, "dd/MM/yyyy");
+//    }
 
-    class CountryCodesAdapter extends BaseAdapter implements Filterable {
+    static class CountryCodesAdapter extends BaseAdapter implements Filterable {
         public ArrayList<HashMap.Entry<Integer, String>> data;
 
         public CountryCodesAdapter(HashMap<Integer, String> data) {
             this.data = new ArrayList<>(data.entrySet());
-            Collections.sort(this.data, new Comparator<HashMap.Entry<Integer, String>>() {
-                @Override
-                public int compare(Map.Entry<Integer, String> entry1, Map.Entry<Integer, String> entry2) {
-                    return entry1.getKey().compareTo(entry2.getKey());
-                }
-            });
+            Collections.sort(this.data, (entry1, entry2) -> entry1.getKey().compareTo(entry2.getKey()));
         }
 
         @Override
@@ -912,17 +889,12 @@ public class TagDataActivity extends AppCompatActivity {
         };
     }
 
-    class AppIdAdapter extends BaseAdapter {
+    static class AppIdAdapter extends BaseAdapter {
         public ArrayList<HashMap.Entry<Integer, String>> data;
 
         public AppIdAdapter(HashMap<Integer, String> data) {
             this.data = new ArrayList<>(data.entrySet());
-            Collections.sort(this.data, new Comparator<HashMap.Entry<Integer, String>>() {
-                @Override
-                public int compare(Map.Entry<Integer, String> entry1, Map.Entry<Integer, String> entry2) {
-                    return entry1.getKey().compareTo(entry2.getKey());
-                }
-            });
+            Collections.sort(this.data, (entry1, entry2) -> entry1.getKey().compareTo(entry2.getKey()));
         }
 
         @Override
@@ -967,7 +939,7 @@ public class TagDataActivity extends AppCompatActivity {
     @UiThread
     void LogError(String msg) {
         new AlertDialog.Builder(this)
-            .setTitle("Error")
+            .setTitle(R.string.error)
             .setMessage(msg)
             .setPositiveButton("Close", null)
             .show();

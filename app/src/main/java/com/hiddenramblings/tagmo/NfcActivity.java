@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -29,6 +30,7 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
+@SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_nfc)
 public class NfcActivity extends AppCompatActivity {
     private static final String TAG = "NfcActivity";
@@ -88,19 +90,19 @@ public class NfcActivity extends AppCompatActivity {
         String mode = commandIntent.getAction();
         switch (mode) {
             case ACTION_WRITE_TAG_RAW:
-                setTitle("Write to Tag (Raw)");
+                setTitle(R.string.write_raw);
                 break;
             case ACTION_WRITE_TAG_FULL:
-                setTitle("Write to Tag (Auto)");
+                setTitle(R.string.write_auto);
                 break;
             case ACTION_WRITE_TAG_DATA:
-                setTitle("Restore Tag");
+                setTitle(R.string.restore_tag);
                 break;
             case ACTION_SCAN_TAG:
-                setTitle("Scan Tag");
+                setTitle(R.string.scan_tag);
                 break;
             default:
-                setTitle("Error");
+                setTitle(R.string.error);
                 finish();
         }
     }
@@ -116,7 +118,7 @@ public class NfcActivity extends AppCompatActivity {
         super.onNewIntent(intent);
 
         if (intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            showMessage("Tag detected..");
+            showMessage(getString(R.string.tag_detected));
             this.onTagDiscovered(intent);
         }
     }
@@ -154,7 +156,7 @@ public class NfcActivity extends AppCompatActivity {
             Log.d(TAG, tag.toString());
             NTAG215 mifare = NTAG215.get(tag);
             if (mifare == null) {
-                throw new Exception("Error getting tag data. Possibly not a NTAG215");
+                throw new Exception(getString(R.string.tag_type_error));
             }
             mifare.connect();
             Intent result = null;
@@ -166,26 +168,26 @@ public class NfcActivity extends AppCompatActivity {
                     case ACTION_WRITE_TAG_RAW:
                         data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
                         if (data == null) {
-                            throw new Exception("No data to write");
+                            throw new Exception(getString(R.string.no_data));
                         }
                         TagWriter.writeToTagRaw(mifare, data, prefs.enableTagTypeValidation().get());
                         resultCode = Activity.RESULT_OK;
-                        showToast("Done");
+                        showToast(getString(R.string.done));
                         break;
                     case ACTION_WRITE_TAG_FULL:
                         data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
                         if (data == null) {
-                            throw new Exception("No data to write");
+                            throw new Exception(getString(R.string.no_data));
                         }
                         TagWriter.writeToTagAuto(mifare, data, this.keyManager, prefs.enableTagTypeValidation().get(), prefs.enablePowerTagSupport().get());
                         resultCode = Activity.RESULT_OK;
-                        showToast("Done");
+                        showToast(getString(R.string.done));
                         break;
                     case ACTION_WRITE_TAG_DATA:
                         data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
                         boolean ignoreUid = commandIntent.getBooleanExtra(EXTRA_IGNORE_TAG_ID, false);
                         if (data == null) {
-                            throw new Exception("No data to write");
+                            throw new Exception(getString(R.string.no_data));
                         }
                         TagWriter.restoreTag(mifare, data, ignoreUid, this.keyManager, prefs.enableTagTypeValidation().get());
                         resultCode = Activity.RESULT_OK;
@@ -196,22 +198,22 @@ public class NfcActivity extends AppCompatActivity {
                         resultCode = Activity.RESULT_OK;
                         result = new Intent(ACTION_NFC_SCANNED);
                         result.putExtra(EXTRA_TAG_DATA, data);
-                        showToast("Done");
+                        showToast(getString(R.string.done));
                         break;
                     default:
-                        throw new Exception("State error. Invalid action:" + mode);
+                        throw new Exception(getString(R.string.state_error, mode));
                 }
             } finally {
                 try {
                     mifare.close();
                 } catch (Exception e) {
-                    Log.d(TAG, "Error closing tag", e);
-                    throw new Exception("Error closing tag: " + e.getMessage());
+                    Log.d(TAG, getString(R.string.tag_close_error), e);
+                    throw new Exception(getString(R.string.tag_close_error, ":" + e.getMessage()));
                 }
             }
             finishActivityWithResult(resultCode, result);
         } catch (Exception e) {
-            Log.d(TAG, "Error", e);
+            Log.d(TAG, getString(R.string.error), e);
             String error = e.getMessage();
             if (e.getCause() != null) {
                 error = error + "\n" + e.getCause().toString();
@@ -234,27 +236,27 @@ public class NfcActivity extends AppCompatActivity {
 
     void startNfcMonitor() {
         if (nfcAdapter == null) {
-            showError("NFC support not detected.");
+            showError(getString(R.string.nfc_unsupported));
             return;
         }
 
         if (!nfcAdapter.isEnabled()) {
-            showError("NFC Disabled.");
+            showError(getString(R.string.nfc_disabled));
             new AlertDialog.Builder(this)
-                .setMessage("NFC countryCodeAdapter is currently disabled. Enable NFC?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setMessage(R.string.nfc_query)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
-                            startActivity(intent);
-                        } else {
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//                            Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+//                            startActivity(intent);
+//                        } else {
                             Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
                             startActivity(intent);
-                        }
+//                        }
                     }
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton(R.string.no, null)
                 .show();
         }
 
@@ -295,7 +297,7 @@ public class NfcActivity extends AppCompatActivity {
 
             if (action.equals(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)) {
                 if (!nfcAdapter.isEnabled()) {
-                    showError("NFC Disabled!");
+                    showError(getString(R.string.nfc_disabled));
                 } else {
                     listenForTags();
                     clearError();

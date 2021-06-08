@@ -30,15 +30,15 @@ public class TagCreateDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View view = inflater.inflate(R.layout.tag_create_activity, null);
 
-        final Spinner spnSeries = (Spinner)view.findViewById(R.id.spnSeries);
-        final Spinner spnCharacter = (Spinner)view.findViewById(R.id.spnCharacter);
-        final Spinner spnVariation = (Spinner)view.findViewById(R.id.spnVariation);
-        final Spinner spnForm = (Spinner)view.findViewById(R.id.spnForm);
-        final Spinner spnID1 = (Spinner)view.findViewById(R.id.spnID1);
-        final Spinner spnID2 = (Spinner)view.findViewById(R.id.spnID2);
-        final Spinner spnSet = (Spinner)view.findViewById(R.id.spnSet);
+        final Spinner spnSeries = view.findViewById(R.id.spnSeries);
+        final Spinner spnCharacter = view.findViewById(R.id.spnCharacter);
+        final Spinner spnVariation = view.findViewById(R.id.spnVariation);
+        final Spinner spnForm = view.findViewById(R.id.spnForm);
+        final Spinner spnID1 = view.findViewById(R.id.spnID1);
+        final Spinner spnID2 = view.findViewById(R.id.spnID2);
+        final Spinner spnSet = view.findViewById(R.id.spnSet);
 
-        ArrayAdapter<CharSequence> adapters[] = new ArrayAdapter[7];
+        ArrayAdapter<CharSequence>[] adapters = new ArrayAdapter[7];
         for(int i=0; i<adapters.length; i++) {
             adapters[i] = ArrayAdapter.createFromResource(getActivity(),
                     R.array.hex_list, android.R.layout.simple_list_item_1);

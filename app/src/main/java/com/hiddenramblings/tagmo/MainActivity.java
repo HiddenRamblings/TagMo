@@ -62,6 +62,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -733,7 +734,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (data == null) {
             try {
-                data = content.getBytes("ISO-8859-1");
+                data = content.getBytes(StandardCharsets.ISO_8859_1);
                 TagUtil.validateTag(data);
             } catch (Exception e) {
                 Log.e(TAG, "QR Code legacy decode failure", e);

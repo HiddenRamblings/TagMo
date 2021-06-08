@@ -77,7 +77,6 @@ public class NTAG215 {
             return ;
         }
 
-        return;
     }
 
     public byte[] transceive(byte[] data) throws IOException {

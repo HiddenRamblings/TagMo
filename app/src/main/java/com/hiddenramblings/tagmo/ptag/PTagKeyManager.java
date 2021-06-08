@@ -3,19 +3,14 @@ package com.hiddenramblings.tagmo.ptag;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Base64;
-import android.util.Log;
 
 import com.hiddenramblings.tagmo.Util;
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 public class PTagKeyManager {

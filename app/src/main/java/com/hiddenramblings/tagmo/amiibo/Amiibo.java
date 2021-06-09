@@ -97,7 +97,7 @@ public class Amiibo implements Comparable<Amiibo> {
 
     public static String getImageUrl(long amiiboId) {
         int head = (int)((amiiboId & HEAD_MASK) >> HEAD_BITSHIFT);
-        int tail = (int)((amiiboId & TAIL_MASK) >> TAIL_BITSHIFT);;
+        int tail = (int)((amiiboId & TAIL_MASK) >> TAIL_BITSHIFT);
         return String.format(AMIIBO_API_IMAGE_URL, head, tail);
     }
 

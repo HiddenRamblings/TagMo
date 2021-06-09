@@ -78,7 +78,7 @@ public class KeyManager {
     }
 
     void saveKeyFile(String file, byte[] key) throws IOException {
-        FileOutputStream fos = context.openFileOutput(file, context.MODE_PRIVATE);
+        FileOutputStream fos = context.openFileOutput(file, Context.MODE_PRIVATE);
         try {
             fos.write(key);
         } finally {

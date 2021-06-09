@@ -832,7 +832,7 @@ public class BrowserActivity extends AppCompatActivity implements
             chipContainer = (FrameLayout) getLayoutInflater().inflate(R.layout.chip_view, null);
             chipContainer.setTag(tag);
             Chip chip = chipContainer.findViewById(R.id.chip);
-            chip.setChipText(text);
+            chip.setText(text);
             chip.setClosable(true);
             chip.setOnCloseClickListener(listener);
             chipList.addView(chipContainer);

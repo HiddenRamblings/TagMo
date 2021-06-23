@@ -141,7 +141,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                 if (amiiboManager != null) {
                     Amiibo amiibo1 = amiiboManager.amiibos.get(amiiboId1);
                     Amiibo amiibo2 = amiiboManager.amiibos.get(amiiboId2);
-                    if (amiibo1 == null)
+                    if (amiibo1 == null && amiibo2 == null)
+                        value = 0;
+                    else if (amiibo1 == null)
                         value = 1;
                     else if (amiibo2 == null)
                         value = -1;
@@ -156,7 +158,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                     } else if (sort == BrowserActivity.SORT_CHARACTER) {
                         value = compareCharacter(amiibo1, amiibo2);
                     }
-                    if (value == 0)
+                    if (value == 0 && amiibo1 != null)
                         value = amiibo1.compareTo(amiibo2);
                 }
                 if (value == 0)
@@ -178,6 +180,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         int compareAmiiboName(Amiibo amiibo1, Amiibo amiibo2) {
             String name1 = amiibo1.name;
             String name2 = amiibo2.name;
+			if (name1 == null && name2 == null) {
+				return 0;
+			}
             if (name1 == null) {
                 return 1;
             } else if (name2 == null) {
@@ -189,6 +194,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         int compareAmiiboSeries(Amiibo amiibo1, Amiibo amiibo2) {
             AmiiboSeries amiiboSeries1 = amiibo1.getAmiiboSeries();
             AmiiboSeries amiiboSeries2 = amiibo2.getAmiiboSeries();
+			if (amiiboSeries1 == null && amiiboSeries2 == null ) {
+				return 0;
+			}
             if (amiiboSeries1 == null) {
                 return 1;
             } else if (amiiboSeries2 == null) {
@@ -200,6 +208,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         int compareAmiiboType(Amiibo amiibo1, Amiibo amiibo2) {
             AmiiboType amiiboType1 = amiibo1.getAmiiboType();
             AmiiboType amiiboType2 = amiibo2.getAmiiboType();
+			if (amiiboType1 == null && amiiboType2 == null ) {
+				return 0;
+			}
             if (amiiboType1 == null) {
                 return 1;
             } else if (amiiboType2 == null) {
@@ -211,6 +222,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         int compareGameSeries(Amiibo amiibo1, Amiibo amiibo2) {
             GameSeries gameSeries1 = amiibo1.getGameSeries();
             GameSeries gameSeries2 = amiibo2.getGameSeries();
+			if (gameSeries1 == null && gameSeries2 == null) {
+				return 0;
+			}
             if (gameSeries1 == null) {
                 return 1;
             } else if (gameSeries2 == null) {
@@ -222,6 +236,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         int compareCharacter(Amiibo amiibo1, Amiibo amiibo2) {
             Character character1 = amiibo1.getCharacter();
             Character character2 = amiibo2.getCharacter();
+			if (character1 == null && character2 == null) {
+				return 0;
+			}
             if (character1 == null) {
                 return 1;
             } else if (character2 == null) {

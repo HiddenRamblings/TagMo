@@ -172,8 +172,8 @@ public class Util {
         return storagePath != null ? storagePath : setFileStorage();
     }
 
-    public static File getDataDir() {
-        return new File(Environment.getExternalStorageDirectory(), DATA_DIR);
+    public static File getFilesDir() {
+        return TagMo.getContext().getExternalFilesDir(null);
     }
 
     public static class AmiiboInfoException extends Exception {
@@ -188,7 +188,7 @@ public class Util {
     }
 
     public static AmiiboManager loadAmiiboManager(Context context) throws IOException, JSONException, ParseException {
-        AmiiboManager amiiboManager = null;
+        AmiiboManager amiiboManager;
         try {
             amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
         } catch (IOException | JSONException | ParseException e) {

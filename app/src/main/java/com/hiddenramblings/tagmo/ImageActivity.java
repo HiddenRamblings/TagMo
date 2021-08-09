@@ -221,11 +221,8 @@ public class ImageActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        File dir = Util.getDataDir();
-                        if (!dir.isDirectory())
-                            dir.mkdir();
-
-                        final File file = new File(dir.getAbsolutePath(), editText.getText().toString() + ".png");
+                        final File file = new File(Util.getFilesDir().getAbsolutePath(),
+                                editText.getText().toString() + ".png");
 
                         Glide.with(ImageActivity.this)
                                 .asBitmap()

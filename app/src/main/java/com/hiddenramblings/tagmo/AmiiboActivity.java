@@ -225,8 +225,7 @@ public class AmiiboActivity extends AppCompatActivity {
             );
 
             File dir = new File(Util.getSDCardDir(), prefs.browserRootFolder().get());
-            if (!dir.isDirectory())
-                dir.mkdir();
+            if (!dir.isDirectory()) dir.mkdir();
 
             File file = new File(dir.getAbsolutePath(), fileName);
 

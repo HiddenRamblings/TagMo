@@ -156,4 +156,7 @@
     <string name="write_auto">Write to Tag (Auto)</string>
     <string name="restore_tag">Restore Tag</string>
     <string name="scan_tag">Scan Tag</string>
+
+    <string name="permission_required">Storage permission required!</string>
+    <string name="allow_permission">Allow</string>
 </resources>

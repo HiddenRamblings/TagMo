@@ -146,7 +146,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return;
         }
 
-        File file = new File(Util.getDataDir(), Util.AMIIBO_DATABASE_FILE);
+        File file = new File(Util.getFilesDir(), Util.AMIIBO_DATABASE_FILE);
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(file);

@@ -1,13 +1,17 @@
 package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +23,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -30,6 +37,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
@@ -158,7 +166,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        verifyStoragePermissions();
+        requestStoragePermissions();
     }
 
     @Override
@@ -226,29 +234,66 @@ public class BrowserActivity extends AppCompatActivity implements
             WRITE_EXTERNAL_STORAGE
     };
 
-    void verifyStoragePermissions() {
-        int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    void requestScopedStorage() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+        try {
+            intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
+        } catch (Exception e) {
+            intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+        }
+        onRequestScopedStorageResult.launch(intent);
+    }
+
+    void requestStoragePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()) {
+                validateKeys();
+            } else {
+                requestScopedStorage();
+            }
         } else {
-            validateKeys();
+            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            } else {
+                validateKeys();
+            }
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
+                    R.string.permission_required, Snackbar.LENGTH_LONG);
+            storageBar.setAction(R.string.allow_permission, v -> ActivityCompat.requestPermissions(
+                    BrowserActivity.this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE));
+            storageBar.show();
         } else {
             validateKeys();
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    ActivityResultLauncher<Intent> onRequestScopedStorageResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (Environment.isExternalStorageManager()) {
+            validateKeys();
+        } else {
+            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
+                    R.string.permission_required, Snackbar.LENGTH_LONG);
+            storageBar.setAction(R.string.allow_permission, v -> requestScopedStorage());
+            storageBar.show();
+        }
+    });
+
     private void validateKeys() {
         KeyManager keyManager = new KeyManager(this);
         if (!keyManager.hasUnFixedKey() || !keyManager.hasFixedKey()) {
-            showToast(getString(R.string.config_required));
+            showToast(getString(R.string.config_required), Toast.LENGTH_LONG);
             openSettings();
         }
     }
@@ -712,7 +757,7 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;
-            showToast("Unable to parse amiibo info");
+            showToast("Unable to parse amiibo info", Toast.LENGTH_LONG);
         }
         if (Thread.currentThread().isInterrupted())
             return;
@@ -993,13 +1038,9 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background
     void dumpLogcat() {
         try {
-            File dir = Util.getDataDir();
-            if (!dir.isDirectory())
-                dir.mkdir();
-
             String fName = "tagmo_logcat.txt";
 
-            File file = new File(dir.getAbsolutePath(), fName);
+            File file = new File(Util.getFilesDir().getAbsolutePath(), fName);
 
             Log.d(TAG, file.toString());
             Util.dumpLogcat(file.getAbsolutePath());
@@ -1022,8 +1063,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @UiThread
-    public void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    public void showToast(String msg, int length) {
+        Toast.makeText(this, msg, length).show();
     }
 
 }

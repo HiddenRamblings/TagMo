@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -24,6 +25,8 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -535,10 +538,39 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.amiiboTypeStats.setSummary("Total: " + amiiboTypeCount);
     }
 
+    void downloadAmiiboAPIDataCompat() {
+        ProviderInstaller.installIfNeededAsync(getContext(), new ProviderInstaller.ProviderInstallListener() {
+            @Override
+            public void onProviderInstalled() {
+                BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
+                downloadAmiiboAPIDataTask();
+            }
+
+            @Override
+            public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
+                GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
+                if (availability.isUserResolvableError(errorCode)) {
+                    // Recoverable error. Show a dialog prompting the user to
+                    // install/update/enable Google Play services.
+                    availability.showErrorDialogFragment(getActivity(), errorCode, 1, dialog -> {
+                        // The user chose not to take the recovery action
+                        getActivity().finish();
+                    });
+                } else {
+                    // Google Play services is not available.
+                    getActivity().finish();
+                }
+            }
+        });
+    }
 
     void downloadAmiiboAPIData() {
-        BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
-        downloadAmiiboAPIDataTask();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
+            downloadAmiiboAPIDataTask();
+        } else {
+            downloadAmiiboAPIDataCompat();
+        }
     }
 
     @Background(id = BACKGROUND_SYNC_AMIIBO_MANAGER)

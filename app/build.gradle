@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.hiddenramblings.tagmo"
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 30
         versionCode 6
         versionName "2.7.1"
@@ -89,4 +89,5 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
+    implementation 'com.google.android.gms:play-services-safetynet:17.0.1'
 }

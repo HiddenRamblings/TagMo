@@ -293,7 +293,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void validateKeys() {
         KeyManager keyManager = new KeyManager(this);
         if (!keyManager.hasUnFixedKey() || !keyManager.hasFixedKey()) {
-            showToast(getString(R.string.config_required), Toast.LENGTH_LONG);
+            showToast(R.string.config_required, Toast.LENGTH_LONG);
             openSettings();
         }
     }
@@ -757,7 +757,7 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;
-            showToast("Unable to parse amiibo info", Toast.LENGTH_LONG);
+            showToast(R.string.amiibo_parse_error, Toast.LENGTH_LONG);
         }
         if (Thread.currentThread().isInterrupted())
             return;
@@ -1063,8 +1063,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @UiThread
-    public void showToast(String msg, int length) {
-        Toast.makeText(this, msg, length).show();
+    public void showToast(int msgRes, int length) {
+        Toast.makeText(this, msgRes, length).show();
     }
 
 }

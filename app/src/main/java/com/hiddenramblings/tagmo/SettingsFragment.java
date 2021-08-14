@@ -145,7 +145,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_export_info)
     void onExportInfoClicked() {
         if (this.amiiboManager == null) {
-            showToast("Amiibo info not loaded", Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_info_not_loaded, Toast.LENGTH_SHORT);
             return;
         }
 
@@ -156,7 +156,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             Util.saveAmiiboInfo(this.amiiboManager, fileOutputStream);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
-            showToast("Failed to export amiibo info to " + Util.friendlyPath(file), Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_info_export_fail, Util.friendlyPath(file), Toast.LENGTH_SHORT);
             return;
         } finally {
             if (fileOutputStream != null) {
@@ -168,7 +168,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         }
 
-        showSnackbar("Exported amiibo info to " + Util.friendlyPath(file), Snackbar.LENGTH_LONG);
+        showSnackbar(getString(R.string.amiibo_info_exported, Util.friendlyPath(file)), Snackbar.LENGTH_LONG);
     }
 
     @PreferenceClick(R.string.settings_reset_info)
@@ -281,7 +281,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         }
                     }
                 }, null)
-                .setPositiveButton("Close", null)
+                .setPositiveButton(R.string.close, null)
                 .show();
     }
 
@@ -297,7 +297,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         new AlertDialog.Builder(this.getContext())
                 .setTitle("Game Series")
                 .setAdapter(new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, items), null)
-                .setPositiveButton("Close", null)
+                .setPositiveButton(R.string.close, null)
                 .show();
     }
 
@@ -341,7 +341,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         return view;
                     }
                 }, null)
-                .setPositiveButton("Close", null)
+                .setPositiveButton(R.string.close, null)
                 .show();
     }
 
@@ -357,7 +357,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         new AlertDialog.Builder(this.getContext())
                 .setTitle("Amiibo Series")
                 .setAdapter(new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, items), null)
-                .setPositiveButton("Close", null)
+                .setPositiveButton(R.string.close, null)
                 .show();
     }
 
@@ -375,7 +375,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         new AlertDialog.Builder(this.getContext())
                 .setTitle("Amiibo Types")
                 .setAdapter(new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, items), null)
-                .setPositiveButton("Close", null)
+                .setPositiveButton(R.string.close, null)
                 .show();
     }
 
@@ -444,7 +444,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             amiiboManager = Util.loadAmiiboManager(this.getContext());
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast("Failed to load amiibo info", Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_failure_generic,
+                    getString(R.string.amiibo_failure_load), Toast.LENGTH_SHORT);
             return;
         }
         if (Thread.currentThread().isInterrupted())
@@ -465,11 +466,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             amiiboManager = AmiiboManager.parse(this.getContext(), data);
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
-            showToast("Failed to parse amiibo info", Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_failure_generic,
+                    getString(R.string.amiibo_failure_parse), Toast.LENGTH_SHORT);
             return;
         } catch (IOException e) {
             e.printStackTrace();
-            showToast("Failed to read amiibo info", Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_failure_generic,
+                    getString(R.string.amiibo_failure_read), Toast.LENGTH_SHORT);
             return;
         }
         if (Thread.currentThread().isInterrupted())
@@ -479,14 +482,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             Util.saveLocalAmiiboInfo(this.getContext(), amiiboManager);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
-            showToast("Failed to update amiibo info", Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_failure_generic,
+                    getString(R.string.amiibo_failure_update), Toast.LENGTH_SHORT);
             return;
         }
         if (Thread.currentThread().isInterrupted())
             return;
 
         setAmiiboManager(amiiboManager);
-        showSnackbar("Updated amiibo info", Snackbar.LENGTH_SHORT);
+        showSnackbar(getString(R.string.amiibo_info_updated), Snackbar.LENGTH_SHORT);
     }
 
     void resetAmiiboManager() {
@@ -503,13 +507,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             amiiboManager = Util.loadDefaultAmiiboManager(this.getContext());
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast("Failed to parse default amiibo info", Snackbar.LENGTH_SHORT);
+            showToast(R.string.amiibo_failure_generic,
+                    getString(R.string.amiibo_failure_parse_default), Snackbar.LENGTH_SHORT);
         }
         if (Thread.currentThread().isInterrupted())
             return;
 
         setAmiiboManager(amiiboManager);
-        showSnackbar("Reset amiibo info", Snackbar.LENGTH_SHORT);
+        showSnackbar(getString(R.string.reset_amiibo_info), Snackbar.LENGTH_SHORT);
     }
 
     @UiThread
@@ -575,7 +580,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Background(id = BACKGROUND_SYNC_AMIIBO_MANAGER)
     void downloadAmiiboAPIDataTask() {
-        showSnackbar("Syncing Amiibo Info from AmiiboAPI...", Snackbar.LENGTH_INDEFINITE);
+        showSnackbar(getString(R.string.sync_amiibo_status, getString(R.string.sync_processing)), Snackbar.LENGTH_INDEFINITE);
         try {
             URL url = new URL("https://www.amiiboapi.com/api/amiibo/");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -610,7 +615,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                 Util.saveLocalAmiiboInfo(this.getContext(), amiiboManager);
                 setAmiiboManager(amiiboManager);
-                showSnackbar("Syncing Amiibo Info from AmiiboAPI successful!", Snackbar.LENGTH_SHORT);
+                showSnackbar(getString(R.string.sync_amiibo_status, getString(R.string.sync_successful)), Snackbar.LENGTH_SHORT);
             } else {
                 throw new Exception(String.valueOf(statusCode));
             }
@@ -618,7 +623,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             e.printStackTrace();
             if (Thread.currentThread().isInterrupted())
                 return;
-            showSnackbar("Syncing Amiibo Info from AmiiboAPI failed", Snackbar.LENGTH_SHORT);
+            showSnackbar(getString(R.string.sync_amiibo_status, getString(R.string.sync_failed)), Snackbar.LENGTH_SHORT);
         }
     }
 
@@ -652,12 +657,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @UiThread
     public void showSnackbar(String msg, int length) {
-        Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.coordinator), msg, length);
-        snackbar.show();
+        Snackbar.make(getActivity().findViewById(R.id.coordinator), msg, length).show();
     }
 
     @UiThread
-    public void showToast(String msg, int length) {
-        Toast.makeText(this.getContext(), msg, length).show();
+    public void showToast(int msgRes, int length) {
+        Toast.makeText(this.getContext(), getString(msgRes), length).show();
+    }
+
+    @UiThread
+    public void showToast(int msgRes, String params, int length) {
+        Toast.makeText(this.getContext(), getString(msgRes, params), length).show();
     }
 }

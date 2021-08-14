@@ -159,4 +159,22 @@
 
     <string name="permission_required">Storage permission required!</string>
     <string name="allow_permission">Allow</string>
+
+    <string name="amiibo_parse_error">Unable to parse amiibo info</string>
+    <string name="amiibo_info_not_loaded">Amiibo info not loaded</string>
+    <string name="amiibo_info_export_fail">Failed to export amiibo info to %1$s</string>
+    <string name="amiibo_info_exported">Exported amiibo info to %1$s</string>
+    <string name="amiibo_failure_generic">Failed to %1$s amiibo info</string>
+    <string name="amiibo_failure_load">load</string>
+    <string name="amiibo_failure_parse">parse</string>
+    <string name="amiibo_failure_read">read</string>
+    <string name="amiibo_failure_update">read</string>
+    <string name="amiibo_failure_parse_default">parse default</string>
+    <string name="amiibo_info_updated">Updated amiibo info</string>
+    <string name="reset_amiibo_info">Reset amiibo info</string>
+
+    <string name="sync_amiibo_status">Syncing Amiibo Info from AmiiboAPI %1$s</string>
+    <string name="sync_processing">&#8230;</string>
+    <string name="sync_successful"> successful!</string>
+    <string name="sync_failed"> failed!</string>
 </resources>

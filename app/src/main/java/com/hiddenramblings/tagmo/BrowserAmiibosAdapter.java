@@ -426,7 +426,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             String amiiboType = "";
             String gameSeries = "";
             String character = "";
-            final String amiiboImageUrl;
+            String amiiboImageUrl;
 
             long amiiboId = item.getId();
             Amiibo amiibo = null;
@@ -455,7 +455,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             String query = settings.getQuery().toLowerCase();
 
             if (tagInfo == null) {
-                txtError.setVisibility(View.GONE);
+                this.txtError.setVisibility(View.GONE);
             } else {
                 setAmiiboInfoText(this.txtError, tagInfo, false);
             }
@@ -494,7 +494,8 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
                 return true;
             } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
-                ConnectivityManager cm = (ConnectivityManager) itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                ConnectivityManager cm = (ConnectivityManager)
+                        itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
                 return activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI;

@@ -11,11 +11,9 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +26,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
@@ -178,109 +175,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_info_amiibos)
     void onAmiiboStatsClicked() {
-        final ArrayList<Amiibo> items = new ArrayList<>(amiiboManager.amiibos.values());
-        Collections.sort(items);
-
         new AlertDialog.Builder(this.getContext())
                 .setTitle("Amiibos")
-                .setAdapter(new BaseAdapter() {
-                    @Override
-                    public int getCount() {
-                        return items.size();
-                    }
-
-                    @Override
-                    public long getItemId(int i) {
-                        return items.get(i).id;
-                    }
-
-                    @Override
-                    public Amiibo getItem(int i) {
-                        return items.get(i);
-                    }
-
-                    @Override
-                    public View getView(int position, View convertView, ViewGroup parent) {
-                        ViewHolder holder;
-                        if (convertView == null) {
-                            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.amiibo_compact_card, parent, false);
-                            holder = new ViewHolder(convertView);
-                        } else {
-                            holder = (ViewHolder) convertView.getTag();
-                        }
-
-                        String tagInfo = null;
-                        String amiiboHexId = "";
-                        String amiiboName = "";
-                        String amiiboSeries = "";
-                        String amiiboType = "";
-                        String gameSeries = "";
-                        String character = "";
-
-                        Amiibo amiibo = getItem(position);
-                        amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
-                        if (amiibo.name != null)
-                            amiiboName = amiibo.name;
-                        if (amiibo.getAmiiboSeries() != null)
-                            amiiboSeries = amiibo.getAmiiboSeries().name;
-                        if (amiibo.getAmiiboType() != null)
-                            amiiboType = amiibo.getAmiiboType().name;
-                        if (amiibo.getGameSeries() != null)
-                            gameSeries = amiibo.getGameSeries().name;
-                        if (amiibo.getCharacter() != null)
-                            character = amiibo.getCharacter().name;
-
-
-                        if (tagInfo == null) {
-                            setAmiiboInfoText(holder.txtName, amiiboName, false);
-                        } else {
-                            setAmiiboInfoText(holder.txtName, tagInfo, false);
-                        }
-                        setAmiiboInfoText(holder.txtTagId, amiiboHexId, tagInfo != null);
-                        setAmiiboInfoText(holder.txtAmiiboSeries, amiiboSeries, tagInfo != null);
-                        setAmiiboInfoText(holder.txtAmiiboType, amiiboType, tagInfo != null);
-                        setAmiiboInfoText(holder.txtGameSeries, gameSeries, tagInfo != null);
-                        //setAmiiboInfoText(this.txtCharacter, character, tagInfo != null);
-
-                        return convertView;
-                    }
-
-                    void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
-                        if (hasTagInfo) {
-                            textView.setText("");
-                        } else if (text.length() == 0) {
-                            textView.setText("Unknown");
-                            textView.setTextColor(Color.RED);
-                        } else {
-                            textView.setText(text);
-                            textView.setTextColor(textView.getTextColors().getDefaultColor());
-                        }
-                    }
-
-                    class ViewHolder {
-                        TextView txtTagInfo;
-                        TextView txtName;
-                        TextView txtTagId;
-                        TextView txtAmiiboSeries;
-                        TextView txtAmiiboType;
-                        TextView txtGameSeries;
-                        TextView txtCharacter;
-                        TextView txtPath;
-
-                        public ViewHolder(View view) {
-                            this.txtTagInfo = view.findViewById(R.id.txtTagInfo);
-                            this.txtName = view.findViewById(R.id.txtName);
-                            this.txtTagId = view.findViewById(R.id.txtTagId);
-                            this.txtAmiiboSeries = view.findViewById(R.id.txtAmiiboSeries);
-                            this.txtAmiiboType = view.findViewById(R.id.txtAmiiboType);
-                            this.txtGameSeries = view.findViewById(R.id.txtGameSeries);
-                            this.txtCharacter = view.findViewById(R.id.txtCharacter);
-                            this.txtPath = view.findViewById(R.id.txtPath);
-
-                            view.setTag(this);
-                        }
-                    }
-                }, null)
+                .setAdapter(new SettingsAmiiboAdapter(prefs, new ArrayList<>(
+                        amiiboManager.amiibos.values())), null)
                 .setPositiveButton(R.string.close, null)
                 .show();
     }

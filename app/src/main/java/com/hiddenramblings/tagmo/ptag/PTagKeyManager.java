@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class PTagKeyManager {
-    private static final String TAG = "PTagKeyManager";
     public static final String KEY_LIST_FILE = "keytable.json";
 
     private static HashMap<String, HashMap<String, byte[]>> keys;

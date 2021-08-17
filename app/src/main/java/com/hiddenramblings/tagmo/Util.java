@@ -25,13 +25,9 @@ import java.text.ParseException;
 
 import static android.os.Environment.isExternalStorageEmulated;
 
-/**
- * Created by MAS on 31/01/2016.
- */
 public class Util {
     final static String TAG = "Util";
 
-    public static final String DATA_DIR = "tagmo";
     public static final String AMIIBO_DATABASE_FILE = "amiibo.json";
 
     private static File storagePath;
@@ -60,7 +56,7 @@ public class Util {
             byte[] result = digest.digest(data);
             return bytesToHex(result);
         } catch (NoSuchAlgorithmException e) {
-            Log.e(TAG, e.getMessage());
+            TagMo.Error(TAG, e.getMessage());
         }
         return null;
     }
@@ -123,35 +119,6 @@ public class Util {
         }
     }
 
-//    public static void dumpLogcat(String fileName) throws Exception {
-//        File file = new File(fileName);
-//
-//        Process process = Runtime.getRuntime().exec("logcat -d");
-//        InputStream logStream = process.getInputStream();
-//        try {
-//            FileOutputStream fos = new FileOutputStream(file);
-//            try {
-//                String phoneDetails = String.format("Manufacturer: %s - Model: %s\nAndroid Ver: %s\nTagMo Version: %s\n",
-//                    Build.MANUFACTURER, Build.MODEL,
-//                    Build.VERSION.RELEASE,
-//                    BuildConfig.VERSION_NAME);
-//
-//                fos.write(phoneDetails.getBytes());
-//
-//                byte[] buf = new byte[1024];
-//                int read = logStream.read(buf);
-//                while (read >= 0) {
-//                    fos.write(buf, 0, read);
-//                    read = logStream.read(buf);
-//                }
-//            } finally {
-//                fos.close();
-//            }
-//        } finally {
-//            logStream.close();
-//        }
-//    }
-
     public static File setFileStorage() {
         File[] storage = ContextCompat.getExternalFilesDirs(TagMo.getContext(), null);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -193,7 +160,7 @@ public class Util {
             amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
         } catch (IOException | JSONException | ParseException e) {
             amiiboManager = null;
-            Log.e(TAG, "Amiibo parse error", e);
+            TagMo.Error(TAG, R.string.amiibo_parse_error, e);
         }
         if (amiiboManager == null) {
             amiiboManager = loadDefaultAmiiboManager(context);

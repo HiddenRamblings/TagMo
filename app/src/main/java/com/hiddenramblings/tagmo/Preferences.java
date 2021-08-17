@@ -1,10 +1,13 @@
 package com.hiddenramblings.tagmo;
 
+import android.annotation.SuppressLint;
+
 import org.androidannotations.annotations.sharedpreferences.DefaultBoolean;
 import org.androidannotations.annotations.sharedpreferences.DefaultInt;
 import org.androidannotations.annotations.sharedpreferences.DefaultString;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
 
+@SuppressLint("NonConstantResourceId")
 @SharedPref(value = SharedPref.Scope.UNIQUE)
 public interface Preferences {
     String query();
@@ -39,4 +42,7 @@ public interface Preferences {
 
     @DefaultBoolean(false)
     boolean showMissingFiles();
+
+    @DefaultBoolean(keyRes = R.string.settings_disable_debug, value = false)
+    boolean disableDebug();
 }

@@ -63,7 +63,7 @@ public class TagUtil {
 
     public static byte[][] splitPages(byte[] data) throws Exception {
         if (data.length < TAG_FILE_SIZE)
-            throw new Exception("Invalid tag data");
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_data));
 
         byte[][] pages = new byte[data.length / TagUtil.PAGE_SIZE][];
         for (int i = 0, j = 0; i < data.length; i += TagUtil.PAGE_SIZE, j++) {
@@ -76,59 +76,59 @@ public class TagUtil {
         byte[][] pages = TagUtil.splitPages(data);
 
         if (pages[0][0] != (byte) 0x04)
-            throw new Exception("Invalid tag file. Tag must start with a 0x04.");
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_prefix));
 
         if (pages[2][2] != (byte) 0x0F || pages[2][3] != (byte) 0xE0)
-            throw new Exception("Invalid tag file. lock signature mismatch.");
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_lock));
 
         if (pages[3][0] != (byte) 0xF1 || pages[3][1] != (byte) 0x10 || pages[3][2] != (byte) 0xFF || pages[3][3] != (byte) 0xEE)
-            throw new Exception("Invalid tag file. CC signature mismatch.");
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cc));
 
         if (pages[0x82][0] != (byte) 0x01 || pages[0x82][1] != (byte) 0x0 || pages[0x82][2] != (byte) 0x0F)
-            throw new Exception("Invalid tag file. dynamic lock signature mismatch.");
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_dynamic));
 
         if (pages[0x83][0] != (byte) 0x0 || pages[0x83][1] != (byte) 0x0 || pages[0x83][2] != (byte) 0x0 || pages[0x83][3] != (byte) 0x04)
-            throw new Exception("Invalid tag file. CFG0 signature mismatch.");
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cfg_zero));
 
         if (pages[0x84][0] != (byte) 0x5F || pages[0x84][1] != (byte) 0x0 || pages[0x84][2] != (byte) 0x0 || pages[0x84][3] != (byte) 0x00)
-            throw new Exception("Invalid tag file. CFG1 signature mismatch.");
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cfg_one));
     }
 
     public static byte[] decrypt(KeyManager keyManager, byte[] tagData) throws Exception {
         if (!keyManager.hasFixedKey() || !keyManager.hasUnFixedKey())
-            throw new Exception("Key files not loaded!");
+            throw new Exception(TagMo.getStringRes(R.string.key_not_present));
 
         AmiiTool tool = new AmiiTool();
         if (tool.setKeysFixed(keyManager.fixedKey, keyManager.fixedKey.length) == 0)
-            throw new Exception("Failed to initialise amiitool");
+            throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
         if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length) == 0)
-            throw new Exception("Failed to initialise amiitool");
+            throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
         byte[] decrypted = new byte[TagUtil.TAG_FILE_SIZE];
         if (tool.unpack(tagData, tagData.length, decrypted, decrypted.length) == 0)
-            throw new Exception("Failed to decrypt tag");
+            throw new Exception(TagMo.getStringRes(R.string.failed_decrypt));
 
         return decrypted;
     }
 
     public static byte[] encrypt(KeyManager keyManager, byte[] tagData) throws Exception {
         if (!keyManager.hasFixedKey() || !keyManager.hasUnFixedKey())
-            throw new Exception("Key files not loaded!");
+            throw new Exception(TagMo.getStringRes(R.string.key_not_present));
 
         AmiiTool tool = new AmiiTool();
         if (tool.setKeysFixed(keyManager.fixedKey, keyManager.fixedKey.length) == 0)
-            throw new Exception("Failed to initialise amiitool");
+            throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
         if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length) == 0)
-            throw new Exception("Failed to initialise amiitool");
+            throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
         byte[] encrypted = new byte[TagUtil.TAG_FILE_SIZE];
         if (tool.pack(tagData, tagData.length, encrypted, encrypted.length) == 0)
-            throw new Exception("Failed to encrypt tag");
+            throw new Exception(TagMo.getStringRes(R.string.failed_encrypt));
 
         return encrypted;
     }
 
 
     public static byte[] patchUid(byte[] uid, byte[] tagData) throws Exception {
-        if (uid.length < 9) throw new Exception("Invalid uid length");
+        if (uid.length < 9) throw new Exception(TagMo.getStringRes(R.string.invalid_uid_length));
 
         byte[] patched = Arrays.copyOf(tagData, tagData.length);
 
@@ -147,7 +147,7 @@ public class TagUtil {
         try {
             int len = inputStream.read(data);
             if (len != TAG_FILE_SIZE)
-                throw new Exception("Invalid file size. was expecting " + TAG_FILE_SIZE);
+                throw new Exception(TagMo.getStringRes(R.string.invalid_file_size) + TAG_FILE_SIZE);
 
             return data;
         } finally {
@@ -219,9 +219,6 @@ public class TagUtil {
     public static void putDate(ByteBuffer bb, int offset, Date date) {
         putBytes(bb, offset, TagUtil.toAmiiboDate(date));
     }
-
-    static Charset UTF16BE = Charset.forName("UTF-16BE");
-    static Charset UTF16LE = Charset.forName("UTF-16LE");
 
     public static String getString(ByteBuffer bb, int offset, int length, Charset charset) throws UnsupportedEncodingException {
         return charset.decode(getByteBuffer(bb, offset, length)).toString();

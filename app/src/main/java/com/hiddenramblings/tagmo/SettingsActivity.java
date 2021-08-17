@@ -1,6 +1,7 @@
 package com.hiddenramblings.tagmo;
 
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -8,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.androidannotations.annotations.EActivity;
 
+@SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.settings_layout)
 public class SettingsActivity extends AppCompatActivity {
     @Override

@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -70,13 +69,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
     private static final String BACKGROUND_SYNC_AMIIBO_MANAGER = "sync_amiibo_manager";
 
+    private static final String AMIIBO_API_URL = "https://www.amiiboapi.com/api/amiibo/";
+
     @Pref
     Preferences_ prefs;
 
     @PreferenceByKey(R.string.settings_import_keys)
     Preference key;
-    @PreferenceByKey(R.string.settings_enable_amiibo_browser)
-    CheckBoxPreference enableAmiiboBrowser;
     @PreferenceByKey(R.string.settings_enable_tag_type_validation)
     CheckBoxPreference enableTagTypeValidation;
     @PreferenceByKey(R.string.settings_enable_power_tag_support)
@@ -93,6 +92,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     Preference amiiboTypeStats;
     @PreferenceByKey(R.string.image_network_settings)
     ListPreference imageNetworkSetting;
+    @PreferenceByKey(R.string.settings_disable_debug)
+    CheckBoxPreference disableDebug;
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -105,6 +106,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @AfterPreferences
     protected void afterViews() {
         this.enableTagTypeValidation.setChecked(prefs.enableTagTypeValidation().get());
+        this.disableDebug.setChecked(prefs.disableDebug().get());
 
         this.keyManager = new KeyManager(this.getContext());
 
@@ -136,7 +138,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_import_info)
     void onImportInfoClicked() {
-        showFileChooser("Fixed Key", "*/*", RESULT_IMPORT_AMIIBO_DATABASE);
+        showFileChooser(getString(R.string.fixed_key), "*/*", RESULT_IMPORT_AMIIBO_DATABASE);
     }
 
     @PreferenceClick(R.string.settings_export_info)
@@ -176,7 +178,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_info_amiibos)
     void onAmiiboStatsClicked() {
         new AlertDialog.Builder(this.getContext())
-                .setTitle("Amiibos")
+                .setTitle(R.string.pref_amiibos)
                 .setAdapter(new SettingsAmiiboAdapter(prefs, new ArrayList<>(
                         amiiboManager.amiibos.values())), null)
                 .setPositiveButton(R.string.close, null)
@@ -193,7 +195,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Collections.sort(items);
 
         new AlertDialog.Builder(this.getContext())
-                .setTitle("Game Series")
+                .setTitle(R.string.pref_amiibo_game)
                 .setAdapter(new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, items), null)
                 .setPositiveButton(R.string.close, null)
                 .show();
@@ -221,7 +223,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Collections.sort(items);
 
         new AlertDialog.Builder(this.getContext())
-                .setTitle("Characters")
+                .setTitle(R.string.pref_amiibo_characters)
                 .setAdapter(new ArrayAdapter<Character>(this.getContext(), android.R.layout.simple_list_item_2, android.R.id.text1, items) {
                     @NonNull
                     @Override
@@ -253,7 +255,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Collections.sort(items);
 
         new AlertDialog.Builder(this.getContext())
-                .setTitle("Amiibo Series")
+                .setTitle(R.string.pref_amiibo_series)
                 .setAdapter(new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, items), null)
                 .setPositiveButton(R.string.close, null)
                 .show();
@@ -271,10 +273,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
 
         new AlertDialog.Builder(this.getContext())
-                .setTitle("Amiibo Types")
+                .setTitle(R.string.pref_amiibo_types)
                 .setAdapter(new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, items), null)
                 .setPositiveButton(R.string.close, null)
                 .show();
+    }
+
+    @PreferenceClick(R.string.settings_disable_debug)
+    void onDisableDebugClicked() {
+        prefs.disableDebug().put(disableDebug.isChecked());
     }
 
     void updateKeys(Uri data) {
@@ -434,11 +441,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             amiiboSeriesCount = String.valueOf(amiiboManager.amiiboSeries.size());
             amiiboTypeCount = String.valueOf(amiiboManager.amiiboTypes.size());
         }
-        this.amiiboStats.setSummary("Total: " + amiiboCount);
-        this.gameSeriesStats.setSummary("Total: " + gameSeriesCount);
-        this.characterStats.setSummary("Total: " + characterCount);
-        this.amiiboSeriesStats.setSummary("Total: " + amiiboSeriesCount);
-        this.amiiboTypeStats.setSummary("Total: " + amiiboTypeCount);
+        this.amiiboStats.setSummary(getString(R.string.total, amiiboCount));
+        this.gameSeriesStats.setSummary(getString(R.string.total, gameSeriesCount));
+        this.characterStats.setSummary(getString(R.string.total, characterCount));
+        this.amiiboSeriesStats.setSummary(getString(R.string.total, amiiboSeriesCount));
+        this.amiiboTypeStats.setSummary(getString(R.string.total, amiiboTypeCount));
     }
 
     void downloadAmiiboAPIDataCompat() {
@@ -480,7 +487,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void downloadAmiiboAPIDataTask() {
         showSnackbar(getString(R.string.sync_amiibo_status, getString(R.string.sync_processing)), Snackbar.LENGTH_INDEFINITE);
         try {
-            URL url = new URL("https://www.amiiboapi.com/api/amiibo/");
+            URL url = new URL(AMIIBO_API_URL);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
 
@@ -549,7 +556,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             startActivityForResult(Intent.createChooser(intent, title), resultCode);
         } catch (android.content.ActivityNotFoundException ex) {
-            Log.e("", ex.getMessage());
+            TagMo.Error("", ex.getMessage());
         }
     }
 

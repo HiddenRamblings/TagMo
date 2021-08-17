@@ -9,9 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Created by MAS on 31/01/2016.
- */
 public class KeyManager {
     private static final String TAG = "KeyManager";
 
@@ -38,7 +35,7 @@ public class KeyManager {
             if (hasLocalFile(UNFIXED_KEY_FILE))
                 unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
         } catch (Exception e) {
-            Log.e(TAG, "Failed to load keys: ", e);
+            TagMo.Error(TAG, R.string.key_load_error, e);
         }
     }
 
@@ -67,11 +64,11 @@ public class KeyManager {
         try {
             try (FileInputStream fs = context.openFileInput(file)) {
                 byte[] key = new byte[KEY_FILE_SIZE];
-                if (fs.read(key) != KEY_FILE_SIZE) throw new Exception("Invalid file size");
+                if (fs.read(key) != KEY_FILE_SIZE) throw new Exception(TagMo.getStringRes(R.string.key_size_invalid));
                 return key;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error reading key from local storage", e);
+            TagMo.Error(TAG, R.string.key_read_error, e);
         }
         return null;
     }
@@ -89,7 +86,7 @@ public class KeyManager {
             return false;
 
         if (rlen < KEY_FILE_SIZE)
-            throw new Exception("Key file size does not match.");
+            throw new Exception(TagMo.getStringRes(R.string.key_size_error));
 
         String md5 = Util.md5(data);
         if (FIXED_KEY_MD5.equals(md5)) {
@@ -99,14 +96,14 @@ public class KeyManager {
             saveKeyFile(UNFIXED_KEY_FILE, data);
             this.unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
         } else
-            throw new Exception("Key file signature does not match.");
+            throw new Exception(TagMo.getStringRes(R.string.key_signature_error));
         return true;
     }
 
     public void loadKey(Uri file) throws Exception {
         try (InputStream strm = context.getContentResolver().openInputStream(file)) {
             if (!readKey(strm))
-                throw new Exception("No valid key in file."); //if we can't even read one key then it's completely wrong
+                throw new Exception(TagMo.getStringRes(R.string.invalid_key_error)); //if we can't even read one key then it's completely wrong
             readKey(strm);
         }
     }

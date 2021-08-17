@@ -16,6 +16,8 @@
     <string name="nfc_enabled">NFC Enabled!</string>
     <string name="nfc_query">NFC countryCodeAdapter is currently disabled. Enable NFC?</string>
 
+    <string name="fixed_key">Fixed Key</string>
+
     <string name="settings_import_keys">import_keys</string>
     <string name="settings_import_info">import_info</string>
     <string name="settings_reset_info">reset_info</string>
@@ -29,13 +31,30 @@
     <string name="settings_info_amiibo_series">settings_info_amiibo_series</string>
     <string name="settings_info_amiibo_types">settings_info_amiibo_types</string>
     <string name="settings_import_info_amiiboapi">settings_sync_info_amiiboapi</string>
+    <string name="settings_disable_debug">settings_disable_debug</string>
+    <string name="image_network_settings">\@string/image_network_settings</string>
+
+    <string name="amiibo_info_stats">Amiibo Info Stats</string>
+    <string name="pref_amiibos">Amiibos</string>
+    <string name="pref_amiibo_game">Game Series</string>
+    <string name="pref_amiibo_characters">Characters</string>
+    <string name="pref_amiibo_types">Amiibo Types</string>
+    <string name="pref_amiibo_series">Amiibo Series</string>
+    <string name="pref_advanced">Advanced</string>
+    <string name="pref_disable_debug">Disable Debug Logs</string>
+
+
+    <string name="sync_api_details">Sync Amiibo info with AmiiboAPI</string>
+    <string name="export_json_details">Export Amiibo info to JSON</string>
+    <string name="import_json_details">Export Amiibo info to JSON</string>
+    <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
+
     <string name="keys_missing_warning">Amiibo keys not found</string>
     <string name="no_decrypt_key">Decryption keys not imported</string>
     <string name="nfc_enable_action">Enable</string>
     <string name="open_settings_action">Settings</string>
     <string name="edit_ssb_data">Edit SSB Data</string>
     <string name="edit_mii_data">Edit Mii Data</string>
-    <string name="image_network_settings">\@string/image_network_settings</string>
 
     <string name="amiibo">Amiibo</string>
 
@@ -88,6 +107,7 @@
     <string name="parent">Parent</string>
     <string name="unknown">Unknown</string>
     <string name="error">ERROR</string>
+    <string name="invalid">Invalid</string>
 
     <string name="change_view">Change View</string>
     <string name="settings">Settings</string>
@@ -128,24 +148,11 @@
     <string name="bonus_two">Bonus Effect 2</string>
     <string name="bonus_three">Bonus Effect 2</string>
 
-    <string name="parse_error">Unable to parse Amiibo info</string>
-    <string name="tag_invalid">Warning: Tag is invalid!</string>
-    <string name="media_scan_fail">Failed to refresh media scanner</string>
-    <string name="no_tag_loaded">&lt;No Tag Loaded&gt;</string>
-    <string name="read_error">&lt;Error Reading Tag&gt;</string>
-    <string name="blank_tag">&lt;Blank Tag&gt;</string>
-    <string name="tag_close_error">Error closing tag %1$s</string>
-    <string name="state_error">State error. Invalid action: %1$s</string>
-
     <string name="wrote_file">Wrote to file %1$s in TagMo directory.</string>
     <string name="write_error">Error writing to file: %1$s</string>
     <string name="no_data">No data to write</string>
     <string name="tag_type_error">Error getting tag data. Possibly not a NTAG215</string>
     <string name="tag_detected">Tag detected&#8230;</string>
-    <string name="failed_decrypt">Failed to decrypt tag data</string>
-
-    <string name="stat_error">Must be between -200 and 200</string>
-    <string name="min_max_error">Must be between %d and %d</string>
 
     <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
     <string name="super_smash">Super Smash Bros. for Nintendo 3DS and Wii U</string>
@@ -160,7 +167,92 @@
     <string name="permission_required">Storage permission required!</string>
     <string name="allow_permission">Allow</string>
 
-    <string name="amiibo_parse_error">Unable to parse amiibo info</string>
+    <string name="encryption_keys">Encryption Keys</string>
+    <string name="pref_import_keys">Import Keys</string>
+    <string name="pref_image_loading">Image Loading</string>
+    <string name="image_loading_details">Load images</string>
+    <string name="enable_tag_validation">Enable NTAG215 validation</string>
+    <string name="tag_validation_details">Not all NFC chipsets correctly identify NFC tags. Disabling tag verification will write to tags that may not be Amiibo compatible or may fail in unexpected ways.</string>
+    <string name="enable_power_tag">Enable PowerTag support</string>
+    <string name="power_tag_details">Support is currently under development. See the Wiki on github for limitations and use.</string>
+
+    <string name="amiibo_info">Amiibo Info</string>
+
+    <string name="amiibo_info_updated">Updated amiibo info</string>
+
+    <string name="sync_amiibo_info">Sync Amiibo info with amiiboapi.com</string>
+    <string name="import_amiibo_info">Import Amiibo info</string>
+    <string name="export_amiibo_info">Export Amiibo info</string>
+    <string name="reset_amiibo_info">Reset amiibo info</string>
+
+    <string name="sync_amiibo_status">Syncing Amiibo Info from AmiiboAPI %1$s</string>
+    <string name="sync_processing">&#8230;</string>
+    <string name="sync_successful"> successful!</string>
+    <string name="sync_failed"> failed!</string>
+
+    <string name="total">Total: %1$s</string>
+
+    <string name="locked">locked</string>
+    <string name="unlocked">unlocked</string>
+
+    <string name="data_write">Wrote main data</string>
+    <string name="password_write">Wrote password</string>
+    <string name="lock_write">Wrote lock info</string>
+
+    <string name="write_pack">Writing PACK</string>
+    <string name="write_pwd">Writing PWD</string>
+    <string name="write_page">Wrote to page</string>
+
+    <string name="auth_response">Auth response %1$s</string>
+    <string name="password">Password: %1$s</string>
+
+    <string name="old_uid">Old UID %1$s</string>
+    <string name="page_ten">page 10 %1$s</string>
+    <string name="ptag_key">ptag key %1$s</string>
+
+    <string name="validation_success">Validation successful</string>
+
+    <string name="tag_invalid">Warning: Tag is invalid!</string>
+    <string name="media_scan_fail">Failed to refresh media scanner</string>
+    <string name="no_tag_loaded">&lt;No Tag Loaded&gt;</string>
+    <string name="read_error">&lt;Error Reading Tag&gt;</string>
+    <string name="blank_tag">&lt;Blank Tag&gt;</string>
+    <string name="tag_close_error">Error closing tag %1$s</string>
+    <string name="state_error">State error. Invalid action: %1$s</string>
+    <string name="length_error">Must be 8 characters</string>
+    <string name="range_error">Must be between 1 and 50</string>
+    <string name="input_error">Invalid input</string>
+    <string name="tag_data_error">Failed to save tag data</string>
+
+    <string name="key_not_present">Key files not loaded!</string>
+    <string name="key_load_error">Failed to load keys: </string>
+    <string name="key_size_error">Key file size does not match.</string>
+    <string name="key_size_invalid">Invalid key file size</string>
+    <string name="key_signature_error">Key file signature does not match.</string>
+    <string name="invalid_key_error">No valid key in file.</string>
+    <string name="key_read_error">Error reading key from local storage</string>
+
+    <string name="amiitool_init_error">Failed to initialise amiitool</string>
+
+    <string name="failed_decrypt">Failed to decrypt tag data</string>
+    <string name="failed_encrypt">Failed to encrypt tag data</string>
+    <string name="invalid_tag_data">Invalid tag data.</string>
+    <string name="invalid_tag_file">Invalid tag file. %1$s</string>
+    <string name="invalid_tag_prefix">Tag must start with a 0x04.</string>
+    <string name="invalid_tag_lock">Lock signature mismatch.</string>
+    <string name="invalid_tag_cc">CC signature mismatch.</string>
+    <string name="invalid_tag_dynamic">Dynamic lock signature mismatch.</string>
+    <string name="invalid_tag_cfg_zero">CFG0 signature mismatch.</string>
+    <string name="invalid_tag_cfg_one">CFG1 signature mismatch.</string>
+    <string name="invalid_uid_length">Invalid UID length</string>
+    <string name="invalid_file_size">Invalid file size. Expected&#160;</string>
+
+    <string name="stat_error">Must be between -200 and 200</string>
+    <string name="min_max_error">Must be between %d and %d</string>
+
+    <string name="amiibo_parse_error">Amiibo parse error</string>
+
+    <string name="amiibo_info_parse_error">Unable to parse Amiibo info</string>
     <string name="amiibo_info_not_loaded">Amiibo info not loaded</string>
     <string name="amiibo_info_export_fail">Failed to export amiibo info to %1$s</string>
     <string name="amiibo_info_exported">Exported amiibo info to %1$s</string>
@@ -170,11 +262,24 @@
     <string name="amiibo_failure_read">read</string>
     <string name="amiibo_failure_update">read</string>
     <string name="amiibo_failure_parse_default">parse default</string>
-    <string name="amiibo_info_updated">Updated amiibo info</string>
-    <string name="reset_amiibo_info">Reset amiibo info</string>
 
-    <string name="sync_amiibo_status">Syncing Amiibo Info from AmiiboAPI %1$s</string>
-    <string name="sync_processing">&#8230;</string>
-    <string name="sync_successful"> successful!</string>
-    <string name="sync_failed"> failed!</string>
+    <string name="data_write_error">Error while writing main data (stage 1)</string>
+    <string name="password_write_error">Error while setting password (stage 2)</string>
+    <string name="lock_write_error">Error while setting lock info (stage 3)</string>
+    <string name="tag_already_written">Tag already an amiibo. Use \'Restore Tag\' to write data.</string>
+    <string name="fail_read_size">Read failed! Unexpected read size.</string>
+    <string name="fail_read_uid">Could not read old UID</string>
+    <string name="fail_mismatch_uid">Source UID does not match the target!</string>
+    <string name="fail_invalid_size">Invalid read result size</string>
+
+    <string name="tag_format_error">Tag is not an NTAG215</string>
+    <string name="no_source_data">Cannot validate: no source data loaded to compare.</string>
+    <string name="tag_version_error">Tag version error</string>
+    <string name="power_tag_exists">Power Tag Exists:&#160;</string>
+
+    <string name="read_failed">Read failed</string>
+    <string name="version_error">Version information error</string>
+
+    <string name="auth_null">Auth result was null</string>
+    <string name="auth_failed">Authenticaiton failed</string>
 </resources>

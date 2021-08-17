@@ -1,7 +1,3 @@
-//
-// Created by MAS on 31/01/2016.
-//
-
 #include <jni.h>
 #include <string.h>
 #include <android/log.h>

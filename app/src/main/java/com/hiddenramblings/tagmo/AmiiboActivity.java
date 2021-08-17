@@ -139,15 +139,15 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @OnActivityResult(EDIT_TAG)
     void onEditTagResult(int resultCode, Intent data) {
-        Log.d(TAG, getString(R.string.tag_data));
+        TagMo.Debug(TAG, R.string.tag_data);
         if (resultCode != Activity.RESULT_OK || data == null)
             return;
 
-        Log.d(TAG, getString(R.string.tag_data));
+        TagMo.Debug(TAG, R.string.tag_data);
         if (!Actions.ACTION_EDIT_COMPLETE.equals(data.getAction()))
             return;
 
-        Log.d(TAG, getString(R.string.tag_data));
+        TagMo.Debug(TAG, R.string.tag_data);
         this.tagData = data.getByteArrayExtra(Actions.EXTRA_TAG_DATA);
         this.updateAmiiboView();
     }
@@ -182,7 +182,7 @@ public class AmiiboActivity extends AppCompatActivity {
             amiiboManager = Util.loadAmiiboManager(this);
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast(getString(R.string.parse_error));
+            showToast(getString(R.string.amiibo_info_parse_error));
         }
 
         if (Thread.currentThread().isInterrupted())
@@ -229,14 +229,14 @@ public class AmiiboActivity extends AppCompatActivity {
 
             File file = new File(dir.getAbsolutePath(), fileName);
 
-            Log.d(TAG, file.toString());
+            TagMo.Debug(TAG, file.toString());
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(tagData);
             }
             try {
                 MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
             } catch (Exception e) {
-                Log.e(TAG, getString(R.string.media_scan_fail), e);
+                TagMo.Error(TAG, R.string.media_scan_fail, e);
             }
             LogMessage(getString(R.string.wrote_file, fileName));
         } catch (Exception e) {

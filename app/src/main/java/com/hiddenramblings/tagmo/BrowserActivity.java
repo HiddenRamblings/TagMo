@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -757,7 +756,7 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;
-            showToast(R.string.amiibo_parse_error, Toast.LENGTH_LONG);
+            showToast(R.string.amiibo_info_parse_error, Toast.LENGTH_LONG);
         }
         if (Thread.currentThread().isInterrupted())
             return;
@@ -1042,12 +1041,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
             File file = new File(Util.getFilesDir().getAbsolutePath(), fName);
 
-            Log.d(TAG, file.toString());
+            TagMo.Debug(TAG, file.toString());
             Util.dumpLogcat(file.getAbsolutePath());
             try {
                 MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
             } catch (Exception e) {
-                Log.e(TAG, getString(R.string.media_scan_fail), e);
+                TagMo.Error(TAG, R.string.media_scan_fail, e);
             }
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.wrote_file, fName))

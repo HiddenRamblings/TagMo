@@ -152,7 +152,7 @@ public class NfcActivity extends AppCompatActivity {
         String mode = commandIntent.getAction();
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Log.d(TAG, tag.toString());
+            TagMo.Debug(TAG, tag.toString());
             NTAG215 mifare = NTAG215.get(tag);
             if (mifare == null) {
                 throw new Exception(getString(R.string.tag_type_error));
@@ -161,7 +161,7 @@ public class NfcActivity extends AppCompatActivity {
             Intent result = null;
             int resultCode = Activity.RESULT_CANCELED;
             try {
-                Log.d(TAG, mode);
+                TagMo.Debug(TAG, mode);
                 byte[] data;
                 switch (mode) {
                     case ACTION_WRITE_TAG_RAW:
@@ -206,13 +206,13 @@ public class NfcActivity extends AppCompatActivity {
                 try {
                     mifare.close();
                 } catch (Exception e) {
-                    Log.d(TAG, getString(R.string.tag_close_error), e);
+                    TagMo.Error(TAG, R.string.tag_close_error, e);
                     throw new Exception(getString(R.string.tag_close_error, ":" + e.getMessage()));
                 }
             }
             finishActivityWithResult(resultCode, result);
         } catch (Exception e) {
-            Log.d(TAG, getString(R.string.error), e);
+            TagMo.Error(TAG, R.string.error, e);
             String error = e.getMessage();
             if (e.getCause() != null) {
                 error = error + "\n" + e.getCause().toString();

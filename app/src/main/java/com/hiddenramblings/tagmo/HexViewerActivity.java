@@ -73,7 +73,7 @@ public class HexViewerActivity extends AppCompatActivity {
         try {
             setTagData(TagUtil.decrypt(keyManager, data));
         } catch (Exception e) {
-            Log.d(TAG, getString(R.string.failed_decrypt), e);
+            TagMo.Error(TAG, R.string.failed_decrypt, e);
             finish();
         }
     }

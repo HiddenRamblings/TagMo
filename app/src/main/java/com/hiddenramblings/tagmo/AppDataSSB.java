@@ -138,9 +138,6 @@ public class AppDataSSB extends AppData {
     }
 
     public void checkBonus(int value) throws Exception {
-        Log.d("test", String.valueOf(value));
-        Log.d("test", String.valueOf(BONUS_MIN_VALUE));
-        Log.d("test", String.valueOf(BONUS_MAX_VALUE));
         if (value < BONUS_MIN_VALUE || value > BONUS_MAX_VALUE)
             throw new Exception();
     }

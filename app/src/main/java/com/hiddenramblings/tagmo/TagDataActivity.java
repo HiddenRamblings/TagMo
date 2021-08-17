@@ -11,7 +11,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -216,7 +215,7 @@ public class TagDataActivity extends AppCompatActivity {
             amiiboManager = Util.loadAmiiboManager(this);
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast(getString(R.string.parse_error));
+            showToast(getString(R.string.amiibo_info_parse_error));
         }
 
         if (Thread.currentThread().isInterrupted())
@@ -237,7 +236,7 @@ public class TagDataActivity extends AppCompatActivity {
         String amiiboSeries = "";
         String amiiboType = "";
         String gameSeries = "";
-        String character = "";
+//        String character = "";
         final String amiiboImageUrl;
 
         if (this.tagData == null) {
@@ -272,8 +271,8 @@ public class TagDataActivity extends AppCompatActivity {
                         amiiboType = amiibo.getAmiiboType().name;
                     if (amiibo.getGameSeries() != null)
                         gameSeries = amiibo.getGameSeries().name;
-                    if (amiibo.getCharacter() != null)
-                        character = amiibo.getCharacter().name;
+//                    if (amiibo.getCharacter() != null)
+//                        character = amiibo.getCharacter().name;
                 } else {
                     tagInfo = "ID: " + TagUtil.amiiboIdToHex(amiiboId);
                     amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
@@ -291,7 +290,7 @@ public class TagDataActivity extends AppCompatActivity {
         setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, tagInfo != null);
         setAmiiboInfoText(txtAmiiboType, amiiboType, tagInfo != null);
         setAmiiboInfoText(txtGameSeries, gameSeries, tagInfo != null);
-        //setAmiiboInfoText(txtCharacter, character, tagInfo != null);
+//        setAmiiboInfoText(txtCharacter, character, tagInfo != null);
 
         if (imageAmiibo != null) {
             imageAmiibo.setVisibility(View.GONE);
@@ -380,7 +379,7 @@ public class TagDataActivity extends AppCompatActivity {
             newTagData.setAppDataInitialized(isUserDataInitialized && isAppDataInitialized);
         } catch (Exception e) {
             e.printStackTrace();
-            LogError("Failed to save tag data");
+            LogError(getString(R.string.tag_data_error));
             return;
         }
 
@@ -452,7 +451,7 @@ public class TagDataActivity extends AppCompatActivity {
             tagData = TagUtil.encrypt(keyManager, newTagData.array());
         } catch (Exception e) {
             e.printStackTrace();
-            LogError("Failed to encrypt tag data");
+            LogError(getString(R.string.failed_encrypt));
             return;
         }
 
@@ -541,7 +540,7 @@ public class TagDataActivity extends AppCompatActivity {
         try {
             text = getDateString(date);
         } catch (IllegalArgumentException e) {
-            text = "Invalid";
+            text = getString(R.string.invalid);
         }
         txtInitDate.setText(text);
     }
@@ -592,7 +591,7 @@ public class TagDataActivity extends AppCompatActivity {
         try {
             text = getDateString(date);
         } catch (IllegalArgumentException e) {
-            text = "Invalid";
+            text = getString(R.string.invalid);
         }
         txtModifiedDate.setText(text);
     }
@@ -675,14 +674,13 @@ public class TagDataActivity extends AppCompatActivity {
 
     int parseAppId() throws Exception {
         String text = txtAppId.getUnMaskedText().trim();
-        Log.d("test", text);
         if (text.length() != 8) {
-            throw new Exception("Must be 8 characters");
+            throw new Exception(getString(R.string.length_error));
         }
         try {
             return (int) Long.parseLong(text, 16);
         } catch (NumberFormatException e) {
-            throw new Exception("Invalid input");
+            throw new Exception(getString(R.string.input_error));
         }
     }
 
@@ -703,7 +701,6 @@ public class TagDataActivity extends AppCompatActivity {
             } catch (Exception e) {
                 appId = null;
                 txtAppId.setError(e.getMessage());
-                Log.d("test", "here");
             }
             updateAppNameView();
             updateAppDataView();
@@ -936,7 +933,7 @@ public class TagDataActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.error)
                 .setMessage(msg)
-                .setPositiveButton("Close", null)
+                .setPositiveButton(R.string.close, null)
                 .show();
     }
 }

@@ -70,7 +70,7 @@ class SettingsAmiiboAdapter extends BaseAdapter {
         String amiiboSeries = "";
         String amiiboType = "";
         String gameSeries = "";
-        String character = "";
+//        String character = "";
         String amiiboImageUrl;
 
         Amiibo amiibo = getItem(position);
@@ -84,8 +84,8 @@ class SettingsAmiiboAdapter extends BaseAdapter {
             amiiboType = amiibo.getAmiiboType().name;
         if (amiibo.getGameSeries() != null)
             gameSeries = amiibo.getGameSeries().name;
-        if (amiibo.getCharacter() != null)
-            character = amiibo.getCharacter().name;
+//        if (amiibo.getCharacter() != null)
+//            character = amiibo.getCharacter().name;
 
         holder.txtError.setVisibility(android.view.View.GONE);
         setAmiiboInfoText(holder.txtName, amiiboName, false);
@@ -93,7 +93,7 @@ class SettingsAmiiboAdapter extends BaseAdapter {
         setAmiiboInfoText(holder.txtAmiiboSeries, amiiboSeries, tagInfo != null);
         setAmiiboInfoText(holder.txtAmiiboType, amiiboType, tagInfo != null);
         setAmiiboInfoText(holder.txtGameSeries, gameSeries, tagInfo != null);
-        //setAmiiboInfoText(holder.txtCharacter, character, tagInfo != null);
+//        setAmiiboInfoText(holder.txtCharacter, character, tagInfo != null);
         holder.txtPath.setVisibility(android.view.View.GONE);
 
         if (holder.imageAmiibo != null) {

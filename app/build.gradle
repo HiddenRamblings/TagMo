@@ -8,8 +8,8 @@ android {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 7
-        versionName "2.7.2"
+        versionCode 8
+        versionName "2.7.3"
     }
 
     buildTypes {

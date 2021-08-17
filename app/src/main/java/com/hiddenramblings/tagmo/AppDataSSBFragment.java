@@ -142,12 +142,12 @@ public class AppDataSSBFragment extends AppDataFragment {
         try {
             int level = Integer.parseInt(txtLevel.getText().toString());
             if (level < 1 || level > 50) {
-                txtLevel.setError("Must be between 1 and 50");
+                txtLevel.setError(getString(R.string.range_error));
             } else {
                 txtLevel.setError(null);
             }
         } catch (NumberFormatException e) {
-            txtLevel.setError("Must be between 1 and 50");
+            txtLevel.setError(getString(R.string.range_error));
         }
     }
 

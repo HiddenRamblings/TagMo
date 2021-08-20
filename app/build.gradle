@@ -52,7 +52,8 @@ android {
 
     applicationVariants.all { variant ->
         def original = variant.outputs[0].outputFile.parent
-        def compiled = "TagMo-" + versionName + "-U"
+        def compiled = "TagMo-" + versionName + "-" +
+                'git describe --tags'.execute().text.trim()
         variant.outputs[0].outputFileName = compiled + ".apk"
         getAssembleProvider().configure() {
             it.doLast {

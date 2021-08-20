@@ -17,6 +17,7 @@
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
         android:layout_marginEnd="4dp"
         android:layout_gravity="center"
         android:src="@drawable/ic_arrow_upward_white_24dp"/>

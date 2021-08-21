@@ -120,11 +120,14 @@ public class Util {
     }
 
     public static File setFileStorage() {
+        if (TagMo.getPrefs().sdcardCompat().get())
+            return storagePath = Environment.getExternalStorageDirectory();
         File[] storage = ContextCompat.getExternalFilesDirs(TagMo.getContext(), null);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
                 File sdcard = storage.length > 1 && storage[1] != null
                         && !isExternalStorageEmulated(storage[1]) ? storage[1] : storage[0];
+                // [TARGET]/Android/data/[PACKAGE]/files
                 return storagePath = sdcard.canRead()
                         ? sdcard.getParentFile().getParentFile().getParentFile().getParentFile()
                         : Environment.getExternalStorageDirectory();

@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -22,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -647,10 +648,19 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
+    ActivityResultLauncher<Intent> onSettingsResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            settings.setBrowserRootFolder(Util.getSDCardDir());
+            refresh();
+        }
+    });
+
     @OptionsItem(R.id.settings)
     void openSettings() {
-        Intent i = new Intent(this, SettingsActivity_.class);
-        startActivity(i);
+        onSettingsResult.launch(new Intent(this, SettingsActivity_.class));
     }
 
     void refresh() {

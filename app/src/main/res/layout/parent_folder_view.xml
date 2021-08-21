@@ -29,5 +29,5 @@
         android:text="@string/parent"
         android:textColor="@android:color/white"
         android:layout_gravity="center_vertical"
-        android:textSize="16dp"/>
+        android:textSize="16sp"/>
 </LinearLayout>

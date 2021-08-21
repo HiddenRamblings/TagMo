@@ -2,7 +2,6 @@ package com.hiddenramblings.tagmo;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

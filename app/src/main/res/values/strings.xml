@@ -223,7 +223,6 @@
     <string name="tag_close_error">Error closing tag %1$s</string>
     <string name="state_error">State error. Invalid action: %1$s</string>
     <string name="length_error">Must be 8 characters</string>
-    <string name="range_error">Must be between 1 and 50</string>
     <string name="input_error">Invalid input</string>
     <string name="tag_data_error">Failed to save tag data</string>
 
@@ -249,8 +248,8 @@
     <string name="invalid_tag_cfg_one">CFG1 signature mismatch.</string>
     <string name="invalid_uid_length">Invalid UID length</string>
     <string name="invalid_file_size">Invalid file size. Expected&#160;</string>
+    <string name="invalid_app_data">Invalid app data</string>
 
-    <string name="stat_error">Must be between -200 and 200</string>
     <string name="min_max_error">Must be between %d and %d</string>
 
     <string name="amiibo_parse_error">Amiibo parse error</string>

@@ -53,7 +53,6 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.InstanceState;
-import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.OptionsMenuItem;
@@ -243,7 +242,7 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (Exception e) {
             intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
         }
-        onRequestScopedStorageResult.launch(intent);
+        onRequestScopedStorage.launch(intent);
     }
 
     void requestStoragePermissions() {
@@ -279,7 +278,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
-    ActivityResultLauncher<Intent> onRequestScopedStorageResult = registerForActivityResult(
+    ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (Environment.isExternalStorageManager()) {
             validateKeys();
@@ -649,7 +648,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    ActivityResultLauncher<Intent> onSettingsResult = registerForActivityResult(
+    ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
             if (result.getData().getBooleanExtra("REFRESH", false)) {
@@ -660,7 +659,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @OptionsItem(R.id.settings)
     void openSettings() {
-        onSettingsResult.launch(new Intent(this, SettingsActivity_.class));
+        onSettingsActivity.launch(new Intent(this, SettingsActivity_.class));
     }
 
     void resetRootFolder() {
@@ -679,24 +678,15 @@ public class BrowserActivity extends AppCompatActivity implements
         this.refresh();
     }
 
-    private static final int NFC_ACTIVITY = 0x102;
-
-    @Click(R.id.fab)
-    public void onFabClicked() {
-        Intent intent = new Intent(this, NfcActivity_.class);
-        intent.setAction(NfcActivity.ACTION_SCAN_TAG);
-        startActivityForResult(intent, NFC_ACTIVITY);
-    }
-
-    @OnActivityResult(NFC_ACTIVITY)
-    void onNFCResult(int resultCode, Intent data) {
-        if (resultCode != RESULT_OK || data == null)
+    ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null)
             return;
 
-        if (!NfcActivity.ACTION_NFC_SCANNED.equals(data.getAction()))
+        if (!NfcActivity.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
-        byte[] tagData = data.getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
+        byte[] tagData = result.getData().getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
 
         Bundle args = new Bundle();
         args.putByteArray(AmiiboActivity.ARG_TAG_DATA, tagData);
@@ -705,6 +695,11 @@ public class BrowserActivity extends AppCompatActivity implements
         intent.putExtras(args);
 
         startActivity(intent);
+    });
+
+    @Click(R.id.fab)
+    public void onFabClicked() {
+        onNFCActivity.launch(new Intent(this, NfcActivity_.class).setAction(NfcActivity.ACTION_SCAN_TAG));
     }
 
     @Override

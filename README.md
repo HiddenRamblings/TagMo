@@ -1,5 +1,11 @@
-# TagMo's development is currently stagnant. 
-If you want to contribute, please make sure to adress your PRs to the 'master2' branch in order to keep them seperate from the original 'master' branch. Thank you.
+# Downloading TagMo
+https://github.com/8BitDream/TagMo/actions
+- Select a workflow run (newest is at the top)
+- Scroll down to the "Artifacts" at the bottom
+- Make sure to unzip the files after download
+
+# TagMo's official repository is stagnant. 
+If you want to contribute, please make sure to adress your PRs to the 'master2' branch of this repository in order to keep them seperate from the original project. Thank you.
 
 # README applies to the 'master' branch. 
 The master branch is an archival copy of the original source. TagMo, itself, is still functional. All documentation of functionality should be assumed relelvant, unless otherwise documented by the UI or source.

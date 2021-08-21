@@ -2,6 +2,7 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -32,7 +33,7 @@
                 android:text="@string/error"
                 android:textAlignment="center"
                 android:textColor="@color/tag_text"
-                android:textSize="16dp"/>
+                android:textSize="16sp"/>
 
             <RelativeLayout
                 android:id="@+id/amiiboInfo"
@@ -45,7 +46,8 @@
                     android:layout_height="150dp"
                     android:layout_marginBottom="4dp"
                     android:foreground="@drawable/card_foreground"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    tools:ignore="UnusedAttribute" />
 
                 <View
                     android:id="@+id/imageDivider"
@@ -61,7 +63,7 @@
                     android:layout_below="@+id/imageDivider"
                     android:text="@string/amiibo_name_caps"
                     android:textColor="@color/tag_text"
-                    android:textSize="16dp"/>
+                    android:textSize="16sp"/>
 
                 <LinearLayout
                     android:id="@+id/group1"
@@ -78,7 +80,8 @@
                         android:gravity="start"
                         android:text="@string/amiibo_id_caps"
                         android:textColor="@color/tag_text"
-                        android:textSize="10dp"/>
+                        android:textSize="10sp"
+                        tools:ignore="SmallSp" />
 
                     <View
                         android:layout_width="4dp"
@@ -92,7 +95,8 @@
                         android:gravity="end"
                         android:text="@string/amiibo_type_caps"
                         android:textColor="@color/tag_text"
-                        android:textSize="10dp"/>
+                        android:textSize="10sp"
+                        tools:ignore="SmallSp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -110,7 +114,8 @@
                         android:gravity="start"
                         android:text="@string/amiibo_game_caps"
                         android:textColor="@color/tag_text"
-                        android:textSize="10dp"/>
+                        android:textSize="10sp"
+                        tools:ignore="SmallSp" />
 
                     <View
                         android:layout_width="4dp"
@@ -124,7 +129,8 @@
                         android:gravity="end"
                         android:text="@string/amiibo_series_caps"
                         android:textColor="@color/tag_text"
-                        android:textSize="10dp"/>
+                        android:textSize="10sp"
+                        tools:ignore="SmallSp" />
                 </LinearLayout>
 
                 <TextView
@@ -134,8 +140,9 @@
                     android:layout_below="@id/group2"
                     android:text="@string/amiibo_path_caps"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"
-                    android:visibility="gone"/>
+                    android:textSize="10sp"
+                    android:visibility="gone"
+                    tools:ignore="SmallSp" />
 
                 <TextView
                     android:id="@+id/txtCharacter"
@@ -144,8 +151,9 @@
                     android:gravity="end"
                     android:text="@string/amiibo_character_caps"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"
-                    android:visibility="gone"/>
+                    android:textSize="10sp"
+                    android:visibility="gone"
+                    tools:ignore="SmallSp" />
             </RelativeLayout>
         </LinearLayout>
 

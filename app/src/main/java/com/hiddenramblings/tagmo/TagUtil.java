@@ -1,5 +1,7 @@
 package com.hiddenramblings.tagmo;
 
+import com.hiddenramblings.tagmo.data.TagData;
+
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;

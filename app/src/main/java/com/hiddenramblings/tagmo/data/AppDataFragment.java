@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.data;
 
 import androidx.fragment.app.Fragment;
 

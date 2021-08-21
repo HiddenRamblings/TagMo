@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.data;
 
 public class AppDataTP extends AppData {
     public static final int LEVEL_MIN_VALUE = 0;

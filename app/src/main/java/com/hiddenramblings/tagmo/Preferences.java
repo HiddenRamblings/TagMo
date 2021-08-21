@@ -48,6 +48,6 @@ public interface Preferences {
     @DefaultBoolean(keyRes = R.string.settings_disable_debug, value = false)
     boolean disableDebug();
 
-    @DefaultBoolean(keyRes = R.string.settings_sdcard_compat, value = false)
-    boolean sdcardCompat();
+    @DefaultBoolean(keyRes = R.string.settings_ignore_sdcard, value = false)
+    boolean ignoreSdcard();
 }

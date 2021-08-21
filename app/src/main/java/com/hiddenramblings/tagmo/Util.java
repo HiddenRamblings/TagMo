@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 

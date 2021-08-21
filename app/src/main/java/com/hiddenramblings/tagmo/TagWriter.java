@@ -1,7 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.util.Log;
-
 import com.hiddenramblings.tagmo.ptag.PTagKeyManager;
 
 import java.io.IOException;

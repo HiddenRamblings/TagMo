@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.data;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import androidx.annotation.Nullable;
+
+import com.hiddenramblings.tagmo.R;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -142,12 +144,12 @@ public class AppDataSSBFragment extends AppDataFragment {
         try {
             int level = Integer.parseInt(txtLevel.getText().toString());
             if (level < 1 || level > 50) {
-                txtLevel.setError(getString(R.string.range_error));
+                txtLevel.setError(getString(R.string.min_max_error, 1, 50));
             } else {
                 txtLevel.setError(null);
             }
         } catch (NumberFormatException e) {
-            txtLevel.setError(getString(R.string.range_error));
+            txtLevel.setError(getString(R.string.min_max_error, 1, 50));
         }
     }
 
@@ -229,10 +231,10 @@ public class AppDataSSBFragment extends AppDataFragment {
                 appData.checkStat(level);
                 txtStatAttack.setError(null);
             } catch (Exception e) {
-                txtStatAttack.setError(getString(R.string.stat_error));
+                txtStatAttack.setError(getString(R.string.min_max_error, -200, 200));
             }
         } catch (NumberFormatException e) {
-            txtStatAttack.setError(getString(R.string.stat_error));
+            txtStatAttack.setError(getString(R.string.min_max_error, -200, 200));
         }
     }
 
@@ -258,10 +260,10 @@ public class AppDataSSBFragment extends AppDataFragment {
                 appData.checkStat(level);
                 txtStatDefense.setError(null);
             } catch (Exception e) {
-                txtStatDefense.setError(getString(R.string.stat_error));
+                txtStatDefense.setError(getString(R.string.min_max_error, -200, 200));
             }
         } catch (NumberFormatException e) {
-            txtStatDefense.setError(getString(R.string.stat_error));
+            txtStatDefense.setError(getString(R.string.min_max_error, -200, 200));
         }
     }
 
@@ -287,10 +289,10 @@ public class AppDataSSBFragment extends AppDataFragment {
                 appData.checkStat(level);
                 txtStatSpeed.setError(null);
             } catch (Exception e) {
-                txtStatSpeed.setError(getString(R.string.stat_error));
+                txtStatSpeed.setError(getString(R.string.min_max_error, -200, 200));
             }
         } catch (NumberFormatException e) {
-            txtStatSpeed.setError(getString(R.string.stat_error));
+            txtStatSpeed.setError(getString(R.string.min_max_error, -200, 200));
         }
     }
 

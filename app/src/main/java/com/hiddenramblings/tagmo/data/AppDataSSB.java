@@ -1,6 +1,4 @@
-package com.hiddenramblings.tagmo;
-
-import android.util.Log;
+package com.hiddenramblings.tagmo.data;
 
 public class AppDataSSB extends AppData {
     public static final int APPEARANCE_OFFSET = 0x08;

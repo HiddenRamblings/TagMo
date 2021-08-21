@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.settings;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -20,9 +20,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.hiddenramblings.tagmo.Preferences_;
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagUtil;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-
-import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.util.ArrayList;
 import java.util.Collections;

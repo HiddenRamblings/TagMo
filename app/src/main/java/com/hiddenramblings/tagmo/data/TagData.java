@@ -1,6 +1,8 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.data;
 
 import android.os.Build;
+
+import com.hiddenramblings.tagmo.TagUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;

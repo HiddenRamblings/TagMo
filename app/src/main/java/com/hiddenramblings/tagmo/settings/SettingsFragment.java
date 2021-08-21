@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.settings;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,6 +25,11 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.KeyManager;
+import com.hiddenramblings.tagmo.Preferences_;
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.Util;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;

@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.data;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -36,8 +36,22 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.hiddenramblings.tagmo.Actions;
+import com.hiddenramblings.tagmo.KeyManager;
+import com.hiddenramblings.tagmo.NothingSelectedSpinnerAdapter;
+import com.hiddenramblings.tagmo.Preferences_;
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagUtil;
+import com.hiddenramblings.tagmo.Util;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.data.AppDataFragment;
+import com.hiddenramblings.tagmo.data.AppDataSSBFragment;
+import com.hiddenramblings.tagmo.data.AppDataTPFragment;
+import com.hiddenramblings.tagmo.data.AppIds;
+import com.hiddenramblings.tagmo.data.CountryCodes;
+import com.hiddenramblings.tagmo.data.TagData;
+import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
 import org.androidannotations.annotations.AfterTextChange;

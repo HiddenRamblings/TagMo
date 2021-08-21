@@ -1,8 +1,9 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.settings;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.hiddenramblings.tagmo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import java.io.File;
@@ -194,7 +195,7 @@ public class BrowserSettings
         this.listeners.clear();
     }
 
-    interface BrowserSettingsListener {
+    public interface BrowserSettingsListener {
         void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings);
     }
 

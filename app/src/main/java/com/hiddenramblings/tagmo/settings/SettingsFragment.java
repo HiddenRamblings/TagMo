@@ -99,8 +99,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     ListPreference imageNetworkSetting;
     @PreferenceByKey(R.string.settings_disable_debug)
     CheckBoxPreference disableDebug;
-    @PreferenceByKey(R.string.settings_sdcard_compat)
-    CheckBoxPreference sdcardCompat;
+    @PreferenceByKey(R.string.settings_ignore_sdcard)
+    CheckBoxPreference ignoreSdcard;
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -114,7 +114,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     protected void afterViews() {
         this.enableTagTypeValidation.setChecked(prefs.enableTagTypeValidation().get());
         this.disableDebug.setChecked(prefs.disableDebug().get());
-        this.sdcardCompat.setChecked(prefs.sdcardCompat().get());
+        this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
 
         this.keyManager = new KeyManager(this.getContext());
 
@@ -292,11 +292,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         prefs.disableDebug().put(disableDebug.isChecked());
     }
 
-    @PreferenceClick(R.string.settings_sdcard_compat)
-    void onSdcardCompatClicked() {
+    @PreferenceClick(R.string.settings_ignore_sdcard)
+    void onIgnoreSdcardClicked() {
         if (getActivity() != null) getActivity().setResult(Activity.RESULT_OK,
                 new Intent().putExtra("REFRESH", true));
-        prefs.sdcardCompat().put(sdcardCompat.isChecked());
+        prefs.ignoreSdcard().put(ignoreSdcard.isChecked());
     }
 
     void updateKeys(Uri data) {

@@ -78,8 +78,8 @@
             android:title="@string/pref_disable_debug"/>
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
-            android:key="@string/settings_sdcard_compat"
-            android:summary="@string/sdcard_compat_details"
-            android:title="@string/pref_sdcard_compat"/>
+            android:key="@string/settings_ignore_sdcard"
+            android:summary="@string/ignore_sdcard_details"
+            android:title="@string/pref_ignore_sdcard"/>
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

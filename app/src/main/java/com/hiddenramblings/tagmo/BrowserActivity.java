@@ -1,6 +1,7 @@
 package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -21,8 +22,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -651,18 +650,23 @@ public class BrowserActivity extends AppCompatActivity implements
     };
 
     ActivityResultLauncher<Intent> onSettingsResult = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-        @Override
-        public void onActivityResult(ActivityResult result) {
-            settings.setBrowserRootFolder(Util.getSDCardDir());
-            refresh();
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+            if (result.getData().getBooleanExtra("REFRESH", false)) {
+                resetRootFolder();
+            }
         }
     });
 
     @OptionsItem(R.id.settings)
     void openSettings() {
         onSettingsResult.launch(new Intent(this, SettingsActivity_.class));
+    }
+
+    void resetRootFolder() {
+        this.settings.setBrowserRootFolder(Util.setFileStorage());
+        this.settings.notifyChanges();
+        this.onRootFolderChanged();
     }
 
     void refresh() {

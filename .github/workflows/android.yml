@@ -31,15 +31,20 @@ jobs:
       with:
         releaseDirectory: app/build/outputs/apk/release
         signingKeyBase64: ${{ secrets.KEYSTORE }}
-        alias: ${{ secrets.KEYALIAS }}
-        keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-        keyPassword: ${{ secrets.KEY_PASSWORD }}
+        alias: ${{ secrets.KEY_ALIAS }}
+        keyStorePassword: ${{ secrets.STOREPASS }}
+        keyPassword: ${{ secrets.KEYPASS }}
       env:
         # override default build-tools version (29.0.3) -- optional
         BUILD_TOOLS_VERSION: "30.0.2"
+        
+    - name: Retrieve commit short hash
+      run: |
+         GIT_HASH=$(git rev-parse --short HEAD)
+         echo "GIT_HASH=${GIT_HASH}" >> $GITHUB_ENV
 
     # Example use of `signedReleaseFile` output -- not needed
     - uses: actions/upload-artifact@v2
       with:
-        name: Signed app bundle
+        name: TagMo-${{ env.GIT_HASH }}
         path: ${{steps.sign_app.outputs.signedReleaseFile}}

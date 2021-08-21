@@ -294,8 +294,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_sdcard_compat)
     void onSdcardCompatClicked() {
+        if (getActivity() != null) getActivity().setResult(Activity.RESULT_OK,
+                new Intent().putExtra("REFRESH", true));
         prefs.sdcardCompat().put(sdcardCompat.isChecked());
-        Util.setFileStorage();
     }
 
     void updateKeys(Uri data) {

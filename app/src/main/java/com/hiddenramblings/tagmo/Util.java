@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Environment;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -28,6 +29,8 @@ public class Util {
     final static String TAG = "Util";
 
     public static final String AMIIBO_DATABASE_FILE = "amiibo.json";
+
+    private static final String STORAGE_ROOT = "/storage";
 
     private static File storagePath;
 
@@ -118,23 +121,48 @@ public class Util {
         }
     }
 
-    public static File setFileStorage() {
-        if (TagMo.getPrefs().sdcardCompat().get())
-            return storagePath = Environment.getExternalStorageDirectory();
+    @SuppressWarnings("ConstantConditions")
+    private static File getRootPath(File directory) {
+        return directory.getParentFile().getParentFile().getParentFile().getParentFile();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private static File setFileStorageLollipop() {
         File[] storage = ContextCompat.getExternalFilesDirs(TagMo.getContext(), null);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            try {
-                File sdcard = storage.length > 1 && storage[1] != null
-                        && !isExternalStorageEmulated(storage[1]) ? storage[1] : storage[0];
-                // [TARGET]/Android/data/[PACKAGE]/files
-                return storagePath = sdcard.canRead()
-                        ? sdcard.getParentFile().getParentFile().getParentFile().getParentFile()
-                        : Environment.getExternalStorageDirectory();
-            } catch (IllegalArgumentException | NullPointerException e) {
-                return storagePath = Environment.getExternalStorageDirectory();
-            }
+        if (TagMo.getPrefs().ignoreSdcard().get())
+            return storagePath = storage[0] != null && storage[0].canRead()
+                    ? getRootPath(storage[0]) : Environment.getExternalStorageDirectory();
+        try {
+            File sdcard = storage.length > 1 && storage[1] != null
+                    && !isExternalStorageEmulated(storage[1]) ? storage[1] : storage[0];
+            // [TARGET]/Android/data/[PACKAGE]/files
+            return storagePath = sdcard.canRead() ? getRootPath(sdcard)
+                    : Environment.getExternalStorageDirectory();
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return storagePath = Environment.getExternalStorageDirectory();
         }
-        return storagePath = storage.length > 1 ? storage[1] : storage[0];
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public static File setFileStorage() {
+        File emulated = null;
+        File physical = null;
+        try {
+            for (File directory : new File(STORAGE_ROOT).listFiles()) {
+                if (directory.getAbsolutePath().endsWith("emulated"))
+                    emulated = directory;
+                else if (!directory.getAbsolutePath().endsWith("self"))
+                    physical = directory;
+            }
+        } catch (NullPointerException e) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                setFileStorageLollipop();
+            else
+                return storagePath = Environment.getExternalStorageDirectory();
+        }
+        if (TagMo.getPrefs().ignoreSdcard().get())
+            return storagePath = emulated != null ? emulated : physical;
+        return storagePath = physical != null ? physical : emulated;
     }
 
     public static File getSDCardDir() {

@@ -29,6 +29,10 @@ public class TagMo extends Application {
         return mContext.get();
     }
 
+    public static Preferences_ getPrefs() {
+        return mPrefs.get();
+    }
+
     public static String getStringRes(int resource) {
         return TagMo.getContext().getString(resource);
     }

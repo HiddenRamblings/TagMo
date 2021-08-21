@@ -19,6 +19,9 @@ android {
         }
     }
 
+    project.archivesBaseName = "TagMo-" + defaultConfig.versionName + "(" +
+            'git rev-parse --short HEAD'.execute().text.trim()+ ")"
+
 //    productFlavors {
 //        fat {
 //            dimension "abi"
@@ -51,23 +54,21 @@ android {
     }
 
     applicationVariants.all { variant ->
-        def original = variant.outputs[0].outputFile.parent
-        def compiled = "TagMo-" + versionName + "-" +
-                'git describe --tags'.execute().text.trim()
-        variant.outputs[0].outputFileName = compiled + ".apk"
+        variant.outputs[0].outputFileName = project.archivesBaseName + ".apk"
         getAssembleProvider().configure() {
             it.doLast {
                 exec {
                     ignoreExitValue true
                     workingDir variant.outputs[0].outputFile.parent
-                    commandLine "find", ".", "-type", "f", "-not", "-name", compiled + ".apk", "-delete"
+                    commandLine "find", ".", "-type", "f", "-not", "-name",
+                            variant.outputs[0].outputFileName, "-delete"
                 }
             }
         }
         variant.getAssembleProvider().configure() {
             it.doLast {
                 variant.outputs.each { output ->
-                    delete "${original}/output.json"
+                    delete "${variant.outputs[0].outputFile.parent}/output.json"
                 }
             }
         }

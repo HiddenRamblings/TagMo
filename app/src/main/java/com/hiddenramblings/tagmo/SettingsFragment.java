@@ -94,6 +94,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     ListPreference imageNetworkSetting;
     @PreferenceByKey(R.string.settings_disable_debug)
     CheckBoxPreference disableDebug;
+    @PreferenceByKey(R.string.settings_sdcard_compat)
+    CheckBoxPreference sdcardCompat;
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -107,6 +109,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     protected void afterViews() {
         this.enableTagTypeValidation.setChecked(prefs.enableTagTypeValidation().get());
         this.disableDebug.setChecked(prefs.disableDebug().get());
+        this.sdcardCompat.setChecked(prefs.sdcardCompat().get());
 
         this.keyManager = new KeyManager(this.getContext());
 
@@ -282,6 +285,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_disable_debug)
     void onDisableDebugClicked() {
         prefs.disableDebug().put(disableDebug.isChecked());
+    }
+
+    @PreferenceClick(R.string.settings_sdcard_compat)
+    void onSdcardCompatClicked() {
+        prefs.sdcardCompat().put(sdcardCompat.isChecked());
+        Util.setFileStorage();
     }
 
     void updateKeys(Uri data) {

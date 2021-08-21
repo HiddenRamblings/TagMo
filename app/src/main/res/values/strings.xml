@@ -32,6 +32,7 @@
     <string name="settings_info_amiibo_types">settings_info_amiibo_types</string>
     <string name="settings_import_info_amiiboapi">settings_sync_info_amiiboapi</string>
     <string name="settings_disable_debug">settings_disable_debug</string>
+    <string name="settings_sdcard_compat">settings_sdcard_compat</string>
     <string name="image_network_settings">\@string/image_network_settings</string>
 
     <string name="amiibo_info_stats">Amiibo Info Stats</string>
@@ -42,12 +43,14 @@
     <string name="pref_amiibo_series">Amiibo Series</string>
     <string name="pref_advanced">Advanced</string>
     <string name="pref_disable_debug">Disable Debug Logs</string>
+    <string name="pref_sdcard_compat">Legacy Storage Mode</string>
 
 
     <string name="sync_api_details">Sync Amiibo info with AmiiboAPI</string>
     <string name="export_json_details">Export Amiibo info to JSON</string>
     <string name="import_json_details">Export Amiibo info to JSON</string>
     <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
+    <string name="sdcard_compat_details">May be required for older devices to properly detect and access storage</string>
 
     <string name="keys_missing_warning">Amiibo keys not found</string>
     <string name="no_decrypt_key">Decryption keys not imported</string>

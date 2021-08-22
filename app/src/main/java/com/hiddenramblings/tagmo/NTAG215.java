@@ -22,18 +22,6 @@ public class NTAG215 {
     public static final int CMD_READ_CNT = 0x39;
     public static final int CMD_PWD_AUTH = 0x1B;
     public static final int CMD_READ_SIG = 0x3C;
-    
-    // n2elite
-    public static final int N2_SELECT_BANK = 0xA7;
-    public static final int N2_FAST_READ = 0x3B;
-    public static final int N2_FAST_WRITE = 0xAE;
-    public static final int AMIIBO_GET_VERSION = 0x55; // N2_GET_INFO
-    public static final int N2_LOCK = 0x46;
-    public static final int AMIIBO_READ_SIG = 0x43;// N2_GET_ID
-    public static final int N2_SET_BANK_CNT = 0xA9;
-    public static final int N2_UNLOCK1 = 0x44;
-    public static final int N2_UNLOCK2 = 0x45;
-    public static final int N2_WRITE = 0xA5;
 
     public NTAG215(MifareUltralight mifare) {
         m_nfcA = null;

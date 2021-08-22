@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <tech-list>
+        <tech>com.smartrac.nfc.NfcNtag</tech>
+    </tech-list>
+</resources>

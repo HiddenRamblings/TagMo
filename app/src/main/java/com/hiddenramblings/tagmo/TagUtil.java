@@ -149,7 +149,8 @@ public class TagUtil {
         try {
             int len = inputStream.read(data);
             if (len != TAG_FILE_SIZE)
-                throw new Exception(TagMo.getStringRes(R.string.invalid_file_size) + TAG_FILE_SIZE);
+                throw new Exception(TagMo.getStringRes(R.string.invalid_file_size,
+                        String.valueOf(TAG_FILE_SIZE)));
 
             return data;
         } finally {

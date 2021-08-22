@@ -20,7 +20,7 @@ import org.androidannotations.annotations.ViewById;
 public class AppDataSSBFragment extends AppDataFragment {
     public static final int APP_ID = 0x10110E00;
 
-    private static final String TAG = "AppDataSSBFragment";
+    private static final String TAG = AppDataSSBFragment.class.getSimpleName();
 
     @ViewById(R.id.spnAppearance)
     Spinner spnAppearance;

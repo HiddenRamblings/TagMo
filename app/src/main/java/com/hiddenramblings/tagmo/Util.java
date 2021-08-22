@@ -26,7 +26,7 @@ import java.text.ParseException;
 import static android.os.Environment.isExternalStorageEmulated;
 
 public class Util {
-    final static String TAG = "Util";
+    private static final String TAG = Util.class.getSimpleName();
 
     public static final String AMIIBO_DATABASE_FILE = "amiibo.json";
 
@@ -132,8 +132,7 @@ public class Util {
     }
 
     public static AmiiboManager loadDefaultAmiiboManager(Context context) throws IOException, JSONException, ParseException {
-        AssetManager assetManager = context.getAssets();
-        return AmiiboManager.parse(assetManager.open(AMIIBO_DATABASE_FILE));
+        return AmiiboManager.parse(context.getResources().openRawResource(R.raw.amiibo));
     }
 
     public static AmiiboManager loadAmiiboManager(Context context) throws IOException, JSONException, ParseException {

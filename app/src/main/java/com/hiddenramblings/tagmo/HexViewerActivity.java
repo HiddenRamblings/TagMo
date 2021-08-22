@@ -20,7 +20,7 @@ import org.androidannotations.annotations.ViewById;
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_hex_viewer)
 public class HexViewerActivity extends AppCompatActivity {
-    private static final String TAG = "HexViewerActivity";
+    private static final String TAG = HexViewerActivity.class.getSimpleName();
 
     static class TagMap {
         int index;

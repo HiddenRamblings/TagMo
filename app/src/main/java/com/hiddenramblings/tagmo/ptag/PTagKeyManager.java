@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Base64;
 
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.Util;
 
 import org.json.JSONException;
@@ -14,23 +16,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class PTagKeyManager {
-    public static final String KEY_LIST_FILE = "keytable.json";
-
     private static HashMap<String, HashMap<String, byte[]>> keys;
 
     public static void load(Context context) throws Exception {
         if (keys != null)
             return;
-        AssetManager assetManager = context.getAssets();
-        InputStream stream = assetManager.open(KEY_LIST_FILE);
-        try {
+        try (InputStream stream = context.getResources().openRawResource(R.raw.keytable)) {
             byte[] data = new byte[stream.available()];
             stream.read(data);
 
             JSONObject obj = new JSONObject(new String(data));
             loadJson(obj);
-        } finally {
-            stream.close();
         }
     }
 
@@ -59,7 +55,7 @@ public class PTagKeyManager {
 
     public static byte[] getKey(byte[] uid, String page10bytes) throws Exception {
         if (keys == null)
-            throw new Exception("PowerTag keys not loaded");
+            throw new Exception(TagMo.getStringRes(R.string.powertag_key_error));
 
         byte[] uidc = new byte[7];
 
@@ -75,11 +71,11 @@ public class PTagKeyManager {
 
         HashMap<String, byte[]> keymap = keys.get(uidStr);
         if (keymap == null)
-            throw new Exception("No available key for UID");
+            throw new Exception(TagMo.getStringRes(R.string.uid_key_missing));
 
         byte[] key = keymap.get(page10bytes);
         if (key == null)
-            throw new Exception("No available key for P10_ID");
+            throw new Exception(TagMo.getStringRes(R.string.p10_key_missing));
 
         return key;
     }

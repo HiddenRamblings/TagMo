@@ -663,7 +663,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     void resetRootFolder() {
-        this.settings.setBrowserRootFolder(Util.setFileStorage());
+        this.settings.setBrowserRootFolder(Storage.setFileStorage());
         this.settings.notifyChanges();
         this.onRootFolderChanged();
     }

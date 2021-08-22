@@ -80,7 +80,7 @@ public class BrowserActivity extends AppCompatActivity implements
         SwipeRefreshLayout.OnRefreshListener,
         BrowserSettings.BrowserSettingsListener,
         BrowserAmiibosAdapter.OnAmiiboClickListener {
-    private static final String TAG = "BrowserActivity";
+    private static final String TAG = BrowserActivity.class.getSimpleName();
 
     public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
     public static final String BACKGROUND_FOLDERS = "folders";

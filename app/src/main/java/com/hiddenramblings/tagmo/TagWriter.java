@@ -5,7 +5,7 @@ import com.hiddenramblings.tagmo.ptag.PTagKeyManager;
 import java.io.IOException;
 
 public class TagWriter {
-    private static final String TAG = "TagWriter";
+    private static final String TAG = TagWriter.class.getSimpleName();
 
     private static final byte[] POWERTAG_SIGNATURE = Util.hexStringToByteArray("213C65444901602985E9F6B50CACB9C8CA3C4BCD13142711FF571CF01E66BD6F");
     private static final byte[] POWERTAG_IDPAGES = Util.hexStringToByteArray("04070883091012131800000000000000");

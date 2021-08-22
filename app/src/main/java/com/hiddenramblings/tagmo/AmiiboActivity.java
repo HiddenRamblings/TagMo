@@ -53,7 +53,7 @@ import java.util.Locale;
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_amiibo)
 public class AmiiboActivity extends AppCompatActivity {
-    private static final String TAG = "AmiiboActivity";
+    private static final String TAG = AmiiboActivity.class.getSimpleName();
 
     public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 

@@ -31,7 +31,7 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_nfc)
 public class NfcActivity extends AppCompatActivity {
-    private static final String TAG = "NfcActivity";
+    private static final String TAG = NfcActivity.class.getSimpleName();
 
     public static final String ACTION_SCAN_TAG = "com.hiddenramblings.tagmo.SCAN_TAG";
     public static final String ACTION_WRITE_TAG_FULL = "com.hiddenramblings.tagmo.WRITE_TAG_FULL";

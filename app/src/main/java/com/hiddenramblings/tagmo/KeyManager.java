@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class KeyManager {
-    private static final String TAG = "KeyManager";
+    private static final String TAG = KeyManager.class.getSimpleName();
 
     private static final String FIXED_KEY_FILE = "fixed_key.bin";
     private static final String FIXED_KEY_MD5 = "0AD86557C7BA9E75C79A7B43BB466333";

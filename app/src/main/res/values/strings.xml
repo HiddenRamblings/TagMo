@@ -246,12 +246,16 @@
     <string name="invalid_tag_cfg_zero">CFG0 signature mismatch.</string>
     <string name="invalid_tag_cfg_one">CFG1 signature mismatch.</string>
     <string name="invalid_uid_length">Invalid UID length</string>
-    <string name="invalid_file_size">Invalid file size. Expected&#160;</string>
+    <string name="invalid_file_size">Invalid file size. Expected %1$s</string>
     <string name="invalid_app_data">Invalid app data</string>
 
     <string name="min_max_error">Must be between %d and %d</string>
 
     <string name="amiibo_parse_error">Amiibo parse error</string>
+    <string name="powertag_key_error">PowerTag keys not loaded</string>
+
+    <string name="uid_key_missing">No available key for UID</string>
+    <string name="p10_key_missing">No available key for P10_ID</string>
 
     <string name="amiibo_info_parse_error">Unable to parse Amiibo info</string>
     <string name="amiibo_info_not_loaded">Amiibo info not loaded</string>
@@ -276,7 +280,7 @@
     <string name="tag_format_error">Tag is not an NTAG215</string>
     <string name="no_source_data">Cannot validate: no source data loaded to compare.</string>
     <string name="tag_version_error">Tag version error</string>
-    <string name="power_tag_exists">Power Tag Exists:&#160;</string>
+    <string name="power_tag_exists">Power Tag Exists: %1$s</string>
 
     <string name="read_failed">Read failed</string>
     <string name="version_error">Version information error</string>

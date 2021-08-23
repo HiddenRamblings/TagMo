@@ -36,8 +36,8 @@
         android:title="@string/amiibo_info">
         <androidx.preference.Preference
             android:key="@string/settings_import_info_amiiboapi"
-            android:summary="@string/sync_amiibo_info"
-            android:title="@string/sync_api_details"/>
+            android:summary="@string/sync_api_details"
+            android:title="@string/sync_amiibo_info"/>
         <androidx.preference.Preference
             android:key="@string/settings_import_info"
             android:summary="@string/import_json_details"

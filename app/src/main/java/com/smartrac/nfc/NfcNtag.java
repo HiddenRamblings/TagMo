@@ -77,6 +77,26 @@ public class NfcNtag implements TagTechnology {
         return resp;
     }
 
+    /* byte 1: currently active slot
+    /* byte 2: number of active banks
+    /* byte 3: button pressed?
+    /* byte 4: FW version?
+    // see: http://wiki.yobi.be/wiki/N2_Elite#0x55:_N2_GET_INFO
+    */
+    public byte[] amiiboGetVersion() {
+        byte[] req = new byte [1];
+        byte[] resp;
+
+        req[0] = NfcNtagOpcode.AMIIBO_GET_VERSION;
+
+        try {
+            resp = nfca.transceive(req);
+        } catch (IOException ex) {
+            resp = null;
+        }
+        return resp;
+    }
+
     // NTAG READ
     public byte[] read(int addr) {
         byte[] req = new byte[2];
@@ -93,9 +113,39 @@ public class NfcNtag implements TagTechnology {
         return resp;
     }
 
+    public interface IFastRead {
+        byte[] doFastRead(int startAddr, int endAddr, int bank);
+    }
+
     // NTAG FAST_READ
     public byte[] fastRead(int startAddr, int endAddr) {
+        return internalFastRead(new IFastRead() {
+            @Override
+            public byte[] doFastRead(int startAddr, int endAddr, int bank) {
+                try {
+                    return nfca.transceive(new byte[]{NfcNtagOpcode.FAST_READ, (byte)(startAddr & 0xFF), (byte)(endAddr & 0xFF)});
+                } catch (Exception unused) {
+                    return null;
+                }
+            }
+        }, startAddr, endAddr, 0);
 
+    }
+    
+    private byte[] amiiboFastRead(int startAddr, int endAddr, int bank) {
+        return internalFastRead(new IFastRead() {
+            @Override
+            public byte[] doFastRead(int startAddr, int endAddr, int bank) {
+                try {
+                    return nfca.transceive(new byte[]{NfcNtagOpcode.N2_FAST_READ, (byte)(startAddr & 0xFF), (byte)(endAddr & 0xFF), (byte) (bank & 0xFF)});
+                } catch (Exception unused) {
+                    return null;
+                }
+            }
+        }, startAddr, endAddr, bank);  	
+    }
+
+    private byte[] internalFastRead(IFastRead iFastRead, int startAddr, int endAddr, int bank) {
         if (endAddr < startAddr)
             return null;
 
@@ -116,7 +166,7 @@ public class NfcNtag implements TagTechnology {
             else
                 endSnippet = startSnippet + maxReadLength - 1;
 
-            byte[] respSnippet = fastReadHelper(startSnippet, endSnippet);
+            byte[] respSnippet = iFastRead.doFastRead(startSnippet, endSnippet, bank);
             if (respSnippet == null)
             {
                 bOk = false;
@@ -140,22 +190,9 @@ public class NfcNtag implements TagTechnology {
         }
         return null;
     }
-    
-    private byte[] fastReadHelper(int startAddr, int endAddr) {
 
-        byte[] req = new byte[3];
-        byte[] resp;
-
-        req[0] = NfcNtagOpcode.FAST_READ;
-        req[1] = (byte)(startAddr & 0xFF);
-        req[2] = (byte)(endAddr & 0xFF);
-
-        try {
-            resp = nfca.transceive(req);
-        } catch (IOException ex) {
-            resp = null;
-        }
-        return resp;    	
+    public interface IFastWrite {
+        boolean doFastWrite(int i, int i2, byte[] bArr);
     }
 
     // NTAG WRITE
@@ -179,6 +216,86 @@ public class NfcNtag implements TagTechnology {
             return false;
         }
         return true;
+    }
+
+    private boolean internalWrite(IFastWrite iFastWrite, int i, int i2, byte[] bArr) {
+        byte[] bArr2 = new byte[4];
+        int length = bArr.length / 4;
+        for (int i3 = 0; i3 < length; i3++) {
+            System.arraycopy(bArr, i3 * 4, bArr2, 0, 4);
+            if (!iFastWrite.doFastWrite(i + i3, i2, bArr2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean amiiboWrite(int i, int i2, byte[] bArr) {
+        if (bArr != null && bArr.length % 4 == 0) {
+            return internalWrite(new IFastWrite() {
+                @Override // com.smartrac.nfc.NfcNtag.IFastWrite
+                public boolean doFastWrite(int i, int i2, byte[] bArr) {
+                    byte[] bArr2 = new byte[7];
+                    bArr2[0] = NfcNtagOpcode.AMIIBO_WRITE;
+                    bArr2[1] = (byte) (i & 0xFF);
+                    bArr2[2] = (byte) (i2 & 0xFF);
+                    try {
+                        System.arraycopy(bArr, 0, bArr2, 3, 4);
+                        NfcNtag.this.nfca.transceive(bArr2);
+                        return true;
+                    } catch (Exception unused) {
+                        return false;
+                    }
+                }
+            }, i, i2, bArr);
+        }
+        return false;
+    }
+
+    private boolean internalFastWrite(IFastWrite iFastWrite, int i, int i2, byte[] bArr) {
+        int length = (bArr.length / 4) + i;
+        int i3 = 16;
+        int i4 = 0;
+        while (i <= length) {
+            int i5 = i + 4;
+            if (i5 >= length) {
+                i3 = bArr.length % i3;
+            }
+            if (i3 == 0) {
+                return true;
+            }
+            byte[] bArr2 = new byte[i3];
+            System.arraycopy(bArr, i4, bArr2, 0, i3);
+            if (!iFastWrite.doFastWrite(i, i2, bArr2)) {
+                return false;
+            }
+            i4 += i3;
+            i = i5;
+        }
+        return true;
+    }
+
+    public boolean amiiboFastWrite(int i, int i2, byte[] bArr) {
+        if (bArr == null) {
+            return false;
+        }
+        return internalFastWrite(new IFastWrite() {
+            @Override // com.smartrac.nfc.NfcNtag.IFastWrite
+            public boolean doFastWrite(int i, int i2, byte[] bArr) {
+                byte[] bArr2 = new byte[(bArr.length + 4)];
+                bArr2[0] = NfcNtagOpcode.AMIIBO_FAST_WRITE;
+                bArr2[1] = (byte) (i & 0xFF);
+                bArr2[2] = (byte) (i2 & 0xFF);
+                bArr2[3] = (byte) (bArr.length & 0xFF);
+                try {
+                    System.arraycopy(bArr, 0, bArr2, 4, bArr.length);
+                    NfcNtag.this.nfca.transceive(bArr2);
+                    return true;
+                } catch (Exception unused) {
+                    return false;
+                }
+            }
+        }, i, i2, bArr);
     }
 
     // NTAG READ_CNT
@@ -237,6 +354,14 @@ public class NfcNtag implements TagTechnology {
             resp = null;
         }
         return resp;	// result will be the NTAG signature
+    }
+
+    public byte[] amiiboReadSig() {
+        try {
+            return this.nfca.transceive(new byte[]{NfcNtagOpcode.AMIIBO_READ_SIG});
+        } catch (Exception unused) {
+            return null;
+        }
     }
 
     // NTAG SECTOR_SELECT
@@ -328,6 +453,22 @@ public class NfcNtag implements TagTechnology {
             return null;
         }
         return resp;	// result will be ekRndA'
+    }
+
+    public byte[] amiiboSetBankcount(int i) {
+        try {
+            return this.nfca.transceive(new byte[]{NfcNtagOpcode.AMIIBO_SET_BANKCOUNT, (byte) (i & 0xFF)});
+        } catch (Exception unused) {
+            return null;
+        }
+    }
+
+    public byte[] amiiboActivateBank(int i) {
+        try {
+            return this.nfca.transceive(new byte[]{NfcNtagOpcode.AMIIBO_ACTIVATE_BANK, (byte) (i & 0xFF)});
+        } catch (Exception unused) {
+            return null;
+        }
     }
 
     private NfcA nfca;

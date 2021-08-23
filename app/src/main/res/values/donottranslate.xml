@@ -7,4 +7,25 @@
     <string name="hex_ffff">FFFF</string>
 
     <string name="tag_data">tagData</string>
+
+    <string name="middleCenterError"> </string>
+
+    <string name="sync_processing">&#8230;</string>
+
+    <string name="settings_import_keys">import_keys</string>
+    <string name="settings_import_info">import_info</string>
+    <string name="settings_reset_info">reset_info</string>
+    <string name="settings_enable_amiibo_browser">enable_amiibo_browser</string>
+    <string name="settings_enable_tag_type_validation">enable_tag_type_validation</string>
+    <string name="settings_enable_power_tag_support">enable_power_tag_support</string>
+    <string name="settings_export_info">settings_export_info</string>
+    <string name="settings_info_amiibos">settings_info_amiibos</string>
+    <string name="settings_info_game_series">settings_info_game_series</string>
+    <string name="settings_info_characters">settings_info_characters</string>
+    <string name="settings_info_amiibo_series">settings_info_amiibo_series</string>
+    <string name="settings_info_amiibo_types">settings_info_amiibo_types</string>
+    <string name="settings_import_info_amiiboapi">settings_sync_info_amiiboapi</string>
+    <string name="settings_disable_debug">settings_disable_debug</string>
+    <string name="settings_ignore_sdcard">settings_ignore_sdcard</string>
+    <string name="image_network_settings">\@string/image_network_settings</string>
 </resources>

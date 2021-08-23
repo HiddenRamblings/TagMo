@@ -535,7 +535,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                 Util.saveLocalAmiiboInfo(this.getContext(), amiiboManager);
                 setAmiiboManager(amiiboManager);
-                showSnackbar(getString(R.string.sync_amiibo_status, getString(R.string.sync_successful)), Snackbar.LENGTH_SHORT);
+                showSnackbar(getString(R.string.sync_amiibo_status, getString(R.string.sync_complete)), Snackbar.LENGTH_SHORT);
             } else {
                 throw new Exception(String.valueOf(statusCode));
             }
@@ -577,7 +577,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @UiThread
     public void showSnackbar(String msg, int length) {
-        Snackbar.make(getActivity().findViewById(R.id.coordinator), msg, length).show();
+        Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.coordinator), msg, length);
+        View snackbarLayout = snackbar.getView();
+        TextView textView = (TextView)snackbarLayout.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_stat_notification, 0, 0, 0);
+        textView.setCompoundDrawablePadding(getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
+        snackbar.show();
     }
 
     @UiThread

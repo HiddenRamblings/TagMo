@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">TagMo</string>
 
-    <string name="topCenterTextMessage">Place the Tag under the Phone</string>
-    <string name="nfcIconDescription">NFC Icon</string>
-    <string name="movingBarDescription">Moving bar indicating the scanning process</string>
+    <string name="topCenterTextMessage">Place the tag under the phone</string>
     <string name="shadow_cave_progress">Shadow Cave progress</string>
     <string name="edit_tp_data">Edit TP Data</string>
     <string name="editor_error_outofbounds">Amiibo contains an invalid current state.</string>
@@ -28,9 +26,9 @@
     <string name="pref_disable_debug">Disable Debug Logs</string>
     <string name="pref_ignore_sdcard">Internal Storage Mode</string>
 
-    <string name="sync_api_details">Sync Amiibo info with AmiiboAPI</string>
+    <string name="sync_api_details">Sync Amiibo info with AmiiboAPI.com</string>
     <string name="export_json_details">Export Amiibo info to JSON</string>
-    <string name="import_json_details">Export Amiibo info to JSON</string>
+    <string name="import_json_details">Import Amiibo info from JSON</string>
     <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
     <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard or external storage device</string>
 
@@ -159,18 +157,18 @@
     <string name="enable_tag_validation">Enable NTAG215 validation</string>
     <string name="tag_validation_details">Not all NFC chipsets correctly identify NFC tags. Disabling tag verification will write to tags that may not be Amiibo compatible or may fail in unexpected ways.</string>
     <string name="enable_power_tag">Enable PowerTag support</string>
-    <string name="power_tag_details">Support is currently under development. See the Wiki on github for limitations and use.</string>
+    <string name="power_tag_details">Support is currently in development. See the Wiki on Github for limitations and use.</string>
 
     <string name="amiibo_info">Amiibo Info</string>
 
-    <string name="amiibo_info_updated">Updated amiibo info</string>
+    <string name="amiibo_info_updated">Updated Amiibo info</string>
 
-    <string name="sync_amiibo_info">Sync Amiibo info with amiiboapi.com</string>
+    <string name="sync_amiibo_info">Sync with AmiiboAPI</string>
     <string name="import_amiibo_info">Import Amiibo info</string>
     <string name="export_amiibo_info">Export Amiibo info</string>
     <string name="reset_amiibo_info">Reset amiibo info</string>
 
-    <string name="sync_amiibo_status">Syncing Amiibo Info from AmiiboAPI %1$s</string>
+    <string name="sync_amiibo_status">Syncing with AmiiboAPI %1$s</string>
     <string name="sync_complete"> complete!</string>
     <string name="sync_failed"> failed!</string>
 
@@ -241,9 +239,9 @@
 
     <string name="amiibo_info_parse_error">Unable to parse Amiibo info</string>
     <string name="amiibo_info_not_loaded">Amiibo info not loaded</string>
-    <string name="amiibo_info_export_fail">Failed to export amiibo info to %1$s</string>
-    <string name="amiibo_info_exported">Exported amiibo info to %1$s</string>
-    <string name="amiibo_failure_generic">Failed to %1$s amiibo info</string>
+    <string name="amiibo_info_export_fail">Failed to export Amiibo info to %1$s</string>
+    <string name="amiibo_info_exported">Exported Amiibo info to %1$s</string>
+    <string name="amiibo_failure_generic">Failed to %1$s Amiibo info</string>
     <string name="amiibo_failure_load">load</string>
     <string name="amiibo_failure_parse">parse</string>
     <string name="amiibo_failure_read">read</string>
@@ -253,7 +251,7 @@
     <string name="data_write_error">Error while writing main data (stage 1)</string>
     <string name="password_write_error">Error while setting password (stage 2)</string>
     <string name="lock_write_error">Error while setting lock info (stage 3)</string>
-    <string name="tag_already_written">Tag already an amiibo. Use \'Restore Tag\' to write data.</string>
+    <string name="tag_already_written">Tag already an Amiibo. Use \'Restore Tag\' to write data.</string>
     <string name="fail_read_size">Read failed! Unexpected read size.</string>
     <string name="fail_read_uid">Could not read old UID</string>
     <string name="fail_mismatch_uid">Source UID does not match the target!</string>

@@ -236,7 +236,7 @@ public class NfcNtag implements TagTechnology {
                 @Override // com.smartrac.nfc.NfcNtag.IFastWrite
                 public boolean doFastWrite(int i, int i2, byte[] bArr) {
                     byte[] bArr2 = new byte[7];
-                    bArr2[0] = NfcNtagOpcode.AMIIBO_WRITE;
+                    bArr2[0] = NfcNtagOpcode.N2_WRITE;
                     bArr2[1] = (byte) (i & 0xFF);
                     bArr2[2] = (byte) (i2 & 0xFF);
                     try {
@@ -283,7 +283,7 @@ public class NfcNtag implements TagTechnology {
             @Override // com.smartrac.nfc.NfcNtag.IFastWrite
             public boolean doFastWrite(int i, int i2, byte[] bArr) {
                 byte[] bArr2 = new byte[(bArr.length + 4)];
-                bArr2[0] = NfcNtagOpcode.AMIIBO_FAST_WRITE;
+                bArr2[0] = NfcNtagOpcode.N2_FAST_WRITE;
                 bArr2[1] = (byte) (i & 0xFF);
                 bArr2[2] = (byte) (i2 & 0xFF);
                 bArr2[3] = (byte) (bArr.length & 0xFF);
@@ -457,7 +457,7 @@ public class NfcNtag implements TagTechnology {
 
     public byte[] amiiboSetBankcount(int i) {
         try {
-            return this.nfca.transceive(new byte[]{NfcNtagOpcode.AMIIBO_SET_BANKCOUNT, (byte) (i & 0xFF)});
+            return this.nfca.transceive(new byte[]{NfcNtagOpcode.N2_SET_BANK_CNT, (byte) (i & 0xFF)});
         } catch (Exception unused) {
             return null;
         }
@@ -465,7 +465,7 @@ public class NfcNtag implements TagTechnology {
 
     public byte[] amiiboActivateBank(int i) {
         try {
-            return this.nfca.transceive(new byte[]{NfcNtagOpcode.AMIIBO_ACTIVATE_BANK, (byte) (i & 0xFF)});
+            return this.nfca.transceive(new byte[]{NfcNtagOpcode.N2_SELECT_BANK, (byte) (i & 0xFF)});
         } catch (Exception unused) {
             return null;
         }

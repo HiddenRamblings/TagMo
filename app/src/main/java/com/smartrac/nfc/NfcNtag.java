@@ -123,7 +123,11 @@ public class NfcNtag implements TagTechnology {
             @Override
             public byte[] doFastRead(int startAddr, int endAddr, int bank) {
                 try {
-                    return nfca.transceive(new byte[]{NfcNtagOpcode.FAST_READ, (byte)(startAddr & 0xFF), (byte)(endAddr & 0xFF)});
+                    return nfca.transceive(new byte[] {
+                            NfcNtagOpcode.FAST_READ,
+                            (byte)(startAddr & 0xFF),
+                            (byte)(endAddr & 0xFF)
+                    });
                 } catch (Exception unused) {
                     return null;
                 }
@@ -137,7 +141,12 @@ public class NfcNtag implements TagTechnology {
             @Override
             public byte[] doFastRead(int startAddr, int endAddr, int bank) {
                 try {
-                    return nfca.transceive(new byte[]{NfcNtagOpcode.N2_FAST_READ, (byte)(startAddr & 0xFF), (byte)(endAddr & 0xFF), (byte) (bank & 0xFF)});
+                    return nfca.transceive(new byte[] {
+                            NfcNtagOpcode.N2_FAST_READ,
+                            (byte)(startAddr & 0xFF),
+                            (byte)(endAddr & 0xFF),
+                            (byte) (bank & 0xFF)
+                    });
                 } catch (Exception unused) {
                     return null;
                 }
@@ -358,7 +367,9 @@ public class NfcNtag implements TagTechnology {
 
     public byte[] amiiboReadSig() {
         try {
-            return this.nfca.transceive(new byte[]{NfcNtagOpcode.AMIIBO_READ_SIG});
+            return this.nfca.transceive(new byte[] {
+                    NfcNtagOpcode.AMIIBO_READ_SIG
+            });
         } catch (Exception unused) {
             return null;
         }
@@ -457,7 +468,10 @@ public class NfcNtag implements TagTechnology {
 
     public byte[] amiiboSetBankcount(int i) {
         try {
-            return this.nfca.transceive(new byte[]{NfcNtagOpcode.N2_SET_BANK_CNT, (byte) (i & 0xFF)});
+            return this.nfca.transceive(new byte[] {
+                    NfcNtagOpcode.N2_SET_BANK_CNT,
+                    (byte) (i & 0xFF)
+            });
         } catch (Exception unused) {
             return null;
         }
@@ -465,7 +479,10 @@ public class NfcNtag implements TagTechnology {
 
     public byte[] amiiboActivateBank(int i) {
         try {
-            return this.nfca.transceive(new byte[]{NfcNtagOpcode.N2_SELECT_BANK, (byte) (i & 0xFF)});
+            return this.nfca.transceive(new byte[] {
+                    NfcNtagOpcode.N2_SELECT_BANK,
+                    (byte) (i & 0xFF)
+            });
         } catch (Exception unused) {
             return null;
         }

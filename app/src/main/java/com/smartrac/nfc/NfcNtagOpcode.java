@@ -38,14 +38,14 @@ public class NfcNtagOpcode {
     public static final byte MFULC_AUTH2 = (byte) 0xAF;
 
     // N2 Elite
-    public static final int N2_SELECT_BANK = 0xA7;
-    public static final int N2_FAST_READ = 0x3B;
-    public static final int N2_FAST_WRITE = 0xAE;
-    public static final int AMIIBO_GET_VERSION = 0x55; // N2_GET_INFO
-    public static final int N2_LOCK = 0x46;
-    public static final int AMIIBO_READ_SIG = 0x43;// N2_GET_ID
-    public static final int N2_SET_BANK_CNT = 0xA9;
-    public static final int N2_UNLOCK1 = 0x44;
-    public static final int N2_UNLOCK2 = 0x45;
-    public static final int N2_WRITE = 0xA5;
+    public static final byte N2_SELECT_BANK = (byte) 0xA7;
+    public static final byte N2_FAST_READ = 0x3B;
+    public static final byte N2_FAST_WRITE = (byte) 0xAE;
+    public static final byte AMIIBO_GET_VERSION = 0x55; // N2_GET_INFO
+    public static final byte N2_LOCK = 0x46;
+    public static final byte AMIIBO_READ_SIG = 0x43;// N2_GET_ID
+    public static final byte N2_SET_BANK_CNT = (byte) 0xA9;
+    public static final byte N2_UNLOCK1 = 0x44;
+    public static final byte N2_UNLOCK2 = 0x45;
+    public static final byte N2_WRITE = (byte) 0xA5;
 }

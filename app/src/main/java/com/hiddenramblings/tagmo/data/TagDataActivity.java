@@ -45,12 +45,6 @@ import com.hiddenramblings.tagmo.TagUtil;
 import com.hiddenramblings.tagmo.Util;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.data.AppDataFragment;
-import com.hiddenramblings.tagmo.data.AppDataSSBFragment;
-import com.hiddenramblings.tagmo.data.AppDataTPFragment;
-import com.hiddenramblings.tagmo.data.AppIds;
-import com.hiddenramblings.tagmo.data.CountryCodes;
-import com.hiddenramblings.tagmo.data.TagData;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 

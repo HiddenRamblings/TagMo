@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.ptag;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.util.Base64;
 
 import com.hiddenramblings.tagmo.R;

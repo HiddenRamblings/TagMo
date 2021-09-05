@@ -1,12 +1,7 @@
 package com.hiddenramblings.tagmo;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.os.Build;
-import android.os.Environment;
-
-import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
 
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
@@ -22,8 +17,6 @@ import java.io.OutputStreamWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-
-import static android.os.Environment.isExternalStorageEmulated;
 
 public class Util {
     private static final String TAG = Util.class.getSimpleName();

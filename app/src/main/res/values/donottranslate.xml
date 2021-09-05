@@ -5,7 +5,6 @@
     <string name="nfcIconDescription">NFC Icon</string>
     <string name="movingBarDescription">Moving bar indicating the scanning process</string>
 
-
     <string name="hex_ff">FF</string>
     <string name="hex_ffff">FFFF</string>
 

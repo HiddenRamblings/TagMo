@@ -14,7 +14,8 @@ local.properties
 # Signing files
 .signing/
 
-# Generated buils
+# Generated
+app/.cxx/
 app/release/
 
 # User-specific configurations

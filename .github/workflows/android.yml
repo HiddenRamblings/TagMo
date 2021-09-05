@@ -48,3 +48,11 @@ jobs:
       with:
         name: TagMo-${{ env.GIT_HASH }}
         path: ${{steps.sign_app.outputs.signedReleaseFile}}
+
+    - uses: marvinpinto/action-automatic-releases@v1.2.1
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: false
+        title: TagMo-${{ env.GIT_HASH }}
+        files: ${{steps.sign_app.outputs.signedReleaseFile}}

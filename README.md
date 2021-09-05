@@ -1,9 +1,3 @@
-# Downloading TagMo
-https://github.com/8BitDream/TagMo/actions
-- Select a workflow run (newest is at the top)
-- Scroll down to the "Artifacts" at the bottom
-- Make sure to unzip the files after download
-
 # TagMo's official repository is stagnant. 
 If you want to contribute, please make sure to adress your PRs to the 'master2' branch of this repository in order to keep them seperate from the original project. Thank you.
 

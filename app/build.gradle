@@ -19,8 +19,7 @@ android {
         }
     }
 
-    project.archivesBaseName = "TagMo-" + defaultConfig.versionName + "(" +
-            'git rev-parse --short HEAD'.execute().text.trim()+ ")"
+    project.archivesBaseName = "TagMo-" + 'git rev-parse --short HEAD'.execute().text.trim()
 
 //    productFlavors {
 //        fat {

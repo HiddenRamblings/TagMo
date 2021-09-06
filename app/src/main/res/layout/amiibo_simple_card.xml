@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
@@ -9,8 +10,10 @@
     android:layout_marginRight="16dp"
     android:layout_marginTop="8dp"
     android:clickable="true"
+    android:focusable="true"
     android:foreground="@drawable/card_foreground"
-    app:cardCornerRadius="@dimen/card_radius">
+    app:cardCornerRadius="@dimen/card_radius"
+    tools:ignore="SmallSp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -24,8 +27,9 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:padding="8dp"
-            android:text="ERROR"
+            android:text="@string/amiibo_error_caps"
             android:textAlignment="center"
+            android:gravity="center_horizontal"
             android:textColor="@color/tag_text"
             android:textSize="16dp"/>
 
@@ -33,7 +37,7 @@
             android:id="@+id/txtName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="NAME"
+            android:text="@string/amiibo_name_caps"
             android:textColor="@color/tag_text"
             android:textSize="16dp"/>
 
@@ -50,9 +54,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:text="TAGID"
+                android:text="@string/amiibo_id_caps"
                 android:textColor="@color/tag_text"
-                android:textSize="10dp"/>
+                android:textSize="10sp"/>
 
             <View
                 android:layout_width="4dp"
@@ -64,9 +68,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:text="AMIIBO TYPE"
+                android:text="@string/amiibo_type_caps"
                 android:textColor="@color/tag_text"
-                android:textSize="10dp"/>
+                android:textSize="10sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -82,9 +86,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:text="GAME SERIES"
+                android:text="@string/amiibo_game_caps"
                 android:textColor="@color/tag_text"
-                android:textSize="10dp"/>
+                android:textSize="10sp"/>
 
             <View
                 android:layout_width="4dp"
@@ -96,9 +100,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:text="AMIIBO SERIES"
+                android:text="@string/amiibo_series_caps"
                 android:textColor="@color/tag_text"
-                android:textSize="10dp"/>
+                android:textSize="10sp"/>
         </LinearLayout>
 
         <TextView
@@ -106,9 +110,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/group2"
-            android:text="PATH"
+            android:text="@string/amiibo_path_caps"
             android:textColor="@color/tag_text"
-            android:textSize="10dp"
+            android:textSize="10sp"
             android:visibility="gone"/>
     </RelativeLayout>
 
@@ -117,8 +121,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="end"
-        android:text="CHARACTER"
+        android:text="@string/amiibo_character_caps"
         android:textColor="@color/tag_text"
-        android:textSize="10dp"
+        android:textSize="10sp"
         android:visibility="gone"/>
 </androidx.cardview.widget.CardView>

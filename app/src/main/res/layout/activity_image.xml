@@ -63,7 +63,7 @@
                 android:gravity="start"
                 android:text="@string/amiibo_id_caps"
                 android:textColor="@android:color/white"
-                android:textSize="10dp"/>
+                android:textSize="10sp"/>
 
             <View
                 android:layout_width="4dp"
@@ -77,7 +77,7 @@
                 android:gravity="end"
                 android:text="@string/amiibo_type_caps"
                 android:textColor="@android:color/white"
-                android:textSize="10dp"/>
+                android:textSize="10sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -95,7 +95,7 @@
                 android:gravity="start"
                 android:text="@string/amiibo_game_caps"
                 android:textColor="@android:color/white"
-                android:textSize="10dp"/>
+                android:textSize="10sp"/>
 
             <View
                 android:layout_width="4dp"
@@ -109,7 +109,7 @@
                 android:gravity="end"
                 android:text="@string/amiibo_series_caps"
                 android:textColor="@android:color/white"
-                android:textSize="10dp"/>
+                android:textSize="10sp"/>
         </LinearLayout>
 
         <TextView
@@ -129,7 +129,7 @@
             android:layout_below="@id/group2"
             android:text="@string/amiibo_path_caps"
             android:textColor="@android:color/white"
-            android:textSize="10dp"
+            android:textSize="10sp"
             android:visibility="gone"/>
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

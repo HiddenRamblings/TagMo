@@ -63,6 +63,7 @@
     <string name="id_number">ID #</string>
     <string name="set">Set</string>
 
+    <string name="amiibo_error_caps">ERROR</string>
     <string name="amiibo_name_caps">NAME</string>
     <string name="amiibo_id_caps">TAGID</string>
     <string name="amiibo_type_caps">AMIIBO TYPE</string>

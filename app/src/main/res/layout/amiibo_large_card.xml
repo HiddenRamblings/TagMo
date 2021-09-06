@@ -74,7 +74,7 @@
                     android:gravity="start"
                     android:text="TAGID"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
+                    android:textSize="10sp"/>
 
                 <View
                     android:layout_width="4dp"
@@ -88,7 +88,7 @@
                     android:gravity="end"
                     android:text="AMIIBO TYPE"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
+                    android:textSize="10sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -106,7 +106,7 @@
                     android:gravity="start"
                     android:text="GAME SERIES"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
+                    android:textSize="10sp"/>
 
                 <View
                     android:layout_width="4dp"
@@ -120,7 +120,7 @@
                     android:gravity="end"
                     android:text="AMIIBO SERIES"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
+                    android:textSize="10sp"/>
             </LinearLayout>
 
             <TextView
@@ -130,7 +130,7 @@
                 android:layout_below="@id/group2"
                 android:text="PATH"
                 android:textColor="@color/tag_text"
-                android:textSize="10dp"
+                android:textSize="10sp"
                 android:visibility="gone"/>
 
             <TextView
@@ -140,7 +140,7 @@
                 android:gravity="end"
                 android:text="CHARACTER"
                 android:textColor="@color/tag_text"
-                android:textSize="10dp"
+                android:textSize="10sp"
                 android:visibility="gone"/>
         </RelativeLayout>
     </LinearLayout>

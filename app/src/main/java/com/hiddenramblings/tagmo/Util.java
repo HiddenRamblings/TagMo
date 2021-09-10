@@ -53,10 +53,6 @@ public class Util {
     }
 
     public static void dumpLogcat(String fileName) throws Exception {
-        File file = new File(fileName);
-
-        Process mLogcatProc;
-        BufferedReader reader;
         final StringBuilder log = new StringBuilder();
         String separator = System.getProperty("line.separator");
         log.append(android.os.Build.MANUFACTURER);
@@ -73,9 +69,11 @@ public class Util {
 
         try {
             String line;
-            mLogcatProc = Runtime.getRuntime().exec(
-                    new String[]{"logcat", "-ds", "AndroidRuntime:E"});
-            reader = new BufferedReader(new InputStreamReader(
+            Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
+                    "logcat", "-ds",
+                    "AndroidRuntime:E"
+            });
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
                     mLogcatProc.getInputStream()));
             log.append(separator);
             log.append(separator);
@@ -88,11 +86,13 @@ public class Util {
             }
             reader.close();
 
-            mLogcatProc = Runtime.getRuntime().exec(
-                    new String[]{"logcat", "-d", "com.hiddenramblings.tagmo"});
+            mLogcatProc = Runtime.getRuntime().exec(new String[]{
+                    "logcat", "-d",
+                    BuildConfig.APPLICATION_ID,
+                    "com.smartrac.nfc"
+            });
             reader = new BufferedReader(new InputStreamReader(
                     mLogcatProc.getInputStream()));
-            log.append(separator);
             log.append(separator);
             log.append("TagMo Verbose Logs");
             log.append(separator);
@@ -105,7 +105,7 @@ public class Util {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try (FileOutputStream fos = new FileOutputStream(file)) {
+        try (FileOutputStream fos = new FileOutputStream(new File(fileName))) {
             fos.write(log.toString().getBytes());
         }
     }

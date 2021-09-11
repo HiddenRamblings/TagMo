@@ -89,7 +89,8 @@ public class Util {
             mLogcatProc = Runtime.getRuntime().exec(new String[]{
                     "logcat", "-d",
                     BuildConfig.APPLICATION_ID,
-                    "com.smartrac.nfc"
+                    "com.smartrac.nfc",
+                    "-t", "2048"
             });
             reader = new BufferedReader(new InputStreamReader(
                     mLogcatProc.getInputStream()));

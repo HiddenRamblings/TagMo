@@ -1,0 +1,5 @@
+<nine-patch
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:alpha="0.12"
+    android:src="@drawable/list_section_divider_mtrl_alpha"
+    android:tint="?android:attr/colorForeground"/>

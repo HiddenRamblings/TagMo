@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="ssb_specials_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
+        <item>Default</item>
+        <item>Custom 1</item>
+        <item>Custom 2</item>
     </string-array>
 </resources>

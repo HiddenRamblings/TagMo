@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".AmiiboActivity">
+    <item
+        android:id="@+id/mnu_save"
+        android:title="@string/save"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_write"
+        android:title="@string/write"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_restore"
+        android:title="@string/restore"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_view_hex"
+        android:title="@string/view_hex"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mnu_edit"
+        android:title="@string/edit_tag"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mnu_ignore_tag_id"
+        android:checkable="true"
+        android:title="@string/ignore_restrictions"
+        app:showAsAction="ifRoom"/>
+</menu>

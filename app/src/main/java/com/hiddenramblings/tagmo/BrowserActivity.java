@@ -1,18 +1,17 @@
 package com.hiddenramblings.tagmo;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
+import android.os.Environment;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -23,12 +22,29 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
+import com.hiddenramblings.tagmo.settings.BrowserSettings;
+import com.hiddenramblings.tagmo.settings.SettingsActivity_;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
 
@@ -53,18 +69,19 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.browser_layout)
 @OptionsMenu({R.menu.browser_menu})
 public class BrowserActivity extends AppCompatActivity implements
-    SearchView.OnQueryTextListener,
-    SwipeRefreshLayout.OnRefreshListener,
-    BrowserSettings.BrowserSettingsListener,
-    BrowserAmiibosAdapter.OnAmiiboClickListener
-{
+        SearchView.OnQueryTextListener,
+        SwipeRefreshLayout.OnRefreshListener,
+        BrowserSettings.BrowserSettingsListener,
+        BrowserAmiibosAdapter.OnAmiiboClickListener {
+    private static final String TAG = BrowserActivity.class.getSimpleName();
+
     public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
     public static final String BACKGROUND_FOLDERS = "folders";
     public static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
@@ -129,10 +146,14 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuViewCompact;
     @OptionsMenuItem(R.id.view_large)
     MenuItem menuViewLarge;
-    @OptionsMenuItem(R.id.recursive_files)
+    @OptionsMenuItem(R.id.recursive)
     MenuItem menuRecursiveFiles;
+    @OptionsMenuItem(R.id.show_missing)
+    MenuItem menuShowMissing;
     @OptionsMenuItem(R.id.refresh)
     MenuItem menuRefresh;
+    @OptionsMenuItem(R.id.dump_logcat)
+    MenuItem menuLogcat;
 
     SearchView searchView;
     BottomSheetBehavior bottomSheetBehavior;
@@ -145,9 +166,11 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestStoragePermissions();
     }
 
-    public void onSaveInstanceState(Bundle outState) {
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
     }
 
@@ -181,7 +204,8 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.setGameSeriesFilter(prefs.filterGameSeries().get());
             this.settings.setAmiiboView(prefs.browserAmiiboView().get());
             this.settings.setImageNetworkSettings(prefs.imageNetworkSetting().get());
-            this.settings.setRecursiveFiles(prefs.recursiveFiles().get());
+            this.settings.setRecursiveEnabled(prefs.recursiveFolders().get());
+            this.settings.setShowMissingFiles(prefs.showMissingFiles().get());
         } else {
             this.currentFolderView.setText(Util.friendlyPath(settings.getBrowserRootFolder()));
             this.onFilterGameSeriesChanged();
@@ -200,7 +224,97 @@ public class BrowserActivity extends AppCompatActivity implements
         this.foldersView.setAdapter(new BrowserFoldersAdapter(settings));
 
         this.loadAmiiboManager();
+    }
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
+    private static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
+    private static final String[] PERMISSIONS_STORAGE = {
+            READ_EXTERNAL_STORAGE,
+            WRITE_EXTERNAL_STORAGE
+    };
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    void requestScopedStorage() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+        try {
+            intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
+        } catch (Exception e) {
+            intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+        }
+        onRequestScopedStorage.launch(intent);
+    }
+
+    void requestStoragePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()) {
+                validateKeys();
+            } else {
+                requestScopedStorage();
+            }
+        } else {
+            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            } else {
+                validateKeys();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
+                    R.string.permission_required, Snackbar.LENGTH_LONG);
+            storageBar.setAction(R.string.allow_permission, v -> ActivityCompat.requestPermissions(
+                    BrowserActivity.this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE));
+            storageBar.show();
+        } else {
+            validateKeys();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (Environment.isExternalStorageManager()) {
+            validateKeys();
+        } else {
+            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
+                    R.string.permission_required, Snackbar.LENGTH_LONG);
+            storageBar.setAction(R.string.allow_permission, v -> requestScopedStorage());
+            storageBar.show();
+        }
+    });
+
+    private void validateKeys() {
+        KeyManager keyManager = new KeyManager(this);
+        if (!keyManager.hasUnFixedKey() || !keyManager.hasFixedKey()) {
+            showToast(R.string.config_required, Toast.LENGTH_LONG);
+            openSettings();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        this.settings.addChangeListener(this);
+        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) this.amiibosView.getAdapter());
+        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) this.foldersView.getAdapter());
+
         this.settings.notifyChanges();
+    }
+
+    @Override
+    protected void onPause() {
+        if (this.settings != null) {
+            this.settings.removeAllChangeListeners();
+        }
+        super.onPause();
     }
 
     @Override
@@ -219,6 +333,7 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onSortChanged();
         this.onViewChanged();
         this.onRecursiveFilesChanged();
+        this.onShowMissingChanged();
 
         // setOnQueryTextListener will clear this, so make a copy
         String query = settings.getQuery();
@@ -228,6 +343,25 @@ public class BrowserActivity extends AppCompatActivity implements
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(this);
+        menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    onBackPressed();
+                    return false;
+                } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    onBackPressed();
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        });
 
         //focus the SearchView
         if (!query.isEmpty()) {
@@ -308,15 +442,26 @@ public class BrowserActivity extends AppCompatActivity implements
         settings.notifyChanges();
     }
 
-    @OptionsItem(R.id.recursive_files)
+    @OptionsItem(R.id.recursive)
     void onRecursiveFilesClicked() {
-        this.settings.setRecursiveFiles(!this.settings.isRecursiveFiles());
+        this.settings.setRecursiveEnabled(!this.settings.isRecursiveEnabled());
+        this.settings.notifyChanges();
+    }
+
+    @OptionsItem(R.id.show_missing)
+    void OnShowMissingCicked() {
+        this.settings.setShowMissingFiles(!this.settings.isShowingMissingFiles());
         this.settings.notifyChanges();
     }
 
     @OptionsItem(R.id.refresh)
     void onRefreshClicked() {
         this.refresh();
+    }
+
+    @OptionsItem(R.id.dump_logcat)
+    void onDumpLogcatClicked() {
+        dumpLogcat();
     }
 
     @OptionsItem(R.id.filter_game_series)
@@ -336,10 +481,10 @@ public class BrowserActivity extends AppCompatActivity implements
 
             GameSeries gameSeries = amiibo.getGameSeries();
             if (gameSeries != null &&
-                Amiibo.matchesCharacterFilter(amiibo.getCharacter(), settings.getCharacterFilter()) &&
-                Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(), settings.getAmiiboSeriesFilter()) &&
-                Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(), settings.getAmiiboTypeFilter())
-                ) {
+                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(), settings.getCharacterFilter()) &&
+                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(), settings.getAmiiboSeriesFilter()) &&
+                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(), settings.getAmiiboTypeFilter())
+            ) {
                 items.add(gameSeries.name);
             }
         }
@@ -348,8 +493,8 @@ public class BrowserActivity extends AppCompatActivity implements
         Collections.sort(list);
         for (String item : list) {
             subMenu.add(R.id.filter_game_series_group, Menu.NONE, 0, item)
-                .setChecked(item.equals(settings.getGameSeriesFilter()))
-                .setOnMenuItemClickListener(onFilterGameSeriesItemClick);
+                    .setChecked(item.equals(settings.getGameSeriesFilter()))
+                    .setOnMenuItemClickListener(onFilterGameSeriesItemClick);
         }
         subMenu.setGroupCheckable(R.id.filter_game_series_group, true, true);
 
@@ -382,10 +527,10 @@ public class BrowserActivity extends AppCompatActivity implements
 
             Character character = amiibo.getCharacter();
             if (character != null &&
-                Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(), settings.getGameSeriesFilter()) &&
-                Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(), settings.getAmiiboSeriesFilter()) &&
-                Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(), settings.getAmiiboTypeFilter())
-                ) {
+                    Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(), settings.getGameSeriesFilter()) &&
+                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(), settings.getAmiiboSeriesFilter()) &&
+                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(), settings.getAmiiboTypeFilter())
+            ) {
                 items.add(character.name);
             }
         }
@@ -394,8 +539,8 @@ public class BrowserActivity extends AppCompatActivity implements
         Collections.sort(list);
         for (String item : list) {
             subMenu.add(R.id.filter_character_group, Menu.NONE, 0, item)
-                .setChecked(item.equals(settings.getCharacterFilter()))
-                .setOnMenuItemClickListener(onFilterCharacterItemClick);
+                    .setChecked(item.equals(settings.getCharacterFilter()))
+                    .setOnMenuItemClickListener(onFilterCharacterItemClick);
         }
         subMenu.setGroupCheckable(R.id.filter_character_group, true, true);
 
@@ -428,10 +573,10 @@ public class BrowserActivity extends AppCompatActivity implements
 
             AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
             if (amiiboSeries != null &&
-                Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(), settings.getGameSeriesFilter()) &&
-                Amiibo.matchesCharacterFilter(amiibo.getCharacter(), settings.getCharacterFilter()) &&
-                Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(), settings.getAmiiboTypeFilter())
-                ) {
+                    Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(), settings.getGameSeriesFilter()) &&
+                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(), settings.getCharacterFilter()) &&
+                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(), settings.getAmiiboTypeFilter())
+            ) {
                 items.add(amiiboSeries.name);
             }
         }
@@ -440,8 +585,8 @@ public class BrowserActivity extends AppCompatActivity implements
         Collections.sort(list);
         for (String item : list) {
             subMenu.add(R.id.filter_amiibo_series_group, Menu.NONE, 0, item)
-                .setChecked(item.equals(settings.getAmiiboSeriesFilter()))
-                .setOnMenuItemClickListener(onFilterAmiiboSeriesItemClick);
+                    .setChecked(item.equals(settings.getAmiiboSeriesFilter()))
+                    .setOnMenuItemClickListener(onFilterAmiiboSeriesItemClick);
         }
         subMenu.setGroupCheckable(R.id.filter_amiibo_series_group, true, true);
 
@@ -474,10 +619,10 @@ public class BrowserActivity extends AppCompatActivity implements
 
             AmiiboType amiiboType = amiibo.getAmiiboType();
             if (amiiboType != null &&
-                Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(), settings.getGameSeriesFilter()) &&
-                Amiibo.matchesCharacterFilter(amiibo.getCharacter(), settings.getCharacterFilter()) &&
-                Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(), settings.getAmiiboSeriesFilter())
-                ) {
+                    Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(), settings.getGameSeriesFilter()) &&
+                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(), settings.getCharacterFilter()) &&
+                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(), settings.getAmiiboSeriesFilter())
+            ) {
                 items.add(amiiboType);
             }
         }
@@ -486,8 +631,8 @@ public class BrowserActivity extends AppCompatActivity implements
         Collections.sort(list);
         for (AmiiboType item : list) {
             subMenu.add(R.id.filter_amiibo_type_group, Menu.NONE, 0, item.name)
-                .setChecked(item.name.equals(settings.getAmiiboTypeFilter()))
-                .setOnMenuItemClickListener(onFilterAmiiboTypeItemClick);
+                    .setChecked(item.name.equals(settings.getAmiiboTypeFilter()))
+                    .setOnMenuItemClickListener(onFilterAmiiboTypeItemClick);
         }
         subMenu.setGroupCheckable(R.id.filter_amiibo_type_group, true, true);
 
@@ -503,6 +648,26 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
+    ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+            if (result.getData().getBooleanExtra("REFRESH", false)) {
+                resetRootFolder();
+            }
+        }
+    });
+
+    @OptionsItem(R.id.settings)
+    void openSettings() {
+        onSettingsActivity.launch(new Intent(this, SettingsActivity_.class));
+    }
+
+    void resetRootFolder() {
+        this.settings.setBrowserRootFolder(Storage.setFileStorage());
+        this.settings.notifyChanges();
+        this.onRootFolderChanged();
+    }
+
     void refresh() {
         this.loadAmiiboManager();
         this.onRootFolderChanged();
@@ -513,13 +678,50 @@ public class BrowserActivity extends AppCompatActivity implements
         this.refresh();
     }
 
+    ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null)
+            return;
+
+        if (!NfcActivity.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+            return;
+
+        byte[] tagData = result.getData().getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
+
+        Bundle args = new Bundle();
+        args.putByteArray(AmiiboActivity.ARG_TAG_DATA, tagData);
+
+        Intent intent = new Intent(this, AmiiboActivity_.class);
+        intent.putExtras(args);
+
+        startActivity(intent);
+    });
+
+    @Click(R.id.fab)
+    public void onFabClicked() {
+        onNFCActivity.launch(new Intent(this, NfcActivity_.class).setAction(NfcActivity.ACTION_SCAN_TAG));
+    }
+
     @Override
     public void onAmiiboClicked(AmiiboFile amiiboFile) {
-        Intent returnIntent = new Intent();
-        returnIntent.setData(Uri.fromFile(amiiboFile.getFilePath()));
+        if (amiiboFile.filePath == null)
+            return;
 
-        this.setResult(Activity.RESULT_OK, returnIntent);
-        this.finish();
+        byte[] tagData;
+        try {
+            tagData = TagUtil.readTag(getContentResolver().openInputStream(Uri.fromFile(amiiboFile.filePath)));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        Bundle args = new Bundle();
+        args.putByteArray(AmiiboActivity.ARG_TAG_DATA, tagData);
+
+        Intent intent = new Intent(this, AmiiboActivity_.class);
+        intent.putExtras(args);
+
+        startActivity(intent);
     }
 
     @Override
@@ -537,7 +739,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public boolean onQueryTextSubmit(String query) {
         settings.setQuery(query);
         settings.notifyChanges();
-        return true;
+        return false;
     }
 
     @Override
@@ -557,7 +759,7 @@ public class BrowserActivity extends AppCompatActivity implements
         loadAmiiboManagerTask();
     }
 
-    @Background(id=BACKGROUND_AMIIBO_MANAGER)
+    @Background(id = BACKGROUND_AMIIBO_MANAGER)
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
@@ -565,18 +767,15 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;
-            showToast("Unable to parse amiibo info");
+            showToast(R.string.amiibo_info_parse_error, Toast.LENGTH_LONG);
         }
         if (Thread.currentThread().isInterrupted())
             return;
 
         final AmiiboManager amiiboManager1 = amiiboManager;
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                settings.setAmiiboManager(amiiboManager1);
-                settings.notifyChanges();
-            }
+        this.runOnUiThread(() -> {
+            settings.setAmiiboManager(amiiboManager1);
+            settings.notifyChanges();
         });
     }
 
@@ -585,15 +784,10 @@ public class BrowserActivity extends AppCompatActivity implements
         loadFoldersTask(rootFolder);
     }
 
-    @Background(id=BACKGROUND_FOLDERS)
+    @Background(id = BACKGROUND_FOLDERS)
     void loadFoldersTask(File rootFolder) {
         final ArrayList<File> folders = listFolders(rootFolder);
-        Collections.sort(folders, new Comparator<File>() {
-            @Override
-            public int compare(File file1, File file2) {
-                return file1.getPath().compareToIgnoreCase(file2.getPath());
-            }
-        });
+        Collections.sort(folders, (file1, file2) -> file1.getPath().compareToIgnoreCase(file2.getPath()));
         if (Thread.currentThread().isInterrupted())
             return;
 
@@ -626,7 +820,7 @@ public class BrowserActivity extends AppCompatActivity implements
         loadAmiiboFilesTask(rootFolder, recursiveFiles);
     }
 
-    @Background(id=BACKGROUND_AMIIBO_FILES)
+    @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         this.setAmiiboFilesLoadingBarVisibility(true);
         final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
@@ -635,12 +829,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.setAmiiboFilesLoadingBarVisibility(false);
 
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                settings.setAmiiboFiles(amiiboFiles);
-                settings.notifyChanges();
-            }
+        this.runOnUiThread(() -> {
+            settings.setAmiiboFiles(amiiboFiles);
+            settings.notifyChanges();
         });
     }
 
@@ -673,9 +864,13 @@ public class BrowserActivity extends AppCompatActivity implements
         if (!Util.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
             folderChanged = true;
         }
-        if (newBrowserSettings.isRecursiveFiles() != oldBrowserSettings.isRecursiveFiles()) {
+        if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
             folderChanged = true;
             onRecursiveFilesChanged();
+        }
+        if (newBrowserSettings.isShowingMissingFiles() != oldBrowserSettings.isShowingMissingFiles()) {
+            folderChanged = true;
+            onShowMissingChanged();
         }
         if (folderChanged) {
             onRootFolderChanged();
@@ -704,17 +899,18 @@ public class BrowserActivity extends AppCompatActivity implements
         }
 
         this.prefs.edit()
-            .browserRootFolder().put(Util.friendlyPath(newBrowserSettings.getBrowserRootFolder()))
-            .query().put(newBrowserSettings.getQuery())
-            .sort().put(newBrowserSettings.getSort())
-            .filterGameSeries().put(newBrowserSettings.getGameSeriesFilter())
-            .filterCharacter().put(newBrowserSettings.getCharacterFilter())
-            .filterAmiiboSeries().put(newBrowserSettings.getAmiiboSeriesFilter())
-            .filterAmiiboType().put(newBrowserSettings.getAmiiboTypeFilter())
-            .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
-            .imageNetworkSetting().put(newBrowserSettings.getImageNetworkSettings())
-            .recursiveFiles().put(newBrowserSettings.isRecursiveFiles())
-            .apply();
+                .browserRootFolder().put(Util.friendlyPath(newBrowserSettings.getBrowserRootFolder()))
+                .query().put(newBrowserSettings.getQuery())
+                .sort().put(newBrowserSettings.getSort())
+                .filterGameSeries().put(newBrowserSettings.getGameSeriesFilter())
+                .filterCharacter().put(newBrowserSettings.getCharacterFilter())
+                .filterAmiiboSeries().put(newBrowserSettings.getAmiiboSeriesFilter())
+                .filterAmiiboType().put(newBrowserSettings.getAmiiboTypeFilter())
+                .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
+                .imageNetworkSetting().put(newBrowserSettings.getImageNetworkSettings())
+                .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
+                .showMissingFiles().put(newBrowserSettings.isShowingMissingFiles())
+                .apply();
     }
 
     private void onAmiiboFilesChanged() {
@@ -765,7 +961,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void onRootFolderChanged() {
         File rootFolder = settings.getBrowserRootFolder();
         this.currentFolderView.setText(Util.friendlyPath(rootFolder));
-        this.loadAmiiboFiles(rootFolder, settings.isRecursiveFiles());
+        this.loadAmiiboFiles(rootFolder, settings.isRecursiveEnabled());
         this.loadFolders(rootFolder);
     }
 
@@ -813,7 +1009,14 @@ public class BrowserActivity extends AppCompatActivity implements
         if (menuRecursiveFiles == null)
             return;
 
-        menuRecursiveFiles.setChecked(settings.isRecursiveFiles());
+        menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
+    }
+
+    void onShowMissingChanged() {
+        if (menuShowMissing == null)
+            return;
+
+        menuShowMissing.setChecked(settings.isShowingMissingFiles());
     }
 
     OnCloseClickListener onAmiiboTypeChipCloseClick = new OnCloseClickListener() {
@@ -824,6 +1027,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
+    @SuppressLint("InflateParams")
     public void addFilterItemView(String text, String tag, OnCloseClickListener listener) {
         FrameLayout chipContainer = chipList.findViewWithTag(tag);
         chipList.removeView(chipContainer);
@@ -831,7 +1035,7 @@ public class BrowserActivity extends AppCompatActivity implements
             chipContainer = (FrameLayout) getLayoutInflater().inflate(R.layout.chip_view, null);
             chipContainer.setTag(tag);
             Chip chip = chipContainer.findViewById(R.id.chip);
-            chip.setChipText(text);
+            chip.setText(text);
             chip.setClosable(true);
             chip.setOnCloseClickListener(listener);
             chipList.addView(chipContainer);
@@ -841,9 +1045,36 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    @Background
+    void dumpLogcat() {
+        try {
+            String fName = "tagmo_logcat.txt";
+
+            File file = new File(Util.getFilesDir().getAbsolutePath(), fName);
+
+            TagMo.Debug(TAG, file.toString());
+            Util.dumpLogcat(file.getAbsolutePath());
+            try {
+                MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
+            } catch (Exception e) {
+                TagMo.Error(TAG, R.string.media_scan_fail, e);
+            }
+            new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.wrote_file, fName))
+                    .setPositiveButton(R.string.close, null)
+                    .show();
+        } catch (Exception e) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.error)
+                    .setMessage(getString(R.string.write_error, e.getMessage()))
+                    .setPositiveButton(R.string.close, null)
+                    .show();
+        }
+    }
+
     @UiThread
-    public void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    public void showToast(int msgRes, int length) {
+        Toast.makeText(this, msgRes, length).show();
     }
 
 }

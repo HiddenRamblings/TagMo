@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_gravity="center"
     android:layout_marginBottom="8dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
@@ -18,22 +19,42 @@
         android:orientation="vertical"
         android:padding="8dp">
 
-        <ImageView
-            android:id="@+id/imageAmiibo"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:foreground="@drawable/card_foreground"
-            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/txtError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="8dp"
+            android:text="ERROR"
+            android:textAlignment="center"
+            android:textColor="@color/tag_text"
+            android:textSize="16dp"/>
 
         <RelativeLayout
+            android:id="@+id/amiiboInfo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imageAmiibo"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginBottom="4dp"
+                android:foreground="@drawable/card_foreground"
+                android:visibility="gone"/>
+
+            <View
+                android:id="@+id/imageDivider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/imageAmiibo"
+                android:background="@drawable/bottom_divider"/>
 
             <TextView
                 android:id="@+id/txtName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/imageDivider"
                 android:text="NAME"
                 android:textColor="@color/tag_text"
                 android:textSize="16dp"/>
@@ -53,11 +74,11 @@
                     android:gravity="start"
                     android:text="TAGID"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
+                    android:textSize="10sp"/>
 
                 <View
                     android:layout_width="4dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="1dp"/>
 
                 <TextView
                     android:id="@+id/txtAmiiboType"
@@ -67,7 +88,7 @@
                     android:gravity="end"
                     android:text="AMIIBO TYPE"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
+                    android:textSize="10sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -85,11 +106,11 @@
                     android:gravity="start"
                     android:text="GAME SERIES"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
+                    android:textSize="10sp"/>
 
                 <View
                     android:layout_width="4dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="1dp"/>
 
                 <TextView
                     android:id="@+id/txtAmiiboSeries"
@@ -99,7 +120,7 @@
                     android:gravity="end"
                     android:text="AMIIBO SERIES"
                     android:textColor="@color/tag_text"
-                    android:textSize="10dp"/>
+                    android:textSize="10sp"/>
             </LinearLayout>
 
             <TextView
@@ -108,18 +129,19 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/group2"
                 android:text="PATH"
-                android:textSize="10dp"
+                android:textColor="@color/tag_text"
+                android:textSize="10sp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/txtCharacter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="CHARACTER"
+                android:textColor="@color/tag_text"
+                android:textSize="10sp"
                 android:visibility="gone"/>
         </RelativeLayout>
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/txtCharacter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        android:text="CHARACTER"
-        android:textColor="@color/tag_text"
-        android:textSize="10dp"
-        android:visibility="gone"/>
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

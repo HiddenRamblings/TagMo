@@ -1,47 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.hiddenramblings.tagmo">
 
-    <uses-permission android:name="android.permission.BIND_NFC_SERVICE"/>
+    <uses-permission android:name="android.permission.BIND_NFC_SERVICE"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.NFC"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-    <application
+    <uses-feature android:name="android.hardware.nfc" android:required="false"/>
+
+    <application tools:targetApi="r"
+        android:name=".TagMo_"
         android:allowBackup="true"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity_">
+        <activity
+            android:name=".BrowserActivity_">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+            <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_list"/>
         </activity>
         <activity
             android:name=".NfcActivity_"
             android:launchMode="singleTop"/>
-        <activity android:name=".EditorSSB_"/>
-        <activity android:name=".EditorTP_"/>
-        <activity android:name=".HexViewerActivity_"/>
         <activity
-            android:name=".BrowserActivity_"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
-        </activity>
+            android:name=".N2Activity_"
+            android:launchMode="singleTop"/>
         <activity
-            android:name=".ImageActivity_"
-            android:theme="@style/AppTheme"/>
+            android:name=".HexViewerActivity_"/>
         <activity
-            android:name=".SettingsActivity_"
-            android:theme="@style/AppTheme"/>
+            android:name=".ImageActivity_"/>
+        <activity
+            android:name=".settings.SettingsActivity_"/>
+        <activity
+            android:name=".AmiiboActivity_"
+            android:theme="@style/AppTheme2.NoActionBar"/>
+        <activity
+            android:name=".data.TagDataActivity_"/>
     </application>
 
 </manifest>

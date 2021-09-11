@@ -1,11 +1,16 @@
 package com.hiddenramblings.tagmo;
 
+import android.annotation.SuppressLint;
+
+import com.hiddenramblings.tagmo.settings.SettingsFragment;
+
 import org.androidannotations.annotations.sharedpreferences.DefaultBoolean;
 import org.androidannotations.annotations.sharedpreferences.DefaultInt;
 import org.androidannotations.annotations.sharedpreferences.DefaultString;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
 
-@SharedPref(value=SharedPref.Scope.UNIQUE)
+@SuppressLint("NonConstantResourceId")
+@SharedPref(value = SharedPref.Scope.UNIQUE)
 public interface Preferences {
     String query();
 
@@ -20,26 +25,29 @@ public interface Preferences {
 
     String filterAmiiboType();
 
-    @DefaultBoolean(keyRes=R.string.settings_enable_amiibo_browser, value=true)
-    boolean enableAmiiboBrowser();
-
-    @DefaultBoolean(keyRes=R.string.settings_enable_tag_type_validation, value=true)
+    @DefaultBoolean(keyRes = R.string.settings_enable_tag_type_validation, value = true)
     boolean enableTagTypeValidation();
 
-    @DefaultBoolean(keyRes=R.string.settings_enable_power_tag_support, value=false)
+    @DefaultBoolean(keyRes = R.string.settings_enable_power_tag_support, value = false)
     boolean enablePowerTagSupport();
 
     @DefaultInt(BrowserActivity.VIEW_TYPE_COMPACT)
     int browserAmiiboView();
 
-    @DefaultInt(MainActivity.VIEW_TYPE_COMPACT)
-    int mainAmiiboView();
-
-    @DefaultString(keyRes=R.string.image_network_settings, value=SettingsFragment.IMAGE_NETWORK_ALWAYS)
+    @DefaultString(keyRes = R.string.image_network_settings, value = SettingsFragment.IMAGE_NETWORK_ALWAYS)
     String imageNetworkSetting();
 
     String browserRootFolder();
 
     @DefaultBoolean(true)
-    boolean recursiveFiles();
+    boolean recursiveFolders();
+
+    @DefaultBoolean(false)
+    boolean showMissingFiles();
+
+    @DefaultBoolean(keyRes = R.string.settings_disable_debug, value = false)
+    boolean disableDebug();
+
+    @DefaultBoolean(keyRes = R.string.settings_ignore_sdcard, value = false)
+    boolean ignoreSdcard();
 }

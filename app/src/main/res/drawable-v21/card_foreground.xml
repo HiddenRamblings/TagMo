@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ripple
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="#20000000"
-    android:drawable="@drawable/card_foreground_selector"/>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false">
+        <shape>
+            <solid android:color="#18000000" />
+        </shape>
+    </item>
+    <item>
+        <ripple
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:color="#20000000"
+            android:drawable="@drawable/card_foreground_selector"/>
+    </item>
+</selector>

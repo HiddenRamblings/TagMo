@@ -1,81 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.preference.PreferenceScreen
+<androidx.preference.PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <android.support.v7.preference.PreferenceCategory
-        android:title="Encryption Keys">
-        <android.support.v7.preference.Preference
+    <androidx.preference.PreferenceCategory
+        android:title="@string/encryption_keys">
+        <androidx.preference.Preference
             android:key="@string/settings_import_keys"
-            android:title="Import Keys"/>
-    </android.support.v7.preference.PreferenceCategory>
+            android:title="@string/pref_import_keys"/>
+    </androidx.preference.PreferenceCategory>
 
-    <android.support.v7.preference.PreferenceCategory
-        android:title="File Browser">
-        <android.support.v7.preference.CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/settings_enable_amiibo_browser"
-            android:summary="The built in amiibo file browser lists and allows filtering of all of the amiibos in the tagmo folder on the sd card."
-            android:title="Enable Amiibo File Browser"/>
-    </android.support.v7.preference.PreferenceCategory>
-
-    <android.support.v7.preference.PreferenceCategory
-        android:title="Image Loading">
-        <android.support.v7.preference.ListPreference
+    <androidx.preference.PreferenceCategory
+        android:title="@string/pref_image_loading">
+        <androidx.preference.ListPreference
             android:entries="@array/imageNetworkSettings"
             android:entryValues="@array/imageNetworkSettingValues"
             android:key="@string/image_network_settings"
-            android:title="Load images"/>
-    </android.support.v7.preference.PreferenceCategory>
+            android:title="@string/image_loading_details"/>
+    </androidx.preference.PreferenceCategory>
 
-    <android.support.v7.preference.PreferenceCategory android:title="Tag Validation">
-        <android.support.v7.preference.CheckBoxPreference
+    <androidx.preference.PreferenceCategory android:title="Tag Validation">
+        <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_enable_tag_type_validation"
-            android:summary="Not all NFC chipsets correctly identify NFC tags. Disabling tag verification will write to tags that may not be Amiibo compatible or may fail in unexpected ways."
-            android:title="Enable NTAG215 validation"/>
-    </android.support.v7.preference.PreferenceCategory>
-    <android.support.v7.preference.PreferenceCategory android:title="PowerTag">
-        <android.support.v7.preference.CheckBoxPreference
+            android:summary="@string/tag_validation_details"
+            android:title="@string/enable_tag_validation"/>
+    </androidx.preference.PreferenceCategory>
+    <androidx.preference.PreferenceCategory android:title="PowerTag">
+        <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/settings_enable_power_tag_support"
-            android:summary="Support is currently under development. See the Wiki on github for limitations and use."
-            android:title="Enable PowerTag support"/>
-    </android.support.v7.preference.PreferenceCategory>
-    <android.support.v7.preference.PreferenceCategory
-        android:title="Amiibo Info">
-        <android.support.v7.preference.Preference
+            android:summary="@string/power_tag_details"
+            android:title="@string/enable_power_tag"/>
+    </androidx.preference.PreferenceCategory>
+    <androidx.preference.PreferenceCategory
+        android:title="@string/amiibo_info">
+        <androidx.preference.Preference
             android:key="@string/settings_import_info_amiiboapi"
-            android:summary="Syncs Amiibo info with amiiboapi.com"
-            android:title="Sync Amiibo info with AmiiboAPI"/>
-        <android.support.v7.preference.Preference
+            android:summary="@string/sync_api_details"
+            android:title="@string/sync_amiibo_info"/>
+        <androidx.preference.Preference
             android:key="@string/settings_import_info"
-            android:summary="Import Amiibo info from JSON"
-            android:title="Import Amiibo info"/>
-        <android.support.v7.preference.Preference
+            android:summary="@string/import_json_details"
+            android:title="@string/import_amiibo_info"/>
+        <androidx.preference.Preference
             android:key="@string/settings_export_info"
-            android:summary="Export Amiibo info to JSON"
-            android:title="Export Amiibo info"/>
-        <android.support.v7.preference.Preference
+            android:summary="@string/export_json_details"
+            android:title="@string/export_amiibo_info"/>
+        <androidx.preference.Preference
             android:key="@string/settings_reset_info"
-            android:title="Reset Amiibo info"/>
-    </android.support.v7.preference.PreferenceCategory>
+            android:title="@string/reset_amiibo_info"/>
+    </androidx.preference.PreferenceCategory>
 
-    <android.support.v7.preference.PreferenceCategory
-        android:title="Amiibo Info Stats">
-        <android.support.v7.preference.Preference
+    <androidx.preference.PreferenceCategory
+        android:title="@string/amiibo_info_stats">
+        <androidx.preference.Preference
             android:key="@string/settings_info_amiibos"
-            android:title="Amiibos"/>
-        <android.support.v7.preference.Preference
+            android:title="@string/pref_amiibos"/>
+        <androidx.preference.Preference
             android:key="@string/settings_info_game_series"
-            android:title="Game Series"/>
-        <android.support.v7.preference.Preference
+            android:title="@string/pref_amiibo_game"/>
+        <androidx.preference.Preference
             android:key="@string/settings_info_characters"
-            android:title="Characters"/>
-        <android.support.v7.preference.Preference
+            android:title="@string/pref_amiibo_characters"/>
+        <androidx.preference.Preference
             android:key="@string/settings_info_amiibo_series"
-            android:title="Amiibo Series"/>
-        <android.support.v7.preference.Preference
+            android:title="@string/pref_amiibo_series"/>
+        <androidx.preference.Preference
             android:key="@string/settings_info_amiibo_types"
-            android:title="Amiibo Types"/>
-    </android.support.v7.preference.PreferenceCategory>
-</android.support.v7.preference.PreferenceScreen>
+            android:title="@string/pref_amiibo_types"/>
+    </androidx.preference.PreferenceCategory>
+    <androidx.preference.PreferenceCategory
+        android:title="@string/pref_advanced">
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/settings_disable_debug"
+            android:summary="@string/disable_debug_details"
+            android:title="@string/pref_disable_debug"/>
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/settings_ignore_sdcard"
+            android:summary="@string/ignore_sdcard_details"
+            android:title="@string/pref_ignore_sdcard"/>
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

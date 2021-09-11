@@ -2,9 +2,7 @@ name: Android CI
 
 on:
   push:
-    branches: [ experimental ]
-  pull_request:
-    branches: [ experimental ]
+    branches: [ master, experimental ]
 
 jobs:
   build:
@@ -37,11 +35,16 @@ jobs:
       env:
         # override default build-tools version (29.0.3) -- optional
         BUILD_TOOLS_VERSION: "30.0.2"
-        
+
     - name: Retrieve commit short hash
       run: |
          GIT_HASH=$(git rev-parse --short HEAD)
          echo "GIT_HASH=${GIT_HASH}" >> $GITHUB_ENV
+
+    - name: Retrieve branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: branch_name
 
     # Example use of `signedReleaseFile` output -- not needed
     - uses: actions/upload-artifact@v2
@@ -49,10 +52,12 @@ jobs:
         name: TagMo-${{ env.GIT_HASH }}
         path: ${{steps.sign_app.outputs.signedReleaseFile}}
 
+
     - uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
-        prerelease: false
+        automatic_release_tag: ${{ steps.branch_name.outputs.branch }}
         title: TagMo-${{ env.GIT_HASH }}
         files: ${{steps.sign_app.outputs.signedReleaseFile}}
+        if: ${{ steps.branch_name.outputs.branch == 'master' }}
+        prerelease: false # default - true

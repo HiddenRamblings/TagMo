@@ -2,11 +2,10 @@ package com.hiddenramblings.tagmo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
@@ -16,6 +15,10 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -27,19 +30,21 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
+import com.hiddenramblings.tagmo.settings.BrowserSettings;
+import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 
 class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.AmiiboVewHolder> implements
-    Filterable,
-    BrowserSettings.BrowserSettingsListener
-{
+        Filterable,
+        BrowserSettings.BrowserSettingsListener {
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
-    private ArrayList<AmiiboFile> data;
+    private final ArrayList<AmiiboFile> data;
     private ArrayList<AmiiboFile> filteredData;
     private AmiiboFilter filter;
     boolean firstRun = true;
@@ -47,23 +52,21 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
     public BrowserAmiibosAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
-        this.settings.addChangeListener(this);
 
         this.data = new ArrayList<>();
         this.filteredData = this.data;
-
-        this.settings.notifyChanges();
     }
 
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
         boolean refresh = firstRun ||
-            !Util.equals(newBrowserSettings.getQuery(), oldBrowserSettings.getQuery()) ||
-            !Util.equals(newBrowserSettings.getSort(), oldBrowserSettings.getSort()) ||
-            !Util.equals(newBrowserSettings.getGameSeriesFilter(), oldBrowserSettings.getGameSeriesFilter()) ||
-            !Util.equals(newBrowserSettings.getCharacterFilter(), oldBrowserSettings.getCharacterFilter()) ||
-            !Util.equals(newBrowserSettings.getAmiiboSeriesFilter(), oldBrowserSettings.getAmiiboSeriesFilter()) ||
-            !Util.equals(newBrowserSettings.getAmiiboTypeFilter(), oldBrowserSettings.getAmiiboTypeFilter());
+                !Util.equals(newBrowserSettings.getQuery(), oldBrowserSettings.getQuery()) ||
+                !Util.equals(newBrowserSettings.getSort(), oldBrowserSettings.getSort()) ||
+                !Util.equals(newBrowserSettings.getGameSeriesFilter(), oldBrowserSettings.getGameSeriesFilter()) ||
+                !Util.equals(newBrowserSettings.getCharacterFilter(), oldBrowserSettings.getCharacterFilter()) ||
+                !Util.equals(newBrowserSettings.getAmiiboSeriesFilter(), oldBrowserSettings.getAmiiboSeriesFilter()) ||
+                !Util.equals(newBrowserSettings.getAmiiboTypeFilter(), oldBrowserSettings.getAmiiboTypeFilter()) ||
+                !Util.equals(newBrowserSettings.isShowingMissingFiles(), oldBrowserSettings.isShowingMissingFiles());
 
         if (firstRun || !Util.equals(newBrowserSettings.getAmiiboFiles(), oldBrowserSettings.getAmiiboFiles())) {
             this.data.clear();
@@ -103,8 +106,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         return settings.getAmiiboView();
     }
 
+    @NonNull
     @Override
-    public AmiiboVewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case BrowserActivity.VIEW_TYPE_COMPACT:
                 return new CompactViewHolder(parent, settings, listener);
@@ -124,24 +128,26 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
     class AmiiboComparator implements Comparator<AmiiboFile> {
         @Override
         public int compare(AmiiboFile amiiboFile1, AmiiboFile amiiboFile2) {
+            int value = 0;
+            int sort = settings.getSort();
+
             File filePath1 = amiiboFile1.getFilePath();
             File filePath2 = amiiboFile2.getFilePath();
+            if (sort == BrowserActivity.SORT_FILE_PATH && !(filePath1 == null && filePath2 == null))
+                value = compareFilePath(filePath1, filePath2);
 
-            int sort = settings.getSort();
-            if (sort == BrowserActivity.SORT_FILE_PATH)
-                return filePath1.compareTo(filePath2);
-
-            int value = 0;
             long amiiboId1 = amiiboFile1.getId();
             long amiiboId2 = amiiboFile2.getId();
             if (sort == BrowserActivity.SORT_ID) {
                 value = compareAmiiboId(amiiboId1, amiiboId2);
-            } else {
+            } else if (value == 0) {
                 AmiiboManager amiiboManager = settings.getAmiiboManager();
                 if (amiiboManager != null) {
                     Amiibo amiibo1 = amiiboManager.amiibos.get(amiiboId1);
                     Amiibo amiibo2 = amiiboManager.amiibos.get(amiiboId2);
-                    if (amiibo1 == null)
+                    if (amiibo1 == null && amiibo2 == null)
+                        value = 0;
+                    else if (amiibo1 == null)
                         value = 1;
                     else if (amiibo2 == null)
                         value = -1;
@@ -156,7 +162,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                     } else if (sort == BrowserActivity.SORT_CHARACTER) {
                         value = compareCharacter(amiibo1, amiibo2);
                     }
-                    if (value == 0)
+                    if (value == 0 && amiibo1 != null)
                         value = amiibo1.compareTo(amiibo2);
                 }
                 if (value == 0)
@@ -164,20 +170,31 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             }
 
             if (value == 0)
-                value = filePath1.compareTo(filePath2);
+                value = compareFilePath(filePath1, filePath2);
 
             return value;
         }
 
+        int compareFilePath(File filePath1, File filePath2) {
+            if (filePath1 == null) {
+                return 1;
+            } else if (filePath2 == null) {
+                return -1;
+            } else {
+                return filePath1.compareTo(filePath2);
+            }
+        }
+
         int compareAmiiboId(long amiiboId1, long amiiboId2) {
-            if (amiiboId1 == amiiboId2)
-                return 0;
-            return amiiboId1 < amiiboId2 ? -1 : 1;
+            return Long.compare(amiiboId1, amiiboId2);
         }
 
         int compareAmiiboName(Amiibo amiibo1, Amiibo amiibo2) {
             String name1 = amiibo1.name;
             String name2 = amiibo2.name;
+            if (name1 == null && name2 == null) {
+                return 0;
+            }
             if (name1 == null) {
                 return 1;
             } else if (name2 == null) {
@@ -189,6 +206,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         int compareAmiiboSeries(Amiibo amiibo1, Amiibo amiibo2) {
             AmiiboSeries amiiboSeries1 = amiibo1.getAmiiboSeries();
             AmiiboSeries amiiboSeries2 = amiibo2.getAmiiboSeries();
+            if (amiiboSeries1 == null && amiiboSeries2 == null ) {
+                return 0;
+            }
             if (amiiboSeries1 == null) {
                 return 1;
             } else if (amiiboSeries2 == null) {
@@ -200,6 +220,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         int compareAmiiboType(Amiibo amiibo1, Amiibo amiibo2) {
             AmiiboType amiiboType1 = amiibo1.getAmiiboType();
             AmiiboType amiiboType2 = amiibo2.getAmiiboType();
+            if (amiiboType1 == null && amiiboType2 == null ) {
+                return 0;
+            }
             if (amiiboType1 == null) {
                 return 1;
             } else if (amiiboType2 == null) {
@@ -211,6 +234,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         int compareGameSeries(Amiibo amiibo1, Amiibo amiibo2) {
             GameSeries gameSeries1 = amiibo1.getGameSeries();
             GameSeries gameSeries2 = amiibo2.getGameSeries();
+            if (gameSeries1 == null && gameSeries2 == null) {
+                return 0;
+            }
             if (gameSeries1 == null) {
                 return 1;
             } else if (gameSeries2 == null) {
@@ -222,6 +248,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         int compareCharacter(Amiibo amiibo1, Amiibo amiibo2) {
             Character character1 = amiibo1.getCharacter();
             Character character2 = amiibo2.getCharacter();
+            if (character1 == null && character2 == null) {
+                return 0;
+            }
             if (character1 == null) {
                 return 1;
             } else if (character2 == null) {
@@ -250,17 +279,30 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             String query = constraint != null ? constraint.toString() : "";
             settings.setQuery(query);
 
-            FilterResults filterResults = new FilterResults();
-            ArrayList<AmiiboFile> tempList = new ArrayList<>();
-            String queryText = query.trim().toLowerCase();
             ArrayList<AmiiboFile> data = new ArrayList<>();
             if (settings.getAmiiboFiles() != null) {
                 data.addAll(settings.getAmiiboFiles());
             }
+
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
+            if (amiiboManager != null && settings.isShowingMissingFiles()) {
+                HashSet<Long> amiiboIds = new HashSet<>();
+                for (AmiiboFile amiiboFile : data) {
+                    amiiboIds.add(amiiboFile.getId());
+                }
+                for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                    if (!amiiboIds.contains(amiibo.id)) {
+                        data.add(new AmiiboFile(null, amiibo.id));
+                    }
+                }
+            }
+
+            FilterResults filterResults = new FilterResults();
+            ArrayList<AmiiboFile> tempList = new ArrayList<>();
+            String queryText = query.trim().toLowerCase();
             for (AmiiboFile amiiboFile : data) {
                 boolean add;
 
-                AmiiboManager amiiboManager = settings.getAmiiboManager();
                 if (amiiboManager != null) {
                     Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
                     if (amiibo == null)
@@ -269,7 +311,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                 } else {
                     add = queryText.isEmpty();
                 }
-                if (!add)
+                if (!add && amiiboFile.getFilePath() != null)
                     add = pathContainsQuery(amiiboFile.getFilePath().getAbsolutePath(), queryText);
                 if (add)
                     tempList.add(amiiboFile);
@@ -282,11 +324,11 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
 
         public boolean pathContainsQuery(String path, String query) {
             return !query.isEmpty() &&
-                settings.getGameSeriesFilter().isEmpty() &&
-                settings.getCharacterFilter().isEmpty() &&
-                settings.getAmiiboSeriesFilter().isEmpty() &&
-                settings.getAmiiboTypeFilter().isEmpty() &&
-                path.toLowerCase().contains(query);
+                    settings.getGameSeriesFilter().isEmpty() &&
+                    settings.getCharacterFilter().isEmpty() &&
+                    settings.getAmiiboSeriesFilter().isEmpty() &&
+                    settings.getAmiiboTypeFilter().isEmpty() &&
+                    path.toLowerCase().contains(query);
         }
 
         public boolean amiiboContainsQuery(Amiibo amiibo, String query) {
@@ -317,10 +359,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                     return true;
                 else if (amiiboSeries != null && amiiboSeries.name.toLowerCase().contains(query))
                     return true;
-                else if (amiiboType != null && amiiboType.name.toLowerCase().contains(query))
-                    return true;
-
-                return false;
+                else return amiiboType != null && amiiboType.name.toLowerCase().contains(query);
             }
             return true;
         }
@@ -337,6 +376,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
         private final BrowserSettings settings;
         private final OnAmiiboClickListener listener;
 
+        public final TextView txtError;
         public final TextView txtName;
         public final TextView txtTagId;
         public final TextView txtAmiiboSeries;
@@ -360,7 +400,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             }
 
             @Override
-            public void onResourceReady(Bitmap resource, Transition transition) {
+            public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
                 imageAmiibo.setImageBitmap(resource);
                 imageAmiibo.setVisibility(View.VISIBLE);
             }
@@ -371,15 +411,13 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
 
             this.settings = settings;
             this.listener = listener;
-            this.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (AmiiboVewHolder.this.listener != null) {
-                        AmiiboVewHolder.this.listener.onAmiiboClicked(amiiboFile);
-                    }
+            this.itemView.setOnClickListener(view -> {
+                if (AmiiboVewHolder.this.listener != null) {
+                    AmiiboVewHolder.this.listener.onAmiiboClicked(amiiboFile);
                 }
             });
 
+            this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
             this.txtTagId = itemView.findViewById(R.id.txtTagId);
             this.txtAmiiboSeries = itemView.findViewById(R.id.txtAmiiboSeries);
@@ -389,12 +427,9 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             this.txtPath = itemView.findViewById(R.id.txtPath);
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
             if (this.imageAmiibo != null) {
-                this.imageAmiibo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (AmiiboVewHolder.this.listener != null) {
-                            AmiiboVewHolder.this.listener.onAmiiboImageClicked(amiiboFile);
-                        }
+                this.imageAmiibo.setOnClickListener(view -> {
+                    if (AmiiboVewHolder.this.listener != null) {
+                        AmiiboVewHolder.this.listener.onAmiiboImageClicked(amiiboFile);
                     }
                 });
             }
@@ -410,7 +445,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             String amiiboType = "";
             String gameSeries = "";
             String character = "";
-            final String amiiboImageUrl;
+            String amiiboImageUrl;
 
             long amiiboId = item.getId();
             Amiibo amiibo = null;
@@ -439,16 +474,25 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             String query = settings.getQuery().toLowerCase();
 
             if (tagInfo == null) {
-                setAmiiboInfoText(this.txtName, boldMatchingText(amiiboName, query), false);
+                this.txtError.setVisibility(View.GONE);
             } else {
-                setAmiiboInfoText(this.txtName, tagInfo, false);
+                setAmiiboInfoText(this.txtError, tagInfo, false);
             }
+            setAmiiboInfoText(this.txtName, amiiboName, false);
             setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query), tagInfo != null);
             setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), tagInfo != null);
             setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query), tagInfo != null);
             setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query), tagInfo != null);
             //setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), tagInfo != null);
-            this.txtPath.setText(boldMatchingText(Util.friendlyPath(item.getFilePath()), query));
+            if (item.getFilePath() != null) {
+                this.itemView.setEnabled(true);
+                this.txtPath.setText(boldMatchingText(Util.friendlyPath(item.getFilePath()), query));
+                this.txtPath.setTextColor(this.txtPath.getResources().getColor(R.color.tag_text));
+            } else {
+                this.itemView.setEnabled(false);
+                this.txtPath.setText("");
+                this.txtPath.setTextColor(Color.RED);
+            }
             this.txtPath.setVisibility(View.VISIBLE);
 
             if (this.imageAmiibo != null) {
@@ -456,10 +500,10 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
                 Glide.with(itemView).clear(target);
                 if (amiiboImageUrl != null) {
                     Glide.with(itemView)
-                        .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
-                        .asBitmap()
-                        .load(amiiboImageUrl)
-                        .into(target);
+                            .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
+                            .asBitmap()
+                            .load(amiiboImageUrl)
+                            .into(target);
                 }
             }
         }
@@ -469,7 +513,8 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
                 return true;
             } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
-                ConnectivityManager cm = (ConnectivityManager) itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                ConnectivityManager cm = (ConnectivityManager)
+                        itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
                 return activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI;
@@ -510,7 +555,7 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
             } else {
                 textView.setVisibility(View.VISIBLE);
                 if (text.length() == 0) {
-                    textView.setText("Unknown");
+                    textView.setText(R.string.unknown);
                     textView.setEnabled(false);
                 } else {
                     textView.setText(text);
@@ -523,10 +568,10 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
     static class SimpleViewHolder extends AmiiboVewHolder {
         public SimpleViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(
-                LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.amiibo_simple_card, parent, false),
-                settings,
-                listener
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.amiibo_simple_card, parent, false),
+                    settings,
+                    listener
             );
         }
     }
@@ -534,10 +579,10 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
     static class CompactViewHolder extends AmiiboVewHolder {
         public CompactViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(
-                LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.amiibo_compact_card, parent, false),
-                settings,
-                listener
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.amiibo_compact_card, parent, false),
+                    settings,
+                    listener
             );
         }
     }
@@ -545,10 +590,10 @@ class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.A
     static class LargeViewHolder extends AmiiboVewHolder {
         public LargeViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(
-                LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.amiibo_large_card, parent, false),
-                settings,
-                listener
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.amiibo_large_card, parent, false),
+                    settings,
+                    listener
             );
         }
     }

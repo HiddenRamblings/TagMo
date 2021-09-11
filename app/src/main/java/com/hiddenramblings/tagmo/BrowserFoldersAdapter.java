@@ -1,10 +1,14 @@
 package com.hiddenramblings.tagmo;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.hiddenramblings.tagmo.settings.BrowserSettings;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,8 +25,6 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
 
     public BrowserFoldersAdapter(BrowserSettings settings) {
         this.settings = settings;
-        this.settings.addChangeListener(this);
-        this.settings.notifyChanges();
     }
 
     @Override
@@ -39,8 +41,9 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
         firstRun = false;
     }
 
+    @NonNull
     @Override
-    public FolderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FolderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case PARENT_FOLDER_VIEW_TYPE:
                 return new ParentFolderViewHolder(parent);
@@ -52,7 +55,7 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
     }
 
     @Override
-    public void onBindViewHolder(FolderViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FolderViewHolder holder, int position) {
         File folder;
         if (holder instanceof ParentFolderViewHolder) {
             folder = this.rootFolder.getParentFile();
@@ -106,8 +109,8 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
 
         public ParentFolderViewHolder(ViewGroup parent) {
             this(LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.parent_folder_view, parent, false));
+                    .from(parent.getContext())
+                    .inflate(R.layout.parent_folder_view, parent, false));
         }
 
         public ParentFolderViewHolder(View itemView) {
@@ -136,20 +139,17 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
 
         public ChildFolderViewHolder(ViewGroup parent) {
             this(LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.child_folder_view, parent, false));
+                    .from(parent.getContext())
+                    .inflate(R.layout.child_folder_view, parent, false));
         }
 
         public ChildFolderViewHolder(View itemView) {
             super(itemView);
 
             this.txtFolderName = itemView.findViewById(R.id.text);
-            this.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    settings.setBrowserRootFolder(folder);
-                    settings.notifyChanges();
-                }
+            this.itemView.setOnClickListener(view -> {
+                settings.setBrowserRootFolder(folder);
+                settings.notifyChanges();
             });
         }
 

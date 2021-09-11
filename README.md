@@ -1,4 +1,6 @@
-# TagMo's development is currently stagnant. If you want to contribute, please make sure to adress your PRs to the 'master2' branch, in order to keep it seperate from the original master. TagMo itself still works in it's current state. Thank you.
+# TagMo's primary branch is stagnant. 
+
+If you want to contribute, please make sure to adress your PRs to the 'experimental' branch of this repository in order to keep them seperate from the original project. Thank you.
 
 
 # What is TagMo?

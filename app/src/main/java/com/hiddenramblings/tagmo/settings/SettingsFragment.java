@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -579,8 +580,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void showSnackbar(String msg, int length) {
         Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.coordinator), msg, length);
         View snackbarLayout = snackbar.getView();
-        TextView textView = (TextView)snackbarLayout.findViewById(com.google.android.material.R.id.snackbar_text);
-        textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_stat_notification, 0, 0, 0);
+        TextView textView = snackbarLayout.findViewById(com.google.android.material.R.id.snackbar_text);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_stat_notification, 0, 0, 0);
+        } else {
+            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_stat_notification, 0, 0, 0);
+        }
+        textView.setGravity(Gravity.CENTER_VERTICAL);
         textView.setCompoundDrawablePadding(getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
         snackbar.show();
     }

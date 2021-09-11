@@ -1,5 +1,5 @@
-# TagMo's official repository is stagnant. 
-If you want to contribute, please make sure to adress your PRs to the 'master2' branch of this repository in order to keep them seperate from the original project. Thank you.
+# TagMo's primary branch is stagnant. 
+If you want to contribute, please make sure to adress your PRs to the 'experimental' branch of this repository in order to keep them seperate from the original project. Thank you.
 
 # README applies to the 'master' branch. 
 The master branch is an archival copy of the original source. TagMo, itself, is still functional. All documentation of functionality should be assumed relelvant, unless otherwise documented by the UI or source.

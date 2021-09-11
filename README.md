@@ -1,4 +1,4 @@
-# TagMo's primary branch is stable. 
+# TagMo's default branch is stable. 
 
 If you want to contribute, please make sure to adress your PRs to the 'experimental' branch of this repository in order to keep them seperate from the stable project. Thank you.
 

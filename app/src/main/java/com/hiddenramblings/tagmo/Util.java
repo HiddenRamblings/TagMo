@@ -69,33 +69,33 @@ public class Util {
 
         try {
             String line;
-            Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
-                    "logcat", "-ds",
-                    "AndroidRuntime:E"
-            });
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    mLogcatProc.getInputStream()));
-            log.append(separator);
-            log.append(separator);
-            log.append("AndroidRuntime Logs");
-            log.append(separator);
-            log.append(separator);
-            while ((line = reader.readLine()) != null) {
-                log.append(line);
-                log.append(separator);
-            }
-            reader.close();
+//            Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
+//                    "logcat", "-ds",
+//                    "AndroidRuntime:E"
+//            });
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(
+//                    mLogcatProc.getInputStream()));
+//            log.append(separator);
+//            log.append(separator);
+//            log.append("AndroidRuntime Logs");
+//            log.append(separator);
+//            log.append(separator);
+//            while ((line = reader.readLine()) != null) {
+//                log.append(line);
+//                log.append(separator);
+//            }
+//            reader.close();
 
-            mLogcatProc = Runtime.getRuntime().exec(new String[]{
+            Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                     "logcat", "-d",
                     BuildConfig.APPLICATION_ID,
                     "com.smartrac.nfc",
                     "-t", "2048"
             });
-            reader = new BufferedReader(new InputStreamReader(
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
                     mLogcatProc.getInputStream()));
-            log.append(separator);
-            log.append("TagMo Verbose Logs");
+//            log.append(separator);
+//            log.append("TagMo Verbose Logs");
             log.append(separator);
             log.append(separator);
             while ((line = reader.readLine()) != null) {

@@ -791,12 +791,9 @@ public class BrowserActivity extends AppCompatActivity implements
         if (Thread.currentThread().isInterrupted())
             return;
 
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                settings.setFolders(folders);
-                settings.notifyChanges();
-            }
+        this.runOnUiThread(() -> {
+            settings.setFolders(folders);
+            settings.notifyChanges();
         });
     }
 
@@ -1059,16 +1056,18 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 TagMo.Error(TAG, R.string.media_scan_fail, e);
             }
-            new AlertDialog.Builder(this)
-                    .setMessage(getString(R.string.wrote_file, fName))
-                    .setPositiveButton(R.string.close, null)
-                    .show();
+            this.runOnUiThread(() ->
+                    new AlertDialog.Builder(BrowserActivity.this)
+                            .setMessage(getString(R.string.wrote_file, fName))
+                            .setPositiveButton(R.string.close, null)
+                            .show());
         } catch (Exception e) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.error)
-                    .setMessage(getString(R.string.write_error, e.getMessage()))
-                    .setPositiveButton(R.string.close, null)
-                    .show();
+            this.runOnUiThread(() ->
+                    new AlertDialog.Builder(BrowserActivity.this)
+                            .setTitle(R.string.error)
+                            .setMessage(getString(R.string.write_error, e.getMessage()))
+                            .setPositiveButton(R.string.close, null)
+                            .show());
         }
     }
 

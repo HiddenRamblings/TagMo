@@ -132,7 +132,7 @@
     <string name="bonus_two">Bonus Effect 2</string>
     <string name="bonus_three">Bonus Effect 2</string>
 
-    <string name="wrote_file">Wrote to file %1$s in TagMo directory.</string>
+    <string name="wrote_file">Wrote to %1$s in TagMo directory.</string>
     <string name="write_error">Error writing to file: %1$s</string>
     <string name="no_data">No data to write</string>
     <string name="tag_type_error">Error getting tag data. Possibly not a NTAG215</string>

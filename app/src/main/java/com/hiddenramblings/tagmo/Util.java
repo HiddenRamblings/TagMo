@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo;
 import android.content.Context;
 import android.os.Build;
 
+import com.endgames.environment.Storage;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import org.json.JSONException;

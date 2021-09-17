@@ -49,7 +49,7 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.hiddenramblings.tagmo;
+package com.endgames.environment;
 
 import android.os.Build;
 import android.os.Environment;
@@ -57,6 +57,8 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
+
+import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.File;
 

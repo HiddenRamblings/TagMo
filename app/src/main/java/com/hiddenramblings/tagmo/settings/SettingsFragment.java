@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult;
 import androidx.annotation.NonNull;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
@@ -40,7 +41,6 @@ import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.PreferenceByKey;
 import org.androidannotations.annotations.PreferenceChange;
 import org.androidannotations.annotations.PreferenceClick;
@@ -75,33 +75,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
     private static final String BACKGROUND_SYNC_AMIIBO_MANAGER = "sync_amiibo_manager";
 
-    private static final String AMIIBO_API_URL = "https://www.amiiboapi.com/api/amiibo/";
-
     @Pref
     Preferences_ prefs;
 
-    @PreferenceByKey(R.string.settings_import_keys)
-    Preference key;
-    @PreferenceByKey(R.string.settings_enable_tag_type_validation)
-    CheckBoxPreference enableTagTypeValidation;
-    @PreferenceByKey(R.string.settings_enable_power_tag_support)
-    CheckBoxPreference enablePowerTagSupport;
-    @PreferenceByKey(R.string.settings_info_amiibos)
-    Preference amiiboStats;
-    @PreferenceByKey(R.string.settings_info_game_series)
-    Preference gameSeriesStats;
-    @PreferenceByKey(R.string.settings_info_characters)
-    Preference characterStats;
-    @PreferenceByKey(R.string.settings_info_amiibo_series)
-    Preference amiiboSeriesStats;
-    @PreferenceByKey(R.string.settings_info_amiibo_types)
-    Preference amiiboTypeStats;
+    Preference key = findPreference(getString(R.string.settings_import_keys));
+    CheckBoxPreference enableTagTypeValidation = findPreference(getString(R.string.settings_enable_tag_type_validation));
+    CheckBoxPreference enablePowerTagSupport = findPreference(getString(R.string.settings_enable_power_tag_support));
+    Preference amiiboStats = findPreference(getString(R.string.settings_info_amiibos));
+    Preference gameSeriesStats = findPreference(getString(R.string.settings_info_game_series));
+    Preference characterStats = findPreference(getString(R.string.settings_info_characters));
+    Preference amiiboSeriesStats = findPreference(getString(R.string.settings_info_amiibo_series));
+    Preference amiiboTypeStats = findPreference(getString(R.string.settings_info_amiibo_types));
     @PreferenceByKey(R.string.image_network_settings)
     ListPreference imageNetworkSetting;
-    @PreferenceByKey(R.string.settings_disable_debug)
-    CheckBoxPreference disableDebug;
-    @PreferenceByKey(R.string.settings_ignore_sdcard)
-    CheckBoxPreference ignoreSdcard;
+    CheckBoxPreference disableDebug = findPreference(getString(R.string.settings_disable_debug));
+    CheckBoxPreference ignoreSdcard = findPreference(getString(R.string.settings_ignore_sdcard));
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -362,7 +350,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = Util.loadAmiiboManager(this.getContext());
+            amiiboManager = Util.loadAmiiboManager(requireContext());
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -503,7 +491,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void downloadAmiiboAPIDataTask() {
         showSnackbar(getString(R.string.sync_amiibo_status, getString(R.string.sync_processing)), Snackbar.LENGTH_INDEFINITE);
         try {
-            URL url = new URL(AMIIBO_API_URL);
+            URL url = new URL(getString(R.string.amiibo_api_url));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
 
@@ -548,37 +536,42 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    @OnActivityResult(RESULT_KEYS)
-    void onLoadKeys(int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK)
-            return;
-
-        updateKeys(data.getData());
-    }
-
-    @OnActivityResult(RESULT_IMPORT_AMIIBO_DATABASE)
-    void onImportAmiiboDatabase(int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK)
-            return;
-
-        updateAmiiboManager(data.getData());
-    }
-
     private void showFileChooser(String title, String mimeType, int resultCode) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType(mimeType);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-        try {
-            startActivityForResult(Intent.createChooser(intent, title), resultCode);
-        } catch (android.content.ActivityNotFoundException ex) {
-            TagMo.Error("", ex.getMessage());
+        switch(resultCode) {
+            case RESULT_KEYS:
+                try {
+                    registerForActivityResult(new StartActivityForResult(),
+                            result -> {
+                        if (result.getResultCode() != Activity.RESULT_OK
+                                || result.getData() == null)
+                            updateKeys(result.getData().getData());
+                    }).launch(Intent.createChooser(intent, title));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    TagMo.Error("", ex.getMessage());
+                }
+                break;
+            case RESULT_IMPORT_AMIIBO_DATABASE:
+                try {
+                    registerForActivityResult(new StartActivityForResult(),
+                            result -> {
+                        if (result.getResultCode() != Activity.RESULT_OK
+                                || result.getData() == null)
+                            updateAmiiboManager(result.getData().getData());
+                    }).launch(Intent.createChooser(intent, title));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    TagMo.Error("", ex.getMessage());
+                }
+                break;
         }
     }
 
     @UiThread
     public void showSnackbar(String msg, int length) {
-        Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.coordinator), msg, length);
+        Snackbar snackbar = Snackbar.make(requireActivity().findViewById(R.id.coordinator), msg, length);
         View snackbarLayout = snackbar.getView();
         TextView textView = snackbarLayout.findViewById(com.google.android.material.R.id.snackbar_text);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {

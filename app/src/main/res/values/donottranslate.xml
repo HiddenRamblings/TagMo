@@ -30,4 +30,6 @@
     <string name="settings_disable_debug">settings_disable_debug</string>
     <string name="settings_ignore_sdcard">settings_ignore_sdcard</string>
     <string name="image_network_settings">\@string/image_network_settings</string>
+
+    <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
 </resources>

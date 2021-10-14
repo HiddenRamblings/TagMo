@@ -27,24 +27,6 @@ android {
 
     project.archivesBaseName = "TagMo-" + 'git rev-parse --short HEAD'.execute().text.trim()
 
-//    productFlavors {
-//        fat {
-//            dimension "abi"
-//            ndk {
-//                abiFilters "x86", "armeabi-v7a"
-//            }
-//        }
-//    }
-//
-//    splits {
-//        abi {
-//            enable true
-//            reset()
-//            include 'x86', 'armeabi-v7a'
-//            universalApk true
-//        }
-//    }
-
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"

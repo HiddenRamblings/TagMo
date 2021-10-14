@@ -981,7 +981,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     OnCloseClickListener onFilterCharacterChipCloseClick = new OnCloseClickListener() {
         @Override
-        public void onCloseClick(View v) {
+        public void onCloseClick(@NonNull View v) {
             settings.setCharacterFilter("");
             settings.notifyChanges();
         }
@@ -993,7 +993,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     OnCloseClickListener onFilterAmiiboSeriesChipCloseClick = new OnCloseClickListener() {
         @Override
-        public void onCloseClick(View v) {
+        public void onCloseClick(@NonNull View v) {
             settings.setAmiiboSeriesFilter("");
             settings.notifyChanges();
         }
@@ -1019,7 +1019,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     OnCloseClickListener onAmiiboTypeChipCloseClick = new OnCloseClickListener() {
         @Override
-        public void onCloseClick(View v) {
+        public void onCloseClick(@NonNull View v) {
             settings.setAmiiboTypeFilter("");
             settings.notifyChanges();
         }

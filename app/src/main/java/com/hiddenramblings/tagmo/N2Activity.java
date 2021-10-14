@@ -204,8 +204,7 @@ public class N2Activity extends AppCompatActivity {
                 TagMo.Debug(TAG, tag.toString());
                 NfcNtag mifare = NfcNtag.get(tag);
                 mifare.connect();
-                Intent result = null;
-                int resultCode = Activity.RESULT_CANCELED;
+                setResult(Activity.RESULT_CANCELED);
                 try {
                     TagMo.Debug(TAG, mode);
                     byte[] data;
@@ -216,7 +215,7 @@ public class N2Activity extends AppCompatActivity {
                                 throw new Exception(getString(R.string.no_data));
                             }
                             mifare.amiiboWrite(0, 0, data);
-                            resultCode = Activity.RESULT_OK;
+                            setResult(Activity.RESULT_OK);
                             showToast(getString(R.string.done));
                             break;
                         case ACTION_WRITE_TAG_FULL:
@@ -225,7 +224,7 @@ public class N2Activity extends AppCompatActivity {
                                 throw new Exception(getString(R.string.no_data));
                             }
                             mifare.amiiboFastWrite(0, 0, data);
-                            resultCode = Activity.RESULT_OK;
+                            setResult(Activity.RESULT_OK);
                             showToast(getString(R.string.done));
                             break;
                         case ACTION_WRITE_TAG_DATA:
@@ -235,14 +234,14 @@ public class N2Activity extends AppCompatActivity {
                                 throw new Exception(getString(R.string.no_data));
                             }
                             mifare.amiiboFastWrite(0, 0, data);
-                            resultCode = Activity.RESULT_OK;
+                            setResult(Activity.RESULT_OK);
                             showToast("Done");
                             break;
                         case ACTION_SCAN_TAG:
                             data = mifare.amiiboFastRead(0,0,0);
-                            resultCode = Activity.RESULT_OK;
-                            result = new Intent(ACTION_NFC_SCANNED);
+                            Intent result = new Intent(ACTION_NFC_SCANNED);
                             result.putExtra(EXTRA_TAG_DATA, data);
+                            setResult(Activity.RESULT_OK, result);
                             showToast(getString(R.string.done));
                             break;
                         default:
@@ -256,7 +255,7 @@ public class N2Activity extends AppCompatActivity {
                         throw new Exception(getString(R.string.tag_close_error, ":" + e.getMessage()));
                     }
                 }
-                finishActivityWithResult(resultCode, result);
+                finish();
             } catch (Exception e) {
                 TagMo.Error(TAG, R.string.error, e);
                 String error = e.getMessage();
@@ -266,12 +265,6 @@ public class N2Activity extends AppCompatActivity {
                 showError(error);
             }
         }
-    }
-
-    @UiThread
-    void finishActivityWithResult(int resultcode, Intent resultIntent) {
-        setResult(resultcode, resultIntent);
-        finish();
     }
 
     @UiThread

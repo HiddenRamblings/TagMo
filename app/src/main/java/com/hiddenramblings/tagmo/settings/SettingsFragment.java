@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.settings;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -63,6 +64,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+@SuppressLint("NonConstantResourceId")
 @EFragment
 public class SettingsFragment extends PreferenceFragmentCompat {
     public static final String IMAGE_NETWORK_NEVER = "NEVER";
@@ -78,18 +80,28 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Pref
     Preferences_ prefs;
 
-    Preference key = findPreference(getString(R.string.settings_import_keys));
-    CheckBoxPreference enableTagTypeValidation = findPreference(getString(R.string.settings_enable_tag_type_validation));
-    CheckBoxPreference enablePowerTagSupport = findPreference(getString(R.string.settings_enable_power_tag_support));
-    Preference amiiboStats = findPreference(getString(R.string.settings_info_amiibos));
-    Preference gameSeriesStats = findPreference(getString(R.string.settings_info_game_series));
-    Preference characterStats = findPreference(getString(R.string.settings_info_characters));
-    Preference amiiboSeriesStats = findPreference(getString(R.string.settings_info_amiibo_series));
-    Preference amiiboTypeStats = findPreference(getString(R.string.settings_info_amiibo_types));
+    @PreferenceByKey(R.string.settings_import_keys)
+    Preference key;
+    @PreferenceByKey(R.string.settings_enable_tag_type_validation)
+    CheckBoxPreference enableTagTypeValidation;
+    @PreferenceByKey(R.string.settings_enable_power_tag_support)
+    CheckBoxPreference enablePowerTagSupport;
+    @PreferenceByKey(R.string.settings_info_amiibos)
+    Preference amiiboStats;
+    @PreferenceByKey(R.string.settings_info_game_series)
+    Preference gameSeriesStats;
+    @PreferenceByKey(R.string.settings_info_characters)
+    Preference characterStats;
+    @PreferenceByKey(R.string.settings_info_amiibo_series)
+    Preference amiiboSeriesStats;
+    @PreferenceByKey(R.string.settings_info_amiibo_types)
+    Preference amiiboTypeStats;
     @PreferenceByKey(R.string.image_network_settings)
     ListPreference imageNetworkSetting;
-    CheckBoxPreference disableDebug = findPreference(getString(R.string.settings_disable_debug));
-    CheckBoxPreference ignoreSdcard = findPreference(getString(R.string.settings_ignore_sdcard));
+    @PreferenceByKey(R.string.settings_disable_debug)
+    CheckBoxPreference disableDebug;
+    @PreferenceByKey(R.string.settings_ignore_sdcard)
+    CheckBoxPreference ignoreSdcard;
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -372,7 +384,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void updateAmiiboManagerTask(Uri data) {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = AmiiboManager.parse(this.getContext(), data);
+            amiiboManager = AmiiboManager.parse(requireContext(), data);
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -388,7 +400,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return;
 
         try {
-            Util.saveLocalAmiiboInfo(this.getContext(), amiiboManager);
+            Util.saveLocalAmiiboInfo(requireContext(), amiiboManager);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -409,11 +421,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Background(id = BACKGROUND_AMIIBO_MANAGER)
     void resetAmiiboManagerTask() {
-        this.getContext().deleteFile(Util.AMIIBO_DATABASE_FILE);
+        requireContext().deleteFile(Util.AMIIBO_DATABASE_FILE);
 
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = Util.loadDefaultAmiiboManager(this.getContext());
+            amiiboManager = Util.loadDefaultAmiiboManager(requireContext());
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -453,7 +465,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     void downloadAmiiboAPIDataCompat() {
-        ProviderInstaller.installIfNeededAsync(getContext(), new ProviderInstaller.ProviderInstallListener() {
+        ProviderInstaller.installIfNeededAsync(requireContext(), new ProviderInstaller.ProviderInstallListener() {
             @Override
             public void onProviderInstalled() {
                 BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
@@ -466,13 +478,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 if (availability.isUserResolvableError(errorCode)) {
                     // Recoverable error. Show a dialog prompting the user to
                     // install/update/enable Google Play services.
-                    availability.showErrorDialogFragment(getActivity(), errorCode, 1, dialog -> {
+                    availability.showErrorDialogFragment(requireActivity(), errorCode, 1, dialog -> {
                         // The user chose not to take the recovery action
-                        getActivity().finish();
+                        requireActivity().finish();
                     });
                 } else {
                     // Google Play services is not available.
-                    getActivity().finish();
+                    requireActivity().finish();
                 }
             }
         });
@@ -522,7 +534,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 if (Thread.currentThread().isInterrupted())
                     return;
 
-                Util.saveLocalAmiiboInfo(this.getContext(), amiiboManager);
+                Util.saveLocalAmiiboInfo(requireContext(), amiiboManager);
                 setAmiiboManager(amiiboManager);
                 showSnackbar(getString(R.string.sync_amiibo_status, getString(R.string.sync_complete)), Snackbar.LENGTH_SHORT);
             } else {
@@ -548,7 +560,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             result -> {
                         if (result.getResultCode() != Activity.RESULT_OK
                                 || result.getData() == null)
-                            updateKeys(result.getData().getData());
+                            return;
+                        updateKeys(result.getData().getData());
                     }).launch(Intent.createChooser(intent, title));
                 } catch (android.content.ActivityNotFoundException ex) {
                     TagMo.Error("", ex.getMessage());
@@ -560,7 +573,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             result -> {
                         if (result.getResultCode() != Activity.RESULT_OK
                                 || result.getData() == null)
-                            updateAmiiboManager(result.getData().getData());
+                            return;
+                        updateAmiiboManager(result.getData().getData());
                     }).launch(Intent.createChooser(intent, title));
                 } catch (android.content.ActivityNotFoundException ex) {
                     TagMo.Error("", ex.getMessage());

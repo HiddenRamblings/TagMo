@@ -21,8 +21,8 @@ public class TagMo extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        mContext = new WeakReference<Context>(this);
-        mPrefs = new WeakReference<Preferences_>(prefs);
+        mContext = new WeakReference<>(this);
+        mPrefs = new WeakReference<>(prefs);
     }
 
     public static Context getContext() {

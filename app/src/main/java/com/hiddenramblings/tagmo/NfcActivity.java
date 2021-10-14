@@ -157,8 +157,7 @@ public class NfcActivity extends AppCompatActivity {
                 throw new Exception(getString(R.string.tag_type_error));
             }
             mifare.connect();
-            Intent result = null;
-            int resultCode = Activity.RESULT_CANCELED;
+            setResult(Activity.RESULT_CANCELED);
             try {
                 TagMo.Debug(TAG, mode);
                 byte[] data;
@@ -169,7 +168,7 @@ public class NfcActivity extends AppCompatActivity {
                             throw new Exception(getString(R.string.no_data));
                         }
                         TagWriter.writeToTagRaw(mifare, data, prefs.enableTagTypeValidation().get());
-                        resultCode = Activity.RESULT_OK;
+                        setResult(Activity.RESULT_OK);
                         showToast(getString(R.string.done));
                         break;
                     case ACTION_WRITE_TAG_FULL:
@@ -178,7 +177,7 @@ public class NfcActivity extends AppCompatActivity {
                             throw new Exception(getString(R.string.no_data));
                         }
                         TagWriter.writeToTagAuto(mifare, data, this.keyManager, prefs.enableTagTypeValidation().get(), prefs.enablePowerTagSupport().get());
-                        resultCode = Activity.RESULT_OK;
+                        setResult(Activity.RESULT_OK);
                         showToast(getString(R.string.done));
                         break;
                     case ACTION_WRITE_TAG_DATA:
@@ -188,14 +187,14 @@ public class NfcActivity extends AppCompatActivity {
                             throw new Exception(getString(R.string.no_data));
                         }
                         TagWriter.restoreTag(mifare, data, ignoreUid, this.keyManager, prefs.enableTagTypeValidation().get());
-                        resultCode = Activity.RESULT_OK;
+                        setResult(Activity.RESULT_OK);
                         showToast("Done");
                         break;
                     case ACTION_SCAN_TAG:
                         data = TagWriter.readFromTag(mifare);
-                        resultCode = Activity.RESULT_OK;
-                        result = new Intent(ACTION_NFC_SCANNED);
+                        Intent result = new Intent(ACTION_NFC_SCANNED);
                         result.putExtra(EXTRA_TAG_DATA, data);
+                        setResult(Activity.RESULT_OK, result);
                         showToast(getString(R.string.done));
                         break;
                     default:
@@ -209,7 +208,7 @@ public class NfcActivity extends AppCompatActivity {
                     throw new Exception(getString(R.string.tag_close_error, ":" + e.getMessage()));
                 }
             }
-            finishActivityWithResult(resultCode, result);
+            finish();
         } catch (Exception e) {
             TagMo.Error(TAG, R.string.error, e);
             String error = e.getMessage();
@@ -219,12 +218,6 @@ public class NfcActivity extends AppCompatActivity {
             showError(error);
         }
 
-    }
-
-    @UiThread
-    void finishActivityWithResult(int resultcode, Intent resultIntent) {
-        setResult(resultcode, resultIntent);
-        finish();
     }
 
     @UiThread

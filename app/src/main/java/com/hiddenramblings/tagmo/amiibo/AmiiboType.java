@@ -26,12 +26,6 @@ public class AmiiboType implements Comparable<AmiiboType> {
 
     @Override
     public int compareTo(@NonNull AmiiboType amiiboType) {
-        if (this.id == amiiboType.id) {
-            return 0;
-        } else if (this.id < amiiboType.id) {
-            return -1;
-        } else {
-            return 1;
-        }
+        return Long.compare(this.id, amiiboType.id);
     }
 }

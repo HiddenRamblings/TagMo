@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.data;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -17,6 +18,7 @@ import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.TextChange;
 import org.androidannotations.annotations.ViewById;
 
+@SuppressLint("NonConstantResourceId")
 @EFragment(R.layout.fragment_app_data_tp)
 public class AppDataTPFragment extends AppDataFragment {
     public static final int APP_ID = 0x1019C800;
@@ -65,7 +67,7 @@ public class AppDataTPFragment extends AppDataFragment {
         loadLevel();
         loadHearts();
 
-        onAppDataChecked(((TagDataActivity) getContext()).isAppDataInitialized);
+        onAppDataChecked(((TagDataActivity) requireContext()).isAppDataInitialized);
     }
 
     @Override

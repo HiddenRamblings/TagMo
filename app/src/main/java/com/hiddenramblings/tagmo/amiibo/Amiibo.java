@@ -98,7 +98,6 @@ public class Amiibo implements Comparable<Amiibo> {
     public static String getImageUrl(long amiiboId) {
         int head = (int) ((amiiboId & HEAD_MASK) >> HEAD_BITSHIFT);
         int tail = (int) ((amiiboId & TAIL_MASK) >> TAIL_BITSHIFT);
-        ;
         return String.format(AMIIBO_API_IMAGE_URL, head, tail);
     }
 
@@ -180,32 +179,28 @@ public class Amiibo implements Comparable<Amiibo> {
 
     public static boolean matchesGameSeriesFilter(GameSeries gameSeries, String gameSeriesFilter) {
         if (gameSeries != null) {
-            if (!gameSeriesFilter.isEmpty() && !gameSeries.name.equals(gameSeriesFilter))
-                return false;
+            return gameSeriesFilter.isEmpty() || gameSeries.name.equals(gameSeriesFilter);
         }
         return true;
     }
 
     public static boolean matchesCharacterFilter(Character character, String characterFilter) {
         if (character != null) {
-            if (!characterFilter.isEmpty() && !character.name.equals(characterFilter))
-                return false;
+            return characterFilter.isEmpty() || character.name.equals(characterFilter);
         }
         return true;
     }
 
     public static boolean matchesAmiiboSeriesFilter(AmiiboSeries amiiboSeries, String amiiboSeriesFilter) {
         if (amiiboSeries != null) {
-            if (!amiiboSeriesFilter.isEmpty() && !amiiboSeries.name.equals(amiiboSeriesFilter))
-                return false;
+            return amiiboSeriesFilter.isEmpty() || amiiboSeries.name.equals(amiiboSeriesFilter);
         }
         return true;
     }
 
     public static boolean matchesAmiiboTypeFilter(AmiiboType amiiboType, String amiiboTypeFilter) {
         if (amiiboType != null) {
-            if (!amiiboTypeFilter.isEmpty() && !amiiboType.name.equals(amiiboTypeFilter))
-                return false;
+            return amiiboTypeFilter.isEmpty() || amiiboType.name.equals(amiiboTypeFilter);
         }
         return true;
     }

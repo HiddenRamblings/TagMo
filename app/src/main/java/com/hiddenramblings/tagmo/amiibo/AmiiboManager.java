@@ -115,7 +115,7 @@ public class AmiiboManager {
     }
 
     public static AmiiboManager parseAmiiboAPI(JSONObject json) throws JSONException, ParseException {
-        final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd");
+        final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
         AmiiboManager manager = new AmiiboManager();
         JSONArray amiibosJSON = json.getJSONArray("amiibo");
@@ -164,7 +164,7 @@ public class AmiiboManager {
     }
 
     public JSONObject toJSON() throws JSONException {
-        final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd");
+        final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
         JSONObject outputJSON = new JSONObject();
 

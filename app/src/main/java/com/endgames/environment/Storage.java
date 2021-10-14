@@ -1,5 +1,5 @@
 /* ====================================================================
- * Copyright (c) 2012-2021 Abandoned Cart.  All rights reserved.
+ * Copyright (c) 2012-2021 AbandonedCart.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -16,19 +16,19 @@
  * 3. All advertising materials mentioning features or use of this
  *    software and redistributions of any form whatsoever
  *    must display the following acknowledgment:
- *    "This product includes software developed by Abandoned Cart" unless
+ *    "This product includes software developed by AbandonedCart" unless
  *    otherwise displayed by tagged, public repository entries.
  *
- * 4. The names "8-Bit Dream", "TwistedUmbrella" and "Abandoned Cart"
+ * 4. The names "8-Bit Dream", "TwistedUmbrella" and "AbandonedCart"
  *    must not be used in any form to endorse or promote products
  *    derived from this software without prior written permission. For
  *    written permission, please contact enderinexiledc@gmail.com
  *
  * 5. Products derived from this software may not be called "8-Bit Dream",
- *    "TwistedUmbrella" or "Abandoned Cart" nor may these labels appear
- *    in their names without prior written permission of Abandoned Cart.
+ *    "TwistedUmbrella" or "AbandonedCart" nor may these labels appear
+ *    in their names without prior written permission of AbandonedCart.
  *
- * THIS SOFTWARE IS PROVIDED BY Abandoned Cart ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY AbandonedCart ``AS IS'' AND ANY
  * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR

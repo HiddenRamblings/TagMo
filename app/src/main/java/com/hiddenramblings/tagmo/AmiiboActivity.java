@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,9 +60,6 @@ public class AmiiboActivity extends AppCompatActivity {
     public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
     public static final String ARG_TAG_DATA = "tag_data";
-
-    private static final int NFC_ACTIVITY = 0x102;
-    private static final int EDIT_TAG = 0x103;
 
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
@@ -135,22 +134,19 @@ public class AmiiboActivity extends AppCompatActivity {
         Intent intent = new Intent(this, TagDataActivity_.class);
         intent.setAction(Actions.ACTION_EDIT_DATA);
         intent.putExtra(Actions.EXTRA_TAG_DATA, this.tagData);
-        startActivityForResult(intent, EDIT_TAG);
-    }
+        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            TagMo.Debug(TAG, R.string.tag_data);
+            if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
+                return;
 
-    @OnActivityResult(EDIT_TAG)
-    void onEditTagResult(int resultCode, Intent data) {
-        TagMo.Debug(TAG, R.string.tag_data);
-        if (resultCode != Activity.RESULT_OK || data == null)
-            return;
+            TagMo.Debug(TAG, R.string.tag_data);
+            if (!Actions.ACTION_EDIT_COMPLETE.equals(result.getData().getAction()))
+                return;
 
-        TagMo.Debug(TAG, R.string.tag_data);
-        if (!Actions.ACTION_EDIT_COMPLETE.equals(data.getAction()))
-            return;
-
-        TagMo.Debug(TAG, R.string.tag_data);
-        this.tagData = data.getByteArrayExtra(Actions.EXTRA_TAG_DATA);
-        this.updateAmiiboView();
+            TagMo.Debug(TAG, R.string.tag_data);
+            this.tagData = result.getData().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
+            this.updateAmiiboView();
+        }).launch(intent);
     }
 
     SimpleTarget<Bitmap> amiiboImageTarget = new SimpleTarget<Bitmap>() {
@@ -245,11 +241,23 @@ public class AmiiboActivity extends AppCompatActivity {
         }
     }
 
+    ActivityResultLauncher<Intent> onNFCResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
+            return;
+
+        if (!NfcActivity.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+            return;
+
+        this.tagData = result.getData().getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
+        updateAmiiboView();
+    });
+
     void writeTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(NfcActivity.ACTION_WRITE_TAG_FULL);
         intent.putExtra(NfcActivity.EXTRA_TAG_DATA, this.tagData);
-        startActivityForResult(intent, NFC_ACTIVITY);
+        onNFCResult.launch(intent);
     }
 
     void restoreTag() {
@@ -257,7 +265,7 @@ public class AmiiboActivity extends AppCompatActivity {
         intent.setAction(NfcActivity.ACTION_WRITE_TAG_DATA);
         intent.putExtra(NfcActivity.EXTRA_TAG_DATA, this.tagData);
         intent.putExtra(NfcActivity.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
-        startActivityForResult(intent, NFC_ACTIVITY);
+        onNFCResult.launch(intent);
     }
 
     void viewHex() {
@@ -265,18 +273,6 @@ public class AmiiboActivity extends AppCompatActivity {
         intent.setAction(Actions.ACTION_EDIT_DATA);
         intent.putExtra(Actions.EXTRA_TAG_DATA, this.tagData);
         startActivity(intent);
-    }
-
-    @OnActivityResult(NFC_ACTIVITY)
-    void onNFCResult(int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK || data == null)
-            return;
-
-        if (!NfcActivity.ACTION_NFC_SCANNED.equals(data.getAction()))
-            return;
-
-        this.tagData = data.getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
-        updateAmiiboView();
     }
 
     @Click(R.id.imageAmiibo)

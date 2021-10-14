@@ -2,9 +2,12 @@ package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.app.SearchManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -31,6 +34,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -44,6 +49,8 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
+import com.hiddenramblings.tagmo.github.InstallReceiver;
+import com.hiddenramblings.tagmo.github.RequestCommit;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.SettingsActivity_;
 import com.robertlevonyan.views.chip.Chip;
@@ -63,10 +70,18 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.api.BackgroundExecutor;
 import org.apmem.tools.layouts.FlowLayout;
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -155,6 +170,8 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuRefresh;
     @OptionsMenuItem(R.id.dump_logcat)
     MenuItem menuLogcat;
+    @OptionsMenuItem(R.id.update_tagmo)
+    MenuItem menuUpdate;
 
     SearchView searchView;
     BottomSheetBehavior bottomSheetBehavior;
@@ -163,6 +180,8 @@ public class BrowserActivity extends AppCompatActivity implements
     Preferences_ prefs;
     @InstanceState
     BrowserSettings settings;
+
+    private String lastCommit;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -225,6 +244,17 @@ public class BrowserActivity extends AppCompatActivity implements
         this.foldersView.setAdapter(new BrowserFoldersAdapter(settings));
 
         this.loadAmiiboManager();
+
+        new RequestCommit().setListener(result -> {
+            try {
+                JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
+                String sha = (String) ((JSONObject) jsonObject.get("object")).get("sha");
+                lastCommit = sha.substring(0,7);
+                menuUpdate.setVisible(!lastCommit.equals(BuildConfig.COMMIT));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).execute(getString(R.string.git_url));
     }
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -465,6 +495,12 @@ public class BrowserActivity extends AppCompatActivity implements
         dumpLogcat();
     }
 
+
+    @OptionsItem(R.id.update_tagmo)
+    void onUpdateTagMoClicked() {
+        requestUpdate();
+    }
+
     @OptionsItem(R.id.filter_game_series)
     boolean onFilterGameSeriesClick() {
         SubMenu subMenu = menuFilterGameSeries.getSubMenu();
@@ -700,7 +736,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Click(R.id.fab)
     public void onFabClicked() {
-        onNFCActivity.launch(new Intent(this, NfcActivity_.class).setAction(NfcActivity.ACTION_SCAN_TAG));
+        onNFCActivity.launch(new Intent(this,
+                NfcActivity_.class).setAction(NfcActivity.ACTION_SCAN_TAG));
     }
 
     @Override
@@ -1069,6 +1106,99 @@ public class BrowserActivity extends AppCompatActivity implements
                             .setMessage(getString(R.string.write_error, e.getMessage()))
                             .setPositiveButton(R.string.close, null)
                             .show());
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    void installUpdate(Uri apkUri) throws IOException {
+        PackageInstaller installer = getPackageManager().getPackageInstaller();
+        ContentResolver resolver = getContentResolver();
+        InputStream apkStream = resolver.openInputStream(apkUri);
+        PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
+                PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+        int sessionId = installer.createSession(params);
+        PackageInstaller.Session session = installer.openSession(sessionId);
+        OutputStream sessionStream = session.openWrite("NAME", 0,
+                DocumentFile.fromSingleUri(this, apkUri).length());
+        byte[] buf = new byte[8192];
+        int length;
+        while ((length = apkStream.read(buf)) > 0) {
+            sessionStream.write(buf, 0, length);
+        }
+        apkStream.close();
+        session.fsync(sessionStream);
+        sessionStream.close();
+        PendingIntent pi = PendingIntent.getBroadcast(
+                this, 8675309,
+                new Intent(this, InstallReceiver.class),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        session.commit(pi.getIntentSender());
+        session.close();
+    }
+
+    @Background
+    void downloadUpdate() {
+        String link = getString(R.string.apk_url, lastCommit);
+        File apk = new File(getFilesDir(), link.substring(link.lastIndexOf('/') + 1));
+        try {
+            URL u = new URL(link);
+            InputStream is = u.openStream();
+
+            DataInputStream dis = new DataInputStream(is);
+
+            byte[] buffer = new byte[1024];
+            int length;
+
+            FileOutputStream fos = new FileOutputStream(apk);
+            while ((length = dis.read(buffer))>0) {
+                fos.write(buffer, 0, length);
+            }
+            fos.close();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                installUpdate(FileProvider.getUriForFile(this,
+                        "com.hiddenramblings.tagmo.provider", apk));
+            } else {
+                Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.setDataAndType(
+                            FileProvider.getUriForFile(this,
+                                    "com.hiddenramblings.tagmo.provider", apk),
+                            "application/vnd.android.package-archive");
+                } else {
+                    intent.setDataAndType(Uri.fromFile(apk),
+                            "application/vnd.android.package-archive");
+                }
+                intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+                intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,
+                        getApplicationInfo().packageName);
+                startActivity(intent);
+            }
+        } catch (MalformedURLException mue) {
+            mue.printStackTrace();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } catch (SecurityException se) {
+            se.printStackTrace();
+        }
+    }
+
+    ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> downloadUpdate());
+    void requestUpdate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (getPackageManager().canRequestPackageInstalls()) {
+                downloadUpdate();
+            } else {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+                intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
+                onRequestInstall.launch(intent);
+            }
+        } else {
+            downloadUpdate();
         }
     }
 

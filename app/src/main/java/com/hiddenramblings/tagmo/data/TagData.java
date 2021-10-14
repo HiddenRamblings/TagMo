@@ -1,13 +1,10 @@
 package com.hiddenramblings.tagmo.data;
 
-import android.os.Build;
-
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.TagUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
 import java.util.Date;
 
@@ -136,31 +133,19 @@ public class TagData {
     }
 
     public String getNickname() throws UnsupportedEncodingException {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-            return TagUtil.getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, StandardCharsets.UTF_16BE);
-        else
-            return TagUtil.getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, Charset.forName("UTF-16BE"));
+        return TagUtil.getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE);
     }
 
     public void setNickname(String value) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-            TagUtil.putString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, StandardCharsets.UTF_16BE, value);
-        else
-            TagUtil.putString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, Charset.forName("UTF-16BE"), value);
+            TagUtil.putString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE, value);
     }
 
     public String getMiiName() throws UnsupportedEncodingException {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-            return TagUtil.getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, StandardCharsets.UTF_16LE);
-        else
-            return TagUtil.getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, Charset.forName("UTF-16LE"));
+        return TagUtil.getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16BE);
     }
 
     public void setMiiName(String value) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-            TagUtil.putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, StandardCharsets.UTF_16LE, value);
-        else
-            TagUtil.putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, Charset.forName("UTF-16LE"), value);
+        TagUtil.putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16BE, value);
     }
 
     public long getTitleID() {

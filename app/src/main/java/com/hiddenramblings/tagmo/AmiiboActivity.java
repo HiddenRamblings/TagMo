@@ -37,7 +37,6 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.InstanceState;
-import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
@@ -130,23 +129,26 @@ public class AmiiboActivity extends AppCompatActivity {
         finish();
     }
 
+    ActivityResultLauncher<Intent> onEditTagResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        TagMo.Debug(TAG, R.string.tag_data);
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
+            return;
+
+        TagMo.Debug(TAG, R.string.tag_data);
+        if (!Actions.ACTION_EDIT_COMPLETE.equals(result.getData().getAction()))
+            return;
+
+        TagMo.Debug(TAG, R.string.tag_data);
+        this.tagData = result.getData().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
+        this.updateAmiiboView();
+    });
+
     void openTagEditor() {
         Intent intent = new Intent(this, TagDataActivity_.class);
         intent.setAction(Actions.ACTION_EDIT_DATA);
         intent.putExtra(Actions.EXTRA_TAG_DATA, this.tagData);
-        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            TagMo.Debug(TAG, R.string.tag_data);
-            if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
-                return;
-
-            TagMo.Debug(TAG, R.string.tag_data);
-            if (!Actions.ACTION_EDIT_COMPLETE.equals(result.getData().getAction()))
-                return;
-
-            TagMo.Debug(TAG, R.string.tag_data);
-            this.tagData = result.getData().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
-            this.updateAmiiboView();
-        }).launch(intent);
+        onEditTagResult.launch(intent);
     }
 
     SimpleTarget<Bitmap> amiiboImageTarget = new SimpleTarget<Bitmap>() {

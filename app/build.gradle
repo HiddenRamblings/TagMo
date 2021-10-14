@@ -4,6 +4,8 @@ android {
     compileSdkVersion 30
     buildToolsVersion '29.0.2'
 
+    def commit = 'git rev-parse --short HEAD'.execute().text.trim()
+
     defaultConfig {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
@@ -16,6 +18,8 @@ android {
                 arguments = ["androidManifestFile": "$projectDir/src/main/AndroidManifest.xml".toString()]
             }
         }
+
+        buildConfigField "String", "COMMIT", "\""+commit+"\""
     }
 
     buildTypes {
@@ -25,7 +29,7 @@ android {
         }
     }
 
-    project.archivesBaseName = "TagMo-" + 'git rev-parse --short HEAD'.execute().text.trim()
+    project.archivesBaseName = "TagMo-" + commit
 
     externalNativeBuild {
         cmake {

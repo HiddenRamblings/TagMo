@@ -18,7 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
@@ -548,6 +549,22 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
+    ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK
+                || result.getData() == null)
+            return;
+        updateKeys(result.getData().getData());
+    });
+
+    ActivityResultLauncher<Intent> onImportAmiiboDatabase = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK
+                || result.getData() == null)
+            return;
+        updateAmiiboManager(result.getData().getData());
+    });
+
     private void showFileChooser(String title, String mimeType, int resultCode) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType(mimeType);
@@ -556,26 +573,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         switch(resultCode) {
             case RESULT_KEYS:
                 try {
-                    registerForActivityResult(new StartActivityForResult(),
-                            result -> {
-                        if (result.getResultCode() != Activity.RESULT_OK
-                                || result.getData() == null)
-                            return;
-                        updateKeys(result.getData().getData());
-                    }).launch(Intent.createChooser(intent, title));
+                    onLoadKeys.launch(Intent.createChooser(intent, title));
                 } catch (android.content.ActivityNotFoundException ex) {
                     TagMo.Error("", ex.getMessage());
                 }
                 break;
             case RESULT_IMPORT_AMIIBO_DATABASE:
                 try {
-                    registerForActivityResult(new StartActivityForResult(),
-                            result -> {
-                        if (result.getResultCode() != Activity.RESULT_OK
-                                || result.getData() == null)
-                            return;
-                        updateAmiiboManager(result.getData().getData());
-                    }).launch(Intent.createChooser(intent, title));
+                    onImportAmiiboDatabase.launch(Intent.createChooser(intent, title));
                 } catch (android.content.ActivityNotFoundException ex) {
                     TagMo.Error("", ex.getMessage());
                 }

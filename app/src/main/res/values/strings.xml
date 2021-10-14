@@ -95,7 +95,8 @@
 
     <string name="change_view">Change View</string>
     <string name="settings">Settings</string>
-    <string name="dump_logcat">Print Logcat</string>
+    <string name="dump_logcat">Logcat</string>
+    <string name="update_tagmo">Update</string>
     <string name="mnu_write_raw">Write Tag (Raw Mode)</string>
 
     <string name="not_found">No Amiibos Found</string>

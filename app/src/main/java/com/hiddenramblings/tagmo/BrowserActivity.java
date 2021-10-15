@@ -324,8 +324,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void validateKeys() {
         KeyManager keyManager = new KeyManager(this);
         if (!keyManager.hasUnFixedKey() || !keyManager.hasFixedKey()) {
-            showToast(R.string.config_required, Toast.LENGTH_LONG);
-            openSettings();
+            showSetupSnackbar();
         }
     }
 
@@ -1201,10 +1200,8 @@ public class BrowserActivity extends AppCompatActivity implements
         Toast.makeText(this, msgRes, length).show();
     }
 
-    @UiThread
-    public void showInstallSnackbar() {
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.coordinator),
-                getString(R.string.update_tagmo_apk), Snackbar.LENGTH_LONG);
+    public Snackbar buildSnackbar(String msg, int length) {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.coordinator), msg, length);
         View snackbarLayout = snackbar.getView();
         TextView textView = snackbarLayout.findViewById(
                 com.google.android.material.R.id.snackbar_text);
@@ -1216,8 +1213,22 @@ public class BrowserActivity extends AppCompatActivity implements
                     R.drawable.ic_stat_notification, 0, 0, 0);
         }
         textView.setGravity(Gravity.CENTER_VERTICAL);
-        textView.setCompoundDrawablePadding(
-                getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
+        textView.setCompoundDrawablePadding(getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
+        return snackbar;
+    }
+
+    @UiThread
+    public void showSetupSnackbar() {
+        Snackbar snackbar = buildSnackbar(getString(
+                R.string.config_required), Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.setup, v -> openSettings());
+        snackbar.show();
+    }
+
+    @UiThread
+    public void showInstallSnackbar() {
+        Snackbar snackbar = buildSnackbar(getString(
+                R.string.update_tagmo_apk), Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.install, v -> requestUpdate());
         snackbar.show();
     }

@@ -39,6 +39,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
+import com.hiddenramblings.tagmo.github.RequestStamp;
 
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.Background;
@@ -124,6 +125,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         updateKeySummary();
         updateAmiiboStats();
         onImageNetworkChange(prefs.imageNetworkSetting().get());
+
+        new RequestStamp().setListener(result -> {
+            if (result != null) {
+                if (prefs.lastModified().get() < result) {
+                    showInstallSnackbar();
+                }
+            }
+        }).execute(getString(R.string.api_raw));
     }
 
     @PreferenceClick(R.string.settings_import_keys)
@@ -177,7 +186,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         }
 
-        showSnackbar(getString(R.string.amiibo_info_exported, Util.friendlyPath(file)), Snackbar.LENGTH_LONG);
+        showSnackbar(getString(R.string.amiibo_info_exported,
+                Util.friendlyPath(file)), Snackbar.LENGTH_LONG);
     }
 
     @PreferenceClick(R.string.settings_reset_info)
@@ -502,7 +512,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Background(id = BACKGROUND_SYNC_AMIIBO_MANAGER)
     void downloadAmiiboAPIDataTask() {
-        showSnackbar(getString(R.string.sync_amiibo_status, getString(R.string.sync_processing)), Snackbar.LENGTH_INDEFINITE);
+        showSnackbar(getString(R.string.sync_amiibo_status,
+                getString(R.string.sync_processing)), Snackbar.LENGTH_INDEFINITE);
         try {
             URL url = new URL(getString(R.string.amiibo_api_url));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -537,7 +548,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                 Util.saveLocalAmiiboInfo(requireContext(), amiiboManager);
                 setAmiiboManager(amiiboManager);
-                showSnackbar(getString(R.string.sync_amiibo_status, getString(R.string.sync_complete)), Snackbar.LENGTH_SHORT);
+                showSnackbar(getString(R.string.sync_amiibo_status,
+                        getString(R.string.sync_complete)), Snackbar.LENGTH_SHORT);
+                prefs.lastModified().put(System.currentTimeMillis());
             } else {
                 throw new Exception(String.valueOf(statusCode));
             }
@@ -545,7 +558,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             e.printStackTrace();
             if (Thread.currentThread().isInterrupted())
                 return;
-            showSnackbar(getString(R.string.sync_amiibo_status, getString(R.string.sync_failed)), Snackbar.LENGTH_SHORT);
+            showSnackbar(getString(R.string.sync_amiibo_status,
+                    getString(R.string.sync_failed)), Snackbar.LENGTH_SHORT);
         }
     }
 
@@ -588,18 +602,34 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    @UiThread
-    public void showSnackbar(String msg, int length) {
-        Snackbar snackbar = Snackbar.make(requireActivity().findViewById(R.id.coordinator), msg, length);
+    public Snackbar buildSnackbar(String msg, int length) {
+        Snackbar snackbar = Snackbar.make(requireActivity().findViewById(
+                R.id.coordinator), msg, length);
         View snackbarLayout = snackbar.getView();
-        TextView textView = snackbarLayout.findViewById(com.google.android.material.R.id.snackbar_text);
+        TextView textView = snackbarLayout.findViewById(
+                com.google.android.material.R.id.snackbar_text);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_stat_notification, 0, 0, 0);
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.ic_stat_notification, 0, 0, 0);
         } else {
-            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_stat_notification, 0, 0, 0);
+            textView.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.ic_stat_notification, 0, 0, 0);
         }
         textView.setGravity(Gravity.CENTER_VERTICAL);
         textView.setCompoundDrawablePadding(getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
+        return snackbar;
+    }
+
+    @UiThread
+    public void showSnackbar(String msg, int length) {
+        buildSnackbar(msg, length).show();
+    }
+
+    @UiThread
+    public void showInstallSnackbar() {
+        Snackbar snackbar = buildSnackbar(getString(
+                R.string.update_amiibo_api), Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.sync, v -> downloadAmiiboAPIData());
         snackbar.show();
     }
 

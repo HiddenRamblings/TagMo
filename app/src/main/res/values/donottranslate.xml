@@ -35,4 +35,6 @@
 
     <string name="git_url">https://api.github.com/repos/HiddenRamblings/TagMo/git/refs/heads/master</string>
     <string name="apk_url">https://github.com/HiddenRamblings/TagMo/releases/download/master/TagMo-%1$s-signed.apk</string>
+
+    <string name="api_raw">https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/database/amiibo.json</string>
 </resources>

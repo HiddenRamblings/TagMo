@@ -96,7 +96,6 @@
     <string name="change_view">Change View</string>
     <string name="settings">Settings</string>
     <string name="dump_logcat">Logcat</string>
-    <string name="update_tagmo">Update</string>
     <string name="mnu_write_raw">Write Tag (Raw Mode)</string>
 
     <string name="not_found">No Amiibos Found</string>
@@ -269,4 +268,9 @@
 
     <string name="auth_null">Auth result was null</string>
     <string name="auth_failed">Authenticaiton failed</string>
+
+    <string name="update_tagmo_apk">New TagMo version released!</string>
+    <string name="update_amiibo_api">AmiiboAPI database updated!</string>
+    <string name="install">Install</string>
+    <string name="sync">Sync</string>
 </resources>

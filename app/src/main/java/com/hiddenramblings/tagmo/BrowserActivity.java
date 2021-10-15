@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -170,8 +171,6 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuRefresh;
     @OptionsMenuItem(R.id.dump_logcat)
     MenuItem menuLogcat;
-    @OptionsMenuItem(R.id.update_tagmo)
-    MenuItem menuUpdate;
 
     SearchView searchView;
     BottomSheetBehavior bottomSheetBehavior;
@@ -250,7 +249,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
                 String sha = (String) ((JSONObject) jsonObject.get("object")).get("sha");
                 lastCommit = sha.substring(0,7);
-                menuUpdate.setVisible(!lastCommit.equals(BuildConfig.COMMIT));
+                if (!lastCommit.equals(BuildConfig.COMMIT))
+                    showInstallSnackbar();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -493,12 +493,6 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsItem(R.id.dump_logcat)
     void onDumpLogcatClicked() {
         dumpLogcat();
-    }
-
-
-    @OptionsItem(R.id.update_tagmo)
-    void onUpdateTagMoClicked() {
-        requestUpdate();
     }
 
     @OptionsItem(R.id.filter_game_series)
@@ -1207,4 +1201,24 @@ public class BrowserActivity extends AppCompatActivity implements
         Toast.makeText(this, msgRes, length).show();
     }
 
+    @UiThread
+    public void showInstallSnackbar() {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.coordinator),
+                getString(R.string.update_tagmo_apk), Snackbar.LENGTH_LONG);
+        View snackbarLayout = snackbar.getView();
+        TextView textView = snackbarLayout.findViewById(
+                com.google.android.material.R.id.snackbar_text);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.ic_stat_notification, 0, 0, 0);
+        } else {
+            textView.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.ic_stat_notification, 0, 0, 0);
+        }
+        textView.setGravity(Gravity.CENTER_VERTICAL);
+        textView.setCompoundDrawablePadding(
+                getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
+        snackbar.setAction(R.string.install, v -> requestUpdate());
+        snackbar.show();
+    }
 }

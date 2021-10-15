@@ -79,7 +79,6 @@
     <string name="recurse">Recursive Folders</string>
     <string name="missing">Show Missing Bins</string>
 
-    <string name="config_required">Please configure keys and sync API</string>
     <string name="missing_amiibo">Amiibo bin not available</string>
 
     <string name="yes">Yes</string>
@@ -271,6 +270,8 @@
 
     <string name="update_tagmo_apk">New TagMo version released!</string>
     <string name="update_amiibo_api">AmiiboAPI database updated!</string>
+    <string name="config_required">Encryption keys not loaded!</string>
     <string name="install">Install</string>
     <string name="sync">Sync</string>
+    <string name="setup">Setup</string>
 </resources>

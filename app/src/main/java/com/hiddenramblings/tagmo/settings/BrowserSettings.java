@@ -9,8 +9,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import java.io.File;
 import java.util.ArrayList;
 
-public class BrowserSettings
-        implements Parcelable {
+public class BrowserSettings implements Parcelable {
     protected ArrayList<BrowserSettingsListener> listeners = new ArrayList<>();
     protected AmiiboManager amiiboManager;
     protected BrowserSettings oldBrowserSettings;

@@ -133,8 +133,4 @@
         android:id="@+id/dump_logcat"
         android:title="@string/dump_logcat"
         app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/update_tagmo"
-        android:title="@string/update_tagmo"
-        app:showAsAction="ifRoom"/>
 </menu>

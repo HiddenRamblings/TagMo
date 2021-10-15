@@ -6,6 +6,7 @@ import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import org.androidannotations.annotations.sharedpreferences.DefaultBoolean;
 import org.androidannotations.annotations.sharedpreferences.DefaultInt;
+import org.androidannotations.annotations.sharedpreferences.DefaultLong;
 import org.androidannotations.annotations.sharedpreferences.DefaultString;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
 
@@ -50,4 +51,7 @@ public interface Preferences {
 
     @DefaultBoolean(keyRes = R.string.settings_ignore_sdcard, value = false)
     boolean ignoreSdcard();
+
+    @DefaultLong(-1)
+    long lastModified();
 }

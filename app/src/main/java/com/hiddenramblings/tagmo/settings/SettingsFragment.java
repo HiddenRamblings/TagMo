@@ -113,6 +113,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         addPreferencesFromResource(R.xml.settings);
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        new RequestStamp().setListener(result -> {
+            if (result != null && prefs.lastModified().get() < result) {
+                showInstallSnackbar();
+            }
+        }).execute(getString(R.string.api_raw));
+    }
+
     @AfterPreferences
     protected void afterViews() {
         this.enableTagTypeValidation.setChecked(prefs.enableTagTypeValidation().get());
@@ -125,14 +135,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         updateKeySummary();
         updateAmiiboStats();
         onImageNetworkChange(prefs.imageNetworkSetting().get());
-
-        new RequestStamp().setListener(result -> {
-            if (result != null) {
-                if (prefs.lastModified().get() < result) {
-                    showInstallSnackbar();
-                }
-            }
-        }).execute(getString(R.string.api_raw));
     }
 
     @PreferenceClick(R.string.settings_import_keys)

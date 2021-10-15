@@ -186,6 +186,17 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestStoragePermissions();
+        new RequestCommit().setListener(result -> {
+            try {
+                JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
+                String sha = (String) ((JSONObject) jsonObject.get("object")).get("sha");
+                lastCommit = sha.substring(0,7);
+                if (!lastCommit.equals(BuildConfig.COMMIT))
+                    showInstallSnackbar();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).execute(getString(R.string.git_url));
     }
 
     @Override
@@ -243,18 +254,6 @@ public class BrowserActivity extends AppCompatActivity implements
         this.foldersView.setAdapter(new BrowserFoldersAdapter(settings));
 
         this.loadAmiiboManager();
-
-        new RequestCommit().setListener(result -> {
-            try {
-                JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-                String sha = (String) ((JSONObject) jsonObject.get("object")).get("sha");
-                lastCommit = sha.substring(0,7);
-                if (!lastCommit.equals(BuildConfig.COMMIT))
-                    showInstallSnackbar();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).execute(getString(R.string.git_url));
     }
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;

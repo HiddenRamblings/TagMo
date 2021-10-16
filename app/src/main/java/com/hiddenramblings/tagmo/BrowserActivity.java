@@ -52,7 +52,6 @@ import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.RequestCommit;
-import com.hiddenramblings.tagmo.n2elite.N2Activity_;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.SettingsActivity_;
 import com.robertlevonyan.views.chip.Chip;
@@ -186,7 +185,6 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestStoragePermissions();
         new RequestCommit().setListener(result -> {
             try {
                 JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
@@ -199,6 +197,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }).execute(getString(R.string.git_url,
                 prefs.stableChannel().get() ? "master" : "experimental"));
+        requestStoragePermissions();
     }
 
     @Override
@@ -709,25 +708,6 @@ public class BrowserActivity extends AppCompatActivity implements
         this.refresh();
     }
 
-    ActivityResultLauncher<Intent> onN2Activity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null)
-            return;
-
-        if (!NfcActivity.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
-
-        byte[] tagData = result.getData().getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
-
-        Bundle args = new Bundle();
-        args.putByteArray(AmiiboActivity.ARG_TAG_DATA, tagData);
-
-        Intent intent = new Intent(this, AmiiboActivity_.class);
-        intent.putExtras(args);
-
-        startActivity(intent);
-    });
-
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null)
@@ -749,13 +729,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Click(R.id.fab)
     public void onFabClicked() {
-        if (prefs.enableN2EliteSupport().get()) {
-            onN2Activity.launch(new Intent(this,
-                    N2Activity_.class).setAction(NfcActivity.ACTION_SCAN_TAG));
-        } else {
-            onNFCActivity.launch(new Intent(this,
-                    NfcActivity_.class).setAction(NfcActivity.ACTION_SCAN_TAG));
-        }
+        onNFCActivity.launch(new Intent(this,
+                NfcActivity_.class).setAction(NfcActivity.ACTION_SCAN_TAG));
     }
 
     @Override

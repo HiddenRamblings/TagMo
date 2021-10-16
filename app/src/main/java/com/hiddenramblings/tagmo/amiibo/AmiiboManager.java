@@ -58,8 +58,8 @@ public class AmiiboManager {
 
         AmiiboManager manager = new AmiiboManager();
         JSONObject amiibosJSON = json.getJSONObject("amiibos");
-        for (Iterator iterator = amiibosJSON.keys(); iterator.hasNext(); ) {
-            String key = (String) iterator.next();
+        for (Iterator<String> iterator = amiibosJSON.keys(); iterator.hasNext(); ) {
+            String key = iterator.next();
             JSONObject amiiboJSON = amiibosJSON.getJSONObject(key);
 
             String name = amiiboJSON.getString("name");
@@ -76,8 +76,8 @@ public class AmiiboManager {
         }
 
         JSONObject gameSeriesJSON = json.getJSONObject("game_series");
-        for (Iterator iterator = gameSeriesJSON.keys(); iterator.hasNext(); ) {
-            String key = (String) iterator.next();
+        for (Iterator<String> iterator = gameSeriesJSON.keys(); iterator.hasNext(); ) {
+            String key = iterator.next();
             String name = gameSeriesJSON.getString(key);
 
             GameSeries gameSeries = new GameSeries(manager, key, name);
@@ -85,8 +85,8 @@ public class AmiiboManager {
         }
 
         JSONObject characterJSON = json.getJSONObject("characters");
-        for (Iterator iterator = characterJSON.keys(); iterator.hasNext(); ) {
-            String key = (String) iterator.next();
+        for (Iterator<String> iterator = characterJSON.keys(); iterator.hasNext(); ) {
+            String key = iterator.next();
             String name = characterJSON.getString(key);
 
             Character character = new Character(manager, key, name);
@@ -94,8 +94,8 @@ public class AmiiboManager {
         }
 
         JSONObject amiiboTypeJSON = json.getJSONObject("types");
-        for (Iterator iterator = amiiboTypeJSON.keys(); iterator.hasNext(); ) {
-            String key = (String) iterator.next();
+        for (Iterator<String> iterator = amiiboTypeJSON.keys(); iterator.hasNext(); ) {
+            String key = iterator.next();
             String name = amiiboTypeJSON.getString(key);
 
             AmiiboType amiiboType = new AmiiboType(manager, key, name);
@@ -103,8 +103,8 @@ public class AmiiboManager {
         }
 
         JSONObject amiiboSeriesJSON = json.getJSONObject("amiibo_series");
-        for (Iterator iterator = amiiboSeriesJSON.keys(); iterator.hasNext(); ) {
-            String key = (String) iterator.next();
+        for (Iterator<String> iterator = amiiboSeriesJSON.keys(); iterator.hasNext(); ) {
+            String key = iterator.next();
             String name = amiiboSeriesJSON.getString(key);
 
             AmiiboSeries amiiboSeries = new AmiiboSeries(manager, key, name);

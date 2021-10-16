@@ -141,7 +141,7 @@ public class AmiiboActivity extends AppCompatActivity {
 
         TagMo.Debug(TAG, R.string.tag_data);
         this.tagData = result.getData().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
-        this.updateAmiiboView();
+        this.runOnUiThread(this::updateAmiiboView);
     });
 
     void openTagEditor() {
@@ -252,7 +252,7 @@ public class AmiiboActivity extends AppCompatActivity {
             return;
 
         this.tagData = result.getData().getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
-        updateAmiiboView();
+        this.runOnUiThread(this::updateAmiiboView);
     });
 
     void writeTag() {

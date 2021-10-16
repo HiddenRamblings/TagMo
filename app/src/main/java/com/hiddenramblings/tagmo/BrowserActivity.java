@@ -196,7 +196,8 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }).execute(getString(R.string.git_url));
+        }).execute(getString(R.string.git_url,
+                prefs.stableChannel().get() ? "master" : "experimental"));
     }
 
     @Override
@@ -1131,7 +1132,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background
     void downloadUpdate() {
-        String link = getString(R.string.apk_url, lastCommit);
+        String link = getString(R.string.apk_url,
+                prefs.stableChannel().get() ? "master" : "experimental", lastCommit);
         File apk = new File(getFilesDir(), link.substring(link.lastIndexOf('/') + 1));
         try {
             URL u = new URL(link);
@@ -1179,7 +1181,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> downloadUpdate());
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> this.runOnUiThread(this::downloadUpdate));
     void requestUpdate() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (getPackageManager().canRequestPackageInstalls()) {
@@ -1219,8 +1222,11 @@ public class BrowserActivity extends AppCompatActivity implements
     @UiThread
     public void showSetupSnackbar() {
         Snackbar snackbar = buildSnackbar(getString(
-                R.string.config_required), Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.setup, v -> openSettings());
+                R.string.config_required), Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.setup, v -> {
+            openSettings();
+            snackbar.dismiss();
+        });
         snackbar.show();
     }
 

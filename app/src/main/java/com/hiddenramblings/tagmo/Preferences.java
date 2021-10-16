@@ -32,6 +32,9 @@ public interface Preferences {
     @DefaultBoolean(keyRes = R.string.settings_enable_power_tag_support, value = false)
     boolean enablePowerTagSupport();
 
+    @DefaultBoolean(keyRes = R.string.settings_enable_n2_elite_support, value = false)
+    boolean enableN2EliteSupport();
+
     @DefaultInt(BrowserActivity.VIEW_TYPE_COMPACT)
     int browserAmiiboView();
 

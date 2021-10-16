@@ -160,6 +160,8 @@
     <string name="tag_validation_details">Not all NFC chipsets correctly identify NFC tags. Disabling tag verification will write to tags that may not be Amiibo compatible or may fail in unexpected ways.</string>
     <string name="enable_power_tag">Enable PowerTag support</string>
     <string name="power_tag_details">Support is currently in development. See the Wiki on Github for limitations and use.</string>
+    <string name="enable_n2_elite">Enable N2 Elite support</string>
+    <string name="n2_elite_details">Support is currently in development. See the Wiki on Github for limitations and use.</string>
 
     <string name="amiibo_info">Amiibo Info</string>
 

@@ -20,6 +20,7 @@
     <string name="settings_enable_amiibo_browser">enable_amiibo_browser</string>
     <string name="settings_enable_tag_type_validation">enable_tag_type_validation</string>
     <string name="settings_enable_power_tag_support">enable_power_tag_support</string>
+    <string name="settings_enable_n2_elite_support">enable_n2_elite_support</string>
     <string name="settings_export_info">settings_export_info</string>
     <string name="settings_info_amiibos">settings_info_amiibos</string>
     <string name="settings_info_game_series">settings_info_game_series</string>

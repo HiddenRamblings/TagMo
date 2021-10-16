@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <uses-feature android:name="android.hardware.nfc" android:required="false"/>
 
@@ -45,9 +46,6 @@
         </activity>
         <activity
             android:name=".NfcActivity_"
-            android:launchMode="singleTop"/>
-        <activity
-            android:name=".n2elite.N2Activity_"
             android:launchMode="singleTop"/>
         <activity
             android:name=".HexViewerActivity_"/>

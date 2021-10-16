@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.preference.PreferenceCategory
         android:title="@string/encryption_keys">
@@ -18,26 +18,32 @@
             android:title="@string/image_loading_details"/>
     </androidx.preference.PreferenceCategory>
 
-    <androidx.preference.PreferenceCategory android:title="Tag Validation">
+    <androidx.preference.PreferenceCategory android:title="@string/pref_title_validation">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_enable_tag_type_validation"
             android:summary="@string/tag_validation_details"
             android:title="@string/enable_tag_validation"/>
     </androidx.preference.PreferenceCategory>
-    <androidx.preference.PreferenceCategory android:title="PowerTag">
+    <androidx.preference.PreferenceCategory android:title="@string/pref_title_powertag">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/settings_enable_power_tag_support"
             android:summary="@string/power_tag_details"
             android:title="@string/enable_power_tag"/>
     </androidx.preference.PreferenceCategory>
-    <androidx.preference.PreferenceCategory android:title="N2 Elite">
+    <androidx.preference.PreferenceCategory android:title="@string/pref_title_amiiqo">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
-            android:key="@string/settings_enable_n2_elite_support"
-            android:summary="@string/n2_elite_details"
-            android:title="@string/enable_n2_elite"/>
+            android:key="@string/settings_enable_amiiqo_support"
+            android:summary="@string/amiiqo_details"
+            android:title="@string/enable_amiiqo"/>
+        <androidx.preference.SeekBarPreference
+            android:title="@string/write_amiiqo_bank_count"
+            android:key="@string/settings_amiiqo_bank_slider"
+            app:showSeekBarValue="true"
+            app:min="1" android:max="200"
+            android:persistent="false" />
     </androidx.preference.PreferenceCategory>
     <androidx.preference.PreferenceCategory
         android:title="@string/amiibo_info">

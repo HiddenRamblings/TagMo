@@ -32,8 +32,17 @@ public interface Preferences {
     @DefaultBoolean(keyRes = R.string.settings_enable_power_tag_support, value = false)
     boolean enablePowerTagSupport();
 
-    @DefaultBoolean(keyRes = R.string.settings_enable_n2_elite_support, value = false)
-    boolean enableN2EliteSupport();
+    @DefaultBoolean(keyRes = R.string.settings_enable_amiiqo_support, value = false)
+    boolean enableAmiiqoSupport();
+
+    @DefaultString(keyRes = R.string.settings_amiiqo_signature, value = "")
+    String amiiqoSignature();
+
+    @DefaultInt(keyRes = R.string.settings_amiiqo_bank_count, value = 1)
+    int amiiqoBankCount();
+
+    @DefaultInt(0)
+    int amiiqoActiveBank();
 
     @DefaultInt(BrowserActivity.VIEW_TYPE_COMPACT)
     int browserAmiiboView();
@@ -55,7 +64,7 @@ public interface Preferences {
     @DefaultBoolean(keyRes = R.string.settings_ignore_sdcard, value = false)
     boolean ignoreSdcard();
 
-    @DefaultBoolean(true)
+    @DefaultBoolean(keyRes = R.string.settings_stable_channel, value = true)
     boolean stableChannel();
 
     @DefaultLong(-1)

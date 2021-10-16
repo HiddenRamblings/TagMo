@@ -3,6 +3,9 @@ package com.hiddenramblings.tagmo.amiibo;
 
 import androidx.annotation.NonNull;
 
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
+
 public class Amiibo implements Comparable<Amiibo> {
     public static long HEAD_MASK = 0xFFFFFFFF00000000L;
     public static long TAIL_MASK = 0x00000000FFFFFFFFL;
@@ -13,7 +16,8 @@ public class Amiibo implements Comparable<Amiibo> {
     public static long AMIIBO_MODEL_MASK = 0x00000000FFFF0000L;
     public static long UNKNOWN_MASK = 0x00000000000000FFL;
 
-    public static String AMIIBO_API_IMAGE_URL = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08x-%08x.png";
+    public static String AMIIBO_API_IMAGE_URL = TagMo.getStringRes(
+            R.string.amiibo_api_raw, R.string.api_image_url);
 
     public AmiiboManager manager;
     public final long id;

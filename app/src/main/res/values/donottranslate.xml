@@ -20,7 +20,10 @@
     <string name="settings_enable_amiibo_browser">enable_amiibo_browser</string>
     <string name="settings_enable_tag_type_validation">enable_tag_type_validation</string>
     <string name="settings_enable_power_tag_support">enable_power_tag_support</string>
-    <string name="settings_enable_n2_elite_support">enable_n2_elite_support</string>
+    <string name="settings_enable_amiiqo_support">enable_amiiqo_support</string>
+    <string name="settings_amiiqo_signature">settings_amiiqo_signature</string>
+    <string name="settings_amiiqo_bank_count">settings_amiiqo_bank_count</string>
+    <string name="settings_amiiqo_bank_slider">settings_amiiqo_bank_slider</string>
     <string name="settings_export_info">settings_export_info</string>
     <string name="settings_info_amiibos">settings_info_amiibos</string>
     <string name="settings_info_game_series">settings_info_game_series</string>
@@ -34,9 +37,10 @@
     <string name="image_network_settings">\@string/image_network_settings</string>
 
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
+    <string name="amiibo_api_raw">https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/%1$s</string>
+    <string name="api_image_url">images/icon_%08x-%08x.png</string>
+    <string name="api_database">database/amiibo.json</string>
 
     <string name="git_url">https://api.github.com/repos/HiddenRamblings/TagMo/git/refs/heads/%1$s</string>
     <string name="apk_url">https://github.com/HiddenRamblings/TagMo/releases/download/%1$s/TagMo-%2$s-signed.apk</string>
-
-    <string name="api_raw">https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/database/amiibo.json</string>
 </resources>

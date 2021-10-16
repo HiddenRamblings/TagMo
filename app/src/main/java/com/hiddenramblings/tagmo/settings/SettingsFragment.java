@@ -88,6 +88,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference enableTagTypeValidation;
     @PreferenceByKey(R.string.settings_enable_power_tag_support)
     CheckBoxPreference enablePowerTagSupport;
+    @PreferenceByKey(R.string.settings_enable_n2_elite_support)
+    CheckBoxPreference enableN2EliteSupport;
     @PreferenceByKey(R.string.settings_info_amiibos)
     Preference amiiboStats;
     @PreferenceByKey(R.string.settings_info_game_series)
@@ -153,6 +155,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_enable_power_tag_support)
     void onEnablePowerTagSupportClicked() {
         prefs.enablePowerTagSupport().put(enablePowerTagSupport.isChecked());
+    }
+
+    @PreferenceClick(R.string.settings_enable_n2_elite_support)
+    void onEnableN2EliteSupportClicked() {
+        prefs.enableN2EliteSupport().put(enableN2EliteSupport.isChecked());
     }
 
     @PreferenceClick(R.string.settings_import_info_amiiboapi)

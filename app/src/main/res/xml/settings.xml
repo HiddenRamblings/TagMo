@@ -32,6 +32,13 @@
             android:summary="@string/power_tag_details"
             android:title="@string/enable_power_tag"/>
     </androidx.preference.PreferenceCategory>
+    <androidx.preference.PreferenceCategory android:title="N2 Elite">
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/settings_enable_n2_elite_support"
+            android:summary="@string/n2_elite_details"
+            android:title="@string/enable_n2_elite"/>
+    </androidx.preference.PreferenceCategory>
     <androidx.preference.PreferenceCategory
         android:title="@string/amiibo_info">
         <androidx.preference.Preference

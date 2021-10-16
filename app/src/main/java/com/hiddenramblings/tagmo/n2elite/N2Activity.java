@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.n2elite;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -21,7 +21,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.smartrac.nfc.NfcNtag;
+import com.hiddenramblings.tagmo.KeyManager;
+import com.hiddenramblings.tagmo.NTAG215;
+import com.hiddenramblings.tagmo.NfcActivity;
+import com.hiddenramblings.tagmo.Preferences_;
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.TagWriter;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -30,12 +36,10 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
-import java.io.IOException;
-
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_nfc)
 public class N2Activity extends AppCompatActivity {
-    private static final String TAG = N2Activity.class.getSimpleName();
+    private static final String TAG = NfcActivity.class.getSimpleName();
 
     public static final String ACTION_SCAN_TAG = "com.hiddenramblings.tagmo.SCAN_TAG";
     public static final String ACTION_WRITE_TAG_FULL = "com.hiddenramblings.tagmo.WRITE_TAG_FULL";
@@ -119,9 +123,7 @@ public class N2Activity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction()) ||
-                NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()) ||
-                NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
+        if (intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             showMessage(getString(R.string.tag_detected));
             this.onTagDiscovered(intent);
         }
@@ -155,116 +157,75 @@ public class N2Activity extends AppCompatActivity {
     void onTagDiscovered(Intent intent) {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
-
-        // Retrieve Tag ID
-        byte[] uid = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
-        // Retrieve Tag object
-        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        if (tag != null) {
-            // Check if the tag supports NfcA/ISO14443A
-//                boolean bIso14443A = false;
-            String[] sTech = tag.getTechList();
-//                while (int i<sTech.length && ! bIso14443A) {
-//                    if (sTech[i].equals("android.nfc.tech.NfcA")) {
-//                        bIso14443A = true;
-//                    }
-//                }
-//                if (bIso14443A)
-//                {
-//                    // Do actions on the NTAG
-//                    try {
-//                        NfcNtag ntag = NfcNtag.get(tag);
-//                        ntag.connect();
-//                        // read user memory blocks 4 to 15
-//                        byte[] data = ntag.fastRead(0x04, 0x0F);
-//                        ntag.close();
-//                    }
-//                    catch (IOException e) {
-//                        // handle NFC comm error...
-//                    }
-//                }
-            for (String tech : sTech) {
-                if (tech.equals("android.nfc.tech.NfcA")) {
-                    // Do actions on the NTAG
-                    try {
-                        NfcNtag ntag = NfcNtag.get(tag);
-                        ntag.connect();
-                        // read user memory blocks 4 to 15
-                        byte[] data = ntag.fastRead(0x04, 0x0F);
-                        ntag.close();
-                    }
-                    catch (IOException e) {
-                        // handle NFC comm error...
-                    }
-                    break;
-                }
+        try {
+            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            TagMo.Debug(TAG, tag.toString());
+            NTAG215 mifare = NTAG215.get(tag);
+            if (mifare == null) {
+                throw new Exception(getString(R.string.tag_type_error));
             }
-
+            mifare.connect();
+            setResult(Activity.RESULT_CANCELED);
             try {
-                TagMo.Debug(TAG, tag.toString());
-                NfcNtag mifare = NfcNtag.get(tag);
-                mifare.connect();
-                setResult(Activity.RESULT_CANCELED);
+                TagMo.Debug(TAG, mode);
+                byte[] data;
+                switch (mode) {
+                    case ACTION_WRITE_TAG_RAW:
+                        data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
+                        if (data == null) {
+                            throw new Exception(getString(R.string.no_data));
+                        }
+                        TagWriter.writeToTagRaw(mifare, data, prefs.enableTagTypeValidation().get());
+                        setResult(Activity.RESULT_OK);
+                        showToast(getString(R.string.done));
+                        break;
+                    case ACTION_WRITE_TAG_FULL:
+                        data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
+                        if (data == null) {
+                            throw new Exception(getString(R.string.no_data));
+                        }
+                        TagWriter.writeToTagAuto(mifare, data, this.keyManager, prefs.enableTagTypeValidation().get(), prefs.enablePowerTagSupport().get());
+                        setResult(Activity.RESULT_OK);
+                        showToast(getString(R.string.done));
+                        break;
+                    case ACTION_WRITE_TAG_DATA:
+                        data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
+                        boolean ignoreUid = commandIntent.getBooleanExtra(EXTRA_IGNORE_TAG_ID, false);
+                        if (data == null) {
+                            throw new Exception(getString(R.string.no_data));
+                        }
+                        TagWriter.restoreTag(mifare, data, ignoreUid, this.keyManager, prefs.enableTagTypeValidation().get());
+                        setResult(Activity.RESULT_OK);
+                        showToast("Done");
+                        break;
+                    case ACTION_SCAN_TAG:
+                        data = TagWriter.readFromTag(mifare);
+                        Intent result = new Intent(ACTION_NFC_SCANNED);
+                        result.putExtra(EXTRA_TAG_DATA, data);
+                        setResult(Activity.RESULT_OK, result);
+                        showToast(getString(R.string.done));
+                        break;
+                    default:
+                        throw new Exception(getString(R.string.state_error, mode));
+                }
+            } finally {
                 try {
-                    TagMo.Debug(TAG, mode);
-                    byte[] data;
-                    switch (mode) {
-                        case ACTION_WRITE_TAG_RAW:
-                            data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
-                            if (data == null) {
-                                throw new Exception(getString(R.string.no_data));
-                            }
-                            mifare.amiiboWrite(0, 0, data);
-                            setResult(Activity.RESULT_OK);
-                            showToast(getString(R.string.done));
-                            break;
-                        case ACTION_WRITE_TAG_FULL:
-                            data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
-                            if (data == null) {
-                                throw new Exception(getString(R.string.no_data));
-                            }
-                            mifare.amiiboFastWrite(0, 0, data);
-                            setResult(Activity.RESULT_OK);
-                            showToast(getString(R.string.done));
-                            break;
-                        case ACTION_WRITE_TAG_DATA:
-                            data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
-                            boolean ignoreUid = commandIntent.getBooleanExtra(EXTRA_IGNORE_TAG_ID, false);
-                            if (data == null) {
-                                throw new Exception(getString(R.string.no_data));
-                            }
-                            mifare.amiiboFastWrite(0, 0, data);
-                            setResult(Activity.RESULT_OK);
-                            showToast("Done");
-                            break;
-                        case ACTION_SCAN_TAG:
-                            data = mifare.amiiboFastRead(0,0,0);
-                            Intent result = new Intent(ACTION_NFC_SCANNED);
-                            result.putExtra(EXTRA_TAG_DATA, data);
-                            setResult(Activity.RESULT_OK, result);
-                            showToast(getString(R.string.done));
-                            break;
-                        default:
-                            throw new Exception(getString(R.string.state_error, mode));
-                    }
-                } finally {
-                    try {
-                        mifare.close();
-                    } catch (Exception e) {
-                        TagMo.Error(TAG, R.string.tag_close_error, e);
-                        throw new Exception(getString(R.string.tag_close_error, ":" + e.getMessage()));
-                    }
+                    mifare.close();
+                } catch (Exception e) {
+                    TagMo.Error(TAG, R.string.tag_close_error, e);
+                    throw new Exception(getString(R.string.tag_close_error, ":" + e.getMessage()));
                 }
-                finish();
-            } catch (Exception e) {
-                TagMo.Error(TAG, R.string.error, e);
-                String error = e.getMessage();
-                if (e.getCause() != null) {
-                    error = error + "\n" + e.getCause().toString();
-                }
-                showError(error);
             }
+            finish();
+        } catch (Exception e) {
+            TagMo.Error(TAG, R.string.error, e);
+            String error = e.getMessage();
+            if (e.getCause() != null) {
+                error = error + "\n" + e.getCause().toString();
+            }
+            showError(error);
         }
+
     }
 
     @UiThread

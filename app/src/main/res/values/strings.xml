@@ -12,7 +12,7 @@
     <string name="nfc_unsupported">NFC Not Supported!</string>
     <string name="nfc_disabled">NFC Disabled!</string>
     <string name="nfc_enabled">NFC Enabled!</string>
-    <string name="nfc_query">NFC countryCodeAdapter is currently disabled. Enable NFC?</string>
+    <string name="nfc_query">NFC is currently disabled. Enable NFC?</string>
 
     <string name="fixed_key">Fixed Key</string>
 
@@ -148,6 +148,7 @@
     <string name="write_auto">Write to Tag (Auto)</string>
     <string name="restore_tag">Restore Tag</string>
     <string name="scan_tag">Scan Tag</string>
+    <string name="scan_amiiqo">Scan N2 Elite</string>
 
     <string name="permission_required">Storage permission required!</string>
     <string name="allow_permission">Allow</string>
@@ -156,12 +157,17 @@
     <string name="pref_import_keys">Import Keys</string>
     <string name="pref_image_loading">Image Loading</string>
     <string name="image_loading_details">Load images</string>
+    <string name="pref_title_validation">Tag Validation</string>
     <string name="enable_tag_validation">Enable NTAG215 validation</string>
     <string name="tag_validation_details">Not all NFC chipsets correctly identify NFC tags. Disabling tag verification will write to tags that may not be Amiibo compatible or may fail in unexpected ways.</string>
+    <string name="pref_title_powertag">PowerTag</string>
     <string name="enable_power_tag">Enable PowerTag support</string>
-    <string name="power_tag_details">Support is currently in development. See the Wiki on Github for limitations and use.</string>
-    <string name="enable_n2_elite">Enable N2 Elite support</string>
-    <string name="n2_elite_details">Support is currently in development. See the Wiki on Github for limitations and use.</string>
+    <string name="power_tag_details">Support is currently in development.\nSee Github for limitations and use.</string>
+    <string name="pref_title_amiiqo">N2 Elite</string>
+    <string name="enable_amiiqo">Enable N2 Elite support</string>
+    <string name="amiiqo_details">Support is currently in development.\nSee Github for limitations and use.</string>
+    <string name="amiiqo_details_enabled">Support is currently in development.\nN2 Elite ID: %1$s</string>
+    <string name="write_amiiqo_bank_count">Write Bank Count to Hardware</string>
 
     <string name="amiibo_info">Amiibo Info</string>
 
@@ -260,11 +266,16 @@
     <string name="fail_read_uid">Could not read old UID</string>
     <string name="fail_mismatch_uid">Source UID does not match the target!</string>
     <string name="fail_invalid_size">Invalid read result size</string>
+    <string name="fail_amiiqo_outofbounds">Selected bank exceeds count!</string>
+    <string name="fail_amiiqo_bank_parse">Failed to parse banks!</string>
 
     <string name="tag_format_error">Tag is not an NTAG215</string>
     <string name="no_source_data">Cannot validate: no source data loaded to compare.</string>
     <string name="tag_version_error">Tag version error</string>
     <string name="power_tag_exists">Power Tag Exists: %1$s</string>
+
+    <string name="bank_select_details">Set Bank Number</string>
+    <string name="bank_count_details">Set Bank Count</string>
 
     <string name="read_failed">Read failed</string>
     <string name="version_error">Version information error</string>

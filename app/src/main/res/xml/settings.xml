@@ -81,5 +81,10 @@
             android:key="@string/settings_ignore_sdcard"
             android:summary="@string/ignore_sdcard_details"
             android:title="@string/pref_ignore_sdcard"/>
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/settings_stable_channel"
+            android:summary="@string/stable_channel_details"
+            android:title="@string/pref_stable_channel"/>
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

@@ -104,6 +104,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference disableDebug;
     @PreferenceByKey(R.string.settings_ignore_sdcard)
     CheckBoxPreference ignoreSdcard;
+    @PreferenceByKey(R.string.settings_stable_channel)
+    CheckBoxPreference stableChannel;
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -128,6 +130,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.enableTagTypeValidation.setChecked(prefs.enableTagTypeValidation().get());
         this.disableDebug.setChecked(prefs.disableDebug().get());
         this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
+        this.stableChannel.setChecked(prefs.stableChannel().get());
 
         this.keyManager = new KeyManager(this.getContext());
 
@@ -311,6 +314,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (getActivity() != null) getActivity().setResult(Activity.RESULT_OK,
                 new Intent().putExtra("REFRESH", true));
         prefs.ignoreSdcard().put(ignoreSdcard.isChecked());
+    }
+
+    @PreferenceClick(R.string.settings_stable_channel)
+    void onStableChannelClicked() {
+        prefs.stableChannel().put(stableChannel.isChecked());
     }
 
     void updateKeys(Uri data) {

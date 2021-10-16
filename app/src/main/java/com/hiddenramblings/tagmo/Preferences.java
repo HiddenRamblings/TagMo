@@ -52,6 +52,9 @@ public interface Preferences {
     @DefaultBoolean(keyRes = R.string.settings_ignore_sdcard, value = false)
     boolean ignoreSdcard();
 
+    @DefaultBoolean(true)
+    boolean stableChannel();
+
     @DefaultLong(-1)
     long lastModified();
 }

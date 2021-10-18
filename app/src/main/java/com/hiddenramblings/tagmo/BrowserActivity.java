@@ -689,9 +689,8 @@ public class BrowserActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-            if (result.getData().getBooleanExtra("REFRESH", false)) {
+            if (result.getData().getBooleanExtra("REFRESH", false))
                 resetRootFolder();
-            }
             this.loadPTagKeyManager();
         }
     });
@@ -1211,9 +1210,12 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> downloadUpdate());
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (getPackageManager().canRequestPackageInstalls())
+            downloadUpdate();
+    });
     void requestUpdate() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (getPackageManager().canRequestPackageInstalls()) {

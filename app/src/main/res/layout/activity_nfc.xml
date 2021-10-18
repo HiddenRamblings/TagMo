@@ -55,7 +55,7 @@
         android:padding="5dp"
         android:src="@drawable/ic_bar_24dp" />
 
-    <com.hiddenramblings.tagmo.amiiqo.BankNumberPicker
+    <com.hiddenramblings.tagmo.BankNumberPicker
         android:id="@+id/bank_number_picker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <tech-list>
-        <tech>com.hiddenramblings.tagmo.amiiqo.N2Elite</tech>
+        <tech>com.hiddenramblings.tagmo.nfc.N2Elite</tech>
     </tech-list>
 </resources>

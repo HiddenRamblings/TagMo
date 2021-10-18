@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.adapter;
 
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.settings;
+package com.hiddenramblings.tagmo.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -22,19 +22,20 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.Preferences_;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagUtil;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.nfc.TagUtil;
+import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-class SettingsAmiiboAdapter extends BaseAdapter {
+public class SettingsAmiiboAdapter extends BaseAdapter {
 
     Preferences_ prefs;
 
     ArrayList<Amiibo> items;
 
-    SettingsAmiiboAdapter(Preferences_ prefs, ArrayList<Amiibo> items) {
+    public SettingsAmiiboAdapter(Preferences_ prefs, ArrayList<Amiibo> items) {
         this.prefs = prefs;
         this.items = items;
         Collections.sort(items);

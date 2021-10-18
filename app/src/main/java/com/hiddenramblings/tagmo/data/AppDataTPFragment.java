@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagDataActivity_;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -67,14 +68,14 @@ public class AppDataTPFragment extends AppDataFragment {
         loadLevel();
         loadHearts();
 
-        onAppDataChecked(((TagDataActivity) requireContext()).isAppDataInitialized);
+        onAppDataChecked(((TagDataActivity_) requireContext()).isAppDataInitialized());
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        onAppDataChecked(((TagDataActivity) context).isAppDataInitialized);
+        onAppDataChecked(((TagDataActivity_) context).isAppDataInitialized());
     }
 
     void loadLevel() {

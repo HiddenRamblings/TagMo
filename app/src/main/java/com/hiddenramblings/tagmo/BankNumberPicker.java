@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.amiiqo;
+package com.hiddenramblings.tagmo;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -7,8 +7,6 @@ import android.util.AttributeSet;
 import android.widget.NumberPicker;
 
 import androidx.annotation.RequiresApi;
-
-import com.hiddenramblings.tagmo.R;
 
 public class BankNumberPicker extends NumberPicker {
 

@@ -1,11 +1,14 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.nfc;
 
-import com.hiddenramblings.tagmo.ptag.PTagKeyManager;
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
-public class TagWriter {
-    private static final String TAG = TagWriter.class.getSimpleName();
+public class AmiiqoWriter {
+    private static final String TAG = AmiiqoWriter.class.getSimpleName();
 
     private static final byte[] POWERTAG_SIGNATURE = Util.hexStringToByteArray("213C65444901602985E9F6B50CACB9C8CA3C4BCD13142711FF571CF01E66BD6F");
     private static final byte[] POWERTAG_IDPAGES = Util.hexStringToByteArray("04070883091012131800000000000000");
@@ -13,7 +16,7 @@ public class TagWriter {
     private static final byte[] COMP_WRITE_CMD = Util.hexStringToByteArray("a000");
     private static final byte[] SIG_CMD = Util.hexStringToByteArray("3c00");
 
-    public static void writeToTagRaw(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
+    public static void writeToTagRaw(N2Elite mifare, byte[] tagData, boolean validateNtag) throws Exception {
         validate(mifare, tagData, validateNtag);
 
         validateBlankTag(mifare);
@@ -39,7 +42,7 @@ public class TagWriter {
         }
     }
 
-    private static void validateBlankTag(NTAG215 mifare) throws Exception {
+    private static void validateBlankTag(N2Elite mifare) throws Exception {
         byte[] lockPage = mifare.readPages(0x02);
         TagMo.Debug(TAG, Util.bytesToHex(lockPage));
         if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {
@@ -49,7 +52,7 @@ public class TagWriter {
         TagMo.Debug(TAG, R.string.unlocked);
     }
 
-    public static void writeToTagAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager, boolean validateNtag, boolean supportPowerTag) throws Exception {
+    public static void writeToTagAuto(N2Elite mifare, byte[] tagData, KeyManager keyManager, boolean validateNtag, boolean supportPowerTag) throws Exception {
         byte[] idPages = mifare.readPages(0);
         if (idPages == null || idPages.length != TagUtil.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
@@ -133,7 +136,7 @@ public class TagWriter {
         }
     }
 
-    public static void restoreTag(NTAG215 mifare, byte[] tagData, boolean ignoreUid, KeyManager keyManager, boolean validateNtag) throws Exception {
+    public static void restoreTag(N2Elite mifare, byte[] tagData, boolean ignoreUid, KeyManager keyManager, boolean validateNtag) throws Exception {
         if (!ignoreUid)
             validate(mifare, tagData, validateNtag);
         else {
@@ -156,7 +159,7 @@ public class TagWriter {
         writePages(mifare, 32, 129, pages);
     }
 
-    static void validate(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
+    static void validate(N2Elite mifare, byte[] tagData, boolean validateNtag) throws Exception {
         if (tagData == null)
             throw new Exception(TagMo.getStringRes(R.string.no_source_data));
 
@@ -193,7 +196,7 @@ public class TagWriter {
 
     public static final int BULK_READ_PAGE_COUNT = 4;
 
-    public static byte[] readFromTag(NTAG215 tag) throws Exception {
+    public static byte[] readFromTag(N2Elite tag) throws Exception {
         byte[] tagData = new byte[TagUtil.TAG_FILE_SIZE];
         int pageCount = TagUtil.TAG_FILE_SIZE / TagUtil.PAGE_SIZE;
 
@@ -212,14 +215,40 @@ public class TagWriter {
         return tagData;
     }
 
-    static void writePages(NTAG215 tag, int pagestart, int pageend, byte[][] data) throws IOException {
+    public static ArrayList<byte[]> readFromTags(N2Elite tag, int numBanks) throws Exception {
+        ArrayList<byte[]> tags = new ArrayList<>();
+        int i = 0;
+        while (i < (numBanks & 255)) {
+            try {
+                byte[] tagData = tag.amiiboFastRead(0x15, 0x16, i);
+                if (tagData == null || tagData.length != 8) {
+                    throw new Exception();
+                }
+                tags.add(tagData);
+                i++;
+            } catch (Exception e) {
+                TagMo.Debug(TAG, TagMo.getStringRes(R.string.fail_amiiqo_bank_parse));
+            }
+        }
+        return tags;
+    }
+
+    public static int getAmiiqoBankCount(N2Elite tag) {
+        return ByteBuffer.wrap(tag.getAmiiqoBankCount()).getShort();
+    }
+
+    public static String getAmiiqoSignature(N2Elite tag) {
+        return Util.bytesToHex(tag.readAmiiqoSignature()).substring(0, 22);
+    }
+
+    static void writePages(N2Elite tag, int pagestart, int pageend, byte[][] data) throws IOException {
         for (int i = pagestart; i <= pageend; i++) {
             tag.writePage(i, data[i]);
             TagMo.Debug(TAG, R.string.write_page, String.valueOf(i));
         }
     }
 
-    static void writePassword(NTAG215 tag) throws IOException {
+    static void writePassword(N2Elite tag) throws IOException {
         byte[] pages0_1 = tag.readPages(0);
 
         if (pages0_1 == null || pages0_1.length != TagUtil.PAGE_SIZE * 4)
@@ -237,7 +266,7 @@ public class TagWriter {
         tag.writePage(0x85, password);
     }
 
-    static void writeLockInfo(NTAG215 tag) throws IOException {
+    static void writeLockInfo(N2Elite tag) throws IOException {
         byte[] pages = tag.readPages(0);
 
         if (pages == null || pages.length != TagUtil.PAGE_SIZE * 4)
@@ -252,7 +281,7 @@ public class TagWriter {
         tag.writePage(132, new byte[]{(byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00}); // config
     }
 
-    static void doAuth(NTAG215 tag) throws Exception {
+    static void doAuth(N2Elite tag) throws Exception {
         byte[] pages0_1 = tag.readPages(0);
 
         if (pages0_1 == null || pages0_1.length != TagUtil.PAGE_SIZE * 4)

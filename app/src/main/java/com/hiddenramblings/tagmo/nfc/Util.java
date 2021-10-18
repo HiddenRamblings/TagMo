@@ -1,9 +1,12 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.nfc;
 
 import android.content.Context;
 import android.os.Build;
 
 import com.endgames.environment.Storage;
+import com.hiddenramblings.tagmo.BuildConfig;
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import org.json.JSONException;

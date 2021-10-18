@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.settings;
+package com.hiddenramblings.tagmo;
 
 
 import android.annotation.SuppressLint;
@@ -7,7 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.settings.SettingsFragment;
+import com.hiddenramblings.tagmo.settings.SettingsFragment_;
 
 import org.androidannotations.annotations.EActivity;
 

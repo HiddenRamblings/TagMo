@@ -32,6 +32,7 @@ public class BrowserSettings implements Parcelable {
         oldBrowserSettings = new BrowserSettings(false);
     }
 
+    @SuppressWarnings("unused")
     public BrowserSettings(
             ArrayList<AmiiboFile> amiiboFiles, ArrayList<File> folders, File browserFolder,
             String query, int sort, String filterGameSeries, String filterCharacter,
@@ -186,6 +187,7 @@ public class BrowserSettings implements Parcelable {
         this.listeners.add(listener);
     }
 
+    @SuppressWarnings("unused")
     public void removeChangeListener(BrowserSettingsListener listener) {
         this.listeners.remove(listener);
     }
@@ -242,7 +244,7 @@ public class BrowserSettings implements Parcelable {
 
     protected BrowserSettings(Parcel in) {
         this.amiiboFiles = in.createTypedArrayList(AmiiboFile.CREATOR);
-        this.folders = new ArrayList<File>();
+        this.folders = new ArrayList<>();
         in.readList(this.folders, File.class.getClassLoader());
         this.browserFolder = (File) in.readSerializable();
         this.query = in.readString();

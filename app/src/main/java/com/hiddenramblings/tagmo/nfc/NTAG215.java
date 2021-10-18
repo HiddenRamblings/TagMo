@@ -10,7 +10,7 @@ import java.io.IOException;
 public class NTAG215 implements TagTechnology {
     private final MifareUltralight m_mifare;
     private final NfcA m_nfcA;
-    private int maxTransceiveLength;
+    private final int maxTransceiveLength;
 
     public NTAG215(MifareUltralight mifare) {
         m_nfcA = null;
@@ -153,25 +153,23 @@ public class NTAG215 implements TagTechnology {
         }
     }
 
-    public byte[] setAmiiqoBankCount(int i) {
+    public void setAmiiqoBankCount(int i) {
         try {
-            return transceive(new byte[]{
+            transceive(new byte[]{
                     NfcByte.N2_SET_BANK_CNT,
                     (byte) (i & 0xFF)
             });
-        } catch (Exception unused) {
-            return null;
+        } catch (Exception ignored) {
         }
     }
 
-    public byte[] activateAmiiqoBank(int i) {
+    public void activateAmiiqoBank(int i) {
         try {
-            return transceive(new byte[]{
+            transceive(new byte[]{
                     NfcByte.N2_SELECT_BANK,
                     (byte) (i & 0xFF)
             });
-        } catch (Exception unused) {
-            return null;
+        } catch (Exception ignored) {
         }
     }
 
@@ -197,19 +195,16 @@ public class NTAG215 implements TagTechnology {
     }
 
     public byte[] amiiboFastRead(int startAddr, int endAddr, int bank) {
-        return internalFastRead(new IFastRead() {
-            @Override
-            public byte[] doFastRead(int startAddr, int endAddr, int bank) {
-                try {
-                    return transceive(new byte[]{
-                            NfcByte.N2_FAST_READ,
-                            (byte) (startAddr & 255),
-                            (byte) (endAddr & 255),
-                            (byte) (bank & 255)
-                    });
-                } catch (Exception e) {
-                    return null;
-                }
+        return internalFastRead((startAddr1, endAddr1, bank1) -> {
+            try {
+                return transceive(new byte[]{
+                        NfcByte.N2_FAST_READ,
+                        (byte) (startAddr1 & 255),
+                        (byte) (endAddr1 & 255),
+                        (byte) (bank1 & 255)
+                });
+            } catch (Exception e) {
+                return null;
             }
         }, startAddr, endAddr, bank);
     }
@@ -262,20 +257,17 @@ public class NTAG215 implements TagTechnology {
 
     public boolean amiiboWrite(int addr, int bank, byte[] data) {
         if (data != null && data.length % 4 == 0) {
-            return internalWrite(new IFastWrite() {
-                @Override
-                public boolean doFastWrite(int startAddr, int bank, byte[] data) {
-                    byte[] req = new byte[7];
-                    req[0] = NfcByte.N2_WRITE;
-                    req[1] = (byte) (startAddr & 255);
-                    req[2] = (byte) (bank & 255);
-                    try {
-                        System.arraycopy(data, 0, req, 3, 4);
-                        transceive(req);
-                        return true;
-                    } catch (Exception e) {
-                        return false;
-                    }
+            return internalWrite((startAddr, bank1, data1) -> {
+                byte[] req = new byte[7];
+                req[0] = NfcByte.N2_WRITE;
+                req[1] = (byte) (startAddr & 255);
+                req[2] = (byte) (bank1 & 255);
+                try {
+                    System.arraycopy(data1, 0, req, 3, 4);
+                    transceive(req);
+                    return true;
+                } catch (Exception e) {
+                    return false;
                 }
             }, addr, bank, data);
         }
@@ -309,21 +301,18 @@ public class NTAG215 implements TagTechnology {
         if (data == null) {
             return false;
         }
-        return internalFastWrite(new IFastWrite() {
-            @Override
-            public boolean doFastWrite(int startAddr, int bank, byte[] data) {
-                byte[] req = new byte[(data.length + 4)];
-                req[0] = NfcByte.N2_FAST_WRITE;
-                req[1] = (byte) (startAddr & 255);
-                req[2] = (byte) (bank & 255);
-                req[3] = (byte) (data.length & 255);
-                try {
-                    System.arraycopy(data, 0, req, 4, data.length);
-                    transceive(req);
-                    return true;
-                } catch (Exception e) {
-                    return false;
-                }
+        return internalFastWrite((startAddr, bank1, data1) -> {
+            byte[] req = new byte[(data1.length + 4)];
+            req[0] = NfcByte.N2_FAST_WRITE;
+            req[1] = (byte) (startAddr & 255);
+            req[2] = (byte) (bank1 & 255);
+            req[3] = (byte) (data1.length & 255);
+            try {
+                System.arraycopy(data1, 0, req, 4, data1.length);
+                transceive(req);
+                return true;
+            } catch (Exception e) {
+                return false;
             }
         }, addr, bank, data);
     }

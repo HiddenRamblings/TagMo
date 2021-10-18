@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.nfc;
 
-public class NfcCmd {
-    public static final int PAGE_SIZE = 4;
+public class NfcByte {
 
     public static final int NXP_MANUFACTURER_ID = 0x04;
     public static final int MAX_PAGE_COUNT = 256;
@@ -26,4 +25,16 @@ public class NfcCmd {
     public static final byte N2_UNLOCK_1 = 0x44;
     public static final byte N2_UNLOCK_2 = 0x45;
     public static final byte N2_WRITE = (byte) 0xA5;
+
+    public static final int TAG_FILE_SIZE = 532;
+    public static final int PAGE_SIZE = 4;
+    public static final int BULK_READ_PAGE_COUNT = 4;
+
+    public static final byte[] POWERTAG_SIGNATURE = Util.hexStringToByteArray(
+            "213C65444901602985E9F6B50CACB9C8CA3C4BCD13142711FF571CF01E66BD6F");
+    public static final byte[] POWERTAG_IDPAGES = Util.hexStringToByteArray(
+            "04070883091012131800000000000000");
+    public static final String POWERTAG_KEY = "FFFFFFFFFFFFFFFF0000000000000000";
+    public static final byte[] COMP_WRITE_CMD = Util.hexStringToByteArray("a000");
+    public static final byte[] SIG_CMD = Util.hexStringToByteArray("3c00");
 }

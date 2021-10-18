@@ -21,9 +21,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.hiddenramblings.tagmo.nfc.AmiiqoWriter;
 import com.hiddenramblings.tagmo.nfc.KeyManager;
-import com.hiddenramblings.tagmo.nfc.N2Elite;
 import com.hiddenramblings.tagmo.nfc.NTAG215;
 import com.hiddenramblings.tagmo.nfc.TagWriter;
 
@@ -260,14 +258,14 @@ public class NfcActivity extends AppCompatActivity {
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             TagMo.Debug(TAG, tag.toString());
-            N2Elite mifare = N2Elite.get(tag);
+            NTAG215 mifare = NTAG215.get(tag);
             if (mifare == null) {
                 throw new Exception(getString(R.string.tag_type_error));
             }
             mifare.connect();
             if (!mode.equals(TagMo.ACTION_GET_DETAILS) && !mode.equals(TagMo.ACTION_CONFIGURE)) {
                 int selection = bankNumberPicker.getValue() - 1;
-                if (selection > AmiiqoWriter.getAmiiqoBankCount(mifare)) {
+                if (selection > TagWriter.getAmiiqoBankCount(mifare)) {
                     throw new Exception(getString(R.string.fail_amiiqo_outofbounds));
                 }
                 mifare.activateAmiiqoBank(selection);
@@ -283,7 +281,7 @@ public class NfcActivity extends AppCompatActivity {
                         if (data == null) {
                             throw new Exception(getString(R.string.no_data));
                         }
-                        AmiiqoWriter.writeToTagRaw(mifare, data, prefs.enableTagTypeValidation().get());
+                        TagWriter.writeToTagRaw(mifare, data, prefs.enableTagTypeValidation().get());
                         setResult(Activity.RESULT_OK);
                         showToast(getString(R.string.done));
                         break;
@@ -292,7 +290,7 @@ public class NfcActivity extends AppCompatActivity {
                         if (data == null) {
                             throw new Exception(getString(R.string.no_data));
                         }
-                        AmiiqoWriter.writeToTagAuto(mifare, data, this.keyManager,
+                        TagWriter.writeToTagAuto(mifare, data, this.keyManager,
                                 prefs.enableTagTypeValidation().get(), prefs.enablePowerTagSupport().get());
                         setResult(Activity.RESULT_OK);
                         showToast(getString(R.string.done));
@@ -303,14 +301,14 @@ public class NfcActivity extends AppCompatActivity {
                         if (data == null) {
                             throw new Exception(getString(R.string.no_data));
                         }
-                        AmiiqoWriter.restoreTag(mifare, data, ignoreUid,
+                        TagWriter.restoreTag(mifare, data, ignoreUid,
                                 this.keyManager, prefs.enableTagTypeValidation().get());
                         setResult(Activity.RESULT_OK);
                         showToast(getString(R.string.done));
                         break;
                     case TagMo.ACTION_GET_DETAILS:
-                        String signature = AmiiqoWriter.getAmiiqoSignature(mifare);
-                        int bank_details = AmiiqoWriter.getAmiiqoBankCount(mifare);
+                        String signature = TagWriter.getAmiiqoSignature(mifare);
+                        int bank_details = TagWriter.getAmiiqoBankCount(mifare);
                         Intent details = new Intent(TagMo.ACTION_NFC_SCANNED);
                         details.putExtra(TagMo.EXTRA_SIGNATURE, signature);
                         details.putExtra(TagMo.EXTRA_BANK_COUNT, bank_details);
@@ -323,14 +321,14 @@ public class NfcActivity extends AppCompatActivity {
                         setResult(Activity.RESULT_OK, configure);
                         break;
                     case TagMo.ACTION_SCAN_TAG:
-                        data = AmiiqoWriter.readFromTag(mifare);
+                        data = TagWriter.readFromTag(mifare);
                         Intent result = new Intent(TagMo.ACTION_NFC_SCANNED);
                         result.putExtra(TagMo.EXTRA_TAG_DATA, data);
                         setResult(Activity.RESULT_OK, result);
                         break;
                     case TagMo.ACTION_SCAN_UNIT:
-                        int count = AmiiqoWriter.getAmiiqoBankCount(mifare);
-                        ArrayList<byte[]> tags = AmiiqoWriter.readFromTags(mifare, count);
+                        int count = TagWriter.getAmiiqoBankCount(mifare);
+                        ArrayList<byte[]> tags = TagWriter.readFromTags(mifare, count);
                         Intent results = new Intent(TagMo.ACTION_NFC_SCANNED);
                         results.putExtra(TagMo.EXTRA_UNIT_DATA, tags);
                         setResult(Activity.RESULT_OK, results);

@@ -17,9 +17,6 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 
 public class TagUtil {
-    public static final int TAG_FILE_SIZE = 532;
-    public static final int PAGE_SIZE = 4;
-
 
     public static byte[] keygen(byte[] uuid) {
         //from AmiiManage (GPL)
@@ -67,12 +64,12 @@ public class TagUtil {
     }
 
     public static byte[][] splitPages(byte[] data) throws Exception {
-        if (data.length < TAG_FILE_SIZE)
+        if (data.length < NfcByte.TAG_FILE_SIZE)
             throw new Exception(TagMo.getStringRes(R.string.invalid_tag_data));
 
-        byte[][] pages = new byte[data.length / TagUtil.PAGE_SIZE][];
-        for (int i = 0, j = 0; i < data.length; i += TagUtil.PAGE_SIZE, j++) {
-            pages[j] = Arrays.copyOfRange(data, i, i + TagUtil.PAGE_SIZE);
+        byte[][] pages = new byte[data.length / NfcByte.PAGE_SIZE][];
+        for (int i = 0, j = 0; i < data.length; i += NfcByte.PAGE_SIZE, j++) {
+            pages[j] = Arrays.copyOfRange(data, i, i + NfcByte.PAGE_SIZE);
         }
         return pages;
     }
@@ -108,7 +105,7 @@ public class TagUtil {
             throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
         if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length) == 0)
             throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
-        byte[] decrypted = new byte[TagUtil.TAG_FILE_SIZE];
+        byte[] decrypted = new byte[NfcByte.TAG_FILE_SIZE];
         if (tool.unpack(tagData, tagData.length, decrypted, decrypted.length) == 0)
             throw new Exception(TagMo.getStringRes(R.string.failed_decrypt));
 
@@ -124,7 +121,7 @@ public class TagUtil {
             throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
         if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length) == 0)
             throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
-        byte[] encrypted = new byte[TagUtil.TAG_FILE_SIZE];
+        byte[] encrypted = new byte[NfcByte.TAG_FILE_SIZE];
         if (tool.pack(tagData, tagData.length, encrypted, encrypted.length) == 0)
             throw new Exception(TagMo.getStringRes(R.string.failed_encrypt));
 
@@ -148,12 +145,12 @@ public class TagUtil {
     }
 
     public static byte[] readTag(InputStream inputStream) throws Exception {
-        byte[] data = new byte[TAG_FILE_SIZE];
+        byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
         try {
             int len = inputStream.read(data);
-            if (len != TAG_FILE_SIZE)
+            if (len != NfcByte.TAG_FILE_SIZE)
                 throw new Exception(TagMo.getStringRes(R.string.invalid_file_size,
-                        String.valueOf(TAG_FILE_SIZE)));
+                        String.valueOf(NfcByte.TAG_FILE_SIZE)));
 
             return data;
         } finally {

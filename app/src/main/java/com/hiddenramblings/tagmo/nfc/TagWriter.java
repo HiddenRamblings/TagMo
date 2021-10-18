@@ -4,15 +4,11 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 public class TagWriter {
     private static final String TAG = TagWriter.class.getSimpleName();
-
-    private static final byte[] POWERTAG_SIGNATURE = Util.hexStringToByteArray("213C65444901602985E9F6B50CACB9C8CA3C4BCD13142711FF571CF01E66BD6F");
-    private static final byte[] POWERTAG_IDPAGES = Util.hexStringToByteArray("04070883091012131800000000000000");
-    private static final String POWERTAG_KEY = "FFFFFFFFFFFFFFFF0000000000000000";
-    private static final byte[] COMP_WRITE_CMD = Util.hexStringToByteArray("a000");
-    private static final byte[] SIG_CMD = Util.hexStringToByteArray("3c00");
 
     public static void writeToTagRaw(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
         validate(mifare, tagData, validateNtag);
@@ -52,13 +48,13 @@ public class TagWriter {
 
     public static void writeToTagAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager, boolean validateNtag, boolean supportPowerTag) throws Exception {
         byte[] idPages = mifare.readPages(0);
-        if (idPages == null || idPages.length != TagUtil.PAGE_SIZE * 4)
+        if (idPages == null || idPages.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
 
         boolean isPowerTag = false;
         if (supportPowerTag) {
-            byte[] sig = mifare.transceive(SIG_CMD);
-            isPowerTag = compareRange(sig, POWERTAG_SIGNATURE, 0, POWERTAG_SIGNATURE.length);
+            byte[] sig = mifare.transceive(NfcByte.SIG_CMD);
+            isPowerTag = compareRange(sig, NfcByte.POWERTAG_SIGNATURE, 0, NfcByte.POWERTAG_SIGNATURE.length);
         }
 
         TagMo.Debug(TAG, R.string.power_tag_exists, String.valueOf(isPowerTag));
@@ -66,7 +62,7 @@ public class TagWriter {
         tagData = TagUtil.decrypt(keyManager, tagData);
         if (isPowerTag) {
             //use a pre-determined static id for powertag
-            tagData = TagUtil.patchUid(POWERTAG_IDPAGES, tagData);
+            tagData = TagUtil.patchUid(NfcByte.POWERTAG_IDPAGES, tagData);
         } else {
             tagData = TagUtil.patchUid(idPages, tagData);
         }
@@ -92,12 +88,12 @@ public class TagWriter {
             String page10bytes = Util.bytesToHex(new byte[]{page10[0], page10[3]});
 
             byte[] ptagKeySuffix = PTagKeyManager.getKey(oldid, page10bytes);
-            byte[] ptagKey = Util.hexStringToByteArray(POWERTAG_KEY);
+            byte[] ptagKey = Util.hexStringToByteArray(NfcByte.POWERTAG_KEY);
             System.arraycopy(ptagKeySuffix, 0, ptagKey, 8, 8);
 
             TagMo.Debug(TAG, R.string.ptag_key, Util.bytesToHex(ptagKey));
 
-            mifare.transceive(COMP_WRITE_CMD);
+            mifare.transceive(NfcByte.COMP_WRITE_CMD);
             mifare.transceive(ptagKey);
 
             if (!(idPages[0] == (byte) 0xFF && idPages[1] == (byte) 0xFF))
@@ -175,7 +171,7 @@ public class TagWriter {
         }
 
         byte[] pages = mifare.readPages(0);
-        if (pages == null || pages.length != TagUtil.PAGE_SIZE * 4)
+        if (pages == null || pages.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
 
         if (!compareRange(pages, tagData, 0, 9))
@@ -192,19 +188,17 @@ public class TagWriter {
         return true;
     }
 
-    public static final int BULK_READ_PAGE_COUNT = 4;
-
     public static byte[] readFromTag(NTAG215 tag) throws Exception {
-        byte[] tagData = new byte[TagUtil.TAG_FILE_SIZE];
-        int pageCount = TagUtil.TAG_FILE_SIZE / TagUtil.PAGE_SIZE;
+        byte[] tagData = new byte[NfcByte.TAG_FILE_SIZE];
+        int pageCount = NfcByte.TAG_FILE_SIZE / NfcByte.PAGE_SIZE;
 
-        for (int i = 0; i < pageCount; i += BULK_READ_PAGE_COUNT) {
+        for (int i = 0; i < pageCount; i += NfcByte.BULK_READ_PAGE_COUNT) {
             byte[] pages = tag.readPages(i);
-            if (pages == null || pages.length != TagUtil.PAGE_SIZE * BULK_READ_PAGE_COUNT)
+            if (pages == null || pages.length != NfcByte.PAGE_SIZE * NfcByte.BULK_READ_PAGE_COUNT)
                 throw new Exception(TagMo.getStringRes(R.string.fail_invalid_size));
 
-            int dstIndex = i * TagUtil.PAGE_SIZE;
-            int dstCount = Math.min(BULK_READ_PAGE_COUNT * TagUtil.PAGE_SIZE, tagData.length - dstIndex);
+            int dstIndex = i * NfcByte.PAGE_SIZE;
+            int dstCount = Math.min(NfcByte.BULK_READ_PAGE_COUNT * NfcByte.PAGE_SIZE, tagData.length - dstIndex);
 
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount);
         }
@@ -223,7 +217,7 @@ public class TagWriter {
     static void writePassword(NTAG215 tag) throws IOException {
         byte[] pages0_1 = tag.readPages(0);
 
-        if (pages0_1 == null || pages0_1.length != TagUtil.PAGE_SIZE * 4)
+        if (pages0_1 == null || pages0_1.length != NfcByte.PAGE_SIZE * 4)
             throw new IOException(TagMo.getStringRes(R.string.read_failed));
 
         byte[] uid = TagUtil.uidFromPages(pages0_1);
@@ -241,11 +235,11 @@ public class TagWriter {
     static void writeLockInfo(NTAG215 tag) throws IOException {
         byte[] pages = tag.readPages(0);
 
-        if (pages == null || pages.length != TagUtil.PAGE_SIZE * 4)
+        if (pages == null || pages.length != NfcByte.PAGE_SIZE * 4)
             throw new IOException(TagMo.getStringRes(R.string.read_failed));
 
-        tag.writePage(2, new byte[]{pages[2 * TagUtil.PAGE_SIZE],
-                pages[(2 * TagUtil.PAGE_SIZE) + 1], (byte) 0x0F, (byte) 0xE0}); // lock bits
+        tag.writePage(2, new byte[]{pages[2 * NfcByte.PAGE_SIZE],
+                pages[(2 * NfcByte.PAGE_SIZE) + 1], (byte) 0x0F, (byte) 0xE0}); // lock bits
         tag.writePage(130, new byte[]{(byte) 0x01, (byte) 0x00, (byte) 0x0F, (byte) 0x00});
         // dynamic lock bits. should the last bit be 0xBD according to the nfc docs though:
         // Remark: Set all bits marked with RFUI to 0, when writing to the dynamic lock bytes.
@@ -256,7 +250,7 @@ public class TagWriter {
     static void doAuth(NTAG215 tag) throws Exception {
         byte[] pages0_1 = tag.readPages(0);
 
-        if (pages0_1 == null || pages0_1.length != TagUtil.PAGE_SIZE * 4)
+        if (pages0_1 == null || pages0_1.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.read_failed));
 
         byte[] uid = TagUtil.uidFromPages(pages0_1);
@@ -281,4 +275,29 @@ public class TagWriter {
         }
     }
 
+    public static ArrayList<byte[]> readFromTags(NTAG215 tag, int numBanks) throws Exception {
+        ArrayList<byte[]> tags = new ArrayList<>();
+        int i = 0;
+        while (i < (numBanks & 255)) {
+            try {
+                byte[] tagData = tag.amiiboFastRead(0x15, 0x16, i);
+                if (tagData == null || tagData.length != 8) {
+                    throw new Exception();
+                }
+                tags.add(tagData);
+                i++;
+            } catch (Exception e) {
+                TagMo.Debug(TAG, TagMo.getStringRes(R.string.fail_amiiqo_bank_parse));
+            }
+        }
+        return tags;
+    }
+
+    public static int getAmiiqoBankCount(NTAG215 tag) {
+        return ByteBuffer.wrap(tag.getAmiiqoBankCount()).getShort();
+    }
+
+    public static String getAmiiqoSignature(NTAG215 tag) {
+        return Util.bytesToHex(tag.readAmiiqoSignature()).substring(0, 22);
+    }
 }

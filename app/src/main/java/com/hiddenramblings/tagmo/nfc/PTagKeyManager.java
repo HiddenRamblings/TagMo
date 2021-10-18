@@ -30,15 +30,15 @@ public class PTagKeyManager {
 
     static void loadJson(JSONObject json) throws JSONException {
         HashMap<String, HashMap<String, byte[]>> keytable = new HashMap<>();
-        for (Iterator uidIterator = json.keys(); uidIterator.hasNext(); ) {
-            String uid = (String) uidIterator.next();
+        for (Iterator<String> uidIterator = json.keys(); uidIterator.hasNext(); ) {
+            String uid = uidIterator.next();
             JSONObject pageKeys = json.getJSONObject(uid);
 
-            HashMap<String, byte[]> keyvalues = new HashMap<String, byte[]>();
+            HashMap<String, byte[]> keyvalues = new HashMap<>();
             keytable.put(uid, keyvalues);
 
-            for (Iterator pageByteIterator = pageKeys.keys(); pageByteIterator.hasNext(); ) {
-                String pageBytes = (String) pageByteIterator.next();
+            for (Iterator<String> pageByteIterator = pageKeys.keys(); pageByteIterator.hasNext(); ) {
+                String pageBytes = pageByteIterator.next();
 
                 String keyStr = pageKeys.getString(pageBytes);
 

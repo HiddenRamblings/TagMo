@@ -56,6 +56,7 @@ import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.RequestCommit;
 import com.hiddenramblings.tagmo.nfc.KeyManager;
+import com.hiddenramblings.tagmo.nfc.PTagKeyManager;
 import com.hiddenramblings.tagmo.nfc.TagUtil;
 import com.hiddenramblings.tagmo.nfc.Util;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -107,6 +108,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
     public static final String BACKGROUND_FOLDERS = "folders";
     public static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
+    public static final String BACKGROUND_POWERTAG = "powertag";
 
 
     public static final int SORT_ID = 0x0;
@@ -260,6 +262,7 @@ public class BrowserActivity extends AppCompatActivity implements
         this.foldersView.setAdapter(new BrowserFoldersAdapter(settings));
 
         this.loadAmiiboManager();
+        this.loadPTagKeyManager();
     }
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -789,6 +792,24 @@ public class BrowserActivity extends AppCompatActivity implements
     @UiThread
     void setAmiiboFilesLoadingBarVisibility(boolean visible) {
         this.swipeRefreshLayout.setRefreshing(visible);
+    }
+
+    void loadPTagKeyManager() {
+        BackgroundExecutor.cancelAll(BACKGROUND_POWERTAG, true);
+        loadPTagKeyManagerTask();
+    }
+
+    @Background(id = BACKGROUND_POWERTAG)
+    void loadPTagKeyManagerTask() {
+        if (!prefs.enablePowerTagSupport().get()) {
+            return;
+        }
+        try {
+            PTagKeyManager.load(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showToast(R.string.fail_powertag_keys, Toast.LENGTH_LONG);
+        }
     }
 
     void loadAmiiboManager() {

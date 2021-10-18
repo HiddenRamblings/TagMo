@@ -266,6 +266,7 @@
     <string name="fail_read_uid">Could not read old UID</string>
     <string name="fail_mismatch_uid">Source UID does not match the target!</string>
     <string name="fail_invalid_size">Invalid read result size</string>
+    <string name="fail_powertag_keys">Failed to load PowerTag keys</string>
     <string name="fail_amiiqo_outofbounds">Selected bank exceeds count!</string>
     <string name="fail_amiiqo_bank_parse">Failed to parse banks!</string>
 

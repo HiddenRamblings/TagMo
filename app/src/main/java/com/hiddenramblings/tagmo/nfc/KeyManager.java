@@ -58,8 +58,8 @@ public class KeyManager {
         return unfixedKey != null;
     }
 
-    public boolean hasBothKeys() {
-        return fixedKey != null && unfixedKey != null;
+    public boolean isKeyMissing() {
+        return fixedKey == null || unfixedKey == null;
     }
 
     private byte[] loadKeyFromStorage(String file) throws Exception {

@@ -805,7 +805,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background(id = BACKGROUND_POWERTAG)
     void loadPTagKeyManagerTask() {
         try {
-            PTagKeyManager.load(this);
+            PTagKeyManager.loadKeyTable(this);
         } catch (Exception e) {
             e.printStackTrace();
             showToast(R.string.fail_powertag_keys, Toast.LENGTH_LONG);

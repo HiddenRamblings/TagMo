@@ -101,8 +101,8 @@ public class TagDataActivity extends AppCompatActivity {
     TextView txtName;
     @ViewById(R.id.txtGameSeries)
     TextView txtGameSeries;
-    @ViewById(R.id.txtCharacter)
-    TextView txtCharacter;
+    // @ViewById(R.id.txtCharacter)
+    // TextView txtCharacter;
     @ViewById(R.id.txtAmiiboType)
     TextView txtAmiiboType;
     @ViewById(R.id.txtAmiiboSeries)
@@ -158,7 +158,7 @@ public class TagDataActivity extends AppCompatActivity {
         byte[] tagData = getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
         keyManager = new KeyManager(this);
-        if (!keyManager.hasBothKeys()) {
+        if (keyManager.isKeyMissing()) {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.error)
                     .setMessage(R.string.no_decrypt_key)
@@ -256,7 +256,7 @@ public class TagDataActivity extends AppCompatActivity {
         String amiiboSeries = "";
         String amiiboType = "";
         String gameSeries = "";
-//        String character = "";
+        // String character = "";
         final String amiiboImageUrl;
 
         if (this.tagData == null) {
@@ -291,8 +291,8 @@ public class TagDataActivity extends AppCompatActivity {
                         amiiboType = amiibo.getAmiiboType().name;
                     if (amiibo.getGameSeries() != null)
                         gameSeries = amiibo.getGameSeries().name;
-//                    if (amiibo.getCharacter() != null)
-//                        character = amiibo.getCharacter().name;
+                    // if (amiibo.getCharacter() != null)
+                    //     character = amiibo.getCharacter().name;
                 } else {
                     tagInfo = "ID: " + TagUtil.amiiboIdToHex(amiiboId);
                     amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
@@ -310,7 +310,7 @@ public class TagDataActivity extends AppCompatActivity {
         setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, tagInfo != null);
         setAmiiboInfoText(txtAmiiboType, amiiboType, tagInfo != null);
         setAmiiboInfoText(txtGameSeries, gameSeries, tagInfo != null);
-//        setAmiiboInfoText(txtCharacter, character, tagInfo != null);
+        // setAmiiboInfoText(txtCharacter, character, tagInfo != null);
 
         if (imageAmiibo != null) {
             imageAmiibo.setVisibility(View.GONE);

@@ -795,15 +795,14 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     void loadPTagKeyManager() {
-        BackgroundExecutor.cancelAll(BACKGROUND_POWERTAG, true);
-        loadPTagKeyManagerTask();
+        if (prefs.enablePowerTagSupport().get()) {
+            BackgroundExecutor.cancelAll(BACKGROUND_POWERTAG, true);
+            loadPTagKeyManagerTask();
+        }
     }
 
     @Background(id = BACKGROUND_POWERTAG)
     void loadPTagKeyManagerTask() {
-        if (!prefs.enablePowerTagSupport().get()) {
-            return;
-        }
         try {
             PTagKeyManager.load(this);
         } catch (Exception e) {

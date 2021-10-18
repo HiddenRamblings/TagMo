@@ -63,7 +63,7 @@ public class AppDataTPFragment extends AppDataFragment {
 
     @AfterViews
     void afterViews() {
-        setListForSpinners(txtHearts2, R.array.editor_tp_hearts, R.layout.spinner_text);
+        setListForSpinners(txtHearts2, R.array.editor_tp_hearts);
 
         loadLevel();
         loadHearts();
@@ -143,8 +143,9 @@ public class AppDataTPFragment extends AppDataFragment {
         }
     }
 
-    void setListForSpinners(Spinner control, int list, int layout) {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.getContext(), list, layout);
+    void setListForSpinners(Spinner control, int list) {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this.getContext(), list, R.layout.spinner_text);
         adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         control.setAdapter(adapter);
     }

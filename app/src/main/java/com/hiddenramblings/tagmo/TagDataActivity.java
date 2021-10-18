@@ -34,7 +34,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.adapter.NothingSelectedSpinnerAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -200,7 +200,7 @@ public class TagDataActivity extends AppCompatActivity {
         return isAppDataInitialized;
     }
 
-    SimpleTarget<Bitmap> amiiboImageTarget = new SimpleTarget<Bitmap>() {
+    CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
         @Override
         public void onLoadStarted(@Nullable Drawable placeholder) {
             imageAmiibo.setVisibility(View.GONE);
@@ -209,6 +209,11 @@ public class TagDataActivity extends AppCompatActivity {
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
             imageAmiibo.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onLoadCleared(@Nullable Drawable placeholder) {
+
         }
 
         @Override

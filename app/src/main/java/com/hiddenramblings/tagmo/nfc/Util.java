@@ -123,6 +123,7 @@ public class Util {
         return TagMo.getContext().getExternalFilesDir(null);
     }
 
+    @SuppressWarnings("unused")
     public static class AmiiboInfoException extends Exception {
         public AmiiboInfoException(String message) {
             super(message);

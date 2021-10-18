@@ -5,13 +5,19 @@ public class NfcByte {
     public static final int NXP_MANUFACTURER_ID = 0x04;
     public static final int MAX_PAGE_COUNT = 256;
 
+    @SuppressWarnings("unused")
     public static final int CMD_GET_VERSION = 0x60;
     public static final int CMD_READ = 0x30;
+    @SuppressWarnings("unused")
     public static final int CMD_FAST_READ = 0x3A;
     public static final int CMD_WRITE = 0xA2;
+    @SuppressWarnings("unused")
     public static final int CMD_COMP_WRITE = 0xA0;
+    @SuppressWarnings("unused")
     public static final int CMD_READ_CNT = 0x39;
+    @SuppressWarnings("unused")
     public static final int CMD_PWD_AUTH = 0x1B;
+    @SuppressWarnings("unused")
     public static final int CMD_READ_SIG = 0x3C;
 
     // N2 Elite

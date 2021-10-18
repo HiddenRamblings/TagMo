@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.amiiqo;
+package com.hiddenramblings.tagmo.nfc;
 
 import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
@@ -8,34 +8,9 @@ import android.nfc.tech.TagTechnology;
 import java.io.IOException;
 
 public class N2Elite implements TagTechnology {
+
     private final MifareUltralight m_mifare;
     private final NfcA m_nfcA;
-
-    public static final int PAGE_SIZE = 4;
-
-    private static final int NXP_MANUFACTURER_ID = 0x04;
-    private static final int MAX_PAGE_COUNT = 256;
-
-    public static final int CMD_GET_VERSION = 0x60;
-    public static final int CMD_READ = 0x30;
-    public static final int CMD_FAST_READ = 0x3A;
-    public static final int CMD_WRITE = 0xA2;
-    public static final int CMD_COMP_WRITE = 0xA0;
-    public static final int CMD_READ_CNT = 0x39;
-    public static final int CMD_PWD_AUTH = 0x1B;
-    public static final int CMD_READ_SIG = 0x3C;
-
-    // N2 Elite
-    public static final byte N2_SELECT_BANK = (byte) 0xA7;
-    public static final byte N2_FAST_READ = 0x3B;
-    public static final byte N2_FAST_WRITE = (byte) 0xAE;
-    public static final byte N2_BANK_COUNT = 0x55;
-    public static final byte N2_LOCK = 0x46;
-    public static final byte N2_READ_SIG = 0x43;// N2_GET_ID
-    public static final byte N2_SET_BANK_CNT = (byte) 0xA9;
-    public static final byte N2_UNLOCK_1 = 0x44;
-    public static final byte N2_UNLOCK_2 = 0x45;
-    public static final byte N2_WRITE = (byte) 0xA5;
 
     public N2Elite(MifareUltralight mifare) {
         m_nfcA = null;
@@ -55,7 +30,7 @@ public class N2Elite implements TagTechnology {
             return new N2Elite(mifare);
         NfcA nfcA = NfcA.get(tag);
         if (nfcA != null) {
-            if (nfcA.getSak() == 0x00 && tag.getId()[0] == NXP_MANUFACTURER_ID)
+            if (nfcA.getSak() == 0x00 && tag.getId()[0] == NfcCmd.NXP_MANUFACTURER_ID)
                 return new N2Elite(nfcA);
         }
 
@@ -69,7 +44,10 @@ public class N2Elite implements TagTechnology {
             validatePageIndex(pageOffset);
             //checkConnected();
 
-            byte[] cmd = {CMD_READ, (byte) pageOffset};
+            byte[] cmd = {
+                    NfcCmd.CMD_READ,
+                    (byte) pageOffset
+            };
             return m_nfcA.transceive(cmd);
         }
         return null;
@@ -83,7 +61,7 @@ public class N2Elite implements TagTechnology {
             //m_nfcA.checkConnected();
 
             byte[] cmd = new byte[data.length + 2];
-            cmd[0] = (byte) CMD_WRITE;
+            cmd[0] = (byte) NfcCmd.CMD_WRITE;
             cmd[1] = (byte) pageOffset;
             System.arraycopy(data, 0, cmd, 2, data.length);
 
@@ -106,7 +84,7 @@ public class N2Elite implements TagTechnology {
         // Note that issuing a command to an out-of-bounds block is safe - the
         // tag will wrap the read to an addressable area. This validation is a
         // helper to guard against obvious programming mistakes.
-        if (pageIndex < 0 || pageIndex >= MAX_PAGE_COUNT) {
+        if (pageIndex < 0 || pageIndex >= NfcCmd.MAX_PAGE_COUNT) {
             throw new IndexOutOfBoundsException("page out of bounds: " + pageIndex);
         }
     }
@@ -151,7 +129,7 @@ public class N2Elite implements TagTechnology {
         byte[] req = new byte [1];
         byte[] resp;
 
-        req[0] = N2_BANK_COUNT;
+        req[0] = NfcCmd.N2_BANK_COUNT;
 
         try {
             resp = transceive(req);
@@ -164,7 +142,7 @@ public class N2Elite implements TagTechnology {
     public byte[] readAmiiqoSignature() {
         try {
             return this.transceive(new byte[]{
-                    N2_READ_SIG
+                    NfcCmd.N2_READ_SIG
             });
         } catch (Exception unused) {
             return null;
@@ -174,7 +152,7 @@ public class N2Elite implements TagTechnology {
     public byte[] setAmiiqoBankCount(int i) {
         try {
             return transceive(new byte[]{
-                    N2_SET_BANK_CNT,
+                    NfcCmd.N2_SET_BANK_CNT,
                     (byte) (i & 0xFF)
             });
         } catch (Exception unused) {
@@ -185,7 +163,7 @@ public class N2Elite implements TagTechnology {
     public byte[] activateAmiiqoBank(int i) {
         try {
             return transceive(new byte[]{
-                    N2_SELECT_BANK,
+                    NfcCmd.N2_SELECT_BANK,
                     (byte) (i & 0xFF)
             });
         } catch (Exception unused) {
@@ -199,7 +177,7 @@ public class N2Elite implements TagTechnology {
                     (byte) -12, (byte) 73, (byte) -101, (byte) -103,
                     (byte) -61, (byte) -38, (byte) 87, (byte) 113,
                     (byte) 10, (byte) 100, (byte) 74, (byte) -98,
-                    (byte) -8, (byte) CMD_WRITE, (byte) CMD_READ, (byte) -39
+                    (byte) -8, (byte) NfcCmd.CMD_WRITE, (byte) NfcCmd.CMD_READ, (byte) -39
             });
         } catch (Exception e) {
             return null;
@@ -220,7 +198,7 @@ public class N2Elite implements TagTechnology {
             public byte[] doFastRead(int startAddr, int endAddr, int bank) {
                 try {
                     return transceive(new byte[]{
-                            N2_FAST_READ,
+                            NfcCmd.N2_FAST_READ,
                             (byte) (startAddr & 255),
                             (byte) (endAddr & 255),
                             (byte) (bank & 255)
@@ -284,7 +262,7 @@ public class N2Elite implements TagTechnology {
                 @Override
                 public boolean doFastWrite(int startAddr, int bank, byte[] data) {
                     byte[] req = new byte[7];
-                    req[0] = N2_WRITE;
+                    req[0] = NfcCmd.N2_WRITE;
                     req[1] = (byte) (startAddr & 255);
                     req[2] = (byte) (bank & 255);
                     try {
@@ -331,7 +309,7 @@ public class N2Elite implements TagTechnology {
             @Override
             public boolean doFastWrite(int startAddr, int bank, byte[] data) {
                 byte[] req = new byte[(data.length + 4)];
-                req[0] = N2_FAST_WRITE;
+                req[0] = NfcCmd.N2_FAST_WRITE;
                 req[1] = (byte) (startAddr & 255);
                 req[2] = (byte) (bank & 255);
                 req[3] = (byte) (data.length & 255);
@@ -348,7 +326,9 @@ public class N2Elite implements TagTechnology {
 
     public byte[] amiiboLock() {
         try {
-            return transceive(new byte[]{N2_LOCK});
+            return transceive(new byte[]{
+                    NfcCmd.N2_LOCK
+            });
         } catch (Exception e) {
             return null;
         }
@@ -356,7 +336,9 @@ public class N2Elite implements TagTechnology {
 
     public byte[] amiiboPrepareUnlock() {
         try {
-            return transceive(new byte[]{N2_UNLOCK_1});
+            return transceive(new byte[]{
+                    NfcCmd.N2_UNLOCK_1
+            });
         } catch (Exception e) {
             return null;
         }
@@ -364,7 +346,9 @@ public class N2Elite implements TagTechnology {
 
     public byte[] amiiboUnlock() {
         try {
-            return transceive(new byte[]{N2_UNLOCK_2});
+            return transceive(new byte[]{
+                    NfcCmd.N2_UNLOCK_2
+            });
         } catch (Exception e) {
             return null;
         }

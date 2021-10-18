@@ -44,7 +44,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.endgames.environment.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
+import com.hiddenramblings.tagmo.adapter.BrowserFoldersAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
@@ -52,8 +55,10 @@ import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.RequestCommit;
+import com.hiddenramblings.tagmo.nfc.KeyManager;
+import com.hiddenramblings.tagmo.nfc.TagUtil;
+import com.hiddenramblings.tagmo.nfc.Util;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.SettingsActivity_;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
 
@@ -173,7 +178,7 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuLogcat;
 
     SearchView searchView;
-    BottomSheetBehavior bottomSheetBehavior;
+    BottomSheetBehavior<View> bottomSheetBehavior;
 
     @Pref
     Preferences_ prefs;
@@ -209,7 +214,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void afterViews() {
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        this.bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -713,10 +718,10 @@ public class BrowserActivity extends AppCompatActivity implements
         if (result.getResultCode() != RESULT_OK || result.getData() == null)
             return;
 
-        if (!NfcActivity.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
-        byte[] tagData = result.getData().getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
+        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
         Bundle args = new Bundle();
         args.putByteArray(AmiiboActivity.ARG_TAG_DATA, tagData);
@@ -730,17 +735,18 @@ public class BrowserActivity extends AppCompatActivity implements
     @Click(R.id.fab)
     public void onFabClicked() {
         onNFCActivity.launch(new Intent(this,
-                NfcActivity_.class).setAction(NfcActivity.ACTION_SCAN_TAG));
+                NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
     }
 
     @Override
     public void onAmiiboClicked(AmiiboFile amiiboFile) {
-        if (amiiboFile.filePath == null)
+        if (amiiboFile.getFilePath() == null)
             return;
 
         byte[] tagData;
         try {
-            tagData = TagUtil.readTag(getContentResolver().openInputStream(Uri.fromFile(amiiboFile.filePath)));
+            tagData = TagUtil.readTag(getContentResolver().openInputStream(
+                    Uri.fromFile(amiiboFile.getFilePath())));
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -999,7 +1005,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     OnCloseClickListener onFilterGameSeriesChipCloseClick = new OnCloseClickListener() {
         @Override
-        public void onCloseClick(View v) {
+        public void onCloseClick(@NonNull View v) {
             settings.setGameSeriesFilter("");
             settings.notifyChanges();
         }
@@ -1111,22 +1117,26 @@ public class BrowserActivity extends AppCompatActivity implements
                 PackageInstaller.SessionParams.MODE_FULL_INSTALL);
         int sessionId = installer.createSession(params);
         PackageInstaller.Session session = installer.openSession(sessionId);
-        OutputStream sessionStream = session.openWrite("NAME", 0,
-                DocumentFile.fromSingleUri(this, apkUri).length());
-        byte[] buf = new byte[8192];
-        int length;
-        while ((length = apkStream.read(buf)) > 0) {
-            sessionStream.write(buf, 0, length);
+        try {
+            OutputStream sessionStream = session.openWrite("NAME", 0,
+                    DocumentFile.fromSingleUri(this, apkUri).length());
+            byte[] buf = new byte[8192];
+            int length;
+            while ((length = apkStream.read(buf)) > 0) {
+                sessionStream.write(buf, 0, length);
+            }
+            apkStream.close();
+            session.fsync(sessionStream);
+            sessionStream.close();
+            PendingIntent pi = PendingIntent.getBroadcast(
+                    this, 8675309,
+                    new Intent(this, InstallReceiver.class),
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            );
+            session.commit(pi.getIntentSender());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        apkStream.close();
-        session.fsync(sessionStream);
-        sessionStream.close();
-        PendingIntent pi = PendingIntent.getBroadcast(
-                this, 8675309,
-                new Intent(this, InstallReceiver.class),
-                PendingIntent.FLAG_UPDATE_CURRENT
-        );
-        session.commit(pi.getIntentSender());
         session.close();
     }
 
@@ -1134,7 +1144,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void downloadUpdate() {
         String link = getString(R.string.apk_url,
                 prefs.stableChannel().get() ? "master" : "experimental", lastCommit);
-        File apk = new File(getFilesDir(), link.substring(link.lastIndexOf('/') + 1));
+        File apk = new File(Util.getFilesDir(), link.substring(link.lastIndexOf('/') + 1));
         try {
             URL u = new URL(link);
             InputStream is = u.openStream();
@@ -1182,7 +1192,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            result -> this.runOnUiThread(this::downloadUpdate));
+            result -> downloadUpdate());
     void requestUpdate() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (getPackageManager().canRequestPackageInstalls()) {

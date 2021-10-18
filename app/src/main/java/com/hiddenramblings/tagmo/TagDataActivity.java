@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.data;
+package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -36,15 +36,18 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.hiddenramblings.tagmo.Actions;
-import com.hiddenramblings.tagmo.KeyManager;
-import com.hiddenramblings.tagmo.NothingSelectedSpinnerAdapter;
-import com.hiddenramblings.tagmo.Preferences_;
-import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagUtil;
-import com.hiddenramblings.tagmo.Util;
+import com.hiddenramblings.tagmo.adapter.NothingSelectedSpinnerAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.data.AppDataFragment;
+import com.hiddenramblings.tagmo.data.AppDataSSBFragment;
+import com.hiddenramblings.tagmo.data.AppDataTPFragment;
+import com.hiddenramblings.tagmo.data.AppIds;
+import com.hiddenramblings.tagmo.data.CountryCodes;
+import com.hiddenramblings.tagmo.data.TagData;
+import com.hiddenramblings.tagmo.nfc.KeyManager;
+import com.hiddenramblings.tagmo.nfc.TagUtil;
+import com.hiddenramblings.tagmo.nfc.Util;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
@@ -152,7 +155,7 @@ public class TagDataActivity extends AppCompatActivity {
 
     @AfterViews
     void afterViews() {
-        byte[] tagData = getIntent().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
+        byte[] tagData = getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
         keyManager = new KeyManager(this);
         if (!keyManager.hasBothKeys()) {
@@ -191,6 +194,10 @@ public class TagDataActivity extends AppCompatActivity {
         appDataSwitch.setOnCheckedChangeListener((compoundButton, b) -> onAppDataSwitchClicked(b));
 
         loadData();
+    }
+
+    public boolean isAppDataInitialized() {
+        return isAppDataInitialized;
     }
 
     SimpleTarget<Bitmap> amiiboImageTarget = new SimpleTarget<Bitmap>() {
@@ -253,7 +260,7 @@ public class TagDataActivity extends AppCompatActivity {
         } else {
             long amiiboId;
             try {
-                amiiboId = TagUtil.amiiboIdFromTag(getIntent().getByteArrayExtra(Actions.EXTRA_TAG_DATA));
+                amiiboId = TagUtil.amiiboIdFromTag(getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
             } catch (Exception e) {
                 e.printStackTrace();
                 amiiboId = -1;
@@ -463,8 +470,8 @@ public class TagDataActivity extends AppCompatActivity {
             return;
         }
 
-        Intent intent = new Intent(Actions.ACTION_EDIT_COMPLETE);
-        intent.putExtra(Actions.EXTRA_TAG_DATA, tagData);
+        Intent intent = new Intent(TagMo.ACTION_EDIT_COMPLETE);
+        intent.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
         setResult(Activity.RESULT_OK, intent);
         finish();
     }

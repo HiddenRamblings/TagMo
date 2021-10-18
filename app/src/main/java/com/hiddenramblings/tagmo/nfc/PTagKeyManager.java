@@ -1,11 +1,10 @@
-package com.hiddenramblings.tagmo.ptag;
+package com.hiddenramblings.tagmo.nfc;
 
 import android.content.Context;
 import android.util.Base64;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;

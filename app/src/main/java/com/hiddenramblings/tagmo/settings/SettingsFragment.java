@@ -30,18 +30,19 @@ import androidx.preference.SeekBarPreference;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.KeyManager;
 import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.Preferences_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.Util;
+import com.hiddenramblings.tagmo.adapter.SettingsAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.RequestStamp;
+import com.hiddenramblings.tagmo.nfc.KeyManager;
+import com.hiddenramblings.tagmo.nfc.Util;
 
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.Background;
@@ -177,11 +178,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
             return;
 
-        if (!NfcActivity_.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
-        String signature = result.getData().getStringExtra(NfcActivity_.EXTRA_SIGNATURE);
-        int bank_count = result.getData().getIntExtra(NfcActivity_.EXTRA_BANK_COUNT, 1);
+        String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
+        int bank_count = result.getData().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
 
         prefs.amiiqoSignature().put(signature);
         prefs.amiiqoBankCount().put(bank_count);
@@ -196,7 +197,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         prefs.enableAmiiqoSupport().put(enableAmiiqoSupport.isChecked());
         if (enableAmiiqoSupport.isChecked()) {
             onAmiiqoActivity.launch(new Intent(getActivity(),
-                    NfcActivity_.class).setAction(NfcActivity_.ACTION_GET_DETAILS));
+                    NfcActivity_.class).setAction(TagMo.ACTION_GET_DETAILS));
         } else {
             prefs.amiiqoSignature().remove();
             amiiqoBankCount.setEnabled(false);
@@ -209,10 +210,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
             return;
 
-        if (!NfcActivity_.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
-        int bank_count = result.getData().getIntExtra(NfcActivity_.EXTRA_BANK_COUNT, 1);
+        int bank_count = result.getData().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
 
         prefs.amiiqoBankCount().put(bank_count);
         amiiqoBankCount.setValue(bank_count);
@@ -222,8 +223,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void onWriteAmiiqoBankCount() {
 
         Intent configure = new Intent(getActivity(), NfcActivity_.class);
-        configure.setAction(NfcActivity_.ACTION_CONFIGURE);
-        configure.putExtra(NfcActivity_.EXTRA_BANK_COUNT, amiiqoBankCount.getValue());
+        configure.setAction(TagMo.ACTION_CONFIGURE);
+        configure.putExtra(TagMo.EXTRA_BANK_COUNT, amiiqoBankCount.getValue());
         onConfigureActivity.launch(configure);
     }
 

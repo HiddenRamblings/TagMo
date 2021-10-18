@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.nfc;
 
 import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
@@ -9,19 +9,6 @@ import java.io.IOException;
 public class NTAG215 {
     private final MifareUltralight m_mifare;
     private final NfcA m_nfcA;
-    public static final int PAGE_SIZE = 4;
-
-    private static final int NXP_MANUFACTURER_ID = 0x04;
-    private static final int MAX_PAGE_COUNT = 256;
-
-    public static final int CMD_GET_VERSION = 0x60;
-    public static final int CMD_READ = 0x30;
-    public static final int CMD_FAST_READ = 0x3A;
-    public static final int CMD_WRITE = 0xA2;
-    public static final int CMD_COMP_WRITE = 0xA0;
-    public static final int CMD_READ_CNT = 0x39;
-    public static final int CMD_PWD_AUTH = 0x1B;
-    public static final int CMD_READ_SIG = 0x3C;
 
     public NTAG215(MifareUltralight mifare) {
         m_nfcA = null;
@@ -39,7 +26,7 @@ public class NTAG215 {
             return new NTAG215(mifare);
         NfcA nfcA = NfcA.get(tag);
         if (nfcA != null) {
-            if (nfcA.getSak() == 0x00 && tag.getId()[0] == NXP_MANUFACTURER_ID)
+            if (nfcA.getSak() == 0x00 && tag.getId()[0] == NfcCmd.NXP_MANUFACTURER_ID)
                 return new NTAG215(nfcA);
         }
 
@@ -53,7 +40,10 @@ public class NTAG215 {
             validatePageIndex(pageOffset);
             //checkConnected();
 
-            byte[] cmd = {CMD_READ, (byte) pageOffset};
+            byte[] cmd = {
+                    NfcCmd.CMD_READ,
+                    (byte) pageOffset
+            };
             return m_nfcA.transceive(cmd);
         }
         return null;
@@ -67,7 +57,7 @@ public class NTAG215 {
             //m_nfcA.checkConnected();
 
             byte[] cmd = new byte[data.length + 2];
-            cmd[0] = (byte) CMD_WRITE;
+            cmd[0] = (byte) NfcCmd.CMD_WRITE;
             cmd[1] = (byte) pageOffset;
             System.arraycopy(data, 0, cmd, 2, data.length);
 
@@ -90,7 +80,7 @@ public class NTAG215 {
         // Note that issuing a command to an out-of-bounds block is safe - the
         // tag will wrap the read to an addressable area. This validation is a
         // helper to guard against obvious programming mistakes.
-        if (pageIndex < 0 || pageIndex >= MAX_PAGE_COUNT) {
+        if (pageIndex < 0 || pageIndex >= NfcCmd.MAX_PAGE_COUNT) {
             throw new IndexOutOfBoundsException("page out of bounds: " + pageIndex);
         }
     }

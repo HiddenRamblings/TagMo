@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
@@ -22,9 +21,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.hiddenramblings.tagmo.amiiqo.AmiiqoWriter;
-import com.hiddenramblings.tagmo.amiiqo.BankNumberPicker;
-import com.hiddenramblings.tagmo.amiiqo.N2Elite;
+import com.hiddenramblings.tagmo.nfc.AmiiqoWriter;
+import com.hiddenramblings.tagmo.nfc.KeyManager;
+import com.hiddenramblings.tagmo.nfc.N2Elite;
+import com.hiddenramblings.tagmo.nfc.NTAG215;
+import com.hiddenramblings.tagmo.nfc.TagWriter;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -40,21 +41,7 @@ import java.util.ArrayList;
 public class NfcActivity extends AppCompatActivity {
     private static final String TAG = NfcActivity.class.getSimpleName();
 
-    public static final String ACTION_GET_DETAILS = "com.hiddenramblings.tagmo.GET_DETAILS";
-    public static final String ACTION_CONFIGURE = "com.hiddenramblings.tagmo.CONFIGURE";
-    public static final String ACTION_SCAN_TAG = "com.hiddenramblings.tagmo.SCAN_TAG";
-    public static final String ACTION_SCAN_UNIT = "com.hiddenramblings.tagmo.SCAN_UNIT";
-    public static final String ACTION_WRITE_TAG_FULL = "com.hiddenramblings.tagmo.WRITE_TAG_FULL";
-    public static final String ACTION_WRITE_TAG_RAW = "com.hiddenramblings.tagmo.WRITE_TAG_RAW";
-    public static final String ACTION_WRITE_TAG_DATA = "com.hiddenramblings.tagmo.WRITE_TAG_DATA";
 
-    public static final String ACTION_NFC_SCANNED = "com.hiddenramblings.tagmo.NFC_SCANNED";
-
-    public static final String EXTRA_TAG_DATA = "com.hiddenramblings.tagmo.EXTRA_TAG_DATA";
-    public static final String EXTRA_UNIT_DATA = "com.hiddenramblings.tagmo.EXTRA_UNIT_DATA";
-    public static final String EXTRA_IGNORE_TAG_ID = "com.hiddenramblings.tagmo.EXTRA_IGNORE_TAG_ID";
-    public static final String EXTRA_SIGNATURE = "com.hiddenramblings.tagmo.EXTRA_SIGNATURE";
-    public static final String EXTRA_BANK_COUNT = "com.hiddenramblings.tagmo.EXTRA_BANK_COUNT";
 
     @ViewById(R.id.txtMessage)
     TextView txtMessage;
@@ -102,18 +89,18 @@ public class NfcActivity extends AppCompatActivity {
         clearError();
         String action = getIntent().getAction();
         switch (action) {
-            case ACTION_WRITE_TAG_FULL:
-            case ACTION_WRITE_TAG_DATA:
+            case TagMo.ACTION_WRITE_TAG_FULL:
+            case TagMo.ACTION_WRITE_TAG_DATA:
                 if (!this.keyManager.hasBothKeys()) {
                     showError("Keys not loaded");
                     this.nfcAdapter = null;
                     break;
                 }
-            case ACTION_WRITE_TAG_RAW:
-            case ACTION_CONFIGURE:
-            case ACTION_GET_DETAILS:
-            case ACTION_SCAN_TAG:
-            case ACTION_SCAN_UNIT:
+            case TagMo.ACTION_WRITE_TAG_RAW:
+            case TagMo.ACTION_CONFIGURE:
+            case TagMo.ACTION_GET_DETAILS:
+            case TagMo.ACTION_SCAN_TAG:
+            case TagMo.ACTION_SCAN_UNIT:
                 startNfcMonitor();
                 break;
         }
@@ -123,25 +110,25 @@ public class NfcActivity extends AppCompatActivity {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
         switch (mode) {
-            case ACTION_WRITE_TAG_RAW:
+            case TagMo.ACTION_WRITE_TAG_RAW:
                 setTitle(R.string.write_raw);
                 break;
-            case ACTION_WRITE_TAG_FULL:
+            case TagMo.ACTION_WRITE_TAG_FULL:
                 setTitle(R.string.write_auto);
                 break;
-            case ACTION_WRITE_TAG_DATA:
+            case TagMo.ACTION_WRITE_TAG_DATA:
                 setTitle(R.string.restore_tag);
                 break;
-            case ACTION_CONFIGURE:
-                bank_count = getIntent().getIntExtra(EXTRA_BANK_COUNT, 1);
-            case ACTION_GET_DETAILS:
+            case TagMo.ACTION_CONFIGURE:
+                bank_count = getIntent().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
+            case TagMo.ACTION_GET_DETAILS:
                 bankTextView.setVisibility(View.GONE);
                 bankNumberPicker.setEnabled(false);
                 bankNumberPicker.setVisibility(View.GONE);
-            case ACTION_SCAN_UNIT:
+            case TagMo.ACTION_SCAN_UNIT:
                 setTitle(R.string.scan_amiiqo);
                 break;
-            case ACTION_SCAN_TAG:
+            case TagMo.ACTION_SCAN_TAG:
                 setTitle(R.string.scan_tag);
                 break;
             default:
@@ -211,8 +198,8 @@ public class NfcActivity extends AppCompatActivity {
                 TagMo.Debug(TAG, mode);
                 byte[] data;
                 switch (mode) {
-                    case ACTION_WRITE_TAG_RAW:
-                        data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
+                    case TagMo.ACTION_WRITE_TAG_RAW:
+                        data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
                         if (data == null) {
                             throw new Exception(getString(R.string.no_data));
                         }
@@ -220,29 +207,32 @@ public class NfcActivity extends AppCompatActivity {
                         setResult(Activity.RESULT_OK);
                         showToast(getString(R.string.done));
                         break;
-                    case ACTION_WRITE_TAG_FULL:
-                        data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
+                    case TagMo.ACTION_WRITE_TAG_FULL:
+                        data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
                         if (data == null) {
                             throw new Exception(getString(R.string.no_data));
                         }
-                        TagWriter.writeToTagAuto(mifare, data, this.keyManager, prefs.enableTagTypeValidation().get(), prefs.enablePowerTagSupport().get());
+                        TagWriter.writeToTagAuto(mifare, data, this.keyManager,
+                                prefs.enableTagTypeValidation().get(), prefs.enablePowerTagSupport().get());
                         setResult(Activity.RESULT_OK);
                         showToast(getString(R.string.done));
                         break;
-                    case ACTION_WRITE_TAG_DATA:
-                        data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
-                        boolean ignoreUid = commandIntent.getBooleanExtra(EXTRA_IGNORE_TAG_ID, false);
+                    case TagMo.ACTION_WRITE_TAG_DATA:
+                        data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+                        boolean ignoreUid = commandIntent.getBooleanExtra(
+                                TagMo.EXTRA_IGNORE_TAG_ID, false);
                         if (data == null) {
                             throw new Exception(getString(R.string.no_data));
                         }
-                        TagWriter.restoreTag(mifare, data, ignoreUid, this.keyManager, prefs.enableTagTypeValidation().get());
+                        TagWriter.restoreTag(mifare, data, ignoreUid,
+                                this.keyManager, prefs.enableTagTypeValidation().get());
                         setResult(Activity.RESULT_OK);
                         showToast("Done");
                         break;
-                    case ACTION_SCAN_TAG:
+                    case TagMo.ACTION_SCAN_TAG:
                         data = TagWriter.readFromTag(mifare);
-                        Intent result = new Intent(ACTION_NFC_SCANNED);
-                        result.putExtra(EXTRA_TAG_DATA, data);
+                        Intent result = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        result.putExtra(TagMo.EXTRA_TAG_DATA, data);
                         setResult(Activity.RESULT_OK, result);
                         showToast(getString(R.string.done));
                         break;
@@ -275,7 +265,7 @@ public class NfcActivity extends AppCompatActivity {
                 throw new Exception(getString(R.string.tag_type_error));
             }
             mifare.connect();
-            if (!mode.equals(ACTION_GET_DETAILS) && !mode.equals(ACTION_CONFIGURE)) {
+            if (!mode.equals(TagMo.ACTION_GET_DETAILS) && !mode.equals(TagMo.ACTION_CONFIGURE)) {
                 int selection = bankNumberPicker.getValue() - 1;
                 if (selection > AmiiqoWriter.getAmiiqoBankCount(mifare)) {
                     throw new Exception(getString(R.string.fail_amiiqo_outofbounds));
@@ -288,8 +278,8 @@ public class NfcActivity extends AppCompatActivity {
                 TagMo.Debug(TAG, mode);
                 byte[] data;
                 switch (mode) {
-                    case ACTION_WRITE_TAG_RAW:
-                        data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
+                    case TagMo.ACTION_WRITE_TAG_RAW:
+                        data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
                         if (data == null) {
                             throw new Exception(getString(R.string.no_data));
                         }
@@ -297,50 +287,52 @@ public class NfcActivity extends AppCompatActivity {
                         setResult(Activity.RESULT_OK);
                         showToast(getString(R.string.done));
                         break;
-                    case ACTION_WRITE_TAG_FULL:
-                        data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
+                    case TagMo.ACTION_WRITE_TAG_FULL:
+                        data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
                         if (data == null) {
                             throw new Exception(getString(R.string.no_data));
                         }
-                        AmiiqoWriter.writeToTagAuto(mifare, data, this.keyManager, prefs.enableTagTypeValidation().get(), prefs.enablePowerTagSupport().get());
+                        AmiiqoWriter.writeToTagAuto(mifare, data, this.keyManager,
+                                prefs.enableTagTypeValidation().get(), prefs.enablePowerTagSupport().get());
                         setResult(Activity.RESULT_OK);
                         showToast(getString(R.string.done));
                         break;
-                    case ACTION_WRITE_TAG_DATA:
-                        data = commandIntent.getByteArrayExtra(EXTRA_TAG_DATA);
-                        boolean ignoreUid = commandIntent.getBooleanExtra(EXTRA_IGNORE_TAG_ID, false);
+                    case TagMo.ACTION_WRITE_TAG_DATA:
+                        data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+                        boolean ignoreUid = commandIntent.getBooleanExtra(TagMo.EXTRA_IGNORE_TAG_ID, false);
                         if (data == null) {
                             throw new Exception(getString(R.string.no_data));
                         }
-                        AmiiqoWriter.restoreTag(mifare, data, ignoreUid, this.keyManager, prefs.enableTagTypeValidation().get());
+                        AmiiqoWriter.restoreTag(mifare, data, ignoreUid,
+                                this.keyManager, prefs.enableTagTypeValidation().get());
                         setResult(Activity.RESULT_OK);
                         showToast(getString(R.string.done));
                         break;
-                    case ACTION_GET_DETAILS:
+                    case TagMo.ACTION_GET_DETAILS:
                         String signature = AmiiqoWriter.getAmiiqoSignature(mifare);
                         int bank_details = AmiiqoWriter.getAmiiqoBankCount(mifare);
-                        Intent details = new Intent(ACTION_NFC_SCANNED);
-                        details.putExtra(EXTRA_SIGNATURE, signature);
-                        details.putExtra(EXTRA_BANK_COUNT, bank_details);
+                        Intent details = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        details.putExtra(TagMo.EXTRA_SIGNATURE, signature);
+                        details.putExtra(TagMo.EXTRA_BANK_COUNT, bank_details);
                         setResult(Activity.RESULT_OK, details);
                         break;
-                    case ACTION_CONFIGURE:
+                    case TagMo.ACTION_CONFIGURE:
                         mifare.setAmiiqoBankCount(bank_count);
-                        Intent configure = new Intent(ACTION_NFC_SCANNED);
-                        configure.putExtra(EXTRA_BANK_COUNT, bank_count);
+                        Intent configure = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        configure.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
                         setResult(Activity.RESULT_OK, configure);
                         break;
-                    case ACTION_SCAN_TAG:
+                    case TagMo.ACTION_SCAN_TAG:
                         data = AmiiqoWriter.readFromTag(mifare);
-                        Intent result = new Intent(ACTION_NFC_SCANNED);
-                        result.putExtra(EXTRA_TAG_DATA, data);
+                        Intent result = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        result.putExtra(TagMo.EXTRA_TAG_DATA, data);
                         setResult(Activity.RESULT_OK, result);
                         break;
-                    case ACTION_SCAN_UNIT:
+                    case TagMo.ACTION_SCAN_UNIT:
                         int count = AmiiqoWriter.getAmiiqoBankCount(mifare);
                         ArrayList<byte[]> tags = AmiiqoWriter.readFromTags(mifare, count);
-                        Intent results = new Intent(ACTION_NFC_SCANNED);
-                        results.putExtra(EXTRA_UNIT_DATA, tags);
+                        Intent results = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        results.putExtra(TagMo.EXTRA_UNIT_DATA, tags);
                         setResult(Activity.RESULT_OK, results);
                         break;
                     default:

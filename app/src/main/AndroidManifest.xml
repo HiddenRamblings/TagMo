@@ -52,12 +52,12 @@
         <activity
             android:name=".ImageActivity_"/>
         <activity
-            android:name=".settings.SettingsActivity_"/>
+            android:name=".SettingsActivity_"/>
         <activity
             android:name=".AmiiboActivity_"
             android:theme="@style/AppTheme2.NoActionBar"/>
         <activity
-            android:name=".data.TagDataActivity_"/>
+            android:name=".TagDataActivity_"/>
         <receiver android:name=".github.InstallReceiver" />
 
         <provider

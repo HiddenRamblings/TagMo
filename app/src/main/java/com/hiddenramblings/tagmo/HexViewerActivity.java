@@ -13,6 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hiddenramblings.tagmo.nfc.KeyManager;
+import com.hiddenramblings.tagmo.nfc.TagUtil;
+
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
@@ -64,7 +67,7 @@ public class HexViewerActivity extends AppCompatActivity {
 
     @AfterViews
     void afterViews() {
-        decryptTagData(getIntent().getByteArrayExtra(Actions.EXTRA_TAG_DATA));
+        decryptTagData(getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
     }
 
     void decryptTagData(byte[] data) {

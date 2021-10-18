@@ -171,6 +171,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_enable_power_tag_support)
     void onEnablePowerTagSupportClicked() {
         prefs.enablePowerTagSupport().put(enablePowerTagSupport.isChecked());
+        if (enablePowerTagSupport.isChecked()
+                && enableAmiiqoSupport.isChecked()) {
+            enableAmiiqoSupport.setChecked(false);
+            onEnableAmiiqoSupportClicked();
+        }
     }
 
     ActivityResultLauncher<Intent> onAmiiqoActivity = registerForActivityResult(
@@ -202,6 +207,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             prefs.amiiqoSignature().remove();
             amiiqoBankCount.setEnabled(false);
             enableAmiiqoSupport.setSummary(getString(R.string.amiiqo_details));
+        }
+        if (enableAmiiqoSupport.isChecked()
+                && enablePowerTagSupport.isChecked()) {
+            enablePowerTagSupport.setChecked(false);
+            onEnablePowerTagSupportClicked();
         }
     }
 

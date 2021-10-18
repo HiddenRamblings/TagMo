@@ -1,7 +1,7 @@
 package com.hiddenramblings.tagmo.data;
 
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.TagUtil;
+import com.hiddenramblings.tagmo.nfc.TagUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;

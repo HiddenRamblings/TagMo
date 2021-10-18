@@ -1,7 +1,10 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.nfc;
 
 import android.content.Context;
 import android.net.Uri;
+
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

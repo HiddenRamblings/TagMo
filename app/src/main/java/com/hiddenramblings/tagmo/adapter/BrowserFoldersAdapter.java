@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,12 +8,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.nfc.Util;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 
 import java.io.File;
 import java.util.ArrayList;
 
-class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.FolderViewHolder> implements BrowserSettings.BrowserSettingsListener {
+public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.FolderViewHolder>
+        implements BrowserSettings.BrowserSettingsListener {
     public static final int PARENT_FOLDER_VIEW_TYPE = 0;
     public static final int CHILD_FOLDER_VIEW_TYPE = 1;
 
@@ -78,7 +81,8 @@ class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.F
     }
 
     public boolean showParentFolder() {
-        return (rootFolder != null && !rootFolder.equals(Util.getSDCardDir())) && rootFolder.getAbsolutePath().startsWith(Util.getSDCardDir().getAbsolutePath());
+        return (rootFolder != null && !rootFolder.equals(Util.getSDCardDir()))
+                && rootFolder.getAbsolutePath().startsWith(Util.getSDCardDir().getAbsolutePath());
     }
 
     @Override

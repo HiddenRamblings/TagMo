@@ -28,7 +28,8 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.data.TagDataActivity_;
+import com.hiddenramblings.tagmo.nfc.TagUtil;
+import com.hiddenramblings.tagmo.nfc.Util;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import org.androidannotations.annotations.AfterViews;
@@ -136,18 +137,18 @@ public class AmiiboActivity extends AppCompatActivity {
             return;
 
         TagMo.Debug(TAG, R.string.tag_data);
-        if (!Actions.ACTION_EDIT_COMPLETE.equals(result.getData().getAction()))
+        if (!TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction()))
             return;
 
         TagMo.Debug(TAG, R.string.tag_data);
-        this.tagData = result.getData().getByteArrayExtra(Actions.EXTRA_TAG_DATA);
+        this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         this.runOnUiThread(this::updateAmiiboView);
     });
 
     void openTagEditor() {
         Intent intent = new Intent(this, TagDataActivity_.class);
-        intent.setAction(Actions.ACTION_EDIT_DATA);
-        intent.putExtra(Actions.EXTRA_TAG_DATA, this.tagData);
+        intent.setAction(TagMo.ACTION_EDIT_DATA);
+        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         onEditTagResult.launch(intent);
     }
 
@@ -248,32 +249,32 @@ public class AmiiboActivity extends AppCompatActivity {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
             return;
 
-        if (!NfcActivity.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
-        this.tagData = result.getData().getByteArrayExtra(NfcActivity.EXTRA_TAG_DATA);
+        this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         this.runOnUiThread(this::updateAmiiboView);
     });
 
     void writeTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
-        intent.setAction(NfcActivity.ACTION_WRITE_TAG_FULL);
-        intent.putExtra(NfcActivity.EXTRA_TAG_DATA, this.tagData);
+        intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
+        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         onNFCResult.launch(intent);
     }
 
     void restoreTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
-        intent.setAction(NfcActivity.ACTION_WRITE_TAG_DATA);
-        intent.putExtra(NfcActivity.EXTRA_TAG_DATA, this.tagData);
-        intent.putExtra(NfcActivity.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
+        intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
+        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
+        intent.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
         onNFCResult.launch(intent);
     }
 
     void viewHex() {
         Intent intent = new Intent(this, HexViewerActivity_.class);
-        intent.setAction(Actions.ACTION_EDIT_DATA);
-        intent.putExtra(Actions.EXTRA_TAG_DATA, this.tagData);
+        intent.setAction(TagMo.ACTION_EDIT_DATA);
+        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         startActivity(intent);
     }
 

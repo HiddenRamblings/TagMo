@@ -1,12 +1,11 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.amiibo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.File;
 
-public class AmiiboFile
-        implements Parcelable {
+public class AmiiboFile implements Parcelable {
 
     protected File filePath;
     protected long id;
@@ -48,16 +47,16 @@ public class AmiiboFile
         this.id = in.readLong();
     }
 
-    public static final Parcelable.Creator<AmiiboFile> CREATOR =
-            new Parcelable.Creator<AmiiboFile>() {
-                @Override
-                public AmiiboFile createFromParcel(Parcel source) {
-                    return new AmiiboFile(source);
-                }
+    public static final Parcelable.Creator<AmiiboFile> CREATOR
+            = new Parcelable.Creator<AmiiboFile>() {
+        @Override
+        public AmiiboFile createFromParcel(Parcel source) {
+            return new AmiiboFile(source);
+        }
 
-                @Override
-                public AmiiboFile[] newArray(int size) {
-                    return new AmiiboFile[size];
-                }
-            };
+        @Override
+        public AmiiboFile[] newArray(int size) {
+            return new AmiiboFile[size];
+        }
+    };
 }

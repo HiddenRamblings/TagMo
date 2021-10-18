@@ -3,6 +3,8 @@ name: Android CI
 on:
   push:
     branches: [ master, experimental ]
+  pull_request:
+    branches: [ experimental ]
 
 jobs:
   build:
@@ -42,9 +44,9 @@ jobs:
          echo "GIT_HASH=${GIT_HASH}" >> $GITHUB_ENV
 
     - name: Retrieve branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: branch_name
+      run: |
+         GIT_BRANCH=$(git symbolic-ref HEAD | sed -e "s/^refs\/heads\///")
+         echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
 
     # Example use of `signedReleaseFile` output -- not needed
     - uses: actions/upload-artifact@v2
@@ -56,8 +58,7 @@ jobs:
     - uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: ${{ steps.branch_name.outputs.branch }}
+        automatic_release_tag: ${{ env.GIT_BRANCH }}
+        prerelease: ${{ env.GIT_BRANCH == 'experimental' }}
         title: TagMo-${{ env.GIT_HASH }}
         files: ${{steps.sign_app.outputs.signedReleaseFile}}
-        if: ${{ steps.branch_name.outputs.branch == 'master' }}
-        prerelease: false # default - true

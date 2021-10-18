@@ -63,8 +63,8 @@ public class ImageActivity extends AppCompatActivity {
     TextView txtName;
     @ViewById(R.id.txtGameSeries)
     TextView txtGameSeries;
-    //@ViewById(R.id.txtCharacter)
-    //TextView txtCharacter;
+    // @ViewById(R.id.txtCharacter)
+    // TextView txtCharacter;
     @ViewById(R.id.txtAmiiboType)
     TextView txtAmiiboType;
     @ViewById(R.id.txtAmiiboSeries)
@@ -154,6 +154,7 @@ public class ImageActivity extends AppCompatActivity {
         String amiiboSeries = "";
         String amiiboType = "";
         String gameSeries = "";
+        // String character = "";
 
         amiibo = null;
         if (this.amiiboManager != null) {
@@ -171,6 +172,8 @@ public class ImageActivity extends AppCompatActivity {
                 amiiboType = amiibo.getAmiiboType().name;
             if (amiibo.getGameSeries() != null)
                 gameSeries = amiibo.getGameSeries().name;
+            // if (amiibo.getCharacter() != null)
+            //     character = amiibo.getCharacter().name;
         } else {
             tagInfo = "ID: " + TagUtil.amiiboIdToHex(amiiboId);
         }
@@ -184,7 +187,7 @@ public class ImageActivity extends AppCompatActivity {
         setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, tagInfo != null);
         setAmiiboInfoText(txtAmiiboType, amiiboType, tagInfo != null);
         setAmiiboInfoText(txtGameSeries, gameSeries, tagInfo != null);
-        //setAmiiboInfoText(txtCharacter, character, tagInfo != null);
+        // setAmiiboInfoText(txtCharacter, character, tagInfo != null);
     }
 
     void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {

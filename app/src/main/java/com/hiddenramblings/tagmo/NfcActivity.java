@@ -89,7 +89,7 @@ public class NfcActivity extends AppCompatActivity {
         switch (action) {
             case TagMo.ACTION_WRITE_TAG_FULL:
             case TagMo.ACTION_WRITE_TAG_DATA:
-                if (!this.keyManager.hasBothKeys()) {
+                if (this.keyManager.isKeyMissing()) {
                     showError("Keys not loaded");
                     this.nfcAdapter = null;
                     break;

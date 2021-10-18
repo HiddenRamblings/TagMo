@@ -1,6 +1,7 @@
 package com.hiddenramblings.tagmo.nfc;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.util.Base64;
 
 import com.hiddenramblings.tagmo.R;
@@ -14,12 +15,28 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class PTagKeyManager {
+
+    public static final String POWERTAG_KEYTABLE_FILE = "keytable.json";
     private static HashMap<String, HashMap<String, byte[]>> keys;
 
+    @SuppressWarnings("unused")
     public static void load(Context context) throws Exception {
         if (keys != null)
             return;
         try (InputStream stream = context.getResources().openRawResource(R.raw.keytable)) {
+            byte[] data = new byte[stream.available()];
+            stream.read(data);
+
+            JSONObject obj = new JSONObject(new String(data));
+            loadJson(obj);
+        }
+    }
+
+    public static void loadKeyTable(Context context) throws Exception {
+        if (keys != null)
+            return;
+        AssetManager assetManager = context.getAssets();
+        try (InputStream stream = assetManager.open(POWERTAG_KEYTABLE_FILE)) {
             byte[] data = new byte[stream.available()];
             stream.read(data);
 
@@ -65,9 +82,7 @@ public class PTagKeyManager {
         uidc[5] = (byte) (uid[5] & 0xFE);
         uidc[6] = (byte) (uid[6] & 0xFE);
 
-        String uidStr = Util.bytesToHex(uidc);
-
-        HashMap<String, byte[]> keymap = keys.get(uidStr);
+        HashMap<String, byte[]> keymap = keys.get(Util.bytesToHex(uidc));
         if (keymap == null)
             throw new Exception(TagMo.getStringRes(R.string.uid_key_missing));
 

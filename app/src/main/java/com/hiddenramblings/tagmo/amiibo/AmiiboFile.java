@@ -19,6 +19,7 @@ public class AmiiboFile implements Parcelable {
         return filePath;
     }
 
+    @SuppressWarnings("unused")
     public void setFilePath(File filePath) {
         this.filePath = filePath;
     }

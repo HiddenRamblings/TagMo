@@ -692,6 +692,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (result.getData().getBooleanExtra("REFRESH", false)) {
                 resetRootFolder();
             }
+            this.loadPTagKeyManager();
         }
     });
 

@@ -24,7 +24,7 @@ public class BankNumberPicker extends NumberPicker {
         processXmlAttributes(attrs, defStyleAttr, 0);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP) @SuppressWarnings("unused")
     public BankNumberPicker(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         processXmlAttributes(attrs, defStyleAttr, defStyleRes);

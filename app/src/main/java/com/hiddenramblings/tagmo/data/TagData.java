@@ -68,6 +68,7 @@ public class TagData {
         return tagData.getLong(AMIIBO_ID_OFFSET);
     }
 
+    @SuppressWarnings("unused")
     public void setAmiiboID(long value) {
         tagData.putLong(AMIIBO_ID_OFFSET, value);
     }
@@ -148,10 +149,12 @@ public class TagData {
         TagUtil.putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16BE, value);
     }
 
+    @SuppressWarnings("unused")
     public long getTitleID() {
         return tagData.getLong(TITLE_ID_OFFSET);
     }
 
+    @SuppressWarnings("unused")
     public void setTitleID(long value) {
         tagData.putLong(TITLE_ID_OFFSET, value);
     }

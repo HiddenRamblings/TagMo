@@ -83,11 +83,11 @@ public class AppDataSSBFragment extends AppDataFragment {
     @AfterViews
     void afterViews() {
         setListForSpinners(new Spinner[]{spnAppearance},
-                R.array.ssb_appearance_values, R.layout.spinner_text);
+                R.array.ssb_appearance_values);
         setListForSpinners(new Spinner[]{spnSpecialNeutral, spnSpecialSide, spnSpecialUp, spnSpecialDown},
-                R.array.ssb_specials_values, R.layout.spinner_text);
+                R.array.ssb_specials_values);
         setListForSpinners(new Spinner[]{spnEffect1, spnEffect2, spnEffect3},
-                R.array.ssb_bonus_effects, R.layout.spinner_text);
+                R.array.ssb_bonus_effects);
 
         this.loadData();
 
@@ -361,9 +361,10 @@ public class AppDataSSBFragment extends AppDataFragment {
         setEffectValue(spnEffect3, bonusEffect3);
     }
 
-    void setListForSpinners(Spinner[] controls, int list, int layout) {
+    void setListForSpinners(Spinner[] controls, int list) {
         for (Spinner control : controls) {
-            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.getContext(), list, layout);
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                    this.getContext(), list, R.layout.spinner_text);
             adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
             control.setAdapter(adapter);
         }

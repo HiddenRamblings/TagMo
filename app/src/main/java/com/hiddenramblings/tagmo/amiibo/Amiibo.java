@@ -63,6 +63,7 @@ public class Amiibo implements Comparable<Amiibo> {
         return this.manager.characters.get(this.getCharacterId());
     }
 
+    @SuppressWarnings("unused")
     public long getVariantId() {
         return this.id & VARIANT_MASK;
     }
@@ -75,6 +76,7 @@ public class Amiibo implements Comparable<Amiibo> {
         return this.manager.amiiboTypes.get(this.getAmiiboTypeId());
     }
 
+    @SuppressWarnings("unused")
     public long getAmiiboModelId() {
         return this.id & AMIIBO_MODEL_MASK;
     }
@@ -87,6 +89,7 @@ public class Amiibo implements Comparable<Amiibo> {
         return this.manager.amiiboSeries.get(this.getAmiiboSeriesId());
     }
 
+    @SuppressWarnings("unused")
     public long getUnknownId() {
         return this.id & UNKNOWN_MASK;
     }

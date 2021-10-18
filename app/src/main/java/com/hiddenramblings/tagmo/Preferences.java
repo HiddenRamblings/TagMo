@@ -11,6 +11,7 @@ import org.androidannotations.annotations.sharedpreferences.DefaultString;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
 
 @SuppressLint("NonConstantResourceId")
+@SuppressWarnings("unused")
 @SharedPref(value = SharedPref.Scope.UNIQUE)
 public interface Preferences {
     String query();

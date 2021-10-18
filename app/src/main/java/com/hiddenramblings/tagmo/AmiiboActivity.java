@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +25,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -152,7 +153,7 @@ public class AmiiboActivity extends AppCompatActivity {
         onEditTagResult.launch(intent);
     }
 
-    SimpleTarget<Bitmap> amiiboImageTarget = new SimpleTarget<Bitmap>() {
+    CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
         @Override
         public void onLoadStarted(@Nullable Drawable placeholder) {
             imageAmiibo.setVisibility(View.GONE);
@@ -164,7 +165,12 @@ public class AmiiboActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onResourceReady(Bitmap resource, Transition transition) {
+        public void onLoadCleared(@Nullable Drawable placeholder) {
+
+        }
+
+        @Override
+        public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
             imageAmiibo.setImageBitmap(resource);
             imageAmiibo.setVisibility(View.VISIBLE);
         }
@@ -304,7 +310,7 @@ public class AmiiboActivity extends AppCompatActivity {
         String amiiboSeries = "";
         String amiiboType = "";
         String gameSeries = "";
-        String character = "";
+        // String character = "";
         final String amiiboImageUrl;
 
         if (this.tagData == null) {
@@ -342,8 +348,8 @@ public class AmiiboActivity extends AppCompatActivity {
                         amiiboType = amiibo.getAmiiboType().name;
                     if (amiibo.getGameSeries() != null)
                         gameSeries = amiibo.getGameSeries().name;
-                    if (amiibo.getCharacter() != null)
-                        character = amiibo.getCharacter().name;
+                    // if (amiibo.getCharacter() != null)
+                    //     character = amiibo.getCharacter().name;
                 } else {
                     tagInfo = "ID: " + TagUtil.amiiboIdToHex(amiiboId);
                     amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
@@ -363,7 +369,7 @@ public class AmiiboActivity extends AppCompatActivity {
         setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, tagInfo != null);
         setAmiiboInfoText(txtAmiiboType, amiiboType, tagInfo != null);
         setAmiiboInfoText(txtGameSeries, gameSeries, tagInfo != null);
-        //setAmiiboInfoText(txtCharacter, character, tagInfo != null);
+        // setAmiiboInfoText(txtCharacter, character, tagInfo != null);
 
         if (imageAmiibo != null) {
             imageAmiibo.setVisibility(View.GONE);

@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
@@ -392,7 +392,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
 
         AmiiboFile amiiboFile = null;
 
-        SimpleTarget<Bitmap> target = new SimpleTarget<Bitmap>() {
+        CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
             public void onLoadStarted(@Nullable Drawable placeholder) {
                 imageAmiibo.setVisibility(View.GONE);
@@ -401,6 +401,11 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             @Override
             public void onLoadFailed(@Nullable Drawable errorDrawable) {
                 imageAmiibo.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+
             }
 
             @Override

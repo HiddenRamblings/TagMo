@@ -223,7 +223,8 @@ public class TagUtil {
         putBytes(bb, offset, TagUtil.toAmiiboDate(date));
     }
 
-    public static String getString(ByteBuffer bb, int offset, int length, Charset charset) throws UnsupportedEncodingException {
+    public static String getString(ByteBuffer bb, int offset, int length, Charset charset)
+            throws UnsupportedEncodingException {
         return charset.decode(getByteBuffer(bb, offset, length)).toString();
     }
 

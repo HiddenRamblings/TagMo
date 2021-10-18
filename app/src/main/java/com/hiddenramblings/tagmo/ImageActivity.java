@@ -1,8 +1,8 @@
 package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -10,11 +10,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -96,13 +97,10 @@ public class ImageActivity extends AppCompatActivity {
             }
         });
 
-        group0.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-                int height = view.getHeight() + bottomSheet.getPaddingTop();
-                bottomSheetBehavior.setPeekHeight(height);
-                imageView.setPadding(imageView.getPaddingLeft(), imageView.getPaddingTop(), imageView.getPaddingRight(), imageView.getPaddingTop() + height);
-            }
+        group0.addOnLayoutChangeListener((view, i, i1, i2, i3, i4, i5, i6, i7) -> {
+            int height = view.getHeight() + bottomSheet.getPaddingTop();
+            bottomSheetBehavior.setPeekHeight(height);
+            imageView.setPadding(imageView.getPaddingLeft(), imageView.getPaddingTop(), imageView.getPaddingRight(), imageView.getPaddingTop() + height);
         });
 
         updateImage();
@@ -195,7 +193,7 @@ public class ImageActivity extends AppCompatActivity {
         } else {
             textView.setVisibility(View.VISIBLE);
             if (text.length() == 0) {
-                textView.setText("Unknown");
+                textView.setText(R.string.unknown);
                 textView.setEnabled(false);
             } else {
                 textView.setText(text);
@@ -220,39 +218,40 @@ public class ImageActivity extends AppCompatActivity {
 
         (new AlertDialog.Builder(this))
                 .setTitle(R.string.save_image)
-                .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        final File file = new File(Util.getFilesDir().getAbsolutePath(),
-                                editText.getText().toString() + ".png");
+                .setPositiveButton(R.string.save, (dialogInterface, i) -> {
+                    final File file = new File(Util.getFilesDir().getAbsolutePath(),
+                            editText.getText().toString() + ".png");
 
-                        Glide.with(ImageActivity.this)
-                                .asBitmap()
-                                .load(getImageUrl())
-                                .into(new SimpleTarget<Bitmap>() {
-                                    @Override
-                                    public void onResourceReady(Bitmap resource, Transition transition) {
-                                        FileOutputStream fos = null;
-                                        try {
-                                            fos = new FileOutputStream(file);
-                                            resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                    Glide.with(ImageActivity.this)
+                            .asBitmap()
+                            .load(getImageUrl())
+                            .into(new CustomTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+                                    FileOutputStream fos = null;
+                                    try {
+                                        fos = new FileOutputStream(file);
+                                        resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
 
-                                            String text = "Saved file as " + Util.friendlyPath(file);
-                                            Toast.makeText(ImageActivity.this, text, Toast.LENGTH_SHORT).show();
-                                        } catch (FileNotFoundException e) {
-                                            e.printStackTrace();
-                                        } finally {
-                                            if (fos != null) {
-                                                try {
-                                                    fos.close();
-                                                } catch (IOException e) {
-                                                    e.printStackTrace();
-                                                }
+                                        String text = "Saved file as " + Util.friendlyPath(file);
+                                        Toast.makeText(ImageActivity.this, text, Toast.LENGTH_SHORT).show();
+                                    } catch (FileNotFoundException e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        if (fos != null) {
+                                            try {
+                                                fos.close();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
                                             }
                                         }
                                     }
-                                });
-                    }
+                                }
+                                @Override
+                                public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                                }
+                            });
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .setView(view)

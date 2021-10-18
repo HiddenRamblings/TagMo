@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.Preferences_;
 import com.hiddenramblings.tagmo.R;
@@ -67,12 +67,12 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         }
 
         String tagInfo = null;
-        String amiiboHexId = "";
+        String amiiboHexId;
         String amiiboName = "";
         String amiiboSeries = "";
         String amiiboType = "";
         String gameSeries = "";
-//        String character = "";
+        // String character = "";
         String amiiboImageUrl;
 
         Amiibo amiibo = getItem(position);
@@ -86,8 +86,8 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
             amiiboType = amiibo.getAmiiboType().name;
         if (amiibo.getGameSeries() != null)
             gameSeries = amiibo.getGameSeries().name;
-//        if (amiibo.getCharacter() != null)
-//            character = amiibo.getCharacter().name;
+        // if (amiibo.getCharacter() != null)
+        //     character = amiibo.getCharacter().name;
 
         holder.txtError.setVisibility(android.view.View.GONE);
         setAmiiboInfoText(holder.txtName, amiiboName, false);
@@ -95,7 +95,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         setAmiiboInfoText(holder.txtAmiiboSeries, amiiboSeries, tagInfo != null);
         setAmiiboInfoText(holder.txtAmiiboType, amiiboType, tagInfo != null);
         setAmiiboInfoText(holder.txtGameSeries, gameSeries, tagInfo != null);
-//        setAmiiboInfoText(holder.txtCharacter, character, tagInfo != null);
+        // setAmiiboInfoText(holder.txtCharacter, character, tagInfo != null);
         holder.txtPath.setVisibility(android.view.View.GONE);
 
         if (holder.imageAmiibo != null) {
@@ -117,7 +117,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         if (hasTagInfo) {
             textView.setText("");
         } else if (text.length() == 0) {
-            textView.setText("Unknown");
+            textView.setText(R.string.unknown);
             textView.setTextColor(Color.RED);
         } else {
             textView.setText(text);
@@ -140,7 +140,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         }
     }
 
-    class ViewHolder {
+    static class ViewHolder {
         TextView txtError;
         TextView txtName;
         TextView txtTagId;
@@ -151,7 +151,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         TextView txtPath;
         ImageView imageAmiibo;
 
-        SimpleTarget<Bitmap> target = new SimpleTarget<Bitmap>() {
+        CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
             public void onLoadStarted(@Nullable Drawable placeholder) {
                 imageAmiibo.setVisibility(android.view.View.GONE);
@@ -160,6 +160,11 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
             @Override
             public void onLoadFailed(@Nullable Drawable errorDrawable) {
                 imageAmiibo.setVisibility(android.view.View.GONE);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+
             }
 
             @Override

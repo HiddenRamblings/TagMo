@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/coordinator" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -40,39 +38,12 @@
                 android:paddingBottom="40dp"
                 android:scrollbars="vertical"/>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="56dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/ic_nfc_white_24dp"
-            app:fabSize="normal"
-            android:contentDescription="@string/nfcIconDescription"
-            tools:ignore="RelativeOverlap" />
     </RelativeLayout>
-
-    <TextView
-        android:id="@+id/empty_text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:paddingBottom="40dp"
-        android:text="@string/not_found"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
 
     <LinearLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="#A9333333"
         android:clickable="true"
         android:focusable="true"
@@ -90,23 +61,24 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/icon"
+                android:id="@+id/config_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginRight="4dp"
                 android:layout_marginEnd="4dp"
                 android:src="@drawable/ic_folder_open_white_24dp"
-                android:contentDescription="@string/imageview_folder" />
+                android:contentDescription="@string/imageview_folder"/>
 
             <TextView
-                android:id="@+id/current_folder"
+                android:id="@+id/hardware_info"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:singleLine="true"
                 android:ellipsize="middle"
+                android:text="@string/not_found"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"/>
 
@@ -119,11 +91,18 @@
                 android:contentDescription="@string/imageview_toggle" />
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/folders_list"
+        <com.hiddenramblings.tagmo.BankNumberPicker
+            android:id="@+id/bank_count_picker"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:background="@color/background_white" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/write_bank_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="36dp"
+            android:text="@string/write_amiiqo_bank_count" />
 
     </LinearLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -45,6 +45,37 @@ public class Util {
         return data;
     }
 
+    public static long hex2long(String s) {
+        long result = 0;
+        for (int i = 0; i < s.length(); i++) {
+            result = (result << 4) + ((long) Character.digit(s.charAt(i), 16));
+        }
+        return result;
+    }
+
+    public static byte hex2byte(String hex) {
+        byte ret = (byte) 0;
+        byte hi = (byte) hex.charAt(0);
+        byte lo = (byte) hex.charAt(1);
+        if (hi >= NfcByte.CMD_READ && hi <= NfcByte.CMD_READ_CNT) {
+            ret = (byte) (((hi - 48) << 4) | 0);
+        } else if (hi >= (byte) 65 && hi <= NfcByte.N2_LOCK) {
+            ret = (byte) ((((hi - 65) + 10) << 4) | 0);
+        } else if (hi >= (byte) 97 && hi <= (byte) 102) {
+            ret = (byte) ((((hi - 97) + 10) << 4) | 0);
+        }
+        if (lo >= NfcByte.CMD_READ && lo <= NfcByte.CMD_READ_CNT) {
+            return (byte) ((lo - 48) | ret);
+        }
+        if (lo >= (byte) 65 && lo <= NfcByte.N2_LOCK) {
+            return (byte) (((lo - 65) + 10) | ret);
+        }
+        if (lo < (byte) 97 || lo > (byte) 102) {
+            return ret;
+        }
+        return (byte) (((lo - 97) + 10) | ret);
+    }
+
     public static String md5(byte[] data) {
         try {
             MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
@@ -73,23 +104,6 @@ public class Util {
 
         try {
             String line;
-//            Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
-//                    "logcat", "-ds",
-//                    "AndroidRuntime:E"
-//            });
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(
-//                    mLogcatProc.getInputStream()));
-//            log.append(separator);
-//            log.append(separator);
-//            log.append("AndroidRuntime Logs");
-//            log.append(separator);
-//            log.append(separator);
-//            while ((line = reader.readLine()) != null) {
-//                log.append(line);
-//                log.append(separator);
-//            }
-//            reader.close();
-
             Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                     "logcat", "-d",
                     BuildConfig.APPLICATION_ID,
@@ -98,8 +112,6 @@ public class Util {
             });
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     mLogcatProc.getInputStream()));
-//            log.append(separator);
-//            log.append("TagMo Verbose Logs");
             log.append(separator);
             log.append(separator);
             while ((line = reader.readLine()) != null) {

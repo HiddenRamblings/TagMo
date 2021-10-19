@@ -3,7 +3,9 @@ package com.hiddenramblings.tagmo.nfc;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
@@ -46,7 +48,9 @@ public class TagWriter {
         TagMo.Debug(TAG, R.string.unlocked);
     }
 
-    public static void writeToTagAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager, boolean validateNtag, boolean supportPowerTag) throws Exception {
+    public static void writeToTagAuto(
+            NTAG215 mifare, byte[] tagData, KeyManager keyManager,
+            boolean validateNtag, boolean supportPowerTag) throws Exception {
         byte[] idPages = mifare.readPages(0);
         if (idPages == null || idPages.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
@@ -127,6 +131,20 @@ public class TagWriter {
             } catch (Exception e) {
                 throw new Exception(TagMo.getStringRes(R.string.lock_write_error), e);
             }
+        }
+    }
+
+    public static byte[] writeAmiiqoAuto(NTAG215 mifare, byte[] tagData, int bank_number) throws Exception {
+        if (doAmiiqoAuth(mifare, mifare.fastRead(0, 0))) {
+            if (mifare.amiiboFastWrite(0, bank_number, tagData)) {
+                byte[] result = new byte[8];
+                System.arraycopy(tagData, 84, result, 0, result.length);
+                return result;
+            } else {
+                throw new Exception(TagMo.getStringRes(R.string.amiiqo_write_error));
+            }
+        } else {
+            throw new Exception(TagMo.getStringRes(R.string.amiiqo_auth_error));
         }
     }
 
@@ -275,8 +293,26 @@ public class TagWriter {
         }
     }
 
-    public static ArrayList<byte[]> readFromTags(NTAG215 tag, int numBanks) throws Exception {
-        ArrayList<byte[]> tags = new ArrayList<>();
+    private static boolean doAmiiqoAuth(NTAG215 tag, byte[] password) throws Exception {
+        if (password == null || password.length != 4) {
+            return false;
+        }
+        byte[] req = new byte[5];
+        req[0] = NfcByte.CMD_PWD_AUTH;
+        try {
+            System.arraycopy(password, 0, req, 1, 4);
+            password = tag.transceive(req);
+        } catch (Exception e) {
+            return false;
+        }
+        if (password == null || password.length != 2) {
+            return false;
+        }
+        return password[0] == Byte.MIN_VALUE && password[1] == Byte.MIN_VALUE;
+    }
+
+    public static ArrayList<String> readFromTags(NTAG215 tag, int numBanks) throws Exception {
+        ArrayList<String> tags = new ArrayList<>();
         int i = 0;
         while (i < (numBanks & 255)) {
             try {
@@ -284,7 +320,7 @@ public class TagWriter {
                 if (tagData == null || tagData.length != 8) {
                     throw new Exception();
                 }
-                tags.add(tagData);
+                tags.add(Util.bytesToHex(tagData));
                 i++;
             } catch (Exception e) {
                 TagMo.Debug(TAG, TagMo.getStringRes(R.string.fail_amiiqo_bank_parse));
@@ -298,6 +334,79 @@ public class TagWriter {
     }
 
     public static String getAmiiqoSignature(NTAG215 tag) {
-        return Util.bytesToHex(tag.readAmiiqoSignature()).substring(0, 22);
+        byte[] signature = tag.readAmiiqoSignature();
+        if (signature != null)
+            return Util.bytesToHex(tag.readAmiiqoSignature()).substring(0, 22);
+        return null;
+    }
+
+    public String flashAPDUFile(NTAG215 tag, int resourceId) {
+        byte[] response = new byte[1];
+        int records_a = 0;
+        int records_r = 0;
+        response[0] = (byte) -1;
+        tag.initAmiiqoAPDU();
+        tag.getVersion();
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    TagMo.getContext().getResources().openRawResource(resourceId)));
+            while (true) {
+                String strLine = br.readLine();
+                if (strLine == null) {
+                    break;
+                }
+                String[] parts = strLine.replaceAll("\\s+", " ").split(" ");
+                int i;
+                if (parts.length < 1) {
+                    break;
+                } else if (parts[0].equals("C-APDU")) {
+                    byte[] apdu_buf = new byte[(parts.length - 1)];
+                    for (i = 1; i < parts.length; i++) {
+                        apdu_buf[i - 1] = Util.hex2byte(parts[i]);
+                    }
+                    int sz = apdu_buf[4] & 255;
+                    byte[] iso_cmd = new byte[sz];
+                    if (apdu_buf[4] + 5 <= apdu_buf.length && apdu_buf[4] <= iso_cmd.length) {
+                        for (i = 0; i < sz; i++) {
+                            iso_cmd[i] = apdu_buf[i + 5];
+                        }
+                        boolean done = false;
+                        for (i = 0; i < 10; i++) {
+                            response = tag.transceive(iso_cmd);
+                            if (response != null) {
+                                done = true;
+                                break;
+                            }
+                        }
+                        if (done) {
+                            records_a++;
+                        } else {
+                            return "ERROR: Firmware update failed. Please try again! (1)";
+                        }
+                    }
+                    return null;
+                } else if (parts[0].equals("C-RPDU")) {
+                    byte[] rpdu_buf = new byte[(parts.length - 1)];
+                    if (response.length != parts.length - 3) {
+                        return "ERROR: Firmware update failed. Please try again! (2)";
+                    }
+                    for (i = 1; i < parts.length; i++) {
+                        rpdu_buf[i - 1] = Util.hex2byte(parts[i]);
+                    }
+                    for (i = 0; i < rpdu_buf.length - 2; i++) {
+                        if (rpdu_buf[i] != response[i]) {
+                            return "ERROR: Firmware update failed. Please try again! (3)";
+                        }
+                    }
+                    records_r++;
+                } else if (!parts[0].equals("RESET") && parts[0].equals("LOGIN")) {
+
+                }
+            }
+            br.close();
+            return "Firmware update done!";
+        } catch (IOException e) {
+            return "ERROR: Firmware update failed. Please try again! (4)";
+        }
     }
 }

@@ -118,6 +118,14 @@ public class NTAG215 implements TagTechnology {
         return null;
     }
 
+    public byte[] getVersion() {
+        try {
+            return transceive(new byte[]{NfcByte.CMD_GET_VERSION});
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @Override
     public boolean isConnected() {
         return m_nfcA.isConnected();
@@ -173,7 +181,7 @@ public class NTAG215 implements TagTechnology {
         }
     }
 
-    public byte[] initAmiiqoApdu() {
+    public byte[] initAmiiqoAPDU() {
         try {
             return transceive(new byte[]{
                     (byte) -12, (byte) 73, (byte) -101, (byte) -103,
@@ -192,6 +200,20 @@ public class NTAG215 implements TagTechnology {
 
     private interface IFastWrite {
         boolean doFastWrite(int i, int i2, byte[] bArr);
+    }
+
+    public byte[] fastRead(int startAddr, int endAddr) {
+        return internalFastRead((startAddr1, endAddr1, bank) -> {
+            try {
+                return transceive(new byte[]{
+                        NfcByte.CMD_FAST_READ,
+                        (byte) (startAddr1 & 255),
+                        (byte) (endAddr1 & 255)
+                });
+            } catch (Exception e) {
+                return null;
+            }
+        }, startAddr, endAddr, 0);
     }
 
     public byte[] amiiboFastRead(int startAddr, int endAddr, int bank) {

@@ -167,7 +167,9 @@
     <string name="enable_amiiqo">Enable N2 Elite support</string>
     <string name="amiiqo_details">Support is currently in development.\nSee Github for limitations and use.</string>
     <string name="amiiqo_details_enabled">Support is currently in development.\nN2 Elite ID: %1$s</string>
+    <string name="amiiqo_sig">N2 Elite ID: %1$s</string>
     <string name="write_amiiqo_bank_count">Write Bank Count to Hardware</string>
+    <string name="hardware_conflict">PowerTags / N2 Elite are incompatible!</string>
 
     <string name="amiibo_info">Amiibo Info</string>
 
@@ -209,6 +211,7 @@
     <string name="no_tag_loaded">&lt;No Tag Loaded&gt;</string>
     <string name="read_error">&lt;Error Reading Tag&gt;</string>
     <string name="blank_tag">&lt;Blank Tag&gt;</string>
+    <string name="blank_tag_number">%1$s: &lt;Blank Tag&gt;</string>
     <string name="tag_close_error">Error closing tag %1$s</string>
     <string name="state_error">State error. Invalid action: %1$s</string>
     <string name="length_error">Must be 8 characters</string>
@@ -239,7 +242,7 @@
     <string name="invalid_file_size">Invalid file size. Expected %1$s</string>
     <string name="invalid_app_data">Invalid app data</string>
 
-    <string name="min_max_error">Must be between %d and %d</string>
+    <string name="min_max_error">Must be between %1d and %2d</string>
 
     <string name="amiibo_parse_error">Amiibo parse error</string>
     <string name="powertag_key_error">PowerTag keys not loaded</string>
@@ -269,6 +272,9 @@
     <string name="fail_powertag_keys">Failed to load PowerTag keys</string>
     <string name="fail_amiiqo_outofbounds">Selected bank exceeds count!</string>
     <string name="fail_amiiqo_bank_parse">Failed to parse banks!</string>
+
+    <string name="amiiqo_write_error">Error while writing Amiibo to N2 Elite</string>
+    <string name="amiiqo_auth_error">Error while authenticating N2 Elite</string>
 
     <string name="tag_format_error">Tag is not an NTAG215</string>
     <string name="no_source_data">Cannot validate: no source data loaded to compare.</string>

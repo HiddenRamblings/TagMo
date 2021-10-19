@@ -38,12 +38,6 @@
             android:key="@string/settings_enable_amiiqo_support"
             android:summary="@string/amiiqo_details"
             android:title="@string/enable_amiiqo"/>
-        <androidx.preference.SeekBarPreference
-            android:title="@string/write_amiiqo_bank_count"
-            android:key="@string/settings_amiiqo_bank_slider"
-            app:showSeekBarValue="true"
-            app:min="1" android:max="200"
-            android:persistent="false" />
     </androidx.preference.PreferenceCategory>
     <androidx.preference.PreferenceCategory
         android:title="@string/amiibo_info">

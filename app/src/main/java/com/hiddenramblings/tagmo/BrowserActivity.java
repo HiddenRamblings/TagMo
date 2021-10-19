@@ -727,7 +727,7 @@ public class BrowserActivity extends AppCompatActivity implements
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
         Bundle args = new Bundle();
-        args.putByteArray(AmiiboActivity.ARG_TAG_DATA, tagData);
+        args.putByteArray(TagMo.BYTE_TAG_DATA, tagData);
 
         Intent intent = new Intent(this, AmiiboActivity_.class);
         intent.putExtras(args);
@@ -735,10 +735,37 @@ public class BrowserActivity extends AppCompatActivity implements
         startActivity(intent);
     });
 
+    ActivityResultLauncher<Intent> onAmiiqoActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null)
+            return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+            return;
+
+        String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
+        int bank_count = result.getData().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
+
+        prefs.amiiqoSignature().put(signature);
+        prefs.amiiqoBankCount().put(bank_count);
+
+        Intent amiiqoIntent = new Intent(this, AmiiqoActivity_.class);
+        amiiqoIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
+        amiiqoIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+        amiiqoIntent.putExtra(TagMo.EXTRA_UNIT_DATA,
+                result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
+        startActivity(amiiqoIntent);
+    });
+
     @Click(R.id.fab)
     public void onFabClicked() {
-        onNFCActivity.launch(new Intent(this,
-                NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
+        if (prefs.enableAmiiqoSupport().get()) {
+            onAmiiqoActivity.launch(new Intent(this,
+                    NfcActivity_.class).setAction(TagMo.ACTION_SCAN_UNIT));
+        } else {
+            onNFCActivity.launch(new Intent(this,
+                    NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
+        }
     }
 
     @Override
@@ -756,7 +783,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
 
         Bundle args = new Bundle();
-        args.putByteArray(AmiiboActivity.ARG_TAG_DATA, tagData);
+        args.putByteArray(TagMo.BYTE_TAG_DATA, tagData);
 
         Intent intent = new Intent(this, AmiiboActivity_.class);
         intent.putExtras(args);

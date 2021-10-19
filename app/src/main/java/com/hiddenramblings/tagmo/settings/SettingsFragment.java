@@ -25,12 +25,10 @@ import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SeekBarPreference;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.Preferences_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -93,8 +91,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference enablePowerTagSupport;
     @PreferenceByKey(R.string.settings_enable_amiiqo_support)
     CheckBoxPreference enableAmiiqoSupport;
-    @PreferenceByKey(R.string.settings_amiiqo_bank_slider)
-    SeekBarPreference amiiqoBankCount;
     @PreferenceByKey(R.string.settings_info_amiibos)
     Preference amiiboStats;
     @PreferenceByKey(R.string.settings_info_game_series)
@@ -141,8 +137,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
 
-        amiiqoBankCount.setValue(prefs.amiiqoBankCount().get());
-
         loadAmiiboManager();
         updateKeySummary();
         updateAmiiboStats();
@@ -152,9 +146,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (this.enableAmiiqoSupport.isChecked()) {
             this.enableAmiiqoSupport.setSummary(getString(
                     R.string.amiiqo_details_enabled, prefs.amiiqoSignature().get()));
-            this.amiiqoBankCount.setEnabled(true);
-        } else {
-            this.amiiqoBankCount.setEnabled(false);
         }
     }
 
@@ -170,72 +161,26 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_enable_power_tag_support)
     void onEnablePowerTagSupportClicked() {
-        prefs.enablePowerTagSupport().put(enablePowerTagSupport.isChecked());
-        if (enablePowerTagSupport.isChecked()
-                && enableAmiiqoSupport.isChecked()) {
-            enableAmiiqoSupport.setChecked(false);
-            onEnableAmiiqoSupportClicked();
+        if (enablePowerTagSupport.isChecked() && enableAmiiqoSupport.isChecked()) {
+            showToast(R.string.hardware_conflict, Toast.LENGTH_LONG);
+            return;
         }
+        prefs.enablePowerTagSupport().put(enablePowerTagSupport.isChecked());
     }
-
-    ActivityResultLauncher<Intent> onAmiiqoActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
-            return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
-
-        String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
-        int bank_count = result.getData().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
-
-        prefs.amiiqoSignature().put(signature);
-        prefs.amiiqoBankCount().put(bank_count);
-
-        enableAmiiqoSupport.setSummary(getString(R.string.amiiqo_details_enabled, signature));
-        amiiqoBankCount.setValue(bank_count);
-        amiiqoBankCount.setEnabled(true);
-    });
 
     @PreferenceClick(R.string.settings_enable_amiiqo_support)
     void onEnableAmiiqoSupportClicked() {
+        boolean isEnabled = enableAmiiqoSupport.isChecked();
+        if (enableAmiiqoSupport.isChecked() && enablePowerTagSupport.isChecked()) {
+            showToast(R.string.hardware_conflict, Toast.LENGTH_LONG);
+            return;
+        }
         prefs.enableAmiiqoSupport().put(enableAmiiqoSupport.isChecked());
-        if (enableAmiiqoSupport.isChecked()) {
-            onAmiiqoActivity.launch(new Intent(getActivity(),
-                    NfcActivity_.class).setAction(TagMo.ACTION_GET_DETAILS));
-        } else {
-            prefs.amiiqoSignature().remove();
-            amiiqoBankCount.setEnabled(false);
+        if (isEnabled && prefs.amiiqoSignature().get() != null)
+            enableAmiiqoSupport.setSummary(getString(
+                    R.string.amiiqo_details_enabled, prefs.amiiqoSignature().get()));
+        else
             enableAmiiqoSupport.setSummary(getString(R.string.amiiqo_details));
-        }
-        if (enableAmiiqoSupport.isChecked()
-                && enablePowerTagSupport.isChecked()) {
-            enablePowerTagSupport.setChecked(false);
-            onEnablePowerTagSupportClicked();
-        }
-    }
-
-    ActivityResultLauncher<Intent> onConfigureActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
-            return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
-
-        int bank_count = result.getData().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
-
-        prefs.amiiqoBankCount().put(bank_count);
-        amiiqoBankCount.setValue(bank_count);
-    });
-
-    @PreferenceClick(R.string.settings_amiiqo_bank_slider)
-    void onWriteAmiiqoBankCount() {
-
-        Intent configure = new Intent(getActivity(), NfcActivity_.class);
-        configure.setAction(TagMo.ACTION_CONFIGURE);
-        configure.putExtra(TagMo.EXTRA_BANK_COUNT, amiiqoBankCount.getValue());
-        onConfigureActivity.launch(configure);
     }
 
     @PreferenceClick(R.string.settings_import_info_amiiboapi)

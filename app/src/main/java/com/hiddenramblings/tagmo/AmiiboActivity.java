@@ -60,8 +60,6 @@ public class AmiiboActivity extends AppCompatActivity {
 
     public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
-    public static final String ARG_TAG_DATA = "tag_data";
-
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
     @ViewById(R.id.amiiboInfo)
@@ -83,7 +81,7 @@ public class AmiiboActivity extends AppCompatActivity {
     @ViewById(R.id.imageAmiibo)
     ImageView imageAmiibo;
 
-    @Extra(ARG_TAG_DATA)
+    @Extra(TagMo.BYTE_TAG_DATA)
     byte[] tagData;
 
     AmiiboManager amiiboManager = null;

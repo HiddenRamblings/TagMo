@@ -45,6 +45,14 @@
                 android:resource="@xml/nfc_tech_list"/>
         </activity>
         <activity
+            android:name=".AmiiqoActivity_"
+            android:theme="@style/DialogTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".NfcActivity_"
             android:launchMode="singleTop"/>
         <activity

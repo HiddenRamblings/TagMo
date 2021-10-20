@@ -476,7 +476,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = Util.loadDefaultAmiiboManager(requireContext());
+            amiiboManager = Util.loadDefaultAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,

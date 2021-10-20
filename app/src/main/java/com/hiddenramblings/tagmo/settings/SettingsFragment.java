@@ -87,8 +87,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference enableTagTypeValidation;
     @PreferenceByKey(R.string.settings_enable_power_tag_support)
     CheckBoxPreference enablePowerTagSupport;
-    @PreferenceByKey(R.string.settings_enable_amiiqo_support)
-    CheckBoxPreference enableAmiiqoSupport;
+    @PreferenceByKey(R.string.settings_enable_elite_support)
+    CheckBoxPreference enableEliteSupport;
     @PreferenceByKey(R.string.settings_info_amiibos)
     Preference amiiboStats;
     @PreferenceByKey(R.string.settings_info_game_series)
@@ -140,10 +140,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         updateAmiiboStats();
         onImageNetworkChange(prefs.imageNetworkSetting().get());
 
-        this.enableAmiiqoSupport.setChecked(prefs.enableAmiiqoSupport().get());
-        if (this.enableAmiiqoSupport.isChecked()) {
-            this.enableAmiiqoSupport.setSummary(getString(
-                    R.string.amiiqo_details_enabled, prefs.amiiqoSignature().get()));
+        this.enableEliteSupport.setChecked(prefs.enableEliteSupport().get());
+        if (this.enableEliteSupport.isChecked() && prefs.eliteSignature().get().length() > 1) {
+            this.enableEliteSupport.setSummary(getString(
+                    R.string.elite_details_enabled, prefs.eliteSignature().get()));
         }
     }
 
@@ -159,26 +159,26 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_enable_power_tag_support)
     void onEnablePowerTagSupportClicked() {
-        if (enablePowerTagSupport.isChecked() && enableAmiiqoSupport.isChecked()) {
+        if (enablePowerTagSupport.isChecked() && enableEliteSupport.isChecked()) {
             showToast(R.string.hardware_conflict, Toast.LENGTH_LONG);
             return;
         }
         prefs.enablePowerTagSupport().put(enablePowerTagSupport.isChecked());
     }
 
-    @PreferenceClick(R.string.settings_enable_amiiqo_support)
-    void onEnableAmiiqoSupportClicked() {
-        boolean isEnabled = enableAmiiqoSupport.isChecked();
-        if (enableAmiiqoSupport.isChecked() && enablePowerTagSupport.isChecked()) {
+    @PreferenceClick(R.string.settings_enable_elite_support)
+    void onenableEliteSupportClicked() {
+        boolean isEnabled = enableEliteSupport.isChecked();
+        if (enableEliteSupport.isChecked() && enablePowerTagSupport.isChecked()) {
             showToast(R.string.hardware_conflict, Toast.LENGTH_LONG);
             return;
         }
-        prefs.enableAmiiqoSupport().put(enableAmiiqoSupport.isChecked());
-        if (isEnabled && prefs.amiiqoSignature().get() != null)
-            enableAmiiqoSupport.setSummary(getString(
-                    R.string.amiiqo_details_enabled, prefs.amiiqoSignature().get()));
+        prefs.enableEliteSupport().put(enableEliteSupport.isChecked());
+        if (isEnabled && prefs.eliteSignature().get().length() > 1)
+            enableEliteSupport.setSummary(getString(
+                    R.string.elite_details_enabled, prefs.eliteSignature().get()));
         else
-            enableAmiiqoSupport.setSummary(getString(R.string.amiiqo_details));
+            enableEliteSupport.setSummary(getString(R.string.elite_details));
     }
 
     @PreferenceClick(R.string.settings_import_info_amiiboapi)

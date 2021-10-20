@@ -195,10 +195,14 @@ public class NTAG215 implements TagTechnology {
     public byte[] initAmiiqoAPDU() {
         try {
             return transceive(new byte[]{
-                    (byte) -12, (byte) 73, (byte) -101, (byte) -103,
-                    (byte) -61, (byte) -38, (byte) 87, (byte) 113,
-                    (byte) 10, (byte) 100, (byte) 74, (byte) -98,
-                    (byte) -8, (byte) NfcByte.CMD_WRITE, (byte) NfcByte.CMD_READ, (byte) -39
+                    (byte) 0xFFF4,              (byte) 0x49,
+                    (byte) 0xFF9B,              (byte) 0xFF99,
+                    (byte) 0xFFC3,              (byte) 0xFFDA,
+                    (byte) 0x57,                (byte) 0x71,
+                    (byte) 0x0A,                (byte) 0x64,
+                    (byte) 0x4A,                (byte) 0xFF9E,
+                    (byte) 0xFFF8,              (byte) NfcByte.CMD_WRITE,
+                    (byte) NfcByte.CMD_READ,    (byte) 0xFFD9
             });
         } catch (Exception e) {
             return null;
@@ -218,8 +222,8 @@ public class NTAG215 implements TagTechnology {
             try {
                 return transceive(new byte[]{
                         NfcByte.CMD_FAST_READ,
-                        (byte) (startAddr1 & 255),
-                        (byte) (endAddr1 & 255)
+                        (byte) (startAddr1 & 0xFF),
+                        (byte) (endAddr1 & 0xFF)
                 });
             } catch (Exception e) {
                 return null;
@@ -232,9 +236,9 @@ public class NTAG215 implements TagTechnology {
             try {
                 return transceive(new byte[]{
                         NfcByte.N2_FAST_READ,
-                        (byte) (startAddr1 & 255),
-                        (byte) (endAddr1 & 255),
-                        (byte) (bank1 & 255)
+                        (byte) (startAddr1 & 0xFF),
+                        (byte) (endAddr1 & 0xFF),
+                        (byte) (bank1 & 0xFF)
                 });
             } catch (Exception e) {
                 return null;
@@ -293,8 +297,8 @@ public class NTAG215 implements TagTechnology {
             return internalWrite((startAddr, bank1, data1) -> {
                 byte[] req = new byte[7];
                 req[0] = NfcByte.N2_WRITE;
-                req[1] = (byte) (startAddr & 255);
-                req[2] = (byte) (bank1 & 255);
+                req[1] = (byte) (startAddr & 0xFF);
+                req[2] = (byte) (bank1 & 0xFF);
                 try {
                     System.arraycopy(data1, 0, req, 3, 4);
                     transceive(req);
@@ -337,9 +341,9 @@ public class NTAG215 implements TagTechnology {
         return internalFastWrite((startAddr, bank1, data1) -> {
             byte[] req = new byte[(data1.length + 4)];
             req[0] = NfcByte.N2_FAST_WRITE;
-            req[1] = (byte) (startAddr & 255);
-            req[2] = (byte) (bank1 & 255);
-            req[3] = (byte) (data1.length & 255);
+            req[1] = (byte) (startAddr & 0xFF);
+            req[2] = (byte) (bank1 & 0xFF);
+            req[3] = (byte) (data1.length & 0xFF);
             try {
                 System.arraycopy(data1, 0, req, 4, data1.length);
                 transceive(req);

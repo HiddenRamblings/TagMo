@@ -6,6 +6,12 @@
     android:orientation="vertical" >
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/activate_bank"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/activate_bank" />
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/delete_bank"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

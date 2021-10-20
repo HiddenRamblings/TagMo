@@ -318,10 +318,6 @@ public class NfcActivity extends AppCompatActivity {
                         break;
                     case TagMo.ACTION_DELETE_BANK:
                         TagWriter.amiiqoDeleteTag(mifare, selection);
-                        if (TagWriter.getAmiiqoActiveBank(mifare) == selection) {
-                            mifare.activateAmiiqoBank(selection - 1);
-                            prefs.amiiqoActiveBank().put(selection);
-                        }
                         Intent delete = new Intent(TagMo.ACTION_NFC_SCANNED);
                         delete.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
                         delete.putExtra(TagMo.EXTRA_UNIT_DATA,
@@ -353,6 +349,10 @@ public class NfcActivity extends AppCompatActivity {
                         String signature = TagWriter.getAmiiqoSignature(mifare);
                         byte[] bank_details = TagWriter.getAmiiqoBankDetails(mifare);
                         ArrayList<String> tags = TagWriter.readFromTags(mifare, bank_details[1]);
+                        if (TagWriter.needsFirmwareUpdate(mifare)) {
+                            if (TagWriter.flashFirmware(mifare))
+                                showToast(getString(R.string.firmware_update));
+                        }
                         Intent results = new Intent(TagMo.ACTION_NFC_SCANNED);
                         results.putExtra(TagMo.EXTRA_SIGNATURE, signature);
                         results.putExtra(TagMo.EXTRA_BANK_COUNT, bank_details[1] & 0xFF);

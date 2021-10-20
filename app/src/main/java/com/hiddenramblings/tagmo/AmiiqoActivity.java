@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -236,12 +237,15 @@ public class AmiiqoActivity  extends AppCompatActivity implements
     @Override
     public void onAmiiboLongClicked(Amiibo amiibo, int position) {
         View view = getLayoutInflater().inflate(R.layout.amiiqo_extended, null);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        Dialog contextMenu = dialog.setView(view).show();
         AppCompatButton activate_button = view.findViewById(R.id.activate_bank);
         activate_button.setOnClickListener(v -> {
             Intent activate = new Intent(AmiiqoActivity.this, NfcActivity_.class);
             activate.setAction(TagMo.ACTION_ACTIVATE_BANK);
             activate.putExtra(TagMo.EXTRA_ACTIVE_BANK, TagWriter.getDisplayFromIndex(position));
             onActivateActivity.launch(activate);
+            contextMenu.dismiss();
         });
         AppCompatButton delete_button = view.findViewById(R.id.delete_bank);
         delete_button.setOnClickListener(v -> {
@@ -250,13 +254,13 @@ public class AmiiqoActivity  extends AppCompatActivity implements
             delete.putExtra(TagMo.EXTRA_ACTIVE_BANK, TagWriter.getDisplayFromIndex(position));
             delete.putExtra(TagMo.EXTRA_BANK_COUNT, amiiqoBankCount.getValue());
             onDeleteActivity.launch(delete);
+            contextMenu.dismiss();
         });
         AppCompatButton backup_button = view.findViewById(R.id.backup_amiibo);
-        backup_button.setOnClickListener(v ->
-                showToast(getString(R.string.feature_unavailable), Toast.LENGTH_LONG));
-
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setView(view).show();
+        backup_button.setOnClickListener(v -> {
+            showToast(getString(R.string.feature_unavailable), Toast.LENGTH_LONG);
+            contextMenu.dismiss();
+        });
     }
 
     @Override

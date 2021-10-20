@@ -192,7 +192,7 @@ public class NTAG215 implements TagTechnology {
         }
     }
 
-    public byte[] initAmiiqoAPDU() {
+    public byte[] initFirmware() {
         try {
             return transceive(new byte[]{
                     (byte) 0xFFF4,              (byte) 0x49,

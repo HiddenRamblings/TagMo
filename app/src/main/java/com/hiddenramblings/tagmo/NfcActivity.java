@@ -70,13 +70,13 @@ public class NfcActivity extends AppCompatActivity {
         if (getIntent().hasExtra(TagMo.EXTRA_ACTIVE_BANK))
             bankNumberPicker.setValue(getIntent().getIntExtra(
                     TagMo.EXTRA_ACTIVE_BANK, bankNumberPicker.getValue()));
-        else if (prefs.enableAmiiqoSupport().get()) {
-            bankNumberPicker.setValue(prefs.amiiqoActiveBank().get());
+        else if (prefs.enableEliteSupport().get()) {
+            bankNumberPicker.setValue(prefs.eliteActiveBank().get());
         } else {
             bankTextView.setVisibility(View.GONE);
             bankNumberPicker.setVisibility(View.GONE);
         }
-        updateLayout();
+        configureInterface();
 
         nfcAnimation = AnimationUtils.loadAnimation(this, R.anim.nfc_scanning);
     }
@@ -105,7 +105,7 @@ public class NfcActivity extends AppCompatActivity {
         }
     }
 
-    void updateLayout() {
+    void configureInterface() {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
         if (getIntent().hasExtra(TagMo.EXTRA_BANK_COUNT)) {
@@ -113,24 +113,27 @@ public class NfcActivity extends AppCompatActivity {
         }
         switch (mode) {
             case TagMo.ACTION_WRITE_TAG_RAW:
+                bankNumberPicker.setMaxValue(prefs.eliteBankCount().get());
                 setTitle(R.string.write_raw);
                 break;
             case TagMo.ACTION_WRITE_TAG_FULL:
+                bankNumberPicker.setMaxValue(prefs.eliteBankCount().get());
                 setTitle(R.string.write_auto);
                 break;
             case TagMo.ACTION_WRITE_TAG_DATA:
+                bankNumberPicker.setMaxValue(prefs.eliteBankCount().get());
                 setTitle(R.string.restore_tag);
                 break;
             case TagMo.ACTION_DELETE_BANK:
                 setTitle(R.string.delete_bank);
                 break;
             case TagMo.ACTION_SCAN_UNIT:
+            case TagMo.ACTION_CONFIGURE:
                 bankNumberPicker.setVisibility(View.GONE);
             case TagMo.ACTION_ACTIVATE_BANK:
-            case TagMo.ACTION_CONFIGURE:
                 bankTextView.setVisibility(View.GONE);
                 bankNumberPicker.setEnabled(false);
-                setTitle(R.string.scan_amiiqo);
+                setTitle(R.string.scan_elite);
                 break;
             case TagMo.ACTION_SCAN_TAG:
                 setTitle(R.string.scan_tag);
@@ -153,8 +156,8 @@ public class NfcActivity extends AppCompatActivity {
 
         if (intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             showMessage(getString(R.string.tag_detected));
-            if (prefs.enableAmiiqoSupport().get()) {
-                this.onAmiiqoDiscovered(intent);
+            if (prefs.enableEliteSupport().get()) {
+                this.onEliteDiscovered(intent);
             } else {
                 this.onTagDiscovered(intent);
             }
@@ -259,7 +262,7 @@ public class NfcActivity extends AppCompatActivity {
     }
 
     @Background
-    void onAmiiqoDiscovered(Intent intent) {
+    void onEliteDiscovered(Intent intent) {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
         try {
@@ -271,15 +274,20 @@ public class NfcActivity extends AppCompatActivity {
             }
             mifare.connect();
             int selection = 0;
-            int bank_count = TagWriter.getAmiiqoBankCount(mifare);
+            int bank_count = TagWriter.getBankCount(mifare);
+            if (mode.equals(TagMo.ACTION_CONFIGURE)) {
+                if (write_count < selection)
+                    throw new Exception(getString(R.string.fail_active_oob));
+            }
+
             if (!mode.equals(TagMo.ACTION_CONFIGURE) && !mode.equals(TagMo.ACTION_SCAN_UNIT)) {
-                selection = TagWriter.getIndexFromDisplay(bankNumberPicker.getValue());
+                selection = TagWriter.getPositionFromValue(bankNumberPicker.getValue());
                 if (selection > bank_count) {
-                    throw new Exception(getString(R.string.fail_amiiqo_outofbounds));
+                    throw new Exception(getString(R.string.fail_bank_oob));
                 }
                 if (!mode.equals(TagMo.ACTION_DELETE_BANK)) {
-                    mifare.activateAmiiqoBank(selection);
-                    prefs.amiiqoActiveBank().put(bankNumberPicker.getValue());
+                    mifare.activateBank(selection);
+                    prefs.eliteActiveBank().put(bankNumberPicker.getValue());
                 }
             }
             setResult(Activity.RESULT_CANCELED);
@@ -301,8 +309,18 @@ public class NfcActivity extends AppCompatActivity {
                         if (data == null) {
                             throw new Exception(getString(R.string.no_data));
                         }
-                        TagWriter.writeAmiiqoAuto(mifare, data, selection);
-                        setResult(Activity.RESULT_OK);
+                        TagWriter.writeEliteAuto(mifare, data, selection);
+                        byte[] bank_details = TagWriter.getBankDetails(mifare);
+                        Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        write.putExtra(TagMo.EXTRA_SIGNATURE,
+                                TagWriter.getEliteSignature(mifare));
+                        write.putExtra(TagMo.EXTRA_BANK_COUNT, bank_details[1] & 0xFF);
+                        write.putExtra(TagMo.EXTRA_ACTIVE_BANK,
+                                TagWriter.getValueFromPosition(bank_details[0] & 0xFF));
+                        write.putExtra(TagMo.EXTRA_UNIT_DATA,
+                                TagWriter.readFromTags(mifare, bank_details[1]));
+                        write.putExtra(TagMo.EXTRA_TAG_DATA, data);
+                        setResult(Activity.RESULT_OK, write);
                         showToast(getString(R.string.done));
                         break;
                     case TagMo.ACTION_WRITE_TAG_DATA:
@@ -317,7 +335,7 @@ public class NfcActivity extends AppCompatActivity {
                         showToast(getString(R.string.done));
                         break;
                     case TagMo.ACTION_DELETE_BANK:
-                        TagWriter.amiiqoDeleteTag(mifare, selection);
+                        TagWriter.deleteBank(mifare, selection);
                         Intent delete = new Intent(TagMo.ACTION_NFC_SCANNED);
                         delete.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
                         delete.putExtra(TagMo.EXTRA_UNIT_DATA,
@@ -328,7 +346,7 @@ public class NfcActivity extends AppCompatActivity {
                     case TagMo.ACTION_ACTIVATE_BANK:
                         Intent active = new Intent(TagMo.ACTION_NFC_SCANNED);
                         active.putExtra(TagMo.EXTRA_ACTIVE_BANK,
-                                TagWriter.getAmiiqoActiveBank(mifare));
+                                TagWriter.getActiveBank(mifare));
                         setResult(Activity.RESULT_OK, active);
                         break;
                     case TagMo.ACTION_SCAN_TAG:
@@ -338,7 +356,7 @@ public class NfcActivity extends AppCompatActivity {
                         setResult(Activity.RESULT_OK, result);
                         break;
                     case TagMo.ACTION_CONFIGURE:
-                        mifare.setAmiiqoBankCount(write_count);
+                        mifare.setBankCount(write_count);
                         ArrayList<String> list = TagWriter.readFromTags(mifare, write_count);
                         Intent configure = new Intent(TagMo.ACTION_NFC_SCANNED);
                         configure.putExtra(TagMo.EXTRA_BANK_COUNT, write_count);
@@ -346,18 +364,18 @@ public class NfcActivity extends AppCompatActivity {
                         setResult(Activity.RESULT_OK, configure);
                         break;
                     case TagMo.ACTION_SCAN_UNIT:
-                        String signature = TagWriter.getAmiiqoSignature(mifare);
-                        byte[] bank_details = TagWriter.getAmiiqoBankDetails(mifare);
-                        ArrayList<String> tags = TagWriter.readFromTags(mifare, bank_details[1]);
-                        if (TagWriter.needsFirmwareUpdate(mifare)) {
+                        byte[] unit_details = TagWriter.getBankDetails(mifare);
+                        ArrayList<String> tags = TagWriter.readFromTags(mifare, unit_details[1]);
+                        if (TagWriter.needsFirmware(mifare)) {
                             if (TagWriter.flashFirmware(mifare))
                                 showToast(getString(R.string.firmware_update));
                         }
                         Intent results = new Intent(TagMo.ACTION_NFC_SCANNED);
-                        results.putExtra(TagMo.EXTRA_SIGNATURE, signature);
-                        results.putExtra(TagMo.EXTRA_BANK_COUNT, bank_details[1] & 0xFF);
+                        results.putExtra(TagMo.EXTRA_SIGNATURE,
+                                TagWriter.getEliteSignature(mifare));
+                        results.putExtra(TagMo.EXTRA_BANK_COUNT, unit_details[1] & 0xFF);
                         results.putExtra(TagMo.EXTRA_ACTIVE_BANK,
-                                TagWriter.getDisplayFromIndex(bank_details[0] & 0xFF));
+                                TagWriter.getValueFromPosition(unit_details[0] & 0xFF));
                         results.putExtra(TagMo.EXTRA_UNIT_DATA, tags);
                         setResult(Activity.RESULT_OK, results);
                         break;

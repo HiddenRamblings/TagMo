@@ -88,7 +88,7 @@ public class AmiiboActivity extends AppCompatActivity {
     byte[] tagData;
 
     AmiiboManager amiiboManager = null;
-    int bank_number = -1;
+    int active_bank = -1;
 
     @InstanceState
     boolean ignoreTagTd;
@@ -122,8 +122,8 @@ public class AmiiboActivity extends AppCompatActivity {
         });
 
         if (getIntent().hasExtra(TagMo.EXTRA_ACTIVE_BANK)) {
-            bank_number = getIntent().getIntExtra(
-                    TagMo.EXTRA_ACTIVE_BANK, prefs.amiiqoActiveBank().get());
+            active_bank = getIntent().getIntExtra(
+                    TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
         }
 
         loadAmiiboManager();
@@ -262,6 +262,35 @@ public class AmiiboActivity extends AppCompatActivity {
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
+        if (prefs.enableEliteSupport().get()) {
+            String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
+            int active_bank = result.getData().getIntExtra(
+                    TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+            int bank_count = result.getData().getIntExtra(
+                    TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
+
+            prefs.eliteSignature().put(signature);
+            prefs.eliteActiveBank().put(active_bank);
+            prefs.eliteBankCount().put(bank_count);
+
+            Intent eliteIntent = new Intent(this, EliteActivity_.class);
+            eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
+            eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+            eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+            eliteIntent.putExtra(TagMo.EXTRA_UNIT_DATA,
+                    result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
+            startActivity(eliteIntent);
+
+            finish(); // Relaunch activity to bring view to front
+
+            Intent amiiboIntent = new Intent(this, AmiiboActivity_.class);
+            amiiboIntent.putExtra(TagMo.BYTE_TAG_DATA, tagData);
+            if (active_bank != -1)
+                amiiboIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+            amiiboIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(amiiboIntent);
+        }
+
         this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         this.runOnUiThread(this::updateAmiiboView);
     });
@@ -269,8 +298,8 @@ public class AmiiboActivity extends AppCompatActivity {
     void writeTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
-        if (bank_number != -1)
-            intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, bank_number);
+        if (active_bank != -1)
+            intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         onNFCResult.launch(intent);
     }
@@ -278,8 +307,8 @@ public class AmiiboActivity extends AppCompatActivity {
     void restoreTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
-        if (bank_number != -1)
-            intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, bank_number);
+        if (active_bank != -1)
+            intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         intent.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
         onNFCResult.launch(intent);

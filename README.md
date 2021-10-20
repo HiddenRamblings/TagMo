@@ -30,7 +30,7 @@ TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC
 * Only NTAG215 tags can be used to clone Amiibos. no other type (eg: NTAG216/NTAG213) are supported.
 * You will require the key files used in the Amiibo encryption. Please don't PM me about them as I am unable to share them. The thread linked above may help you find them.
 * Once you write an NFC tag, it is effectively permanent.  If we rewrite the NFC tag, it will no longer be recognized as an Amiibo.
-* **This means that this method can not replace Amiiqo or other Amiibo emulator devices**
+* **This means that this method can not replace N2 Elite or other Amiibo emulator devices**
 * Only android phones are supported.
 
 # Requirements:

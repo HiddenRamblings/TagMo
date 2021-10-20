@@ -33,17 +33,17 @@ public interface Preferences {
     @DefaultBoolean(keyRes = R.string.settings_enable_power_tag_support, value = false)
     boolean enablePowerTagSupport();
 
-    @DefaultBoolean(keyRes = R.string.settings_enable_amiiqo_support, value = false)
-    boolean enableAmiiqoSupport();
+    @DefaultBoolean(keyRes = R.string.settings_enable_elite_support, value = false)
+    boolean enableEliteSupport();
 
-    @DefaultString(keyRes = R.string.settings_amiiqo_signature, value = "")
-    String amiiqoSignature();
+    @DefaultString(keyRes = R.string.settings_elite_signature, value = "")
+    String eliteSignature();
 
-    @DefaultInt(keyRes = R.string.settings_amiiqo_bank_count, value = 1)
-    int amiiqoBankCount();
+    @DefaultInt(keyRes = R.string.settings_elite_bank_count, value = 1)
+    int eliteBankCount();
 
     @DefaultInt(0)
-    int amiiqoActiveBank();
+    int eliteActiveBank();
 
     @DefaultInt(BrowserActivity.VIEW_TYPE_COMPACT)
     int browserAmiiboView();

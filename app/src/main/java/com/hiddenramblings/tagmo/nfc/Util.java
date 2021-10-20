@@ -146,10 +146,10 @@ public class Util {
         return AmiiboManager.parse(TagMo.getContext().getAssets().open(AMIIBO_DATABASE_FILE));
     }
 
-    public static AmiiboManager loadAmiiboManager(Context context) throws IOException, JSONException, ParseException {
+    public static AmiiboManager loadAmiiboManager() throws IOException, JSONException, ParseException {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
+            amiiboManager = AmiiboManager.parse(TagMo.getContext().openFileInput(AMIIBO_DATABASE_FILE));
         } catch (IOException | JSONException | ParseException e) {
             amiiboManager = null;
             TagMo.Error(TAG, R.string.amiibo_parse_error, e);
@@ -178,10 +178,11 @@ public class Util {
         }
     }
 
-    public static void saveLocalAmiiboInfo(Context context, AmiiboManager amiiboManager) throws IOException, JSONException {
+    public static void saveLocalAmiiboInfo(AmiiboManager amiiboManager) throws IOException, JSONException {
         OutputStream outputStream = null;
         try {
-            outputStream = context.openFileOutput(Util.AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
+            outputStream = TagMo.getContext().openFileOutput(
+                    Util.AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
             Util.saveAmiiboInfo(amiiboManager, outputStream);
         } finally {
             if (outputStream != null) {

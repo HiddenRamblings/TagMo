@@ -413,7 +413,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = Util.loadAmiiboManager(requireContext());
+            amiiboManager = Util.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -451,7 +451,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return;
 
         try {
-            Util.saveLocalAmiiboInfo(requireContext(), amiiboManager);
+            Util.saveLocalAmiiboInfo(amiiboManager);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -588,7 +588,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 if (Thread.currentThread().isInterrupted())
                     return;
 
-                Util.saveLocalAmiiboInfo(requireContext(), amiiboManager);
+                Util.saveLocalAmiiboInfo(amiiboManager);
                 setAmiiboManager(amiiboManager);
                 showSnackbar(getString(R.string.sync_amiibo_status,
                         getString(R.string.sync_complete)), Snackbar.LENGTH_SHORT);

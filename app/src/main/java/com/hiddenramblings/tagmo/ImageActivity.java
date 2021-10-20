@@ -125,7 +125,7 @@ public class ImageActivity extends AppCompatActivity {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = Util.loadAmiiboManager(this);
+            amiiboManager = Util.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
         }

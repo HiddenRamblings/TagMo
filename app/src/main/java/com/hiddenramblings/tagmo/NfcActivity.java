@@ -104,6 +104,9 @@ public class NfcActivity extends AppCompatActivity {
     void updateLayout() {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
+        if (getIntent().hasExtra(TagMo.EXTRA_BANK_NUMBER))
+            bankNumberPicker.setValue(getIntent().getIntExtra(
+                    TagMo.EXTRA_BANK_NUMBER, bankNumberPicker.getValue()));
         switch (mode) {
             case TagMo.ACTION_WRITE_TAG_RAW:
                 setTitle(R.string.write_raw);
@@ -123,12 +126,8 @@ public class NfcActivity extends AppCompatActivity {
                 setTitle(R.string.scan_amiiqo);
                 break;
             case TagMo.ACTION_SCAN_TAG:
-                if (getIntent().hasExtra(TagMo.EXTRA_BANK_NUMBER)) {
-                    bankNumberPicker.setValue(getIntent().getIntExtra(
-                            TagMo.EXTRA_BANK_NUMBER, bankNumberPicker.getValue()));
                     bankTextView.setVisibility(View.GONE);
                     bankNumberPicker.setVisibility(View.GONE);
-                }
                 setTitle(R.string.scan_tag);
                 break;
             default:

@@ -148,22 +148,22 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
                 if (amiiboManager != null) {
                     Amiibo amiibo1 = amiiboManager.amiibos.get(amiiboId1);
                     Amiibo amiibo2 = amiiboManager.amiibos.get(amiiboId2);
-                    if (amiibo1 == null && amiibo2 == null)
-                        value = 0;
-                    else if (amiibo1 == null)
-                        value = 1;
-                    else if (amiibo2 == null)
-                        value = -1;
-                    else if (sort == BrowserActivity.SORT_NAME) {
-                        value = compareAmiiboName(amiibo1, amiibo2);
-                    } else if (sort == BrowserActivity.SORT_AMIIBO_SERIES) {
-                        value = compareAmiiboSeries(amiibo1, amiibo2);
-                    } else if (sort == BrowserActivity.SORT_AMIIBO_TYPE) {
-                        value = compareAmiiboType(amiibo1, amiibo2);
-                    } else if (sort == BrowserActivity.SORT_GAME_SERIES) {
-                        value = compareGameSeries(amiibo1, amiibo2);
-                    } else if (sort == BrowserActivity.SORT_CHARACTER) {
-                        value = compareCharacter(amiibo1, amiibo2);
+                    if (amiibo1 != null || amiibo2 != null) {
+                        if (amiibo1 == null)
+                            value = 1;
+                        else if (amiibo2 == null)
+                            value = -1;
+                        else if (sort == BrowserActivity.SORT_NAME) {
+                            value = compareAmiiboName(amiibo1, amiibo2);
+                        } else if (sort == BrowserActivity.SORT_AMIIBO_SERIES) {
+                            value = compareAmiiboSeries(amiibo1, amiibo2);
+                        } else if (sort == BrowserActivity.SORT_AMIIBO_TYPE) {
+                            value = compareAmiiboType(amiibo1, amiibo2);
+                        } else if (sort == BrowserActivity.SORT_GAME_SERIES) {
+                            value = compareGameSeries(amiibo1, amiibo2);
+                        } else if (sort == BrowserActivity.SORT_CHARACTER) {
+                            value = compareCharacter(amiibo1, amiibo2);
+                        }
                     }
                     if (value == 0 && amiibo1 != null)
                         value = amiibo1.compareTo(amiibo2);
@@ -282,7 +282,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             String query = constraint != null ? constraint.toString() : "";
             settings.setQuery(query);
 
-            ArrayList<AmiiboFile> data = new ArrayList<>();
+            data.clear();
             if (settings.getAmiiboFiles() != null) {
                 data.addAll(settings.getAmiiboFiles());
             }

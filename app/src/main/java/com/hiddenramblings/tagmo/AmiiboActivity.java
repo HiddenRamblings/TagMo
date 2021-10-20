@@ -85,6 +85,7 @@ public class AmiiboActivity extends AppCompatActivity {
     byte[] tagData;
 
     AmiiboManager amiiboManager = null;
+    int bank_number = -1;
 
     @Pref
     Preferences_ prefs;
@@ -119,6 +120,10 @@ public class AmiiboActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        if (getIntent().hasExtra(TagMo.EXTRA_BANK_NUMBER)) {
+            bank_number = getIntent().getIntExtra(TagMo.EXTRA_BANK_NUMBER, bank_number);
+        }
 
         loadAmiiboManager();
         updateAmiiboView();
@@ -263,6 +268,8 @@ public class AmiiboActivity extends AppCompatActivity {
     void writeTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
+        if (bank_number != -1)
+            intent.putExtra(TagMo.EXTRA_BANK_NUMBER, bank_number);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         onNFCResult.launch(intent);
     }
@@ -270,6 +277,8 @@ public class AmiiboActivity extends AppCompatActivity {
     void restoreTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
+        if (bank_number != -1)
+            intent.putExtra(TagMo.EXTRA_BANK_NUMBER, bank_number);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         intent.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
         onNFCResult.launch(intent);

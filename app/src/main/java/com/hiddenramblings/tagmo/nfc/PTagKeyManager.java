@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo.nfc;
 
-import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Base64;
 

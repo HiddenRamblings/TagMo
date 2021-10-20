@@ -32,12 +32,12 @@
             android:summary="@string/power_tag_details"
             android:title="@string/enable_power_tag"/>
     </androidx.preference.PreferenceCategory>
-    <androidx.preference.PreferenceCategory android:title="@string/pref_title_amiiqo">
+    <androidx.preference.PreferenceCategory android:title="@string/pref_title_elite">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
-            android:key="@string/settings_enable_amiiqo_support"
-            android:summary="@string/amiiqo_details"
-            android:title="@string/enable_amiiqo"/>
+            android:key="@string/settings_enable_elite_support"
+            android:summary="@string/elite_details"
+            android:title="@string/enable_elite"/>
     </androidx.preference.PreferenceCategory>
     <androidx.preference.PreferenceCategory
         android:title="@string/amiibo_info">

@@ -84,7 +84,6 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -672,7 +671,7 @@ public class BrowserActivity extends AppCompatActivity implements
         startActivity(intent);
     });
 
-    ActivityResultLauncher<Intent> onAmiiqoActivity = registerForActivityResult(
+    ActivityResultLauncher<Intent> onEliteActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null)
             return;
@@ -682,28 +681,28 @@ public class BrowserActivity extends AppCompatActivity implements
 
         String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
         int active_bank = result.getData().getIntExtra(
-                TagMo.EXTRA_ACTIVE_BANK, prefs.amiiqoActiveBank().get());
+                TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
         int bank_count = result.getData().getIntExtra(
-                TagMo.EXTRA_BANK_COUNT, prefs.amiiqoBankCount().get());
+                TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
 
-        prefs.amiiqoSignature().put(signature);
-        prefs.amiiqoActiveBank().put(active_bank);
-        prefs.amiiqoBankCount().put(bank_count);
+        prefs.eliteSignature().put(signature);
+        prefs.eliteActiveBank().put(active_bank);
+        prefs.eliteBankCount().put(bank_count);
 
-        Intent amiiqoIntent = new Intent(this, AmiiqoActivity_.class);
-        amiiqoIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
-        amiiqoIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
-        amiiqoIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
-        amiiqoIntent.putExtra(TagMo.EXTRA_UNIT_DATA,
+        Intent eliteIntent = new Intent(this, EliteActivity_.class);
+        eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
+        eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+        eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+        eliteIntent.putExtra(TagMo.EXTRA_UNIT_DATA,
                 result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
-        amiiqoIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
-        startActivity(amiiqoIntent);
+        eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
+        startActivity(eliteIntent);
     });
 
     @Click(R.id.fab)
     public void onFabClicked() {
-        if (prefs.enableAmiiqoSupport().get()) {
-            onAmiiqoActivity.launch(new Intent(this,
+        if (prefs.enableEliteSupport().get()) {
+            onEliteActivity.launch(new Intent(this,
                     NfcActivity_.class).setAction(TagMo.ACTION_SCAN_UNIT));
         } else {
             onNFCActivity.launch(new Intent(this,
@@ -779,7 +778,7 @@ public class BrowserActivity extends AppCompatActivity implements
             PTagKeyManager.loadKeyTable();
         } catch (Exception e) {
             e.printStackTrace();
-            showToast(R.string.fail_powertag_keys, Toast.LENGTH_LONG);
+            showToast(R.string.fail_powertag_keys);
         }
     }
 
@@ -798,7 +797,7 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;
-            showToast(R.string.amiibo_info_parse_error, Toast.LENGTH_LONG);
+            showToast(R.string.amiibo_info_parse_error);
         }
         if (Thread.currentThread().isInterrupted())
             return;
@@ -1240,10 +1239,10 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         } catch (MalformedURLException mue) {
             mue.printStackTrace();
-            showToast(R.string.update_not_found, Toast.LENGTH_LONG);
+            showToast(R.string.update_not_found);
         } catch (IOException ioe) {
             ioe.printStackTrace();
-            showToast(R.string.update_not_found, Toast.LENGTH_LONG);
+            showToast(R.string.update_not_found);
         } catch (SecurityException se) {
             se.printStackTrace();
         }
@@ -1270,8 +1269,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @UiThread
-    public void showToast(int msgRes, int length) {
-        Toast.makeText(this, msgRes, length).show();
+    public void showToast(int msgRes) {
+        Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
     }
 
     public Snackbar buildSnackbar(String msg, int length) {

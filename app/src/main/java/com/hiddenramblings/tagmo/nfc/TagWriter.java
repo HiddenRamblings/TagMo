@@ -133,17 +133,17 @@ public class TagWriter {
         }
     }
 
-    public static byte[] writeAmiiqoAuto(NTAG215 tag, byte[] tagData, int active_bank) throws Exception {
-        if (doAmiiqoAuth(tag, tag.fastRead(0, 0))) {
+    public static byte[] writeEliteAuto(NTAG215 tag, byte[] tagData, int active_bank) throws Exception {
+        if (doEliteAuth(tag, tag.fastRead(0, 0))) {
             if (tag.amiiboFastWrite(0, active_bank, tagData)) {
                 byte[] result = new byte[8];
                 System.arraycopy(tagData, 84, result, 0, result.length);
                 return result;
             } else {
-                throw new Exception(TagMo.getStringRes(R.string.amiiqo_write_error));
+                throw new Exception(TagMo.getStringRes(R.string.elite_write_error));
             }
         } else {
-            throw new Exception(TagMo.getStringRes(R.string.amiiqo_auth_error));
+            throw new Exception(TagMo.getStringRes(R.string.elite_auth_error));
         }
     }
 
@@ -292,7 +292,7 @@ public class TagWriter {
         }
     }
 
-    private static boolean doAmiiqoAuth(NTAG215 tag, byte[] password) throws Exception {
+    private static boolean doEliteAuth(NTAG215 tag, byte[] password) throws Exception {
         if (password == null || password.length != 4) {
             return false;
         }
@@ -322,14 +322,14 @@ public class TagWriter {
                 tags.add(Util.bytesToHex(tagData));
                 i++;
             } catch (Exception e) {
-                TagMo.Debug(TAG, TagMo.getStringRes(R.string.fail_amiiqo_bank_parse));
+                TagMo.Debug(TAG, TagMo.getStringRes(R.string.fail_elite_bank_parse));
             }
         }
         return tags;
     }
 
-    public static byte[] amiiqoDeleteTag(NTAG215 tag, int active_bank)  throws Exception {
-        if (doAmiiqoAuth(tag, tag.fastRead(0, 0))) {
+    public static byte[] deleteBank(NTAG215 tag, int active_bank)  throws Exception {
+        if (doEliteAuth(tag, tag.fastRead(0, 0))) {
             byte[] tagData = Util.hexStringToByteArray(new String(
                     new char[1080]).replace("\u0000", "F"));
             if (tag.amiiboFastWrite(0, active_bank, tagData)) {
@@ -337,51 +337,49 @@ public class TagWriter {
                 System.arraycopy(tagData, 84, result, 0, result.length);
                 return result;
             } else {
-                throw new Exception(TagMo.getStringRes(R.string.amiiqo_write_error));
+                throw new Exception(TagMo.getStringRes(R.string.elite_write_error));
             }
         } else {
-            throw new Exception(TagMo.getStringRes(R.string.amiiqo_write_error));
+            throw new Exception(TagMo.getStringRes(R.string.elite_write_error));
         }
     }
 
-    public static int getIndexFromDisplay(int value) {
+    public static int getPositionFromValue(int value) {
         return value - 1;
     }
 
-    public static int getDisplayFromIndex(int value) {
+    public static int getValueFromPosition(int value) {
         return value + 1;
     }
 
-    public static byte[] getAmiiqoBankDetails(NTAG215 tag) {
+    public static byte[] getBankDetails(NTAG215 tag) {
         return tag.amiiboGetVersion();
     }
 
-    public static boolean needsFirmwareUpdate(NTAG215 tag) {
-        byte[] version = getAmiiqoBankDetails(tag);
+    public static boolean needsFirmware(NTAG215 tag) {
+        byte[] version = getBankDetails(tag);
         return !((version.length != 4 || version[3] == (byte) 0x03)
                 && !(version.length == 2 && version[0] == 100 && version[1] == 0));
     }
 
-    public static int getAmiiqoBankCount(NTAG215 tag) {
-        return getAmiiqoBankDetails(tag)[1] & 0xFF;
+    public static int getBankCount(NTAG215 tag) {
+        return getBankDetails(tag)[1] & 0xFF;
     }
 
-    public static int getAmiiqoActiveBank(NTAG215 tag) {
-        return getDisplayFromIndex(getAmiiqoBankDetails(tag)[0] & 0xFF);
+    public static int getActiveBank(NTAG215 tag) {
+        return getValueFromPosition(getBankDetails(tag)[0] & 0xFF);
     }
 
-    public static String getAmiiqoSignature(NTAG215 tag) {
-        byte[] signature = tag.readAmiiqoSignature();
+    public static String getEliteSignature(NTAG215 tag) {
+        byte[] signature = tag.readEliteSingature();
         if (signature != null)
-            return Util.bytesToHex(tag.readAmiiqoSignature()).substring(0, 22);
+            return Util.bytesToHex(tag.readEliteSingature()).substring(0, 22);
         return null;
     }
 
     public static boolean flashFirmware(NTAG215 tag) throws Exception {
         byte[] response = new byte[1];
-        int records_a = 0;
-        int records_r = 0;
-        response[0] = (byte) -1;
+        response[0] = (byte) 0xFFFF;
         tag.initFirmware();
         tag.getVersion();
         try {
@@ -415,9 +413,7 @@ public class TagWriter {
                                 break;
                             }
                         }
-                        if (done) {
-                            records_a++;
-                        } else {
+                        if (!done) {
                             throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 1));
                         }
                     }
@@ -435,7 +431,6 @@ public class TagWriter {
                             throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 3));
                         }
                     }
-                    records_r++;
                 } else if (!parts[0].equals("RESET") && parts[0].equals("LOGIN")) {
 
                 }
@@ -444,6 +439,24 @@ public class TagWriter {
             return true;
         } catch (IOException e) {
             throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 4));
+        }
+    }
+
+    public byte[] amiiboBackup(NTAG215 tag) throws Exception {
+        byte[] output = new byte[572];
+        try {
+            byte[] data = tag.fastRead(0, 134);
+            if (data == null) {
+                throw new Exception("Could not dump amiibo.");
+            }
+            System.arraycopy(data, 0, output, 0, 540);
+            data = tag.readSignature();
+            System.arraycopy(data, 0, output, 540, data.length);
+            return output;
+        } catch (IllegalStateException e) {
+            throw new Exception("Please wait for scanning to be completed before removing.");
+        } catch (NullPointerException e2) {
+            throw new Exception("Please try scanning again.");
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.hiddenramblings.tagmo.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -24,38 +24,41 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfc.TagUtil;
+import com.hiddenramblings.tagmo.nfc.Util;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
 
-public class AmiiqoContentAdapter extends RecyclerView.Adapter<AmiiqoContentAdapter.AmiiboVewHolder> {
+public class EliteWriterAdapter extends RecyclerView.Adapter<EliteWriterAdapter.AmiiboVewHolder> {
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
-    private final ArrayList<Amiibo> amiibos;
+    private final ArrayList<AmiiboFile> data = new ArrayList<>();
+    private final ArrayList<AmiiboFile> amiiboFiles;
 
-    public AmiiqoContentAdapter(BrowserSettings settings, OnAmiiboClickListener listener, ArrayList<Amiibo> amiibos) {
+    public EliteWriterAdapter(BrowserSettings settings, OnAmiiboClickListener listener, ArrayList<AmiiboFile> amiiboFiles) {
         this.settings = settings;
         this.listener = listener;
 
-        this.amiibos = amiibos;
+        this.amiiboFiles = amiiboFiles;
     }
 
     @Override
     public int getItemCount() {
-        return amiibos.size();
+        return amiiboFiles.size();
     }
 
     @Override
     public long getItemId(int i) {
-        return amiibos.get(i).id;
+        return amiiboFiles.get(i).getId();
     }
 
-    public Amiibo getItem(int i) {
-        return amiibos.get(i);
+    public AmiiboFile getItem(int i) {
+        return amiiboFiles.get(i);
     }
 
     @Override
@@ -96,7 +99,7 @@ public class AmiiqoContentAdapter extends RecyclerView.Adapter<AmiiqoContentAdap
         public final TextView txtPath;
         public final ImageView imageAmiibo;
 
-        Amiibo amiiboItem = null;
+        AmiiboFile amiiboFile = null;
 
         CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
@@ -129,16 +132,10 @@ public class AmiiqoContentAdapter extends RecyclerView.Adapter<AmiiqoContentAdap
             this.itemView.setOnClickListener(view -> {
                 if (AmiiboVewHolder.this.listener != null) {
                     AmiiboVewHolder.this.listener.onAmiiboClicked(
-                            amiiboItem, getAbsoluteAdapterPosition());
+                            amiiboFile, getAbsoluteAdapterPosition());
                 }
             });
-            this.itemView.setOnLongClickListener(v -> {
-                if (AmiiboVewHolder.this.listener != null) {
-                    AmiiboVewHolder.this.listener.onAmiiboLongClicked(
-                            amiiboItem, getAbsoluteAdapterPosition());
-                }
-                return true;
-            });
+
             this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
             this.txtTagId = itemView.findViewById(R.id.txtTagId);
@@ -152,15 +149,14 @@ public class AmiiqoContentAdapter extends RecyclerView.Adapter<AmiiqoContentAdap
                 this.imageAmiibo.setOnClickListener(view -> {
                     if (AmiiboVewHolder.this.listener != null) {
                         AmiiboVewHolder.this.listener.onAmiiboImageClicked(
-                                amiiboItem, getAbsoluteAdapterPosition());
+                                amiiboFile, getAbsoluteAdapterPosition());
                     }
                 });
             }
         }
 
-        @SuppressLint("SetTextI18n")
-        void bind(final Amiibo amiibo) {
-            this.amiiboItem = amiibo;
+        void bind(final AmiiboFile item) {
+            this.amiiboFile = item;
 
             String tagInfo = null;
             String amiiboHexId = "";
@@ -169,10 +165,17 @@ public class AmiiqoContentAdapter extends RecyclerView.Adapter<AmiiqoContentAdap
             String amiiboType = "";
             String gameSeries = "";
             // String character = "";
-            String amiiboImageUrl = null;
-            boolean isAmiibo = amiibo != null;
+            String amiiboImageUrl;
 
-            if (isAmiibo) {
+            long amiiboId = item.getId();
+            Amiibo amiibo = null;
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
+            if (amiiboManager != null) {
+                amiibo = amiiboManager.amiibos.get(amiiboId);
+                if (amiibo == null)
+                    amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
+            }
+            if (amiibo != null) {
                 amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
                 if (amiibo.name != null)
@@ -185,46 +188,45 @@ public class AmiiqoContentAdapter extends RecyclerView.Adapter<AmiiqoContentAdap
                     gameSeries = amiibo.getGameSeries().name;
                 // if (amiibo.getCharacter() != null)
                 //     gameSeries = amiibo.getCharacter().name;
+            } else {
+                tagInfo = "ID: " + TagUtil.amiiboIdToHex(amiiboId);
+                amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
             }
 
             String query = settings.getQuery().toLowerCase();
-            String position = String.valueOf(getAbsoluteAdapterPosition() + 1);
 
             if (tagInfo == null) {
                 this.txtError.setVisibility(View.GONE);
             } else {
                 setAmiiboInfoText(this.txtError, tagInfo, false);
             }
-            if (isAmiibo) {
-                setAmiiboInfoText(this.txtName, position + ": " + amiiboName, false);
-                setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query),
-                        tagInfo != null);
-                setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query),
-                        tagInfo != null);
-                setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query),
-                        tagInfo != null);
-                setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query),
-                        tagInfo != null);
-                // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query),
-                //         tagInfo != null);
+            setAmiiboInfoText(this.txtName, amiiboName, false);
+            setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query), tagInfo != null);
+            setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), tagInfo != null);
+            setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query), tagInfo != null);
+            setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query), tagInfo != null);
+            // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), tagInfo != null);
+            if (item.getFilePath() != null) {
+                this.itemView.setEnabled(true);
+                this.txtPath.setText(boldMatchingText(Util.friendlyPath(item.getFilePath()), query));
+                this.txtPath.setTextColor(this.txtPath.getResources().getColor(R.color.tag_text));
             } else {
-                this.txtName.setVisibility(View.VISIBLE);
-                this.txtName.setText(TagMo.getStringRes(R.string.blank_tag_number, position));
-                this.txtTagId.setVisibility(View.GONE);
-                this.txtAmiiboSeries.setVisibility(View.GONE);
-                this.txtAmiiboType.setVisibility(View.GONE);
-                this.txtGameSeries.setVisibility(View.GONE);
-                // this.txtCharacter.setVisibility(View.GONE);
+                this.itemView.setEnabled(false);
+                this.txtPath.setText("");
+                this.txtPath.setTextColor(Color.RED);
             }
+            this.txtPath.setVisibility(View.VISIBLE);
 
             if (this.imageAmiibo != null) {
                 this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(itemView).clear(target);
-                Glide.with(itemView)
-                        .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
-                        .asBitmap()
-                        .load(amiiboImageUrl != null ? amiiboImageUrl: R.mipmap.ic_launcher)
-                        .into(target);
+                if (amiiboImageUrl != null) {
+                    Glide.with(itemView)
+                            .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
+                            .asBitmap()
+                            .load(amiiboImageUrl)
+                            .into(target);
+                }
             }
         }
 
@@ -319,10 +321,8 @@ public class AmiiqoContentAdapter extends RecyclerView.Adapter<AmiiqoContentAdap
     }
 
     public interface OnAmiiboClickListener {
-        void onAmiiboClicked(Amiibo amiibo, int position);
+        void onAmiiboClicked(AmiiboFile amiiboFile, int position);
 
-        void onAmiiboLongClicked(Amiibo amiibo, int position);
-
-        void onAmiiboImageClicked(Amiibo amiibo, int position);
+        void onAmiiboImageClicked(AmiiboFile amiiboFile, int position);
     }
 }

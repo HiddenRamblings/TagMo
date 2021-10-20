@@ -24,21 +24,15 @@
             android:layout_below="@+id/chip_list"
             android:background="?android:attr/listDivider"/>
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_refresh"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/amiibos_list"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="40dp"
+            android:scrollbars="vertical"
             android:layout_alignParentBottom="true"
-            android:layout_below="@+id/divider">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/amiibos_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingBottom="40dp"
-                android:scrollbars="vertical"/>
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            android:layout_below="@+id/divider" />
     </RelativeLayout>
 
     <LinearLayout
@@ -92,6 +86,19 @@
                 android:src="@drawable/ic_expand_less_white_24dp"
                 android:contentDescription="@string/imageview_toggle" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/elite_bank_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="6dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            android:text="@string/not_found"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/write_all_banks"

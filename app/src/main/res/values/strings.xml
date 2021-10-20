@@ -148,7 +148,7 @@
     <string name="write_auto">Write to Tag (Auto)</string>
     <string name="restore_tag">Restore Tag</string>
     <string name="scan_tag">Scan Tag</string>
-    <string name="scan_amiiqo">Scan N2 Elite</string>
+    <string name="scan_elite">Scan N2 Elite</string>
     <string name="delete_bank">Delete Bank</string>
     <string name="backup_amiibo">Backup Amiibo</string>
     <string name="activate_bank">Activate Bank</string>
@@ -166,14 +166,14 @@
     <string name="pref_title_powertag">PowerTag</string>
     <string name="enable_power_tag">Enable PowerTag support</string>
     <string name="power_tag_details">Support is currently in development.\nSee Github for limitations and use.</string>
-    <string name="pref_title_amiiqo">N2 Elite</string>
-    <string name="enable_amiiqo">Enable N2 Elite support</string>
-    <string name="amiiqo_details">Support is currently in development.\nSee Github for limitations and use.</string>
-    <string name="amiiqo_details_enabled">Support is currently in development.\nN2 Elite ID: %1$s</string>
-    <string name="amiiqo_sig">N2 Elite ID: %1$s</string>
+    <string name="pref_title_elite">N2 Elite</string>
+    <string name="enable_elite">Enable N2 Elite support</string>
+    <string name="elite_details">Support is currently in development.\nSee Github for limitations and use.</string>
+    <string name="elite_details_enabled">Support is currently in development.\nN2 Elite ID: %1$s</string>
+    <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="write_all_banks">Write All Banks to N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>
-    <string name="show_active_bank">Bank %1$d Active</string>
+    <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
     <string name="hardware_conflict">PowerTags / N2 Elite are incompatible!</string>
 
     <string name="amiibo_info">Amiibo Info</string>
@@ -275,11 +275,12 @@
     <string name="fail_mismatch_uid">Source UID does not match the target!</string>
     <string name="fail_invalid_size">Invalid read result size</string>
     <string name="fail_powertag_keys">Failed to load PowerTag keys</string>
-    <string name="fail_amiiqo_outofbounds">Selected bank exceeds count!</string>
-    <string name="fail_amiiqo_bank_parse">Failed to parse banks!</string>
+    <string name="fail_bank_oob">Selected bank exceeds count!</string>
+    <string name="fail_active_oob">Active bank beyond new count!</string>
+    <string name="fail_elite_bank_parse">Failed to parse banks!</string>
 
-    <string name="amiiqo_write_error">Error while writing data to N2 Elite</string>
-    <string name="amiiqo_auth_error">Error while authenticating N2 Elite</string>
+    <string name="elite_write_error">Error while writing data to N2 Elite</string>
+    <string name="elite_auth_error">Error while authenticating N2 Elite</string>
 
     <string name="tag_format_error">Tag is not an NTAG215</string>
     <string name="no_source_data">Cannot validate: no source data loaded to compare.</string>

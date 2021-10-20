@@ -84,6 +84,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -186,6 +187,12 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        File[] files = Util.getFilesDir().listFiles((dir, name) -> (name.endsWith("apk")));
+        if (files != null) {
+            for (File file : files) {
+                if (!file.isDirectory()) file.delete();
+            }
+        }
         new RequestCommit().setListener(result -> {
             try {
                 JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
@@ -1170,27 +1177,22 @@ public class BrowserActivity extends AppCompatActivity implements
                 PackageInstaller.SessionParams.MODE_FULL_INSTALL);
         int sessionId = installer.createSession(params);
         PackageInstaller.Session session = installer.openSession(sessionId);
-        try {
-            OutputStream sessionStream = session.openWrite("NAME", 0,
-                    DocumentFile.fromSingleUri(this, apkUri).length());
-            byte[] buf = new byte[8192];
-            int length;
-            while ((length = apkStream.read(buf)) > 0) {
-                sessionStream.write(buf, 0, length);
-            }
-            apkStream.close();
-            session.fsync(sessionStream);
-            sessionStream.close();
-            PendingIntent pi = PendingIntent.getBroadcast(
-                    this, 8675309,
-                    new Intent(this, InstallReceiver.class),
-                    PendingIntent.FLAG_UPDATE_CURRENT
-            );
-            session.commit(pi.getIntentSender());
-        } catch (Exception e) {
-            e.printStackTrace();
+        OutputStream sessionStream = session.openWrite("NAME", 0,
+                DocumentFile.fromSingleUri(this, apkUri).length());
+        byte[] buf = new byte[8192];
+        int length;
+        while ((length = apkStream.read(buf)) > 0) {
+            sessionStream.write(buf, 0, length);
         }
-        session.close();
+        session.fsync(sessionStream);
+        apkStream.close();
+        sessionStream.close();
+        PendingIntent pi = PendingIntent.getBroadcast(
+                this, 8675309,
+                new Intent(this, InstallReceiver.class),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        session.commit(pi.getIntentSender());
     }
 
     @Background

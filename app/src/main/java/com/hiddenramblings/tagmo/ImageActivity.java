@@ -45,7 +45,6 @@ import java.text.ParseException;
 @EActivity(R.layout.activity_image)
 @OptionsMenu({R.menu.image_menu})
 public class ImageActivity extends AppCompatActivity {
-    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
     public static final String INTENT_EXTRA_AMIIBO_ID = "AMIIBO_ID";
 
@@ -71,12 +70,11 @@ public class ImageActivity extends AppCompatActivity {
     TextView txtAmiiboSeries;
 
     BottomSheetBehavior<View> bottomSheetBehavior;
+    Amiibo amiibo;
+    AmiiboManager amiiboManager;
 
     @Extra(INTENT_EXTRA_AMIIBO_ID)
     long amiiboId;
-
-    Amiibo amiibo;
-    AmiiboManager amiiboManager;
 
     @AfterViews
     void afterViews() {
@@ -115,6 +113,8 @@ public class ImageActivity extends AppCompatActivity {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
     }
+
+    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);

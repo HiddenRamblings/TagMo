@@ -132,7 +132,13 @@ public class AmiiqoContentAdapter extends RecyclerView.Adapter<AmiiqoContentAdap
                             amiiboItem, getAbsoluteAdapterPosition());
                 }
             });
-
+            this.itemView.setOnLongClickListener(v -> {
+                if (AmiiboVewHolder.this.listener != null) {
+                    AmiiboVewHolder.this.listener.onAmiiboLongClicked(
+                            amiiboItem, getAbsoluteAdapterPosition());
+                }
+                return true;
+            });
             this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
             this.txtTagId = itemView.findViewById(R.id.txtTagId);
@@ -314,6 +320,8 @@ public class AmiiqoContentAdapter extends RecyclerView.Adapter<AmiiqoContentAdap
 
     public interface OnAmiiboClickListener {
         void onAmiiboClicked(Amiibo amiibo, int position);
+
+        void onAmiiboLongClicked(Amiibo amiibo, int position);
 
         void onAmiiboImageClicked(Amiibo amiibo, int position);
     }

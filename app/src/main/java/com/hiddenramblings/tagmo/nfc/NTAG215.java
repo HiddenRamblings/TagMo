@@ -8,6 +8,7 @@ import android.nfc.tech.TagTechnology;
 import java.io.IOException;
 
 public class NTAG215 implements TagTechnology {
+
     private final MifareUltralight m_mifare;
     private final NfcA m_nfcA;
     private final int maxTransceiveLength;
@@ -137,6 +138,16 @@ public class NTAG215 implements TagTechnology {
     /* byte 4: FW version?
     // see: http://wiki.yobi.be/wiki/N2_Elite#0x55:_N2_GET_INFO
     */
+    public byte[] amiiboGetVersion() {
+        try {
+            return transceive(new byte[]{
+                    NfcByte.N2_GET_VERSION
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public byte[] getAmiiqoBankCount() {
         byte[] req = new byte [1];
         byte[] resp;

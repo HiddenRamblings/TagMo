@@ -38,7 +38,7 @@ public class BankNumberPicker extends NumberPicker {
             this.setMinValue(attributes.getInt(
                     R.styleable.BankNumberPicker_minValue, 1));
             this.setMaxValue(attributes.getInt(
-                    R.styleable.BankNumberPicker_maxValue, 201));
+                    R.styleable.BankNumberPicker_maxValue, 200));
             this.setValue(attributes.getInt(
                     R.styleable.BankNumberPicker_startValue, 1));
         } finally {

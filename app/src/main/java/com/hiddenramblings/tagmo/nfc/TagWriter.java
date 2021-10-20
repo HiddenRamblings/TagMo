@@ -6,7 +6,6 @@ import com.hiddenramblings.tagmo.TagMo;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class TagWriter {
@@ -357,6 +356,12 @@ public class TagWriter {
         return tag.amiiboGetVersion();
     }
 
+    public static boolean needsFirmwareUpdate(NTAG215 tag) {
+        byte[] version = getAmiiqoBankDetails(tag);
+        return !((version.length != 4 || version[3] == (byte) 0x03)
+                && !(version.length == 2 && version[0] == 100 && version[1] == 0));
+    }
+
     public static int getAmiiqoBankCount(NTAG215 tag) {
         return getAmiiqoBankDetails(tag)[1] & 0xFF;
     }
@@ -372,12 +377,12 @@ public class TagWriter {
         return null;
     }
 
-    public boolean flashAPDUFile(NTAG215 tag) throws Exception {
+    public static boolean flashFirmware(NTAG215 tag) throws Exception {
         byte[] response = new byte[1];
         int records_a = 0;
         int records_r = 0;
         response[0] = (byte) -1;
-        tag.initAmiiqoAPDU();
+        tag.initFirmware();
         tag.getVersion();
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(

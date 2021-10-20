@@ -303,5 +303,6 @@
     <string name="sync">Sync</string>
     <string name="setup">Setup</string>
 
+    <string name="firmware_update">N2 Elite Firmware Updated!</string>
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 </resources>

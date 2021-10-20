@@ -70,15 +70,13 @@ import java.util.Collections;
 @SuppressLint("NonConstantResourceId")
 @EFragment
 public class SettingsFragment extends PreferenceFragmentCompat {
+
     public static final String IMAGE_NETWORK_NEVER = "NEVER";
     public static final String IMAGE_NETWORK_WIFI = "WIFI_ONLY";
     public static final String IMAGE_NETWORK_ALWAYS = "ALWAYS";
 
     private static final int RESULT_KEYS = 0;
     private static final int RESULT_IMPORT_AMIIBO_DATABASE = 1;
-    private static final String BACKGROUND_LOAD_KEYS = "load_keys";
-    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-    private static final String BACKGROUND_SYNC_AMIIBO_MANAGER = "sync_amiibo_manager";
 
     @Pref
     Preferences_ prefs;
@@ -349,6 +347,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         prefs.stableChannel().put(stableChannel.isChecked());
     }
 
+    private static final String BACKGROUND_LOAD_KEYS = "load_keys";
+
     void updateKeys(Uri data) {
         BackgroundExecutor.cancelAll(BACKGROUND_LOAD_KEYS, true);
         updateKeysTask(data);
@@ -401,6 +401,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         key.setSummary(keySummary);
     }
+
+    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
@@ -512,6 +514,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.amiiboSeriesStats.setSummary(getString(R.string.total, amiiboSeriesCount));
         this.amiiboTypeStats.setSummary(getString(R.string.total, amiiboTypeCount));
     }
+
+    private static final String BACKGROUND_SYNC_AMIIBO_MANAGER = "sync_amiibo_manager";
 
     void downloadAmiiboAPIDataCompat() {
         ProviderInstaller.installIfNeededAsync(requireContext(), new ProviderInstaller.ProviderInstallListener() {

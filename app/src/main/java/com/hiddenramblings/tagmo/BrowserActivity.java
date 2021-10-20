@@ -105,12 +105,6 @@ public class BrowserActivity extends AppCompatActivity implements
         BrowserAmiibosAdapter.OnAmiiboClickListener {
     private static final String TAG = BrowserActivity.class.getSimpleName();
 
-    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-    public static final String BACKGROUND_FOLDERS = "folders";
-    public static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
-    public static final String BACKGROUND_POWERTAG = "powertag";
-
-
     public static final int SORT_ID = 0x0;
     public static final int SORT_NAME = 0x1;
     public static final int SORT_AMIIBO_SERIES = 0x2;
@@ -122,6 +116,9 @@ public class BrowserActivity extends AppCompatActivity implements
     public static final int VIEW_TYPE_SIMPLE = 0;
     public static final int VIEW_TYPE_COMPACT = 1;
     public static final int VIEW_TYPE_LARGE = 2;
+
+    @Pref
+    Preferences_ prefs;
 
     @ViewById(R.id.chip_list)
     FlowLayout chipList;
@@ -183,8 +180,6 @@ public class BrowserActivity extends AppCompatActivity implements
     BottomSheetBehavior<View> bottomSheetBehavior;
     private String lastCommit;
 
-    @Pref
-    Preferences_ prefs;
     @InstanceState
     BrowserSettings settings;
 
@@ -263,70 +258,6 @@ public class BrowserActivity extends AppCompatActivity implements
         this.loadAmiiboManager();
         this.loadPTagKeyManager();
     }
-
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
-    private static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
-    private static final String[] PERMISSIONS_STORAGE = {
-            READ_EXTERNAL_STORAGE,
-            WRITE_EXTERNAL_STORAGE
-    };
-
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    void requestScopedStorage() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-        try {
-            intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
-        } catch (Exception e) {
-            intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-        }
-        onRequestScopedStorage.launch(intent);
-    }
-
-    void requestStoragePermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
-                validateKeys();
-            } else {
-                requestScopedStorage();
-            }
-        } else {
-            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
-            } else {
-                validateKeys();
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
-                    R.string.permission_required, Snackbar.LENGTH_LONG);
-            storageBar.setAction(R.string.allow_permission, v -> ActivityCompat.requestPermissions(
-                    BrowserActivity.this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE));
-            storageBar.show();
-        } else {
-            validateKeys();
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (Environment.isExternalStorageManager()) {
-            validateKeys();
-        } else {
-            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
-                    R.string.permission_required, Snackbar.LENGTH_LONG);
-            storageBar.setAction(R.string.allow_permission, v -> requestScopedStorage());
-            storageBar.show();
-        }
-    });
 
     private void validateKeys() {
         KeyManager keyManager = new KeyManager(this);
@@ -743,13 +674,16 @@ public class BrowserActivity extends AppCompatActivity implements
             return;
 
         String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
+        int active_bank = result.getData().getIntExtra(TagMo.EXTRA_ACTIVE_BANK, 1);
         int bank_count = result.getData().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
 
         prefs.amiiqoSignature().put(signature);
+        prefs.amiiqoActiveBank().put(active_bank);
         prefs.amiiqoBankCount().put(bank_count);
 
         Intent amiiqoIntent = new Intent(this, AmiiqoActivity_.class);
         amiiqoIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
+        amiiqoIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
         amiiqoIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
         amiiqoIntent.putExtra(TagMo.EXTRA_UNIT_DATA,
                 result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
@@ -821,6 +755,8 @@ public class BrowserActivity extends AppCompatActivity implements
         this.swipeRefreshLayout.setRefreshing(visible);
     }
 
+    public static final String BACKGROUND_POWERTAG = "powertag";
+
     void loadPTagKeyManager() {
         if (prefs.enablePowerTagSupport().get()) {
             BackgroundExecutor.cancelAll(BACKGROUND_POWERTAG, true);
@@ -837,6 +773,8 @@ public class BrowserActivity extends AppCompatActivity implements
             showToast(R.string.fail_powertag_keys, Toast.LENGTH_LONG);
         }
     }
+
+    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
@@ -862,6 +800,8 @@ public class BrowserActivity extends AppCompatActivity implements
             settings.notifyChanges();
         });
     }
+
+    public static final String BACKGROUND_FOLDERS = "folders";
 
     void loadFolders(File rootFolder) {
         BackgroundExecutor.cancelAll(BACKGROUND_FOLDERS, true);
@@ -895,6 +835,8 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         return folders;
     }
+
+    public static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
 
     void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
@@ -1154,6 +1096,70 @@ public class BrowserActivity extends AppCompatActivity implements
                             .show());
         }
     }
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
+    private static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
+    private static final String[] PERMISSIONS_STORAGE = {
+            READ_EXTERNAL_STORAGE,
+            WRITE_EXTERNAL_STORAGE
+    };
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    void requestScopedStorage() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+        try {
+            intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
+        } catch (Exception e) {
+            intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+        }
+        onRequestScopedStorage.launch(intent);
+    }
+
+    void requestStoragePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()) {
+                validateKeys();
+            } else {
+                requestScopedStorage();
+            }
+        } else {
+            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            } else {
+                validateKeys();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
+                    R.string.permission_required, Snackbar.LENGTH_LONG);
+            storageBar.setAction(R.string.allow_permission, v -> ActivityCompat.requestPermissions(
+                    BrowserActivity.this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE));
+            storageBar.show();
+        } else {
+            validateKeys();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (Environment.isExternalStorageManager()) {
+            validateKeys();
+        } else {
+            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
+                    R.string.permission_required, Snackbar.LENGTH_LONG);
+            storageBar.setAction(R.string.allow_permission, v -> requestScopedStorage());
+            storageBar.show();
+        }
+    });
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     void installUpdate(Uri apkUri) throws IOException {

@@ -149,6 +149,8 @@
     <string name="restore_tag">Restore Tag</string>
     <string name="scan_tag">Scan Tag</string>
     <string name="scan_amiiqo">Scan N2 Elite</string>
+    <string name="delete_bank">Delete Bank</string>
+    <string name="backup_amiibo">Backup Amiibo</string>
 
     <string name="permission_required">Storage permission required!</string>
     <string name="allow_permission">Allow</string>
@@ -170,6 +172,7 @@
     <string name="amiiqo_sig">N2 Elite ID: %1$s</string>
     <string name="write_all_banks">Write All Banks to N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>
+    <string name="show_active_bank">Bank %1$d Active</string>
     <string name="hardware_conflict">PowerTags / N2 Elite are incompatible!</string>
 
     <string name="amiibo_info">Amiibo Info</string>
@@ -243,7 +246,7 @@
     <string name="invalid_file_size">Invalid file size. Expected %1$s</string>
     <string name="invalid_app_data">Invalid app data</string>
 
-    <string name="min_max_error">Must be between %1d and %2d</string>
+    <string name="min_max_error">Must be between %1$d and %2$d</string>
 
     <string name="amiibo_parse_error">Amiibo parse error</string>
     <string name="powertag_key_error">PowerTag keys not loaded</string>
@@ -274,7 +277,7 @@
     <string name="fail_amiiqo_outofbounds">Selected bank exceeds count!</string>
     <string name="fail_amiiqo_bank_parse">Failed to parse banks!</string>
 
-    <string name="amiiqo_write_error">Error while writing Amiibo to N2 Elite</string>
+    <string name="amiiqo_write_error">Error while writing data to N2 Elite</string>
     <string name="amiiqo_auth_error">Error while authenticating N2 Elite</string>
 
     <string name="tag_format_error">Tag is not an NTAG215</string>
@@ -284,6 +287,7 @@
 
     <string name="bank_select_details">Set Bank Number</string>
     <string name="bank_count_details">Set Bank Count</string>
+    <string name="feature_unavailable">Coming Soon!</string>
 
     <string name="read_failed">Read failed</string>
     <string name="version_error">Version information error</string>

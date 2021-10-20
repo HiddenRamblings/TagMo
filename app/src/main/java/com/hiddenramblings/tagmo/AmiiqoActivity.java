@@ -9,10 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,6 +33,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.InstanceState;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.json.JSONException;
@@ -41,13 +44,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 @SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.amiiqo_content_layout)
+@EActivity(R.layout.amiiqo_content)
 public class AmiiqoActivity  extends AppCompatActivity implements
         AmiiqoContentAdapter.OnAmiiboClickListener {
 
     private static final String TAG = AmiiqoActivity.class.getSimpleName();
 
-    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+    @Pref
+    Preferences_ prefs;
 
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
@@ -66,8 +70,6 @@ public class AmiiqoActivity  extends AppCompatActivity implements
 
     BottomSheetBehavior<View> bottomSheetBehavior;
 
-    @Pref
-    Preferences_ prefs;
     @InstanceState
     BrowserSettings settings;
 
@@ -116,15 +118,15 @@ public class AmiiqoActivity  extends AppCompatActivity implements
             }
         });
 
-        String signature = getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE);
-        int bank_count = getIntent().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
-        ArrayList<String> tagData = getIntent().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA);
-        settings.setAmiiboFiles(getIntent().getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES));
-
-        hardwareInfo.setText(getString(R.string.amiiqo_sig, signature));
-        amiiqoBankCount.setValue(bank_count);
+        hardwareInfo.setText(getString(R.string.amiiqo_sig,
+                getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE)));
+        amiiqoBankCount.setValue(getIntent().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1));
         amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        updateAmiiqoList(tagData);
+        settings.setAmiiboFiles(getIntent().getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES));
+        updateAmiiqoList(getIntent().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
+
+        showToast(getString(R.string.show_active_bank, getIntent().getIntExtra(
+                TagMo.EXTRA_ACTIVE_BANK, 1) + 1), Toast.LENGTH_LONG);
     }
 
     private void updateAmiiqoList(ArrayList<String> tagData) {
@@ -146,7 +148,8 @@ public class AmiiqoActivity  extends AppCompatActivity implements
         amiibosView.setAdapter(new AmiiqoContentAdapter(settings, this, amiibos));
     }
 
-    ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null)
             return;
 
@@ -164,7 +167,8 @@ public class AmiiqoActivity  extends AppCompatActivity implements
         startActivity(intent);
     });
 
-    ActivityResultLauncher<Intent> onConfigureActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    ActivityResultLauncher<Intent> onConfigureActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
             return;
 
@@ -172,11 +176,24 @@ public class AmiiqoActivity  extends AppCompatActivity implements
             return;
 
         int bank_count = result.getData().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
-        ArrayList<String> tagDatas = result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA);
+        ArrayList<String> tagData = result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA);
 
         prefs.amiiqoBankCount().put(bank_count);
         amiiqoBankCount.setValue(bank_count);
-        updateAmiiqoList(tagDatas);
+        updateAmiiqoList(tagData);
+    });
+
+    ActivityResultLauncher<Intent> onDeleteActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
+            return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+            return;
+
+        ArrayList<String> tagData = result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA);
+
+        updateAmiiqoList(tagData);
     });
 
     @Click(R.id.toggle)
@@ -203,6 +220,25 @@ public class AmiiqoActivity  extends AppCompatActivity implements
     }
 
     @Override
+    public void onAmiiboLongClicked(Amiibo amiibo, int position) {
+        View view = getLayoutInflater().inflate(R.layout.amiiqo_extended, null);
+        AppCompatButton delete_button = view.findViewById(R.id.delete_bank);
+        delete_button.setOnClickListener(v -> {
+            Intent delete = new Intent(AmiiqoActivity.this, NfcActivity_.class);
+            delete.setAction(TagMo.ACTION_DELETE_BANK);
+            delete.putExtra(TagMo.EXTRA_ACTIVE_BANK, position + 1);
+            delete.putExtra(TagMo.EXTRA_BANK_COUNT, amiiqoBankCount.getValue());
+            onDeleteActivity.launch(delete);
+        });
+        AppCompatButton backup_button = view.findViewById(R.id.backup_amiibo);
+        backup_button.setOnClickListener(v ->
+                showToast(getString(R.string.feature_unavailable), Toast.LENGTH_LONG));
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setView(view).show();
+    }
+
+    @Override
     public void onAmiiboClicked(Amiibo amiibo, int position) {
         boolean isAvailable = false;
         ArrayList<AmiiboFile> files = settings.getAmiiboFiles();
@@ -221,7 +257,7 @@ public class AmiiqoActivity  extends AppCompatActivity implements
                 args.putByteArray(TagMo.BYTE_TAG_DATA, tagData);
 
                 Intent intent = new Intent(this, AmiiboActivity_.class);
-                intent.putExtra(TagMo.EXTRA_BANK_NUMBER, position + 1);
+                intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, position + 1);
                 intent.putExtras(args);
 
                 startActivity(intent);
@@ -232,7 +268,7 @@ public class AmiiqoActivity  extends AppCompatActivity implements
 
         if (!isAvailable && amiibo != null) {
             Intent amiiboIntent = new Intent(AmiiqoActivity.this, NfcActivity_.class);
-            amiiboIntent.putExtra(TagMo.EXTRA_BANK_NUMBER, position + 1);
+            amiiboIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, position + 1);
             amiiboIntent.setAction(TagMo.ACTION_SCAN_TAG);
             onNFCActivity.launch(amiiboIntent);
         }
@@ -249,5 +285,10 @@ public class AmiiqoActivity  extends AppCompatActivity implements
 
             this.startActivity(intent);
         }
+    }
+
+    @UiThread
+    public void showToast(String msg, int length) {
+        Toast.makeText(this, msg, length).show();
     }
 }

@@ -168,7 +168,8 @@
     <string name="amiiqo_details">Support is currently in development.\nSee Github for limitations and use.</string>
     <string name="amiiqo_details_enabled">Support is currently in development.\nN2 Elite ID: %1$s</string>
     <string name="amiiqo_sig">N2 Elite ID: %1$s</string>
-    <string name="write_amiiqo_bank_count">Write Bank Count to Hardware</string>
+    <string name="write_all_banks">Write All Banks to N2 Elite</string>
+    <string name="write_bank_count">Write Bank Count to N2 Elite</string>
     <string name="hardware_conflict">PowerTags / N2 Elite are incompatible!</string>
 
     <string name="amiibo_info">Amiibo Info</string>

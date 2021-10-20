@@ -128,7 +128,7 @@ public class AmiiqoContentAdapter extends RecyclerView.Adapter<AmiiqoContentAdap
             this.listener = listener;
             this.itemView.setOnClickListener(view -> {
                 if (AmiiboVewHolder.this.listener != null) {
-                    AmiiboVewHolder.this.listener.onAmiiboImageClicked(
+                    AmiiboVewHolder.this.listener.onAmiiboClicked(
                             amiiboItem, getAbsoluteAdapterPosition());
                 }
             });

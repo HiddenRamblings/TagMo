@@ -75,6 +75,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:gravity="center"
                 android:layout_weight="1"
                 android:singleLine="true"
                 android:ellipsize="middle"
@@ -91,6 +92,13 @@
                 android:contentDescription="@string/imageview_toggle" />
         </LinearLayout>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/write_all_banks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="36dp"
+            android:text="@string/write_all_banks" />
+
         <com.hiddenramblings.tagmo.BankNumberPicker
             android:id="@+id/bank_count_picker"
             android:layout_width="match_parent"
@@ -102,7 +110,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="36dp"
-            android:text="@string/write_amiiqo_bank_count" />
+            android:text="@string/write_bank_count" />
 
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

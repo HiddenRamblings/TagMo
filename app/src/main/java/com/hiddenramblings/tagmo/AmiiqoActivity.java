@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.AmiiqoContentAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.nfc.TagUtil;
 import com.hiddenramblings.tagmo.nfc.Util;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 
@@ -56,16 +59,17 @@ public class AmiiqoActivity  extends AppCompatActivity implements
     ImageView toggle;
     @ViewById(R.id.bank_count_picker)
     BankNumberPicker amiiqoBankCount;
+    @ViewById(R.id.write_all_banks)
+    AppCompatButton writeAllBanks;
     @ViewById(R.id.write_bank_count)
     AppCompatButton writeBankCount;
 
+    BottomSheetBehavior<View> bottomSheetBehavior;
 
     @Pref
     Preferences_ prefs;
     @InstanceState
     BrowserSettings settings;
-
-    BottomSheetBehavior<View> bottomSheetBehavior;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -115,6 +119,7 @@ public class AmiiqoActivity  extends AppCompatActivity implements
         String signature = getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE);
         int bank_count = getIntent().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
         ArrayList<String> tagData = getIntent().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA);
+        settings.setAmiiboFiles(getIntent().getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES));
 
         hardwareInfo.setText(getString(R.string.amiiqo_sig, signature));
         amiiqoBankCount.setValue(bank_count);
@@ -183,6 +188,11 @@ public class AmiiqoActivity  extends AppCompatActivity implements
         }
     }
 
+    @Click(R.id.write_all_banks)
+    void onWriteAllBanksClick() {
+
+    }
+
     @Click(R.id.write_bank_count)
     void onWriteBankCountClick() {
         Intent configure = new Intent(this, NfcActivity_.class);
@@ -194,7 +204,33 @@ public class AmiiqoActivity  extends AppCompatActivity implements
 
     @Override
     public void onAmiiboClicked(Amiibo amiibo, int position) {
-        if (amiibo != null) {
+        boolean isAvailable = false;
+        ArrayList<AmiiboFile> files = settings.getAmiiboFiles();
+        for (int x = 0; x < files.size(); x ++) {
+            if (files.get(x).getId() == amiibo.id) {
+                byte[] tagData;
+                try {
+                    tagData = TagUtil.readTag(getContentResolver().openInputStream(
+                            Uri.fromFile(files.get(x).getFilePath())));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
+
+                Bundle args = new Bundle();
+                args.putByteArray(TagMo.BYTE_TAG_DATA, tagData);
+
+                Intent intent = new Intent(this, AmiiboActivity_.class);
+                intent.putExtra(TagMo.EXTRA_BANK_NUMBER, position + 1);
+                intent.putExtras(args);
+
+                startActivity(intent);
+                isAvailable = true;
+                break;
+            }
+        }
+
+        if (!isAvailable && amiibo != null) {
             Intent amiiboIntent = new Intent(AmiiqoActivity.this, NfcActivity_.class);
             amiiboIntent.putExtra(TagMo.EXTRA_BANK_NUMBER, position + 1);
             amiiboIntent.setAction(TagMo.ACTION_SCAN_TAG);
@@ -205,10 +241,13 @@ public class AmiiqoActivity  extends AppCompatActivity implements
     @Override
     public void onAmiiboImageClicked(Amiibo amiibo, int position) {
         if (amiibo != null) {
-            Intent amiiboIntent = new Intent(AmiiqoActivity.this, NfcActivity_.class);
-            amiiboIntent.setAction(TagMo.ACTION_SCAN_TAG);
-            amiiboIntent.putExtra(TagMo.EXTRA_BANK_NUMBER, position + 1);
-            onNFCActivity.launch(amiiboIntent);
+            Bundle bundle = new Bundle();
+            bundle.putLong(ImageActivity.INTENT_EXTRA_AMIIBO_ID, amiibo.id);
+
+            Intent intent = new Intent(this, ImageActivity_.class);
+            intent.putExtras(bundle);
+
+            this.startActivity(intent);
         }
     }
 }

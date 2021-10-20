@@ -181,13 +181,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
     SearchView searchView;
     BottomSheetBehavior<View> bottomSheetBehavior;
+    private String lastCommit;
 
     @Pref
     Preferences_ prefs;
     @InstanceState
     BrowserSettings settings;
-
-    private String lastCommit;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -754,6 +753,7 @@ public class BrowserActivity extends AppCompatActivity implements
         amiiqoIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
         amiiqoIntent.putExtra(TagMo.EXTRA_UNIT_DATA,
                 result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
+        amiiqoIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
         startActivity(amiiqoIntent);
     });
 

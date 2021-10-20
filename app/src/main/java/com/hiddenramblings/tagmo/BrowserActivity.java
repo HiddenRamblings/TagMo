@@ -1240,8 +1240,10 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         } catch (MalformedURLException mue) {
             mue.printStackTrace();
+            showToast(R.string.update_not_found, Toast.LENGTH_LONG);
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            showToast(R.string.update_not_found, Toast.LENGTH_LONG);
         } catch (SecurityException se) {
             se.printStackTrace();
         }

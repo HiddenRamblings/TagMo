@@ -19,19 +19,6 @@ public class PTagKeyManager {
     public static final String POWERTAG_KEYTABLE_FILE = "keytable.json";
     private static HashMap<String, HashMap<String, byte[]>> keys;
 
-    @SuppressWarnings("unused")
-    public static void load(Context context) throws Exception {
-        if (keys != null)
-            return;
-        try (InputStream stream = context.getResources().openRawResource(R.raw.keytable)) {
-            byte[] data = new byte[stream.available()];
-            stream.read(data);
-
-            JSONObject obj = new JSONObject(new String(data));
-            loadJson(obj);
-        }
-    }
-
     public static void loadKeyTable(Context context) throws Exception {
         if (keys != null)
             return;

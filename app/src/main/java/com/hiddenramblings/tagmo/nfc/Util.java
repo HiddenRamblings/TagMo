@@ -143,7 +143,7 @@ public class Util {
     }
 
     public static AmiiboManager loadDefaultAmiiboManager(Context context) throws IOException, JSONException, ParseException {
-        return AmiiboManager.parse(context.getResources().openRawResource(R.raw.amiibo));
+        return AmiiboManager.parse(context.getAssets().open(AMIIBO_DATABASE_FILE));
     }
 
     public static AmiiboManager loadAmiiboManager(Context context) throws IOException, JSONException, ParseException {

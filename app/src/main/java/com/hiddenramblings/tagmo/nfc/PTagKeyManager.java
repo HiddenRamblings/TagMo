@@ -19,10 +19,10 @@ public class PTagKeyManager {
     public static final String POWERTAG_KEYTABLE_FILE = "keytable.json";
     private static HashMap<String, HashMap<String, byte[]>> keys;
 
-    public static void loadKeyTable(Context context) throws Exception {
+    public static void loadKeyTable() throws Exception {
         if (keys != null)
             return;
-        AssetManager assetManager = context.getAssets();
+        AssetManager assetManager = TagMo.getContext().getAssets();
         try (InputStream stream = assetManager.open(POWERTAG_KEYTABLE_FILE)) {
             byte[] data = new byte[stream.available()];
             stream.read(data);

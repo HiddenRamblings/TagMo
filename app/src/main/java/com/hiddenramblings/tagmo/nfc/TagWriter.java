@@ -345,17 +345,24 @@ public class TagWriter {
         }
     }
 
+    public static int getIndexFromDisplay(int value) {
+        return value - 1;
+    }
+
+    public static int getDisplayFromIndex(int value) {
+        return value + 1;
+    }
+
     public static byte[] getAmiiqoBankDetails(NTAG215 tag) {
         return tag.amiiboGetVersion();
     }
 
     public static int getAmiiqoBankCount(NTAG215 tag) {
-//        return ByteBuffer.wrap(tag.getAmiiqoBankCount()).getShort();
-        return tag.amiiboGetVersion()[1] & 0xFF;
+        return getAmiiqoBankDetails(tag)[1] & 0xFF;
     }
 
     public static int getAmiiqoActiveBank(NTAG215 tag) {
-        return tag.amiiboGetVersion()[0] & 0xFF;
+        return getDisplayFromIndex(getAmiiqoBankDetails(tag)[0] & 0xFF);
     }
 
     public static String getAmiiqoSignature(NTAG215 tag) {
@@ -365,7 +372,7 @@ public class TagWriter {
         return null;
     }
 
-    public String flashAPDUFile(NTAG215 tag, int resourceId) {
+    public boolean flashAPDUFile(NTAG215 tag) throws Exception {
         byte[] response = new byte[1];
         int records_a = 0;
         int records_r = 0;
@@ -374,7 +381,7 @@ public class TagWriter {
         tag.getVersion();
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(
-                    TagMo.getContext().getResources().openRawResource(resourceId)));
+                    TagMo.getContext().getResources().openRawResource(R.raw.firmware)));
             while (true) {
                 String strLine = br.readLine();
                 if (strLine == null) {
@@ -406,21 +413,21 @@ public class TagWriter {
                         if (done) {
                             records_a++;
                         } else {
-                            return "ERROR: Firmware update failed. Please try again! (1)";
+                            throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 1));
                         }
                     }
-                    return null;
+                    return false;
                 } else if (parts[0].equals("C-RPDU")) {
                     byte[] rpdu_buf = new byte[(parts.length - 1)];
                     if (response.length != parts.length - 3) {
-                        return "ERROR: Firmware update failed. Please try again! (2)";
+                        throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 2));
                     }
                     for (i = 1; i < parts.length; i++) {
                         rpdu_buf[i - 1] = Util.hex2byte(parts[i]);
                     }
                     for (i = 0; i < rpdu_buf.length - 2; i++) {
                         if (rpdu_buf[i] != response[i]) {
-                            return "ERROR: Firmware update failed. Please try again! (3)";
+                            throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 3));
                         }
                     }
                     records_r++;
@@ -429,9 +436,9 @@ public class TagWriter {
                 }
             }
             br.close();
-            return "Firmware update done!";
+            return true;
         } catch (IOException e) {
-            return "ERROR: Firmware update failed. Please try again! (4)";
+            throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 4));
         }
     }
 }

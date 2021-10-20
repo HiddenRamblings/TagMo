@@ -681,8 +681,10 @@ public class BrowserActivity extends AppCompatActivity implements
             return;
 
         String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
-        int active_bank = result.getData().getIntExtra(TagMo.EXTRA_ACTIVE_BANK, 1);
-        int bank_count = result.getData().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
+        int active_bank = result.getData().getIntExtra(
+                TagMo.EXTRA_ACTIVE_BANK, prefs.amiiqoActiveBank().get());
+        int bank_count = result.getData().getIntExtra(
+                TagMo.EXTRA_BANK_COUNT, prefs.amiiqoBankCount().get());
 
         prefs.amiiqoSignature().put(signature);
         prefs.amiiqoActiveBank().put(active_bank);

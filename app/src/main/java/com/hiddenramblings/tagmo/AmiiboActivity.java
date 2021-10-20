@@ -122,7 +122,8 @@ public class AmiiboActivity extends AppCompatActivity {
         });
 
         if (getIntent().hasExtra(TagMo.EXTRA_ACTIVE_BANK)) {
-            bank_number = getIntent().getIntExtra(TagMo.EXTRA_ACTIVE_BANK, bank_number);
+            bank_number = getIntent().getIntExtra(
+                    TagMo.EXTRA_ACTIVE_BANK, prefs.amiiqoActiveBank().get());
         }
 
         loadAmiiboManager();

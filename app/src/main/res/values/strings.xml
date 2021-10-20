@@ -151,6 +151,7 @@
     <string name="scan_amiiqo">Scan N2 Elite</string>
     <string name="delete_bank">Delete Bank</string>
     <string name="backup_amiibo">Backup Amiibo</string>
+    <string name="activate_bank">Activate Bank</string>
 
     <string name="permission_required">Storage permission required!</string>
     <string name="allow_permission">Allow</string>
@@ -301,4 +302,6 @@
     <string name="install">Install</string>
     <string name="sync">Sync</string>
     <string name="setup">Setup</string>
+
+    <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 </resources>

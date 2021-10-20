@@ -27,13 +27,13 @@ public class TagMo extends Application {
 
     public static final String ACTION_NFC_SCANNED = "com.hiddenramblings.tagmo.NFC_SCANNED";
     public static final String BYTE_TAG_DATA = "com.hiddenramblings.tagmo.BYTE_TAG_DATA";
-
     public static final String EXTRA_TAG_DATA = "com.hiddenramblings.tagmo.EXTRA_TAG_DATA";
     public static final String EXTRA_UNIT_DATA = "com.hiddenramblings.tagmo.EXTRA_UNIT_DATA";
     public static final String EXTRA_IGNORE_TAG_ID = "com.hiddenramblings.tagmo.EXTRA_IGNORE_TAG_ID";
     public static final String EXTRA_SIGNATURE = "com.hiddenramblings.tagmo.EXTRA_SIGNATURE";
     public static final String EXTRA_BANK_NUMBER = "com.hiddenramblings.tagmo.EXTRA_BANK_NUMBER";
     public static final String EXTRA_BANK_COUNT = "com.hiddenramblings.tagmo.EXTRA_BANK_COUNT";
+    public static final String EXTRA_AMIIBO_FILES = "com.hiddenramblings.tagmo.EXTRA_AMIIBO_FILES";
 
     @Pref
     Preferences_ prefs;

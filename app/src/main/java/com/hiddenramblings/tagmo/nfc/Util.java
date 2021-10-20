@@ -142,8 +142,8 @@ public class Util {
         }
     }
 
-    public static AmiiboManager loadDefaultAmiiboManager(Context context) throws IOException, JSONException, ParseException {
-        return AmiiboManager.parse(context.getAssets().open(AMIIBO_DATABASE_FILE));
+    public static AmiiboManager loadDefaultAmiiboManager() throws IOException, JSONException, ParseException {
+        return AmiiboManager.parse(TagMo.getContext().getAssets().open(AMIIBO_DATABASE_FILE));
     }
 
     public static AmiiboManager loadAmiiboManager(Context context) throws IOException, JSONException, ParseException {
@@ -155,7 +155,7 @@ public class Util {
             TagMo.Error(TAG, R.string.amiibo_parse_error, e);
         }
         if (amiiboManager == null) {
-            amiiboManager = loadDefaultAmiiboManager(context);
+            amiiboManager = loadDefaultAmiiboManager();
         }
 
         return amiiboManager;

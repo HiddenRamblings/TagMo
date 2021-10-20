@@ -10,11 +10,11 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class TagWriter {
+
     private static final String TAG = TagWriter.class.getSimpleName();
 
     public static void writeToTagRaw(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
         validate(mifare, tagData, validateNtag);
-
         validateBlankTag(mifare);
 
         try {
@@ -134,9 +134,9 @@ public class TagWriter {
         }
     }
 
-    public static byte[] writeAmiiqoAuto(NTAG215 mifare, byte[] tagData, int bank_number) throws Exception {
-        if (doAmiiqoAuth(mifare, mifare.fastRead(0, 0))) {
-            if (mifare.amiiboFastWrite(0, bank_number, tagData)) {
+    public static byte[] writeAmiiqoAuto(NTAG215 tag, byte[] tagData, int active_bank) throws Exception {
+        if (doAmiiqoAuth(tag, tag.fastRead(0, 0))) {
+            if (tag.amiiboFastWrite(0, active_bank, tagData)) {
                 byte[] result = new byte[8];
                 System.arraycopy(tagData, 84, result, 0, result.length);
                 return result;
@@ -314,7 +314,7 @@ public class TagWriter {
     public static ArrayList<String> readFromTags(NTAG215 tag, int numBanks) throws Exception {
         ArrayList<String> tags = new ArrayList<>();
         int i = 0;
-        while (i < (numBanks & 255)) {
+        while (i < (numBanks & 0xFF)) {
             try {
                 byte[] tagData = tag.amiiboFastRead(0x15, 0x16, i);
                 if (tagData == null || tagData.length != 8) {
@@ -329,8 +329,33 @@ public class TagWriter {
         return tags;
     }
 
+    public static byte[] amiiqoDeleteTag(NTAG215 tag, int active_bank)  throws Exception {
+        if (doAmiiqoAuth(tag, tag.fastRead(0, 0))) {
+            byte[] tagData = Util.hexStringToByteArray(new String(
+                    new char[1080]).replace("\u0000", "F"));
+            if (tag.amiiboFastWrite(0, active_bank, tagData)) {
+                byte[] result = new byte[8];
+                System.arraycopy(tagData, 84, result, 0, result.length);
+                return result;
+            } else {
+                throw new Exception(TagMo.getStringRes(R.string.amiiqo_write_error));
+            }
+        } else {
+            throw new Exception(TagMo.getStringRes(R.string.amiiqo_write_error));
+        }
+    }
+
+    public static byte[] getAmiiqoBankDetails(NTAG215 tag) {
+        return tag.amiiboGetVersion();
+    }
+
     public static int getAmiiqoBankCount(NTAG215 tag) {
-        return ByteBuffer.wrap(tag.getAmiiqoBankCount()).getShort();
+//        return ByteBuffer.wrap(tag.getAmiiqoBankCount()).getShort();
+        return tag.amiiboGetVersion()[1] & 0xFF;
+    }
+
+    public static int getAmiiqoActiveBank(NTAG215 tag) {
+        return tag.amiiboGetVersion()[0] & 0xFF;
     }
 
     public static String getAmiiqoSignature(NTAG215 tag) {
@@ -364,7 +389,7 @@ public class TagWriter {
                     for (i = 1; i < parts.length; i++) {
                         apdu_buf[i - 1] = Util.hex2byte(parts[i]);
                     }
-                    int sz = apdu_buf[4] & 255;
+                    int sz = apdu_buf[4] & 0xFF;
                     byte[] iso_cmd = new byte[sz];
                     if (apdu_buf[4] + 5 <= apdu_buf.length && apdu_buf[4] <= iso_cmd.length) {
                         for (i = 0; i < sz; i++) {

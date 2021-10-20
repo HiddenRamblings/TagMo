@@ -82,13 +82,6 @@ import java.util.Map;
 @EActivity(R.layout.activity_tag_data)
 @OptionsMenu(R.menu.image_menu)
 public class TagDataActivity extends AppCompatActivity {
-    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-
-    boolean ignoreAppNameSelected;
-
-    KeyManager keyManager;
-
-    AmiiboManager amiiboManager = null;
 
     @Pref
     Preferences_ prefs;
@@ -135,7 +128,9 @@ public class TagDataActivity extends AppCompatActivity {
 
     CountryCodesAdapter countryCodeAdapter;
     NothingSelectedSpinnerAdapter appIdAdapter;
-
+    boolean ignoreAppNameSelected;
+    KeyManager keyManager;
+    AmiiboManager amiiboManager = null;
     TagData tagData;
 
     @InstanceState
@@ -222,6 +217,8 @@ public class TagDataActivity extends AppCompatActivity {
             imageAmiibo.setVisibility(View.VISIBLE);
         }
     };
+
+    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);

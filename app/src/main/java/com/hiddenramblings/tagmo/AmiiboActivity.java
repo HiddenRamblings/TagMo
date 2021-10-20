@@ -60,6 +60,9 @@ public class AmiiboActivity extends AppCompatActivity {
 
     public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
+    @Pref
+    Preferences_ prefs;
+
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
     @ViewById(R.id.amiiboInfo)
@@ -86,9 +89,6 @@ public class AmiiboActivity extends AppCompatActivity {
 
     AmiiboManager amiiboManager = null;
     int bank_number = -1;
-
-    @Pref
-    Preferences_ prefs;
 
     @InstanceState
     boolean ignoreTagTd;
@@ -121,8 +121,8 @@ public class AmiiboActivity extends AppCompatActivity {
             return false;
         });
 
-        if (getIntent().hasExtra(TagMo.EXTRA_BANK_NUMBER)) {
-            bank_number = getIntent().getIntExtra(TagMo.EXTRA_BANK_NUMBER, bank_number);
+        if (getIntent().hasExtra(TagMo.EXTRA_ACTIVE_BANK)) {
+            bank_number = getIntent().getIntExtra(TagMo.EXTRA_ACTIVE_BANK, bank_number);
         }
 
         loadAmiiboManager();
@@ -269,7 +269,7 @@ public class AmiiboActivity extends AppCompatActivity {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
         if (bank_number != -1)
-            intent.putExtra(TagMo.EXTRA_BANK_NUMBER, bank_number);
+            intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, bank_number);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         onNFCResult.launch(intent);
     }
@@ -278,7 +278,7 @@ public class AmiiboActivity extends AppCompatActivity {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
         if (bank_number != -1)
-            intent.putExtra(TagMo.EXTRA_BANK_NUMBER, bank_number);
+            intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, bank_number);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         intent.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
         onNFCResult.launch(intent);

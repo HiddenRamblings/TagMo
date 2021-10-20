@@ -133,7 +133,7 @@ public class AmiiqoActivity  extends AppCompatActivity implements
     private void updateAmiiqoList(ArrayList<String> tagData) {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = Util.loadAmiiboManager(this);
+            amiiboManager = Util.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;

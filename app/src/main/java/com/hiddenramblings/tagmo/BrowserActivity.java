@@ -794,7 +794,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = Util.loadAmiiboManager(this);
+            amiiboManager = Util.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;

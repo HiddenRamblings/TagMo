@@ -229,7 +229,7 @@ public class TagDataActivity extends AppCompatActivity {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = Util.loadAmiiboManager(this);
+            amiiboManager = Util.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(getString(R.string.amiibo_info_parse_error));

@@ -27,9 +27,9 @@ import com.hiddenramblings.tagmo.adapter.EliteWriteBlankAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfc.TagUtil;
+import com.hiddenramblings.tagmo.nfc.TagUtils;
 import com.hiddenramblings.tagmo.nfc.TagWriter;
-import com.hiddenramblings.tagmo.nfc.Util;
+import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 
 import org.androidannotations.annotations.AfterViews;
@@ -90,7 +90,7 @@ public class EliteActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         this.settings = new BrowserSettings();
-        this.settings.setBrowserRootFolder(new File(Util.getSDCardDir(), prefs.browserRootFolder().get()));
+        this.settings.setBrowserRootFolder(new File(FileUtils.getSDCardDir(), prefs.browserRootFolder().get()));
         this.settings.setQuery(prefs.query().get());
         this.settings.setSort(prefs.sort().get());
         this.settings.setAmiiboSeriesFilter(prefs.filterAmiiboSeries().get());
@@ -147,7 +147,7 @@ public class EliteActivity extends AppCompatActivity implements
     private void updateEliteHardwareAdapter(ArrayList<String> tagData) {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = Util.loadAmiiboManager();
+            amiiboManager = FileUtils.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;
@@ -160,7 +160,7 @@ public class EliteActivity extends AppCompatActivity implements
         });
         ArrayList<Amiibo> amiibos = new ArrayList<>();
         for (int x = 0; x < tagData.size(); x++) {
-            Amiibo amiibo = amiiboManager.amiibos.get(Util.hex2long(tagData.get(x)));
+            Amiibo amiibo = amiiboManager.amiibos.get(TagUtils.hex2long(tagData.get(x)));
             if (amiibo != null) TagMo.Debug(TAG, amiibo.getName());
             amiibos.add(amiibo);
         }
@@ -171,7 +171,7 @@ public class EliteActivity extends AppCompatActivity implements
     private void writeAmiiboFile(AmiiboFile amiiboFile, int position) {
         Bundle args = new Bundle();
         try {
-            args.putByteArray(TagMo.EXTRA_TAG_DATA, TagUtil.readTag(
+            args.putByteArray(TagMo.EXTRA_TAG_DATA, TagUtils.readTag(
                     getContentResolver().openInputStream(Uri.fromFile(
                             amiiboFile.getFilePath()))));
         } catch (Exception e) {
@@ -355,9 +355,9 @@ public class EliteActivity extends AppCompatActivity implements
                 amiiboFiles.addAll(listAmiibos(file, true));
             } else {
                 try {
-                    byte[] data = TagUtil.readTag(new FileInputStream(file));
-                    TagUtil.validateTag(data);
-                    amiiboFiles.add(new AmiiboFile(file, TagUtil.amiiboIdFromTag(data)));
+                    byte[] data = TagUtils.readTag(new FileInputStream(file));
+                    TagUtils.validateTag(data);
+                    amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -410,7 +410,7 @@ public class EliteActivity extends AppCompatActivity implements
             if (amiiboFiles.get(x).getId() == amiibo.id) {
                 Bundle args = new Bundle();
                 try {
-                    args.putByteArray(TagMo.EXTRA_TAG_DATA, TagUtil.readTag(
+                    args.putByteArray(TagMo.EXTRA_TAG_DATA, TagUtils.readTag(
                             getContentResolver().openInputStream(Uri.fromFile(
                                     amiiboFiles.get(x).getFilePath()))));
                 } catch (Exception e) {

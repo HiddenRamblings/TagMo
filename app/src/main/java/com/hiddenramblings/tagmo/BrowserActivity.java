@@ -57,8 +57,8 @@ import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.RequestCommit;
 import com.hiddenramblings.tagmo.nfc.KeyManager;
 import com.hiddenramblings.tagmo.nfc.PTagKeyManager;
-import com.hiddenramblings.tagmo.nfc.TagUtil;
-import com.hiddenramblings.tagmo.nfc.Util;
+import com.hiddenramblings.tagmo.nfc.TagUtils;
+import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
@@ -187,7 +187,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        File[] files = Util.getFilesDir().listFiles((dir, name) ->
+        File[] files = FileUtils.getFilesDir().listFiles((dir, name) ->
                 name.toLowerCase(Locale.getDefault()).endsWith(".apk"));
         if (files != null) {
             for (File file : files) {
@@ -236,7 +236,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (this.settings == null) {
             this.settings = new BrowserSettings();
-            this.settings.setBrowserRootFolder(new File(Util.getSDCardDir(), prefs.browserRootFolder().get()));
+            this.settings.setBrowserRootFolder(new File(FileUtils.getSDCardDir(), prefs.browserRootFolder().get()));
             this.settings.setQuery(prefs.query().get());
             this.settings.setSort(prefs.sort().get());
             this.settings.setAmiiboSeriesFilter(prefs.filterAmiiboSeries().get());
@@ -248,7 +248,7 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.setRecursiveEnabled(prefs.recursiveFolders().get());
             this.settings.setShowMissingFiles(prefs.showMissingFiles().get());
         } else {
-            this.currentFolderView.setText(Util.friendlyPath(settings.getBrowserRootFolder()));
+            this.currentFolderView.setText(FileUtils.friendlyPath(settings.getBrowserRootFolder()));
             this.onFilterGameSeriesChanged();
             this.onFilterCharacterChanged();
             this.onFilterAmiiboSeriesChanged();
@@ -720,7 +720,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         byte[] tagData;
         try {
-            tagData = TagUtil.readTag(getContentResolver().openInputStream(
+            tagData = TagUtils.readTag(getContentResolver().openInputStream(
                     Uri.fromFile(amiiboFile.getFilePath())));
         } catch (Exception e) {
             e.printStackTrace();
@@ -796,7 +796,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = Util.loadAmiiboManager();
+            amiiboManager = FileUtils.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;
@@ -881,9 +881,9 @@ public class BrowserActivity extends AppCompatActivity implements
                 amiiboFiles.addAll(listAmiibos(file, true));
             } else {
                 try {
-                    byte[] data = TagUtil.readTag(new FileInputStream(file));
-                    TagUtil.validateTag(data);
-                    amiiboFiles.add(new AmiiboFile(file, TagUtil.amiiboIdFromTag(data)));
+                    byte[] data = TagUtils.readTag(new FileInputStream(file));
+                    TagUtils.validateTag(data);
+                    amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
                 } catch (Exception e) {
                     //
                 }
@@ -895,7 +895,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
         boolean folderChanged = false;
-        if (!Util.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
+        if (!FileUtils.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
             folderChanged = true;
         }
         if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
@@ -913,27 +913,27 @@ public class BrowserActivity extends AppCompatActivity implements
         if (newBrowserSettings.getSort() != oldBrowserSettings.getSort()) {
             onSortChanged();
         }
-        if (!Util.equals(newBrowserSettings.getGameSeriesFilter(), oldBrowserSettings.getGameSeriesFilter())) {
+        if (!FileUtils.equals(newBrowserSettings.getGameSeriesFilter(), oldBrowserSettings.getGameSeriesFilter())) {
             onFilterGameSeriesChanged();
         }
-        if (!Util.equals(newBrowserSettings.getCharacterFilter(), oldBrowserSettings.getCharacterFilter())) {
+        if (!FileUtils.equals(newBrowserSettings.getCharacterFilter(), oldBrowserSettings.getCharacterFilter())) {
             onFilterCharacterChanged();
         }
-        if (!Util.equals(newBrowserSettings.getAmiiboSeriesFilter(), oldBrowserSettings.getAmiiboSeriesFilter())) {
+        if (!FileUtils.equals(newBrowserSettings.getAmiiboSeriesFilter(), oldBrowserSettings.getAmiiboSeriesFilter())) {
             onFilterAmiiboSeriesChanged();
         }
-        if (!Util.equals(newBrowserSettings.getAmiiboTypeFilter(), oldBrowserSettings.getAmiiboTypeFilter())) {
+        if (!FileUtils.equals(newBrowserSettings.getAmiiboTypeFilter(), oldBrowserSettings.getAmiiboTypeFilter())) {
             onFilterAmiiboTypeChanged();
         }
         if (newBrowserSettings.getAmiiboView() != oldBrowserSettings.getAmiiboView()) {
             onViewChanged();
         }
-        if (!Util.equals(newBrowserSettings.getAmiiboFiles(), oldBrowserSettings.getAmiiboFiles())) {
+        if (!FileUtils.equals(newBrowserSettings.getAmiiboFiles(), oldBrowserSettings.getAmiiboFiles())) {
             onAmiiboFilesChanged();
         }
 
         this.prefs.edit()
-                .browserRootFolder().put(Util.friendlyPath(newBrowserSettings.getBrowserRootFolder()))
+                .browserRootFolder().put(FileUtils.friendlyPath(newBrowserSettings.getBrowserRootFolder()))
                 .query().put(newBrowserSettings.getQuery())
                 .sort().put(newBrowserSettings.getSort())
                 .filterGameSeries().put(newBrowserSettings.getGameSeriesFilter())
@@ -994,7 +994,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     void onRootFolderChanged() {
         File rootFolder = settings.getBrowserRootFolder();
-        this.currentFolderView.setText(Util.friendlyPath(rootFolder));
+        this.currentFolderView.setText(FileUtils.friendlyPath(rootFolder));
         this.loadAmiiboFiles(rootFolder, settings.isRecursiveEnabled());
         this.loadFolders(rootFolder);
     }
@@ -1084,8 +1084,8 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             String logFile = "tagmo_logcat.txt";
 
-            File file = new File(Util.getFilesDir().getAbsolutePath(), logFile);
-            Util.dumpLogcat(file.getAbsolutePath());
+            File file = new File(FileUtils.getFilesDir().getAbsolutePath(), logFile);
+            FileUtils.dumpLogcat(file.getAbsolutePath());
             try {
                 MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
             } catch (Exception e) {
@@ -1214,7 +1214,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background
     void downloadUpdate(String apkUrl) {
-        File apk = new File(Util.getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
+        File apk = new File(FileUtils.getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
         try {
             URL u = new URL(apkUrl);
             InputStream is = u.openStream();

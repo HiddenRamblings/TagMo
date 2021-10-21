@@ -90,7 +90,7 @@ public class KeyManager {
         if (rlen < KEY_FILE_SIZE)
             throw new Exception(TagMo.getStringRes(R.string.key_size_error));
 
-        String md5 = Util.md5(data);
+        String md5 = TagUtils.md5(data);
         if (FIXED_KEY_MD5.equals(md5)) {
             saveKeyFile(FIXED_KEY_FILE, data);
             this.fixedKey = loadKeyFromStorage(FIXED_KEY_FILE);

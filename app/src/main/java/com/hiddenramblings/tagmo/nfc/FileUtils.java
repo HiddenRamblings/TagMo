@@ -18,74 +18,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 
-public class Util {
-    private static final String TAG = Util.class.getSimpleName();
+public class FileUtils {
+    private static final String TAG = FileUtils.class.getSimpleName();
 
     public static final String AMIIBO_DATABASE_FILE = "amiibo.json";
-
-    public static String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02X", b));
-        }
-        return sb.toString();
-    }
-
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
-    }
-
-    public static long hex2long(String s) {
-        long result = 0;
-        for (int i = 0; i < s.length(); i++) {
-            result = (result << 4) + ((long) Character.digit(s.charAt(i), 16));
-        }
-        return result;
-    }
-
-    public static byte hex2byte(String hex) {
-        byte ret = (byte) 0;
-        byte hi = (byte) hex.charAt(0);
-        byte lo = (byte) hex.charAt(1);
-        if (hi >= NfcByte.CMD_READ && hi <= NfcByte.CMD_READ_CNT) {
-            ret = (byte) (((hi - 48) << 4) | 0);
-        } else if (hi >= (byte) 65 && hi <= NfcByte.N2_LOCK) {
-            ret = (byte) ((((hi - 65) + 10) << 4) | 0);
-        } else if (hi >= (byte) 97 && hi <= (byte) 102) {
-            ret = (byte) ((((hi - 97) + 10) << 4) | 0);
-        }
-        if (lo >= NfcByte.CMD_READ && lo <= NfcByte.CMD_READ_CNT) {
-            return (byte) ((lo - 48) | ret);
-        }
-        if (lo >= (byte) 65 && lo <= NfcByte.N2_LOCK) {
-            return (byte) (((lo - 65) + 10) | ret);
-        }
-        if (lo < (byte) 97 || lo > (byte) 102) {
-            return ret;
-        }
-        return (byte) (((lo - 97) + 10) | ret);
-    }
-
-    public static String md5(byte[] data) {
-        try {
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-            byte[] result = digest.digest(data);
-            return bytesToHex(result);
-        } catch (NoSuchAlgorithmException e) {
-            TagMo.Error(TAG, e.getMessage());
-        }
-        return null;
-    }
 
     public static void dumpLogcat(String fileName) throws Exception {
         final StringBuilder log = new StringBuilder();
@@ -143,16 +81,22 @@ public class Util {
     }
 
     public static AmiiboManager loadDefaultAmiiboManager() throws IOException, JSONException, ParseException {
-        return AmiiboManager.parse(TagMo.getContext().getAssets().open(AMIIBO_DATABASE_FILE));
+//        return AmiiboManager.parse(TagMo.getContext().getAssets().open(AMIIBO_DATABASE_FILE));
+        return AmiiboManager.parse(TagMo.getContext().getResources().openRawResource(R.raw.amiibo));
     }
 
     public static AmiiboManager loadAmiiboManager() throws IOException, JSONException, ParseException {
         AmiiboManager amiiboManager;
-        try {
-            amiiboManager = AmiiboManager.parse(TagMo.getContext().openFileInput(AMIIBO_DATABASE_FILE));
-        } catch (IOException | JSONException | ParseException e) {
+        if (new File(getFilesDir(), AMIIBO_DATABASE_FILE).exists()) {
+            try {
+                amiiboManager = AmiiboManager.parse(
+                        TagMo.getContext().openFileInput(AMIIBO_DATABASE_FILE));
+            } catch (IOException | JSONException | ParseException e) {
+                amiiboManager = null;
+                TagMo.Error(TAG, R.string.amiibo_parse_error, e);
+            }
+        } else {
             amiiboManager = null;
-            TagMo.Error(TAG, R.string.amiibo_parse_error, e);
         }
         if (amiiboManager == null) {
             amiiboManager = loadDefaultAmiiboManager();
@@ -182,8 +126,8 @@ public class Util {
         OutputStream outputStream = null;
         try {
             outputStream = TagMo.getContext().openFileOutput(
-                    Util.AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
-            Util.saveAmiiboInfo(amiiboManager, outputStream);
+                    FileUtils.AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
+            FileUtils.saveAmiiboInfo(amiiboManager, outputStream);
         } finally {
             if (outputStream != null) {
                 try {

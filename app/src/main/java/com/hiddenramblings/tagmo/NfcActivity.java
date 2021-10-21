@@ -332,11 +332,10 @@ public class NfcActivity extends AppCompatActivity {
                         delete.putExtra(TagMo.EXTRA_UNIT_DATA,
                                 TagWriter.readFromTags(mifare, bank_count));
                         setResult(Activity.RESULT_OK, delete);
-                        showToast(getString(R.string.done));
                         break;
                     case TagMo.ACTION_ACTIVATE_BANK:
                         mifare.activateBank(selection);
-                        prefs.eliteActiveBank().put(bankNumberPicker.getValue());
+                        prefs.eliteActiveBank().put(selection);
                         Intent active = new Intent(TagMo.ACTION_NFC_SCANNED);
                         active.putExtra(TagMo.EXTRA_ACTIVE_BANK,
                                 TagWriter.getActiveBank(mifare));

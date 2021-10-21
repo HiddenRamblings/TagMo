@@ -19,7 +19,7 @@ public class TagMo extends Application {
     public static final String ACTION_EDIT_COMPLETE = "com.hiddenramblings.tagmo.ACTION_EDIT_COMPLETE";
 
     public static final String ACTION_CONFIGURE = "com.hiddenramblings.tagmo.CONFIGURE";
-    public static final String ACTION_ACTIVATE_BANK = "com.hiddenramblings.tagmo.SET_ACTIVE";
+    public static final String ACTION_ACTIVATE_BANK = "com.hiddenramblings.tagmo.ACTIVATE_BANK";
     public static final String ACTION_SCAN_TAG = "com.hiddenramblings.tagmo.SCAN_TAG";
     public static final String ACTION_SCAN_UNIT = "com.hiddenramblings.tagmo.SCAN_UNIT";
     public static final String ACTION_WRITE_TAG_FULL = "com.hiddenramblings.tagmo.WRITE_TAG_FULL";

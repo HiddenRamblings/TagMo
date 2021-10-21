@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Calendar;
@@ -16,7 +18,69 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
-public class TagUtil {
+public class TagUtils {
+
+    private static final String TAG = TagUtils.class.getSimpleName();
+
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02X", b));
+        }
+        return sb.toString();
+    }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i + 1), 16));
+        }
+        return data;
+    }
+
+    public static long hex2long(String s) {
+        long result = 0;
+        for (int i = 0; i < s.length(); i++) {
+            result = (result << 4) + ((long) Character.digit(s.charAt(i), 16));
+        }
+        return result;
+    }
+
+    public static byte hex2byte(String hex) {
+        byte ret = (byte) 0;
+        byte hi = (byte) hex.charAt(0);
+        byte lo = (byte) hex.charAt(1);
+        if (hi >= NfcByte.CMD_READ && hi <= NfcByte.CMD_READ_CNT) {
+            ret = (byte) (((hi - 48) << 4) | 0);
+        } else if (hi >= (byte) 65 && hi <= NfcByte.N2_LOCK) {
+            ret = (byte) ((((hi - 65) + 10) << 4) | 0);
+        } else if (hi >= (byte) 97 && hi <= (byte) 102) {
+            ret = (byte) ((((hi - 97) + 10) << 4) | 0);
+        }
+        if (lo >= NfcByte.CMD_READ && lo <= NfcByte.CMD_READ_CNT) {
+            return (byte) ((lo - 48) | ret);
+        }
+        if (lo >= (byte) 65 && lo <= NfcByte.N2_LOCK) {
+            return (byte) (((lo - 65) + 10) | ret);
+        }
+        if (lo < (byte) 97 || lo > (byte) 102) {
+            return ret;
+        }
+        return (byte) (((lo - 97) + 10) | ret);
+    }
+
+    public static String md5(byte[] data) {
+        try {
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            byte[] result = digest.digest(data);
+            return bytesToHex(result);
+        } catch (NoSuchAlgorithmException e) {
+            TagMo.Error(TAG, e.getMessage());
+        }
+        return null;
+    }
 
     public static byte[] keygen(byte[] uuid) {
         //from AmiiManage (GPL)
@@ -75,7 +139,7 @@ public class TagUtil {
     }
 
     public static void validateTag(byte[] data) throws Exception {
-        byte[][] pages = TagUtil.splitPages(data);
+        byte[][] pages = TagUtils.splitPages(data);
 
         if (pages[0][0] != (byte) 0x04)
             throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_prefix));
@@ -126,24 +190,6 @@ public class TagUtil {
             throw new Exception(TagMo.getStringRes(R.string.failed_encrypt));
 
         return encrypted;
-    }
-
-    public static byte[] patchPowerTagUid(byte[] uid, byte[] tagData, KeyManager keyManager) throws Exception {
-        tagData = decrypt(keyManager, tagData);
-
-        if (uid.length < 9) throw new Exception(TagMo.getStringRes(R.string.invalid_uid_length));
-
-        byte[] patched = Arrays.copyOf(tagData, tagData.length);
-
-        System.arraycopy(uid, 0, patched, 0x1d4, 8);
-        patched[0] = uid[8];
-
-        AmiiTool tool = new AmiiTool();
-        byte[] result = new byte[NfcByte.TAG_FILE_SIZE];
-        if (tool.pack(patched, patched.length, result, result.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.failed_encrypt));
-
-        return result;
     }
 
     public static byte[] patchUid(byte[] uid, byte[] tagData) throws Exception {
@@ -233,11 +279,11 @@ public class TagUtil {
     }
 
     public static Date getDate(ByteBuffer bb, int offset) {
-        return TagUtil.fromAmiiboDate(getBytes(bb, offset, 0x2));
+        return TagUtils.fromAmiiboDate(getBytes(bb, offset, 0x2));
     }
 
     public static void putDate(ByteBuffer bb, int offset, Date date) {
-        putBytes(bb, offset, TagUtil.toAmiiboDate(date));
+        putBytes(bb, offset, TagUtils.toAmiiboDate(date));
     }
 
     public static String getString(ByteBuffer bb, int offset, int length, Charset charset)

@@ -17,7 +17,7 @@ public class TagWriter {
         validateBlankTag(mifare);
 
         try {
-            byte[][] pages = TagUtil.splitPages(tagData);
+            byte[][] pages = TagUtils.splitPages(tagData);
             writePages(mifare, 3, 129, pages);
             TagMo.Debug(TAG, R.string.data_write);
         } catch (Exception e) {
@@ -39,7 +39,7 @@ public class TagWriter {
 
     private static void validateBlankTag(NTAG215 mifare) throws Exception {
         byte[] lockPage = mifare.readPages(0x02);
-        TagMo.Debug(TAG, Util.bytesToHex(lockPage));
+        TagMo.Debug(TAG, TagUtils.bytesToHex(lockPage));
         if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {
             TagMo.Debug(TAG, R.string.locked);
             throw new Exception(TagMo.getStringRes(R.string.tag_already_written));
@@ -47,29 +47,32 @@ public class TagWriter {
         TagMo.Debug(TAG, R.string.unlocked);
     }
 
-    public static void writeToTagAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager, boolean validateNtag, boolean supportPowerTag) throws Exception {
+    public static void writeToTagAuto(
+            NTAG215 mifare, byte[] tagData, KeyManager keyManager,
+            boolean validateNtag, boolean usePowerTag) throws Exception {
         byte[] idPages = mifare.readPages(0);
         if (idPages == null || idPages.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
 
         boolean isPowerTag = false;
-        if (supportPowerTag) {
+        if (usePowerTag) {
             byte[] sig = mifare.transceive(NfcByte.SIG_CMD);
-            isPowerTag = compareRange(sig, NfcByte.POWERTAG_SIGNATURE, 0, NfcByte.POWERTAG_SIGNATURE.length);
+            isPowerTag = compareRange(sig, NfcByte.POWERTAG_SIGNATURE,
+                    0, NfcByte.POWERTAG_SIGNATURE.length);
         }
 
         TagMo.Debug(TAG, R.string.power_tag_exists, String.valueOf(isPowerTag));
 
+        tagData = TagUtils.decrypt(keyManager, tagData);
         if (isPowerTag) {
             //use a pre-determined static id for Power Tag
-            tagData = TagUtil.patchPowerTagUid(NfcByte.POWERTAG_IDPAGES, tagData, keyManager);
+            tagData = TagUtils.patchUid(NfcByte.POWERTAG_IDPAGES, tagData);
         } else {
-            tagData = TagUtil.decrypt(keyManager, tagData);
-            tagData = TagUtil.patchUid(idPages, tagData);
-            tagData = TagUtil.encrypt(keyManager, tagData);
+            tagData = TagUtils.patchUid(idPages, tagData);
         }
+        tagData = TagUtils.encrypt(keyManager, tagData);
 
-        TagMo.Debug(TAG, Util.bytesToHex(tagData));
+        TagMo.Debug(TAG, TagUtils.bytesToHex(tagData));
 
         if (!isPowerTag) {
             validate(mifare, tagData, validateNtag);
@@ -81,18 +84,18 @@ public class TagWriter {
             if (oldid == null || oldid.length != 7)
                 throw new Exception(TagMo.getStringRes(R.string.fail_read_uid));
 
-            TagMo.Debug(TAG, R.string.old_uid, Util.bytesToHex(oldid));
+            TagMo.Debug(TAG, R.string.old_uid, TagUtils.bytesToHex(oldid));
 
             byte[] page10 = mifare.readPages(0x10);
-            TagMo.Debug(TAG, R.string.page_ten, Util.bytesToHex(page10));
+            TagMo.Debug(TAG, R.string.page_ten, TagUtils.bytesToHex(page10));
 
-            String page10bytes = Util.bytesToHex(new byte[]{page10[0], page10[3]});
+            String page10bytes = TagUtils.bytesToHex(new byte[]{page10[0], page10[3]});
 
             byte[] ptagKeySuffix = PTagKeyManager.getPowerTagKey(oldid, page10bytes);
-            byte[] ptagKey = Util.hexStringToByteArray(NfcByte.POWERTAG_KEY);
+            byte[] ptagKey = TagUtils.hexStringToByteArray(NfcByte.POWERTAG_KEY);
             System.arraycopy(ptagKeySuffix, 0, ptagKey, 8, 8);
 
-            TagMo.Debug(TAG, R.string.ptag_key, Util.bytesToHex(ptagKey));
+            TagMo.Debug(TAG, R.string.ptag_key, TagUtils.bytesToHex(ptagKey));
 
             mifare.transceive(NfcByte.COMP_WRITE_CMD);
             mifare.transceive(ptagKey);
@@ -101,9 +104,9 @@ public class TagWriter {
                 doAuth(mifare);
         }
 
-        byte[][] pages = TagUtil.splitPages(tagData);
+        byte[][] pages = TagUtils.splitPages(tagData);
         if (isPowerTag) {
-            byte[] zeropage = Util.hexStringToByteArray("00000000");
+            byte[] zeropage = TagUtils.hexStringToByteArray("00000000");
             mifare.writePage(0x86, zeropage); //PACK
             writePages(mifare, 0x01, 0x84, pages);
             mifare.writePage(0x85, zeropage); //PWD
@@ -153,17 +156,17 @@ public class TagWriter {
             if (!compareRange(liveData, tagData, 0, 9)) {
                 //restoring to different tag: transplant mii and appdata to livedata and re-encrypt
 
-                liveData = TagUtil.decrypt(keyManager, liveData);
-                tagData = TagUtil.decrypt(keyManager, tagData);
+                liveData = TagUtils.decrypt(keyManager, liveData);
+                tagData = TagUtils.decrypt(keyManager, tagData);
 
                 System.arraycopy(tagData, 0x08, liveData, 0x08, 0x1B4 - 0x08);
 
-                tagData = TagUtil.encrypt(keyManager, liveData);
+                tagData = TagUtils.encrypt(keyManager, liveData);
             }
         }
 
         doAuth(mifare);
-        byte[][] pages = TagUtil.splitPages(tagData);
+        byte[][] pages = TagUtils.splitPages(tagData);
         writePages(mifare, 4, 12, pages);
         writePages(mifare, 32, 129, pages);
     }
@@ -218,7 +221,7 @@ public class TagWriter {
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount);
         }
 
-        TagMo.Debug(TAG, Util.bytesToHex(tagData));
+        TagMo.Debug(TAG, TagUtils.bytesToHex(tagData));
         return tagData;
     }
 
@@ -235,10 +238,10 @@ public class TagWriter {
         if (pages0_1 == null || pages0_1.length != NfcByte.PAGE_SIZE * 4)
             throw new IOException(TagMo.getStringRes(R.string.read_failed));
 
-        byte[] uid = TagUtil.uidFromPages(pages0_1);
-        byte[] password = TagUtil.keygen(uid);
+        byte[] uid = TagUtils.uidFromPages(pages0_1);
+        byte[] password = TagUtils.keygen(uid);
 
-        TagMo.Debug(TAG, R.string.password, Util.bytesToHex(password));
+        TagMo.Debug(TAG, R.string.password, TagUtils.bytesToHex(password));
 
         TagMo.Debug(TAG, R.string.write_pack);
         tag.writePage(0x86, new byte[]{(byte) 0x80, (byte) 0x80, (byte) 0, (byte) 0});
@@ -268,10 +271,10 @@ public class TagWriter {
         if (pages0_1 == null || pages0_1.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.read_failed));
 
-        byte[] uid = TagUtil.uidFromPages(pages0_1);
-        byte[] password = TagUtil.keygen(uid);
+        byte[] uid = TagUtils.uidFromPages(pages0_1);
+        byte[] password = TagUtils.keygen(uid);
 
-        TagMo.Debug(TAG, R.string.password, Util.bytesToHex(password));
+        TagMo.Debug(TAG, R.string.password, TagUtils.bytesToHex(password));
 
         byte[] auth = new byte[]{
                 (byte) 0x1B,
@@ -283,7 +286,7 @@ public class TagWriter {
         byte[] response = tag.transceive(auth);
         if (response == null)
             throw new Exception(TagMo.getStringRes(R.string.auth_null));
-        String respStr = Util.bytesToHex(response);
+        String respStr = TagUtils.bytesToHex(response);
         TagMo.Error(TAG, R.string.auth_response, respStr);
         if (!"8080".equals(respStr)) {
             throw new Exception(TagMo.getStringRes(R.string.auth_failed));
@@ -317,7 +320,7 @@ public class TagWriter {
                 if (tagData == null || tagData.length != 8) {
                     throw new Exception();
                 }
-                tags.add(Util.bytesToHex(tagData));
+                tags.add(TagUtils.bytesToHex(tagData));
                 i++;
             } catch (Exception e) {
                 TagMo.Debug(TAG, TagMo.getStringRes(R.string.fail_elite_bank_parse));
@@ -328,7 +331,7 @@ public class TagWriter {
 
     public static byte[] deleteBank(NTAG215 tag, int active_bank)  throws Exception {
         if (doEliteAuth(tag, tag.fastRead(0, 0))) {
-            byte[] tagData = Util.hexStringToByteArray(new String(
+            byte[] tagData = TagUtils.hexStringToByteArray(new String(
                     new char[1080]).replace("\u0000", "F"));
             if (tag.amiiboFastWrite(0, active_bank, tagData)) {
                 byte[] result = new byte[8];
@@ -371,7 +374,7 @@ public class TagWriter {
     public static String getEliteSignature(NTAG215 tag) {
         byte[] signature = tag.readEliteSingature();
         if (signature != null)
-            return Util.bytesToHex(tag.readEliteSingature()).substring(0, 22);
+            return TagUtils.bytesToHex(tag.readEliteSingature()).substring(0, 22);
         return null;
     }
 
@@ -395,7 +398,7 @@ public class TagWriter {
                 } else if (parts[0].equals("C-APDU")) {
                     byte[] apdu_buf = new byte[(parts.length - 1)];
                     for (i = 1; i < parts.length; i++) {
-                        apdu_buf[i - 1] = Util.hex2byte(parts[i]);
+                        apdu_buf[i - 1] = TagUtils.hex2byte(parts[i]);
                     }
                     int sz = apdu_buf[4] & 0xFF;
                     byte[] iso_cmd = new byte[sz];
@@ -422,7 +425,7 @@ public class TagWriter {
                         throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 2));
                     }
                     for (i = 1; i < parts.length; i++) {
-                        rpdu_buf[i - 1] = Util.hex2byte(parts[i]);
+                        rpdu_buf[i - 1] = TagUtils.hex2byte(parts[i]);
                     }
                     for (i = 0; i < rpdu_buf.length - 2; i++) {
                         if (rpdu_buf[i] != response[i]) {

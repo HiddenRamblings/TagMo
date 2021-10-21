@@ -29,8 +29,8 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfc.TagUtil;
-import com.hiddenramblings.tagmo.nfc.Util;
+import com.hiddenramblings.tagmo.nfc.TagUtils;
+import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import org.androidannotations.annotations.AfterViews;
@@ -193,7 +193,7 @@ public class AmiiboActivity extends AppCompatActivity {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = Util.loadAmiiboManager();
+            amiiboManager = FileUtils.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(getString(R.string.amiibo_info_parse_error));
@@ -213,14 +213,14 @@ public class AmiiboActivity extends AppCompatActivity {
     void saveTag() {
         boolean valid = false;
         try {
-            TagUtil.validateTag(tagData);
+            TagUtils.validateTag(tagData);
             valid = true;
         } catch (Exception e) {
             LogError(getString(R.string.tag_invalid));
         }
 
         try {
-            long amiiboId = TagUtil.amiiboIdFromTag(tagData);
+            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
             String name = null;
             if (this.amiiboManager != null) {
                 Amiibo amiibo = this.amiiboManager.amiibos.get(amiiboId);
@@ -229,16 +229,16 @@ public class AmiiboActivity extends AppCompatActivity {
                 }
             }
             if (name == null)
-                name = TagUtil.amiiboIdToHex(amiiboId);
+                name = TagUtils.amiiboIdToHex(amiiboId);
 
             byte[] uId = Arrays.copyOfRange(tagData, 0, 9);
-            String uIds = Util.bytesToHex(uId);
+            String uIds = TagUtils.bytesToHex(uId);
             String fileName = String.format(Locale.ENGLISH,
                     "%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin",
                     name, uIds, Calendar.getInstance(), (valid ? "" : "_corrupted_")
             );
 
-            File dir = new File(Util.getSDCardDir(), prefs.browserRootFolder().get());
+            File dir = new File(FileUtils.getSDCardDir(), prefs.browserRootFolder().get());
             if (!dir.isDirectory()) dir.mkdir();
 
             File file = new File(dir.getAbsolutePath(), fileName);
@@ -334,7 +334,7 @@ public class AmiiboActivity extends AppCompatActivity {
     void onImageClicked() {
         long amiiboId;
         try {
-            amiiboId = TagUtil.amiiboIdFromTag(tagData);
+            amiiboId = TagUtils.amiiboIdFromTag(tagData);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -365,7 +365,7 @@ public class AmiiboActivity extends AppCompatActivity {
         } else {
             long amiiboId;
             try {
-                amiiboId = TagUtil.amiiboIdFromTag(this.tagData);
+                amiiboId = TagUtils.amiiboIdFromTag(this.tagData);
             } catch (Exception e) {
                 e.printStackTrace();
                 amiiboId = -1;
@@ -384,7 +384,7 @@ public class AmiiboActivity extends AppCompatActivity {
                         amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
                 }
                 if (amiibo != null) {
-                    amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
+                    amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                     amiiboImageUrl = amiibo.getImageUrl();
                     if (amiibo.name != null)
                         amiiboName = amiibo.name;
@@ -397,7 +397,7 @@ public class AmiiboActivity extends AppCompatActivity {
                     // if (amiibo.getCharacter() != null)
                     //     character = amiibo.getCharacter().name;
                 } else {
-                    tagInfo = "ID: " + TagUtil.amiiboIdToHex(amiiboId);
+                    tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
                     amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
                 }
             }

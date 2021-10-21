@@ -20,8 +20,8 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfc.TagUtil;
-import com.hiddenramblings.tagmo.nfc.Util;
+import com.hiddenramblings.tagmo.nfc.TagUtils;
+import com.hiddenramblings.tagmo.nfc.FileUtils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -125,7 +125,7 @@ public class ImageActivity extends AppCompatActivity {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = Util.loadAmiiboManager();
+            amiiboManager = FileUtils.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
         }
@@ -163,7 +163,7 @@ public class ImageActivity extends AppCompatActivity {
                 amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
         }
         if (amiibo != null) {
-            amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
+            amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
             if (amiibo.name != null)
                 amiiboName = amiibo.name;
             if (amiibo.getAmiiboSeries() != null)
@@ -175,7 +175,7 @@ public class ImageActivity extends AppCompatActivity {
             // if (amiibo.getCharacter() != null)
             //     character = amiibo.getCharacter().name;
         } else {
-            tagInfo = "ID: " + TagUtil.amiiboIdToHex(amiiboId);
+            tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
         }
 
         if (tagInfo == null) {
@@ -216,13 +216,13 @@ public class ImageActivity extends AppCompatActivity {
         if (amiibo != null) {
             editText.setText(amiibo.getName());
         } else {
-            editText.setText(TagUtil.amiiboIdToHex(amiiboId));
+            editText.setText(TagUtils.amiiboIdToHex(amiiboId));
         }
 
         (new AlertDialog.Builder(this))
                 .setTitle(R.string.save_image)
                 .setPositiveButton(R.string.save, (dialogInterface, i) -> {
-                    final File file = new File(Util.getFilesDir().getAbsolutePath(),
+                    final File file = new File(FileUtils.getFilesDir().getAbsolutePath(),
                             editText.getText().toString() + ".png");
 
                     Glide.with(ImageActivity.this)
@@ -236,7 +236,7 @@ public class ImageActivity extends AppCompatActivity {
                                         fos = new FileOutputStream(file);
                                         resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
 
-                                        String text = "Saved file as " + Util.friendlyPath(file);
+                                        String text = "Saved file as " + FileUtils.friendlyPath(file);
                                         Toast.makeText(ImageActivity.this, text, Toast.LENGTH_SHORT).show();
                                     } catch (FileNotFoundException e) {
                                         e.printStackTrace();

@@ -1,7 +1,7 @@
 package com.hiddenramblings.tagmo.data;
 
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.nfc.TagUtil;
+import com.hiddenramblings.tagmo.nfc.TagUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -74,11 +74,11 @@ public class TagData {
     }
 
     public BitSet getSettingFlags() {
-        return TagUtil.getBitSet(tagData, SETTING_FLAGS_OFFSET, SETTING_FLAGS_LENGTH);
+        return TagUtils.getBitSet(tagData, SETTING_FLAGS_OFFSET, SETTING_FLAGS_LENGTH);
     }
 
     public void setSettingFlags(BitSet value) {
-        TagUtil.putBitSet(tagData, SETTING_FLAGS_OFFSET, SETTING_FLAGS_LENGTH, value);
+        TagUtils.putBitSet(tagData, SETTING_FLAGS_OFFSET, SETTING_FLAGS_LENGTH, value);
     }
 
     public boolean isUserDataInitialized() {
@@ -118,35 +118,35 @@ public class TagData {
     }
 
     public Date getInitializedDate() throws Exception {
-        return TagUtil.getDate(tagData, INIT_DATA_OFFSET);
+        return TagUtils.getDate(tagData, INIT_DATA_OFFSET);
     }
 
     public void setInitializedDate(Date value) throws Exception {
-        TagUtil.putDate(tagData, INIT_DATA_OFFSET, value);
+        TagUtils.putDate(tagData, INIT_DATA_OFFSET, value);
     }
 
     public Date getModifiedDate() throws Exception {
-        return TagUtil.getDate(tagData, MODIFIED_DATA_OFFSET);
+        return TagUtils.getDate(tagData, MODIFIED_DATA_OFFSET);
     }
 
     public void setModifiedDate(Date value) throws Exception {
-        TagUtil.putDate(tagData, MODIFIED_DATA_OFFSET, value);
+        TagUtils.putDate(tagData, MODIFIED_DATA_OFFSET, value);
     }
 
     public String getNickname() throws UnsupportedEncodingException {
-        return TagUtil.getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE);
+        return TagUtils.getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE);
     }
 
     public void setNickname(String value) {
-            TagUtil.putString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE, value);
+            TagUtils.putString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE, value);
     }
 
     public String getMiiName() throws UnsupportedEncodingException {
-        return TagUtil.getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16BE);
+        return TagUtils.getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16BE);
     }
 
     public void setMiiName(String value) {
-        TagUtil.putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16BE, value);
+        TagUtils.putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16BE, value);
     }
 
     @SuppressWarnings("unused")
@@ -182,13 +182,13 @@ public class TagData {
     }
 
     public byte[] getAppData() {
-        return TagUtil.getBytes(tagData, APP_DATA_OFFSET, APP_DATA_LENGTH);
+        return TagUtils.getBytes(tagData, APP_DATA_OFFSET, APP_DATA_LENGTH);
     }
 
     public void setAppData(byte[] value) throws Exception {
         if (value.length != APP_DATA_LENGTH)
             throw new Exception();
 
-        TagUtil.putBytes(tagData, APP_DATA_OFFSET, value);
+        TagUtils.putBytes(tagData, APP_DATA_OFFSET, value);
     }
 }

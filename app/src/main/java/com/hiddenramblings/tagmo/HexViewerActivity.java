@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiddenramblings.tagmo.nfc.KeyManager;
-import com.hiddenramblings.tagmo.nfc.TagUtil;
+import com.hiddenramblings.tagmo.nfc.TagUtils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -73,7 +73,7 @@ public class HexViewerActivity extends AppCompatActivity {
     void decryptTagData(byte[] data) {
         KeyManager keyManager = new KeyManager(this);
         try {
-            setTagData(TagUtil.decrypt(keyManager, data));
+            setTagData(TagUtils.decrypt(keyManager, data));
         } catch (Exception e) {
             TagMo.Error(TAG, R.string.failed_decrypt, e);
             finish();

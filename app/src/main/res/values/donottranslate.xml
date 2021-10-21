@@ -40,7 +40,7 @@
 
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
     <string name="amiibo_api_raw">https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/%1$s</string>
-    <string name="api_image_url">images/icon_%08x-%08x.png</string>
+    <string name="api_image_url">images/icon_%1$08x-%2$08x.png</string>
     <string name="api_database">database/amiibo.json</string>
 
     <string name="git_url">https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/%1$s</string>

@@ -150,7 +150,10 @@
     <string name="scan_tag">Scan Tag</string>
     <string name="scan_elite">Scan N2 Elite</string>
     <string name="delete_bank">Delete Bank</string>
+    <string name="lock_bank">Lock Bank</string>
     <string name="backup_amiibo">Backup Amiibo</string>
+    <string name="unlock_elite">Unlock N2 Elite</string>
+    <string name="lock_elite">Lock N2 Elite</string>
     <string name="activate_bank">Activate Bank</string>
 
     <string name="permission_required">Storage permission required!</string>

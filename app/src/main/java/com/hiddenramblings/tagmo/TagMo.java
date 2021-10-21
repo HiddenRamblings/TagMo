@@ -19,16 +19,17 @@ public class TagMo extends Application {
     public static final String ACTION_EDIT_COMPLETE = "com.hiddenramblings.tagmo.ACTION_EDIT_COMPLETE";
 
     public static final String ACTION_CONFIGURE = "com.hiddenramblings.tagmo.CONFIGURE";
-    public static final String ACTION_ACTIVATE_BANK = "com.hiddenramblings.tagmo.ACTION_SET_ACTIVE";
+    public static final String ACTION_ACTIVATE_BANK = "com.hiddenramblings.tagmo.SET_ACTIVE";
     public static final String ACTION_SCAN_TAG = "com.hiddenramblings.tagmo.SCAN_TAG";
     public static final String ACTION_SCAN_UNIT = "com.hiddenramblings.tagmo.SCAN_UNIT";
     public static final String ACTION_WRITE_TAG_FULL = "com.hiddenramblings.tagmo.WRITE_TAG_FULL";
     public static final String ACTION_WRITE_TAG_RAW = "com.hiddenramblings.tagmo.WRITE_TAG_RAW";
     public static final String ACTION_WRITE_TAG_DATA = "com.hiddenramblings.tagmo.WRITE_TAG_DATA";
-    public static final String ACTION_DELETE_BANK = "com.hiddenramblings.tagmo.ACTION_DELETE_TAG";
+    public static final String ACTION_WRITE_ALL_TAGS = "com.hiddenramblings.tagmo.WRITE_ALL_TAGS";
+    public static final String ACTION_UNLOCK_UNIT = "com.hiddenramblings.tagmo.UNLOCK_UNIT";
+    public static final String ACTION_DELETE_BANK = "com.hiddenramblings.tagmo.DELETE_TAG";
 
     public static final String ACTION_NFC_SCANNED = "com.hiddenramblings.tagmo.NFC_SCANNED";
-    public static final String BYTE_TAG_DATA = "com.hiddenramblings.tagmo.BYTE_TAG_DATA";
     public static final String EXTRA_TAG_DATA = "com.hiddenramblings.tagmo.EXTRA_TAG_DATA";
     public static final String EXTRA_UNIT_DATA = "com.hiddenramblings.tagmo.EXTRA_UNIT_DATA";
     public static final String EXTRA_IGNORE_TAG_ID = "com.hiddenramblings.tagmo.EXTRA_IGNORE_TAG_ID";

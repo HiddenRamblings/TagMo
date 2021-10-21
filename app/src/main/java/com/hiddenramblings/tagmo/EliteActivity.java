@@ -20,11 +20,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.EliteBrowserAdapter;
-import com.hiddenramblings.tagmo.adapter.EliteWriterAdapter;
+import com.hiddenramblings.tagmo.adapter.EliteWriteBlankAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -74,6 +73,8 @@ public class EliteActivity extends AppCompatActivity implements
     BankNumberPicker eliteBankCount;
     @ViewById(R.id.write_all_banks)
     AppCompatButton writeAllBanks;
+//    @ViewById(R.id.unlock_elite)
+//    AppCompatButton unlockElite;
     @ViewById(R.id.write_bank_count)
     AppCompatButton writeBankCount;
 
@@ -152,6 +153,11 @@ public class EliteActivity extends AppCompatActivity implements
             amiiboManager = null;
         }
         if (amiiboManager == null) return;
+        final AmiiboManager uiAmiiboManager = amiiboManager;
+        this.runOnUiThread(() -> {
+            settings.setAmiiboManager(uiAmiiboManager);
+            settings.notifyChanges();
+        });
         ArrayList<Amiibo> amiibos = new ArrayList<>();
         for (int x = 0; x < tagData.size(); x++) {
             Amiibo amiibo = amiiboManager.amiibos.get(Util.hex2long(tagData.get(x)));
@@ -160,6 +166,59 @@ public class EliteActivity extends AppCompatActivity implements
         }
 
         amiibosView.setAdapter(new EliteBrowserAdapter(settings, this, amiibos));
+    }
+
+    private void writeAmiiboFile(AmiiboFile amiiboFile, int position) {
+        Bundle args = new Bundle();
+        try {
+            args.putByteArray(TagMo.EXTRA_TAG_DATA, TagUtil.readTag(
+                    getContentResolver().openInputStream(Uri.fromFile(
+                            amiiboFile.getFilePath()))));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Intent intent = new Intent(this, NfcActivity_.class);
+        intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
+        intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, TagWriter.getValueFromPosition(position));
+        intent.putExtras(args);
+        onModifierActivity.launch(intent);
+
+    }
+
+    private void displayWriteDialog(int position) {
+        View view = getLayoutInflater().inflate( R.layout.elite_writer, null);
+
+        RecyclerView writerListView = view.findViewById(R.id.amiibos_list);
+        writerListView.setLayoutManager(new LinearLayoutManager(this));
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        Dialog writeDialog = dialog.setView(view).show();
+
+        EliteWriteBlankAdapter.OnAmiiboClickListener itemClick =
+                new EliteWriteBlankAdapter.OnAmiiboClickListener() {
+            @Override
+            public void onAmiiboClicked(AmiiboFile amiiboFile) {
+                if (amiiboFile != null) {
+                    writeAmiiboFile(amiiboFile, position);
+                    writeDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
+                if (amiiboFile != null) {
+                    writeAmiiboFile(amiiboFile, position);
+                    writeDialog.dismiss();
+                }
+            }
+        };
+
+        writerListView.setAdapter(new EliteWriteBlankAdapter(settings, itemClick, amiiboFiles));
+        writeDialog.getWindow().setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        );
     }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
@@ -173,7 +232,7 @@ public class EliteActivity extends AppCompatActivity implements
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
         Bundle args = new Bundle();
-        args.putByteArray(TagMo.BYTE_TAG_DATA, tagData);
+        args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
 
         Intent intent = new Intent(this, AmiiboActivity_.class);
         intent.putExtras(args);
@@ -221,6 +280,11 @@ public class EliteActivity extends AppCompatActivity implements
         updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
     });
 
+    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        // getCallingActivity() requires a result to be requested
+    });
+
     @Click(R.id.toggle)
     void onConfigExpandClick() {
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -232,12 +296,16 @@ public class EliteActivity extends AppCompatActivity implements
 
     @Click(R.id.write_all_banks)
     void onWriteAllBanksClick() {
+        Intent writeAll = new Intent(this, NfcActivity_.class);
+        writeAll.setAction(TagMo.ACTION_WRITE_ALL_TAGS);
+        writeAll.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
 
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     @Click(R.id.write_bank_count)
     void onWriteBankCountClick() {
-        if (TagWriter.getValueFromPosition(prefs.eliteActiveBank().get()) > eliteBankCount.getValue()) {
+        if (prefs.eliteActiveBank().get() > eliteBankCount.getValue()) {
             showToast(R.string.fail_active_oob);
             return;
         }
@@ -245,8 +313,18 @@ public class EliteActivity extends AppCompatActivity implements
         configure.setAction(TagMo.ACTION_CONFIGURE);
         configure.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
         onConfigureActivity.launch(configure);
+
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
+
+//    @Click(R.id.unlock_elite)
+//    void onUnlockEliteClicked() {
+//        Intent activate = new Intent(EliteActivity.this, NfcActivity_.class);
+//        activate.setAction(TagMo.ACTION_UNLOCK_UNIT);
+//        onModifierActivity.launch(activate);
+//
+//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//    }
 
     public static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
 
@@ -276,57 +354,11 @@ public class EliteActivity extends AppCompatActivity implements
                     TagUtil.validateTag(data);
                     amiiboFiles.add(new AmiiboFile(file, TagUtil.amiiboIdFromTag(data)));
                 } catch (Exception e) {
-                    //
+                    e.printStackTrace();
                 }
             }
         }
         return amiiboFiles;
-    }
-
-    private void writeAmiiboFile(AmiiboFile amiiboFile, int position) {
-        Bundle args = new Bundle();
-        try {
-            args.putByteArray(TagMo.BYTE_TAG_DATA, TagUtil.readTag(
-                    getContentResolver().openInputStream(Uri.fromFile(
-                            amiiboFile.getFilePath()))));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Intent intent = new Intent(this, NfcActivity_.class);
-        intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
-        intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, position);
-        intent.putExtras(args);
-        onModifierActivity.launch(intent);
-    }
-
-    private void displayWriteDialog() {
-        View view = getLayoutInflater().inflate( R.layout.elite_writer, null);
-
-        RecyclerView writerListView = view.findViewById(R.id.amiibos_list);
-        writerListView.setLayoutManager(new LinearLayoutManager(this));
-
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setView(view).show().getWindow().setLayout(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-        EliteWriterAdapter.OnAmiiboClickListener itemClick = new EliteWriterAdapter.OnAmiiboClickListener() {
-            @Override
-            public void onAmiiboClicked(AmiiboFile amiiboFile, int position) {
-                if (amiiboFile != null) {
-                    writeAmiiboFile(amiiboFile, position);
-                }
-            }
-
-            @Override
-            public void onAmiiboImageClicked(AmiiboFile amiiboFile, int position) {
-                if (amiiboFile != null) {
-                    writeAmiiboFile(amiiboFile, position);
-                }
-            }
-        };
-
-        writerListView.setAdapter(new EliteWriterAdapter(settings, itemClick, amiiboFiles));
     }
 
     @Override
@@ -334,6 +366,7 @@ public class EliteActivity extends AppCompatActivity implements
         View view = getLayoutInflater().inflate(R.layout.elite_extended, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         Dialog contextMenu = dialog.setView(view).show();
+
         AppCompatButton activate_button = view.findViewById(R.id.activate_bank);
         activate_button.setOnClickListener(v -> {
             Intent activate = new Intent(EliteActivity.this, NfcActivity_.class);
@@ -342,6 +375,7 @@ public class EliteActivity extends AppCompatActivity implements
             onActivateActivity.launch(activate);
             contextMenu.dismiss();
         });
+
         AppCompatButton delete_button = view.findViewById(R.id.delete_bank);
         delete_button.setOnClickListener(v -> {
             Intent delete = new Intent(EliteActivity.this, NfcActivity_.class);
@@ -351,6 +385,7 @@ public class EliteActivity extends AppCompatActivity implements
             onModifierActivity.launch(delete);
             contextMenu.dismiss();
         });
+
         AppCompatButton backup_button = view.findViewById(R.id.backup_amiibo);
         backup_button.setOnClickListener(v -> {
             showToast(R.string.feature_unavailable);
@@ -362,14 +397,14 @@ public class EliteActivity extends AppCompatActivity implements
     public void onAmiiboClicked(Amiibo amiibo, int position) {
         boolean isAvailable = false;
         if (amiibo == null) {
-            displayWriteDialog();
+            displayWriteDialog(position);
             return;
         }
         for (int x = 0; x < amiiboFiles.size(); x ++) {
             if (amiiboFiles.get(x).getId() == amiibo.id) {
                 Bundle args = new Bundle();
                 try {
-                    args.putByteArray(TagMo.BYTE_TAG_DATA, TagUtil.readTag(
+                    args.putByteArray(TagMo.EXTRA_TAG_DATA, TagUtil.readTag(
                             getContentResolver().openInputStream(Uri.fromFile(
                                     amiiboFiles.get(x).getFilePath()))));
                 } catch (Exception e) {
@@ -381,7 +416,7 @@ public class EliteActivity extends AppCompatActivity implements
                 intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, TagWriter.getValueFromPosition(position));
                 intent.putExtras(args);
 
-                startActivity(intent);
+                onViewerActivity.launch(intent);
                 isAvailable = true;
                 break;
             }

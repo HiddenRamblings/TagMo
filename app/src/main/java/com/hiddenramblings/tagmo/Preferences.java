@@ -70,4 +70,6 @@ public interface Preferences {
 
     @DefaultLong(-1)
     long lastModified();
+
+    String downloadUrl();
 }

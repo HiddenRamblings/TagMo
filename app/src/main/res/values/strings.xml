@@ -166,8 +166,8 @@
     <string name="pref_title_validation">Tag Validation</string>
     <string name="enable_tag_validation">Enable NTAG215 validation</string>
     <string name="tag_validation_details">Not all NFC chipsets correctly identify NFC tags. Disabling tag verification will write to tags that may not be Amiibo compatible or may fail in unexpected ways.</string>
-    <string name="pref_title_powertag">PowerTag</string>
-    <string name="enable_power_tag">Enable PowerTag support</string>
+    <string name="pref_title_powertag">Power Tag</string>
+    <string name="enable_power_tag">Enable Power Tag support</string>
     <string name="power_tag_details">Support is currently in development.\nSee Github for limitations and use.</string>
     <string name="pref_title_elite">N2 Elite</string>
     <string name="enable_elite">Enable N2 Elite support</string>
@@ -177,7 +177,7 @@
     <string name="write_all_banks">Write All Banks to N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>
     <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
-    <string name="hardware_conflict">PowerTags / N2 Elite are incompatible!</string>
+    <string name="hardware_conflict">Power Tag / N2 Elite are incompatible!</string>
 
     <string name="amiibo_info">Amiibo Info</string>
 
@@ -253,7 +253,7 @@
     <string name="min_max_error">Must be between %1$d and %2$d</string>
 
     <string name="amiibo_parse_error">Amiibo parse error</string>
-    <string name="powertag_key_error">PowerTag keys not loaded</string>
+    <string name="powertag_key_error">Power Tag keys not loaded</string>
 
     <string name="uid_key_missing">No available key for UID</string>
     <string name="p10_key_missing">No available key for P10_ID</string>
@@ -277,7 +277,7 @@
     <string name="fail_read_uid">Could not read old UID</string>
     <string name="fail_mismatch_uid">Source UID does not match the target!</string>
     <string name="fail_invalid_size">Invalid read result size</string>
-    <string name="fail_powertag_keys">Failed to load PowerTag keys</string>
+    <string name="fail_powertag_keys">Failed to load Power Tag keys</string>
     <string name="fail_bank_oob">Selected bank exceeds count!</string>
     <string name="fail_active_oob">Active bank beyond new count!</string>
     <string name="fail_elite_bank_parse">Failed to parse banks!</string>

@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -779,7 +778,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background(id = BACKGROUND_POWERTAG)
     void loadPTagKeyManagerTask() {
         try {
-            PTagKeyManager.loadKeyTable();
+            PTagKeyManager.loadPowerTagManager();
         } catch (Exception e) {
             e.printStackTrace();
             showToast(R.string.fail_powertag_keys);

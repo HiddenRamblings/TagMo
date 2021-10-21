@@ -47,9 +47,7 @@ public class TagWriter {
         TagMo.Debug(TAG, R.string.unlocked);
     }
 
-    public static void writeToTagAuto(
-            NTAG215 mifare, byte[] tagData, KeyManager keyManager,
-            boolean validateNtag, boolean supportPowerTag) throws Exception {
+    public static void writeToTagAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager, boolean validateNtag, boolean supportPowerTag) throws Exception {
         byte[] idPages = mifare.readPages(0);
         if (idPages == null || idPages.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
@@ -62,14 +60,14 @@ public class TagWriter {
 
         TagMo.Debug(TAG, R.string.power_tag_exists, String.valueOf(isPowerTag));
 
-        tagData = TagUtil.decrypt(keyManager, tagData);
         if (isPowerTag) {
-            //use a pre-determined static id for powertag
-            tagData = TagUtil.patchUid(NfcByte.POWERTAG_IDPAGES, tagData);
+            //use a pre-determined static id for Power Tag
+            tagData = TagUtil.patchPowerTagUid(NfcByte.POWERTAG_IDPAGES, tagData, keyManager);
         } else {
+            tagData = TagUtil.decrypt(keyManager, tagData);
             tagData = TagUtil.patchUid(idPages, tagData);
+            tagData = TagUtil.encrypt(keyManager, tagData);
         }
-        tagData = TagUtil.encrypt(keyManager, tagData);
 
         TagMo.Debug(TAG, Util.bytesToHex(tagData));
 
@@ -90,7 +88,7 @@ public class TagWriter {
 
             String page10bytes = Util.bytesToHex(new byte[]{page10[0], page10[3]});
 
-            byte[] ptagKeySuffix = PTagKeyManager.getKey(oldid, page10bytes);
+            byte[] ptagKeySuffix = PTagKeyManager.getPowerTagKey(oldid, page10bytes);
             byte[] ptagKey = Util.hexStringToByteArray(NfcByte.POWERTAG_KEY);
             System.arraycopy(ptagKeySuffix, 0, ptagKey, 8, 8);
 

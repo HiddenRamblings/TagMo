@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -76,6 +77,7 @@ import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.api.BackgroundExecutor;
 import org.apmem.tools.layouts.FlowLayout;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -179,6 +181,7 @@ public class BrowserActivity extends AppCompatActivity implements
     SearchView searchView;
     BottomSheetBehavior<View> bottomSheetBehavior;
     private String lastCommit;
+    private String downloadUrl;
 
     @InstanceState
     BrowserSettings settings;
@@ -195,10 +198,12 @@ public class BrowserActivity extends AppCompatActivity implements
         new RequestCommit().setListener(result -> {
             try {
                 JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-                String sha = (String) ((JSONObject) jsonObject.get("object")).get("sha");
-                lastCommit = sha.substring(0,7);
-                if (!lastCommit.equals(BuildConfig.COMMIT))
+                lastCommit = ((String) jsonObject.get("name")).substring(6);
+                if (!lastCommit.equals(BuildConfig.COMMIT)) {
+                    JSONObject assets = (JSONObject) ((JSONArray) jsonObject.get("assets")).get(0);
+                    downloadUrl = (String) assets.get("browser_download_url");
                     showInstallSnackbar();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1198,11 +1203,10 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background
     void downloadUpdate() {
-        String link = getString(R.string.apk_url,
-                prefs.stableChannel().get() ? "master" : "experimental", lastCommit);
-        File apk = new File(Util.getFilesDir(), link.substring(link.lastIndexOf('/') + 1));
+        File apk = new File(Util.getFilesDir(),
+                downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1));
         try {
-            URL u = new URL(link);
+            URL u = new URL(downloadUrl);
             InputStream is = u.openStream();
 
             DataInputStream dis = new DataInputStream(is);
@@ -1239,10 +1243,8 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         } catch (MalformedURLException mue) {
             mue.printStackTrace();
-            showToast(R.string.update_not_found);
         } catch (IOException ioe) {
             ioe.printStackTrace();
-            showToast(R.string.update_not_found);
         } catch (SecurityException se) {
             se.printStackTrace();
         }

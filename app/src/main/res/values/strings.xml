@@ -299,7 +299,6 @@
 
     <string name="update_tagmo_apk">New TagMo version released!</string>
     <string name="update_amiibo_api">AmiiboAPI database updated!</string>
-    <string name="update_not_found">Publishing incomplete, try later!</string>
     <string name="config_required">Encryption keys not loaded!</string>
     <string name="install">Install</string>
     <string name="sync">Sync</string>

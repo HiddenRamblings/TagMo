@@ -363,14 +363,6 @@ public class TagWriter {
                 && !(version.length == 2 && version[0] == 100 && version[1] == 0));
     }
 
-    public static int getBankCount(NTAG215 tag) {
-        return getBankDetails(tag)[1] & 0xFF;
-    }
-
-    public static int getActiveBank(NTAG215 tag) {
-        return getValueFromPosition(getBankDetails(tag)[0] & 0xFF);
-    }
-
     public static String getEliteSignature(NTAG215 tag) {
         byte[] signature = tag.readEliteSingature();
         if (signature != null)

@@ -134,14 +134,15 @@ public class EliteActivity extends AppCompatActivity implements
 
         int bank_count = getIntent().getIntExtra(
                 TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
+        int active_bank = getIntent().getIntExtra(
+                TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+
         hardwareInfo.setText(getString(R.string.elite_signature,
                 getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE)));
         eliteBankCount.setValue(bank_count);
         amiibosView.setLayoutManager(new LinearLayoutManager(this));
         updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
-
-        bankStats.setText(getString(R.string.elite_bank_stats, getIntent().getIntExtra(
-                TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get()), bank_count));
+        bankStats.setText(getString(R.string.elite_bank_stats, active_bank, bank_count));
     }
 
     private void updateEliteHardwareAdapter(ArrayList<String> tagData) {
@@ -165,7 +166,7 @@ public class EliteActivity extends AppCompatActivity implements
             amiibos.add(amiibo);
         }
 
-        amiibosView.setAdapter(new EliteBrowserAdapter(settings, this, amiibos));
+        amiibosView.setAdapter(new EliteBrowserAdapter(settings, this, prefs, amiibos));
     }
 
     private void writeAmiiboFile(AmiiboFile amiiboFile, int position) {
@@ -180,7 +181,7 @@ public class EliteActivity extends AppCompatActivity implements
 
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
-        intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, TagWriter.getValueFromPosition(position));
+        intent.putExtra(TagMo.EXTRA_CURRENT_BANK, TagWriter.getValueFromPosition(position));
         intent.putExtras(args);
         onModifierActivity.launch(intent);
 
@@ -253,8 +254,11 @@ public class EliteActivity extends AppCompatActivity implements
         ArrayList<String> tagData = result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA);
 
         prefs.eliteBankCount().put(bank_count);
+
         eliteBankCount.setValue(bank_count);
         updateEliteHardwareAdapter(tagData);
+        bankStats.setText(getString(R.string.elite_bank_stats,
+                prefs.eliteActiveBank().get(), bank_count));
     });
 
     ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(
@@ -267,11 +271,14 @@ public class EliteActivity extends AppCompatActivity implements
 
         int active_bank = result.getData().getIntExtra(
                 TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+        ArrayList<String> tagData = result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA);
 
         prefs.eliteActiveBank().put(active_bank);
 
+        updateEliteHardwareAdapter(tagData);
         bankStats.setText(getString(R.string.elite_bank_stats,
                 active_bank, prefs.eliteBankCount().get()));
+
     });
 
     ActivityResultLauncher<Intent> onModifierActivity = registerForActivityResult(
@@ -315,7 +322,7 @@ public class EliteActivity extends AppCompatActivity implements
             return;
         }
         Intent configure = new Intent(this, NfcActivity_.class);
-        configure.setAction(TagMo.ACTION_CONFIGURE);
+        configure.setAction(TagMo.ACTION_SET_BANK_COUNT);
         configure.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
         onConfigureActivity.launch(configure);
 
@@ -377,7 +384,7 @@ public class EliteActivity extends AppCompatActivity implements
         activate_button.setOnClickListener(v -> {
             Intent activate = new Intent(EliteActivity.this, NfcActivity_.class);
             activate.setAction(TagMo.ACTION_ACTIVATE_BANK);
-            activate.putExtra(TagMo.EXTRA_ACTIVE_BANK, TagWriter.getValueFromPosition(position));
+            activate.putExtra(TagMo.EXTRA_CURRENT_BANK, TagWriter.getValueFromPosition(position));
             onActivateActivity.launch(activate);
             contextMenu.dismiss();
         });
@@ -386,8 +393,7 @@ public class EliteActivity extends AppCompatActivity implements
         delete_button.setOnClickListener(v -> {
             Intent delete = new Intent(EliteActivity.this, NfcActivity_.class);
             delete.setAction(TagMo.ACTION_DELETE_BANK);
-            delete.putExtra(TagMo.EXTRA_ACTIVE_BANK, TagWriter.getValueFromPosition(position));
-            delete.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
+            delete.putExtra(TagMo.EXTRA_CURRENT_BANK, TagWriter.getValueFromPosition(position));
             onModifierActivity.launch(delete);
             contextMenu.dismiss();
         });
@@ -419,7 +425,7 @@ public class EliteActivity extends AppCompatActivity implements
                 }
 
                 Intent intent = new Intent(this, AmiiboActivity_.class);
-                intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, TagWriter.getValueFromPosition(position));
+                intent.putExtra(TagMo.EXTRA_CURRENT_BANK, TagWriter.getValueFromPosition(position));
                 intent.putExtras(args);
 
                 onViewerActivity.launch(intent);
@@ -430,7 +436,7 @@ public class EliteActivity extends AppCompatActivity implements
 
         if (!isAvailable) {
             Intent amiiboIntent = new Intent(EliteActivity.this, NfcActivity_.class);
-            amiiboIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, TagWriter.getValueFromPosition(position));
+            amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, TagWriter.getValueFromPosition(position));
             amiiboIntent.setAction(TagMo.ACTION_SCAN_TAG);
             onNFCActivity.launch(amiiboIntent);
         }

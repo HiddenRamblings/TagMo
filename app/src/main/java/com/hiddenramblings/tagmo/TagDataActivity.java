@@ -46,8 +46,8 @@ import com.hiddenramblings.tagmo.data.AppIds;
 import com.hiddenramblings.tagmo.data.CountryCodes;
 import com.hiddenramblings.tagmo.data.TagData;
 import com.hiddenramblings.tagmo.nfc.KeyManager;
-import com.hiddenramblings.tagmo.nfc.TagUtil;
-import com.hiddenramblings.tagmo.nfc.Util;
+import com.hiddenramblings.tagmo.nfc.TagUtils;
+import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
@@ -162,7 +162,7 @@ public class TagDataActivity extends AppCompatActivity {
             return;
         }
         try {
-            this.tagData = new TagData(TagUtil.decrypt(keyManager, tagData));
+            this.tagData = new TagData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
             e.printStackTrace();
             new AlertDialog.Builder(this)
@@ -229,7 +229,7 @@ public class TagDataActivity extends AppCompatActivity {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = Util.loadAmiiboManager();
+            amiiboManager = FileUtils.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(getString(R.string.amiibo_info_parse_error));
@@ -262,7 +262,7 @@ public class TagDataActivity extends AppCompatActivity {
         } else {
             long amiiboId;
             try {
-                amiiboId = TagUtil.amiiboIdFromTag(getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
+                amiiboId = TagUtils.amiiboIdFromTag(getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
             } catch (Exception e) {
                 e.printStackTrace();
                 amiiboId = -1;
@@ -278,7 +278,7 @@ public class TagDataActivity extends AppCompatActivity {
                         amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
                 }
                 if (amiibo != null) {
-                    amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
+                    amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                     amiiboImageUrl = amiibo.getImageUrl();
                     if (amiibo.name != null)
                         amiiboName = amiibo.name;
@@ -291,7 +291,7 @@ public class TagDataActivity extends AppCompatActivity {
                     // if (amiibo.getCharacter() != null)
                     //     character = amiibo.getCharacter().name;
                 } else {
-                    tagInfo = "ID: " + TagUtil.amiiboIdToHex(amiiboId);
+                    tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
                     amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
                 }
             }
@@ -465,7 +465,7 @@ public class TagDataActivity extends AppCompatActivity {
 
         byte[] tagData;
         try {
-            tagData = TagUtil.encrypt(keyManager, newTagData.array());
+            tagData = TagUtils.encrypt(keyManager, newTagData.array());
         } catch (Exception e) {
             e.printStackTrace();
             LogError(getString(R.string.failed_encrypt));
@@ -513,7 +513,7 @@ public class TagDataActivity extends AppCompatActivity {
 
     void loadUID() {
         byte[] value = tagData.getUID();
-        txtUID.setText(Util.bytesToHex(value));
+        txtUID.setText(TagUtils.bytesToHex(value));
     }
 
     void loadCountryCode() {

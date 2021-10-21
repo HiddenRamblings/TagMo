@@ -26,7 +26,7 @@ import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.nfc.TagUtil;
+import com.hiddenramblings.tagmo.nfc.TagUtils;
 import com.hiddenramblings.tagmo.nfc.TagWriter;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
@@ -174,7 +174,7 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
             boolean isAmiibo = amiibo != null;
 
             if (isAmiibo) {
-                amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
+                amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
                 if (amiibo.name != null)
                     amiiboName = amiibo.name;

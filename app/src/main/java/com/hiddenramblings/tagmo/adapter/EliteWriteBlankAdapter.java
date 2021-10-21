@@ -27,8 +27,8 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfc.TagUtil;
-import com.hiddenramblings.tagmo.nfc.Util;
+import com.hiddenramblings.tagmo.nfc.TagUtils;
+import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
@@ -173,7 +173,7 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
                     amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
             }
             if (amiibo != null) {
-                amiiboHexId = TagUtil.amiiboIdToHex(amiibo.id);
+                amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
                 if (amiibo.name != null)
                     amiiboName = amiibo.name;
@@ -186,7 +186,7 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
                 // if (amiibo.getCharacter() != null)
                 //     gameSeries = amiibo.getCharacter().name;
             } else {
-                tagInfo = "ID: " + TagUtil.amiiboIdToHex(amiiboId);
+                tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
             }
 
@@ -205,7 +205,7 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
             // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), tagInfo != null);
             if (item.getFilePath() != null) {
                 this.itemView.setEnabled(true);
-                this.txtPath.setText(boldMatchingText(Util.friendlyPath(item.getFilePath()), query));
+                this.txtPath.setText(boldMatchingText(FileUtils.friendlyPath(item.getFilePath()), query));
                 this.txtPath.setTextColor(this.txtPath.getResources().getColor(R.color.tag_text));
             } else {
                 this.itemView.setEnabled(false);

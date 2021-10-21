@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
@@ -1082,20 +1083,33 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background
     void dumpLogcat() {
         try {
-            String fName = "tagmo_logcat.txt";
+            String logFile = "tagmo_logcat.txt";
 
-            File file = new File(Util.getFilesDir().getAbsolutePath(), fName);
-
-            TagMo.Debug(TAG, file.toString());
+            File file = new File(Util.getFilesDir().getAbsolutePath(), logFile);
             Util.dumpLogcat(file.getAbsolutePath());
             try {
                 MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
             } catch (Exception e) {
                 TagMo.Error(TAG, R.string.media_scan_fail, e);
             }
+            Uri fileUri;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                fileUri = FileProvider.getUriForFile(this,
+                    "com.hiddenramblings.tagmo.provider", file);
+            } else {
+                fileUri = Uri.fromFile(file);
+            }
+
             this.runOnUiThread(() ->
                     new AlertDialog.Builder(BrowserActivity.this)
-                            .setMessage(getString(R.string.wrote_file, fName))
+                            .setMessage(getString(R.string.wrote_file, logFile))
+                            .setNegativeButton(R.string.view, (dialog, which) -> {
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, fileUri);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                                    browserIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                startActivity(browserIntent);
+
+                            })
                             .setPositiveButton(R.string.close, null)
                             .show());
         } catch (Exception e) {

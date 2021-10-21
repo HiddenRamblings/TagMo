@@ -43,6 +43,5 @@
     <string name="api_image_url">images/icon_%08x-%08x.png</string>
     <string name="api_database">database/amiibo.json</string>
 
-    <string name="git_url">https://api.github.com/repos/HiddenRamblings/TagMo/git/refs/heads/%1$s</string>
-    <string name="apk_url">https://github.com/HiddenRamblings/TagMo/releases/download/%1$s/TagMo-%2$s-signed.apk</string>
+    <string name="git_url">https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/%1$s</string>
 </resources>

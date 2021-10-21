@@ -289,8 +289,7 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
-                    settings,
-                    listener
+                    settings, listener
             );
         }
     }
@@ -300,8 +299,7 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
-                    settings,
-                    listener
+                    settings, listener
             );
         }
     }
@@ -311,8 +309,7 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
-                    settings,
-                    listener
+                    settings, listener
             );
         }
     }

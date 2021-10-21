@@ -67,9 +67,9 @@ public class NfcActivity extends AppCompatActivity {
     void afterViews() {
         this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         this.keyManager = new KeyManager(this);
-        if (getIntent().hasExtra(TagMo.EXTRA_ACTIVE_BANK))
+        if (getIntent().hasExtra(TagMo.EXTRA_CURRENT_BANK))
             bankNumberPicker.setValue(getIntent().getIntExtra(
-                    TagMo.EXTRA_ACTIVE_BANK, bankNumberPicker.getValue()));
+                    TagMo.EXTRA_CURRENT_BANK, bankNumberPicker.getValue()));
         else if (prefs.enableEliteSupport().get()) {
             bankNumberPicker.setValue(prefs.eliteActiveBank().get());
         } else {
@@ -97,7 +97,7 @@ public class NfcActivity extends AppCompatActivity {
             case TagMo.ACTION_WRITE_TAG_RAW:
             case TagMo.ACTION_DELETE_BANK:
             case TagMo.ACTION_ACTIVATE_BANK:
-            case TagMo.ACTION_CONFIGURE:
+            case TagMo.ACTION_SET_BANK_COUNT:
             case TagMo.ACTION_SCAN_TAG:
             case TagMo.ACTION_SCAN_UNIT:
                 startNfcMonitor();
@@ -128,7 +128,7 @@ public class NfcActivity extends AppCompatActivity {
                 setTitle(R.string.delete_bank);
                 break;
             case TagMo.ACTION_SCAN_UNIT:
-            case TagMo.ACTION_CONFIGURE:
+            case TagMo.ACTION_SET_BANK_COUNT:
                 bankNumberPicker.setVisibility(View.GONE);
             case TagMo.ACTION_ACTIVATE_BANK:
                 bankTextView.setVisibility(View.GONE);
@@ -274,8 +274,10 @@ public class NfcActivity extends AppCompatActivity {
             }
             mifare.connect();
             int selection = 0;
-            int bank_count = TagWriter.getBankCount(mifare);
-            if (!mode.equals(TagMo.ACTION_CONFIGURE) && !mode.equals(TagMo.ACTION_SCAN_UNIT)) {
+            byte[] bank_details = TagWriter.getBankDetails(mifare);
+            int bank_count = bank_details[1] & 0xFF;
+            int active_bank = TagWriter.getValueFromPosition(bank_details[0] & 0xFF);
+            if (!mode.equals(TagMo.ACTION_SET_BANK_COUNT) && !mode.equals(TagMo.ACTION_SCAN_UNIT)) {
                 selection = TagWriter.getPositionFromValue(bankNumberPicker.getValue());
                 if (selection > bank_count) {
                     throw new Exception(getString(R.string.fail_bank_oob));
@@ -301,15 +303,13 @@ public class NfcActivity extends AppCompatActivity {
                             throw new Exception(getString(R.string.no_data));
                         }
                         TagWriter.writeEliteAuto(mifare, data, selection);
-                        byte[] bank_details = TagWriter.getBankDetails(mifare);
                         Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
                         write.putExtra(TagMo.EXTRA_SIGNATURE,
                                 TagWriter.getEliteSignature(mifare));
-                        write.putExtra(TagMo.EXTRA_BANK_COUNT, bank_details[1] & 0xFF);
-                        write.putExtra(TagMo.EXTRA_ACTIVE_BANK,
-                                TagWriter.getValueFromPosition(bank_details[0] & 0xFF));
+                        write.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+                        write.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
                         write.putExtra(TagMo.EXTRA_UNIT_DATA,
-                                TagWriter.readFromTags(mifare, bank_details[1]));
+                                TagWriter.readFromTags(mifare, bank_count));
                         write.putExtra(TagMo.EXTRA_TAG_DATA, data);
                         setResult(Activity.RESULT_OK, write);
                         showToast(getString(R.string.done));
@@ -335,10 +335,11 @@ public class NfcActivity extends AppCompatActivity {
                         break;
                     case TagMo.ACTION_ACTIVATE_BANK:
                         mifare.activateBank(selection);
-                        prefs.eliteActiveBank().put(selection);
                         Intent active = new Intent(TagMo.ACTION_NFC_SCANNED);
                         active.putExtra(TagMo.EXTRA_ACTIVE_BANK,
-                                TagWriter.getActiveBank(mifare));
+                                TagWriter.getValueFromPosition(selection));
+                        active.putExtra(TagMo.EXTRA_UNIT_DATA,
+                                TagWriter.readFromTags(mifare, bank_count));
                         setResult(Activity.RESULT_OK, active);
                         break;
                     case TagMo.ACTION_SCAN_TAG:
@@ -347,8 +348,9 @@ public class NfcActivity extends AppCompatActivity {
                         result.putExtra(TagMo.EXTRA_TAG_DATA, data);
                         setResult(Activity.RESULT_OK, result);
                         break;
-                    case TagMo.ACTION_CONFIGURE:
+                    case TagMo.ACTION_SET_BANK_COUNT:
                         mifare.setBankCount(write_count);
+                        mifare.activateBank(TagWriter.getPositionFromValue(active_bank));
                         ArrayList<String> list = TagWriter.readFromTags(mifare, write_count);
                         Intent configure = new Intent(TagMo.ACTION_NFC_SCANNED);
                         configure.putExtra(TagMo.EXTRA_BANK_COUNT, write_count);
@@ -356,8 +358,7 @@ public class NfcActivity extends AppCompatActivity {
                         setResult(Activity.RESULT_OK, configure);
                         break;
                     case TagMo.ACTION_SCAN_UNIT:
-                        byte[] unit_details = TagWriter.getBankDetails(mifare);
-                        ArrayList<String> tags = TagWriter.readFromTags(mifare, unit_details[1]);
+                        ArrayList<String> tags = TagWriter.readFromTags(mifare, bank_count);
                         if (TagWriter.needsFirmware(mifare)) {
                             if (TagWriter.flashFirmware(mifare))
                                 showToast(getString(R.string.firmware_update));
@@ -365,9 +366,8 @@ public class NfcActivity extends AppCompatActivity {
                         Intent results = new Intent(TagMo.ACTION_NFC_SCANNED);
                         results.putExtra(TagMo.EXTRA_SIGNATURE,
                                 TagWriter.getEliteSignature(mifare));
-                        results.putExtra(TagMo.EXTRA_BANK_COUNT, unit_details[1] & 0xFF);
-                        results.putExtra(TagMo.EXTRA_ACTIVE_BANK,
-                                TagWriter.getValueFromPosition(unit_details[0] & 0xFF));
+                        results.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+                        results.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
                         results.putExtra(TagMo.EXTRA_UNIT_DATA, tags);
                         setResult(Activity.RESULT_OK, results);
                         break;

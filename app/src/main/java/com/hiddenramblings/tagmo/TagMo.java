@@ -18,7 +18,7 @@ public class TagMo extends Application {
     public static final String ACTION_EDIT_DATA = "com.hiddenramblings.tagmo.ACTION_EDIT_DATA";
     public static final String ACTION_EDIT_COMPLETE = "com.hiddenramblings.tagmo.ACTION_EDIT_COMPLETE";
 
-    public static final String ACTION_CONFIGURE = "com.hiddenramblings.tagmo.CONFIGURE";
+    public static final String ACTION_SET_BANK_COUNT = "com.hiddenramblings.tagmo.SET_BANK_COUNT";
     public static final String ACTION_ACTIVATE_BANK = "com.hiddenramblings.tagmo.ACTIVATE_BANK";
     public static final String ACTION_SCAN_TAG = "com.hiddenramblings.tagmo.SCAN_TAG";
     public static final String ACTION_SCAN_UNIT = "com.hiddenramblings.tagmo.SCAN_UNIT";
@@ -34,9 +34,10 @@ public class TagMo extends Application {
     public static final String EXTRA_UNIT_DATA = "com.hiddenramblings.tagmo.EXTRA_UNIT_DATA";
     public static final String EXTRA_IGNORE_TAG_ID = "com.hiddenramblings.tagmo.EXTRA_IGNORE_TAG_ID";
     public static final String EXTRA_SIGNATURE = "com.hiddenramblings.tagmo.EXTRA_SIGNATURE";
-    public static final String EXTRA_ACTIVE_BANK = "com.hiddenramblings.tagmo.EXTRA_BANK_NUMBER";
+    public static final String EXTRA_ACTIVE_BANK = "com.hiddenramblings.tagmo.EXTRA_ACTIVE_BANK";
     public static final String EXTRA_BANK_COUNT = "com.hiddenramblings.tagmo.EXTRA_BANK_COUNT";
     public static final String EXTRA_AMIIBO_FILES = "com.hiddenramblings.tagmo.EXTRA_AMIIBO_FILES";
+    public static final String EXTRA_CURRENT_BANK = "com.hiddenramblings.tagmo.EXTRA_CURRENT_BANK";
 
     @Pref
     Preferences_ prefs;

@@ -88,8 +88,8 @@ public class AmiiboActivity extends AppCompatActivity {
     byte[] tagData;
 
     AmiiboManager amiiboManager = null;
-    int active_bank = -1;
     boolean isResponsive = false;
+    int current_bank = -1;
 
     @InstanceState
     boolean ignoreTagTd;
@@ -125,9 +125,9 @@ public class AmiiboActivity extends AppCompatActivity {
             return false;
         });
 
-        if (getIntent().hasExtra(TagMo.EXTRA_ACTIVE_BANK)) {
-            active_bank = getIntent().getIntExtra(
-                    TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+        if (getIntent().hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
+            current_bank = getIntent().getIntExtra(
+                    TagMo.EXTRA_CURRENT_BANK, prefs.eliteActiveBank().get());
         }
 
         loadAmiiboManager();
@@ -295,7 +295,7 @@ public class AmiiboActivity extends AppCompatActivity {
             Intent amiiboIntent = new Intent(this, AmiiboActivity_.class);
             amiiboIntent.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
             if (active_bank != -1)
-                amiiboIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+                amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, active_bank);
             amiiboIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(amiiboIntent);
         }
@@ -307,8 +307,8 @@ public class AmiiboActivity extends AppCompatActivity {
     void writeTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
-        if (active_bank != -1)
-            intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+        if (current_bank != -1)
+            intent.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         onNFCResult.launch(intent);
     }
@@ -316,8 +316,8 @@ public class AmiiboActivity extends AppCompatActivity {
     void restoreTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
-        if (active_bank != -1)
-            intent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+        if (current_bank != -1)
+            intent.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         intent.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
         onNFCResult.launch(intent);

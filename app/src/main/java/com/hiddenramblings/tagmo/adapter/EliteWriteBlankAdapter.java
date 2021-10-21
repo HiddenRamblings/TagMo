@@ -34,13 +34,12 @@ import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
 
-public class EliteWriterAdapter extends RecyclerView.Adapter<EliteWriterAdapter.AmiiboVewHolder> {
+public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlankAdapter.AmiiboVewHolder> {
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
-    private final ArrayList<AmiiboFile> data = new ArrayList<>();
     private final ArrayList<AmiiboFile> amiiboFiles;
 
-    public EliteWriterAdapter(BrowserSettings settings, OnAmiiboClickListener listener, ArrayList<AmiiboFile> amiiboFiles) {
+    public EliteWriteBlankAdapter(BrowserSettings settings, OnAmiiboClickListener listener, ArrayList<AmiiboFile> amiiboFiles) {
         this.settings = settings;
         this.listener = listener;
 
@@ -131,8 +130,7 @@ public class EliteWriterAdapter extends RecyclerView.Adapter<EliteWriterAdapter.
             this.listener = listener;
             this.itemView.setOnClickListener(view -> {
                 if (AmiiboVewHolder.this.listener != null) {
-                    AmiiboVewHolder.this.listener.onAmiiboClicked(
-                            amiiboFile, getAbsoluteAdapterPosition());
+                    AmiiboVewHolder.this.listener.onAmiiboClicked(amiiboFile);
                 }
             });
 
@@ -148,8 +146,7 @@ public class EliteWriterAdapter extends RecyclerView.Adapter<EliteWriterAdapter.
             if (this.imageAmiibo != null) {
                 this.imageAmiibo.setOnClickListener(view -> {
                     if (AmiiboVewHolder.this.listener != null) {
-                        AmiiboVewHolder.this.listener.onAmiiboImageClicked(
-                                amiiboFile, getAbsoluteAdapterPosition());
+                        AmiiboVewHolder.this.listener.onAmiiboImageClicked(amiiboFile);
                     }
                 });
             }
@@ -290,8 +287,8 @@ public class EliteWriterAdapter extends RecyclerView.Adapter<EliteWriterAdapter.
     static class SimpleViewHolder extends AmiiboVewHolder {
         public SimpleViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(
-                    LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.amiibo_simple_card, parent, false),
+                    LayoutInflater.from(parent.getContext()).inflate(
+                            R.layout.amiibo_simple_card, parent, false),
                     settings,
                     listener
             );
@@ -301,8 +298,8 @@ public class EliteWriterAdapter extends RecyclerView.Adapter<EliteWriterAdapter.
     static class CompactViewHolder extends AmiiboVewHolder {
         public CompactViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(
-                    LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.amiibo_compact_card, parent, false),
+                    LayoutInflater.from(parent.getContext()).inflate(
+                            R.layout.amiibo_compact_card, parent, false),
                     settings,
                     listener
             );
@@ -312,8 +309,8 @@ public class EliteWriterAdapter extends RecyclerView.Adapter<EliteWriterAdapter.
     static class LargeViewHolder extends AmiiboVewHolder {
         public LargeViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(
-                    LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.amiibo_large_card, parent, false),
+                    LayoutInflater.from(parent.getContext()).inflate(
+                            R.layout.amiibo_large_card, parent, false),
                     settings,
                     listener
             );
@@ -321,8 +318,8 @@ public class EliteWriterAdapter extends RecyclerView.Adapter<EliteWriterAdapter.
     }
 
     public interface OnAmiiboClickListener {
-        void onAmiiboClicked(AmiiboFile amiiboFile, int position);
+        void onAmiiboClicked(AmiiboFile amiiboFile);
 
-        void onAmiiboImageClicked(AmiiboFile amiiboFile, int position);
+        void onAmiiboImageClicked(AmiiboFile amiiboFile);
     }
 }

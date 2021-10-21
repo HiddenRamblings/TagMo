@@ -120,5 +120,11 @@
             android:minHeight="36dp"
             android:text="@string/write_bank_count" />
 
+        <!-- <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/unlock_elite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/unlock_elite" /> -->
+
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -84,17 +84,21 @@ public class AmiiboActivity extends AppCompatActivity {
     @ViewById(R.id.imageAmiibo)
     ImageView imageAmiibo;
 
-    @Extra(TagMo.BYTE_TAG_DATA)
+    @Extra(TagMo.EXTRA_TAG_DATA)
     byte[] tagData;
 
     AmiiboManager amiiboManager = null;
     int active_bank = -1;
+    boolean isResponsive = false;
 
     @InstanceState
     boolean ignoreTagTd;
 
     @AfterViews
     void afterViews() {
+        if (getCallingActivity() != null) {
+            isResponsive = getCallingActivity().getClassName().equals(EliteActivity_.class.getName());
+        }
         toolbar.inflateMenu(R.menu.tag_menu);
         toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
@@ -274,6 +278,11 @@ public class AmiiboActivity extends AppCompatActivity {
             prefs.eliteBankCount().put(bank_count);
 
             Intent eliteIntent = new Intent(this, EliteActivity_.class);
+            if (isResponsive) {
+                eliteIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            }
             eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
             eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
             eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
@@ -284,7 +293,7 @@ public class AmiiboActivity extends AppCompatActivity {
             finish(); // Relaunch activity to bring view to front
 
             Intent amiiboIntent = new Intent(this, AmiiboActivity_.class);
-            amiiboIntent.putExtra(TagMo.BYTE_TAG_DATA, tagData);
+            amiiboIntent.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
             if (active_bank != -1)
                 amiiboIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
             amiiboIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

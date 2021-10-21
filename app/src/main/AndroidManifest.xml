@@ -54,7 +54,7 @@
         </activity>
         <activity
             android:name=".NfcActivity_"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop" />
         <activity
             android:name=".HexViewerActivity_"/>
         <activity

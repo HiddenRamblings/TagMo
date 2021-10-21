@@ -50,6 +50,7 @@
     <string name="content">Content</string>
     <string name="refresh">Refresh</string>
     <string name="close">Close</string>
+    <string name="view">View</string>
 
     <string name="amiibo_id">ID</string>
     <string name="amiibo_name">Name</string>

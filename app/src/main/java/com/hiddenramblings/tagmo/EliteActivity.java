@@ -265,8 +265,13 @@ public class EliteActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
-        bankStats.setText(getString(R.string.elite_bank_stats, getIntent().getIntExtra(
-                TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get()), prefs.eliteBankCount().get()));
+        int active_bank = result.getData().getIntExtra(
+                TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+
+        prefs.eliteActiveBank().put(active_bank);
+
+        bankStats.setText(getString(R.string.elite_bank_stats,
+                active_bank, prefs.eliteBankCount().get()));
     });
 
     ActivityResultLauncher<Intent> onModifierActivity = registerForActivityResult(
@@ -363,6 +368,7 @@ public class EliteActivity extends AppCompatActivity implements
 
     @Override
     public void onAmiiboLongClicked(Amiibo amiibo, int position) {
+        if (amiibo == null) return;
         View view = getLayoutInflater().inflate(R.layout.elite_extended, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         Dialog contextMenu = dialog.setView(view).show();

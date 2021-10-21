@@ -275,19 +275,10 @@ public class NfcActivity extends AppCompatActivity {
             mifare.connect();
             int selection = 0;
             int bank_count = TagWriter.getBankCount(mifare);
-            if (mode.equals(TagMo.ACTION_CONFIGURE)) {
-                if (write_count < selection)
-                    throw new Exception(getString(R.string.fail_active_oob));
-            }
-
             if (!mode.equals(TagMo.ACTION_CONFIGURE) && !mode.equals(TagMo.ACTION_SCAN_UNIT)) {
                 selection = TagWriter.getPositionFromValue(bankNumberPicker.getValue());
                 if (selection > bank_count) {
                     throw new Exception(getString(R.string.fail_bank_oob));
-                }
-                if (!mode.equals(TagMo.ACTION_DELETE_BANK)) {
-                    mifare.activateBank(selection);
-                    prefs.eliteActiveBank().put(bankNumberPicker.getValue());
                 }
             }
             setResult(Activity.RESULT_CANCELED);
@@ -344,6 +335,8 @@ public class NfcActivity extends AppCompatActivity {
                         showToast(getString(R.string.done));
                         break;
                     case TagMo.ACTION_ACTIVATE_BANK:
+                        mifare.activateBank(selection);
+                        prefs.eliteActiveBank().put(bankNumberPicker.getValue());
                         Intent active = new Intent(TagMo.ACTION_NFC_SCANNED);
                         active.putExtra(TagMo.EXTRA_ACTIVE_BANK,
                                 TagWriter.getActiveBank(mifare));

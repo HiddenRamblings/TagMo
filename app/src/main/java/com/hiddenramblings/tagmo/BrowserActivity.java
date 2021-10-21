@@ -95,6 +95,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 @SuppressLint("NonConstantResourceId")
@@ -180,8 +181,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
     SearchView searchView;
     BottomSheetBehavior<View> bottomSheetBehavior;
-    private String lastCommit;
-    private String downloadUrl;
 
     @InstanceState
     BrowserSettings settings;
@@ -189,7 +188,8 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        File[] files = Util.getFilesDir().listFiles((dir, name) -> (name.endsWith("apk")));
+        File[] files = Util.getFilesDir().listFiles((dir, name) ->
+                name.toLowerCase(Locale.getDefault()).endsWith(".apk"));
         if (files != null) {
             for (File file : files) {
                 if (!file.isDirectory()) file.delete();
@@ -198,11 +198,10 @@ public class BrowserActivity extends AppCompatActivity implements
         new RequestCommit().setListener(result -> {
             try {
                 JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-                lastCommit = ((String) jsonObject.get("name")).substring(6);
+                String lastCommit = ((String) jsonObject.get("name")).substring(6);
                 if (!lastCommit.equals(BuildConfig.COMMIT)) {
                     JSONObject assets = (JSONObject) ((JSONArray) jsonObject.get("assets")).get(0);
-                    downloadUrl = (String) assets.get("browser_download_url");
-                    showInstallSnackbar();
+                    showInstallSnackbar((String) assets.get("browser_download_url"));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -668,7 +667,7 @@ public class BrowserActivity extends AppCompatActivity implements
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
         Bundle args = new Bundle();
-        args.putByteArray(TagMo.BYTE_TAG_DATA, tagData);
+        args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
 
         Intent intent = new Intent(this, AmiiboActivity_.class);
         intent.putExtras(args);
@@ -730,7 +729,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
 
         Bundle args = new Bundle();
-        args.putByteArray(TagMo.BYTE_TAG_DATA, tagData);
+        args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
 
         Intent intent = new Intent(this, AmiiboActivity_.class);
         intent.putExtras(args);
@@ -807,9 +806,9 @@ public class BrowserActivity extends AppCompatActivity implements
         if (Thread.currentThread().isInterrupted())
             return;
 
-        final AmiiboManager amiiboManager1 = amiiboManager;
+        final AmiiboManager uiAmiiboManager = amiiboManager;
         this.runOnUiThread(() -> {
-            settings.setAmiiboManager(amiiboManager1);
+            settings.setAmiiboManager(uiAmiiboManager);
             settings.notifyChanges();
         });
     }
@@ -1202,11 +1201,10 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @Background
-    void downloadUpdate() {
-        File apk = new File(Util.getFilesDir(),
-                downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1));
+    void downloadUpdate(String apkUrl) {
+        File apk = new File(Util.getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
         try {
-            URL u = new URL(downloadUrl);
+            URL u = new URL(apkUrl);
             InputStream is = u.openStream();
 
             DataInputStream dis = new DataInputStream(is);
@@ -1254,19 +1252,21 @@ public class BrowserActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (getPackageManager().canRequestPackageInstalls())
-            downloadUpdate();
+            downloadUpdate(prefs.downloadUrl().get());
+        prefs.downloadUrl().remove();
     });
-    void requestUpdate() {
+    void requestUpdate(String apkUrl) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (getPackageManager().canRequestPackageInstalls()) {
-                downloadUpdate();
+                downloadUpdate(apkUrl);
             } else {
+                prefs.downloadUrl().put(apkUrl);
                 Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
                 intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
                 onRequestInstall.launch(intent);
             }
         } else {
-            downloadUpdate();
+            downloadUpdate(apkUrl);
         }
     }
 
@@ -1304,10 +1304,10 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @UiThread
-    public void showInstallSnackbar() {
+    public void showInstallSnackbar(String apkUrl) {
         Snackbar snackbar = buildSnackbar(getString(
                 R.string.update_tagmo_apk), Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.install, v -> requestUpdate());
+        snackbar.setAction(R.string.install, v -> requestUpdate(apkUrl));
         snackbar.show();
     }
 }

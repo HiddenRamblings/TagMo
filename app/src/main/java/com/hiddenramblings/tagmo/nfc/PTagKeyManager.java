@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo.nfc;
 
-import android.content.res.AssetManager;
 import android.util.Base64;
 
 import com.hiddenramblings.tagmo.R;
@@ -18,20 +17,22 @@ public class PTagKeyManager {
     public static final String POWERTAG_KEYTABLE_FILE = "keytable.json";
     private static HashMap<String, HashMap<String, byte[]>> keys;
 
-    public static void loadKeyTable() throws Exception {
+    public static void loadPowerTagManager() throws Exception {
         if (keys != null)
             return;
-        AssetManager assetManager = TagMo.getContext().getAssets();
-        try (InputStream stream = assetManager.open(POWERTAG_KEYTABLE_FILE)) {
+        InputStream stream = TagMo.getContext().getAssets().open(POWERTAG_KEYTABLE_FILE);
+        try {
             byte[] data = new byte[stream.available()];
             stream.read(data);
 
             JSONObject obj = new JSONObject(new String(data));
-            loadJson(obj);
+            parseKeyTable(obj);
+        } finally {
+            stream.close();
         }
     }
 
-    static void loadJson(JSONObject json) throws JSONException {
+    static void parseKeyTable(JSONObject json) throws JSONException {
         HashMap<String, HashMap<String, byte[]>> keytable = new HashMap<>();
         for (Iterator<String> uidIterator = json.keys(); uidIterator.hasNext(); ) {
             String uid = uidIterator.next();
@@ -54,21 +55,22 @@ public class PTagKeyManager {
         keys = keytable;
     }
 
-    public static byte[] getKey(byte[] uid, String page10bytes) throws Exception {
+    public static byte[] getPowerTagKey(byte[] uid, String page10bytes) throws Exception {
         if (keys == null)
             throw new Exception(TagMo.getStringRes(R.string.powertag_key_error));
 
         byte[] uidc = new byte[7];
 
-        uidc[0] = (byte) (uid[0] & 0xFE);
-        uidc[1] = (byte) (uid[1] & 0xFE);
-        uidc[2] = (byte) (uid[2] & 0xFE);
-        uidc[3] = (byte) (uid[3] & 0xFE);
-        uidc[4] = (byte) (uid[4] & 0xFE);
-        uidc[5] = (byte) (uid[5] & 0xFE);
-        uidc[6] = (byte) (uid[6] & 0xFE);
+        uidc[0] = (byte)(uid[0] & 0xFE);
+        uidc[1] = (byte)(uid[1] & 0xFE);
+        uidc[2] = (byte)(uid[2] & 0xFE);
+        uidc[3] = (byte)(uid[3] & 0xFE);
+        uidc[4] = (byte)(uid[4] & 0xFE);
+        uidc[5] = (byte)(uid[5] & 0xFE);
+        uidc[6] = (byte)(uid[6] & 0xFE);
 
-        HashMap<String, byte[]> keymap = keys.get(Util.bytesToHex(uidc));
+        String uidStr = Util.bytesToHex(uidc);
+        HashMap<String, byte[]> keymap = keys.get(uidStr);
         if (keymap == null)
             throw new Exception(TagMo.getStringRes(R.string.uid_key_missing));
 

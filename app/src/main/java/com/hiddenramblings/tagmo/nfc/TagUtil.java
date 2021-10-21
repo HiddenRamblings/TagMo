@@ -128,6 +128,23 @@ public class TagUtil {
         return encrypted;
     }
 
+    public static byte[] patchPowerTagUid(byte[] uid, byte[] tagData, KeyManager keyManager) throws Exception {
+        tagData = decrypt(keyManager, tagData);
+
+        if (uid.length < 9) throw new Exception(TagMo.getStringRes(R.string.invalid_uid_length));
+
+        byte[] patched = Arrays.copyOf(tagData, tagData.length);
+
+        System.arraycopy(uid, 0, patched, 0x1d4, 8);
+        patched[0] = uid[8];
+
+        AmiiTool tool = new AmiiTool();
+        byte[] result = new byte[NfcByte.TAG_FILE_SIZE];
+        if (tool.pack(patched, patched.length, result, result.length) == 0)
+            throw new Exception(TagMo.getStringRes(R.string.failed_encrypt));
+
+        return result;
+    }
 
     public static byte[] patchUid(byte[] uid, byte[] tagData) throws Exception {
         if (uid.length < 9) throw new Exception(TagMo.getStringRes(R.string.invalid_uid_length));

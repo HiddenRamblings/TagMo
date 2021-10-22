@@ -137,4 +137,8 @@
         android:id="@+id/dump_logcat"
         android:title="@string/dump_logcat"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/unlock_elite"
+        android:title="@string/unlock_elite_unit"
+        app:showAsAction="ifRoom"/>
 </menu>

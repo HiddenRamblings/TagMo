@@ -182,6 +182,8 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuBackup;
     @OptionsMenuItem(R.id.dump_logcat)
     MenuItem menuLogcat;
+    @OptionsMenuItem(R.id.unlock_elite)
+    MenuItem menuUnlockElite;
 
     SearchView searchView;
     BottomSheetBehavior<View> bottomSheetBehavior;
@@ -293,7 +295,8 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     });
 
-    ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null)
             return;
 
@@ -326,6 +329,17 @@ public class BrowserActivity extends AppCompatActivity implements
             backupDialog.dismiss();
         });
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+    });
+
+    ActivityResultLauncher<Intent> onUnlockActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null)
+            return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+            return;
+
+
     });
 
     ActivityResultLauncher<Intent> onEliteActivity = registerForActivityResult(
@@ -463,6 +477,17 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsItem(R.id.dump_logcat)
     void onDumpLogcatClicked() {
         dumpLogcat();
+    }
+
+    @OptionsItem(R.id.unlock_elite)
+    void onUnlockEliteClicked() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.prepare_unlock)
+                .setPositiveButton(R.string.close, (dialog, which) -> {
+                    Intent unlock = new Intent(this, NfcActivity_.class);
+                    unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
+                    onUnlockActivity.launch(unlock);
+                }).show();
     }
 
     @OptionsItem(R.id.filter_game_series)
@@ -697,6 +722,8 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onViewChanged();
         this.onRecursiveFilesChanged();
         this.onShowMissingChanged();
+
+        menuUnlockElite.setVisible(prefs.enableEliteSupport().get());
 
         // setOnQueryTextListener will clear this, so make a copy
         String query = settings.getQuery();

@@ -21,11 +21,4 @@
         android:layout_marginBottom="2dp"
         android:text="@string/delete_bank" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/backup_amiibo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:text="@string/backup_amiibo" />
-
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -27,6 +27,7 @@ public class TagMo extends Application {
     public static final String ACTION_WRITE_TAG_DATA = "com.hiddenramblings.tagmo.WRITE_TAG_DATA";
     public static final String ACTION_WRITE_ALL_TAGS = "com.hiddenramblings.tagmo.WRITE_ALL_TAGS";
     public static final String ACTION_UNLOCK_UNIT = "com.hiddenramblings.tagmo.UNLOCK_UNIT";
+    public static final String ACTION_BACKUP_AMIIBO = "com.hiddenramblings.tagmo.BACKUP_AMIIBO";
     public static final String ACTION_DELETE_BANK = "com.hiddenramblings.tagmo.DELETE_TAG";
 
     public static final String ACTION_NFC_SCANNED = "com.hiddenramblings.tagmo.NFC_SCANNED";

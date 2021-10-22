@@ -166,7 +166,8 @@ public class EliteActivity extends AppCompatActivity implements
             amiibos.add(amiibo);
         }
 
-        amiibosView.setAdapter(new EliteBrowserAdapter(settings, this, prefs, amiibos));
+        amiibosView.setAdapter(new EliteBrowserAdapter(settings, this,
+                prefs.eliteActiveBank().get(), amiibos));
     }
 
     private void writeAmiiboFile(AmiiboFile amiiboFile, int position) {
@@ -338,41 +339,6 @@ public class EliteActivity extends AppCompatActivity implements
 //        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 //    }
 
-    public static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
-
-    void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
-        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
-        loadAmiiboFilesTask(rootFolder, recursiveFiles);
-    }
-
-    @Background(id = BACKGROUND_AMIIBO_FILES)
-    void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
-        amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
-    }
-
-    ArrayList<AmiiboFile> listAmiibos(File rootFolder, boolean recursiveFiles) {
-        ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
-
-        File[] files = rootFolder.listFiles();
-        if (files == null)
-            return amiiboFiles;
-
-        for (File file : files) {
-            if (file.isDirectory() && recursiveFiles) {
-                amiiboFiles.addAll(listAmiibos(file, true));
-            } else {
-                try {
-                    byte[] data = TagUtils.readTag(new FileInputStream(file));
-                    TagUtils.validateTag(data);
-                    amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return amiiboFiles;
-    }
-
     @Override
     public void onAmiiboLongClicked(Amiibo amiibo, int position) {
         if (amiibo == null) return;
@@ -395,12 +361,6 @@ public class EliteActivity extends AppCompatActivity implements
             delete.setAction(TagMo.ACTION_DELETE_BANK);
             delete.putExtra(TagMo.EXTRA_CURRENT_BANK, TagWriter.getValueFromPosition(position));
             onModifierActivity.launch(delete);
-            contextMenu.dismiss();
-        });
-
-        AppCompatButton backup_button = view.findViewById(R.id.backup_amiibo);
-        backup_button.setOnClickListener(v -> {
-            showToast(R.string.feature_unavailable);
             contextMenu.dismiss();
         });
     }
@@ -463,5 +423,40 @@ public class EliteActivity extends AppCompatActivity implements
     @UiThread
     public void showToast(int msgRes) {
         Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
+    }
+
+    public static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
+
+    void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
+        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
+        loadAmiiboFilesTask(rootFolder, recursiveFiles);
+    }
+
+    @Background(id = BACKGROUND_AMIIBO_FILES)
+    void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
+        amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
+    }
+
+    ArrayList<AmiiboFile> listAmiibos(File rootFolder, boolean recursiveFiles) {
+        ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
+
+        File[] files = rootFolder.listFiles();
+        if (files == null)
+            return amiiboFiles;
+
+        for (File file : files) {
+            if (file.isDirectory() && recursiveFiles) {
+                amiiboFiles.addAll(listAmiibos(file, true));
+            } else {
+                try {
+                    byte[] data = TagUtils.readTag(new FileInputStream(file));
+                    TagUtils.validateTag(data);
+                    amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return amiiboFiles;
     }
 }

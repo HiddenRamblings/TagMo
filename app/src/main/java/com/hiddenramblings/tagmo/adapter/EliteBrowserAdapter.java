@@ -37,17 +37,17 @@ import java.util.ArrayList;
 
 public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapter.AmiiboVewHolder> {
 
-    private final Preferences_ prefs;
+    private final int active_bank;
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
     private final ArrayList<Amiibo> amiibos;
 
     public EliteBrowserAdapter(
             BrowserSettings settings, OnAmiiboClickListener listener,
-            Preferences_ prefs, ArrayList<Amiibo> amiibos) {
+            int active_bank, ArrayList<Amiibo> amiibos) {
         this.settings = settings;
         this.listener = listener;
-        this.prefs = prefs;
+        this.active_bank = active_bank;
         this.amiibos = amiibos;
     }
 
@@ -75,12 +75,12 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
     public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case BrowserActivity.VIEW_TYPE_COMPACT:
-                return new CompactViewHolder(parent, settings, listener, prefs);
+                return new CompactViewHolder(parent, settings, listener, active_bank);
             case BrowserActivity.VIEW_TYPE_LARGE:
-                return new LargeViewHolder(parent, settings, listener, prefs);
+                return new LargeViewHolder(parent, settings, listener, active_bank);
             case BrowserActivity.VIEW_TYPE_SIMPLE:
             default:
-                return new SimpleViewHolder(parent, settings, listener, prefs);
+                return new SimpleViewHolder(parent, settings, listener, active_bank);
         }
     }
 
@@ -91,9 +91,9 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
 
     static abstract class AmiiboVewHolder extends RecyclerView.ViewHolder {
 
-        private final Preferences_ prefs;
         private final BrowserSettings settings;
         private final OnAmiiboClickListener listener;
+        private final int active_bank;
 
         public final TextView txtError;
         public final TextView txtName;
@@ -131,12 +131,12 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
         };
 
         public AmiiboVewHolder(View itemView, BrowserSettings settings,
-                               OnAmiiboClickListener listener, Preferences_ prefs) {
+                               OnAmiiboClickListener listener, int active_bank) {
             super(itemView);
 
             this.settings = settings;
             this.listener = listener;
-            this.prefs = prefs;
+            this.active_bank = active_bank;
             this.itemView.setOnClickListener(view -> {
                 if (AmiiboVewHolder.this.listener != null) {
                     AmiiboVewHolder.this.listener.onAmiiboClicked(
@@ -229,8 +229,7 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
                 // this.txtCharacter.setVisibility(View.GONE);
             }
 
-            if (TagWriter.getValueFromPosition(getAbsoluteAdapterPosition())
-                    == this.prefs.eliteActiveBank().get()) {
+            if (TagWriter.getValueFromPosition(getAbsoluteAdapterPosition()) == active_bank) {
                 this.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
                         android.R.color.holo_green_light));
             }
@@ -304,31 +303,37 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
     }
 
     static class SimpleViewHolder extends AmiiboVewHolder {
-        public SimpleViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener, Preferences_ prefs) {
+        public SimpleViewHolder(
+                ViewGroup parent, BrowserSettings settings,
+                OnAmiiboClickListener listener, int active_bank) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
-                    settings, listener, prefs
+                    settings, listener, active_bank
             );
         }
     }
 
     static class CompactViewHolder extends AmiiboVewHolder {
-        public CompactViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener, Preferences_ prefs) {
+        public CompactViewHolder(
+                ViewGroup parent, BrowserSettings settings,
+                OnAmiiboClickListener listener, int active_bank) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
-                    settings, listener, prefs
+                    settings, listener, active_bank
             );
         }
     }
 
     static class LargeViewHolder extends AmiiboVewHolder {
-        public LargeViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener, Preferences_ prefs) {
+        public LargeViewHolder(
+                ViewGroup parent, BrowserSettings settings,
+                OnAmiiboClickListener listener, int active_bank) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
-                    settings, listener, prefs
+                    settings, listener, active_bank
             );
         }
     }

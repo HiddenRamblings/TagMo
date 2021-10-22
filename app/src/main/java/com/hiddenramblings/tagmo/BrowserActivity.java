@@ -286,62 +286,6 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onRootFolderChanged();
     }
 
-    ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-            if (result.getData().getBooleanExtra("REFRESH", false))
-                resetRootFolder();
-            this.loadPTagKeyManager();
-        }
-    });
-
-    ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null)
-            return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
-
-        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-
-        String amiiboFileName = "";
-        try {
-            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-            Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
-            amiiboFileName = amiibo.getName() + "-" + amiibo.id;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
-        final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(amiiboFileName);
-        Dialog backupDialog = dialog.setView(view).show();
-        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
-            if (TagWriter.writeBlobToFile(
-                    input.getText().toString() + ".bin", tagData)) {
-                showToast(R.string.backup_complete);
-            } else {
-                showToast(R.string.backup_failed);
-            }
-            backupDialog.dismiss();
-        });
-        view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
-    });
-
-    ActivityResultLauncher<Intent> onUnlockActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null)
-            return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
-
-
-    });
-
     ActivityResultLauncher<Intent> onEliteActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null)
@@ -368,6 +312,25 @@ public class BrowserActivity extends AppCompatActivity implements
                 result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
         eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
         startActivity(eliteIntent);
+    });
+
+    ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null)
+            return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+            return;
+
+        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+
+        Bundle args = new Bundle();
+        args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
+
+        Intent intent = new Intent(this, AmiiboActivity_.class);
+        intent.putExtras(args);
+
+        startActivity(intent);
     });
 
     @Click(R.id.fab)
@@ -467,6 +430,42 @@ public class BrowserActivity extends AppCompatActivity implements
         this.refresh();
     }
 
+    ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null)
+            return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+            return;
+
+        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+
+        String amiiboFileName = "";
+        try {
+            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+            Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+            amiiboFileName = amiibo.getName() + "-" + amiibo.id;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        final EditText input = view.findViewById(R.id.backup_entry);
+        input.setText(amiiboFileName);
+        Dialog backupDialog = dialog.setView(view).show();
+        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
+            if (TagWriter.writeBlobToFile(
+                    input.getText().toString() + ".bin", tagData)) {
+                showToast(R.string.backup_complete);
+            } else {
+                showToast(R.string.backup_failed);
+            }
+            backupDialog.dismiss();
+        });
+        view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+    });
+
     @OptionsItem(R.id.dump_amiibo)
     void onDumpAmiiboClicked() {
         Intent backup = new Intent(this, NfcActivity_.class);
@@ -474,10 +473,62 @@ public class BrowserActivity extends AppCompatActivity implements
         onBackupActivity.launch(backup);
     }
 
+    @Background
+    void dumpLogcat() {
+        try {
+            String logFile = "tagmo_logcat.txt";
+
+            File file = new File(FileUtils.getFilesDir().getAbsolutePath(), logFile);
+            FileUtils.dumpLogcat(file.getAbsolutePath());
+            try {
+                MediaScannerConnection.scanFile(this,
+                        new String[]{file.getAbsolutePath()}, null, null);
+            } catch (Exception e) {
+                TagMo.Error(TAG, R.string.media_scan_fail, e);
+            }
+            Uri fileUri;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                fileUri = FileProvider.getUriForFile(this,
+                        "com.hiddenramblings.tagmo.provider", file);
+            } else {
+                fileUri = Uri.fromFile(file);
+            }
+
+            this.runOnUiThread(() -> new AlertDialog.Builder(BrowserActivity.this)
+                    .setMessage(getString(R.string.wrote_file, logFile))
+                    .setNegativeButton(R.string.view, (dialog, which) -> {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, fileUri);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                            browserIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivity(browserIntent);
+
+                    })
+                    .setPositiveButton(R.string.close, null)
+                    .show());
+        } catch (Exception e) {
+            this.runOnUiThread(() -> new AlertDialog.Builder(BrowserActivity.this)
+                    .setTitle(R.string.error)
+                    .setMessage(getString(R.string.write_error, e.getMessage()))
+                    .setPositiveButton(R.string.close, null)
+                    .show());
+        }
+    }
+
     @OptionsItem(R.id.dump_logcat)
     void onDumpLogcatClicked() {
         dumpLogcat();
     }
+
+    ActivityResultLauncher<Intent> onUnlockActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null)
+            return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+            return;
+
+        // TODO: as is, we eat the result and move forward
+    });
 
     @OptionsItem(R.id.unlock_elite)
     void onUnlockEliteClicked() {
@@ -674,6 +725,15 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
+    ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+            if (result.getData().getBooleanExtra("REFRESH", false))
+                resetRootFolder();
+            this.loadPTagKeyManager();
+        }
+    });
+
     @OptionsItem(R.id.settings)
     void openSettings() {
         onSettingsActivity.launch(new Intent(this, SettingsActivity_.class));
@@ -767,25 +827,6 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onRefresh() {
         this.refresh();
     }
-
-    ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null)
-            return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
-
-        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-
-        Bundle args = new Bundle();
-        args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
-
-        Intent intent = new Intent(this, AmiiboActivity_.class);
-        intent.putExtras(args);
-
-        startActivity(intent);
-    });
 
     @Override
     public void onAmiiboClicked(AmiiboFile amiiboFile) {
@@ -893,19 +934,6 @@ public class BrowserActivity extends AppCompatActivity implements
         loadFoldersTask(rootFolder);
     }
 
-    @Background(id = BACKGROUND_FOLDERS)
-    void loadFoldersTask(File rootFolder) {
-        final ArrayList<File> folders = listFolders(rootFolder);
-        Collections.sort(folders, (file1, file2) -> file1.getPath().compareToIgnoreCase(file2.getPath()));
-        if (Thread.currentThread().isInterrupted())
-            return;
-
-        this.runOnUiThread(() -> {
-            settings.setFolders(folders);
-            settings.notifyChanges();
-        });
-    }
-
     ArrayList<File> listFolders(File rootFolder) {
         ArrayList<File> folders = new ArrayList<>();
 
@@ -921,26 +949,24 @@ public class BrowserActivity extends AppCompatActivity implements
         return folders;
     }
 
+    @Background(id = BACKGROUND_FOLDERS)
+    void loadFoldersTask(File rootFolder) {
+        final ArrayList<File> folders = listFolders(rootFolder);
+        Collections.sort(folders, (file1, file2) -> file1.getPath().compareToIgnoreCase(file2.getPath()));
+        if (Thread.currentThread().isInterrupted())
+            return;
+
+        this.runOnUiThread(() -> {
+            settings.setFolders(folders);
+            settings.notifyChanges();
+        });
+    }
+
     public static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
 
     void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
         loadAmiiboFilesTask(rootFolder, recursiveFiles);
-    }
-
-    @Background(id = BACKGROUND_AMIIBO_FILES)
-    void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
-        this.setAmiiboFilesLoadingBarVisibility(true);
-        final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
-        if (Thread.currentThread().isInterrupted())
-            return;
-
-        this.setAmiiboFilesLoadingBarVisibility(false);
-
-        this.runOnUiThread(() -> {
-            settings.setAmiiboFiles(amiiboFiles);
-            settings.notifyChanges();
-        });
     }
 
     ArrayList<AmiiboFile> listAmiibos(File rootFolder, boolean recursiveFiles) {
@@ -964,6 +990,21 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }
         return amiiboFiles;
+    }
+
+    @Background(id = BACKGROUND_AMIIBO_FILES)
+    void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
+        this.setAmiiboFilesLoadingBarVisibility(true);
+        final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
+        if (Thread.currentThread().isInterrupted())
+            return;
+
+        this.setAmiiboFilesLoadingBarVisibility(false);
+
+        this.runOnUiThread(() -> {
+            settings.setAmiiboFiles(amiiboFiles);
+            settings.notifyChanges();
+        });
     }
 
     @Override
@@ -1153,111 +1194,38 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    @Background
-    void dumpLogcat() {
-        try {
-            String logFile = "tagmo_logcat.txt";
-
-            File file = new File(FileUtils.getFilesDir().getAbsolutePath(), logFile);
-            FileUtils.dumpLogcat(file.getAbsolutePath());
-            try {
-                MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
-            } catch (Exception e) {
-                TagMo.Error(TAG, R.string.media_scan_fail, e);
-            }
-            Uri fileUri;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                fileUri = FileProvider.getUriForFile(this,
-                    "com.hiddenramblings.tagmo.provider", file);
-            } else {
-                fileUri = Uri.fromFile(file);
-            }
-
-            this.runOnUiThread(() ->
-                    new AlertDialog.Builder(BrowserActivity.this)
-                            .setMessage(getString(R.string.wrote_file, logFile))
-                            .setNegativeButton(R.string.view, (dialog, which) -> {
-                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, fileUri);
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                                    browserIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                startActivity(browserIntent);
-
-                            })
-                            .setPositiveButton(R.string.close, null)
-                            .show());
-        } catch (Exception e) {
-            this.runOnUiThread(() ->
-                    new AlertDialog.Builder(BrowserActivity.this)
-                            .setTitle(R.string.error)
-                            .setMessage(getString(R.string.write_error, e.getMessage()))
-                            .setPositiveButton(R.string.close, null)
-                            .show());
-        }
+    @UiThread
+    public void showToast(int msgRes) {
+        Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
     }
 
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
-    private static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
-    private static final String[] PERMISSIONS_STORAGE = {
-            READ_EXTERNAL_STORAGE,
-            WRITE_EXTERNAL_STORAGE
-    };
-
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    void requestScopedStorage() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-        try {
-            intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
-        } catch (Exception e) {
-            intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-        }
-        onRequestScopedStorage.launch(intent);
-    }
-
-    void requestStoragePermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
-                validateKeys();
-            } else {
-                requestScopedStorage();
-            }
+    public Snackbar buildSnackbar(String msg, int length) {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.coordinator), msg, length);
+        View snackbarLayout = snackbar.getView();
+        TextView textView = snackbarLayout.findViewById(
+                com.google.android.material.R.id.snackbar_text);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.ic_stat_notification, 0, 0, 0);
         } else {
-            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
-            } else {
-                validateKeys();
-            }
+            textView.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.ic_stat_notification, 0, 0, 0);
         }
+        textView.setGravity(Gravity.CENTER_VERTICAL);
+        textView.setCompoundDrawablePadding(getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
+        return snackbar;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
-                    R.string.permission_required, Snackbar.LENGTH_LONG);
-            storageBar.setAction(R.string.allow_permission, v -> ActivityCompat.requestPermissions(
-                    BrowserActivity.this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE));
-            storageBar.show();
-        } else {
-            validateKeys();
-        }
+    @UiThread
+    public void showSetupSnackbar() {
+        Snackbar snackbar = buildSnackbar(getString(
+                R.string.config_required), Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.setup, v -> {
+            openSettings();
+            snackbar.dismiss();
+        });
+        snackbar.show();
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (Environment.isExternalStorageManager()) {
-            validateKeys();
-        } else {
-            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
-                    R.string.permission_required, Snackbar.LENGTH_LONG);
-            storageBar.setAction(R.string.allow_permission, v -> requestScopedStorage());
-            storageBar.show();
-        }
-    });
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     void installUpdate(Uri apkUri) throws IOException {
@@ -1341,6 +1309,7 @@ public class BrowserActivity extends AppCompatActivity implements
             downloadUpdate(prefs.downloadUrl().get());
         prefs.downloadUrl().remove();
     });
+
     void requestUpdate(String apkUrl) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (getPackageManager().canRequestPackageInstalls()) {
@@ -1357,43 +1326,74 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @UiThread
-    public void showToast(int msgRes) {
-        Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
-    }
-
-    public Snackbar buildSnackbar(String msg, int length) {
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.coordinator), msg, length);
-        View snackbarLayout = snackbar.getView();
-        TextView textView = snackbarLayout.findViewById(
-                com.google.android.material.R.id.snackbar_text);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_stat_notification, 0, 0, 0);
-        } else {
-            textView.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_stat_notification, 0, 0, 0);
-        }
-        textView.setGravity(Gravity.CENTER_VERTICAL);
-        textView.setCompoundDrawablePadding(getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
-        return snackbar;
-    }
-
-    @UiThread
-    public void showSetupSnackbar() {
-        Snackbar snackbar = buildSnackbar(getString(
-                R.string.config_required), Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction(R.string.setup, v -> {
-            openSettings();
-            snackbar.dismiss();
-        });
-        snackbar.show();
-    }
-
-    @UiThread
     public void showInstallSnackbar(String apkUrl) {
         Snackbar snackbar = buildSnackbar(getString(
                 R.string.update_tagmo_apk), Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.install, v -> requestUpdate(apkUrl));
         snackbar.show();
+    }
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
+    private static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
+    private static final String[] PERMISSIONS_STORAGE = {
+            READ_EXTERNAL_STORAGE,
+            WRITE_EXTERNAL_STORAGE
+    };
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (Environment.isExternalStorageManager()) {
+            validateKeys();
+        } else {
+            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
+                    R.string.permission_required, Snackbar.LENGTH_LONG);
+            storageBar.setAction(R.string.allow_permission, v -> requestScopedStorage());
+            storageBar.show();
+        }
+    });
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
+                    R.string.permission_required, Snackbar.LENGTH_LONG);
+            storageBar.setAction(R.string.allow_permission, v -> ActivityCompat.requestPermissions(
+                    BrowserActivity.this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE));
+            storageBar.show();
+        } else {
+            validateKeys();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    void requestScopedStorage() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+        try {
+            intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
+        } catch (Exception e) {
+            intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+        }
+        onRequestScopedStorage.launch(intent);
+    }
+
+    void requestStoragePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()) {
+                validateKeys();
+            } else {
+                requestScopedStorage();
+            }
+        } else {
+            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            } else {
+                validateKeys();
+            }
+        }
     }
 }

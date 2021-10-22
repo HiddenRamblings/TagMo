@@ -11,6 +11,8 @@ import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +29,10 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
+import com.hiddenramblings.tagmo.amiibo.AmiiboType;
+import com.hiddenramblings.tagmo.amiibo.Character;
+import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -36,17 +42,68 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlankAdapter.AmiiboVewHolder> {
+public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlankAdapter.AmiiboVewHolder>
+        implements Filterable, BrowserSettings.BrowserSettingsListener {
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
     private final ArrayList<AmiiboFile> amiiboFiles;
+    private ArrayList<AmiiboFile> filteredData;
+    private AmiiboFilter filter;
 
     public EliteWriteBlankAdapter(BrowserSettings settings, OnAmiiboClickListener listener, ArrayList<AmiiboFile> amiiboFiles) {
         this.settings = settings;
         this.listener = listener;
 
-        this.amiiboFiles = amiiboFiles;
+        this.filteredData = this.amiiboFiles = amiiboFiles;
         Collections.sort(this.amiiboFiles, new AmiiboComparator());
+    }
+
+    @Override
+    public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
+        if (!FileUtils.equals(newBrowserSettings.getQuery(), oldBrowserSettings.getQuery())) {
+            this.refresh();
+        }
+        if (!FileUtils.equals(newBrowserSettings.getAmiiboManager(), oldBrowserSettings.getAmiiboManager())) {
+            this.refresh();
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return filteredData.size();
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return filteredData.get(i).getId();
+    }
+
+    public AmiiboFile getItem(int i) {
+        return filteredData.get(i);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return settings.getAmiiboView();
+    }
+
+    @NonNull
+    @Override
+    public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case BrowserActivity.VIEW_TYPE_COMPACT:
+                return new CompactViewHolder(parent, settings, listener);
+            case BrowserActivity.VIEW_TYPE_LARGE:
+                return new LargeViewHolder(parent, settings, listener);
+            case BrowserActivity.VIEW_TYPE_SIMPLE:
+            default:
+                return new SimpleViewHolder(parent, settings, listener);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(final AmiiboVewHolder holder, int position) {
+        holder.bind(getItem(position));
     }
 
     class AmiiboComparator implements Comparator<AmiiboFile> {
@@ -87,42 +144,99 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return amiiboFiles.size();
+    public void refresh() {
+        this.getFilter().filter(settings.getQuery());
     }
 
     @Override
-    public long getItemId(int i) {
-        return amiiboFiles.get(i).getId();
-    }
-
-    public AmiiboFile getItem(int i) {
-        return amiiboFiles.get(i);
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return settings.getAmiiboView();
-    }
-
-    @NonNull
-    @Override
-    public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case BrowserActivity.VIEW_TYPE_COMPACT:
-                return new CompactViewHolder(parent, settings, listener);
-            case BrowserActivity.VIEW_TYPE_LARGE:
-                return new LargeViewHolder(parent, settings, listener);
-            case BrowserActivity.VIEW_TYPE_SIMPLE:
-            default:
-                return new SimpleViewHolder(parent, settings, listener);
+    public AmiiboFilter getFilter() {
+        if (this.filter == null) {
+            this.filter = new AmiiboFilter();
         }
+
+        return this.filter;
     }
 
-    @Override
-    public void onBindViewHolder(final AmiiboVewHolder holder, int position) {
-        holder.bind(getItem(position));
+    class AmiiboFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+//            String query = constraint != null ? constraint.toString() : "";
+//            settings.setQuery(query);
+
+            FilterResults filterResults = new FilterResults();
+            ArrayList<AmiiboFile> tempList = new ArrayList<>();
+            String queryText = settings.getQuery().trim().toLowerCase();
+            for (AmiiboFile amiiboFile : amiiboFiles) {
+                boolean add;
+
+                if (settings.getAmiiboManager() != null) {
+                    Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboFile.getId());
+                    if (amiibo == null)
+                        amiibo = new Amiibo(settings.getAmiiboManager(),
+                                amiiboFile.getId(), null, null);
+                    add = amiiboContainsQuery(amiibo, queryText);
+                } else {
+                    add = queryText.isEmpty();
+                }
+                if (!add && amiiboFile.getFilePath() != null)
+                    add = pathContainsQuery(amiiboFile.getFilePath().getAbsolutePath(), queryText);
+                if (add)
+                    tempList.add(amiiboFile);
+            }
+            filterResults.count = tempList.size();
+            filterResults.values = tempList;
+
+            return filterResults;
+        }
+
+        public boolean pathContainsQuery(String path, String query) {
+            return !query.isEmpty() &&
+                    settings.getGameSeriesFilter().isEmpty() &&
+                    settings.getCharacterFilter().isEmpty() &&
+                    settings.getAmiiboSeriesFilter().isEmpty() &&
+                    settings.getAmiiboTypeFilter().isEmpty() &&
+                    path.toLowerCase().contains(query);
+        }
+
+        public boolean amiiboContainsQuery(Amiibo amiibo, String query) {
+            GameSeries gameSeries = amiibo.getGameSeries();
+            if (!Amiibo.matchesGameSeriesFilter(gameSeries, settings.getGameSeriesFilter()))
+                return false;
+
+            Character character = amiibo.getCharacter();
+            if (!Amiibo.matchesCharacterFilter(character, settings.getCharacterFilter()))
+                return false;
+
+            AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
+            if (!Amiibo.matchesAmiiboSeriesFilter(amiiboSeries, settings.getAmiiboSeriesFilter()))
+                return false;
+
+            AmiiboType amiiboType = amiibo.getAmiiboType();
+            if (!Amiibo.matchesAmiiboTypeFilter(amiiboType, settings.getAmiiboTypeFilter()))
+                return false;
+
+            if (!query.isEmpty()) {
+                if (TagUtils.amiiboIdToHex(amiibo.id).toLowerCase().startsWith(query))
+                    return true;
+                else if (amiibo.name != null && amiibo.name.toLowerCase().contains(query))
+                    return true;
+                else if (gameSeries != null && gameSeries.name.toLowerCase().contains(query))
+                    return true;
+                else if (character != null && character.name.toLowerCase().contains(query))
+                    return true;
+                else if (amiiboSeries != null && amiiboSeries.name.toLowerCase().contains(query))
+                    return true;
+                else return amiiboType != null && amiiboType.name.toLowerCase().contains(query);
+            }
+            return true;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            Collections.sort((ArrayList<AmiiboFile>) filterResults.values, new AmiiboComparator());
+            filteredData = (ArrayList<AmiiboFile>) filterResults.values;
+            notifyDataSetChanged();
+        }
     }
 
     static abstract class AmiiboVewHolder extends RecyclerView.ViewHolder {

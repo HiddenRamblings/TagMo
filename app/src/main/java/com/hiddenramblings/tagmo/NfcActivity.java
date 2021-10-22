@@ -32,6 +32,7 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 @SuppressLint("NonConstantResourceId")
@@ -60,22 +61,13 @@ public class NfcActivity extends AppCompatActivity {
     KeyManager keyManager;
     Animation nfcAnimation;
 
-
     private int write_count;
+    private volatile boolean isUnlocking;
 
     @AfterViews
     void afterViews() {
         this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         this.keyManager = new KeyManager(this);
-        if (getIntent().hasExtra(TagMo.EXTRA_CURRENT_BANK))
-            bankNumberPicker.setValue(getIntent().getIntExtra(
-                    TagMo.EXTRA_CURRENT_BANK, bankNumberPicker.getValue()));
-        else if (prefs.enableEliteSupport().get()) {
-            bankNumberPicker.setValue(prefs.eliteActiveBank().get());
-        } else {
-            bankTextView.setVisibility(View.GONE);
-            bankNumberPicker.setVisibility(View.GONE);
-        }
         configureInterface();
 
         nfcAnimation = AnimationUtils.loadAnimation(this, R.anim.nfc_scanning);
@@ -101,6 +93,7 @@ public class NfcActivity extends AppCompatActivity {
             case TagMo.ACTION_SET_BANK_COUNT:
             case TagMo.ACTION_ACTIVATE_BANK:
             case TagMo.ACTION_DELETE_BANK:
+            case TagMo.ACTION_UNLOCK_UNIT:
                 startNfcMonitor();
                 break;
         }
@@ -109,14 +102,20 @@ public class NfcActivity extends AppCompatActivity {
     void configureInterface() {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
-        if (!prefs.enableEliteSupport().get()) {
-            bankNumberPicker.setVisibility(View.GONE);
-            bankNumberPicker.setEnabled(false);
+
+        if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK))
+            bankNumberPicker.setValue(commandIntent.getIntExtra(
+                    TagMo.EXTRA_CURRENT_BANK, bankNumberPicker.getValue()));
+        else if (prefs.enableEliteSupport().get()) {
+            bankNumberPicker.setValue(prefs.eliteActiveBank().get());
+        } else {
             bankTextView.setVisibility(View.GONE);
+            bankNumberPicker.setVisibility(View.GONE);
         }
-        if (getIntent().hasExtra(TagMo.EXTRA_BANK_COUNT)) {
-            write_count = getIntent().getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
+        if (commandIntent.hasExtra(TagMo.EXTRA_BANK_COUNT)) {
+            write_count = commandIntent.getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
         }
+        if (mode.equals(TagMo.ACTION_UNLOCK_UNIT)) isUnlocking = true;
         switch (mode) {
             case TagMo.ACTION_WRITE_TAG_RAW:
                 bankNumberPicker.setMaxValue(prefs.eliteBankCount().get());
@@ -141,6 +140,7 @@ public class NfcActivity extends AppCompatActivity {
                 break;
             case TagMo.ACTION_SCAN_UNIT:
             case TagMo.ACTION_SET_BANK_COUNT:
+            case TagMo.ACTION_UNLOCK_UNIT:
                 bankNumberPicker.setVisibility(View.GONE);
             case TagMo.ACTION_ACTIVATE_BANK:
                 bankNumberPicker.setEnabled(false);
@@ -214,7 +214,9 @@ public class NfcActivity extends AppCompatActivity {
             byte[] bank_details;
             int bank_count;
             int active_bank;
-            if (!prefs.enableEliteSupport().get() || mode.equals(TagMo.ACTION_BACKUP_AMIIBO)) {
+            if (!prefs.enableEliteSupport().get()
+                    || mode.equals(TagMo.ACTION_BACKUP_AMIIBO)
+                    || mode.equals(TagMo.ACTION_UNLOCK_UNIT)) {
                 selection = 0;
                 bank_count = -1;
                 active_bank = -1;
@@ -342,6 +344,22 @@ public class NfcActivity extends AppCompatActivity {
                                 TagWriter.readFromTags(mifare, bank_count));
                         setResult(Activity.RESULT_OK, delete);
                         break;
+
+                    case TagMo.ACTION_UNLOCK_UNIT:
+                        if (isUnlocking) {
+                            Intent unlock = new Intent(TagMo.ACTION_NFC_SCANNED);
+                            mifare.amiiboPrepareUnlock();
+                            runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
+                                    .setMessage(R.string.progress_unlock)
+                                    .setPositiveButton(R.string.close, (dialog, which) -> {
+                                        mifare.amiiboUnlock();
+                                        isUnlocking = false;
+                                    }).show());
+                            while (isUnlocking) {
+                                setResult(Activity.RESULT_OK, unlock);
+                            }
+                        }
+                       break;
 
                     default:
                         throw new Exception(getString(R.string.state_error, mode));

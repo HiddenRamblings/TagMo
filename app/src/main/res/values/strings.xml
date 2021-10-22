@@ -176,8 +176,7 @@
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="write_all_banks">Write All Banks to N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>
-    <string name="unlock_elite_unit">Unlock N2 Elite Hardware</string>
-    <string name="lock_elite_unit">Lock N2 Elite Hardware</string>
+    <string name="unlock_elite_unit">Unlock N2 Unit</string>
     <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
     <string name="hardware_conflict">Power Tag / N2 Elite are incompatible!</string>
 
@@ -188,6 +187,9 @@
     <string name="backup_filename">Amiibo Backup Name</string>
     <string name="backup_complete">Amiibo backup complete!</string>
     <string name="backup_failed">Amiibo backup failed!</string>
+
+    <string name="prepare_unlock">Once scanned, do not remove the unit from the NFC field until complete.</string>
+    <string name="progress_unlock">Press and hold the N2 button and continue to wait for unlock to complete.</string>
 
     <string name="sync_amiibo_info">Sync with AmiiboAPI</string>
     <string name="import_amiibo_info">Import Amiibo info</string>

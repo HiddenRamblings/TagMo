@@ -28,7 +28,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".BrowserActivity_">
+            android:name=".BrowserActivity_"
+            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode" >
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>
@@ -46,6 +47,7 @@
         </activity>
         <activity
             android:name=".EliteActivity_"
+            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
             android:theme="@style/DialogTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -54,6 +56,7 @@
         </activity>
         <activity
             android:name=".NfcActivity_"
+            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
             android:launchMode="singleTop" />
         <activity
             android:name=".HexViewerActivity_"/>

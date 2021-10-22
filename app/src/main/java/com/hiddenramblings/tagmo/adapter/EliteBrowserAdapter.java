@@ -6,8 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -230,8 +232,30 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
             }
 
             if (TagWriter.getValueFromPosition(getAbsoluteAdapterPosition()) == active_bank) {
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                    this.itemView.getBackground().setColorFilter(
+//                            new BlendModeColorFilter(ContextCompat.getColor(TagMo.getContext(),
+//                            android.R.color.holo_green_light), BlendMode.COLOR_DODGE));
+//                } else {
+//                    this.itemView.getBackground().setColorFilter(
+//                            ContextCompat.getColor(TagMo.getContext(),
+//                            android.R.color.holo_green_light), PorterDuff.Mode.SRC_ATOP);
+//                }
                 this.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
                         android.R.color.holo_green_light));
+            } else {
+//                this.itemView.getBackground().clearColorFilter();
+                TypedValue a = new TypedValue();
+                TagMo.getContext().getTheme().resolveAttribute(
+                        android.R.attr.windowBackground, a, true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                    this.itemView.setBackgroundColor(a.data);
+                } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                        && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                    this.itemView.setBackgroundColor(a.data);
+                } else {
+                    this.itemView.setBackgroundResource(a.resourceId);
+                }
             }
 
             if (this.imageAmiibo != null) {

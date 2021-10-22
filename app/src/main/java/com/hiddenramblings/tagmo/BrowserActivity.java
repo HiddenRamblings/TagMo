@@ -483,7 +483,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void onUnlockEliteClicked() {
         new AlertDialog.Builder(this)
                 .setMessage(R.string.prepare_unlock)
-                .setPositiveButton(R.string.close, (dialog, which) -> {
+                .setPositiveButton(R.string.proceed, (dialog, which) -> {
                     Intent unlock = new Intent(this, NfcActivity_.class);
                     unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
                     onUnlockActivity.launch(unlock);

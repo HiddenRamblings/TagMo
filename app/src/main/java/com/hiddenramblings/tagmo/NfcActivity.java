@@ -351,7 +351,7 @@ public class NfcActivity extends AppCompatActivity {
                             mifare.amiiboPrepareUnlock();
                             runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                                     .setMessage(R.string.progress_unlock)
-                                    .setPositiveButton(R.string.close, (dialog, which) -> {
+                                    .setPositiveButton(R.string.proceed, (dialog, which) -> {
                                         mifare.amiiboUnlock();
                                         isUnlocking = false;
                                     }).show());

@@ -30,6 +30,7 @@ import com.hiddenramblings.tagmo.Preferences_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
 import com.hiddenramblings.tagmo.nfc.TagWriter;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -37,20 +38,27 @@ import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
 
-public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapter.AmiiboVewHolder> {
+public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapter.AmiiboVewHolder>
+        implements BrowserSettings.BrowserSettingsListener {
 
-    private final int active_bank;
+    private final Preferences_ prefs;
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
-    private final ArrayList<Amiibo> amiibos;
+    private ArrayList<Amiibo> amiibos = new ArrayList<>();
 
-    public EliteBrowserAdapter(
-            BrowserSettings settings, OnAmiiboClickListener listener,
-            int active_bank, ArrayList<Amiibo> amiibos) {
+    public EliteBrowserAdapter(BrowserSettings settings, Preferences_ prefs, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
-        this.active_bank = active_bank;
+        this.prefs = prefs;
+    }
+
+    public void setAmiibos(ArrayList<Amiibo> amiibos) {
         this.amiibos = amiibos;
+    }
+
+    @Override
+    public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
+
     }
 
     @Override
@@ -77,12 +85,12 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
     public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case BrowserActivity.VIEW_TYPE_COMPACT:
-                return new CompactViewHolder(parent, settings, listener, active_bank);
+                return new CompactViewHolder(parent, settings, prefs, listener);
             case BrowserActivity.VIEW_TYPE_LARGE:
-                return new LargeViewHolder(parent, settings, listener, active_bank);
+                return new LargeViewHolder(parent, settings, prefs, listener);
             case BrowserActivity.VIEW_TYPE_SIMPLE:
             default:
-                return new SimpleViewHolder(parent, settings, listener, active_bank);
+                return new SimpleViewHolder(parent, settings, prefs, listener);
         }
     }
 
@@ -95,7 +103,7 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
 
         private final BrowserSettings settings;
         private final OnAmiiboClickListener listener;
-        private final int active_bank;
+        private final Preferences_ prefs;
 
         public final TextView txtError;
         public final TextView txtName;
@@ -132,13 +140,14 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
             }
         };
 
-        public AmiiboVewHolder(View itemView, BrowserSettings settings,
-                               OnAmiiboClickListener listener, int active_bank) {
+        public AmiiboVewHolder(
+                View itemView, BrowserSettings settings,
+                Preferences_ prefs, OnAmiiboClickListener listener) {
             super(itemView);
 
             this.settings = settings;
             this.listener = listener;
-            this.active_bank = active_bank;
+            this.prefs = prefs;
             this.itemView.setOnClickListener(view -> {
                 if (AmiiboVewHolder.this.listener != null) {
                     AmiiboVewHolder.this.listener.onAmiiboClicked(
@@ -231,7 +240,8 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
                 // this.txtCharacter.setVisibility(View.GONE);
             }
 
-            if (TagWriter.getValueFromPosition(getAbsoluteAdapterPosition()) == active_bank) {
+            if (TagWriter.getValueFromPosition(getAbsoluteAdapterPosition())
+                    == prefs.eliteActiveBank().get()) {
 //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 //                    this.itemView.getBackground().setColorFilter(
 //                            new BlendModeColorFilter(ContextCompat.getColor(TagMo.getContext(),
@@ -329,11 +339,11 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
     static class SimpleViewHolder extends AmiiboVewHolder {
         public SimpleViewHolder(
                 ViewGroup parent, BrowserSettings settings,
-                OnAmiiboClickListener listener, int active_bank) {
+                Preferences_ prefs, OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
-                    settings, listener, active_bank
+                    settings, prefs, listener
             );
         }
     }
@@ -341,11 +351,11 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
     static class CompactViewHolder extends AmiiboVewHolder {
         public CompactViewHolder(
                 ViewGroup parent, BrowserSettings settings,
-                OnAmiiboClickListener listener, int active_bank) {
+                Preferences_ prefs, OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
-                    settings, listener, active_bank
+                    settings, prefs, listener
             );
         }
     }
@@ -353,11 +363,11 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
     static class LargeViewHolder extends AmiiboVewHolder {
         public LargeViewHolder(
                 ViewGroup parent, BrowserSettings settings,
-                OnAmiiboClickListener listener, int active_bank) {
+                Preferences_ prefs, OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
-                    settings, listener, active_bank
+                    settings, prefs, listener
             );
         }
     }

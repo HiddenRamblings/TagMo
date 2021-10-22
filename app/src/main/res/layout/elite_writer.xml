@@ -23,6 +23,16 @@
             android:layout_below="@+id/chip_list"
             android:background="?android:attr/listDivider"/>
 
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/amiibo_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
+            android:layout_marginEnd="2dp"
+            android:lineSpacingExtra="0dp"
+            android:lineSpacingMultiplier="0"
+            android:layout_below="@+id/divider" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/amiibos_list"
             android:layout_width="match_parent"
@@ -31,6 +41,6 @@
             android:paddingBottom="40dp"
             android:scrollbars="vertical"
             android:layout_alignParentBottom="true"
-            android:layout_below="@+id/divider"/>
+            android:layout_below="@+id/amiibo_search"/>
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

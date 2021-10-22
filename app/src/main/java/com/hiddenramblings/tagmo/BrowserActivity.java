@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentResolver;
@@ -21,8 +22,10 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,10 +58,11 @@ import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.RequestCommit;
+import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.nfc.KeyManager;
 import com.hiddenramblings.tagmo.nfc.PTagKeyManager;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
-import com.hiddenramblings.tagmo.nfc.FileUtils;
+import com.hiddenramblings.tagmo.nfc.TagWriter;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
@@ -175,6 +179,8 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuShowMissing;
     @OptionsMenuItem(R.id.refresh)
     MenuItem menuRefresh;
+    @OptionsMenuItem(R.id.dump_amiibo)
+    MenuItem menuBackup;
     @OptionsMenuItem(R.id.dump_logcat)
     MenuItem menuLogcat;
 
@@ -268,86 +274,98 @@ public class BrowserActivity extends AppCompatActivity implements
         this.loadPTagKeyManager();
     }
 
-    private void validateKeys() {
-        KeyManager keyManager = new KeyManager(this);
-        if (!keyManager.hasUnFixedKey() || !keyManager.hasFixedKey()) {
-            showSetupSnackbar();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        this.settings.addChangeListener(this);
-        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) this.amiibosView.getAdapter());
-        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) this.foldersView.getAdapter());
-
+    void resetRootFolder() {
+        this.settings.setBrowserRootFolder(Storage.setFileStorage());
         this.settings.notifyChanges();
+        this.onRootFolderChanged();
     }
 
-    @Override
-    protected void onPause() {
-        if (this.settings != null) {
-            this.settings.removeAllChangeListeners();
+    void refresh() {
+        this.loadAmiiboManager();
+        this.onRootFolderChanged();
+    }
+
+    ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+            if (result.getData().getBooleanExtra("REFRESH", false))
+                resetRootFolder();
+            this.loadPTagKeyManager();
         }
-        super.onPause();
-    }
+    });
 
-    @Override
-    public void onBackPressed() {
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        } else {
-            super.onBackPressed();
+    ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null)
+            return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+            return;
+
+        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+
+        String amiiboFileName = "";
+        try {
+            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+            Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+            amiiboFileName = amiibo.getName() + "-" + amiibo.id;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        boolean result = super.onCreateOptionsMenu(menu);
-
-        this.onSortChanged();
-        this.onViewChanged();
-        this.onRecursiveFilesChanged();
-        this.onShowMissingChanged();
-
-        // setOnQueryTextListener will clear this, so make a copy
-        String query = settings.getQuery();
-
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menuSearch.getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setSubmitButtonEnabled(true);
-        searchView.setOnQueryTextListener(this);
-        menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                return true;
+        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        final EditText input = view.findViewById(R.id.backup_entry);
+        input.setText(amiiboFileName);
+        Dialog backupDialog = dialog.setView(view).show();
+        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
+            if (TagWriter.writeBlobToFile(
+                    input.getText().toString() + ".bin", tagData)) {
+                showToast(R.string.backup_complete);
+            } else {
+                showToast(R.string.backup_failed);
             }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                    onBackPressed();
-                    return false;
-                } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    onBackPressed();
-                    return false;
-                } else {
-                    return true;
-                }
-            }
+            backupDialog.dismiss();
         });
+        view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+    });
 
-        //focus the SearchView
-        if (!query.isEmpty()) {
-            menuSearch.expandActionView();
-            searchView.setQuery(query, true);
-            searchView.clearFocus();
+    ActivityResultLauncher<Intent> onEliteActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null)
+            return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+            return;
+
+        String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
+        int active_bank = result.getData().getIntExtra(
+                TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+        int bank_count = result.getData().getIntExtra(
+                TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
+
+        prefs.eliteSignature().put(signature);
+        prefs.eliteActiveBank().put(active_bank);
+        prefs.eliteBankCount().put(bank_count);
+
+        Intent eliteIntent = new Intent(this, EliteActivity_.class);
+        eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
+        eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+        eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+        eliteIntent.putExtra(TagMo.EXTRA_UNIT_DATA,
+                result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
+        eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
+        startActivity(eliteIntent);
+    });
+
+    @Click(R.id.fab)
+    public void onFabClicked() {
+        if (prefs.enableEliteSupport().get()) {
+            onEliteActivity.launch(new Intent(this,
+                    NfcActivity_.class).setAction(TagMo.ACTION_SCAN_UNIT));
+        } else {
+            onNFCActivity.launch(new Intent(this,
+                    NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
         }
-
-        return result;
     }
 
     @Click(R.id.toggle)
@@ -434,6 +452,13 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsItem(R.id.refresh)
     void onRefreshClicked() {
         this.refresh();
+    }
+
+    @OptionsItem(R.id.dump_amiibo)
+    void onDumpAmiiboClicked() {
+        Intent backup = new Intent(this, NfcActivity_.class);
+        backup.setAction(TagMo.ACTION_BACKUP_AMIIBO);
+        onBackupActivity.launch(backup);
     }
 
     @OptionsItem(R.id.dump_logcat)
@@ -625,29 +650,91 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-            if (result.getData().getBooleanExtra("REFRESH", false))
-                resetRootFolder();
-            this.loadPTagKeyManager();
-        }
-    });
-
     @OptionsItem(R.id.settings)
     void openSettings() {
         onSettingsActivity.launch(new Intent(this, SettingsActivity_.class));
     }
 
-    void resetRootFolder() {
-        this.settings.setBrowserRootFolder(Storage.setFileStorage());
-        this.settings.notifyChanges();
-        this.onRootFolderChanged();
+    private void validateKeys() {
+        KeyManager keyManager = new KeyManager(this);
+        if (!keyManager.hasUnFixedKey() || !keyManager.hasFixedKey()) {
+            showSetupSnackbar();
+        }
     }
 
-    void refresh() {
-        this.loadAmiiboManager();
-        this.onRootFolderChanged();
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        this.settings.addChangeListener(this);
+        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) this.amiibosView.getAdapter());
+        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) this.foldersView.getAdapter());
+
+        this.settings.notifyChanges();
+    }
+
+    @Override
+    protected void onPause() {
+        if (this.settings != null) {
+            this.settings.removeAllChangeListeners();
+        }
+        super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        boolean result = super.onCreateOptionsMenu(menu);
+
+        this.onSortChanged();
+        this.onViewChanged();
+        this.onRecursiveFilesChanged();
+        this.onShowMissingChanged();
+
+        // setOnQueryTextListener will clear this, so make a copy
+        String query = settings.getQuery();
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menuSearch.getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnQueryTextListener(this);
+        menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    onBackPressed();
+                    return false;
+                } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    onBackPressed();
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        });
+
+        //focus the SearchView
+        if (!query.isEmpty()) {
+            menuSearch.expandActionView();
+            searchView.setQuery(query, true);
+            searchView.clearFocus();
+        }
+
+        return result;
     }
 
     @Override
@@ -673,45 +760,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
         startActivity(intent);
     });
-
-    ActivityResultLauncher<Intent> onEliteActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null)
-            return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
-
-        String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
-        int active_bank = result.getData().getIntExtra(
-                TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
-        int bank_count = result.getData().getIntExtra(
-                TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
-
-        prefs.eliteSignature().put(signature);
-        prefs.eliteActiveBank().put(active_bank);
-        prefs.eliteBankCount().put(bank_count);
-
-        Intent eliteIntent = new Intent(this, EliteActivity_.class);
-        eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
-        eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
-        eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
-        eliteIntent.putExtra(TagMo.EXTRA_UNIT_DATA,
-                result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
-        eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
-        startActivity(eliteIntent);
-    });
-
-    @Click(R.id.fab)
-    public void onFabClicked() {
-        if (prefs.enableEliteSupport().get()) {
-            onEliteActivity.launch(new Intent(this,
-                    NfcActivity_.class).setAction(TagMo.ACTION_SCAN_UNIT));
-        } else {
-            onNFCActivity.launch(new Intent(this,
-                    NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
-        }
-    }
 
     @Override
     public void onAmiiboClicked(AmiiboFile amiiboFile) {

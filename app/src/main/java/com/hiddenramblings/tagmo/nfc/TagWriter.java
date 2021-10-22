@@ -2,10 +2,17 @@ package com.hiddenramblings.tagmo.nfc;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+
+import org.json.JSONException;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 public class TagWriter {
@@ -435,21 +442,35 @@ public class TagWriter {
         }
     }
 
-    public byte[] amiiboBackup(NTAG215 tag) throws Exception {
+    public static boolean writeBlobToFile(String name, byte[] tagData) {
+        File directory = new File(FileUtils.getFilesDir(), "backup");
+        directory.mkdirs();
+        try {
+            FileOutputStream fos = new FileOutputStream(new File(directory, name));
+            fos.write(tagData);
+            fos.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static byte[] amiiboBackup(NTAG215 tag) throws Exception {
         byte[] output = new byte[572];
         try {
             byte[] data = tag.fastRead(0, 134);
             if (data == null) {
-                throw new Exception("Could not dump amiibo.");
+                throw new Exception(TagMo.getStringRes(R.string.fail_read_amiibo));
             }
             System.arraycopy(data, 0, output, 0, 540);
             data = tag.readSignature();
             System.arraycopy(data, 0, output, 540, data.length);
             return output;
         } catch (IllegalStateException e) {
-            throw new Exception("Please wait for scanning to be completed before removing.");
+            throw new Exception(TagMo.getStringRes(R.string.fail_early_remove));
         } catch (NullPointerException e2) {
-            throw new Exception("Please try scanning again.");
+            throw new Exception(TagMo.getStringRes(R.string.fail_amiibo_npe));
         }
     }
 }

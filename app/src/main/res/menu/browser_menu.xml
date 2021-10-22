@@ -130,6 +130,10 @@
         android:title="@string/refresh"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/dump_amiibo"
+        android:title="@string/dump_amiibo"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/dump_logcat"
         android:title="@string/dump_logcat"
         app:showAsAction="ifRoom"/>

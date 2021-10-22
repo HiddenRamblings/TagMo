@@ -27,8 +27,9 @@
             android:layout_height="60dp"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
             android:foreground="@drawable/card_foreground"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/txtError"
@@ -40,7 +41,7 @@
             android:textAlignment="center"
             android:gravity="center_horizontal"
             android:textColor="@color/tag_text"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -54,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/amiibo_name_caps"
                 android:textColor="@color/tag_text"
-                android:textSize="16dp"/>
+                android:textSize="16sp"/>
 
             <LinearLayout
                 android:id="@+id/group1"

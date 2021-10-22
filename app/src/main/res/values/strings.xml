@@ -97,6 +97,7 @@
 
     <string name="change_view">Change View</string>
     <string name="settings">Settings</string>
+    <string name="dump_amiibo">Backup</string>
     <string name="dump_logcat">Logcat</string>
     <string name="mnu_write_raw">Write Tag (Raw Mode)</string>
 
@@ -152,10 +153,8 @@
     <string name="scan_elite">Scan N2 Elite</string>
     <string name="delete_bank">Delete Bank</string>
     <string name="lock_bank">Lock Bank</string>
-    <string name="backup_amiibo">Backup Amiibo</string>
-    <string name="unlock_elite">Unlock N2 Elite</string>
-    <string name="lock_elite">Lock N2 Elite</string>
     <string name="activate_bank">Activate Bank</string>
+    <string name="backup_amiibo">Backup Amiibo</string>
 
     <string name="permission_required">Storage permission required!</string>
     <string name="allow_permission">Allow</string>
@@ -177,12 +176,18 @@
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="write_all_banks">Write All Banks to N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>
+    <string name="unlock_elite_unit">Unlock N2 Elite Hardware</string>
+    <string name="lock_elite_unit">Lock N2 Elite Hardware</string>
     <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
     <string name="hardware_conflict">Power Tag / N2 Elite are incompatible!</string>
 
     <string name="amiibo_info">Amiibo Info</string>
 
     <string name="amiibo_info_updated">Updated Amiibo info</string>
+
+    <string name="backup_filename">Amiibo Backup Name</string>
+    <string name="backup_complete">Amiibo backup complete!</string>
+    <string name="backup_failed">Amiibo backup failed!</string>
 
     <string name="sync_amiibo_info">Sync with AmiiboAPI</string>
     <string name="import_amiibo_info">Import Amiibo info</string>
@@ -282,6 +287,10 @@
     <string name="fail_bank_oob">Selected bank exceeds count!</string>
     <string name="fail_active_oob">Active bank beyond new count!</string>
     <string name="fail_elite_bank_parse">Failed to parse banks!</string>
+    <string name="fail_read_amiibo">Reading Amiibo data failed!</string>
+    <string name="fail_write_amiibo">Writing Amiibo data failed!</string>
+    <string name="fail_early_remove">Amiibo removed too early!</string>
+    <string name="fail_amiibo_npe">Please scan the Amiibo again</string>
 
     <string name="elite_write_error">Error while writing data to N2 Elite</string>
     <string name="elite_auth_error">Error while authenticating N2 Elite</string>

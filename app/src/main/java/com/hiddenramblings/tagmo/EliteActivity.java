@@ -27,9 +27,9 @@ import com.hiddenramblings.tagmo.adapter.EliteWriteBlankAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
 import com.hiddenramblings.tagmo.nfc.TagWriter;
-import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 
 import org.androidannotations.annotations.AfterViews;

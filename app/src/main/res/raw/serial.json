@@ -1,0 +1,871 @@
+[
+   {
+      "serial":"AA",
+      "series":"Super Smash Bros.",
+      "items":[
+         {
+            "product":100298,
+            "serial":"AA",
+            "name":"Mario"
+         },
+         {
+            "product":100310,
+            "serial":"AB",
+            "name":"Peach"
+         },
+         {
+            "product":100322,
+            "serial":"AC",
+            "name":"Donkey Kong"
+         },
+         {
+            "product":100316,
+            "serial":"AE",
+            "name":"Link"
+         },
+         {
+            "product":100328,
+            "serial":"AF",
+            "name":"Fox"
+         },
+         {
+            "product":100331,
+            "serial":"AG",
+            "name":"Samus"
+         },
+         {
+            "product":100334,
+            "serial":"AH",
+            "name":"Wii Fit Trainer"
+         },
+         {
+            "product":100313,
+            "serial":"AJ",
+            "name":"Villager"
+         },
+         {
+            "product":100306,
+            "serial":"AK",
+            "name":"Pikachu"
+         },
+         {
+            "product":100319,
+            "serial":"AL",
+            "name":"Kirby"
+         },
+         {
+            "product":100303,
+            "serial":"AM",
+            "name":"Marth"
+         },
+         {
+            "product":100460,
+            "serial":"AN",
+            "name":"Luigi"
+         },
+         {
+            "product":100466,
+            "serial":"AP",
+            "name":"Diddy Kong"
+         },
+         {
+            "product":100457,
+            "serial":"AQ",
+            "name":"Zelda"
+         },
+         {
+            "product":100469,
+            "serial":"AR - Little Mac"
+         },
+         {
+            "product":100454,
+            "serial":"AS",
+            "name":"Pit"
+         },
+         {
+            "product":100463,
+            "serial":"AT",
+            "name":"Lucario"
+         },
+         {
+            "product":100472,
+            "serial":"AU",
+            "name":"Captain Falcon"
+         },
+         {
+            "product":100722,
+            "serial":"AV",
+            "name":"Rosalina & Luma"
+         },
+         {
+            "product":100710,
+            "serial":"AW",
+            "name":"Bowser"
+         },
+         {
+            "product":100713,
+            "serial":"AX",
+            "name":"Bowser Jr."
+         },
+         {
+            "product":100716,
+            "serial":"AY",
+            "name":"Toon Link"
+         },
+         {
+            "product":100719,
+            "serial":"AZ",
+            "name":"Sheik"
+         },
+         {
+            "product":100725,
+            "serial":"BA",
+            "name":"Ike"
+         },
+         {
+            "product":101919,
+            "serial":"BB",
+            "name":"Dr. Mario"
+         },
+         {
+            "product":101344,
+            "serial":"BC",
+            "name":"Wario"
+         },
+         {
+            "product":101763,
+            "serial":"BD",
+            "name":"Ganondorf"
+         },
+         {
+            "product":102155,
+            "serial":"BE",
+            "name":"Falco"
+         },
+         {
+            "product":101753,
+            "serial":"BF",
+            "name":"Zero Suit Samus"
+         },
+         {
+            "product":101916,
+            "serial":"BG",
+            "name":"Olimar"
+         },
+         {
+            "product":101760,
+            "serial":"BH",
+            "name":"Palutena"
+         },
+         {
+            "product":101757,
+            "serial":"BJ",
+            "name":"Dark Pit"
+         },
+         {
+            "product":"",
+            "serial":"BK",
+            "name":"Mii Brawler"
+         },
+         {
+            "product":"",
+            "serial":"BL",
+            "name":"Mii Swordfighter"
+         },
+         {
+            "product":"",
+            "serial":"BM",
+            "name":"Mii Gunner"
+         },
+         {
+            "product":101347,
+            "serial":"BN",
+            "name":"Charizard"
+         },
+         {
+            "product":101393,
+            "serial":"BP",
+            "name":"Greninja"
+         },
+         {
+            "product":101389,
+            "serial":"BQ",
+            "name":"Jigglypuff"
+         },
+         {
+            "product":100975,
+            "serial":"BR",
+            "name":"Meta Knight"
+         },
+         {
+            "product":100976,
+            "serial":"BS",
+            "name":"King Dedede"
+         },
+         {
+            "product":101341,
+            "serial":"BT",
+            "name":"Lucina"
+         },
+         {
+            "product":101338,
+            "serial":"BU",
+            "name":"Robin"
+         },
+         {
+            "product":100974,
+            "serial":"BV",
+            "name":"Shulk"
+         },
+         {
+            "product":101353,
+            "serial":"BW",
+            "name":"Ness"
+         },
+         {
+            "product":"",
+            "serial":"BX",
+            "name":"Mr. Game & Watch"
+         },
+         {
+            "product":102763,
+            "serial":"BY",
+            "name":"R.O.B. (Famicom)"
+         },
+         {
+            "product":"",
+            "serial":"BZ",
+            "name":"Duck Hunt"
+         },
+         {
+            "product":100978,
+            "serial":"CA",
+            "name":"Sonic"
+         },
+         {
+            "product":100977,
+            "serial":"CB",
+            "name":"Mega Man"
+         },
+         {
+            "product":101350,
+            "serial":"CC",
+            "name":"PAC-MAN"
+         },
+         {
+            "product":"",
+            "serial":"CD",
+            "name":"R.O.B. (NES)"
+         },
+         {
+            "product":102158,
+            "serial":"CE",
+            "name":"Mewtwo"
+         },
+         {
+            "product":102766,
+            "serial":"CF",
+            "name":"Lucas"
+         },
+         {
+            "product":102851,
+            "serial":"CG",
+            "name":"Roy"
+         },
+         {
+            "product":102848,
+            "serial":"CH",
+            "name":"Ryu"
+         },
+         {
+            "product":"",
+            "serial":"CJ",
+            "name":"Mega Man (Gold) [495000AACJS1]"
+         },
+         {
+            "product":102248,
+            "serial":"3C",
+            "name":"Mii Fighters [Mii Brawler, Mii Gunner, Mii Swordfighter]"
+         },
+         {
+            "product":102251,
+            "serial":"3D",
+            "name":"Retro 3-Pack [R.O.B. (NES), Duck Hunt, Mr. Game & Watch]"
+         },
+         {
+            "product":104798,
+            "serial":"CK",
+            "name":"Cloud"
+         },
+         {
+            "product":104804,
+            "serial":"CL",
+            "name":"Corrin"
+         },
+         {
+            "product":104801,
+            "serial":"CM",
+            "name":"Bayonetta"
+         },
+         {
+            "product":104951,
+            "serial":"CN",
+            "name":"Cloud (Player 2)"
+         },
+         {
+            "product":"",
+            "serial":"CP",
+            "name":"Corrin (Player 2)"
+         },
+         {
+            "product":"",
+            "serial":"CQ",
+            "name":"Bayonetta (Player 2)"
+         }
+      ]
+   },
+   {
+      "serial":"AB",
+      "series":"Super Mario Bros.",
+      "items":[
+         {
+            "product":101306,
+            "serial":"AA",
+            "name":"Mario"
+         },
+         {
+            "product":101312,
+            "serial":"AB",
+            "name":"Luigi"
+         },
+         {
+            "product":101309,
+            "serial":"AC",
+            "name":"Peach"
+         },
+         {
+            "product":101315,
+            "serial":"AD",
+            "name":"Yoshi"
+         },
+         {
+            "product":101318,
+            "serial":"AE",
+            "name":"Toad"
+         },
+         {
+            "product":101321,
+            "serial":"AF",
+            "name":"Bowser"
+         },
+         {
+            "product":101324,
+            "serial":"AG",
+            "name":"Gold Mario"
+         },
+         {
+            "product":101327,
+            "serial":"AH",
+            "name":"Silver Mario"
+         },
+         {
+            "product":104018,
+            "serial":"AJ",
+            "name":"Rosalina"
+         },
+         {
+            "product":104021,
+            "serial":"AK",
+            "name":"Wario"
+         },
+         {
+            "product":104024,
+            "serial":"AL",
+            "name":"Donkey Kong"
+         },
+         {
+            "product":104027,
+            "serial":"AM",
+            "name":"Diddy Kong"
+         },
+         {
+            "product":104012,
+            "serial":"AN",
+            "name":"Daisy"
+         },
+         {
+            "product":104007,
+            "serial":"AP",
+            "name":"Waluigi"
+         },
+         {
+            "product":104015,
+            "serial":"AQ",
+            "name":"Boo"
+         }
+      ]
+   },
+   {
+      "serial":"AC",
+      "series":"Chibi-Robo!",
+      "items":[
+         {
+            "product":102271,
+            "serial":"AA",
+            "name":"Chibi-Robo"
+         }
+      ]
+   },
+   {
+      "serial":"AE",
+      "series":"Splatoon",
+      "items":[
+         {
+            "product":101475,
+            "serial":"AA",
+            "name":"Inkling Girl"
+         },
+         {
+            "product":101472,
+            "serial":"AB",
+            "name":"Inkling Boy"
+         },
+         {
+            "product":"",
+            "serial":"AC",
+            "name":"Inkling Squid"
+         },
+         {
+            "product":"",
+            "serial":"AD",
+            "name":"Callie"
+         },
+         {
+            "product":103708,
+            "serial":"AF",
+            "name":"Inkling Girl (Recolor)"
+         },
+         {
+            "product":103705,
+            "serial":"AG",
+            "name":"Inkling Boy (Recolor)"
+         },
+         {
+            "product":"",
+            "serial":"AH",
+            "name":"Inkling Squid (Recolor)"
+         },
+         {
+            "product":"",
+            "serial":"AJ",
+            "name":"Inkling Girl (Splatoon 2)"
+         },
+         {
+            "product":"",
+            "serial":"AK",
+            "name":"Inkling Boy (Splatoon 2)"
+         },
+         {
+            "product":"",
+            "serial":"AL",
+            "name":"Inkling Squid (Splatoon 2)"
+         },
+         {
+            "product":101485,
+            "serial":"3A",
+            "name":"Inkling 3-Pack [Inkling Girl, Inkling Boy, Inkling Squid]"
+         },
+         {
+            "product":103702,
+            "serial":"2B",
+            "name":"Callie & Marie [Callie, Marie]"
+         },
+         {
+            "product":103713,
+            "serial":"3C",
+            "name":"Inkling 3-Pack (Recolor) [Inkling Girl (Recolor), Inkling Boy (Recolor), Inkling Squid (Recolor)]"
+         }
+      ]
+   },
+   {
+      "serial":"AF",
+      "series":"Super Mario Bros. 30th Anniversary",
+      "items":[
+         {
+            "product":102265,
+            "serial":"AA",
+            "name":"8-Bit Mario (Classic)"
+         },
+         {
+            "product":102268,
+            "serial":"AB",
+            "name":"8-Bit Mario (Modern)"
+         }
+      ]
+   },
+   {
+      "serial":"AJ",
+      "series":"Animal Crossing",
+      "items":[
+         {
+            "product":102685,
+            "serial":"AA",
+            "name":"Isabelle"
+         },
+         {
+            "product":"",
+            "serial":"AB",
+            "name":"KK Slider"
+         },
+         {
+            "product":102625,
+            "serial":"AC - Mabel"
+         },
+         {
+            "product":102623,
+            "serial":"AD",
+            "name":"Tom Nook"
+         },
+         {
+            "product":103182,
+            "serial":"AE",
+            "name":"Digby"
+         },
+         {
+            "product":102624,
+            "serial":"AF",
+            "name":"Lottie"
+         },
+         {
+            "product":"",
+            "serial":"AG",
+            "name":"Reese"
+         },
+         {
+            "product":"",
+            "serial":"AH",
+            "name":"Cyrus"
+         },
+         {
+            "product":102773,
+            "serial":"AJ",
+            "name":"Blathers"
+         },
+         {
+            "product":102776,
+            "serial":"AK",
+            "name":"Celeste"
+         },
+         {
+            "product":102779,
+            "serial":"AL",
+            "name":"Resetti"
+         },
+         {
+            "product":102769,
+            "serial":"AM",
+            "name":"Kicks"
+         },
+         {
+            "product":103177,
+            "serial":"AN",
+            "name":"Isabelle (Summer)"
+         },
+         {
+            "product":102860,
+            "serial":"AP",
+            "name":"Rover"
+         },
+         {
+            "product":102857,
+            "serial":"AQ",
+            "name":"Timmy & Tommy"
+         },
+         {
+            "product":102854,
+            "serial":"AR",
+            "name":"Kapp'n"
+         },
+         {
+            "product":102626,
+            "serial":"3A",
+            "name":"Animal Crossing 3-Pack [K.K., Reese, Cyrus]"
+         },
+         {
+            "product":102622,
+            "serial":"2B",
+            "name":"amiibo Festival [Isabelle, Digby]"
+         }
+      ]
+   },
+   {
+      "serial":"AK",
+      "series":"The Legend of Zelda",
+      "items":[
+         {
+            "product":103146,
+            "serial":"AA",
+            "name":"Wolf Link"
+         },
+         {
+            "product":104384,
+            "serial":"AB",
+            "name":"Link (Ocarina of Time)"
+         },
+         {
+            "product":"",
+            "serial":"AC",
+            "name":"Link (Majora's Mask)"
+         },
+         {
+            "product":"",
+            "serial":"AD",
+            "name":"Link (Twilight Princess)"
+         },
+         {
+            "product":"",
+            "serial":"AE",
+            "name":"Link (Skyward Sword)"
+         },
+         {
+            "product":104387,
+            "serial":"AF",
+            "name":"8-Bit Link"
+         },
+         {
+            "product":"",
+            "serial":"AG",
+            "name":"Link (Wind Waker)"
+         },
+         {
+            "product":"",
+            "serial":"AJ",
+            "name":"Zelda (Wind Waker)"
+         },
+         {
+            "product":104664,
+            "serial":"AK",
+            "name":"Link (Archer)"
+         },
+         {
+            "product":104667,
+            "serial":"AL",
+            "name":"Link (Rider)"
+         },
+         {
+            "product":104417,
+            "serial":"AM",
+            "name":"Guardian"
+         },
+         {
+            "product":104661,
+            "serial":"AN",
+            "name":"Zelda"
+         },
+         {
+            "product":104670,
+            "serial":"AU",
+            "name":"Bokoblin"
+         },
+         {
+            "product":104379,
+            "serial":"2A",
+            "name":"Wind Waker 2-Pack [Link (Wind Waker), Zelda (Wind Waker)]"
+         },
+         {
+            "product":"",
+            "serial":"AH",
+            "name":""
+         },
+         {
+            "product":"",
+            "serial":"AP",
+            "name":""
+         },
+         {
+            "product":"",
+            "serial":"AQ",
+            "name":""
+         },
+         {
+            "product":"",
+            "serial":"AR",
+            "name":""
+         },
+         {
+            "product":"",
+            "serial":"AS",
+            "name":""
+         },
+         {
+            "product":"",
+            "serial":"AT",
+            "name":""
+         }
+      ]
+   },
+   {
+      "serial":"AL",
+      "series":"Kirby",
+      "items":[
+         {
+            "product":103520,
+            "serial":"AA",
+            "name":"Kirby"
+         },
+         {
+            "product":103523,
+            "serial":"AB",
+            "name":"Meta Knight"
+         },
+         {
+            "product":103526,
+            "serial":"AC",
+            "name":"King Dedede"
+         },
+         {
+            "product":103529,
+            "serial":"AD",
+            "name":"Waddle Dee"
+         }
+      ]
+   },
+   {
+      "serial":"AP",
+      "series":"Pikmin",
+      "items":[
+         {
+            "product":105044,
+            "serial":"AA",
+            "name":"Pikmin"
+         }
+      ]
+   },
+   {
+      "serial":"AQ",
+      "series":"Fire Emblem",
+      "items":[
+         {
+            "product":105131,
+            "serial":"2A",
+            "name":"Alm & Celica [Alm, Celica]"
+         }
+      ]
+   },
+   {
+      "serial":"YA",
+      "series":"Yoshi's Woolly World",
+      "items":[
+         {
+            "product":101774,
+            "serial":"AA",
+            "name":"Green Yarn Yoshi"
+         },
+         {
+            "product":101767,
+            "serial":"AB",
+            "name":"Pink Yarn Yoshi"
+         },
+         {
+            "product":101770,
+            "serial":"AC",
+            "name":"Light Blue Yarn Yoshi"
+         },
+         {
+            "product":102578,
+            "serial":"AD",
+            "name":"Mega Yarn Yoshi"
+         },
+         {
+            "product":104566,
+            "serial":"AE",
+            "name":"Yarn Poochy"
+         }
+      ]
+   },
+   {
+      "serial":"AM",
+      "series":"Monster Hunter Stories",
+      "items":[
+         {
+            "product":"",
+            "serial":"AA",
+            "name":"隻眼のリオレウス＆ライダー（男の子）"
+         },
+         {
+            "product":"",
+            "serial":"AB",
+            "name":"隻眼のリオレウス＆ライダー（女の子）"
+         },
+         {
+            "product":"",
+            "serial":"AC",
+            "name":"ナビルー"
+         },
+         {
+            "product":"",
+            "serial":"AD",
+            "name":"リオレイア＆シュヴァル"
+         },
+         {
+            "product":"",
+            "serial":"AE",
+            "name":"ベリオロス（ヒョウガ）＆アユリア"
+         },
+         {
+            "product":"",
+            "serial":"AF",
+            "name":"クルペッコ＆ダン先輩"
+         }
+      ]
+   },
+   {
+      "serial":"AN",
+      "series":"BOXBOY!",
+      "items":[
+         {
+            "product":"",
+            "serial":"AA",
+            "name":"Qbby"
+         }
+      ]
+   },
+   {
+      "serial":"AH",
+      "series":"Shovel Knight",
+      "items":[
+         {
+            "product":"JTSK-2901",
+            "serial":"AA",
+            "name":"Shovel Knight"
+         }
+      ]
+   },
+   {
+      "serial":"MA",
+      "series":"Animal Crossing",
+      "items":[
+         {
+
+         }
+      ]
+   },
+   {
+      "serial":"MD",
+      "series":"Mario Sports Superstars",
+      "items":[
+         {
+
+         }
+      ]
+   },
+   {
+      "serial":"ME",
+      "series":"New Leaf: Welcome amiibo",
+      "items":[
+         {
+
+         }
+      ]
+   }
+]

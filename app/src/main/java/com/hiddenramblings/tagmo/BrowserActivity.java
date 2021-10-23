@@ -1196,10 +1196,10 @@ public class BrowserActivity extends AppCompatActivity implements
                 com.google.android.material.R.id.snackbar_text);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_stat_notification, 0, 0, 0);
+                    R.drawable.ic_stat_notice, 0, 0, 0);
         } else {
             textView.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_stat_notification, 0, 0, 0);
+                    R.drawable.ic_stat_notice, 0, 0, 0);
         }
         textView.setGravity(Gravity.CENTER_VERTICAL);
         textView.setCompoundDrawablePadding(getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));

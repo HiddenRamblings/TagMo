@@ -11,4 +11,11 @@
         <item>WIFI_ONLY</item>
         <item>NEVER</item>
     </string-array>
+
+    <string-array name="production_factory">
+        <item>S1</item>
+        <item>S2</item>
+        <item>W1</item>
+        <item>W2</item>
+    </string-array>
 </resources>

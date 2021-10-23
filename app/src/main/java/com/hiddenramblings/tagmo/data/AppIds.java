@@ -11,6 +11,6 @@ public class AppIds {
     static {
         appIds.put(AppDataTPFragment.APP_ID, TagMo.getStringRes(R.string.zelda_twilight));
         appIds.put(AppDataSSBFragment.APP_ID, TagMo.getStringRes(R.string.super_smash));
-        appIds.put(-1, TagMo.getStringRes(R.string.unknown));
+        appIds.put(-1, TagMo.getStringRes(R.string.unspecified));
     }
 }

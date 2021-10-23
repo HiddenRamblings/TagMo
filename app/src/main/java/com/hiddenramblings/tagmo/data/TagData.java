@@ -142,11 +142,11 @@ public class TagData {
     }
 
     public String getMiiName() throws UnsupportedEncodingException {
-        return TagUtils.getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16BE);
+        return TagUtils.getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16LE);
     }
 
     public void setMiiName(String value) {
-        TagUtils.putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16BE, value);
+        TagUtils.putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16LE, value);
     }
 
     @SuppressWarnings("unused")

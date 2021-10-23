@@ -38,6 +38,10 @@
             android:key="@string/settings_enable_elite_support"
             android:summary="@string/elite_details"
             android:title="@string/enable_elite"/>
+        <androidx.preference.Preference
+            android:key="@string/lock_elite_hardware"
+            android:summary="@string/lock_elite_hardware_details"
+            android:title="@string/lock_elite_hardware"/>
     </androidx.preference.PreferenceCategory>
     <androidx.preference.PreferenceCategory
         android:title="@string/amiibo_info">

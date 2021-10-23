@@ -138,7 +138,7 @@
     <string name="bonus_two">Bonus Effect 2</string>
     <string name="bonus_three">Bonus Effect 2</string>
 
-    <string name="wrote_file">Wrote logcat to %1$s</string>
+    <string name="wrote_file">File saved to %1$s</string>
     <string name="write_error">Error: %1$s</string>
     <string name="no_data">No data to write</string>
     <string name="tag_type_error">Error getting tag data. Possibly not a NTAG215</string>

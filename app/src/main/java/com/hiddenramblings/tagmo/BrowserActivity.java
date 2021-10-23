@@ -455,12 +455,13 @@ public class BrowserActivity extends AppCompatActivity implements
         input.setText(amiiboFileName);
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
-            if (TagWriter.writeBlobToFile(
+            if (TagWriter.writeBytesToFile(settings.getBrowserRootFolder(),
                     input.getText().toString() + ".bin", tagData)) {
                 showToast(R.string.backup_complete);
             } else {
                 showToast(R.string.backup_failed);
             }
+            this.refresh();
             backupDialog.dismiss();
         });
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());

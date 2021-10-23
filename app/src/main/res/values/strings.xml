@@ -95,6 +95,7 @@
     <string name="unknown">Unknown</string>
     <string name="error">ERROR</string>
     <string name="invalid">Invalid</string>
+    <string name="unspecified">Unspecified</string>
 
     <string name="change_view">Change View</string>
     <string name="settings">Settings</string>

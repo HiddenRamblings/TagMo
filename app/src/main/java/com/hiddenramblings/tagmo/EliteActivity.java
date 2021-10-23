@@ -30,7 +30,6 @@ import com.hiddenramblings.tagmo.adapter.EliteWriteBlankAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
 import com.hiddenramblings.tagmo.nfc.TagWriter;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -91,7 +90,7 @@ public class EliteActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         this.settings = new BrowserSettings();
-        this.settings.setBrowserRootFolder(new File(FileUtils.getSDCardDir(), prefs.browserRootFolder().get()));
+        this.settings.setBrowserRootFolder(new File(TagMo.getStorage(), prefs.browserRootFolder().get()));
         this.settings.setQuery(prefs.query().get());
         this.settings.setSort(prefs.sort().get());
         this.settings.setAmiiboSeriesFilter(prefs.filterAmiiboSeries().get());
@@ -153,7 +152,7 @@ public class EliteActivity extends AppCompatActivity implements
     private void updateEliteHardwareAdapter(ArrayList<String> tagData) {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = FileUtils.loadAmiiboManager();
+            amiiboManager = AmiiboManager.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;

@@ -41,7 +41,6 @@ import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.RequestStamp;
 import com.hiddenramblings.tagmo.nfc.KeyManager;
-import com.hiddenramblings.tagmo.nfc.FileUtils;
 
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.Background;
@@ -214,14 +213,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return;
         }
 
-        File file = new File(FileUtils.getFilesDir(), FileUtils.AMIIBO_DATABASE_FILE);
+        File file = new File(TagMo.getTagMoFiles(), AmiiboManager.AMIIBO_DATABASE_FILE);
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(file);
-            FileUtils.saveAmiiboInfo(this.amiiboManager, fileOutputStream);
+            AmiiboManager.saveAmiiboInfo(this.amiiboManager, fileOutputStream);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
-            showToast(R.string.amiibo_info_export_fail, FileUtils.friendlyPath(file), Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_info_export_fail, TagMo.friendlyPath(file), Toast.LENGTH_SHORT);
             return;
         } finally {
             if (fileOutputStream != null) {
@@ -233,7 +232,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         }
         showSnackbar(getString(R.string.amiibo_info_exported,
-                FileUtils.friendlyPath(file)), Snackbar.LENGTH_LONG);
+                TagMo.friendlyPath(file)), Snackbar.LENGTH_LONG);
     }
 
     @PreferenceClick(R.string.settings_reset_info)
@@ -428,7 +427,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = FileUtils.loadAmiiboManager();
+            amiiboManager = AmiiboManager.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -466,7 +465,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return;
 
         try {
-            FileUtils.saveLocalAmiiboInfo(amiiboManager);
+            AmiiboManager.saveAmiiboInfo(amiiboManager);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -487,11 +486,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Background(id = BACKGROUND_AMIIBO_MANAGER)
     void resetAmiiboManagerTask() {
-        requireContext().deleteFile(FileUtils.AMIIBO_DATABASE_FILE);
+        requireContext().deleteFile(AmiiboManager.AMIIBO_DATABASE_FILE);
 
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = FileUtils.loadDefaultAmiiboManager();
+            amiiboManager = AmiiboManager.loadDefaultAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -603,7 +602,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 if (Thread.currentThread().isInterrupted())
                     return;
 
-                FileUtils.saveLocalAmiiboInfo(amiiboManager);
+                AmiiboManager.saveAmiiboInfo(amiiboManager);
                 setAmiiboManager(amiiboManager);
                 showSnackbar(getString(R.string.sync_amiibo_status,
                         getString(R.string.sync_complete)), Snackbar.LENGTH_SHORT);

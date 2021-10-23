@@ -21,7 +21,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
-import com.hiddenramblings.tagmo.nfc.FileUtils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -125,7 +124,7 @@ public class ImageActivity extends AppCompatActivity {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = FileUtils.loadAmiiboManager();
+            amiiboManager = AmiiboManager.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
         }
@@ -222,7 +221,7 @@ public class ImageActivity extends AppCompatActivity {
         (new AlertDialog.Builder(this))
                 .setTitle(R.string.save_image)
                 .setPositiveButton(R.string.save, (dialogInterface, i) -> {
-                    final File file = new File(FileUtils.getFilesDir().getAbsolutePath(),
+                    final File file = new File(TagMo.getTagMoFiles().getAbsolutePath(),
                             editText.getText().toString() + ".png");
 
                     Glide.with(ImageActivity.this)
@@ -236,7 +235,7 @@ public class ImageActivity extends AppCompatActivity {
                                         fos = new FileOutputStream(file);
                                         resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
 
-                                        String text = "Saved file as " + FileUtils.friendlyPath(file);
+                                        String text = "Saved file as " + TagMo.friendlyPath(file);
                                         Toast.makeText(ImageActivity.this, text, Toast.LENGTH_SHORT).show();
                                     } catch (FileNotFoundException e) {
                                         e.printStackTrace();

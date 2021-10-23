@@ -26,6 +26,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -33,7 +34,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
-import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
@@ -63,24 +63,24 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
         boolean refresh = firstRun ||
-                !FileUtils.equals(newBrowserSettings.getQuery(), oldBrowserSettings.getQuery()) ||
-                !FileUtils.equals(newBrowserSettings.getSort(), oldBrowserSettings.getSort()) ||
-                !FileUtils.equals(newBrowserSettings.getGameSeriesFilter(), oldBrowserSettings.getGameSeriesFilter()) ||
-                !FileUtils.equals(newBrowserSettings.getCharacterFilter(), oldBrowserSettings.getCharacterFilter()) ||
-                !FileUtils.equals(newBrowserSettings.getAmiiboSeriesFilter(), oldBrowserSettings.getAmiiboSeriesFilter()) ||
-                !FileUtils.equals(newBrowserSettings.getAmiiboTypeFilter(), oldBrowserSettings.getAmiiboTypeFilter()) ||
-                !FileUtils.equals(newBrowserSettings.isShowingMissingFiles(), oldBrowserSettings.isShowingMissingFiles());
+                !BrowserSettings.equals(newBrowserSettings.getQuery(), oldBrowserSettings.getQuery()) ||
+                !BrowserSettings.equals(newBrowserSettings.getSort(), oldBrowserSettings.getSort()) ||
+                !BrowserSettings.equals(newBrowserSettings.getGameSeriesFilter(), oldBrowserSettings.getGameSeriesFilter()) ||
+                !BrowserSettings.equals(newBrowserSettings.getCharacterFilter(), oldBrowserSettings.getCharacterFilter()) ||
+                !BrowserSettings.equals(newBrowserSettings.getAmiiboSeriesFilter(), oldBrowserSettings.getAmiiboSeriesFilter()) ||
+                !BrowserSettings.equals(newBrowserSettings.getAmiiboTypeFilter(), oldBrowserSettings.getAmiiboTypeFilter()) ||
+                !BrowserSettings.equals(newBrowserSettings.isShowingMissingFiles(), oldBrowserSettings.isShowingMissingFiles());
 
-        if (firstRun || !FileUtils.equals(newBrowserSettings.getAmiiboFiles(), oldBrowserSettings.getAmiiboFiles())) {
+        if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(), oldBrowserSettings.getAmiiboFiles())) {
             this.data.clear();
             if (newBrowserSettings.getAmiiboFiles() != null)
                 this.data.addAll(newBrowserSettings.getAmiiboFiles());
             refresh = true;
         }
-        if (!FileUtils.equals(newBrowserSettings.getAmiiboManager(), oldBrowserSettings.getAmiiboManager())) {
+        if (!BrowserSettings.equals(newBrowserSettings.getAmiiboManager(), oldBrowserSettings.getAmiiboManager())) {
             refresh = true;
         }
-        if (!FileUtils.equals(newBrowserSettings.getAmiiboView(), oldBrowserSettings.getAmiiboView())) {
+        if (!BrowserSettings.equals(newBrowserSettings.getAmiiboView(), oldBrowserSettings.getAmiiboView())) {
             refresh = true;
         }
         if (refresh) {
@@ -496,7 +496,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), tagInfo != null);
             if (item.getFilePath() != null) {
                 this.itemView.setEnabled(true);
-                this.txtPath.setText(boldMatchingText(FileUtils.friendlyPath(item.getFilePath()), query));
+                this.txtPath.setText(boldMatchingText(TagMo.friendlyPath(item.getFilePath()), query));
                 this.txtPath.setTextColor(this.txtPath.getResources().getColor(R.color.tag_text));
             } else {
                 this.itemView.setEnabled(false);

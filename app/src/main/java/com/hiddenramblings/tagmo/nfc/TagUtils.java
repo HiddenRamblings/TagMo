@@ -263,6 +263,18 @@ public class TagUtils {
         return uid;
     }
 
+    public static String randomizeAmiiboSerial(String serial) {
+        Random random = new Random();
+        String week = new DecimalFormat("00").format(
+                random.nextInt(52 - 1 + 1) + 1);
+        String year = String.valueOf(random.nextInt(9 + 1));
+        String identifier = serial.substring(3, 7);
+        String facility = TagMo.getContext().getResources().getStringArray(
+                R.array.production_factory)[random.nextInt(3 + 1)];
+
+        return week + year + "000" + identifier + facility;
+    }
+
     public static byte[] getBytes(ByteBuffer bb, int offset, int length) {
         byte[] bytes = new byte[length];
         bb.position(offset);
@@ -320,16 +332,5 @@ public class TagUtils {
             }
         }
         putBytes(bb, offset, bytes);
-    }
-
-    public static String randomizeAmiiboSerial(String serial) {
-        Random random = new Random();
-        String week = new DecimalFormat("00").format(random.nextInt(52 - 1 + 1) + 1);
-        String year = String.valueOf(random.nextInt(9 + 1));
-        String identifier = serial.substring(3, 7);
-        String facility = TagMo.getContext().getResources().getStringArray(
-                R.array.production_factory)[random.nextInt(3 + 1)];
-
-        return week + year + "000" + identifier + facility;
     }
 }

@@ -45,6 +45,7 @@ public class TagMo extends Application {
 
     public static Charset UTF_8;
     public static Charset UTF_16BE;
+    public static Charset UTF_16LE;
 
     private static WeakReference<Context> mContext;
     private static WeakReference<Preferences_> mPrefs;
@@ -55,9 +56,11 @@ public class TagMo extends Application {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             UTF_8 = StandardCharsets.UTF_8;
             UTF_16BE = StandardCharsets.UTF_16BE;
+            UTF_16LE = StandardCharsets.UTF_16LE;
         } else {
             UTF_8 = Charset.forName("UTF-8");
             UTF_16BE = Charset.forName("UTF-16BE");
+            UTF_16LE = Charset.forName("UTF-16LE");
         }
         mContext = new WeakReference<>(this);
         mPrefs = new WeakReference<>(prefs);

@@ -442,8 +442,8 @@ public class TagWriter {
         }
     }
 
-    public static boolean writeBlobToFile(String name, byte[] tagData) {
-        File directory = new File(FileUtils.getFilesDir(), "backup");
+    public static boolean writeBytesToFile(File browserRoot, String name, byte[] tagData) {
+        File directory = new File(browserRoot, "backup");
         directory.mkdirs();
         try {
             FileOutputStream fos = new FileOutputStream(new File(directory, name));
@@ -456,7 +456,7 @@ public class TagWriter {
         }
     }
 
-    public static byte[] amiiboBackup(NTAG215 tag) throws Exception {
+    public static byte[] scanTagToBytes(NTAG215 tag) throws Exception {
         byte[] output = new byte[572];
         try {
             byte[] data = tag.fastRead(0, 134);

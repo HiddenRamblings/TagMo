@@ -303,7 +303,7 @@ public class NfcActivity extends AppCompatActivity {
                         break;
 
                     case TagMo.ACTION_BACKUP_AMIIBO:
-                        data = TagWriter.amiiboBackup(mifare);
+                        data = TagWriter.scanTagToBytes(mifare);
                         Intent backup = new Intent(TagMo.ACTION_NFC_SCANNED);
                         backup.putExtra(TagMo.EXTRA_TAG_DATA, data);
                         setResult(Activity.RESULT_OK, backup);

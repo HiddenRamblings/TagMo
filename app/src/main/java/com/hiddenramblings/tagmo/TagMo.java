@@ -5,9 +5,12 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import com.endgames.environment.Storage;
+
 import org.androidannotations.annotations.EApplication;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -116,5 +119,23 @@ public class TagMo extends Application {
 
     public static void Error(String TAG, int resource, Exception e) {
         Log.e(TAG, getStringRes(resource), e);
+    }
+
+    public static File getStorage() {
+        return Storage.getStorageFile();
+    }
+
+    public static File getTagMoFiles() {
+        return mContext.get().getExternalFilesDir(null);
+    }
+
+    public static String friendlyPath(File file) {
+        String dirPath = file.getAbsolutePath();
+        String sdcardPath = getStorage().getAbsolutePath();
+        if (dirPath.startsWith(sdcardPath)) {
+            dirPath = dirPath.substring(sdcardPath.length());
+        }
+
+        return dirPath;
     }
 }

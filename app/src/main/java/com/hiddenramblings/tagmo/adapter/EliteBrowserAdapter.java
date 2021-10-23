@@ -30,7 +30,6 @@ import com.hiddenramblings.tagmo.Preferences_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
 import com.hiddenramblings.tagmo.nfc.TagWriter;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;

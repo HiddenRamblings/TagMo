@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.nfc.FileUtils;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 
 import java.io.File;
@@ -32,12 +32,12 @@ public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAd
 
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
-        if (firstRun || !FileUtils.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
+        if (firstRun || !BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
             this.rootFolder = newBrowserSettings.getBrowserRootFolder();
             this.showUpFolder = showParentFolder();
             this.notifyDataSetChanged();
         }
-        if (firstRun || !FileUtils.equals(newBrowserSettings.getFolders(), oldBrowserSettings.getFolders())) {
+        if (firstRun || !BrowserSettings.equals(newBrowserSettings.getFolders(), oldBrowserSettings.getFolders())) {
             this.data = newBrowserSettings.getFolders();
             this.notifyDataSetChanged();
         }
@@ -81,8 +81,8 @@ public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAd
     }
 
     public boolean showParentFolder() {
-        return (rootFolder != null && !rootFolder.equals(FileUtils.getSDCardDir()))
-                && rootFolder.getAbsolutePath().startsWith(FileUtils.getSDCardDir().getAbsolutePath());
+        return (rootFolder != null && !rootFolder.equals(TagMo.getStorage()))
+                && rootFolder.getAbsolutePath().startsWith(TagMo.getStorage().getAbsolutePath());
     }
 
     @Override

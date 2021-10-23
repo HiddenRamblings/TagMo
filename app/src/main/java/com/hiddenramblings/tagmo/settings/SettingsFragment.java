@@ -186,7 +186,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.lock_elite_hardware)
     void onLockEliteHardwareClicked() {
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        new AlertDialog.Builder(requireContext())
                 .setMessage(R.string.lock_elite_warning)
                 .setPositiveButton(R.string.proceed, (dialog, which) -> {
                     Intent lock = new Intent(requireContext(), NfcActivity_.class);

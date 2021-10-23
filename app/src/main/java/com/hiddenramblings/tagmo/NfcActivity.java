@@ -10,7 +10,9 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
+import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -18,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,11 +31,11 @@ import com.hiddenramblings.tagmo.nfc.TagWriter;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 @SuppressLint("NonConstantResourceId")
@@ -63,6 +66,17 @@ public class NfcActivity extends AppCompatActivity {
 
     private int write_count;
     private volatile boolean isUnlocking;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
 
     @AfterViews
     void afterViews() {
@@ -450,4 +464,16 @@ public class NfcActivity extends AppCompatActivity {
             }
         }
     };
+
+    @OptionsItem(android.R.id.home)
+    void cancelAction() {
+        setResult(Activity.RESULT_CANCELED);
+        finish();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
 }

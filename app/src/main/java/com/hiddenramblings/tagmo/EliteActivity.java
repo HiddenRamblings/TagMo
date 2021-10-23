@@ -76,8 +76,6 @@ public class EliteActivity extends AppCompatActivity implements
     BankNumberPicker eliteBankCount;
     @ViewById(R.id.write_all_banks)
     AppCompatButton writeAllBanks;
-//    @ViewById(R.id.unlock_elite)
-//    AppCompatButton unlockElite;
     @ViewById(R.id.write_bank_count)
     AppCompatButton writeBankCount;
 
@@ -229,15 +227,6 @@ public class EliteActivity extends AppCompatActivity implements
 
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
-
-//    @Click(R.id.unlock_elite)
-//    void onUnlockEliteClicked() {
-//        Intent activate = new Intent(EliteActivity.this, NfcActivity_.class);
-//        activate.setAction(TagMo.ACTION_UNLOCK_UNIT);
-//        onModifierActivity.launch(activate);
-//
-//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//    }
 
     ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {

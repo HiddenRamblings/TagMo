@@ -29,6 +29,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.Preferences_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -89,6 +90,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference enablePowerTagSupport;
     @PreferenceByKey(R.string.settings_enable_elite_support)
     CheckBoxPreference enableEliteSupport;
+    @PreferenceByKey(R.string.lock_elite_hardware)
+    Preference lockEliteHardware;
     @PreferenceByKey(R.string.settings_info_amiibos)
     Preference amiiboStats;
     @PreferenceByKey(R.string.settings_info_game_series)
@@ -167,7 +170,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     @PreferenceClick(R.string.settings_enable_elite_support)
-    void onenableEliteSupportClicked() {
+    void onEnableEliteSupportClicked() {
         boolean isEnabled = enableEliteSupport.isChecked();
         if (enableEliteSupport.isChecked() && enablePowerTagSupport.isChecked()) {
             showToast(R.string.hardware_conflict, Toast.LENGTH_LONG);
@@ -179,6 +182,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     R.string.elite_details_enabled, prefs.eliteSignature().get()));
         else
             enableEliteSupport.setSummary(getString(R.string.elite_details));
+    }
+
+    @PreferenceClick(R.string.lock_elite_hardware)
+    void onLockEliteHardwareClicked() {
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setMessage(R.string.lock_elite_warning)
+                .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                    Intent lock = new Intent(requireContext(), NfcActivity_.class);
+                    lock.setAction(TagMo.ACTION_LOCK_AMIIBO);
+                    startActivity(lock);
+                    dialog.dismiss();
+                })
+                .setNegativeButton(R.string.cancel, null).show();
     }
 
     @PreferenceClick(R.string.settings_import_info_amiiboapi)
@@ -216,7 +232,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 }
             }
         }
-
         showSnackbar(getString(R.string.amiibo_info_exported,
                 FileUtils.friendlyPath(file)), Snackbar.LENGTH_LONG);
     }

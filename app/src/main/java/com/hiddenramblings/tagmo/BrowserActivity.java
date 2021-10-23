@@ -476,9 +476,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background
     void dumpLogcat() {
         try {
-            String logFile = "tagmo_logcat.txt";
-
-            File file = new File(FileUtils.getFilesDir().getAbsolutePath(), logFile);
+            File file = new File(FileUtils.getFilesDir(), "tagmo_logcat.txt");
             FileUtils.dumpLogcat(file.getAbsolutePath());
             try {
                 MediaScannerConnection.scanFile(this,
@@ -493,42 +491,32 @@ public class BrowserActivity extends AppCompatActivity implements
             } else {
                 fileUri = Uri.fromFile(file);
             }
-
-            this.runOnUiThread(() -> new AlertDialog.Builder(BrowserActivity.this)
-                    .setMessage(getString(R.string.wrote_file, logFile))
-                    .setNegativeButton(R.string.view, (dialog, which) -> {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, fileUri);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                            browserIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        startActivity(browserIntent);
-
-                    })
-                    .setPositiveButton(R.string.close, null)
-                    .show());
+            showLogcatSnackbar(getString(R.string.wrote_file,
+                    FileUtils.friendlyPath(file)), fileUri);
         } catch (Exception e) {
-            this.runOnUiThread(() -> new AlertDialog.Builder(BrowserActivity.this)
-                    .setTitle(R.string.error)
-                    .setMessage(getString(R.string.write_error, e.getMessage()))
-                    .setPositiveButton(R.string.close, null)
-                    .show());
+            showLogcatSnackbar(getString(R.string.write_error, e.getMessage()), null);
         }
+    }
+
+    @UiThread
+    public void showLogcatSnackbar(String message, Uri fileUri) {
+        Snackbar snackbar = buildSnackbar(message, Snackbar.LENGTH_LONG);
+        if (fileUri != null) {
+            snackbar.setAction(R.string.view, v -> {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, fileUri);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                    browserIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(browserIntent);
+                snackbar.dismiss();
+            });
+        }
+        snackbar.show();
     }
 
     @OptionsItem(R.id.dump_logcat)
     void onDumpLogcatClicked() {
         dumpLogcat();
     }
-
-    ActivityResultLauncher<Intent> onUnlockActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null)
-            return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
-
-        // TODO: as is, we eat the result and move forward
-    });
 
     @OptionsItem(R.id.unlock_elite)
     void onUnlockEliteClicked() {
@@ -537,7 +525,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 .setPositiveButton(R.string.proceed, (dialog, which) -> {
                     Intent unlock = new Intent(this, NfcActivity_.class);
                     unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
-                    onUnlockActivity.launch(unlock);
+                    startActivity(unlock);
+                    dialog.dismiss();
                 }).show();
     }
 

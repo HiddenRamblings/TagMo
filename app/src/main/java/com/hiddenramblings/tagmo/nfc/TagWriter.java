@@ -443,7 +443,7 @@ public class TagWriter {
     }
 
     public static boolean writeBytesToFile(File browserRoot, String name, byte[] tagData) {
-        File directory = new File(browserRoot, "backup");
+        File directory = new File(browserRoot, TagMo.getStringRes(R.string.tagmo_backup));
         directory.mkdirs();
         try {
             FileOutputStream fos = new FileOutputStream(new File(directory, name));

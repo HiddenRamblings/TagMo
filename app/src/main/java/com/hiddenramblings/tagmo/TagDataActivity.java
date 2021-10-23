@@ -44,10 +44,9 @@ import com.hiddenramblings.tagmo.data.AppDataSSBFragment;
 import com.hiddenramblings.tagmo.data.AppDataTPFragment;
 import com.hiddenramblings.tagmo.data.AppIds;
 import com.hiddenramblings.tagmo.data.CountryCodes;
-import com.hiddenramblings.tagmo.data.TagData;
 import com.hiddenramblings.tagmo.nfc.KeyManager;
+import com.hiddenramblings.tagmo.nfc.TagData;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
-import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
@@ -229,7 +228,7 @@ public class TagDataActivity extends AppCompatActivity {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = FileUtils.loadAmiiboManager();
+            amiiboManager = AmiiboManager.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(getString(R.string.amiibo_info_parse_error));

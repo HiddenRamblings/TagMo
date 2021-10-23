@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo.nfc;
 import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.data.TagData;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;

@@ -30,7 +30,6 @@ import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
-import com.hiddenramblings.tagmo.nfc.FileUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import org.androidannotations.annotations.AfterViews;
@@ -193,7 +192,7 @@ public class AmiiboActivity extends AppCompatActivity {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = FileUtils.loadAmiiboManager();
+            amiiboManager = AmiiboManager.loadAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(getString(R.string.amiibo_info_parse_error));
@@ -238,7 +237,7 @@ public class AmiiboActivity extends AppCompatActivity {
                     name, uIds, Calendar.getInstance(), (valid ? "" : "_corrupted_")
             );
 
-            File dir = new File(FileUtils.getSDCardDir(), prefs.browserRootFolder().get());
+            File dir = new File(TagMo.getStorage(), prefs.browserRootFolder().get());
             if (!dir.isDirectory()) dir.mkdir();
 
             File file = new File(dir.getAbsolutePath(), fileName);

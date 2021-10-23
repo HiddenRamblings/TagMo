@@ -107,6 +107,7 @@ public class NfcActivity extends AppCompatActivity {
             case TagMo.ACTION_SET_BANK_COUNT:
             case TagMo.ACTION_ACTIVATE_BANK:
             case TagMo.ACTION_DELETE_BANK:
+            case TagMo.ACTION_LOCK_AMIIBO:
             case TagMo.ACTION_UNLOCK_UNIT:
                 startNfcMonitor();
                 break;
@@ -154,6 +155,7 @@ public class NfcActivity extends AppCompatActivity {
                 break;
             case TagMo.ACTION_SCAN_UNIT:
             case TagMo.ACTION_SET_BANK_COUNT:
+            case TagMo.ACTION_LOCK_AMIIBO:
             case TagMo.ACTION_UNLOCK_UNIT:
                 bankNumberPicker.setVisibility(View.GONE);
             case TagMo.ACTION_ACTIVATE_BANK:
@@ -359,18 +361,23 @@ public class NfcActivity extends AppCompatActivity {
                         setResult(Activity.RESULT_OK, delete);
                         break;
 
+                    case TagMo.ACTION_LOCK_AMIIBO:
+                        mifare.amiiboLock();
+                        setResult(Activity.RESULT_OK);
+                        break;
+
                     case TagMo.ACTION_UNLOCK_UNIT:
                         if (isUnlocking) {
-                            Intent unlock = new Intent(TagMo.ACTION_NFC_SCANNED);
                             mifare.amiiboPrepareUnlock();
                             runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                                     .setMessage(R.string.progress_unlock)
                                     .setPositiveButton(R.string.proceed, (dialog, which) -> {
                                         mifare.amiiboUnlock();
                                         isUnlocking = false;
+                                        dialog.dismiss();
                                     }).show());
                             while (isUnlocking) {
-                                setResult(Activity.RESULT_OK, unlock);
+                                setResult(Activity.RESULT_OK);
                             }
                         }
                        break;
@@ -389,6 +396,19 @@ public class NfcActivity extends AppCompatActivity {
                 error = error + "\n" + e.getCause().toString();
             }
             showError(error);
+            if (prefs.enableEliteSupport().get() && error != null
+                    && error.equals("Attempt to read from null array")) {
+                runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
+                        .setMessage(R.string.possible_lock)
+                        .setPositiveButton(R.string.unlock, (dialog, which) -> {
+                            dialog.dismiss();
+                            finish();
+                            Intent unlock = new Intent(this, NfcActivity_.class);
+                            unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
+                            startActivity(unlock);
+                        })
+                        .setNegativeButton(R.string.cancel, null).show());
+            }
         }
     }
 

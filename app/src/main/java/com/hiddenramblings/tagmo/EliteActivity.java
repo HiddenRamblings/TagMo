@@ -170,10 +170,12 @@ public class EliteActivity extends AppCompatActivity implements
             if (amiibo != null) TagMo.Debug(TAG, amiibo.getName());
             amiibos.add(amiibo);
         }
-        this.runOnUiThread(() -> {
-            ((EliteBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
-            amiibosView.getAdapter().notifyDataSetChanged();
-        });
+        if (amiibosView.getAdapter() != null) {
+            this.runOnUiThread(() -> {
+                ((EliteBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
+                amiibosView.getAdapter().notifyDataSetChanged();
+            });
+        }
     }
 
     @Click(R.id.toggle)

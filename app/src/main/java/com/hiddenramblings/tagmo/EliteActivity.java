@@ -332,13 +332,28 @@ public class EliteActivity extends AppCompatActivity implements
         );
     }
 
+    private Amiibo clickedAmiibo;
+    private int clickedPosition;
+
+    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+
+        if (clickedAmiibo != null)
+            onAmiiboLongClicked(clickedAmiibo, clickedPosition);
+    });
+
     @SuppressLint("SetTextI18n")
     @Override
     public void onAmiiboLongClicked(Amiibo amiibo, int position) {
         if (amiibo == null) return;
+        clickedAmiibo = amiibo;
+        clickedPosition = position;
         View view = getLayoutInflater().inflate(R.layout.elite_extended, null);
         ((TextView) view.findViewById(R.id.amiibo_label)).setText(
-                position + ": " + amiibo.name);
+                TagWriter.getValueFromPosition(position) + ": " + amiibo.name);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         Dialog contextMenu = dialog.setView(view).show();
 
@@ -363,11 +378,9 @@ public class EliteActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null)
-            return;
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
@@ -377,12 +390,7 @@ public class EliteActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, AmiiboActivity_.class);
         intent.putExtras(args);
 
-        startActivity(intent);
-    });
-
-    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        // getCallingActivity() requires a result to be requested
+        onViewerActivity.launch(intent);
     });
 
     @Override
@@ -392,6 +400,8 @@ public class EliteActivity extends AppCompatActivity implements
             displayWriteDialog(position);
             return;
         }
+        clickedAmiibo = amiibo;
+        clickedPosition = position;
         for (int x = 0; x < amiiboFiles.size(); x ++) {
             if (amiiboFiles.get(x).getId() == amiibo.id) {
                 Bundle args = new Bundle();

@@ -19,11 +19,17 @@ https://github.com/HiddenRamblings/TagMo/tree/master2
 
 TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC tags. It was created as a result of the "[DIY Amiibo cards](https://gbatemp.net/threads/diy-amiibo-cards.406978/)" thread and all the collaboration that took place in it.
 
+# Submitting Issues:
+
+* The stable and testing branches contain the latest features, but some may be incomplete. If you see progress being made on that feature or ones related to it, make sure to update to the latest version and allow at least 24 hours before reporting. The exception would be a fatal issue (makes the app completely unusable).
+* If you have a suggestion, feel free to submit it with the appropriate labels (ie. enhancement). Much like reporting a new issue, please make sure to allow enough time to verifywhat you are about to request is not currently in progress. The exception would be requested feedback.
+* Duplicate issues will be closed without warning and future comments on the duplicate will be disregarded. A link to the issue is duplicates will be provided upon closure.
+
 # Features:
 
 * Write dump files from legitimate Amiibos into an NTAG215 tag in a way that WiiU/3DS/switch devices will consider to be a legitimate Amiibo with the same functionality.
 * Save data of a tag to a file and restore it to the same or different Amiibo/Clone provided they are of the same character/game/series.
-* Beta feature: Edit some parameters of a SSB type amiibo allowing you to change special effects, stats etc.
+* Beta feature: Edit some parameters of SSB type Amiibos, allowing you to change special effects, stats etc.
 
 # Limitations:
 
@@ -64,7 +70,7 @@ This app is a result of work by many others. Thanks go out to (In alphabetical o
 
 * \_Tim\_ - The originial idea
 * 1RedOne - Support / README
-* AbandonedCart - General modernization and compatibility updates
+* AbandonedCart - Rebuild, N2 Elite / legacy support
 * azsde - Bug fixes / maintenance
 * Bombastisch - Support and motivation
 * brunomarchand - Change AmiiboAPI to https and upgrade to cmake

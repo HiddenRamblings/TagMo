@@ -24,6 +24,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.nfc.KeyManager;
 import com.hiddenramblings.tagmo.nfc.NTAG215;
 import com.hiddenramblings.tagmo.nfc.TagWriter;
@@ -62,8 +63,9 @@ public class NfcActivity extends AppCompatActivity {
     KeyManager keyManager;
     Animation nfcAnimation;
 
-    private int write_count;
+    private NTAG215 mifare;
     private volatile boolean isUnlocking;
+    private int write_count;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -219,7 +221,7 @@ public class NfcActivity extends AppCompatActivity {
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             TagMo.Debug(getClass(), tag.toString());
-            NTAG215 mifare = NTAG215.get(tag);
+            mifare = NTAG215.get(tag);
             if (mifare == null) {
                 throw new Exception(getString(R.string.tag_type_error));
             }
@@ -486,8 +488,20 @@ public class NfcActivity extends AppCompatActivity {
 
     @OptionsItem(android.R.id.home)
     void cancelAction() {
+        if (mifare != null) {
+            try {
+                mifare.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         setResult(Activity.RESULT_CANCELED);
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        cancelAction();
     }
 
 

@@ -20,8 +20,6 @@ import java.util.Random;
 
 public class TagUtils {
 
-    private static final String TAG = TagUtils.class.getSimpleName();
-
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
@@ -77,7 +75,7 @@ public class TagUtils {
             byte[] result = digest.digest(data);
             return bytesToHex(result);
         } catch (NoSuchAlgorithmException e) {
-            TagMo.Error(TAG, e.getMessage());
+            TagMo.Error(TagUtils.class, e.getMessage());
         }
         return null;
     }

@@ -109,7 +109,6 @@ public class BrowserActivity extends AppCompatActivity implements
         SwipeRefreshLayout.OnRefreshListener,
         BrowserSettings.BrowserSettingsListener,
         BrowserAmiibosAdapter.OnAmiiboClickListener {
-    private static final String TAG = BrowserActivity.class.getSimpleName();
 
     public static final int SORT_ID = 0x0;
     public static final int SORT_NAME = 0x1;
@@ -445,7 +444,7 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             long amiiboId = TagUtils.amiiboIdFromTag(tagData);
             Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
-            amiiboFileName = amiibo.getName() + "-" + amiibo.id;
+            amiiboFileName = amiibo.name + "-" + amiibo.id;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -475,23 +474,23 @@ public class BrowserActivity extends AppCompatActivity implements
         onBackupActivity.launch(backup);
     }
 
-    private static void generateLogcat(String fileName) throws Exception {
-        final StringBuilder log = new StringBuilder();
-        String separator = System.getProperty("line.separator");
-        log.append(android.os.Build.MANUFACTURER);
-        log.append(" ");
-        log.append(android.os.Build.MODEL);
-        log.append(separator);
-        log.append("Android SDK ");
-        log.append(Build.VERSION.SDK_INT);
-        log.append(" (");
-        log.append(Build.VERSION.RELEASE);
-        log.append(")");
-        log.append(separator);
-        log.append("TagMo Version " + BuildConfig.VERSION_NAME);
-
+    @Background
+    void dumpLogcat() {
         try {
-            String line;
+            File file = new File(TagMo.getTagMoFiles(), "tagmo_logcat.txt");
+            final StringBuilder log = new StringBuilder();
+            String separator = System.getProperty("line.separator");
+            log.append(android.os.Build.MANUFACTURER);
+            log.append(" ");
+            log.append(android.os.Build.MODEL);
+            log.append(separator);
+            log.append("Android SDK ");
+            log.append(Build.VERSION.SDK_INT);
+            log.append(" (");
+            log.append(Build.VERSION.RELEASE);
+            log.append(")");
+            log.append(separator);
+            log.append("TagMo Version " + BuildConfig.VERSION_NAME);
             Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                     "logcat", "-d",
                     BuildConfig.APPLICATION_ID,
@@ -502,29 +501,20 @@ public class BrowserActivity extends AppCompatActivity implements
                     mLogcatProc.getInputStream()));
             log.append(separator);
             log.append(separator);
+            String line;
             while ((line = reader.readLine()) != null) {
                 log.append(line);
                 log.append(separator);
             }
             reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try (FileOutputStream fos = new FileOutputStream(new File(fileName))) {
-            fos.write(log.toString().getBytes());
-        }
-    }
-
-    @Background
-    void dumpLogcat() {
-        try {
-            File file = new File(TagMo.getTagMoFiles(), "tagmo_logcat.txt");
-            generateLogcat(file.getAbsolutePath());
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(log.toString().getBytes());
+            }
             try {
                 MediaScannerConnection.scanFile(this,
                         new String[]{file.getAbsolutePath()}, null, null);
             } catch (Exception e) {
-                TagMo.Error(TAG, R.string.media_scan_fail, e);
+                TagMo.Error(getClass(), R.string.media_scan_fail, e);
             }
             Uri fileUri;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -885,7 +875,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
         Bundle bundle = new Bundle();
-        bundle.putLong(ImageActivity.INTENT_EXTRA_AMIIBO_ID, amiiboFile.getId());
+        bundle.putLong(TagMo.EXTRA_AMIIBO_ID, amiiboFile.getId());
 
         Intent intent = new Intent(this, ImageActivity_.class);
         intent.putExtras(bundle);
@@ -924,7 +914,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background(id = BACKGROUND_POWERTAG)
     void loadPTagKeyManagerTask() {
         try {
-            PTagKeyManager.loadPowerTagManager();
+            PTagKeyManager.getPowerTagManager();
         } catch (Exception e) {
             e.printStackTrace();
             showToast(R.string.fail_powertag_keys);
@@ -942,7 +932,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = AmiiboManager.loadAmiiboManager();
+            amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;

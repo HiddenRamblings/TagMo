@@ -19,9 +19,8 @@ import org.androidannotations.annotations.ViewById;
 @SuppressLint("NonConstantResourceId")
 @EFragment(R.layout.fragment_app_data_ssb)
 public class AppDataSSBFragment extends AppDataFragment {
-    public static final int APP_ID = 0x10110E00;
 
-    private static final String TAG = AppDataSSBFragment.class.getSimpleName();
+    public static final int APP_ID = 0x10110E00;
 
     @ViewById(R.id.spnAppearance)
     Spinner spnAppearance;

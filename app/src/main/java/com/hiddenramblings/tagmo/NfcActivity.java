@@ -42,8 +42,6 @@ import java.util.ArrayList;
 @EActivity(R.layout.activity_nfc)
 public class NfcActivity extends AppCompatActivity {
 
-    private static final String TAG = NfcActivity.class.getSimpleName();
-
     @Pref
     Preferences_ prefs;
 
@@ -220,7 +218,7 @@ public class NfcActivity extends AppCompatActivity {
         String mode = commandIntent.getAction();
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            TagMo.Debug(TAG, tag.toString());
+            TagMo.Debug(getClass(), tag.toString());
             NTAG215 mifare = NTAG215.get(tag);
             if (mifare == null) {
                 throw new Exception(getString(R.string.tag_type_error));
@@ -251,7 +249,7 @@ public class NfcActivity extends AppCompatActivity {
             }
             setResult(Activity.RESULT_CANCELED);
             try {
-                TagMo.Debug(TAG, mode);
+                TagMo.Debug(getClass(), mode);
                 byte[] data;
                 switch (mode) {
                     case TagMo.ACTION_WRITE_TAG_RAW:
@@ -390,7 +388,7 @@ public class NfcActivity extends AppCompatActivity {
             }
             finish();
         } catch (Exception e) {
-            TagMo.Error(TAG, R.string.error, e);
+            TagMo.Error(getClass(), R.string.error, e);
             String error = e.getMessage();
             if (e.getCause() != null) {
                 error = error + "\n" + e.getCause().toString();
@@ -399,7 +397,8 @@ public class NfcActivity extends AppCompatActivity {
             if (prefs.enableEliteSupport().get() && error != null
                     && error.equals("Attempt to read from null array")) {
                 runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
-                        .setMessage(R.string.possible_lock)
+                        .setTitle(R.string.possible_lock)
+                        .setMessage(R.string.prepare_unlock)
                         .setPositiveButton(R.string.unlock, (dialog, which) -> {
                             dialog.dismiss();
                             finish();

@@ -55,9 +55,6 @@ import java.util.Locale;
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_amiibo)
 public class AmiiboActivity extends AppCompatActivity {
-    private static final String TAG = AmiiboActivity.class.getSimpleName();
-
-    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
     @Pref
     Preferences_ prefs;
@@ -140,22 +137,21 @@ public class AmiiboActivity extends AppCompatActivity {
 
     ActivityResultLauncher<Intent> onEditTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        TagMo.Debug(TAG, R.string.tag_data);
+        TagMo.Debug(getClass(), R.string.tag_data);
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
             return;
 
-        TagMo.Debug(TAG, R.string.tag_data);
+        TagMo.Debug(getClass(), R.string.tag_data);
         if (!TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction()))
             return;
 
-        TagMo.Debug(TAG, R.string.tag_data);
+        TagMo.Debug(getClass(), R.string.tag_data);
         this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         this.runOnUiThread(this::updateAmiiboView);
     });
 
     void openTagEditor() {
         Intent intent = new Intent(this, TagDataActivity_.class);
-        intent.setAction(TagMo.ACTION_EDIT_DATA);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         onEditTagResult.launch(intent);
     }
@@ -183,6 +179,8 @@ public class AmiiboActivity extends AppCompatActivity {
         }
     };
 
+    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
         loadAmiiboManagerTask();
@@ -192,7 +190,7 @@ public class AmiiboActivity extends AppCompatActivity {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = AmiiboManager.loadAmiiboManager();
+            amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(getString(R.string.amiibo_info_parse_error));
@@ -242,14 +240,14 @@ public class AmiiboActivity extends AppCompatActivity {
 
             File file = new File(dir.getAbsolutePath(), fileName);
 
-            TagMo.Debug(TAG, file.toString());
+            TagMo.Debug(getClass(), file.toString());
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(tagData);
             }
             try {
                 MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
             } catch (Exception e) {
-                TagMo.Error(TAG, R.string.media_scan_fail, e);
+                TagMo.Error(getClass(), R.string.media_scan_fail, e);
             }
             LogMessage(getString(R.string.wrote_file, fileName));
         } catch (Exception e) {
@@ -324,7 +322,6 @@ public class AmiiboActivity extends AppCompatActivity {
 
     void viewHex() {
         Intent intent = new Intent(this, HexViewerActivity_.class);
-        intent.setAction(TagMo.ACTION_EDIT_DATA);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         startActivity(intent);
     }
@@ -340,7 +337,7 @@ public class AmiiboActivity extends AppCompatActivity {
         }
 
         Bundle bundle = new Bundle();
-        bundle.putLong(ImageActivity.INTENT_EXTRA_AMIIBO_ID, amiiboId);
+        bundle.putLong(TagMo.EXTRA_AMIIBO_ID, amiiboId);
 
         Intent intent = new Intent(this, ImageActivity_.class);
         intent.putExtras(bundle);

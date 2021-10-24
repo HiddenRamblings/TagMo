@@ -52,6 +52,9 @@ TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC
 * Click "Scan Tag" to scan the amiibo.
 * Click "Save Tag" to save data to a file. (A file name will be generated based on the tag details and saved to the download folder.)
 
+## Power Tag
+* Please see the [Power Tag (PowerSaves) Wiki](<https://github.com/HiddenRamblings/TagMo/wiki/Power-Tag-(PowerSaves)>) for setup and usage instructions
+
 # Editing Super Smash Bros (SSB) data  
 * Click "Scan Tag" to scan a amiibo. Make sure that the amiibo was once used in Super Smash Bros before.
 * Click "Edit SSB Data" to edit properties related to SSB. Using this on non SSB amiibo will corrupt its saved data. requiring you to restore it from a save file (if you have one) or to reset it. It is recommended you backup the amiibo data using the steps above before trying this out.

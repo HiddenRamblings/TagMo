@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo.amiibo;
 import androidx.annotation.NonNull;
 
 public class AmiiboSeries implements Comparable<AmiiboSeries> {
+
     public static final long MASK = 0x000000000000FF00L;
     public static final int BITSHIFT = 4 * 2;
 

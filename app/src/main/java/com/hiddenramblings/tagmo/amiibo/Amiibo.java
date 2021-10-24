@@ -7,6 +7,7 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 
 public class Amiibo implements Comparable<Amiibo> {
+
     public static long HEAD_MASK = 0xFFFFFFFF00000000L;
     public static long TAIL_MASK = 0x00000000FFFFFFFFL;
     public static int HEAD_BITSHIFT = 4 * 8;
@@ -33,10 +34,6 @@ public class Amiibo implements Comparable<Amiibo> {
 
     public Amiibo(AmiiboManager manager, String id, String name, AmiiboReleaseDates releaseDates) {
         this(manager, hexToId(id), name, releaseDates);
-    }
-
-    public String getName() {
-        return this.name;
     }
 
     public int getHead() {
@@ -170,8 +167,8 @@ public class Amiibo implements Comparable<Amiibo> {
         if (value != 0)
             return value;
 
-        String name1 = this.getName();
-        String name2 = amiibo.getName();
+        String name1 = this.name;
+        String name2 = amiibo.name;
         if (name1 == null && name2 == null) {
             value = 0;
         } else if (name1 == null) {

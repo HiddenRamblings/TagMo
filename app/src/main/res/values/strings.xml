@@ -100,8 +100,8 @@
 
     <string name="change_view">Change View</string>
     <string name="settings">Settings</string>
-    <string name="dump_amiibo">Backup</string>
-    <string name="dump_logcat">Logcat</string>
+    <string name="logcat">Logcat</string>
+    <string name="unlock_elite">Unlock N2 Elite</string>
     <string name="mnu_write_raw">Write Tag (Raw Mode)</string>
 
     <string name="not_found">No Amiibos Found</string>
@@ -183,7 +183,6 @@
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="write_all_banks">Write All Banks to N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>
-    <string name="unlock_elite_unit">Unlock N2 Unit</string>
     <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
     <string name="hardware_conflict">Power Tag / N2 Elite are incompatible!</string>
 
@@ -308,7 +307,7 @@
     <string name="tag_format_error">Tag is not an NTAG215</string>
     <string name="no_source_data">Cannot validate: no source data loaded to compare.</string>
     <string name="tag_version_error">Tag version error</string>
-    <string name="power_tag_exists">Power Tag Exists: %1$s</string>
+    <string name="power_tag_verify">Power Tag Confirmed: %1$s</string>
 
     <string name="bank_select_details">Set Bank Number</string>
     <string name="bank_count_details">Set Bank Count</string>

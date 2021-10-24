@@ -12,8 +12,6 @@ import java.util.ArrayList;
 
 public class TagWriter {
 
-    private static final String TAG = TagWriter.class.getSimpleName();
-
     public static void writeToTagRaw(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
         validate(mifare, tagData, validateNtag);
         validateBlankTag(mifare);
@@ -21,19 +19,19 @@ public class TagWriter {
         try {
             byte[][] pages = TagUtils.splitPages(tagData);
             writePages(mifare, 3, 129, pages);
-            TagMo.Debug(TAG, R.string.data_write);
+            TagMo.Debug(TagWriter.class, R.string.data_write);
         } catch (Exception e) {
             throw new Exception(TagMo.getStringRes(R.string.data_write_error), e);
         }
         try {
             writePassword(mifare);
-            TagMo.Debug(TAG, R.string.password_write);
+            TagMo.Debug(TagWriter.class, R.string.password_write);
         } catch (Exception e) {
             throw new Exception(TagMo.getStringRes(R.string.password_write_error), e);
         }
         try {
             writeLockInfo(mifare);
-            TagMo.Debug(TAG, R.string.lock_write);
+            TagMo.Debug(TagWriter.class, R.string.lock_write);
         } catch (Exception e) {
             throw new Exception(TagMo.getStringRes(R.string.lock_write_error), e);
         }
@@ -41,12 +39,12 @@ public class TagWriter {
 
     private static void validateBlankTag(NTAG215 mifare) throws Exception {
         byte[] lockPage = mifare.readPages(0x02);
-        TagMo.Debug(TAG, TagUtils.bytesToHex(lockPage));
+        TagMo.Debug(TagWriter.class, TagUtils.bytesToHex(lockPage));
         if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {
-            TagMo.Debug(TAG, R.string.locked);
+            TagMo.Debug(TagWriter.class, R.string.locked);
             throw new Exception(TagMo.getStringRes(R.string.tag_already_written));
         }
-        TagMo.Debug(TAG, R.string.unlocked);
+        TagMo.Debug(TagWriter.class, R.string.unlocked);
     }
 
     public static void writeToTagAuto(
@@ -63,7 +61,7 @@ public class TagWriter {
                     0, NfcByte.POWERTAG_SIGNATURE.length);
         }
 
-        TagMo.Debug(TAG, R.string.power_tag_exists, String.valueOf(isPowerTag));
+        TagMo.Debug(TagWriter.class, R.string.power_tag_verify, String.valueOf(isPowerTag));
 
         tagData = TagUtils.decrypt(keyManager, tagData);
         if (isPowerTag) {
@@ -74,7 +72,7 @@ public class TagWriter {
         }
         tagData = TagUtils.encrypt(keyManager, tagData);
 
-        TagMo.Debug(TAG, TagUtils.bytesToHex(tagData));
+        TagMo.Debug(TagWriter.class, TagUtils.bytesToHex(tagData));
 
         if (!isPowerTag) {
             validate(mifare, tagData, validateNtag);
@@ -86,10 +84,10 @@ public class TagWriter {
             if (oldid == null || oldid.length != 7)
                 throw new Exception(TagMo.getStringRes(R.string.fail_read_uid));
 
-            TagMo.Debug(TAG, R.string.old_uid, TagUtils.bytesToHex(oldid));
+            TagMo.Debug(TagWriter.class, R.string.old_uid, TagUtils.bytesToHex(oldid));
 
             byte[] page10 = mifare.readPages(0x10);
-            TagMo.Debug(TAG, R.string.page_ten, TagUtils.bytesToHex(page10));
+            TagMo.Debug(TagWriter.class, R.string.page_ten, TagUtils.bytesToHex(page10));
 
             String page10bytes = TagUtils.bytesToHex(new byte[]{page10[0], page10[3]});
 
@@ -97,7 +95,7 @@ public class TagWriter {
             byte[] ptagKey = TagUtils.hexStringToByteArray(NfcByte.POWERTAG_KEY);
             System.arraycopy(ptagKeySuffix, 0, ptagKey, 8, 8);
 
-            TagMo.Debug(TAG, R.string.ptag_key, TagUtils.bytesToHex(ptagKey));
+            TagMo.Debug(TagWriter.class, R.string.ptag_key, TagUtils.bytesToHex(ptagKey));
 
             mifare.transceive(NfcByte.COMP_WRITE_CMD);
             mifare.transceive(ptagKey);
@@ -117,19 +115,19 @@ public class TagWriter {
         } else {
             try {
                 writePages(mifare, 3, 129, pages);
-                TagMo.Debug(TAG, R.string.data_write);
+                TagMo.Debug(TagWriter.class, R.string.data_write);
             } catch (Exception e) {
                 throw new Exception(TagMo.getStringRes(R.string.data_write_error), e);
             }
             try {
                 writePassword(mifare);
-                TagMo.Debug(TAG, R.string.password_write);
+                TagMo.Debug(TagWriter.class, R.string.password_write);
             } catch (Exception e) {
                 throw new Exception(TagMo.getStringRes(R.string.password_write_error), e);
             }
             try {
                 writeLockInfo(mifare);
-                TagMo.Debug(TAG, R.string.lock_write);
+                TagMo.Debug(TagWriter.class, R.string.lock_write);
             } catch (Exception e) {
                 throw new Exception(TagMo.getStringRes(R.string.lock_write_error), e);
             }
@@ -185,7 +183,7 @@ public class TagWriter {
                 if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
                     throw new Exception(TagMo.getStringRes(R.string.tag_format_error));
             } catch (Exception e) {
-                TagMo.Error(TAG, R.string.version_error, e);
+                TagMo.Error(TagWriter.class, R.string.version_error, e);
                 throw e;
             }
         }
@@ -197,7 +195,7 @@ public class TagWriter {
         if (!compareRange(pages, tagData, 0, 9))
             throw new Exception(TagMo.getStringRes(R.string.fail_mismatch_uid));
 
-        TagMo.Error(TAG, R.string.validation_success);
+        TagMo.Error(TagWriter.class, R.string.validation_success);
     }
 
     static boolean compareRange(byte[] data, byte[] data2, int data2offset, int len) {
@@ -223,14 +221,14 @@ public class TagWriter {
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount);
         }
 
-        TagMo.Debug(TAG, TagUtils.bytesToHex(tagData));
+        TagMo.Debug(TagWriter.class, TagUtils.bytesToHex(tagData));
         return tagData;
     }
 
     static void writePages(NTAG215 tag, int pagestart, int pageend, byte[][] data) throws IOException {
         for (int i = pagestart; i <= pageend; i++) {
             tag.writePage(i, data[i]);
-            TagMo.Debug(TAG, R.string.write_page, String.valueOf(i));
+            TagMo.Debug(TagWriter.class, R.string.write_page, String.valueOf(i));
         }
     }
 
@@ -243,12 +241,12 @@ public class TagWriter {
         byte[] uid = TagUtils.uidFromPages(pages0_1);
         byte[] password = TagUtils.keygen(uid);
 
-        TagMo.Debug(TAG, R.string.password, TagUtils.bytesToHex(password));
+        TagMo.Debug(TagWriter.class, R.string.password, TagUtils.bytesToHex(password));
 
-        TagMo.Debug(TAG, R.string.write_pack);
+        TagMo.Debug(TagWriter.class, R.string.write_pack);
         tag.writePage(0x86, new byte[]{(byte) 0x80, (byte) 0x80, (byte) 0, (byte) 0});
 
-        TagMo.Debug(TAG, R.string.write_pwd);
+        TagMo.Debug(TagWriter.class, R.string.write_pwd);
         tag.writePage(0x85, password);
     }
 
@@ -276,7 +274,7 @@ public class TagWriter {
         byte[] uid = TagUtils.uidFromPages(pages0_1);
         byte[] password = TagUtils.keygen(uid);
 
-        TagMo.Debug(TAG, R.string.password, TagUtils.bytesToHex(password));
+        TagMo.Debug(TagWriter.class, R.string.password, TagUtils.bytesToHex(password));
 
         byte[] auth = new byte[]{
                 (byte) 0x1B,
@@ -289,7 +287,7 @@ public class TagWriter {
         if (response == null)
             throw new Exception(TagMo.getStringRes(R.string.auth_null));
         String respStr = TagUtils.bytesToHex(response);
-        TagMo.Error(TAG, R.string.auth_response, respStr);
+        TagMo.Error(TagWriter.class, R.string.auth_response, respStr);
         if (!"8080".equals(respStr)) {
             throw new Exception(TagMo.getStringRes(R.string.auth_failed));
         }
@@ -325,7 +323,7 @@ public class TagWriter {
                 tags.add(TagUtils.bytesToHex(tagData));
                 i++;
             } catch (Exception e) {
-                TagMo.Debug(TAG, TagMo.getStringRes(R.string.fail_elite_bank_parse));
+                TagMo.Debug(TagWriter.class, TagMo.getStringRes(R.string.fail_elite_bank_parse));
             }
         }
         return tags;

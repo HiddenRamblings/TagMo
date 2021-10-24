@@ -2,10 +2,12 @@ package com.hiddenramblings.tagmo;
 
 import android.app.Application;
 import android.content.Context;
+import android.media.MediaScannerConnection;
 import android.os.Build;
 import android.util.Log;
 
 import com.endgames.environment.Storage;
+import com.hiddenramblings.tagmo.nfc.TagWriter;
 
 import org.androidannotations.annotations.EApplication;
 import org.androidannotations.annotations.sharedpreferences.Pref;
@@ -18,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 @EApplication
 public class TagMo extends Application {
 
-    public static final String ACTION_EDIT_COMPLETE = "com.hiddenramblings.tagmo.ACTION_EDIT_COMPLETE";
+    public static final String ACTION_EDIT_COMPLETE = "com.hiddenramblings.tagmo.EDIT_COMPLETE";
     public static final String ACTION_SCAN_TAG = "com.hiddenramblings.tagmo.SCAN_TAG";
     public static final String ACTION_SCAN_UNIT = "com.hiddenramblings.tagmo.SCAN_UNIT";
     public static final String ACTION_WRITE_TAG_FULL = "com.hiddenramblings.tagmo.WRITE_TAG_FULL";
@@ -89,6 +91,10 @@ public class TagMo extends Application {
         return TagMo.getContext().getString(resource, TagMo.getContext().getString(params));
     }
 
+    public static String TAG(Class<?> src) {
+        return src.getSimpleName();
+    }
+
     public static void Debug(Class<?> src, String params) {
         if (!mPrefs.get().disableDebug().get())
             Log.d(TAG(src), params);
@@ -138,7 +144,13 @@ public class TagMo extends Application {
         return dirPath;
     }
 
-    public static String TAG(Class<?> src) {
-        return src.getSimpleName();
+    public static void scanFile(File file) {
+        try {
+            MediaScannerConnection.scanFile(TagMo.getContext(), new String[]{
+                    file.getAbsolutePath()
+            }, null, null);
+        } catch (Exception e) {
+            Error(TagWriter.class, R.string.media_scan_fail, e);
+        }
     }
 }

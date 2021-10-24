@@ -4,6 +4,10 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".AmiiboActivity">
     <item
+        android:id="@+id/mnu_elite"
+        android:title="@string/bank_options"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/mnu_save"
         android:title="@string/save"
         app:showAsAction="always"/>

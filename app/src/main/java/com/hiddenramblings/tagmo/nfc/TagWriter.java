@@ -2,6 +2,8 @@ package com.hiddenramblings.tagmo.nfc;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,6 +11,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class TagWriter {
 
@@ -435,18 +440,16 @@ public class TagWriter {
         }
     }
 
-    public static boolean writeBytesToFile(File browserRoot, String name, byte[] tagData) {
+    public static String writeBytesToFile(
+            File browserRoot, String name, byte[] tagData) throws IOException {
         File directory = new File(browserRoot, TagMo.getStringRes(R.string.tagmo_backup));
         directory.mkdirs();
-        try {
-            FileOutputStream fos = new FileOutputStream(new File(directory, name));
+        File binFile = new File(directory, name);
+        try (FileOutputStream fos = new FileOutputStream(binFile)) {
             fos.write(tagData);
-            fos.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
         }
+        TagMo.scanFile(binFile);
+        return binFile.getAbsolutePath();
     }
 
     public static byte[] scanTagToBytes(NTAG215 tag) throws Exception {
@@ -464,6 +467,41 @@ public class TagWriter {
             throw new Exception(TagMo.getStringRes(R.string.fail_early_remove));
         } catch (NullPointerException e2) {
             throw new Exception(TagMo.getStringRes(R.string.fail_amiibo_npe));
+        }
+    }
+
+    public static String scanAmiiboToFile(
+            AmiiboManager amiiboManager, String browserRoot, byte[] tagData) throws Exception {
+        boolean valid;
+        try {
+            TagUtils.validateTag(tagData);
+            valid = true;
+        } catch (Exception e) {
+            throw new Exception(TagMo.getStringRes(R.string.tag_invalid));
+        }
+
+        try {
+            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+            String name = null;
+            if (amiiboManager != null) {
+                Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
+                if (amiibo != null && amiibo.name != null) {
+                    name = amiibo.name.replace("/", "-");
+                }
+            }
+            if (name == null)
+                name = TagUtils.amiiboIdToHex(amiiboId);
+
+            byte[] uId = Arrays.copyOfRange(tagData, 0, 9);
+            String uIds = TagUtils.bytesToHex(uId);
+            String fileName = String.format(Locale.ENGLISH,
+                    "%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin",
+                    name, uIds, Calendar.getInstance(), (valid ? "" : "_corrupted_")
+            );
+
+            return writeBytesToFile(new File(TagMo.getStorage(), browserRoot), fileName, tagData);
+        } catch (Exception e) {
+            throw new Exception(TagMo.getStringRes(R.string.write_error, e.getMessage()));
         }
     }
 }

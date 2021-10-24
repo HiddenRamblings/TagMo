@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -30,6 +29,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
+import com.hiddenramblings.tagmo.nfc.TagWriter;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import org.androidannotations.annotations.AfterViews;
@@ -44,13 +44,8 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Locale;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_amiibo)
@@ -96,8 +91,12 @@ public class AmiiboActivity extends AppCompatActivity {
             isResponsive = getCallingActivity().getClassName().equals(EliteActivity_.class.getName());
         }
         toolbar.inflateMenu(R.menu.tag_menu);
+        toolbar.getMenu().findItem(R.id.mnu_elite).setVisible(isResponsive);
         toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
+                case R.id.mnu_elite:
+                    bankOptions();
+                    return true;
                 case R.id.mnu_save:
                     saveTag();
                     return true;
@@ -207,54 +206,6 @@ public class AmiiboActivity extends AppCompatActivity {
         this.updateAmiiboView();
     }
 
-    void saveTag() {
-        boolean valid = false;
-        try {
-            TagUtils.validateTag(tagData);
-            valid = true;
-        } catch (Exception e) {
-            LogError(getString(R.string.tag_invalid));
-        }
-
-        try {
-            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-            String name = null;
-            if (this.amiiboManager != null) {
-                Amiibo amiibo = this.amiiboManager.amiibos.get(amiiboId);
-                if (amiibo != null && amiibo.name != null) {
-                    name = amiibo.name.replace("/", "-");
-                }
-            }
-            if (name == null)
-                name = TagUtils.amiiboIdToHex(amiiboId);
-
-            byte[] uId = Arrays.copyOfRange(tagData, 0, 9);
-            String uIds = TagUtils.bytesToHex(uId);
-            String fileName = String.format(Locale.ENGLISH,
-                    "%1$s [%2$s] %3$ty%3$tm%3$te_%3$tH%3$tM%3$tS%4$s.bin",
-                    name, uIds, Calendar.getInstance(), (valid ? "" : "_corrupted_")
-            );
-
-            File dir = new File(TagMo.getStorage(), prefs.browserRootFolder().get());
-            if (!dir.isDirectory()) dir.mkdir();
-
-            File file = new File(dir.getAbsolutePath(), fileName);
-
-            TagMo.Debug(getClass(), file.toString());
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(tagData);
-            }
-            try {
-                MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
-            } catch (Exception e) {
-                TagMo.Error(getClass(), R.string.media_scan_fail, e);
-            }
-            LogMessage(getString(R.string.wrote_file, fileName));
-        } catch (Exception e) {
-            LogError(getString(R.string.write_error, e.getMessage()));
-        }
-    }
-
     ActivityResultLauncher<Intent> onNFCResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
@@ -310,6 +261,22 @@ public class AmiiboActivity extends AppCompatActivity {
         onNFCResult.launch(intent);
     }
 
+    void saveTag() {
+        new android.app.AlertDialog.Builder(this)
+                .setMessage(R.string.save_view_warning)
+                .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                    try {
+                        String fileName = TagWriter.scanAmiiboToFile(this.amiiboManager,
+                                prefs.browserRootFolder().get(), tagData);
+                        LogMessage(getString(R.string.wrote_file, fileName));
+                    } catch (Exception e) {
+                        LogError(e.getMessage());
+                    }
+                    dialog.dismiss();
+                })
+                .setNegativeButton(R.string.cancel, null).show();
+    }
+
     void restoreTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
@@ -324,6 +291,11 @@ public class AmiiboActivity extends AppCompatActivity {
         Intent intent = new Intent(this, HexViewerActivity_.class);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         startActivity(intent);
+    }
+
+    void bankOptions() {
+        setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_NFC_SCANNED));
+        finish();
     }
 
     @Click(R.id.imageAmiibo)
@@ -463,15 +435,6 @@ public class AmiiboActivity extends AppCompatActivity {
     @UiThread
     void LogMessage(String msg) {
         new AlertDialog.Builder(this)
-                .setMessage(msg)
-                .setPositiveButton(R.string.close, null)
-                .show();
-    }
-
-    @UiThread
-    void LogError(String msg, Throwable e) {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.error)
                 .setMessage(msg)
                 .setPositiveButton(R.string.close, null)
                 .show();

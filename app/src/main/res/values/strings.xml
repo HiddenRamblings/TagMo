@@ -112,6 +112,7 @@
     <string name="mod_date">Modified Date</string>
     <string name="nickname">Nickname</string>
     <string name="write_count">Write Counter</string>
+    <string name="bank_options">Bank Options</string>
     <string name="view_hex">View Hex Code</string>
     <string name="restore">Restore</string>
     <string name="edit_tag">Edit Tag Data</string>
@@ -149,6 +150,7 @@
     <string name="super_smash">Super Smash Bros. for Nintendo 3DS and Wii U</string>
 
     <string name="save_image">Save Image</string>
+    <string name="save_view_warning">Note: The bin file will be written using the default values displayed. Are you sure?</string>
 
     <string name="write_raw">Write to Tag (Raw)</string>
     <string name="write_auto">Write to Tag (Auto)</string>

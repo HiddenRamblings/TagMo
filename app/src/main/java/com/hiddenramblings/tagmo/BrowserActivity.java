@@ -288,11 +288,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onEliteActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null)
-            return;
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
         int active_bank = result.getData().getIntExtra(
@@ -316,11 +314,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null)
-            return;
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
@@ -432,11 +428,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null)
-            return;
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
@@ -455,13 +449,15 @@ public class BrowserActivity extends AppCompatActivity implements
         input.setText(amiiboFileName);
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
-            if (TagWriter.writeBytesToFile(settings.getBrowserRootFolder(),
-                    input.getText().toString() + ".bin", tagData)) {
+            try {
+                TagWriter.writeBytesToFile(settings.getBrowserRootFolder(),
+                        input.getText().toString() + ".bin", tagData);
                 showToast(R.string.backup_complete);
-            } else {
+                this.refresh();
+            } catch (IOException e) {
+                e.printStackTrace();
                 showToast(R.string.backup_failed);
             }
-            this.refresh();
             backupDialog.dismiss();
         });
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
@@ -510,12 +506,7 @@ public class BrowserActivity extends AppCompatActivity implements
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(log.toString().getBytes());
             }
-            try {
-                MediaScannerConnection.scanFile(this,
-                        new String[]{file.getAbsolutePath()}, null, null);
-            } catch (Exception e) {
-                TagMo.Error(getClass(), R.string.media_scan_fail, e);
-            }
+            TagMo.scanFile(file);
             Uri fileUri;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 fileUri = FileProvider.getUriForFile(this,
@@ -750,7 +741,7 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
             if (result.getData().getBooleanExtra("REFRESH", false))
-                resetRootFolder();
+                this.onRootFolderChanged();
             this.loadPTagKeyManager();
         }
     });

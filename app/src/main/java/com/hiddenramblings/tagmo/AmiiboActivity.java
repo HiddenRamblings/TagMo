@@ -18,7 +18,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -95,7 +94,7 @@ public class AmiiboActivity extends AppCompatActivity {
         toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.mnu_elite:
-                    bankOptions();
+                    editBank();
                     return true;
                 case R.id.mnu_save:
                     saveTag();
@@ -268,9 +267,9 @@ public class AmiiboActivity extends AppCompatActivity {
                     try {
                         String fileName = TagWriter.scanAmiiboToFile(this.amiiboManager,
                                 prefs.browserRootFolder().get(), tagData);
-                        LogMessage(getString(R.string.wrote_file, fileName));
+                        showToast(getString(R.string.wrote_file, fileName));
                     } catch (Exception e) {
-                        LogError(e.getMessage());
+                        showToast(e.getMessage());
                     }
                     dialog.dismiss();
                 })
@@ -293,7 +292,7 @@ public class AmiiboActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    void bankOptions() {
+    void editBank() {
         setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_NFC_SCANNED));
         finish();
     }
@@ -430,22 +429,5 @@ public class AmiiboActivity extends AppCompatActivity {
     @UiThread
     public void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-    }
-
-    @UiThread
-    void LogMessage(String msg) {
-        new AlertDialog.Builder(this)
-                .setMessage(msg)
-                .setPositiveButton(R.string.close, null)
-                .show();
-    }
-
-    @UiThread
-    void LogError(String msg) {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.error)
-                .setMessage(msg)
-                .setPositiveButton(R.string.close, null)
-                .show();
     }
 }

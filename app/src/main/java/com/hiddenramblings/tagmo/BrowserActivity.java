@@ -275,12 +275,6 @@ public class BrowserActivity extends AppCompatActivity implements
         this.loadPTagKeyManager();
     }
 
-    void resetRootFolder() {
-        this.settings.setBrowserRootFolder(Storage.setFileStorage());
-        this.settings.notifyChanges();
-        this.onRootFolderChanged();
-    }
-
     void refresh() {
         this.loadAmiiboManager();
         this.onRootFolderChanged();
@@ -450,13 +444,12 @@ public class BrowserActivity extends AppCompatActivity implements
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                TagWriter.writeBytesToFile(settings.getBrowserRootFolder(),
+                String fileName = TagWriter.writeBytesToFile(settings.getBrowserRootFolder(),
                         input.getText().toString() + ".bin", tagData);
-                showToast(R.string.backup_complete);
+                showToast(getString(R.string.wrote_file, fileName));
                 this.refresh();
             } catch (IOException e) {
-                e.printStackTrace();
-                showToast(R.string.backup_failed);
+                showToast(e.getMessage());
             }
             backupDialog.dismiss();
         });
@@ -740,8 +733,13 @@ public class BrowserActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-            if (result.getData().getBooleanExtra("REFRESH", false))
+            if (result.getData().getBooleanExtra("REFRESH", false)) {
+                if (prefs.ignoreSdcard().get()) {
+                    this.settings.setBrowserRootFolder(Storage.setFileStorage());
+                    this.settings.notifyChanges();
+                }
                 this.onRootFolderChanged();
+            }
             this.loadPTagKeyManager();
         }
     });
@@ -1209,6 +1207,11 @@ public class BrowserActivity extends AppCompatActivity implements
     @UiThread
     public void showToast(int msgRes) {
         Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
+    }
+
+    @UiThread
+    public void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
     public Snackbar buildSnackbar(String msg, int length) {

@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -345,6 +346,41 @@ public class EliteActivity extends AppCompatActivity implements
             onAmiiboLongClicked(clickedAmiibo, clickedPosition);
     });
 
+    ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+
+        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+
+        String amiiboFileName = "";
+        try {
+            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+            Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+            amiiboFileName = amiibo.name + "-" + amiibo.id;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        final EditText input = view.findViewById(R.id.backup_entry);
+        input.setText(amiiboFileName);
+        Dialog backupDialog = dialog.setView(view).show();
+        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
+            try {
+                String fileName = TagWriter.writeBytesToFile(settings.getBrowserRootFolder(),
+                        input.getText().toString() + ".bin", tagData);
+                showToast(getString(R.string.wrote_file, fileName));
+            } catch (IOException e) {
+                showToast(e.getMessage());
+            }
+            backupDialog.dismiss();
+        });
+        view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+    });
+
     @SuppressLint("SetTextI18n")
     @Override
     public void onAmiiboLongClicked(Amiibo amiibo, int position) {
@@ -363,6 +399,15 @@ public class EliteActivity extends AppCompatActivity implements
             activate.setAction(TagMo.ACTION_ACTIVATE_BANK);
             activate.putExtra(TagMo.EXTRA_CURRENT_BANK, TagWriter.getValueFromPosition(position));
             onActivateActivity.launch(activate);
+            contextMenu.dismiss();
+        });
+
+        AppCompatButton backup_button = view.findViewById(R.id.bank_backup);
+        backup_button.setOnClickListener(v -> {
+            Intent backup = new Intent(this, NfcActivity_.class);
+            backup.setAction(TagMo.ACTION_BACKUP_AMIIBO);
+            backup.putExtra(TagMo.EXTRA_CURRENT_BANK, TagWriter.getValueFromPosition(position));
+            onBackupActivity.launch(backup);
             contextMenu.dismiss();
         });
 

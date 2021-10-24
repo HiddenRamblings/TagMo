@@ -303,7 +303,14 @@ public class NfcActivity extends AppCompatActivity {
                         break;
 
                     case TagMo.ACTION_BACKUP_AMIIBO:
+                        if (prefs.enableEliteSupport().get()) {
+                            mifare.activateBank(TagWriter.getPositionFromValue(
+                                    bankNumberPicker.getValue()));
+                        }
                         data = TagWriter.scanTagToBytes(mifare);
+                        if (prefs.enableEliteSupport().get()) {
+                            mifare.activateBank(prefs.eliteActiveBank().get());
+                        }
                         Intent backup = new Intent(TagMo.ACTION_NFC_SCANNED);
                         backup.putExtra(TagMo.EXTRA_TAG_DATA, data);
                         setResult(Activity.RESULT_OK, backup);

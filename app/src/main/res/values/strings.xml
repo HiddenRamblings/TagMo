@@ -112,7 +112,7 @@
     <string name="mod_date">Modified Date</string>
     <string name="nickname">Nickname</string>
     <string name="write_count">Write Counter</string>
-    <string name="bank_options">Bank Options</string>
+    <string name="edit_bank">Edit Bank</string>
     <string name="view_hex">View Hex Code</string>
     <string name="restore">Restore</string>
     <string name="edit_tag">Edit Tag Data</string>
@@ -158,9 +158,9 @@
     <string name="scan_tag">Scan Tag</string>
     <string name="scan_elite">Scan N2 Elite</string>
     <string name="delete_bank">Delete Bank</string>
-    <string name="lock_bank">Lock Bank</string>
     <string name="activate_bank">Activate Bank</string>
-    <string name="backup_amiibo">Backup Amiibo</string>
+    <string name="bank_backup">Bank Backup</string>
+    <string name="backup_amiibo">Amiibo Backup</string>
 
     <string name="permission_required">Storage permission required!</string>
     <string name="allow_permission">Allow</string>
@@ -181,7 +181,7 @@
     <string name="elite_details_enabled">Support is currently in development.\nN2 Elite ID: %1$s</string>
     <string name="lock_elite_hardware">Lock N2 Elite Hardware</string>
     <string name="lock_elite_hardware_details">The active bank will emulate a retail Amiibo.\nOther features will be disabled until unlocked.</string>
-    <string name="lock_elite_warning">Lock Elite N2 Hardware?</string>
+    <string name="lock_elite_warning">Lock N2 Elite Hardware?</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="write_all_banks">Write All Banks to N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>
@@ -193,8 +193,6 @@
     <string name="amiibo_info_updated">Updated Amiibo info</string>
 
     <string name="backup_filename">Amiibo Backup Name</string>
-    <string name="backup_complete">Amiibo backup complete!</string>
-    <string name="backup_failed">Amiibo backup failed!</string>
 
     <string name="prepare_unlock">Once scanned, do not remove the unit from the NFC field until complete.</string>
     <string name="progress_unlock">Press and hold the N2 button and continue to wait for unlock to complete.</string>
@@ -236,7 +234,7 @@
     <string name="no_tag_loaded">&lt;No Tag Loaded&gt;</string>
     <string name="read_error">&lt;Error Reading Tag&gt;</string>
     <string name="blank_tag">&lt;Blank Tag&gt;</string>
-    <string name="blank_tag_number">%1$s: &lt;Blank Tag&gt;</string>
+    <string name="blank_bank">%1$s: &lt;Blank Bank&gt;</string>
     <string name="tag_close_error">Error closing tag %1$s</string>
     <string name="state_error">State error. Invalid action: %1$s</string>
     <string name="length_error">Must be 8 characters</string>

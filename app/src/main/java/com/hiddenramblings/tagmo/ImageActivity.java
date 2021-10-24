@@ -45,8 +45,6 @@ import java.text.ParseException;
 @OptionsMenu({R.menu.image_menu})
 public class ImageActivity extends AppCompatActivity {
 
-    public static final String INTENT_EXTRA_AMIIBO_ID = "AMIIBO_ID";
-
     @ViewById(R.id.imageAmiibo)
     ImageView imageView;
     @ViewById(R.id.bottom_sheet)
@@ -72,7 +70,7 @@ public class ImageActivity extends AppCompatActivity {
     Amiibo amiibo;
     AmiiboManager amiiboManager;
 
-    @Extra(INTENT_EXTRA_AMIIBO_ID)
+    @Extra(TagMo.EXTRA_AMIIBO_ID)
     long amiiboId;
 
     @AfterViews
@@ -124,7 +122,7 @@ public class ImageActivity extends AppCompatActivity {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = AmiiboManager.loadAmiiboManager();
+            amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
         }
@@ -213,7 +211,7 @@ public class ImageActivity extends AppCompatActivity {
         final View view = this.getLayoutInflater().inflate(R.layout.edit_text, null);
         final EditText editText = view.findViewById(R.id.editText);
         if (amiibo != null) {
-            editText.setText(amiibo.getName());
+            editText.setText(amiibo.name);
         } else {
             editText.setText(TagUtils.amiiboIdToHex(amiiboId));
         }

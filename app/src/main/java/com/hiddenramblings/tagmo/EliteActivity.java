@@ -56,8 +56,6 @@ import java.util.ArrayList;
 public class EliteActivity extends AppCompatActivity implements
         EliteBrowserAdapter.OnAmiiboClickListener {
 
-    private static final String TAG = EliteActivity.class.getSimpleName();
-
     @Pref
     Preferences_ prefs;
 
@@ -152,7 +150,7 @@ public class EliteActivity extends AppCompatActivity implements
     private void updateEliteHardwareAdapter(ArrayList<String> tagData) {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = AmiiboManager.loadAmiiboManager();
+            amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             amiiboManager = null;
@@ -166,7 +164,6 @@ public class EliteActivity extends AppCompatActivity implements
         ArrayList<Amiibo> amiibos = new ArrayList<>();
         for (int x = 0; x < tagData.size(); x++) {
             Amiibo amiibo = amiiboManager.amiibos.get(TagUtils.hex2long(tagData.get(x)));
-            if (amiibo != null) TagMo.Debug(TAG, amiibo.getName());
             amiibos.add(amiibo);
         }
         if (amiibosView.getAdapter() != null) {
@@ -341,7 +338,7 @@ public class EliteActivity extends AppCompatActivity implements
         if (amiibo == null) return;
         View view = getLayoutInflater().inflate(R.layout.elite_extended, null);
         ((TextView) view.findViewById(R.id.amiibo_label)).setText(
-                position + ": " + amiibo.getName());
+                position + ": " + amiibo.name);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         Dialog contextMenu = dialog.setView(view).show();
 
@@ -429,7 +426,7 @@ public class EliteActivity extends AppCompatActivity implements
     public void onAmiiboImageClicked(Amiibo amiibo, int position) {
         if (amiibo != null) {
             Bundle bundle = new Bundle();
-            bundle.putLong(ImageActivity.INTENT_EXTRA_AMIIBO_ID, amiibo.id);
+            bundle.putLong(TagMo.EXTRA_AMIIBO_ID, amiibo.id);
 
             Intent intent = new Intent(this, ImageActivity_.class);
             intent.putExtras(bundle);

@@ -8,34 +8,33 @@ import java.util.BitSet;
 import java.util.Date;
 
 public class TagData {
-    public static final int TAG_FILE_SIZE = 532;
 
-    public static final int UID_OFFSET = 0x1D4;
-    public static final int UID_LENGTH = 0x9;
-    public static final int AMIIBO_ID_OFFSET = 0x54;
-    public static final int SETTING_FLAGS_OFFSET = 0x38 - 0xC;
-    public static final int SETTING_FLAGS_LENGTH = 0x1;
-    public static final int USER_DATA_INITIALIZED_OFFSET = 0x4;
-    public static final int APP_DATA_INITIALIZED_OFFSET = 0x5;
-    public static final int COUNTRY_CODE = 0x2D;
-    public static final int INIT_DATA_OFFSET = 0x30;
-    public static final int MODIFIED_DATA_OFFSET = 0x32;
-    public static final int NICKNAME_OFFSET = 0x38;
-    public static final int NICKNAME_LENGTH = 0x14;
-    public static final int MII_NAME_OFFSET = 0x4C + 0x1A;
-    public static final int MII_NAME_LENGTH = 0x14;
-    public static final int TITLE_ID_OFFSET = 0xB6 - 0x8A + 0x80;
+    private static final int UID_OFFSET = 0x1D4;
+    private static final int UID_LENGTH = 0x9;
+    private static final int AMIIBO_ID_OFFSET = 0x54;
+    private static final int SETTING_FLAGS_OFFSET = 0x38 - 0xC;
+    private static final int SETTING_FLAGS_LENGTH = 0x1;
+    private static final int USER_DATA_INITIALIZED_OFFSET = 0x4;
+    private static final int APP_DATA_INITIALIZED_OFFSET = 0x5;
+    private static final int COUNTRY_CODE = 0x2D;
+    private static final int INIT_DATA_OFFSET = 0x30;
+    private static final int MODIFIED_DATA_OFFSET = 0x32;
+    private static final int NICKNAME_OFFSET = 0x38;
+    private static final int NICKNAME_LENGTH = 0x14;
+    private static final int MII_NAME_OFFSET = 0x4C + 0x1A;
+    private static final int MII_NAME_LENGTH = 0x14;
+    private static final int TITLE_ID_OFFSET = 0xB6 - 0x8A + 0x80;
     public static final int WRITE_COUNT_MIN_VALUE = 0;
     public static final int WRITE_COUNT_MAX_VALUE = Short.MAX_VALUE & 0xFFFF;
-    public static final int WRITE_COUNT_OFFSET = 0xB4;
-    public static final int APP_ID_OFFSET = 0xB6;
-    public static final int APP_DATA_OFFSET = 0xED;
-    public static final int APP_DATA_LENGTH = 0xD8;
+    private static final int WRITE_COUNT_OFFSET = 0xB4;
+    private static final int APP_ID_OFFSET = 0xB6;
+    private static final int APP_DATA_OFFSET = 0xED;
+    private static final int APP_DATA_LENGTH = 0xD8;
 
     private final ByteBuffer tagData;
 
     public TagData(byte[] tagData) throws Exception {
-        if (tagData.length < TAG_FILE_SIZE)
+        if (tagData.length < NfcByte.TAG_FILE_SIZE)
             throw new Exception("Invalid tag data");
 
         this.tagData = ByteBuffer.wrap(tagData);

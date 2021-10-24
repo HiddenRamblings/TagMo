@@ -25,7 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class AmiiboManager {
-    private static final String TAG = AmiiboManager.class.getSimpleName();
+
     public static final String AMIIBO_DATABASE_FILE = "amiibo.json";
 
     public final HashMap<Long, Amiibo> amiibos = new HashMap<>();
@@ -226,12 +226,12 @@ public class AmiiboManager {
         return outputJSON;
     }
 
-    public static AmiiboManager loadDefaultAmiiboManager() throws IOException, JSONException, ParseException {
+    public static AmiiboManager getDefaultAmiiboManager() throws IOException, JSONException, ParseException {
 //        return AmiiboManager.parse(TagMo.getContext().getAssets().open(AMIIBO_DATABASE_FILE));
         return AmiiboManager.parse(TagMo.getContext().getResources().openRawResource(R.raw.amiibo));
     }
 
-    public static AmiiboManager loadAmiiboManager() throws IOException, JSONException, ParseException {
+    public static AmiiboManager getAmiiboManager() throws IOException, JSONException, ParseException {
         AmiiboManager amiiboManager;
         if (new File(TagMo.getTagMoFiles(), AMIIBO_DATABASE_FILE).exists()) {
             try {
@@ -239,19 +239,19 @@ public class AmiiboManager {
                         TagMo.getContext().openFileInput(AMIIBO_DATABASE_FILE));
             } catch (IOException | JSONException | ParseException e) {
                 amiiboManager = null;
-                TagMo.Error(TAG, R.string.amiibo_parse_error, e);
+                TagMo.Error(AmiiboManager.class, R.string.amiibo_parse_error, e);
             }
         } else {
             amiiboManager = null;
         }
         if (amiiboManager == null) {
-            amiiboManager = loadDefaultAmiiboManager();
+            amiiboManager = getDefaultAmiiboManager();
         }
 
         return amiiboManager;
     }
 
-    public static void saveAmiiboInfo(AmiiboManager amiiboManager, OutputStream outputStream) throws JSONException, IOException {
+    public static void saveDatabase(AmiiboManager amiiboManager, OutputStream outputStream) throws JSONException, IOException {
         OutputStreamWriter streamWriter = null;
         try {
             streamWriter = new OutputStreamWriter(outputStream);
@@ -268,12 +268,12 @@ public class AmiiboManager {
         }
     }
 
-    public static void saveAmiiboInfo(AmiiboManager amiiboManager) throws IOException, JSONException {
+    public static void saveDatabase(AmiiboManager amiiboManager) throws IOException, JSONException {
         OutputStream outputStream = null;
         try {
             outputStream = TagMo.getContext().openFileOutput(
                     AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
-            saveAmiiboInfo(amiiboManager, outputStream);
+            saveDatabase(amiiboManager, outputStream);
         } finally {
             if (outputStream != null) {
                 try {

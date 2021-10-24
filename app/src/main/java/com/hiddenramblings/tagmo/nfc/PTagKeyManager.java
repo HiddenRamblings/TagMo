@@ -17,7 +17,7 @@ public class PTagKeyManager {
     public static final String POWERTAG_KEYTABLE_FILE = "keytable.json";
     private static HashMap<String, HashMap<String, byte[]>> keys;
 
-    public static void loadPowerTagManager() throws Exception {
+    public static void getPowerTagManager() throws Exception {
         if (keys != null)
             return;
         try (InputStream stream = TagMo.getContext().getAssets().open(POWERTAG_KEYTABLE_FILE)) {

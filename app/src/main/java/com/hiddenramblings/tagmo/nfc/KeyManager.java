@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class KeyManager {
-    private static final String TAG = KeyManager.class.getSimpleName();
 
     private static final String FIXED_KEY_FILE = "fixed_key.bin";
     private static final String FIXED_KEY_MD5 = "0AD86557C7BA9E75C79A7B43BB466333";
@@ -37,7 +36,7 @@ public class KeyManager {
             if (hasLocalFile(UNFIXED_KEY_FILE))
                 unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
         } catch (Exception e) {
-            TagMo.Error(TAG, R.string.key_load_error, e);
+            TagMo.Error(getClass(), R.string.key_load_error, e);
         }
     }
 
@@ -70,7 +69,7 @@ public class KeyManager {
                 return key;
             }
         } catch (Exception e) {
-            TagMo.Error(TAG, R.string.key_read_error, e);
+            TagMo.Error(getClass(), R.string.key_read_error, e);
         }
         return null;
     }

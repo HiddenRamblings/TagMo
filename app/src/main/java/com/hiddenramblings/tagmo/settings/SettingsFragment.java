@@ -142,11 +142,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         updateAmiiboStats();
         onImageNetworkChange(prefs.imageNetworkSetting().get());
 
-        this.enableEliteSupport.setChecked(prefs.enableEliteSupport().get());
-        if (this.enableEliteSupport.isChecked() && prefs.eliteSignature().get().length() > 1) {
+        boolean isElite = prefs.enableEliteSupport().get();
+        this.enableEliteSupport.setChecked(isElite);
+        if (isElite && prefs.eliteSignature().get().length() > 1) {
             this.enableEliteSupport.setSummary(getString(
                     R.string.elite_details_enabled, prefs.eliteSignature().get()));
         }
+        lockEliteHardware.setVisible(isElite);
     }
 
     @PreferenceClick(R.string.settings_import_keys)
@@ -181,6 +183,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     R.string.elite_details_enabled, prefs.eliteSignature().get()));
         else
             enableEliteSupport.setSummary(getString(R.string.elite_details));
+        lockEliteHardware.setVisible(isEnabled);
     }
 
     @PreferenceClick(R.string.lock_elite_hardware)
@@ -217,7 +220,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(file);
-            AmiiboManager.saveAmiiboInfo(this.amiiboManager, fileOutputStream);
+            AmiiboManager.saveDatabase(this.amiiboManager, fileOutputStream);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_info_export_fail, TagMo.friendlyPath(file), Toast.LENGTH_SHORT);
@@ -427,7 +430,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void loadAmiiboManagerTask() {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = AmiiboManager.loadAmiiboManager();
+            amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -465,7 +468,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return;
 
         try {
-            AmiiboManager.saveAmiiboInfo(amiiboManager);
+            AmiiboManager.saveDatabase(amiiboManager);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -490,7 +493,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         AmiiboManager amiiboManager = null;
         try {
-            amiiboManager = AmiiboManager.loadDefaultAmiiboManager();
+            amiiboManager = AmiiboManager.getDefaultAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
             showToast(R.string.amiibo_failure_generic,
@@ -602,7 +605,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 if (Thread.currentThread().isInterrupted())
                     return;
 
-                AmiiboManager.saveAmiiboInfo(amiiboManager);
+                AmiiboManager.saveDatabase(amiiboManager);
                 setAmiiboManager(amiiboManager);
                 showSnackbar(getString(R.string.sync_amiibo_status,
                         getString(R.string.sync_complete)), Snackbar.LENGTH_SHORT);
@@ -645,14 +648,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 try {
                     onLoadKeys.launch(Intent.createChooser(intent, title));
                 } catch (android.content.ActivityNotFoundException ex) {
-                    TagMo.Error("", ex.getMessage());
+                    TagMo.Error(getClass(), ex.getMessage());
                 }
                 break;
             case RESULT_IMPORT_AMIIBO_DATABASE:
                 try {
                     onImportAmiiboDatabase.launch(Intent.createChooser(intent, title));
                 } catch (android.content.ActivityNotFoundException ex) {
-                    TagMo.Error("", ex.getMessage());
+                    TagMo.Error(getClass(), ex.getMessage());
                 }
                 break;
         }

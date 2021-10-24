@@ -231,7 +231,7 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
                 //         tagInfo != null);
             } else {
                 this.txtName.setVisibility(View.VISIBLE);
-                this.txtName.setText(TagMo.getStringRes(R.string.blank_tag_number, position));
+                this.txtName.setText(TagMo.getStringRes(R.string.blank_bank, position));
                 this.txtTagId.setVisibility(View.GONE);
                 this.txtAmiiboSeries.setVisibility(View.GONE);
                 this.txtAmiiboType.setVisibility(View.GONE);

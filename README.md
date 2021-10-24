@@ -21,8 +21,8 @@ TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC
 
 # Submitting Issues:
 
-* The stable and testing branches contain the latest features, but some may be incomplete. If you see progress being made on that feature or ones related to it, make sure to update to the latest version and allow at least 24 hours before reporting. The exception would be a fatal issue (makes the app completely unusable).
-* If you have a suggestion, feel free to submit it with the appropriate labels (ie. enhancement). Much like reporting a new issue, please make sure to allow enough time to verifywhat you are about to request is not currently in progress. The exception would be requested feedback.
+* The stable and testing branches contain the latest features, but some may be incomplete. If you see related progress, make sure to allow at least 24 hours before reporting. The exception is a fatal issue (TagMo becomes completely unusable).
+* If you have a suggestion, feel free to submit it with the appropriate labels (ie. enhancement). Much like reporting a new issue, make sure to allow enough time before suggesting changes. The exception is requested feedback.
 * Duplicate issues will be closed without warning and future comments on the duplicate will be disregarded. A link to the issue is duplicates will be provided upon closure.
 
 # Features:
@@ -47,6 +47,12 @@ TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC
 
 # Instructions:
 
+## Downloading TagMo
+* Releases are tagged with the master and experimental branches, respectively.
+* Each build is labeled with the hashtag for the last commit included in that build.
+* Releases published from the experimental branch are also tagged as "Pre-Release" and will not appear on the main repository page. You must click on the "Releases" label to download these builds.
+* Both tags include a signed copy of the apk in their assets. Builds from either tag can be installed over each other without uninstalling. Please include the branch or hash in any issue reports.
+
 ## Cloning Amiibo 
 * Install the app on the phone as usual.
 * Make sure NFC is enabled.
@@ -58,10 +64,10 @@ TagMo is an Android app which allows for cloning Amiibos using blank NTAG215 NFC
 * Click "Scan Tag" to scan the amiibo.
 * Click "Save Tag" to save data to a file. (A file name will be generated based on the tag details and saved to the download folder.)
 
-## Power Tag
+## Writing to Power Tag
 * Please see the [Power Tag (PowerSaves) Wiki](<https://github.com/HiddenRamblings/TagMo/wiki/Power-Tag-(PowerSaves)>) for setup and usage instructions
 
-# Editing Super Smash Bros (SSB) data  
+## Editing Super Smash Bros (SSB) data  
 * Click "Scan Tag" to scan a amiibo. Make sure that the amiibo was once used in Super Smash Bros before.
 * Click "Edit SSB Data" to edit properties related to SSB. Using this on non SSB amiibo will corrupt its saved data. requiring you to restore it from a save file (if you have one) or to reset it. It is recommended you backup the amiibo data using the steps above before trying this out.
 

@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.style.StyleSpan;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,17 +85,34 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
     public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case BrowserActivity.VIEW_TYPE_COMPACT:
-                return new CompactViewHolder(parent, settings, prefs, listener);
+                return new CompactViewHolder(parent, settings, listener);
             case BrowserActivity.VIEW_TYPE_LARGE:
-                return new LargeViewHolder(parent, settings, prefs, listener);
+                return new LargeViewHolder(parent, settings, listener);
             case BrowserActivity.VIEW_TYPE_SIMPLE:
             default:
-                return new SimpleViewHolder(parent, settings, prefs, listener);
+                return new SimpleViewHolder(parent, settings, listener);
         }
     }
 
     @Override
-    public void onBindViewHolder(final AmiiboVewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final AmiiboVewHolder holder, int position) {
+        if (TagWriter.getValueFromPosition(position)
+                == prefs.eliteActiveBank().get()) {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
+                    android.R.color.holo_green_light));
+        } else {
+            TypedValue a = new TypedValue();
+            TagMo.getContext().getTheme().resolveAttribute(
+                    android.R.attr.windowBackground, a, true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                holder.itemView.setBackgroundColor(a.data);
+            } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                    && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                holder.itemView.setBackgroundColor(a.data);
+            } else {
+                holder.itemView.setBackgroundResource(a.resourceId);
+            }
+        }
         holder.bind(getItem(position));
     }
 
@@ -102,7 +120,6 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
 
         private final BrowserSettings settings;
         private final OnAmiiboClickListener listener;
-        private final Preferences_ prefs;
 
         public final TextView txtError;
         public final TextView txtName;
@@ -139,14 +156,12 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
             }
         };
 
-        public AmiiboVewHolder(
-                View itemView, BrowserSettings settings,
-                Preferences_ prefs, OnAmiiboClickListener listener) {
+        public AmiiboVewHolder(View itemView, BrowserSettings settings,
+                               OnAmiiboClickListener listener) {
             super(itemView);
 
             this.settings = settings;
             this.listener = listener;
-            this.prefs = prefs;
             this.itemView.setOnClickListener(view -> {
                 if (AmiiboVewHolder.this.listener != null) {
                     AmiiboVewHolder.this.listener.onAmiiboClicked(
@@ -239,34 +254,6 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
                 // this.txtCharacter.setVisibility(View.GONE);
             }
 
-            if (TagWriter.getValueFromPosition(getAbsoluteAdapterPosition())
-                    == prefs.eliteActiveBank().get()) {
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//                    this.itemView.getBackground().setColorFilter(
-//                            new BlendModeColorFilter(ContextCompat.getColor(TagMo.getContext(),
-//                            android.R.color.holo_green_light), BlendMode.COLOR_DODGE));
-//                } else {
-//                    this.itemView.getBackground().setColorFilter(
-//                            ContextCompat.getColor(TagMo.getContext(),
-//                            android.R.color.holo_green_light), PorterDuff.Mode.SRC_ATOP);
-//                }
-                this.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                        android.R.color.holo_green_light));
-            } else {
-//                this.itemView.getBackground().clearColorFilter();
-                TypedValue a = new TypedValue();
-                TagMo.getContext().getTheme().resolveAttribute(
-                        android.R.attr.windowBackground, a, true);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
-                    this.itemView.setBackgroundColor(a.data);
-                } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
-                        && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-                    this.itemView.setBackgroundColor(a.data);
-                } else {
-                    this.itemView.setBackgroundResource(a.resourceId);
-                }
-            }
-
             if (this.imageAmiibo != null) {
                 this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(itemView).clear(target);
@@ -306,7 +293,8 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
                     break;
 
                 j = i + query.length();
-                str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), i, j, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                str.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+                        i, j, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             return str;
         }
@@ -314,7 +302,8 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
         SpannableStringBuilder boldStartText(String text, String query) {
             SpannableStringBuilder str = new SpannableStringBuilder(text);
             if (!query.isEmpty() && text.toLowerCase().startsWith(query)) {
-                str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, query.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                str.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+                        0, query.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             return str;
         }
@@ -336,37 +325,34 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
     }
 
     static class SimpleViewHolder extends AmiiboVewHolder {
-        public SimpleViewHolder(
-                ViewGroup parent, BrowserSettings settings,
-                Preferences_ prefs, OnAmiiboClickListener listener) {
+        public SimpleViewHolder(ViewGroup parent, BrowserSettings settings,
+                                OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
-                    settings, prefs, listener
+                    settings, listener
             );
         }
     }
 
     static class CompactViewHolder extends AmiiboVewHolder {
-        public CompactViewHolder(
-                ViewGroup parent, BrowserSettings settings,
-                Preferences_ prefs, OnAmiiboClickListener listener) {
+        public CompactViewHolder(ViewGroup parent, BrowserSettings settings,
+                                 OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
-                    settings, prefs, listener
+                    settings, listener
             );
         }
     }
 
     static class LargeViewHolder extends AmiiboVewHolder {
-        public LargeViewHolder(
-                ViewGroup parent, BrowserSettings settings,
-                Preferences_ prefs, OnAmiiboClickListener listener) {
+        public LargeViewHolder(ViewGroup parent, BrowserSettings settings,
+                               OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
-                    settings, prefs, listener
+                    settings, listener
             );
         }
     }

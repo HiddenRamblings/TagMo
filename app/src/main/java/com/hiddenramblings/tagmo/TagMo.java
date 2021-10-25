@@ -20,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 @EApplication
 public class TagMo extends Application {
 
+    public static final String PROVIDER = "com.hiddenramblings.tagmo.provider";
+
     public static final String ACTION_EDIT_COMPLETE = "com.hiddenramblings.tagmo.EDIT_COMPLETE";
     public static final String ACTION_SCAN_TAG = "com.hiddenramblings.tagmo.SCAN_TAG";
     public static final String ACTION_SCAN_UNIT = "com.hiddenramblings.tagmo.SCAN_UNIT";

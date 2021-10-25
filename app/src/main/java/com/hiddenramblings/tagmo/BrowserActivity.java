@@ -502,8 +502,7 @@ public class BrowserActivity extends AppCompatActivity implements
             TagMo.scanFile(file);
             Uri fileUri;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                fileUri = FileProvider.getUriForFile(this,
-                        "com.hiddenramblings.tagmo.provider", file);
+                fileUri = FileProvider.getUriForFile(this, TagMo.PROVIDER, file);
             } else {
                 fileUri = Uri.fromFile(file);
             }
@@ -1288,15 +1287,13 @@ public class BrowserActivity extends AppCompatActivity implements
             fos.close();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                installUpdate(FileProvider.getUriForFile(this,
-                        "com.hiddenramblings.tagmo.provider", apk));
+                installUpdate(FileProvider.getUriForFile(this, TagMo.PROVIDER, apk));
             } else {
                 Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     intent.setDataAndType(
-                            FileProvider.getUriForFile(this,
-                                    "com.hiddenramblings.tagmo.provider", apk),
+                            FileProvider.getUriForFile(this, TagMo.PROVIDER, apk),
                             "application/vnd.android.package-archive");
                 } else {
                     intent.setDataAndType(Uri.fromFile(apk),

@@ -101,11 +101,11 @@
             android:textSize="16sp"/>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/write_all_banks"
+            android:id="@+id/write_open_banks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="36dp"
-            android:text="@string/write_all_banks" />
+            android:text="@string/write_open_banks" />
 
         <com.hiddenramblings.tagmo.BankNumberPicker
             android:id="@+id/bank_count_picker"

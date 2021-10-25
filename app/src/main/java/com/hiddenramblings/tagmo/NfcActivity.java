@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Build;
@@ -23,10 +24,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.nfc.KeyManager;
 import com.hiddenramblings.tagmo.nfc.NTAG215;
+import com.hiddenramblings.tagmo.nfc.TagUtils;
 import com.hiddenramblings.tagmo.nfc.TagWriter;
 
 import org.androidannotations.annotations.AfterViews;
@@ -101,6 +105,7 @@ public class NfcActivity extends AppCompatActivity {
                     break;
                 }
             case TagMo.ACTION_WRITE_TAG_RAW:
+            case TagMo.ACTION_WRITE_ALL_TAGS:
             case TagMo.ACTION_BACKUP_AMIIBO:
             case TagMo.ACTION_SCAN_TAG:
             case TagMo.ACTION_SCAN_UNIT:
@@ -144,6 +149,11 @@ public class NfcActivity extends AppCompatActivity {
                 bankNumberPicker.setMaxValue(prefs.eliteBankCount().get());
                 setTitle(R.string.restore_tag);
                 break;
+            case TagMo.ACTION_WRITE_ALL_TAGS:
+                bankNumberPicker.setVisibility(View.GONE);
+                bankNumberPicker.setEnabled(false);
+                bankTextView.setVisibility(View.GONE);
+                setTitle(R.string.write_collection);
             case TagMo.ACTION_BACKUP_AMIIBO:
                 bankNumberPicker.setVisibility(View.GONE);
                 bankNumberPicker.setEnabled(false);
@@ -242,6 +252,7 @@ public class NfcActivity extends AppCompatActivity {
                 bank_count = bank_details[1] & 0xFF;
                 active_bank = TagWriter.getValueFromPosition(bank_details[0] & 0xFF);
                 if (!mode.equals(TagMo.ACTION_SET_BANK_COUNT)
+                        && !mode.equals(TagMo.ACTION_WRITE_ALL_TAGS)
                         && !mode.equals(TagMo.ACTION_SCAN_UNIT)) {
                     selection = TagWriter.getPositionFromValue(bankNumberPicker.getValue());
                     if (selection > bank_count) {
@@ -300,6 +311,26 @@ public class NfcActivity extends AppCompatActivity {
                                 this.keyManager, prefs.enableTagTypeValidation().get());
                         setResult(Activity.RESULT_OK);
                         showToast(getString(R.string.done));
+                        break;
+
+                    case TagMo.ACTION_WRITE_ALL_TAGS:
+                        ArrayList<AmiiboFile> amiiboList =
+                                commandIntent.getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES);
+                        for (int x = 0; x < amiiboList.size(); x++) {
+                            Uri fileUri;
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                fileUri = FileProvider.getUriForFile(this,
+                                        TagMo.PROVIDER, amiiboList.get(x).getFilePath());
+                            } else {
+                                fileUri = Uri.fromFile(amiiboList.get(x).getFilePath());
+                            }
+                            data = TagUtils.readTag(getContentResolver().openInputStream(fileUri));
+                            TagWriter.writeEliteAuto(mifare, data, x);
+                        }
+                        Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        write.putExtra(TagMo.EXTRA_UNIT_DATA,
+                                TagWriter.readFromTags(mifare, bank_count));
+                        setResult(Activity.RESULT_OK, write);
                         break;
 
                     case TagMo.ACTION_BACKUP_AMIIBO:

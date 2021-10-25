@@ -161,6 +161,7 @@
     <string name="activate_bank">Activate Bank</string>
     <string name="bank_backup">Bank Backup</string>
     <string name="backup_amiibo">Amiibo Backup</string>
+    <string name="write_collection">Write Collection</string>
 
     <string name="permission_required">Storage permission required!</string>
     <string name="allow_permission">Allow</string>
@@ -183,7 +184,7 @@
     <string name="lock_elite_hardware_details">The active bank will emulate a retail Amiibo.\nOther features will be disabled until unlocked.</string>
     <string name="lock_elite_warning">Lock N2 Elite Hardware?</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
-    <string name="write_all_banks">Write All Banks to N2 Elite</string>
+    <string name="write_open_banks">Write %1$d Banks to N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>
     <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
     <string name="hardware_conflict">Power Tag / N2 Elite are incompatible!</string>
@@ -311,6 +312,7 @@
 
     <string name="bank_select_details">Set Bank Number</string>
     <string name="bank_count_details">Set Bank Count</string>
+    <string name="write_complete">Write selections to N2 Elite?</string>
     <string name="feature_unavailable">Coming Soon!</string>
 
     <string name="read_failed">Read failed</string>

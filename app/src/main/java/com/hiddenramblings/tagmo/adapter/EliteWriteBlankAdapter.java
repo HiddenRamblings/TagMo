@@ -6,8 +6,10 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -45,10 +48,13 @@ import java.util.Comparator;
 public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlankAdapter.AmiiboVewHolder>
         implements Filterable, BrowserSettings.BrowserSettingsListener {
     private final BrowserSettings settings;
-    private final OnAmiiboClickListener listener;
+    private OnAmiiboClickListener listener = null;
+    private OnHighlightListener collector = null;
     private final ArrayList<AmiiboFile> amiiboFiles;
     private ArrayList<AmiiboFile> filteredData;
     private AmiiboFilter filter;
+    private boolean isCollection;
+    private final ArrayList<AmiiboFile> amiiboList = new ArrayList<>();
 
     public EliteWriteBlankAdapter(BrowserSettings settings, OnAmiiboClickListener listener, ArrayList<AmiiboFile> amiiboFiles) {
         this.settings = settings;
@@ -56,6 +62,19 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
 
         this.filteredData = this.amiiboFiles = amiiboFiles;
         Collections.sort(this.amiiboFiles, new AmiiboComparator());
+    }
+
+    public EliteWriteBlankAdapter(BrowserSettings settings, OnHighlightListener collector, ArrayList<AmiiboFile> amiiboFiles) {
+        this.settings = settings;
+        this.collector = collector;
+
+        this.filteredData = this.amiiboFiles = amiiboFiles;
+        Collections.sort(this.amiiboFiles, new AmiiboComparator());
+    }
+
+    public EliteWriteBlankAdapter withHighlight(boolean isCollection) {
+        this.isCollection = isCollection;
+        return this;
     }
 
     @Override
@@ -92,18 +111,72 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
     public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case BrowserActivity.VIEW_TYPE_COMPACT:
-                return new CompactViewHolder(parent, settings, listener);
+                if (isCollection)
+                    return new CompactViewHolder(parent, settings, collector);
+                else
+                    return new CompactViewHolder(parent, settings, listener);
             case BrowserActivity.VIEW_TYPE_LARGE:
-                return new LargeViewHolder(parent, settings, listener);
+                if (isCollection)
+                    return new LargeViewHolder(parent, settings, collector);
+                else
+                    return new LargeViewHolder(parent, settings, listener);
             case BrowserActivity.VIEW_TYPE_SIMPLE:
             default:
-                return new SimpleViewHolder(parent, settings, listener);
+                if (isCollection)
+                    return new SimpleViewHolder(parent, settings, collector);
+                else
+                    return new SimpleViewHolder(parent, settings, listener);
         }
     }
 
     @Override
     public void onBindViewHolder(final AmiiboVewHolder holder, int position) {
+        holder.itemView.setOnClickListener(view -> {
+            if (isCollection) {
+                amiiboList.add(filteredData.get(holder.getAbsoluteAdapterPosition()));
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
+                        android.R.color.holo_green_light));
+                if (holder.collector != null) {
+                    holder.collector.onAmiiboClicked(amiiboList);
+                }
+            } else {
+                if (holder.listener != null) {
+                    holder.listener.onAmiiboClicked(holder.amiiboFile);
+                }
+            }
+        });
+        if (holder.imageAmiibo != null) {
+            if (isCollection) {
+                holder.imageAmiibo.setOnClickListener(view -> {
+                    if (holder.collector != null) {
+                        holder.collector.onAmiiboImageClicked(amiiboList);
+                    }
+                });
+            } else {
+                holder.imageAmiibo.setOnClickListener(view -> {
+                    if (holder.listener != null) {
+                        holder.listener.onAmiiboImageClicked(holder.amiiboFile);
+                    }
+                });
+            }
+        }
         holder.bind(getItem(position));
+        if (amiiboList.contains(holder.amiiboFile)) {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
+                    android.R.color.holo_green_light));
+        } else {
+            TypedValue a = new TypedValue();
+            TagMo.getContext().getTheme().resolveAttribute(
+                    android.R.attr.windowBackground, a, true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                holder.itemView.setBackgroundColor(a.data);
+            } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                    && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                holder.itemView.setBackgroundColor(a.data);
+            } else {
+                holder.itemView.setBackgroundResource(a.resourceId);
+            }
+        }
     }
 
     class AmiiboComparator implements Comparator<AmiiboFile> {
@@ -241,7 +314,8 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
 
     static abstract class AmiiboVewHolder extends RecyclerView.ViewHolder {
         private final BrowserSettings settings;
-        private final OnAmiiboClickListener listener;
+        private OnAmiiboClickListener listener = null;
+        private OnHighlightListener collector = null;
 
         public final TextView txtError;
         public final TextView txtName;
@@ -278,16 +352,12 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
             }
         };
 
-        public AmiiboVewHolder(View itemView, BrowserSettings settings, OnAmiiboClickListener listener) {
+        public AmiiboVewHolder(View itemView, BrowserSettings settings,
+                               OnAmiiboClickListener listener) {
             super(itemView);
 
             this.settings = settings;
             this.listener = listener;
-            this.itemView.setOnClickListener(view -> {
-                if (AmiiboVewHolder.this.listener != null) {
-                    AmiiboVewHolder.this.listener.onAmiiboClicked(amiiboFile);
-                }
-            });
 
             this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
@@ -298,13 +368,24 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
             // this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
             this.txtPath = itemView.findViewById(R.id.txtPath);
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
-            if (this.imageAmiibo != null) {
-                this.imageAmiibo.setOnClickListener(view -> {
-                    if (AmiiboVewHolder.this.listener != null) {
-                        AmiiboVewHolder.this.listener.onAmiiboImageClicked(amiiboFile);
-                    }
-                });
-            }
+        }
+
+        public AmiiboVewHolder(View itemView, BrowserSettings settings,
+                               OnHighlightListener collector) {
+            super(itemView);
+
+            this.settings = settings;
+            this.collector = collector;
+
+            this.txtError = itemView.findViewById(R.id.txtError);
+            this.txtName = itemView.findViewById(R.id.txtName);
+            this.txtTagId = itemView.findViewById(R.id.txtTagId);
+            this.txtAmiiboSeries = itemView.findViewById(R.id.txtAmiiboSeries);
+            this.txtAmiiboType = itemView.findViewById(R.id.txtAmiiboType);
+            this.txtGameSeries = itemView.findViewById(R.id.txtGameSeries);
+            // this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
+            this.txtPath = itemView.findViewById(R.id.txtPath);
+            this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
         }
 
         void bind(final AmiiboFile item) {
@@ -440,31 +521,58 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
     }
 
     static class SimpleViewHolder extends AmiiboVewHolder {
-        public SimpleViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
+        public SimpleViewHolder(ViewGroup parent, BrowserSettings settings,
+                                OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
                     settings, listener
             );
         }
+        public SimpleViewHolder(ViewGroup parent, BrowserSettings settings,
+                                OnHighlightListener collector) {
+            super(
+                    LayoutInflater.from(parent.getContext()).inflate(
+                            R.layout.amiibo_simple_card, parent, false),
+                    settings, collector
+            );
+        }
     }
 
     static class CompactViewHolder extends AmiiboVewHolder {
-        public CompactViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
+        public CompactViewHolder(ViewGroup parent, BrowserSettings settings,
+                                 OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
                     settings, listener
             );
         }
+        public CompactViewHolder(ViewGroup parent, BrowserSettings settings,
+                                 OnHighlightListener collector) {
+            super(
+                    LayoutInflater.from(parent.getContext()).inflate(
+                            R.layout.amiibo_compact_card, parent, false),
+                    settings, collector
+            );
+        }
     }
 
     static class LargeViewHolder extends AmiiboVewHolder {
-        public LargeViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
+        public LargeViewHolder(ViewGroup parent, BrowserSettings settings,
+                               OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
                     settings, listener
+            );
+        }
+        public LargeViewHolder(ViewGroup parent, BrowserSettings settings,
+                               OnHighlightListener collector) {
+            super(
+                    LayoutInflater.from(parent.getContext()).inflate(
+                            R.layout.amiibo_large_card, parent, false),
+                    settings, collector
             );
         }
     }
@@ -473,5 +581,11 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
         void onAmiiboClicked(AmiiboFile amiiboFile);
 
         void onAmiiboImageClicked(AmiiboFile amiiboFile);
+    }
+
+    public interface OnHighlightListener {
+        void onAmiiboClicked(ArrayList<AmiiboFile> amiiboList);
+
+        void onAmiiboImageClicked(ArrayList<AmiiboFile> amiiboList);
     }
 }

@@ -96,14 +96,14 @@ public class AmiiboActivity extends AppCompatActivity {
                 case R.id.mnu_elite:
                     editBank();
                     return true;
-                case R.id.mnu_save:
-                    saveTag();
-                    return true;
                 case R.id.mnu_write:
                     writeTag();
                     return true;
                 case R.id.mnu_restore:
                     restoreTag();
+                    return true;
+                case R.id.mnu_save:
+                    saveTag();
                     return true;
                 case R.id.mnu_view_hex:
                     viewHex();
@@ -251,12 +251,28 @@ public class AmiiboActivity extends AppCompatActivity {
         this.runOnUiThread(this::updateAmiiboView);
     });
 
+
+    void editBank() {
+        setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_NFC_SCANNED));
+        finish();
+    }
+
     void writeTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
         if (current_bank != -1)
             intent.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
+        onNFCResult.launch(intent);
+    }
+
+    void restoreTag() {
+        Intent intent = new Intent(this, NfcActivity_.class);
+        intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
+        if (current_bank != -1)
+            intent.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
+        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
+        intent.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
         onNFCResult.launch(intent);
     }
 
@@ -276,25 +292,10 @@ public class AmiiboActivity extends AppCompatActivity {
                 .setNegativeButton(R.string.cancel, null).show();
     }
 
-    void restoreTag() {
-        Intent intent = new Intent(this, NfcActivity_.class);
-        intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
-        if (current_bank != -1)
-            intent.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
-        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
-        intent.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
-        onNFCResult.launch(intent);
-    }
-
     void viewHex() {
         Intent intent = new Intent(this, HexViewerActivity_.class);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         startActivity(intent);
-    }
-
-    void editBank() {
-        setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_NFC_SCANNED));
-        finish();
     }
 
     @Click(R.id.imageAmiibo)

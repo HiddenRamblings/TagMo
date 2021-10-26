@@ -162,7 +162,7 @@ public class EliteActivity extends AppCompatActivity implements
         });
         ArrayList<Amiibo> amiibos = new ArrayList<>();
         for (int x = 0; x < tagData.size(); x++) {
-            Amiibo amiibo = amiiboManager.amiibos.get(TagUtils.hex2long(tagData.get(x)));
+            Amiibo amiibo = amiiboManager.amiibos.get(TagUtils.hexToLong(tagData.get(x)));
             amiibos.add(amiibo);
         }
         if (amiibosView.getAdapter() != null) {

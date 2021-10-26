@@ -65,7 +65,8 @@ public class KeyManager {
         try {
             try (FileInputStream fs = context.openFileInput(file)) {
                 byte[] key = new byte[KEY_FILE_SIZE];
-                if (fs.read(key) != KEY_FILE_SIZE) throw new Exception(TagMo.getStringRes(R.string.key_size_invalid));
+                if (fs.read(key) != KEY_FILE_SIZE) throw new Exception(
+                        TagMo.getStringRes(R.string.key_size_invalid));
                 return key;
             }
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Resources;
 import android.media.MediaScannerConnection;
 import android.os.Build;
 import android.util.Log;
@@ -25,7 +26,6 @@ public class TagMo extends Application {
 
     public static final String ACTION_EDIT_COMPLETE = BuildConfig.APPLICATION_ID + ".EDIT_COMPLETE";
     public static final String ACTION_SCAN_TAG = BuildConfig.APPLICATION_ID + ".SCAN_TAG";
-    public static final String ACTION_SCAN_ELITE = BuildConfig.APPLICATION_ID + ".SCAN_ELITE";
     public static final String ACTION_WRITE_TAG_FULL = BuildConfig.APPLICATION_ID + ".WRITE_TAG_FULL";
     public static final String ACTION_WRITE_TAG_RAW = BuildConfig.APPLICATION_ID + ".WRITE_TAG_RAW";
     public static final String ACTION_WRITE_TAG_DATA = BuildConfig.APPLICATION_ID + ".WRITE_TAG_DATA";
@@ -84,15 +84,26 @@ public class TagMo extends Application {
     }
 
     public static String getStringRes(int resource) {
-        return TagMo.getContext().getString(resource);
+        return mContext.get().getString(resource);
     }
 
     public static String getStringRes(int resource, String params) {
-        return TagMo.getContext().getString(resource, params);
+        return mContext.get().getString(resource, params);
+    }
+
+    public static String getStringRes(int resource, String params, int digits) {
+        return mContext.get().getString(resource, params, digits);
     }
 
     public static String getStringRes(int resource, int params) {
-        return TagMo.getContext().getString(resource, TagMo.getContext().getString(params));
+        try {
+            Resources res = mContext.get().getResources();
+            res.getIdentifier(res.getResourceName(params),
+                    "string", BuildConfig.APPLICATION_ID);
+            return mContext.get().getString(resource, mContext.get().getString(params));
+        } catch (Resources.NotFoundException ignore) {
+            return mContext.get().getString(resource, params);
+        }
     }
 
     public static String TAG(Class<?> src) {

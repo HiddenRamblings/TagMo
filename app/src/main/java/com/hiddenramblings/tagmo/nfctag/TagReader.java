@@ -89,7 +89,7 @@ public class TagReader {
             int len = inputStream.read(data);
             if (len != NfcByte.TAG_FILE_SIZE)
                 throw new Exception(TagMo.getStringRes(R.string.invalid_file_size,
-                        String.valueOf(NfcByte.TAG_FILE_SIZE)));
+                        file.getName(), NfcByte.TAG_FILE_SIZE));
             return data;
         }
     }
@@ -107,7 +107,7 @@ public class TagReader {
             int len = inputStream.read(data);
             if (len != NfcByte.TAG_FILE_SIZE)
                 throw new Exception(TagMo.getStringRes(R.string.invalid_file_size,
-                        String.valueOf(NfcByte.TAG_FILE_SIZE)));
+                        file.getName(), NfcByte.TAG_FILE_SIZE));
             return data;
         }
     }
@@ -131,7 +131,7 @@ public class TagReader {
         return tagData;
     }
 
-    public static ArrayList<String> readTagTitles(NTAG215 tag, int numBanks) throws Exception {
+    public static ArrayList<String> readTagTitles(NTAG215 tag, int numBanks) {
         ArrayList<String> tags = new ArrayList<>();
         int i = 0;
         while (i < (numBanks & 0xFF)) {
@@ -156,14 +156,13 @@ public class TagReader {
     public static String getEliteSignature(NTAG215 tag) {
         byte[] signature = tag.readEliteSingature();
         if (signature != null)
-            return TagUtils.bytesToHex(tag.readEliteSingature()).substring(0, 22);
+            return TagUtils.bytesToHex(signature).substring(0, 22);
         return null;
     }
 
-    public static String writeBytesToFile(
-            File directory, String name, byte[] tagData) throws IOException {
-        directory.mkdirs();
-        File binFile = new File(directory, name);
+    public static String writeBytesToFile(File backupDir, String name, byte[] tagData) throws IOException {
+        backupDir.mkdirs();
+        File binFile = new File(backupDir, name);
         try (FileOutputStream fos = new FileOutputStream(binFile)) {
             fos.write(tagData);
         }
@@ -189,8 +188,7 @@ public class TagReader {
         }
     }
 
-    public static String scanAmiiboToFile(AmiiboManager amiiboManager, byte[] tagData,
-                                          String browserRoot) throws Exception {
+    public static String scanAmiiboToFile(AmiiboManager amiiboManager, byte[] tagData) throws Exception {
         String status = "";
         try {
             validateTag(tagData);
@@ -218,9 +216,9 @@ public class TagReader {
                     name, uIds, Calendar.getInstance(), status
             );
 
-            File directory = new File(TagMo.getStorage(), browserRoot
-                    + File.pathSeparator + TagMo.getStringRes(R.string.tagmo_export));
-            return writeBytesToFile(directory, fileName, tagData);
+            return writeBytesToFile(new File(TagMo.getStorage(),
+                    TagMo.getPrefs().browserRootFolder().get() + File.pathSeparator
+                            + TagMo.getStringRes(R.string.tagmo_export)), fileName, tagData);
         } catch (Exception e) {
             throw new Exception(TagMo.getStringRes(R.string.write_error, e.getMessage()));
         }
@@ -270,7 +268,7 @@ public class TagReader {
                 } else if (parts[0].equals("C-APDU")) {
                     byte[] apdu_buf = new byte[(parts.length - 1)];
                     for (i = 1; i < parts.length; i++) {
-                        apdu_buf[i - 1] = TagUtils.hex2byte(parts[i]);
+                        apdu_buf[i - 1] = TagUtils.hexToByte(parts[i]);
                     }
                     int sz = apdu_buf[4] & 0xFF;
                     byte[] iso_cmd = new byte[sz];
@@ -297,7 +295,7 @@ public class TagReader {
                         throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 2));
                     }
                     for (i = 1; i < parts.length; i++) {
-                        rpdu_buf[i - 1] = TagUtils.hex2byte(parts[i]);
+                        rpdu_buf[i - 1] = TagUtils.hexToByte(parts[i]);
                     }
                     for (i = 0; i < rpdu_buf.length - 2; i++) {
                         if (rpdu_buf[i] != response[i]) {

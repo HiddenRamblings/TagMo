@@ -288,8 +288,7 @@ public class AmiiboActivity extends AppCompatActivity {
                 .setMessage(R.string.export_warning)
                 .setPositiveButton(R.string.export, (dialog, which) -> {
                     try {
-                        String fileName = TagReader.scanAmiiboToFile(this.amiiboManager,
-                                tagData, TagMo.getPrefs().browserRootFolder().get());
+                        String fileName = TagReader.scanAmiiboToFile(this.amiiboManager, tagData);
                         showToast(getString(R.string.wrote_file, fileName));
                     } catch (Exception e) {
                         showToast(e.getMessage());

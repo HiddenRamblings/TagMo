@@ -270,7 +270,7 @@
     <string name="invalid_tag_cfg_zero">CFG0 signature mismatch.</string>
     <string name="invalid_tag_cfg_one">CFG1 signature mismatch.</string>
     <string name="invalid_uid_length">Invalid UID length</string>
-    <string name="invalid_file_size">Invalid file size. Expected %1$s</string>
+    <string name="invalid_file_size">%1$s size invalid (%2$d expected)!</string>
     <string name="invalid_app_data">Invalid app data</string>
 
     <string name="min_max_error">Must be between %1$d and %2$d</string>

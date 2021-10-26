@@ -276,58 +276,48 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onRootFolderChanged();
     }
 
-    ActivityResultLauncher<Intent> onEliteActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
-
-        String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
-        int active_bank = result.getData().getIntExtra(
-                TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
-        int bank_count = result.getData().getIntExtra(
-                TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
-
-        TagMo.getPrefs().eliteSignature().put(signature);
-        TagMo.getPrefs().eliteActiveBank().put(active_bank);
-        TagMo.getPrefs().eliteBankCount().put(bank_count);
-
-        Intent eliteIntent = new Intent(this, EliteActivity_.class);
-        eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
-        eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
-        eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
-        eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
-                result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
-        eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
-        startActivity(eliteIntent);
-    });
-
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
-        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        if (result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
+            String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
+            int active_bank = result.getData().getIntExtra(
+                    TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
+            int bank_count = result.getData().getIntExtra(
+                    TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
 
-        Bundle args = new Bundle();
-        args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
+            TagMo.getPrefs().eliteSignature().put(signature);
+            TagMo.getPrefs().eliteActiveBank().put(active_bank);
+            TagMo.getPrefs().eliteBankCount().put(bank_count);
 
-        Intent intent = new Intent(this, AmiiboActivity_.class);
-        intent.putExtras(args);
+            Intent eliteIntent = new Intent(this, EliteActivity_.class);
+            eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
+            eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+            eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
+                    result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
+            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
+            startActivity(eliteIntent);
+        } else {
+            byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
-        startActivity(intent);
+            Bundle args = new Bundle();
+            args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
+
+            Intent intent = new Intent(this, AmiiboActivity_.class);
+            intent.putExtras(args);
+
+            startActivity(intent);
+        }
     });
 
     @Click(R.id.fab)
     public void onFabClicked() {
-        if (TagMo.getPrefs().enableEliteSupport().get()) {
-            onEliteActivity.launch(new Intent(this,
-                    NfcActivity_.class).setAction(TagMo.ACTION_SCAN_ELITE));
-        } else {
-            onNFCActivity.launch(new Intent(this,
-                    NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
-        }
+        onNFCActivity.launch(new Intent(this,
+                NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
     }
 
     @Click(R.id.toggle)

@@ -32,7 +32,6 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.nfc.TagUtils;
-import com.hiddenramblings.tagmo.nfc.TagWriter;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
@@ -96,7 +95,7 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
 
     @Override
     public void onBindViewHolder(@NonNull final AmiiboVewHolder holder, int position) {
-        if (TagWriter.getValueFromPosition(position)
+        if (TagUtils.getValueForPosition(position)
                 == prefs.eliteActiveBank().get()) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
                     android.R.color.holo_green_light));
@@ -224,7 +223,7 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
             }
 
             String query = settings.getQuery().toLowerCase();
-            String position = String.valueOf(TagWriter.getValueFromPosition(
+            String position = String.valueOf(TagUtils.getValueForPosition(
                     getAbsoluteAdapterPosition()));
 
             if (tagInfo == null) {

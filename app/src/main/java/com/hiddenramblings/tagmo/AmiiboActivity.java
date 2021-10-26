@@ -102,8 +102,8 @@ public class AmiiboActivity extends AppCompatActivity {
                 case R.id.mnu_restore:
                     restoreTag();
                     return true;
-                case R.id.mnu_save:
-                    saveTag();
+                case R.id.mnu_export:
+                    exportTag();
                     return true;
                 case R.id.mnu_view_hex:
                     viewHex();
@@ -233,8 +233,8 @@ public class AmiiboActivity extends AppCompatActivity {
             eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
             eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
             eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
-            eliteIntent.putExtra(TagMo.EXTRA_UNIT_DATA,
-                    result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
+            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
+                    result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
             startActivity(eliteIntent);
 
             finish(); // Relaunch activity to bring view to front
@@ -276,13 +276,13 @@ public class AmiiboActivity extends AppCompatActivity {
         onNFCResult.launch(intent);
     }
 
-    void saveTag() {
+    void exportTag() {
         new android.app.AlertDialog.Builder(this)
-                .setMessage(R.string.save_view_warning)
-                .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                .setMessage(R.string.export_warning)
+                .setPositiveButton(R.string.export, (dialog, which) -> {
                     try {
                         String fileName = TagWriter.scanAmiiboToFile(this.amiiboManager,
-                                prefs.browserRootFolder().get(), tagData);
+                                tagData, prefs.browserRootFolder().get());
                         showToast(getString(R.string.wrote_file, fileName));
                     } catch (Exception e) {
                         showToast(e.getMessage());

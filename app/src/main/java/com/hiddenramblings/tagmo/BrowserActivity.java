@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -198,7 +197,9 @@ public class BrowserActivity extends AppCompatActivity implements
                 name.toLowerCase(Locale.getDefault()).endsWith(".apk"));
         if (files != null) {
             for (File file : files) {
-                if (!file.isDirectory()) file.delete();
+                if (!file.isDirectory())
+                    //noinspection ResultOfMethodCallIgnored
+                    file.delete();
             }
         }
         new RequestCommit().setListener(result -> {
@@ -300,8 +301,8 @@ public class BrowserActivity extends AppCompatActivity implements
         eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
         eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
         eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
-        eliteIntent.putExtra(TagMo.EXTRA_UNIT_DATA,
-                result.getData().getStringArrayListExtra(TagMo.EXTRA_UNIT_DATA));
+        eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
+                result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
         eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
         startActivity(eliteIntent);
     });
@@ -327,7 +328,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onFabClicked() {
         if (prefs.enableEliteSupport().get()) {
             onEliteActivity.launch(new Intent(this,
-                    NfcActivity_.class).setAction(TagMo.ACTION_SCAN_UNIT));
+                    NfcActivity_.class).setAction(TagMo.ACTION_SCAN_ELITE));
         } else {
             onNFCActivity.launch(new Intent(this,
                     NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
@@ -432,7 +433,8 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             long amiiboId = TagUtils.amiiboIdFromTag(tagData);
             Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
-            amiiboFileName = amiibo.name + "-" + amiibo.id;
+            if (amiibo != null)
+                amiiboFileName = amiibo.name + "-" + amiibo.id;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -444,7 +446,9 @@ public class BrowserActivity extends AppCompatActivity implements
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                String fileName = TagWriter.writeBytesToFile(settings.getBrowserRootFolder(),
+                File directory = new File(settings.getBrowserRootFolder(),
+                        TagMo.getStringRes(R.string.tagmo_backup));
+                String fileName = TagWriter.writeBytesToFile(directory,
                         input.getText().toString() + ".bin", tagData);
                 showToast(getString(R.string.wrote_file, fileName));
                 this.refresh();
@@ -537,7 +541,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void onUnlockEliteClicked() {
         new AlertDialog.Builder(this)
                 .setMessage(R.string.prepare_unlock)
-                .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                .setPositiveButton(R.string.start, (dialog, which) -> {
                     Intent unlock = new Intent(this, NfcActivity_.class);
                     unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
                     startActivity(unlock);

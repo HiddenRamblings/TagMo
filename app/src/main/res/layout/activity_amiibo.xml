@@ -41,8 +41,8 @@
                     android:text="@string/error"
                     android:layout_gravity="center"
                     android:textAlignment="center"
-                    android:textColor="@color/tag_text"
-                    android:textSize="16dp"/>
+                    android:textColor="@color/tag_text_light"
+                    android:textSize="16sp"/>
 
                 <RelativeLayout
                     android:id="@+id/amiiboInfo"
@@ -71,9 +71,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/amiibo_name_caps"
-                        android:textColor="@color/tag_text"
+                        android:textColor="@color/tag_text_light"
                         android:layout_below="@+id/imageDivider"
-                        android:textSize="16dp"/>
+                        android:textSize="16sp"/>
 
                     <LinearLayout
                         android:id="@+id/group1"
@@ -89,8 +89,9 @@
                             android:layout_weight="1"
                             android:gravity="start"
                             android:text="@string/amiibo_id_caps"
-                            android:textColor="@color/tag_text"
-                            android:textSize="10sp"/>
+                            android:textColor="@color/tag_text_light"
+                            android:textSize="10sp"
+                            tools:ignore="SmallSp" />
 
                         <View
                             android:layout_width="4dp"
@@ -103,8 +104,9 @@
                             android:layout_weight="1"
                             android:gravity="end"
                             android:text="@string/amiibo_type_caps"
-                            android:textColor="@color/tag_text"
-                            android:textSize="10sp"/>
+                            android:textColor="@color/tag_text_light"
+                            android:textSize="10sp"
+                            tools:ignore="SmallSp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -121,8 +123,9 @@
                             android:layout_weight="1"
                             android:gravity="start"
                             android:text="@string/amiibo_game_caps"
-                            android:textColor="@color/tag_text"
-                            android:textSize="10sp"/>
+                            android:textColor="@color/tag_text_light"
+                            android:textSize="10sp"
+                            tools:ignore="SmallSp" />
 
                         <View
                             android:layout_width="4dp"
@@ -135,8 +138,9 @@
                             android:layout_weight="1"
                             android:gravity="end"
                             android:text="@string/amiibo_series_caps"
-                            android:textColor="@color/tag_text"
-                            android:textSize="10sp"/>
+                            android:textColor="@color/tag_text_light"
+                            android:textSize="10sp"
+                            tools:ignore="SmallSp" />
                     </LinearLayout>
 
                     <TextView
@@ -145,8 +149,9 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/group2"
                         android:text="@string/amiibo_path_caps"
-                        android:textColor="@color/tag_text"
+                        android:textColor="@color/tag_text_light"
                         android:textSize="10sp"
+                        tools:ignore="SmallSp"
                         android:visibility="gone"/>
 
                     <TextView
@@ -155,8 +160,9 @@
                         android:layout_height="wrap_content"
                         android:gravity="end"
                         android:text="@string/amiibo_character_caps"
-                        android:textColor="@color/tag_text"
+                        android:textColor="@color/tag_text_light"
                         android:textSize="10sp"
+                        tools:ignore="SmallSp"
                         android:visibility="gone"/>
                 </RelativeLayout>
             </LinearLayout>

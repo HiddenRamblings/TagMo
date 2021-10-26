@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.data;
+package com.hiddenramblings.tagmo.nfctag.data;
 
 public class AppDataTP extends AppData {
     public static final int LEVEL_MIN_VALUE = 0;

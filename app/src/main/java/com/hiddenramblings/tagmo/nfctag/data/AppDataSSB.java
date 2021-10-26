@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.data;
+package com.hiddenramblings.tagmo.nfctag.data;
 
 public class AppDataSSB extends AppData {
     public static final int APPEARANCE_OFFSET = 0x08;

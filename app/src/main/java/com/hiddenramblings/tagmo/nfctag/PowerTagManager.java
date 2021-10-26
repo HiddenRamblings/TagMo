@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfc;
+package com.hiddenramblings.tagmo.nfctag;
 
 import android.util.Base64;
 
@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class PTagKeyManager {
+public class PowerTagManager {
 
     public static final String POWERTAG_KEYTABLE_FILE = "keytable.json";
     private static HashMap<String, HashMap<String, byte[]>> keys;

@@ -110,7 +110,7 @@ public class NfcActivity extends AppCompatActivity {
             case TagMo.ACTION_SCAN_ELITE:
             case TagMo.ACTION_SET_BANK_COUNT:
             case TagMo.ACTION_ACTIVATE_BANK:
-            case TagMo.ACTION_DELETE_BANK:
+            case TagMo.ACTION_FORMAT_BANK:
             case TagMo.ACTION_LOCK_AMIIBO:
             case TagMo.ACTION_UNLOCK_UNIT:
                 startNfcMonitor();
@@ -152,7 +152,7 @@ public class NfcActivity extends AppCompatActivity {
                 bankTextView.setVisibility(View.GONE);
                 break;
             case TagMo.ACTION_SCAN_TAG:
-            case TagMo.ACTION_DELETE_BANK:
+            case TagMo.ACTION_FORMAT_BANK:
                 break;
         }
         switch (mode) {
@@ -190,8 +190,8 @@ public class NfcActivity extends AppCompatActivity {
             case TagMo.ACTION_ACTIVATE_BANK:
                 setTitle(R.string.activate_bank);
                 break;
-            case TagMo.ACTION_DELETE_BANK:
-                setTitle(R.string.delete_bank);
+            case TagMo.ACTION_FORMAT_BANK:
+                setTitle(R.string.wipe_bank);
                 break;
 
             default:
@@ -401,13 +401,13 @@ public class NfcActivity extends AppCompatActivity {
                         setResult(Activity.RESULT_OK, active);
                         break;
 
-                    case TagMo.ACTION_DELETE_BANK:
-                        TagWriter.deleteBank(mifare, selection);
-                        Intent delete = new Intent(TagMo.ACTION_NFC_SCANNED);
-                        delete.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
-                        delete.putExtra(TagMo.EXTRA_AMIIBO_DATA,
+                    case TagMo.ACTION_FORMAT_BANK:
+                        TagWriter.wipeBankData(mifare, selection);
+                        Intent format = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        format.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+                        format.putExtra(TagMo.EXTRA_AMIIBO_DATA,
                                 TagWriter.readTagTitles(mifare, bank_count));
-                        setResult(Activity.RESULT_OK, delete);
+                        setResult(Activity.RESULT_OK, format);
                         break;
 
                     case TagMo.ACTION_LOCK_AMIIBO:

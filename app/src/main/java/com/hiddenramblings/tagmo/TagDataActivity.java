@@ -39,14 +39,13 @@ import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.adapter.NothingSelectedSpinnerAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.data.AppDataFragment;
-import com.hiddenramblings.tagmo.data.AppDataSSBFragment;
-import com.hiddenramblings.tagmo.data.AppDataTPFragment;
-import com.hiddenramblings.tagmo.data.AppIds;
-import com.hiddenramblings.tagmo.data.CountryCodes;
-import com.hiddenramblings.tagmo.nfc.KeyManager;
-import com.hiddenramblings.tagmo.nfc.TagData;
-import com.hiddenramblings.tagmo.nfc.TagUtils;
+import com.hiddenramblings.tagmo.nfctag.KeyManager;
+import com.hiddenramblings.tagmo.nfctag.TagData;
+import com.hiddenramblings.tagmo.nfctag.TagUtils;
+import com.hiddenramblings.tagmo.nfctag.data.AppData;
+import com.hiddenramblings.tagmo.nfctag.data.AppDataFragment;
+import com.hiddenramblings.tagmo.nfctag.data.AppDataSSBFragment;
+import com.hiddenramblings.tagmo.nfctag.data.AppDataTPFragment;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
@@ -61,7 +60,6 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
@@ -81,9 +79,6 @@ import java.util.Map;
 @EActivity(R.layout.activity_tag_data)
 @OptionsMenu(R.menu.image_menu)
 public class TagDataActivity extends AppCompatActivity {
-
-    @Pref
-    Preferences_ prefs;
 
     @ViewById(R.id.txtError)
     TextView txtError;
@@ -178,10 +173,11 @@ public class TagDataActivity extends AppCompatActivity {
         txtAppName.setOnItemSelectedListener(onAppNameSelected);
         txtAppId.addTextChangedListener(onAppIdChange);
 
-        countryCodeAdapter = new CountryCodesAdapter(CountryCodes.countryCodes);
+        countryCodeAdapter = new CountryCodesAdapter(TagData.countryCodes);
         txtCountryCode.setAdapter(countryCodeAdapter);
 
-        appIdAdapter = new NothingSelectedSpinnerAdapter(new AppIdAdapter(AppIds.appIds), R.layout.nothing_spinner_text);
+        appIdAdapter = new NothingSelectedSpinnerAdapter(
+                new AppIdAdapter(AppData.appIds), R.layout.nothing_spinner_text);
         txtAppName.setAdapter(appIdAdapter);
 
         userDataSwitch.setOnCheckedChangeListener((compoundButton, b) -> onUserDataSwitchClicked(b));
@@ -337,7 +333,7 @@ public class TagDataActivity extends AppCompatActivity {
     }
 
     boolean onlyRetrieveFromCache() {
-        String imageNetworkSetting = prefs.imageNetworkSetting().get();
+        String imageNetworkSetting = TagMo.getPrefs().imageNetworkSetting().get();
         if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
             return true;
         } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {

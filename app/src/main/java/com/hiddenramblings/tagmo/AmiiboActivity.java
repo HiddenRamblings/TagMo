@@ -27,8 +27,8 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfc.TagUtils;
-import com.hiddenramblings.tagmo.nfc.TagWriter;
+import com.hiddenramblings.tagmo.nfctag.TagReader;
+import com.hiddenramblings.tagmo.nfctag.TagUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import org.androidannotations.annotations.AfterViews;
@@ -39,7 +39,6 @@ import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
@@ -49,9 +48,6 @@ import java.text.ParseException;
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_amiibo)
 public class AmiiboActivity extends AppCompatActivity {
-
-    @Pref
-    Preferences_ prefs;
 
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
@@ -129,8 +125,8 @@ public class AmiiboActivity extends AppCompatActivity {
             return false;
         });
         if (getIntent().hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
-            current_bank = getIntent().getIntExtra(
-                    TagMo.EXTRA_CURRENT_BANK, prefs.eliteActiveBank().get());
+            current_bank = getIntent().getIntExtra(TagMo.EXTRA_CURRENT_BANK,
+                    TagMo.getPrefs().eliteActiveBank().get());
         }
 
         loadAmiiboManager();
@@ -222,16 +218,16 @@ public class AmiiboActivity extends AppCompatActivity {
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
-        if (prefs.enableEliteSupport().get()) {
+        if (TagMo.getPrefs().enableEliteSupport().get()) {
             String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
             int active_bank = result.getData().getIntExtra(
-                    TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+                    TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
             int bank_count = result.getData().getIntExtra(
-                    TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
+                    TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
 
-            prefs.eliteSignature().put(signature);
-            prefs.eliteActiveBank().put(active_bank);
-            prefs.eliteBankCount().put(bank_count);
+            TagMo.getPrefs().eliteSignature().put(signature);
+            TagMo.getPrefs().eliteActiveBank().put(active_bank);
+            TagMo.getPrefs().eliteBankCount().put(bank_count);
 
             Intent eliteIntent = new Intent(this, EliteActivity_.class);
             if (isResponsive) {
@@ -292,8 +288,8 @@ public class AmiiboActivity extends AppCompatActivity {
                 .setMessage(R.string.export_warning)
                 .setPositiveButton(R.string.export, (dialog, which) -> {
                     try {
-                        String fileName = TagWriter.scanAmiiboToFile(this.amiiboManager,
-                                tagData, prefs.browserRootFolder().get());
+                        String fileName = TagReader.scanAmiiboToFile(this.amiiboManager,
+                                tagData, TagMo.getPrefs().browserRootFolder().get());
                         showToast(getString(R.string.wrote_file, fileName));
                     } catch (Exception e) {
                         showToast(e.getMessage());
@@ -425,7 +421,7 @@ public class AmiiboActivity extends AppCompatActivity {
     }
 
     boolean onlyRetrieveFromCache() {
-        String imageNetworkSetting = prefs.imageNetworkSetting().get();
+        String imageNetworkSetting = TagMo.getPrefs().imageNetworkSetting().get();
         if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
             return true;
         } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {

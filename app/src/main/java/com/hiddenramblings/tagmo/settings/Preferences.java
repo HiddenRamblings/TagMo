@@ -1,8 +1,9 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.settings;
 
 import android.annotation.SuppressLint;
 
-import com.hiddenramblings.tagmo.settings.SettingsFragment;
+import com.hiddenramblings.tagmo.BrowserActivity;
+import com.hiddenramblings.tagmo.R;
 
 import org.androidannotations.annotations.sharedpreferences.DefaultBoolean;
 import org.androidannotations.annotations.sharedpreferences.DefaultInt;

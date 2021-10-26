@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <tech-list>
-        <tech>com.hiddenramblings.tagmo.nfc.NTAG215</tech>
+        <tech>com.hiddenramblings.tagmo.nfctag.NTAG215</tech>
     </tech-list>
 </resources>

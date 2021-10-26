@@ -6,8 +6,6 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +21,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SearchView;
-import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,8 +30,8 @@ import com.hiddenramblings.tagmo.adapter.EliteWriteBlankAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfc.TagUtils;
-import com.hiddenramblings.tagmo.nfc.TagWriter;
+import com.hiddenramblings.tagmo.nfctag.TagReader;
+import com.hiddenramblings.tagmo.nfctag.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 
 import org.androidannotations.annotations.AfterViews;
@@ -44,12 +41,10 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -62,9 +57,6 @@ public class EliteActivity extends AppCompatActivity implements
     public static final int ACTIVATE = 0;
     public static final int BACKUP = 1;
     public static final int WIPE_BANK = 2;
-
-    @Pref
-    Preferences_ prefs;
 
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
@@ -95,17 +87,17 @@ public class EliteActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         this.settings = new BrowserSettings();
-        this.settings.setBrowserRootFolder(new File(TagMo.getStorage(), prefs.browserRootFolder().get()));
-        this.settings.setQuery(prefs.query().get());
-        this.settings.setSort(prefs.sort().get());
-        this.settings.setAmiiboSeriesFilter(prefs.filterAmiiboSeries().get());
-        this.settings.setAmiiboTypeFilter(prefs.filterAmiiboType().get());
-        this.settings.setCharacterFilter(prefs.filterCharacter().get());
-        this.settings.setGameSeriesFilter(prefs.filterGameSeries().get());
-        this.settings.setAmiiboView(prefs.browserAmiiboView().get());
-        this.settings.setImageNetworkSettings(prefs.imageNetworkSetting().get());
-        this.settings.setRecursiveEnabled(prefs.recursiveFolders().get());
-        this.settings.setShowMissingFiles(prefs.showMissingFiles().get());
+        this.settings.setBrowserRootFolder(new File(TagMo.getStorage(), TagMo.getPrefs().browserRootFolder().get()));
+        this.settings.setQuery(TagMo.getPrefs().query().get());
+        this.settings.setSort(TagMo.getPrefs().sort().get());
+        this.settings.setAmiiboSeriesFilter(TagMo.getPrefs().filterAmiiboSeries().get());
+        this.settings.setAmiiboTypeFilter(TagMo.getPrefs().filterAmiiboType().get());
+        this.settings.setCharacterFilter(TagMo.getPrefs().filterCharacter().get());
+        this.settings.setGameSeriesFilter(TagMo.getPrefs().filterGameSeries().get());
+        this.settings.setAmiiboView(TagMo.getPrefs().browserAmiiboView().get());
+        this.settings.setImageNetworkSettings(TagMo.getPrefs().imageNetworkSetting().get());
+        this.settings.setRecursiveEnabled(TagMo.getPrefs().recursiveFolders().get());
+        this.settings.setShowMissingFiles(TagMo.getPrefs().showMissingFiles().get());
     }
 
     @Override
@@ -138,16 +130,15 @@ public class EliteActivity extends AppCompatActivity implements
         loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
 
         int bank_count = getIntent().getIntExtra(
-                TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
+                TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
         int active_bank = getIntent().getIntExtra(
-                TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+                TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
 
         hardwareInfo.setText(getString(R.string.elite_signature,
                 getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE)));
         eliteBankCount.setValue(bank_count);
         amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        EliteBrowserAdapter adapter = new EliteBrowserAdapter(
-                settings, prefs, this);
+        EliteBrowserAdapter adapter = new EliteBrowserAdapter(settings, this);
         amiibosView.setAdapter(adapter);
         this.settings.addChangeListener(adapter);
         updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
@@ -203,7 +194,7 @@ public class EliteActivity extends AppCompatActivity implements
     });
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList, Dialog writeDialog) {
-        if (amiiboList != null && amiiboList.size() == prefs.eliteBankCount().get()) {
+        if (amiiboList != null && amiiboList.size() == TagMo.getPrefs().eliteBankCount().get()) {
             new AlertDialog.Builder(EliteActivity.this)
                     .setMessage(R.string.write_confirm)
                     .setPositiveButton(R.string.proceed, (dialog, which) -> {
@@ -285,21 +276,21 @@ public class EliteActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
-        int bank_count = result.getData().getIntExtra(
-                TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
+        int bank_count = result.getData().getIntExtra(TagMo.EXTRA_BANK_COUNT,
+                TagMo.getPrefs().eliteBankCount().get());
 
-        prefs.eliteBankCount().put(bank_count);
+        TagMo.getPrefs().eliteBankCount().put(bank_count);
 
         eliteBankCount.setValue(bank_count);
         updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
         bankStats.setText(getString(R.string.elite_bank_stats,
-                prefs.eliteActiveBank().get(), bank_count));
+                TagMo.getPrefs().eliteActiveBank().get(), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
     });
 
     @Click(R.id.write_bank_count)
     void onWriteBankCountClick() {
-        if (prefs.eliteActiveBank().get() >= eliteBankCount.getValue()) {
+        if (TagMo.getPrefs().eliteActiveBank().get() >= eliteBankCount.getValue()) {
             showToast(R.string.fail_active_oob);
             return;
         }
@@ -319,13 +310,13 @@ public class EliteActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
-        int active_bank = result.getData().getIntExtra(
-                TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+        int active_bank = result.getData().getIntExtra(TagMo.EXTRA_ACTIVE_BANK,
+                TagMo.getPrefs().eliteActiveBank().get());
 
-        prefs.eliteActiveBank().put(active_bank);
+        TagMo.getPrefs().eliteActiveBank().put(active_bank);
 
         updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
-        int bank_count = prefs.eliteBankCount().get();
+        int bank_count = TagMo.getPrefs().eliteBankCount().get();
         bankStats.setText(getString(R.string.elite_bank_stats, active_bank, bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
 
@@ -357,7 +348,7 @@ public class EliteActivity extends AppCompatActivity implements
             try {
                 File directory = new File(settings.getBrowserRootFolder(),
                         TagMo.getStringRes(R.string.tagmo_backup));
-                String fileName = TagWriter.writeBytesToFile(directory,
+                String fileName = TagReader.writeBytesToFile(directory,
                         input.getText().toString() + ".bin", tagData);
                 showToast(getString(R.string.wrote_file, fileName));
             } catch (IOException e) {
@@ -382,15 +373,8 @@ public class EliteActivity extends AppCompatActivity implements
     private void writeAmiiboFile(AmiiboFile amiiboFile, int position) {
         Bundle args = new Bundle();
         try {
-            Uri fileUri;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                fileUri = FileProvider.getUriForFile(this,
-                        TagMo.PROVIDER, amiiboFile.getFilePath());
-            } else {
-                fileUri = Uri.fromFile(amiiboFile.getFilePath());
-            }
-            args.putByteArray(TagMo.EXTRA_TAG_DATA, TagUtils.readTag(
-                    getContentResolver().openInputStream(fileUri)));
+            args.putByteArray(TagMo.EXTRA_TAG_DATA,
+                    TagReader.readTagStream(amiiboFile.getFilePath()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -521,15 +505,8 @@ public class EliteActivity extends AppCompatActivity implements
             if (amiiboFiles.get(x).getId() == amiibo.id) {
                 Bundle args = new Bundle();
                 try {
-                    Uri fileUri;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        fileUri = FileProvider.getUriForFile(this,
-                                TagMo.PROVIDER, amiiboFiles.get(x).getFilePath());
-                    } else {
-                        fileUri = Uri.fromFile(amiiboFiles.get(x).getFilePath());
-                    }
-                    args.putByteArray(TagMo.EXTRA_TAG_DATA, TagUtils.readTag(
-                            getContentResolver().openInputStream(fileUri)));
+                    args.putByteArray(TagMo.EXTRA_TAG_DATA, TagReader.readTagStream(
+                            amiiboFiles.get(x).getFilePath()));
                 } catch (Exception e) {
                     e.printStackTrace();
                     continue;
@@ -590,8 +567,8 @@ public class EliteActivity extends AppCompatActivity implements
                 amiiboFiles.addAll(listAmiibos(file, true));
             } else {
                 try {
-                    byte[] data = TagUtils.readTag(new FileInputStream(file));
-                    TagUtils.validateTag(data);
+                    byte[] data = TagReader.readTagFile(file);
+                    TagReader.validateTag(data);
                     amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
                 } catch (Exception e) {
                     e.printStackTrace();

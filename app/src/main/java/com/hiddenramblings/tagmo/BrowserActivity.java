@@ -278,40 +278,45 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+                if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+                if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
-        if (result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
-            String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
-            int active_bank = result.getData().getIntExtra(
-                    TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
-            int bank_count = result.getData().getIntExtra(
-                    TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
+                if (result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
+                    String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
+                    int active_bank = result.getData().getIntExtra(
+                            TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
+                    int bank_count = result.getData().getIntExtra(
+                            TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
 
-            TagMo.getPrefs().eliteSignature().put(signature);
-            TagMo.getPrefs().eliteActiveBank().put(active_bank);
-            TagMo.getPrefs().eliteBankCount().put(bank_count);
+                    TagMo.getPrefs().eliteSignature().put(signature);
+                    TagMo.getPrefs().eliteActiveBank().put(active_bank);
+                    TagMo.getPrefs().eliteBankCount().put(bank_count);
 
-            Intent eliteIntent = new Intent(this, EliteActivity_.class);
-            eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
-            eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
-            eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
-            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
-                    result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
-            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
-            startActivity(eliteIntent);
-        } else {
-            byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+                    Intent eliteIntent = new Intent(this, EliteActivity_.class);
+                    eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
+                    eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+                    eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+                    eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
+                            result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
+                    eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
+                    startActivity(eliteIntent);
+                } else {
+                    byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
-            Bundle args = new Bundle();
-            args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
+                    Bundle args = new Bundle();
+                    args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
 
-            Intent intent = new Intent(this, AmiiboActivity_.class);
-            intent.putExtras(args);
+                    Intent intent = new Intent(this, AmiiboActivity_.class);
+                    intent.putExtras(args);
 
-            startActivity(intent);
-        }
+                    startActivity(intent);
+                }
+            });
+
+    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        this.refresh();
     });
 
     @Click(R.id.fab)
@@ -414,20 +419,10 @@ public class BrowserActivity extends AppCompatActivity implements
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
-        String amiiboFileName = "";
-        try {
-            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-            Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
-            if (amiibo != null)
-                amiiboFileName = amiibo.name + "-" + amiibo.id;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(amiiboFileName);
+        input.setText(TagReader.generateFileName(settings.getAmiiboManager(), tagData));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
@@ -571,7 +566,8 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    MenuItem.OnMenuItemClickListener onFilterGameSeriesItemClick = new MenuItem.OnMenuItemClickListener() {
+    MenuItem.OnMenuItemClickListener onFilterGameSeriesItemClick =
+            new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             settings.setGameSeriesFilter(menuItem.getTitle().toString());
@@ -617,7 +613,8 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    MenuItem.OnMenuItemClickListener onFilterCharacterItemClick = new MenuItem.OnMenuItemClickListener() {
+    MenuItem.OnMenuItemClickListener onFilterCharacterItemClick =
+            new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             settings.setCharacterFilter(menuItem.getTitle().toString());
@@ -845,7 +842,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, AmiiboActivity_.class);
         intent.putExtras(args);
 
-        startActivity(intent);
+        onViewerActivity.launch(intent);
     }
 
     @Override
@@ -857,6 +854,19 @@ public class BrowserActivity extends AppCompatActivity implements
         intent.putExtras(bundle);
 
         this.startActivity(intent);
+    }
+
+    @Override
+    public void onAmiiboLongClicked(AmiiboFile amiiboFile) {
+        new AlertDialog.Builder(this)
+                .setMessage(getString(R.string.delete_amiibo,
+                        TagMo.friendlyPath(amiiboFile.getFilePath())))
+                .setNegativeButton(R.string.delete, (dialog, which) -> {
+                    amiiboFile.getFilePath().delete();
+                    this.refresh();
+                    dialog.dismiss();
+                })
+                .setPositiveButton(R.string.cancel, null).show();
     }
 
     @Override

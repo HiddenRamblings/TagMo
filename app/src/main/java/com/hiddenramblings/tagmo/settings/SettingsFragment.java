@@ -190,7 +190,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void onLockEliteHardwareClicked() {
         new AlertDialog.Builder(requireContext())
                 .setMessage(R.string.lock_elite_warning)
-                .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                .setPositiveButton(R.string.write, (dialog, which) -> {
                     Intent lock = new Intent(requireContext(), NfcActivity_.class);
                     lock.setAction(TagMo.ACTION_LOCK_AMIIBO);
                     startActivity(lock);

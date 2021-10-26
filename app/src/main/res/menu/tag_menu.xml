@@ -16,8 +16,8 @@
         android:title="@string/restore"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/mnu_save"
-        android:title="@string/save"
+        android:id="@+id/mnu_export"
+        android:title="@string/export"
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_view_hex"

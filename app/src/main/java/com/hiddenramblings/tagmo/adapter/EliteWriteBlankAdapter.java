@@ -233,9 +233,6 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
     class AmiiboFilter extends Filter {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-//            String query = constraint != null ? constraint.toString() : "";
-//            settings.setQuery(query);
-
             FilterResults filterResults = new FilterResults();
             ArrayList<AmiiboFile> tempList = new ArrayList<>();
             String queryText = settings.getQuery().trim().toLowerCase();

@@ -89,15 +89,22 @@ public class AmiiboActivity extends AppCompatActivity {
         if (getCallingActivity() != null) {
             isResponsive = getCallingActivity().getClassName().equals(EliteActivity_.class.getName());
         }
-        toolbar.inflateMenu(R.menu.tag_menu);
-        toolbar.getMenu().findItem(R.id.mnu_elite).setVisible(isResponsive);
+        toolbar.inflateMenu(R.menu.amiibo_menu);
+        toolbar.getMenu().findItem(R.id.mnu_activate).setVisible(isResponsive);
+        toolbar.getMenu().findItem(R.id.mnu_backup).setVisible(isResponsive);
+        toolbar.getMenu().findItem(R.id.mnu_restore).setVisible(!isResponsive);
+        toolbar.getMenu().findItem(R.id.mnu_export).setVisible(!isResponsive);
+        toolbar.getMenu().findItem(R.id.mnu_wipe_bank).setVisible(isResponsive);
         toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
-                case R.id.mnu_elite:
-                    editBank();
+                case R.id.mnu_activate:
+                    modifyBank(EliteActivity.ACTIVATE);
                     return true;
                 case R.id.mnu_write:
                     writeTag();
+                    return true;
+                case R.id.mnu_backup:
+                    modifyBank(EliteActivity.BACKUP);
                     return true;
                 case R.id.mnu_restore:
                     restoreTag();
@@ -105,20 +112,22 @@ public class AmiiboActivity extends AppCompatActivity {
                 case R.id.mnu_export:
                     exportTag();
                     return true;
+                case R.id.mnu_edit:
+                    openTagEditor();
+                    return true;
                 case R.id.mnu_view_hex:
                     viewHex();
+                    return true;
+                case R.id.mnu_wipe_bank:
+                    modifyBank(EliteActivity.WIPE_BANK);
                     return true;
                 case R.id.mnu_ignore_tag_id:
                     ignoreTagTd = !item.isChecked();
                     item.setChecked(ignoreTagTd);
                     return true;
-                case R.id.mnu_edit:
-                    openTagEditor();
-                    return true;
             }
             return false;
         });
-
         if (getIntent().hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
             current_bank = getIntent().getIntExtra(
                     TagMo.EXTRA_CURRENT_BANK, prefs.eliteActiveBank().get());
@@ -252,8 +261,10 @@ public class AmiiboActivity extends AppCompatActivity {
     });
 
 
-    void editBank() {
-        setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_NFC_SCANNED));
+    void modifyBank(int selection) {
+        Intent action = new Intent(TagMo.ACTION_NFC_SCANNED);
+        action.putExtra(TagMo.EXTRA_BANK_ACTION, selection);
+        setResult(Activity.RESULT_OK, action);
         finish();
     }
 

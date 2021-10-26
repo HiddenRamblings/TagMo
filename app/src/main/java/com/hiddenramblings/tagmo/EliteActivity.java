@@ -59,6 +59,10 @@ import java.util.ArrayList;
 public class EliteActivity extends AppCompatActivity implements
         EliteBrowserAdapter.OnAmiiboClickListener {
 
+    public static final int ACTIVATE = 0;
+    public static final int BACKUP = 1;
+    public static final int WIPE_BANK = 2;
+
     @Pref
     Preferences_ prefs;
 
@@ -327,6 +331,43 @@ public class EliteActivity extends AppCompatActivity implements
 
     });
 
+    ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+
+        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+
+        String amiiboFileName = "";
+        try {
+            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+            Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+            amiiboFileName = amiibo.name + "-" + amiibo.id;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        final EditText input = view.findViewById(R.id.backup_entry);
+        input.setText(amiiboFileName);
+        Dialog backupDialog = dialog.setView(view).show();
+        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
+            try {
+                File directory = new File(settings.getBrowserRootFolder(),
+                        TagMo.getStringRes(R.string.tagmo_backup));
+                String fileName = TagWriter.writeBytesToFile(directory,
+                        input.getText().toString() + ".bin", tagData);
+                showToast(getString(R.string.wrote_file, fileName));
+            } catch (IOException e) {
+                showToast(e.getMessage());
+            }
+            backupDialog.dismiss();
+        });
+        view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+    });
+
     ActivityResultLauncher<Intent> onModifierActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
@@ -419,95 +460,37 @@ public class EliteActivity extends AppCompatActivity implements
         );
     }
 
-    private Amiibo clickedAmiibo;
     private int clickedPosition;
 
-    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
+    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
-        if (clickedAmiibo != null)
-            onAmiiboLongClicked(clickedAmiibo, clickedPosition);
-    });
-
-    ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
-
-        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-
-        String amiiboFileName = "";
-        try {
-            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-            Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
-            amiiboFileName = amiibo.name + "-" + amiibo.id;
-        } catch (Exception e) {
-            e.printStackTrace();
+        switch (result.getData().getIntExtra(TagMo.EXTRA_BANK_ACTION, 0)) {
+            case ACTIVATE:
+                Intent activate = new Intent(EliteActivity.this, NfcActivity_.class);
+                activate.setAction(TagMo.ACTION_ACTIVATE_BANK);
+                activate.putExtra(TagMo.EXTRA_CURRENT_BANK,
+                        TagUtils.getValueForPosition(clickedPosition));
+                onActivateActivity.launch(activate);
+                break;
+            case BACKUP:
+                Intent backup = new Intent(this, NfcActivity_.class);
+                backup.setAction(TagMo.ACTION_BACKUP_AMIIBO);
+                backup.putExtra(TagMo.EXTRA_CURRENT_BANK,
+                        TagUtils.getValueForPosition(clickedPosition));
+                onBackupActivity.launch(backup);
+                break;
+            case WIPE_BANK:
+                Intent format = new Intent(EliteActivity.this, NfcActivity_.class);
+                format.setAction(TagMo.ACTION_FORMAT_BANK);
+                format.putExtra(TagMo.EXTRA_CURRENT_BANK,
+                        TagUtils.getValueForPosition(clickedPosition));
+                onModifierActivity.launch(format);
+                break;
         }
-
-        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
-        final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(amiiboFileName);
-        Dialog backupDialog = dialog.setView(view).show();
-        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
-            try {
-                File directory = new File(settings.getBrowserRootFolder(),
-                        TagMo.getStringRes(R.string.tagmo_backup));
-                String fileName = TagWriter.writeBytesToFile(directory,
-                        input.getText().toString() + ".bin", tagData);
-                showToast(getString(R.string.wrote_file, fileName));
-            } catch (IOException e) {
-                showToast(e.getMessage());
-            }
-            backupDialog.dismiss();
-        });
-        view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
     });
-
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void onAmiiboLongClicked(Amiibo amiibo, int position) {
-        if (amiibo == null) return;
-        clickedAmiibo = amiibo;
-        clickedPosition = position;
-        View view = getLayoutInflater().inflate(R.layout.elite_extended, null);
-        ((TextView) view.findViewById(R.id.amiibo_label)).setText(
-                TagUtils.getValueForPosition(position) + ": " + amiibo.name);
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        Dialog contextMenu = dialog.setView(view).show();
-
-        AppCompatButton activate_button = view.findViewById(R.id.activate_bank);
-        activate_button.setOnClickListener(v -> {
-            Intent activate = new Intent(EliteActivity.this, NfcActivity_.class);
-            activate.setAction(TagMo.ACTION_ACTIVATE_BANK);
-            activate.putExtra(TagMo.EXTRA_CURRENT_BANK, TagUtils.getValueForPosition(position));
-            onActivateActivity.launch(activate);
-            contextMenu.dismiss();
-        });
-
-        AppCompatButton backup_button = view.findViewById(R.id.bank_backup);
-        backup_button.setOnClickListener(v -> {
-            Intent backup = new Intent(this, NfcActivity_.class);
-            backup.setAction(TagMo.ACTION_BACKUP_AMIIBO);
-            backup.putExtra(TagMo.EXTRA_CURRENT_BANK, TagUtils.getValueForPosition(position));
-            onBackupActivity.launch(backup);
-            contextMenu.dismiss();
-        });
-
-        AppCompatButton delete_button = view.findViewById(R.id.delete_bank);
-        delete_button.setOnClickListener(v -> {
-            Intent delete = new Intent(EliteActivity.this, NfcActivity_.class);
-            delete.setAction(TagMo.ACTION_DELETE_BANK);
-            delete.putExtra(TagMo.EXTRA_CURRENT_BANK, TagUtils.getValueForPosition(position));
-            onModifierActivity.launch(delete);
-            contextMenu.dismiss();
-        });
-    }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -533,7 +516,6 @@ public class EliteActivity extends AppCompatActivity implements
             displayWriteDialog(position);
             return;
         }
-        clickedAmiibo = amiibo;
         clickedPosition = position;
         for (int x = 0; x < amiiboFiles.size(); x ++) {
             if (amiiboFiles.get(x).getId() == amiibo.id) {

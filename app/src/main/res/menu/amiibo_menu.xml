@@ -4,12 +4,16 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".AmiiboActivity">
     <item
-        android:id="@+id/mnu_elite"
-        android:title="@string/edit_bank"
+        android:id="@+id/mnu_activate"
+        android:title="@string/activate"
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_write"
         android:title="@string/write"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_backup"
+        android:title="@string/backup"
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_restore"
@@ -20,12 +24,16 @@
         android:title="@string/export"
         app:showAsAction="always"/>
     <item
+        android:id="@+id/mnu_edit"
+        android:title="@string/edit_props"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/mnu_view_hex"
         android:title="@string/view_hex"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/mnu_edit"
-        android:title="@string/edit_tag"
+        android:id="@+id/mnu_wipe_bank"
+        android:title="@string/wipe_bank"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_ignore_tag_id"

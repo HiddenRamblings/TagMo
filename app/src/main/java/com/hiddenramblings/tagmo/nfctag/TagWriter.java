@@ -39,25 +39,19 @@ public class TagWriter {
         }
     }
 
-    public static void writeToTagAuto(
-            NTAG215 mifare, byte[] tagData, KeyManager keyManager,
-            boolean validateNtag, boolean usePowerTag) throws Exception {
+    public static void writeToTagAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager,
+                                      boolean validateNtag) throws Exception {
         byte[] idPages = mifare.readPages(0);
         if (idPages == null || idPages.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
 
-        boolean isPowerTag = false;
-        if (usePowerTag) {
-            byte[] sig = mifare.transceive(NfcByte.SIG_CMD);
-            isPowerTag = TagUtils.compareRange(sig, NfcByte.POWERTAG_SIGNATURE,
-                    0, NfcByte.POWERTAG_SIGNATURE.length);
-        }
+        boolean isPowerTag = TagUtils.getHardware(mifare) == TagUtils.POWERTAG;
 
         TagMo.Debug(TagWriter.class, R.string.power_tag_verify, String.valueOf(isPowerTag));
 
         tagData = TagUtils.decrypt(keyManager, tagData);
         if (isPowerTag) {
-            //use a pre-determined static id for Power Tag
+            // use a pre-determined static id for Power Tag
             tagData = TagUtils.patchUid(NfcByte.POWERTAG_IDPAGES, tagData);
         } else {
             tagData = TagUtils.patchUid(idPages, tagData);
@@ -84,7 +78,7 @@ public class TagWriter {
             String page10bytes = TagUtils.bytesToHex(new byte[]{page10[0], page10[3]});
 
             byte[] ptagKeySuffix = PowerTagManager.getPowerTagKey(oldid, page10bytes);
-            byte[] ptagKey = TagUtils.hexStringToByteArray(NfcByte.POWERTAG_KEY);
+            byte[] ptagKey = TagUtils.hexToByteArray(NfcByte.POWERTAG_KEY);
             System.arraycopy(ptagKeySuffix, 0, ptagKey, 8, 8);
 
             TagMo.Debug(TagWriter.class, R.string.ptag_key, TagUtils.bytesToHex(ptagKey));
@@ -98,7 +92,7 @@ public class TagWriter {
 
         byte[][] pages = TagUtils.splitPages(tagData);
         if (isPowerTag) {
-            byte[] zeropage = TagUtils.hexStringToByteArray("00000000");
+            byte[] zeropage = TagUtils.hexToByteArray("00000000");
             mifare.writePage(0x86, zeropage); //PACK
             writePages(mifare, 0x01, 0x84, pages);
             mifare.writePage(0x85, zeropage); //PWD
@@ -146,7 +140,7 @@ public class TagWriter {
         else {
             byte[] liveData = TagReader.readFromTag(mifare);
             if (!TagUtils.compareRange(liveData, tagData, 0, 9)) {
-                //restoring to different tag: transplant mii and appdata to livedata and re-encrypt
+                // restoring to different tag: transplant mii and appdata to livedata and re-encrypt
 
                 liveData = TagUtils.decrypt(keyManager, liveData);
                 tagData = TagUtils.decrypt(keyManager, tagData);
@@ -264,7 +258,7 @@ public class TagWriter {
 
     public static byte[] wipeBankData(NTAG215 tag, int active_bank)  throws Exception {
         if (doEliteAuth(tag, tag.fastRead(0, 0))) {
-            byte[] tagData = TagUtils.hexStringToByteArray(new String(
+            byte[] tagData = TagUtils.hexToByteArray(new String(
                     new char[1080]).replace("\u0000", "F"));
             if (tag.amiiboFastWrite(0, active_bank, tagData)) {
                 byte[] result = new byte[8];

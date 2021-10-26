@@ -1,9 +1,12 @@
 package com.hiddenramblings.tagmo.nfctag;
 
+import android.util.Log;
+
 import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -18,6 +21,10 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 
 public class TagUtils {
+
+    public static final int STICKER = 0;
+    public static final int POWERTAG = 1;
+    public static final int N2ELITE = 2;
 
     public static int getPositionForValue(int value) {
         return value - 1;
@@ -35,6 +42,28 @@ public class TagUtils {
         return true;
     }
 
+    public static int getHardware(NTAG215 mifare) {
+        if (TagMo.getPrefs().enablePowerTagSupport().get()) {
+            try {
+                if (TagUtils.compareRange(mifare.transceive(NfcByte.SIG_CMD), NfcByte.POWERTAG_SIGNATURE,
+                        0, NfcByte.POWERTAG_SIGNATURE.length))
+                    return POWERTAG;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (TagMo.getPrefs().enableEliteSupport().get()) {
+            try {
+                String signature = TagUtils.bytesToHex(mifare.readEliteSingature());
+                if (signature.length() > 22 && signature.endsWith("FFFFFFFFFF"))
+                    return N2ELITE;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return STICKER;
+    }
+
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
@@ -43,7 +72,7 @@ public class TagUtils {
         return sb.toString();
     }
 
-    public static byte[] hexStringToByteArray(String s) {
+    public static byte[] hexToByteArray(String s) {
         int len = s.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
@@ -53,7 +82,7 @@ public class TagUtils {
         return data;
     }
 
-    public static long hex2long(String s) {
+    public static long hexToLong(String s) {
         long result = 0;
         for (int i = 0; i < s.length(); i++) {
             result = (result << 4) + ((long) Character.digit(s.charAt(i), 16));
@@ -61,7 +90,7 @@ public class TagUtils {
         return result;
     }
 
-    public static byte hex2byte(String hex) {
+    public static byte hexToByte(String hex) {
         byte ret = (byte) 0;
         byte hi = (byte) hex.charAt(0);
         byte lo = (byte) hex.charAt(1);
@@ -96,7 +125,7 @@ public class TagUtils {
     }
 
     public static byte[] keygen(byte[] uuid) {
-        //from AmiiManage (GPL)
+        // from AmiiManage (GPL)
         byte[] key = new byte[4];
         int[] uuid_to_ints = new int[uuid.length];
 
@@ -113,8 +142,6 @@ public class TagUtils {
 
         return null;
     }
-
-
 
     public static long amiiboIdFromTag(byte[] data) throws Exception {
         return new TagData(data).getAmiiboID();
@@ -174,12 +201,37 @@ public class TagUtils {
     public static byte[] patchUid(byte[] uid, byte[] tagData) throws Exception {
         if (uid.length < 9) throw new Exception(TagMo.getStringRes(R.string.invalid_uid_length));
 
+        Log.d("UID", bytesToHex(uid));
+
         byte[] patched = Arrays.copyOf(tagData, tagData.length);
 
         System.arraycopy(uid, 0, patched, 0x1d4, 8);
         patched[0] = uid[8];
 
         return patched;
+    }
+
+    public static byte[] generateRandomUID() {
+        byte[] uid = new byte[9];
+        Random Random = new Random();
+        Random.nextBytes(uid);
+
+        uid[3] = (byte) (0x88 ^ uid[0] ^ uid[1] ^ uid[2]);
+        uid[8] = (byte) (uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
+
+        return uid;
+    }
+
+    public static String randomizeSerial(String serial) {
+        Random random = new Random();
+        String week = new DecimalFormat("00").format(
+                random.nextInt(52 - 1 + 1) + 1);
+        String year = String.valueOf(random.nextInt(9 + 1));
+        String identifier = serial.substring(3, 7);
+        String facility = TagMo.getContext().getResources().getStringArray(
+                R.array.production_factory)[random.nextInt(3 + 1)];
+
+        return week + year + "000" + identifier + facility;
     }
 
     static byte[] toAmiiboDate(Date date) {
@@ -210,29 +262,6 @@ public class TagUtils {
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, day);
         return calendar.getTime();
-    }
-
-    public static byte[] generateRandomUID() {
-        byte[] uid = new byte[9];
-        Random Random = new Random();
-        Random.nextBytes(uid);
-
-        uid[3] = (byte) (0x88 ^ uid[0] ^ uid[1] ^ uid[2]);
-        uid[8] = (byte) (uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
-
-        return uid;
-    }
-
-    public static String randomizeSerial(String serial) {
-        Random random = new Random();
-        String week = new DecimalFormat("00").format(
-                random.nextInt(52 - 1 + 1) + 1);
-        String year = String.valueOf(random.nextInt(9 + 1));
-        String identifier = serial.substring(3, 7);
-        String facility = TagMo.getContext().getResources().getStringArray(
-                R.array.production_factory)[random.nextInt(3 + 1)];
-
-        return week + year + "000" + identifier + facility;
     }
 
     public static byte[] getBytes(ByteBuffer bb, int offset, int length) {

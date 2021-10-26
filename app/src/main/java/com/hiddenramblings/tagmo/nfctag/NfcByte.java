@@ -37,11 +37,11 @@ public class NfcByte {
     public static final byte N2_UNLOCK_2 = 0x45;
     public static final byte N2_WRITE = (byte) 0xA5;
 
-    public static final byte[] POWERTAG_SIGNATURE = TagUtils.hexStringToByteArray(
+    public static final byte[] POWERTAG_SIGNATURE = TagUtils.hexToByteArray(
             "213C65444901602985E9F6B50CACB9C8CA3C4BCD13142711FF571CF01E66BD6F");
-    public static final byte[] POWERTAG_IDPAGES = TagUtils.hexStringToByteArray(
+    public static final byte[] POWERTAG_IDPAGES = TagUtils.hexToByteArray(
             "04070883091012131800000000000000");
     public static final String POWERTAG_KEY = "FFFFFFFFFFFFFFFF0000000000000000";
-    public static final byte[] COMP_WRITE_CMD = TagUtils.hexStringToByteArray("a000");
-    public static final byte[] SIG_CMD = TagUtils.hexStringToByteArray("3c00");
+    public static final byte[] COMP_WRITE_CMD = TagUtils.hexToByteArray("a000");
+    public static final byte[] SIG_CMD = TagUtils.hexToByteArray("3c00");
 }

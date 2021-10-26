@@ -260,7 +260,7 @@ public class TagUtils {
         return uid;
     }
 
-    public static String randomizeAmiiboSerial(String serial) {
+    public static String randomizeSerial(String serial) {
         Random random = new Random();
         String week = new DecimalFormat("00").format(
                 random.nextInt(52 - 1 + 1) + 1);
@@ -329,5 +329,13 @@ public class TagUtils {
             }
         }
         putBytes(bb, offset, bytes);
+    }
+
+    public static int getPositionForValue(int value) {
+        return value - 1;
+    }
+
+    public static int getValueForPosition(int value) {
+        return value + 1;
     }
 }

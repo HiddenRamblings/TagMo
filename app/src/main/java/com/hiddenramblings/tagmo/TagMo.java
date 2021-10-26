@@ -20,32 +20,32 @@ import java.nio.charset.StandardCharsets;
 @EApplication
 public class TagMo extends Application {
 
-    public static final String PROVIDER = "com.hiddenramblings.tagmo.provider";
+    public static final String PROVIDER = BuildConfig.APPLICATION_ID + ".provider";
 
-    public static final String ACTION_EDIT_COMPLETE = "com.hiddenramblings.tagmo.EDIT_COMPLETE";
-    public static final String ACTION_SCAN_TAG = "com.hiddenramblings.tagmo.SCAN_TAG";
-    public static final String ACTION_SCAN_UNIT = "com.hiddenramblings.tagmo.SCAN_UNIT";
-    public static final String ACTION_WRITE_TAG_FULL = "com.hiddenramblings.tagmo.WRITE_TAG_FULL";
-    public static final String ACTION_WRITE_TAG_RAW = "com.hiddenramblings.tagmo.WRITE_TAG_RAW";
-    public static final String ACTION_WRITE_TAG_DATA = "com.hiddenramblings.tagmo.WRITE_TAG_DATA";
-    public static final String ACTION_WRITE_ALL_TAGS = "com.hiddenramblings.tagmo.WRITE_ALL_TAGS";
-    public static final String ACTION_ACTIVATE_BANK = "com.hiddenramblings.tagmo.ACTIVATE_BANK";
-    public static final String ACTION_SET_BANK_COUNT = "com.hiddenramblings.tagmo.SET_BANK_COUNT";
-    public static final String ACTION_DELETE_BANK = "com.hiddenramblings.tagmo.DELETE_TAG";
-    public static final String ACTION_LOCK_AMIIBO = "com.hiddenramblings.tagmo.LOCK_AMIIBO";
-    public static final String ACTION_UNLOCK_UNIT = "com.hiddenramblings.tagmo.UNLOCK_UNIT";
-    public static final String ACTION_BACKUP_AMIIBO = "com.hiddenramblings.tagmo.BACKUP_AMIIBO";
-    public static final String ACTION_NFC_SCANNED = "com.hiddenramblings.tagmo.NFC_SCANNED";
+    public static final String ACTION_EDIT_COMPLETE = BuildConfig.APPLICATION_ID + ".EDIT_COMPLETE";
+    public static final String ACTION_SCAN_TAG = BuildConfig.APPLICATION_ID + ".SCAN_TAG";
+    public static final String ACTION_SCAN_ELITE = BuildConfig.APPLICATION_ID + ".SCAN_ELITE";
+    public static final String ACTION_WRITE_TAG_FULL = BuildConfig.APPLICATION_ID + ".WRITE_TAG_FULL";
+    public static final String ACTION_WRITE_TAG_RAW = BuildConfig.APPLICATION_ID + ".WRITE_TAG_RAW";
+    public static final String ACTION_WRITE_TAG_DATA = BuildConfig.APPLICATION_ID + ".WRITE_TAG_DATA";
+    public static final String ACTION_WRITE_ALL_TAGS = BuildConfig.APPLICATION_ID + ".WRITE_ALL_TAGS";
+    public static final String ACTION_ACTIVATE_BANK = BuildConfig.APPLICATION_ID + ".ACTIVATE_BANK";
+    public static final String ACTION_SET_BANK_COUNT = BuildConfig.APPLICATION_ID + ".SET_BANK_COUNT";
+    public static final String ACTION_DELETE_BANK = BuildConfig.APPLICATION_ID + ".DELETE_TAG";
+    public static final String ACTION_LOCK_AMIIBO = BuildConfig.APPLICATION_ID + ".LOCK_AMIIBO";
+    public static final String ACTION_UNLOCK_UNIT = BuildConfig.APPLICATION_ID + ".UNLOCK_UNIT";
+    public static final String ACTION_BACKUP_AMIIBO = BuildConfig.APPLICATION_ID + ".BACKUP_AMIIBO";
+    public static final String ACTION_NFC_SCANNED = BuildConfig.APPLICATION_ID + ".NFC_SCANNED";
 
-    public static final String EXTRA_TAG_DATA = "com.hiddenramblings.tagmo.EXTRA_TAG_DATA";
-    public static final String EXTRA_UNIT_DATA = "com.hiddenramblings.tagmo.EXTRA_UNIT_DATA";
-    public static final String EXTRA_IGNORE_TAG_ID = "com.hiddenramblings.tagmo.EXTRA_IGNORE_TAG_ID";
-    public static final String EXTRA_AMIIBO_ID = "com.hiddenramblings.tagmo.AMIIBO_ID";
-    public static final String EXTRA_AMIIBO_FILES = "com.hiddenramblings.tagmo.EXTRA_AMIIBO_FILES";
-    public static final String EXTRA_SIGNATURE = "com.hiddenramblings.tagmo.EXTRA_SIGNATURE";
-    public static final String EXTRA_ACTIVE_BANK = "com.hiddenramblings.tagmo.EXTRA_ACTIVE_BANK";
-    public static final String EXTRA_BANK_COUNT = "com.hiddenramblings.tagmo.EXTRA_BANK_COUNT";
-    public static final String EXTRA_CURRENT_BANK = "com.hiddenramblings.tagmo.EXTRA_CURRENT_BANK";
+    public static final String EXTRA_TAG_DATA = BuildConfig.APPLICATION_ID + ".EXTRA_TAG_DATA";
+    public static final String EXTRA_AMIIBO_DATA = BuildConfig.APPLICATION_ID + ".EXTRA_AMIIBO_DATA";
+    public static final String EXTRA_IGNORE_TAG_ID = BuildConfig.APPLICATION_ID + ".EXTRA_IGNORE_TAG_ID";
+    public static final String EXTRA_AMIIBO_ID = BuildConfig.APPLICATION_ID + ".AMIIBO_ID";
+    public static final String EXTRA_AMIIBO_FILES = BuildConfig.APPLICATION_ID + ".EXTRA_AMIIBO_FILES";
+    public static final String EXTRA_SIGNATURE = BuildConfig.APPLICATION_ID + ".EXTRA_SIGNATURE";
+    public static final String EXTRA_ACTIVE_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_ACTIVE_BANK";
+    public static final String EXTRA_BANK_COUNT = BuildConfig.APPLICATION_ID + ".EXTRA_BANK_COUNT";
+    public static final String EXTRA_CURRENT_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_CURRENT_BANK";
 
     @Pref
     Preferences_ prefs;

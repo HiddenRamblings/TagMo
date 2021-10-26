@@ -1,6 +1,7 @@
 package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -151,15 +152,18 @@ public class HexViewerActivity extends AppCompatActivity {
                     if (rowIndex == -1 && columnIndex == -1) {
                         hexItem = null;
                     } else if (rowIndex == -1) {
-                        hexItem = new HexHeader(String.format("%02X", columnIndex), Color.TRANSPARENT);
+                        hexItem = new HexHeader(String.format("%02X",
+                                columnIndex), Color.TRANSPARENT);
                     } else if (columnIndex == -1) {
-                        hexItem = new HexHeader(String.format("%04X", rowIndex * HEX), Color.TRANSPARENT);
+                        hexItem = new HexHeader(String.format("%04X",
+                                rowIndex * HEX), Color.TRANSPARENT);
                     } else {
                         int index = (rowIndex * HEX) + columnIndex;
                         if (index >= tagData.length) {
                             hexItem = null;
                         } else {
-                            String text = String.format("%02X", Byte.valueOf(tagData[index]).intValue() & 0xFF);
+                            String text = String.format("%02X",
+                                    Byte.valueOf(tagData[index]).intValue() & 0xFF);
                             int color = Color.WHITE;
                             for (TagMap t : tagMap) {
                                 if (t.index <= index) {
@@ -209,12 +213,19 @@ public class HexViewerActivity extends AppCompatActivity {
                     view.setBackgroundColor(Color.TRANSPARENT);
                 } else {
                     view.setText(hexItem.text);
+                    view.setTextColor(hexItem instanceof HexHeader && isDarkTheme()
+                            ? Color.WHITE : Color.BLACK);
                     view.setTextColor(Color.BLACK);
                     view.setTypeface(Typeface.MONOSPACE, hexItem.textStyle);
                     view.setBackgroundColor(hexItem.backgroundColor);
                     view.setVisibility(View.VISIBLE);
                 }
             }
+        }
+
+        private boolean isDarkTheme() {
+            return (TagMo.getContext().getResources().getConfiguration().uiMode
+                    & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         }
     }
 }

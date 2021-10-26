@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -10,7 +10,7 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
-    <style name="AppTheme2" parent="Theme.AppCompat.Light.Dialog">
+    <style name="AppTheme2" parent="Theme.AppCompat.DayNight.Dialog">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -28,12 +28,12 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="PopupThemeOverlay" parent="ThemeOverlay.AppCompat.Dark">
+    <style name="PopupThemeOverlay" parent="ThemeOverlay.AppCompat.DayNight">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="PopupTheme" parent="ThemeOverlay.AppCompat.Light">
+    <style name="PopupTheme" parent="ThemeOverlay.AppCompat.DayNight">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@android:color/transparent</item>
@@ -105,7 +105,7 @@
         <item name="android:paddingStart">0dp</item>
     </style>
 
-    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
+    <style name="DialogTheme" parent="Theme.AppCompat.DayNight.Dialog">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -121,7 +121,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorPrimary">@color/colorAccent</item>
     </style>
 

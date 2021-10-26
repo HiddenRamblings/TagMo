@@ -258,8 +258,7 @@ public class NfcActivity extends AppCompatActivity {
                 bank_count = bank_details[1] & 0xFF;
                 active_bank = TagUtils.getValueForPosition(bank_details[0] & 0xFF);
                 if (!mode.equals(TagMo.ACTION_SET_BANK_COUNT)
-                        && !mode.equals(TagMo.ACTION_WRITE_ALL_TAGS)
-                        && !mode.equals(TagMo.ACTION_SCAN_TAG)) {
+                        && !mode.equals(TagMo.ACTION_WRITE_ALL_TAGS)) {
                     selection = TagUtils.getPositionForValue(bankNumberPicker.getValue());
                     if (selection > bank_count) {
                         throw new Exception(getString(R.string.fail_bank_oob));

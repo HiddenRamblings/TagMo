@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -337,7 +336,7 @@ public class TagWriter {
         return tags;
     }
 
-    public static byte[] deleteBank(NTAG215 tag, int active_bank)  throws Exception {
+    public static byte[] wipeBankData(NTAG215 tag, int active_bank)  throws Exception {
         if (doEliteAuth(tag, tag.fastRead(0, 0))) {
             byte[] tagData = TagUtils.hexStringToByteArray(new String(
                     new char[1080]).replace("\u0000", "F"));

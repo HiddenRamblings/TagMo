@@ -117,7 +117,7 @@
     <string name="edit_bank">Edit Bank</string>
     <string name="view_hex">View Hex Code</string>
     <string name="restore">Restore</string>
-    <string name="edit_tag">Edit Tag Data</string>
+    <string name="edit_props">Edit Properties</string>
     <string name="ignore_restrictions">Ignore Restrictions</string>
 
     <string name="properties">Properties</string>
@@ -160,8 +160,10 @@
     <string name="restore_tag">Restore Tag</string>
     <string name="scan_tag">Scan Tag</string>
     <string name="scan_elite">Scan N2 Elite</string>
-    <string name="delete_bank">Delete Bank</string>
+    <string name="wipe_bank">Wipe Bank Data</string>
+    <string name="activate">Activate</string>
     <string name="activate_bank">Activate Bank</string>
+    <string name="backup">Backup</string>
     <string name="bank_backup">Bank Backup</string>
     <string name="backup_amiibo">Amiibo Backup</string>
     <string name="set_bank_count">Set Bank Count</string>

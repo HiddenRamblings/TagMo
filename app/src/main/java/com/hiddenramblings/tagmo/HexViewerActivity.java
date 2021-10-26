@@ -13,8 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hiddenramblings.tagmo.nfc.KeyManager;
-import com.hiddenramblings.tagmo.nfc.TagUtils;
+import com.hiddenramblings.tagmo.nfctag.KeyManager;
+import com.hiddenramblings.tagmo.nfctag.TagUtils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;

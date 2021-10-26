@@ -20,10 +20,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.hiddenramblings.tagmo.Preferences_;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.nfc.TagUtils;
+import com.hiddenramblings.tagmo.nfctag.TagUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
@@ -31,12 +31,9 @@ import java.util.Collections;
 
 public class SettingsAmiiboAdapter extends BaseAdapter {
 
-    Preferences_ prefs;
-
     ArrayList<Amiibo> items;
 
-    public SettingsAmiiboAdapter(Preferences_ prefs, ArrayList<Amiibo> items) {
-        this.prefs = prefs;
+    public SettingsAmiiboAdapter(ArrayList<Amiibo> items) {
         this.items = items;
         Collections.sort(items);
     }
@@ -126,7 +123,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
     }
 
     boolean onlyRetrieveFromCache(View view) {
-        String imageNetworkSetting = prefs.imageNetworkSetting().get();
+        String imageNetworkSetting = TagMo.getPrefs().imageNetworkSetting().get();
         if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
             return true;
         } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {

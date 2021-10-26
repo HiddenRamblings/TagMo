@@ -30,7 +30,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.NfcActivity_;
-import com.hiddenramblings.tagmo.Preferences_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.adapter.SettingsAmiiboAdapter;
@@ -40,7 +39,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.RequestStamp;
-import com.hiddenramblings.tagmo.nfc.KeyManager;
+import com.hiddenramblings.tagmo.nfctag.KeyManager;
 
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.Background;
@@ -247,7 +246,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void onAmiiboStatsClicked() {
         new AlertDialog.Builder(this.getContext())
                 .setTitle(R.string.pref_amiibos)
-                .setAdapter(new SettingsAmiiboAdapter(prefs, new ArrayList<>(
+                .setAdapter(new SettingsAmiiboAdapter(new ArrayList<>(
                         amiiboManager.amiibos.values())), null)
                 .setPositiveButton(R.string.close, null)
                 .show();

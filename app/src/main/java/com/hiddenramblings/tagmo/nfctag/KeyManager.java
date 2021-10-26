@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfc;
+package com.hiddenramblings.tagmo.nfctag;
 
 import android.content.Context;
 import android.net.Uri;

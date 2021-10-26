@@ -1,10 +1,9 @@
-package com.hiddenramblings.tagmo.nfc;
+package com.hiddenramblings.tagmo.nfctag;
 
 import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -19,6 +18,22 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 
 public class TagUtils {
+
+    public static int getPositionForValue(int value) {
+        return value - 1;
+    }
+
+    public static int getValueForPosition(int value) {
+        return value + 1;
+    }
+
+    static boolean compareRange(byte[] data, byte[] data2, int data2offset, int len) {
+        for (int i = data2offset, j = 0; j < len; i++, j++) {
+            if (data[j] != data2[i])
+                return false;
+        }
+        return true;
+    }
 
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
@@ -99,23 +114,7 @@ public class TagUtils {
         return null;
     }
 
-    /**
-     * Returns the UID of a tag from first two pages of data (TagFormat)
-     */
-    public static byte[] uidFromPages(byte[] pages0_1) {
-        //removes the checksum bytes from the first two pages of a tag to get the actual uid
-        if (pages0_1.length < 8) return null;
 
-        byte[] key = new byte[7];
-        key[0] = pages0_1[0];
-        key[1] = pages0_1[1];
-        key[2] = pages0_1[2];
-        key[3] = pages0_1[4];
-        key[4] = pages0_1[5];
-        key[5] = pages0_1[6];
-        key[6] = pages0_1[7];
-        return key;
-    }
 
     public static long amiiboIdFromTag(byte[] data) throws Exception {
         return new TagData(data).getAmiiboID();
@@ -134,28 +133,6 @@ public class TagUtils {
             pages[j] = Arrays.copyOfRange(data, i, i + NfcByte.PAGE_SIZE);
         }
         return pages;
-    }
-
-    public static void validateTag(byte[] data) throws Exception {
-        byte[][] pages = TagUtils.splitPages(data);
-
-        if (pages[0][0] != (byte) 0x04)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_prefix));
-
-        if (pages[2][2] != (byte) 0x0F || pages[2][3] != (byte) 0xE0)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_lock));
-
-        if (pages[3][0] != (byte) 0xF1 || pages[3][1] != (byte) 0x10 || pages[3][2] != (byte) 0xFF || pages[3][3] != (byte) 0xEE)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cc));
-
-        if (pages[0x82][0] != (byte) 0x01 || pages[0x82][1] != (byte) 0x0 || pages[0x82][2] != (byte) 0x0F)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_dynamic));
-
-        if (pages[0x83][0] != (byte) 0x0 || pages[0x83][1] != (byte) 0x0 || pages[0x83][2] != (byte) 0x0 || pages[0x83][3] != (byte) 0x04)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cfg_zero));
-
-        if (pages[0x84][0] != (byte) 0x5F || pages[0x84][1] != (byte) 0x0 || pages[0x84][2] != (byte) 0x0 || pages[0x84][3] != (byte) 0x00)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cfg_one));
     }
 
     public static byte[] decrypt(KeyManager keyManager, byte[] tagData) throws Exception {
@@ -190,6 +167,10 @@ public class TagUtils {
         return encrypted;
     }
 
+    public static boolean isEncrypted(byte[] tagData) {
+        return tagData[10] == 0x0F && tagData[11] == 0xE0;
+    }
+
     public static byte[] patchUid(byte[] uid, byte[] tagData) throws Exception {
         if (uid.length < 9) throw new Exception(TagMo.getStringRes(R.string.invalid_uid_length));
 
@@ -199,24 +180,6 @@ public class TagUtils {
         patched[0] = uid[8];
 
         return patched;
-    }
-
-    public static boolean isEncrypted(byte[] tagData) {
-        return tagData[10] == 0x0F && tagData[11] == 0xE0;
-    }
-
-    public static byte[] readTag(InputStream inputStream) throws Exception {
-        byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
-        try {
-            int len = inputStream.read(data);
-            if (len != NfcByte.TAG_FILE_SIZE)
-                throw new Exception(TagMo.getStringRes(R.string.invalid_file_size,
-                        String.valueOf(NfcByte.TAG_FILE_SIZE)));
-
-            return data;
-        } finally {
-            inputStream.close();
-        }
     }
 
     static byte[] toAmiiboDate(Date date) {
@@ -329,13 +292,5 @@ public class TagUtils {
             }
         }
         putBytes(bb, offset, bytes);
-    }
-
-    public static int getPositionForValue(int value) {
-        return value - 1;
-    }
-
-    public static int getValueForPosition(int value) {
-        return value + 1;
     }
 }

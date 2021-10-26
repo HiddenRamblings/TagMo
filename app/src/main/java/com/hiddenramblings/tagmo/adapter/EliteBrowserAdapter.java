@@ -27,11 +27,10 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.BrowserActivity;
-import com.hiddenramblings.tagmo.Preferences_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.nfc.TagUtils;
+import com.hiddenramblings.tagmo.nfctag.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
@@ -40,15 +39,13 @@ import java.util.ArrayList;
 public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapter.AmiiboVewHolder>
         implements BrowserSettings.BrowserSettingsListener {
 
-    private final Preferences_ prefs;
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
     private ArrayList<Amiibo> amiibos = new ArrayList<>();
 
-    public EliteBrowserAdapter(BrowserSettings settings, Preferences_ prefs, OnAmiiboClickListener listener) {
+    public EliteBrowserAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
-        this.prefs = prefs;
     }
 
     public void setAmiibos(ArrayList<Amiibo> amiibos) {
@@ -96,7 +93,7 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
     @Override
     public void onBindViewHolder(@NonNull final AmiiboVewHolder holder, int position) {
         if (TagUtils.getValueForPosition(position)
-                == prefs.eliteActiveBank().get()) {
+                == TagMo.getPrefs().eliteActiveBank().get()) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
                     android.R.color.holo_green_light));
         } else {

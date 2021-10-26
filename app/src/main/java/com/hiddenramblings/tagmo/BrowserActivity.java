@@ -56,10 +56,10 @@ import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.RequestCommit;
-import com.hiddenramblings.tagmo.nfc.KeyManager;
-import com.hiddenramblings.tagmo.nfc.PTagKeyManager;
-import com.hiddenramblings.tagmo.nfc.TagUtils;
-import com.hiddenramblings.tagmo.nfc.TagWriter;
+import com.hiddenramblings.tagmo.nfctag.KeyManager;
+import com.hiddenramblings.tagmo.nfctag.PowerTagManager;
+import com.hiddenramblings.tagmo.nfctag.TagReader;
+import com.hiddenramblings.tagmo.nfctag.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
@@ -74,7 +74,6 @@ import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.OptionsMenuItem;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.api.BackgroundExecutor;
 import org.apmem.tools.layouts.FlowLayout;
 import org.json.JSONArray;
@@ -85,7 +84,6 @@ import org.json.JSONTokener;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -120,9 +118,6 @@ public class BrowserActivity extends AppCompatActivity implements
     public static final int VIEW_TYPE_SIMPLE = 0;
     public static final int VIEW_TYPE_COMPACT = 1;
     public static final int VIEW_TYPE_LARGE = 2;
-
-    @Pref
-    Preferences_ prefs;
 
     @ViewById(R.id.chip_list)
     FlowLayout chipList;
@@ -214,7 +209,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
         }).execute(getString(R.string.git_url,
-                prefs.stableChannel().get() ? "master" : "experimental"));
+                TagMo.getPrefs().stableChannel().get() ? "master" : "experimental"));
         requestStoragePermissions();
     }
 
@@ -244,17 +239,17 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (this.settings == null) {
             this.settings = new BrowserSettings();
-            this.settings.setBrowserRootFolder(new File(TagMo.getStorage(), prefs.browserRootFolder().get()));
-            this.settings.setQuery(prefs.query().get());
-            this.settings.setSort(prefs.sort().get());
-            this.settings.setAmiiboSeriesFilter(prefs.filterAmiiboSeries().get());
-            this.settings.setAmiiboTypeFilter(prefs.filterAmiiboType().get());
-            this.settings.setCharacterFilter(prefs.filterCharacter().get());
-            this.settings.setGameSeriesFilter(prefs.filterGameSeries().get());
-            this.settings.setAmiiboView(prefs.browserAmiiboView().get());
-            this.settings.setImageNetworkSettings(prefs.imageNetworkSetting().get());
-            this.settings.setRecursiveEnabled(prefs.recursiveFolders().get());
-            this.settings.setShowMissingFiles(prefs.showMissingFiles().get());
+            this.settings.setBrowserRootFolder(new File(TagMo.getStorage(), TagMo.getPrefs().browserRootFolder().get()));
+            this.settings.setQuery(TagMo.getPrefs().query().get());
+            this.settings.setSort(TagMo.getPrefs().sort().get());
+            this.settings.setAmiiboSeriesFilter(TagMo.getPrefs().filterAmiiboSeries().get());
+            this.settings.setAmiiboTypeFilter(TagMo.getPrefs().filterAmiiboType().get());
+            this.settings.setCharacterFilter(TagMo.getPrefs().filterCharacter().get());
+            this.settings.setGameSeriesFilter(TagMo.getPrefs().filterGameSeries().get());
+            this.settings.setAmiiboView(TagMo.getPrefs().browserAmiiboView().get());
+            this.settings.setImageNetworkSettings(TagMo.getPrefs().imageNetworkSetting().get());
+            this.settings.setRecursiveEnabled(TagMo.getPrefs().recursiveFolders().get());
+            this.settings.setShowMissingFiles(TagMo.getPrefs().showMissingFiles().get());
         } else {
             this.currentFolderView.setText(TagMo.friendlyPath(settings.getBrowserRootFolder()));
             this.onFilterGameSeriesChanged();
@@ -289,13 +284,13 @@ public class BrowserActivity extends AppCompatActivity implements
 
         String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
         int active_bank = result.getData().getIntExtra(
-                TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+                TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
         int bank_count = result.getData().getIntExtra(
-                TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
+                TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
 
-        prefs.eliteSignature().put(signature);
-        prefs.eliteActiveBank().put(active_bank);
-        prefs.eliteBankCount().put(bank_count);
+        TagMo.getPrefs().eliteSignature().put(signature);
+        TagMo.getPrefs().eliteActiveBank().put(active_bank);
+        TagMo.getPrefs().eliteBankCount().put(bank_count);
 
         Intent eliteIntent = new Intent(this, EliteActivity_.class);
         eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
@@ -326,7 +321,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Click(R.id.fab)
     public void onFabClicked() {
-        if (prefs.enableEliteSupport().get()) {
+        if (TagMo.getPrefs().enableEliteSupport().get()) {
             onEliteActivity.launch(new Intent(this,
                     NfcActivity_.class).setAction(TagMo.ACTION_SCAN_ELITE));
         } else {
@@ -448,7 +443,7 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 File directory = new File(settings.getBrowserRootFolder(),
                         TagMo.getStringRes(R.string.tagmo_backup));
-                String fileName = TagWriter.writeBytesToFile(directory,
+                String fileName = TagReader.writeBytesToFile(directory,
                         input.getText().toString() + ".bin", tagData);
                 showToast(getString(R.string.wrote_file, fileName));
                 this.refresh();
@@ -737,7 +732,7 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
             if (result.getData().getBooleanExtra("REFRESH", false)) {
-                if (prefs.ignoreSdcard().get()) {
+                if (TagMo.getPrefs().ignoreSdcard().get()) {
                     this.settings.setBrowserRootFolder(Storage.setFileStorage());
                     this.settings.notifyChanges();
                 }
@@ -796,7 +791,7 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onRecursiveFilesChanged();
         this.onShowMissingChanged();
 
-        menuUnlockElite.setVisible(prefs.enableEliteSupport().get());
+        menuUnlockElite.setVisible(TagMo.getPrefs().enableEliteSupport().get());
 
         // setOnQueryTextListener will clear this, so make a copy
         String query = settings.getQuery();
@@ -848,8 +843,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         byte[] tagData;
         try {
-            tagData = TagUtils.readTag(getContentResolver().openInputStream(
-                    Uri.fromFile(amiiboFile.getFilePath())));
+            tagData = TagReader.readTagStream(amiiboFile.getFilePath());
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -897,7 +891,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public static final String BACKGROUND_POWERTAG = "powertag";
 
     void loadPTagKeyManager() {
-        if (prefs.enablePowerTagSupport().get()) {
+        if (TagMo.getPrefs().enablePowerTagSupport().get()) {
             BackgroundExecutor.cancelAll(BACKGROUND_POWERTAG, true);
             loadPTagKeyManagerTask();
         }
@@ -906,7 +900,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background(id = BACKGROUND_POWERTAG)
     void loadPTagKeyManagerTask() {
         try {
-            PTagKeyManager.getPowerTagManager();
+            PowerTagManager.getPowerTagManager();
         } catch (Exception e) {
             e.printStackTrace();
             showToast(R.string.fail_powertag_keys);
@@ -994,8 +988,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 amiiboFiles.addAll(listAmiibos(file, true));
             } else {
                 try {
-                    byte[] data = TagUtils.readTag(new FileInputStream(file));
-                    TagUtils.validateTag(data);
+                    byte[] data = TagReader.readTagFile(file);
+                    TagReader.validateTag(data);
                     amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
                 } catch (Exception e) {
                     //
@@ -1060,7 +1054,7 @@ public class BrowserActivity extends AppCompatActivity implements
             onAmiiboFilesChanged();
         }
 
-        this.prefs.edit()
+        TagMo.getPrefs().edit()
                 .browserRootFolder().put(TagMo.friendlyPath(newBrowserSettings.getBrowserRootFolder()))
                 .query().put(newBrowserSettings.getQuery())
                 .sort().put(newBrowserSettings.getSort())
@@ -1322,8 +1316,8 @@ public class BrowserActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (getPackageManager().canRequestPackageInstalls())
-            downloadUpdate(prefs.downloadUrl().get());
-        prefs.downloadUrl().remove();
+            downloadUpdate(TagMo.getPrefs().downloadUrl().get());
+        TagMo.getPrefs().downloadUrl().remove();
     });
 
     void requestUpdate(String apkUrl) {
@@ -1331,7 +1325,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (getPackageManager().canRequestPackageInstalls()) {
                 downloadUpdate(apkUrl);
             } else {
-                prefs.downloadUrl().put(apkUrl);
+                TagMo.getPrefs().downloadUrl().put(apkUrl);
                 Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
                 intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
                 onRequestInstall.launch(intent);

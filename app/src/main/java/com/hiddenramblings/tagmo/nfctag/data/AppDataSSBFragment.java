@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.data;
+package com.hiddenramblings.tagmo.nfctag.data;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;

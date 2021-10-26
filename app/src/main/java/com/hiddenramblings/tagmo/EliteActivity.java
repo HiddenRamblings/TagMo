@@ -197,7 +197,7 @@ public class EliteActivity extends AppCompatActivity implements
         if (amiiboList != null && amiiboList.size() == TagMo.getPrefs().eliteBankCount().get()) {
             new AlertDialog.Builder(EliteActivity.this)
                     .setMessage(R.string.write_confirm)
-                    .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                    .setNegativeButton(R.string.proceed, (dialog, which) -> {
                         Intent collection = new Intent(this, NfcActivity_.class);
                         collection.setAction(TagMo.ACTION_WRITE_ALL_TAGS);
                         collection.putExtra(TagMo.EXTRA_AMIIBO_FILES, amiiboList);
@@ -205,7 +205,7 @@ public class EliteActivity extends AppCompatActivity implements
                         dialog.dismiss();
                         writeDialog.dismiss();
                     })
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    .setPositiveButton(R.string.cancel, (dialog, which) -> {
                         amiiboList.clear();
                         dialog.dismiss();
                     })
@@ -330,19 +330,10 @@ public class EliteActivity extends AppCompatActivity implements
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
-        String amiiboFileName = "";
-        try {
-            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-            Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
-            amiiboFileName = amiibo.name + "-" + amiibo.id;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(amiiboFileName);
+        input.setText(TagReader.generateFileName(settings.getAmiiboManager(), tagData));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {

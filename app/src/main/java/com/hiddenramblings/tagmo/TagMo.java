@@ -62,6 +62,9 @@ public class TagMo extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        setTheme(R.style.AppTheme);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             UTF_8 = StandardCharsets.UTF_8;
             UTF_16BE = StandardCharsets.UTF_16BE;

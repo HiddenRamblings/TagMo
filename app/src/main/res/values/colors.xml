@@ -3,8 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="tagWarning">#FF0000</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="background_white">#88FFFFFF</color>
+    <color name="tagWarningLight">#FF0000</color>
+    <color name="tagWarningDark">#FF00FF</color>
+    <color name="background_white">#66FFFFFF</color>
 </resources>

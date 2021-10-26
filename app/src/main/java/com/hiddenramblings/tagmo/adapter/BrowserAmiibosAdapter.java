@@ -1,6 +1,7 @@
 package com.hiddenramblings.tagmo.adapter;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -148,25 +149,23 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
                 if (amiiboManager != null) {
                     Amiibo amiibo1 = amiiboManager.amiibos.get(amiiboId1);
                     Amiibo amiibo2 = amiiboManager.amiibos.get(amiiboId2);
-                    if (amiibo1 != null || amiibo2 != null) {
-                        if (amiibo1 == null)
-                            value = 1;
-                        else if (amiibo2 == null)
-                            value = -1;
-                        else if (sort == BrowserActivity.SORT_NAME) {
-                            value = compareAmiiboName(amiibo1, amiibo2);
-                        } else if (sort == BrowserActivity.SORT_AMIIBO_SERIES) {
-                            value = compareAmiiboSeries(amiibo1, amiibo2);
-                        } else if (sort == BrowserActivity.SORT_AMIIBO_TYPE) {
-                            value = compareAmiiboType(amiibo1, amiibo2);
-                        } else if (sort == BrowserActivity.SORT_GAME_SERIES) {
-                            value = compareGameSeries(amiibo1, amiibo2);
-                        } else if (sort == BrowserActivity.SORT_CHARACTER) {
-                            value = compareCharacter(amiibo1, amiibo2);
-                        }
-                    }
-                    if (value == 0 && amiibo1 != null)
+                    if (amiibo1 == null) {
+                        value = 1;
+                    } else if (amiibo2 == null) {
+                        value = -1;
+                    } else if (sort == BrowserActivity.SORT_NAME) {
+                        value = compareAmiiboName(amiibo1, amiibo2);
+                    } else if (sort == BrowserActivity.SORT_AMIIBO_SERIES) {
+                        value = compareAmiiboSeries(amiibo1, amiibo2);
+                    } else if (sort == BrowserActivity.SORT_AMIIBO_TYPE) {
+                        value = compareAmiiboType(amiibo1, amiibo2);
+                    } else if (sort == BrowserActivity.SORT_GAME_SERIES) {
+                        value = compareGameSeries(amiibo1, amiibo2);
+                    } else if (sort == BrowserActivity.SORT_CHARACTER) {
+                        value = compareCharacter(amiibo1, amiibo2);
+                    } else {
                         value = amiibo1.compareTo(amiibo2);
+                    }
                 }
                 if (value == 0)
                     value = compareAmiiboId(amiiboId1, amiiboId2);
@@ -179,7 +178,9 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         }
 
         int compareFilePath(File filePath1, File filePath2) {
-            if (filePath1 == null) {
+            if (filePath1 == null && filePath2 == null) {
+                return 0;
+            } else if (filePath1 == null) {
                 return 1;
             } else if (filePath2 == null) {
                 return -1;
@@ -197,8 +198,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             String name2 = amiibo2.name;
             if (name1 == null && name2 == null) {
                 return 0;
-            }
-            if (name1 == null) {
+            } else if (name1 == null) {
                 return 1;
             } else if (name2 == null) {
                 return -1;
@@ -211,8 +211,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             AmiiboSeries amiiboSeries2 = amiibo2.getAmiiboSeries();
             if (amiiboSeries1 == null && amiiboSeries2 == null ) {
                 return 0;
-            }
-            if (amiiboSeries1 == null) {
+            } else if (amiiboSeries1 == null) {
                 return 1;
             } else if (amiiboSeries2 == null) {
                 return -1;
@@ -225,8 +224,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             AmiiboType amiiboType2 = amiibo2.getAmiiboType();
             if (amiiboType1 == null && amiiboType2 == null ) {
                 return 0;
-            }
-            if (amiiboType1 == null) {
+            } else if (amiiboType1 == null) {
                 return 1;
             } else if (amiiboType2 == null) {
                 return -1;
@@ -239,8 +237,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             GameSeries gameSeries2 = amiibo2.getGameSeries();
             if (gameSeries1 == null && gameSeries2 == null) {
                 return 0;
-            }
-            if (gameSeries1 == null) {
+            } else if (gameSeries1 == null) {
                 return 1;
             } else if (gameSeries2 == null) {
                 return -1;
@@ -253,8 +250,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             Character character2 = amiibo2.getCharacter();
             if (character1 == null && character2 == null) {
                 return 0;
-            }
-            if (character1 == null) {
+            } else if (character1 == null) {
                 return 1;
             } else if (character2 == null) {
                 return -1;
@@ -496,8 +492,11 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), tagInfo != null);
             if (item.getFilePath() != null) {
                 this.itemView.setEnabled(true);
-                this.txtPath.setText(boldMatchingText(TagMo.friendlyPath(item.getFilePath()), query));
-                this.txtPath.setTextColor(this.txtPath.getResources().getColor(R.color.tag_text));
+                String relativeFile = TagMo.friendlyPath(item.getFilePath()).replace(
+                        TagMo.getPrefs().browserRootFolder().get(), "");
+                this.txtPath.setText(boldMatchingText(relativeFile, query));
+                this.txtPath.setTextColor(this.txtPath.getResources().getColor(isDarkTheme() ?
+                        R.color.tag_text_dark : R.color.tag_text_light));
             } else {
                 this.itemView.setEnabled(false);
                 this.txtPath.setText("");
@@ -572,6 +571,11 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
                     textView.setEnabled(true);
                 }
             }
+        }
+
+        private boolean isDarkTheme() {
+            return (TagMo.getContext().getResources().getConfiguration().uiMode
+                    & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         }
     }
 

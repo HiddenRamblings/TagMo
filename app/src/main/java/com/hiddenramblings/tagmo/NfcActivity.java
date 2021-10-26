@@ -135,7 +135,6 @@ public class NfcActivity extends AppCompatActivity {
                 bankNumberPicker.setMaxValue(TagMo.getPrefs().eliteBankCount().get());
                 break;
             case TagMo.ACTION_WRITE_ALL_TAGS:
-            case TagMo.ACTION_BACKUP_AMIIBO:
             case TagMo.ACTION_SCAN_TAG:
             case TagMo.ACTION_SET_BANK_COUNT:
             case TagMo.ACTION_LOCK_AMIIBO:
@@ -144,6 +143,14 @@ public class NfcActivity extends AppCompatActivity {
             case TagMo.ACTION_ACTIVATE_BANK:
                 bankNumberPicker.setEnabled(false);
                 bankTextView.setVisibility(View.GONE);
+                break;
+            case TagMo.ACTION_BACKUP_AMIIBO:
+                if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)
+                        || !TagMo.getPrefs().enableEliteSupport().get()) {
+                    bankNumberPicker.setVisibility(View.GONE);
+                    bankNumberPicker.setEnabled(false);
+                    bankTextView.setVisibility(View.GONE);
+                }
                 break;
             case TagMo.ACTION_FORMAT_BANK:
                 break;
@@ -340,7 +347,7 @@ public class NfcActivity extends AppCompatActivity {
                         break;
 
                     case TagMo.ACTION_SCAN_TAG:
-                        if (isElite) {
+                        if (isElite && !commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
                             if (TagReader.needsFirmware(mifare)) {
                                 if (TagReader.updateFirmware(mifare))
                                     showToast(getString(R.string.firmware_update));
@@ -430,14 +437,14 @@ public class NfcActivity extends AppCompatActivity {
                 runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                         .setTitle(R.string.possible_lock)
                         .setMessage(R.string.prepare_unlock)
-                        .setPositiveButton(R.string.unlock, (dialog, which) -> {
+                        .setNegativeButton(R.string.unlock, (dialog, which) -> {
                             dialog.dismiss();
                             finish();
                             Intent unlock = new Intent(this, NfcActivity_.class);
                             unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
                             startActivity(unlock);
                         })
-                        .setNegativeButton(R.string.cancel, null).show());
+                        .setPositiveButton(R.string.cancel, null).show());
             }
         }
     }
@@ -457,13 +464,13 @@ public class NfcActivity extends AppCompatActivity {
             showError(getString(R.string.nfc_disabled));
             new AlertDialog.Builder(this)
                     .setMessage(R.string.nfc_query)
-                    .setPositiveButton(R.string.yes, (dialog, which) ->
+                    .setNegativeButton(R.string.yes, (dialog, which) ->
                             startActivity(new Intent(Build.VERSION.SDK_INT
                                     >= Build.VERSION_CODES.JELLY_BEAN
                                     ? Settings.ACTION_NFC_SETTINGS
                                     : Settings.ACTION_WIRELESS_SETTINGS)
                     ))
-                    .setNegativeButton(R.string.no, null)
+                    .setPositiveButton(R.string.no, null)
                     .show();
         }
 

@@ -94,6 +94,7 @@
     <string name="write">Write</string>
     <string name="cancel">Cancel</string>
     <string name="start">Start</string>
+    <string name="delete">Delete</string>
     <string name="parent">Parent</string>
     <string name="unknown">Unknown</string>
     <string name="error">ERROR</string>
@@ -143,7 +144,6 @@
 
     <string name="wrote_file">File saved to %1$s</string>
     <string name="tagmo_backup">TagMo Backup</string>
-    <string name="tagmo_export">TagMo Export</string>
     <string name="write_error">Error: %1$s</string>
     <string name="no_data">No data to write</string>
     <string name="tag_type_error">Error getting tag data. Possibly not a NTAG215</string>
@@ -172,6 +172,8 @@
 
     <string name="permission_required">Storage permission required!</string>
     <string name="allow_permission">Allow</string>
+
+    <string name="delete_amiibo">Deleting %1$s. Are you sure?</string>
 
     <string name="encryption_keys">Encryption Keys</string>
     <string name="pref_import_keys">Import Keys</string>

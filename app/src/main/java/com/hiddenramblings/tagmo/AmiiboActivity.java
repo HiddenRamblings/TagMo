@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -42,6 +45,7 @@ import org.androidannotations.annotations.ViewById;
 import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -87,7 +91,9 @@ public class AmiiboActivity extends AppCompatActivity {
         }
         toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.getMenu().findItem(R.id.mnu_activate).setVisible(isResponsive);
+        toolbar.getMenu().findItem(R.id.mnu_refresh).setVisible(isResponsive);
         toolbar.getMenu().findItem(R.id.mnu_backup).setVisible(isResponsive);
+        toolbar.getMenu().findItem(R.id.mnu_write).setVisible(!isResponsive);
         toolbar.getMenu().findItem(R.id.mnu_restore).setVisible(!isResponsive);
         toolbar.getMenu().findItem(R.id.mnu_export).setVisible(!isResponsive);
         toolbar.getMenu().findItem(R.id.mnu_wipe_bank).setVisible(isResponsive);
@@ -95,6 +101,12 @@ public class AmiiboActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.mnu_activate:
                     modifyBank(EliteActivity.ACTIVATE);
+                    return true;
+                case R.id.mnu_refresh:
+                    Intent refresh = new Intent(this, NfcActivity_.class);
+                    refresh.setAction(TagMo.ACTION_SCAN_TAG);
+                    refresh.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
+                    onEditTagResult.launch(refresh);
                     return true;
                 case R.id.mnu_write:
                     writeTag();
@@ -133,25 +145,22 @@ public class AmiiboActivity extends AppCompatActivity {
         updateAmiiboView();
     }
 
+    ActivityResultLauncher<Intent> onEditTagResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
+            return;
+
+        if (!TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction()))
+            return;
+
+        this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        this.runOnUiThread(this::updateAmiiboView);
+    });
+
     @Click(R.id.container)
     void onContainerClick() {
         finish();
     }
-
-    ActivityResultLauncher<Intent> onEditTagResult = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        TagMo.Debug(getClass(), R.string.tag_data);
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
-            return;
-
-        TagMo.Debug(getClass(), R.string.tag_data);
-        if (!TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction()))
-            return;
-
-        TagMo.Debug(getClass(), R.string.tag_data);
-        this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-        this.runOnUiThread(this::updateAmiiboView);
-    });
 
     void openTagEditor() {
         Intent intent = new Intent(this, TagDataActivity_.class);
@@ -283,19 +292,38 @@ public class AmiiboActivity extends AppCompatActivity {
         onNFCResult.launch(intent);
     }
 
+    private void displayBackupDialog() {
+        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        final EditText input = view.findViewById(R.id.backup_entry);
+        input.setText(TagReader.generateFileName(this.amiiboManager, tagData));
+        Dialog backupDialog = dialog.setView(view).show();
+        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
+            try {
+                File directory = new File(TagMo.getStorage(), TagMo.getPrefs().browserRootFolder().get()
+                        + File.separator + TagMo.getStringRes(R.string.tagmo_backup));
+                String fileName = TagReader.writeBytesToFile(directory, input.getText().toString(), tagData);
+                showToast(getString(R.string.wrote_file, fileName));
+            } catch (IOException e) {
+                showToast(e.getMessage());
+            }
+            backupDialog.dismiss();
+        });
+        view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+    }
+
     void exportTag() {
-        new android.app.AlertDialog.Builder(this)
-                .setMessage(R.string.export_warning)
-                .setPositiveButton(R.string.export, (dialog, which) -> {
-                    try {
-                        String fileName = TagReader.scanAmiiboToFile(this.amiiboManager, tagData);
-                        showToast(getString(R.string.wrote_file, fileName));
-                    } catch (Exception e) {
-                        showToast(e.getMessage());
-                    }
-                    dialog.dismiss();
-                })
-                .setNegativeButton(R.string.cancel, null).show();
+        if (isResponsive) {
+            new android.app.AlertDialog.Builder(this)
+                    .setMessage(R.string.export_warning)
+                    .setNegativeButton(R.string.export, (dialog, which) -> {
+                        displayBackupDialog();
+                        dialog.dismiss();
+                    })
+                    .setPositiveButton(R.string.cancel, null).show();
+        } else {
+            displayBackupDialog();
+        }
     }
 
     void viewHex() {

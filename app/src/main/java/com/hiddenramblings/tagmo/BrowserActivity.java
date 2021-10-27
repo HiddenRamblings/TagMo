@@ -278,41 +278,41 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
-                if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
-                if (result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
-                    String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
-                    int active_bank = result.getData().getIntExtra(
-                            TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
-                    int bank_count = result.getData().getIntExtra(
-                            TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
+        if (result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
+            String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
+            int active_bank = result.getData().getIntExtra(
+                    TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
+            int bank_count = result.getData().getIntExtra(
+                    TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
 
-                    TagMo.getPrefs().eliteSignature().put(signature);
-                    TagMo.getPrefs().eliteActiveBank().put(active_bank);
-                    TagMo.getPrefs().eliteBankCount().put(bank_count);
+            TagMo.getPrefs().eliteSignature().put(signature);
+            TagMo.getPrefs().eliteActiveBank().put(active_bank);
+            TagMo.getPrefs().eliteBankCount().put(bank_count);
 
-                    Intent eliteIntent = new Intent(this, EliteActivity_.class);
-                    eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
-                    eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
-                    eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
-                    eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
-                            result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
-                    eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
-                    startActivity(eliteIntent);
-                } else {
-                    byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+            Intent eliteIntent = new Intent(this, EliteActivity_.class);
+            eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
+            eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+            eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
+                    result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
+            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
+            startActivity(eliteIntent);
+        } else {
+            byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
-                    Bundle args = new Bundle();
-                    args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
+            Bundle args = new Bundle();
+            args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
 
-                    Intent intent = new Intent(this, AmiiboActivity_.class);
-                    intent.putExtras(args);
+            Intent intent = new Intent(this, AmiiboActivity_.class);
+            intent.putExtras(args);
 
-                    startActivity(intent);
-                }
-            });
+            startActivity(intent);
+        }
+    });
 
     ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {

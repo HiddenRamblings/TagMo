@@ -90,8 +90,8 @@
     <string name="no">No</string>
     <string name="done">Done</string>
     <string name="save">Save</string>
-    <string name="export">Export</string>
     <string name="write">Write</string>
+    <string name="replace">Replace</string>
     <string name="cancel">Cancel</string>
     <string name="start">Start</string>
     <string name="delete">Delete</string>
@@ -153,7 +153,6 @@
     <string name="super_smash">Super Smash Bros. for Nintendo 3DS and Wii U</string>
 
     <string name="save_image">Save Image</string>
-    <string name="export_warning">Note: The bin file will be written using the default values displayed. Are you sure?</string>
 
     <string name="write_raw">Write to Tag (Raw)</string>
     <string name="write_auto">Write to Tag (Auto)</string>
@@ -163,7 +162,6 @@
     <string name="wipe_bank">Wipe Bank Data</string>
     <string name="activate">Activate</string>
     <string name="activate_bank">Activate Bank</string>
-    <string name="backup">Backup</string>
     <string name="bank_backup">Bank Backup</string>
     <string name="backup_amiibo">Amiibo Backup</string>
     <string name="set_bank_count">Set Bank Count</string>

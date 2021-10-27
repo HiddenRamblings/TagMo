@@ -25,7 +25,7 @@ public class Amiibo implements Comparable<Amiibo> {
     public final long id;
     public final String name;
     public final AmiiboReleaseDates releaseDates;
-    public final byte[] data;
+    public byte[] data;
 
     public Amiibo(AmiiboManager manager, long id, String name, AmiiboReleaseDates releaseDates) {
         this.manager = manager;

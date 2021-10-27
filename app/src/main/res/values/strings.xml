@@ -91,7 +91,6 @@
     <string name="done">Done</string>
     <string name="save">Save</string>
     <string name="write">Write</string>
-    <string name="replace">Replace</string>
     <string name="cancel">Cancel</string>
     <string name="start">Start</string>
     <string name="delete">Delete</string>
@@ -164,6 +163,7 @@
     <string name="activate_bank">Activate Bank</string>
     <string name="bank_backup">Bank Backup</string>
     <string name="backup_amiibo">Amiibo Backup</string>
+    <string name="replace_bank">Replace Amiibo</string>
     <string name="set_bank_count">Set Bank Count</string>
     <string name="lock_amiibo">Lock N2 Elite</string>
     <string name="write_collection">Write Collection</string>
@@ -173,6 +173,8 @@
 
     <string name="delete_amiibo">Deleting %1$s. Are you sure?</string>
     <string name="delete_active">Cannot delete the active bank!</string>
+    <string name="refresh_required">Amiibo data refresh required!</string>
+    <string name="write_suggested">Save Amiibo to retain changes!</string>
 
     <string name="encryption_keys">Encryption Keys</string>
     <string name="pref_import_keys">Import Keys</string>

@@ -68,14 +68,14 @@ public class AppDataTPFragment extends AppDataFragment {
         loadLevel();
         loadHearts();
 
-        onAppDataChecked(((TagDataActivity_) requireContext()).isAppDataInitialized());
+        onAppDataChecked(((TagDataActivity_) requireContext()).isAppDataInitialized);
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        onAppDataChecked(((TagDataActivity_) context).isAppDataInitialized());
+        onAppDataChecked(((TagDataActivity_) context).isAppDataInitialized);
     }
 
     void loadLevel() {

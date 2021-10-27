@@ -40,8 +40,8 @@ import com.hiddenramblings.tagmo.adapter.NothingSelectedSpinnerAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctag.KeyManager;
-import com.hiddenramblings.tagmo.nfctag.TagData;
 import com.hiddenramblings.tagmo.nfctag.TagUtils;
+import com.hiddenramblings.tagmo.nfctag.data.AmiiboData;
 import com.hiddenramblings.tagmo.nfctag.data.AppData;
 import com.hiddenramblings.tagmo.nfctag.data.AppDataFragment;
 import com.hiddenramblings.tagmo.nfctag.data.AppDataSSBFragment;
@@ -55,6 +55,7 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.CheckedChange;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
@@ -120,17 +121,20 @@ public class TagDataActivity extends AppCompatActivity {
     @ViewById(R.id.userDataSwitch)
     SwitchCompat userDataSwitch;
 
+    @Extra(TagMo.EXTRA_TAG_DATA)
+    byte[] tagData;
+
     CountryCodesAdapter countryCodeAdapter;
     NothingSelectedSpinnerAdapter appIdAdapter;
     boolean ignoreAppNameSelected;
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
-    TagData tagData;
+    AmiiboData amiiboData;
 
     @InstanceState
     boolean initialUserDataInitialized;
     @InstanceState
-    boolean isAppDataInitialized;
+    public boolean isAppDataInitialized;
     @InstanceState
     boolean initialAppDataInitialized;
     @InstanceState
@@ -144,26 +148,16 @@ public class TagDataActivity extends AppCompatActivity {
 
     @AfterViews
     void afterViews() {
-        byte[] tagData = getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-
         keyManager = new KeyManager(this);
         if (keyManager.isKeyMissing()) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.error)
-                    .setMessage(R.string.no_decrypt_key)
-                    .setPositiveButton(R.string.close, (dialogInterface, i) -> finish())
-                    .show();
+            LogError(getString(R.string.no_decrypt_key));
             return;
         }
         try {
-            this.tagData = new TagData(TagUtils.decrypt(keyManager, tagData));
+            this.amiiboData = new AmiiboData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
             e.printStackTrace();
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.error)
-                    .setMessage(R.string.failed_decrypt)
-                    .setPositiveButton(R.string.close, (dialogInterface, i) -> finish())
-                    .show();
+            LogError(getString(R.string.failed_decrypt));
             return;
         }
 
@@ -173,7 +167,7 @@ public class TagDataActivity extends AppCompatActivity {
         txtAppName.setOnItemSelectedListener(onAppNameSelected);
         txtAppId.addTextChangedListener(onAppIdChange);
 
-        countryCodeAdapter = new CountryCodesAdapter(TagData.countryCodes);
+        countryCodeAdapter = new CountryCodesAdapter(AmiiboData.countryCodes);
         txtCountryCode.setAdapter(countryCodeAdapter);
 
         appIdAdapter = new NothingSelectedSpinnerAdapter(
@@ -184,10 +178,6 @@ public class TagDataActivity extends AppCompatActivity {
         appDataSwitch.setOnCheckedChangeListener((compoundButton, b) -> onAppDataSwitchClicked(b));
 
         loadData();
-    }
-
-    public boolean isAppDataInitialized() {
-        return isAppDataInitialized;
     }
 
     CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
@@ -257,7 +247,7 @@ public class TagDataActivity extends AppCompatActivity {
         } else {
             long amiiboId;
             try {
-                amiiboId = TagUtils.amiiboIdFromTag(getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
+                amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
                 e.printStackTrace();
                 amiiboId = -1;
@@ -352,12 +342,12 @@ public class TagDataActivity extends AppCompatActivity {
     }
 
     void loadData() {
-        boolean isUserDataInitialized = tagData.isUserDataInitialized();
+        boolean isUserDataInitialized = amiiboData.isUserDataInitialized();
         this.initialUserDataInitialized = isUserDataInitialized;
         userDataSwitch.setChecked(isUserDataInitialized);
         onUserDataSwitchClicked(isUserDataInitialized);
 
-        boolean isAppDataInitialized = tagData.isAppDataInitialized();
+        boolean isAppDataInitialized = amiiboData.isAppDataInitialized();
         this.initialAppDataInitialized = isAppDataInitialized;
         appDataSwitch.setChecked(isAppDataInitialized);
         onAppDataSwitchClicked(isAppDataInitialized);
@@ -383,12 +373,12 @@ public class TagDataActivity extends AppCompatActivity {
 
     @OptionsItem(R.id.mnu_save)
     void onSaveClicked() {
-        TagData newTagData;
+        AmiiboData newAmiiboData;
         try {
-            newTagData = new TagData(this.tagData.array());
+            newAmiiboData = new AmiiboData(this.amiiboData.array());
 
-            newTagData.setUserDataInitialized(isUserDataInitialized);
-            newTagData.setAppDataInitialized(isUserDataInitialized && isAppDataInitialized);
+            newAmiiboData.setUserDataInitialized(isUserDataInitialized);
+            newAmiiboData.setAppDataInitialized(isUserDataInitialized && isAppDataInitialized);
         } catch (Exception e) {
             e.printStackTrace();
             LogError(getString(R.string.tag_data_error));
@@ -398,20 +388,20 @@ public class TagDataActivity extends AppCompatActivity {
         if (isUserDataInitialized) {
             try {
                 int countryCode = ((HashMap.Entry<Integer, String>) txtCountryCode.getSelectedItem()).getKey();
-                newTagData.setCountryCode(countryCode);
+                newAmiiboData.setCountryCode(countryCode);
             } catch (Exception e) {
                 txtCountryCode.requestFocus();
                 return;
             }
 
             try {
-                newTagData.setInitializedDate(initializedDate);
+                newAmiiboData.setInitializedDate(initializedDate);
             } catch (Exception e) {
                 txtInitDate.requestFocus();
                 return;
             }
             try {
-                newTagData.setModifiedDate(modifiedDate);
+                newAmiiboData.setModifiedDate(modifiedDate);
             } catch (Exception e) {
                 txtModifiedDate.requestFocus();
                 return;
@@ -419,7 +409,7 @@ public class TagDataActivity extends AppCompatActivity {
 
             try {
                 String nickname = txtNickname.getText().toString();
-                newTagData.setNickname(nickname);
+                newAmiiboData.setNickname(nickname);
             } catch (Exception e) {
                 txtNickname.requestFocus();
                 return;
@@ -427,7 +417,7 @@ public class TagDataActivity extends AppCompatActivity {
 
             try {
                 String miiName = txtMiiName.getText().toString();
-                newTagData.setMiiName(miiName);
+                newAmiiboData.setMiiName(miiName);
             } catch (Exception e) {
                 txtMiiName.requestFocus();
                 return;
@@ -435,14 +425,14 @@ public class TagDataActivity extends AppCompatActivity {
 
             try {
                 int writeCounter = Integer.parseInt(txtWriteCounter.getText().toString());
-                newTagData.setWriteCount(writeCounter);
+                newAmiiboData.setWriteCount(writeCounter);
             } catch (Exception e) {
                 txtWriteCounter.requestFocus();
                 return;
             }
             try {
                 int appId = parseAppId();
-                newTagData.setAppId(appId);
+                newAmiiboData.setAppId(appId);
             } catch (Exception e) {
                 txtAppId.requestFocus();
                 return;
@@ -451,7 +441,7 @@ public class TagDataActivity extends AppCompatActivity {
             AppDataFragment fragment = getAppDataFragment();
             if (isAppDataInitialized && fragment != null) {
                 try {
-                    newTagData.setAppData(fragment.onAppDataSaved());
+                    newAmiiboData.setAppData(fragment.onAppDataSaved());
                 } catch (Exception e) {
                     return;
                 }
@@ -460,7 +450,7 @@ public class TagDataActivity extends AppCompatActivity {
 
         byte[] tagData;
         try {
-            tagData = TagUtils.encrypt(keyManager, newTagData.array());
+            tagData = TagUtils.encrypt(keyManager, newAmiiboData.array());
         } catch (Exception e) {
             e.printStackTrace();
             LogError(getString(R.string.failed_encrypt));
@@ -507,7 +497,7 @@ public class TagDataActivity extends AppCompatActivity {
     }
 
     void loadUID() {
-        byte[] value = tagData.getUID();
+        byte[] value = amiiboData.getUID();
         txtUID.setText(TagUtils.bytesToHex(value));
     }
 
@@ -515,7 +505,7 @@ public class TagDataActivity extends AppCompatActivity {
         int countryCode;
         if (initialUserDataInitialized) {
             try {
-                countryCode = tagData.getCountryCode();
+                countryCode = amiiboData.getCountryCode();
             } catch (Exception e) {
                 countryCode = 0;
             }
@@ -537,7 +527,7 @@ public class TagDataActivity extends AppCompatActivity {
     void loadInitializedDate() {
         if (initialUserDataInitialized) {
             try {
-                this.initializedDate = tagData.getInitializedDate();
+                this.initializedDate = amiiboData.getInitializedDate();
             } catch (Exception e) {
                 this.initializedDate = new Date();
             }
@@ -588,7 +578,7 @@ public class TagDataActivity extends AppCompatActivity {
     void loadModifiedDate() {
         if (initialUserDataInitialized) {
             try {
-                this.modifiedDate = tagData.getModifiedDate();
+                this.modifiedDate = amiiboData.getModifiedDate();
             } catch (Exception e) {
                 this.modifiedDate = new Date();
             }
@@ -640,7 +630,7 @@ public class TagDataActivity extends AppCompatActivity {
         String nickname;
         if (initialUserDataInitialized) {
             try {
-                nickname = tagData.getNickname().trim();
+                nickname = amiiboData.getNickname().trim();
             } catch (UnsupportedEncodingException e) {
                 nickname = "";
             }
@@ -654,7 +644,7 @@ public class TagDataActivity extends AppCompatActivity {
         String miiName;
         if (initialUserDataInitialized) {
             try {
-                miiName = tagData.getMiiName().trim();
+                miiName = amiiboData.getMiiName().trim();
             } catch (UnsupportedEncodingException e) {
                 miiName = "";
             }
@@ -666,7 +656,7 @@ public class TagDataActivity extends AppCompatActivity {
 
     void loadAppId() {
         if (initialUserDataInitialized) {
-            appId = tagData.getAppId();
+            appId = amiiboData.getAppId();
         } else {
             appId = 0;
         }
@@ -762,11 +752,11 @@ public class TagDataActivity extends AppCompatActivity {
             String tag = "app_data:" + appId;
             fragment = (AppDataFragment) fm.findFragmentByTag(tag);
             if (fragment == null) {
-                boolean initialAppDataInitialized = this.initialAppDataInitialized && tagData.getAppId() == appId;
+                boolean initialAppDataInitialized = this.initialAppDataInitialized && amiiboData.getAppId() == appId;
                 if (appId == AppDataTPFragment.APP_ID) {
-                    fragment = AppDataTPFragment.newInstance(tagData.getAppData(), initialAppDataInitialized);
+                    fragment = AppDataTPFragment.newInstance(amiiboData.getAppData(), initialAppDataInitialized);
                 } else if (appId == AppDataSSBFragment.APP_ID) {
-                    fragment = AppDataSSBFragment.newInstance(tagData.getAppData(), initialAppDataInitialized);
+                    fragment = AppDataSSBFragment.newInstance(amiiboData.getAppData(), initialAppDataInitialized);
                 }
             }
             if (fragment != null) {
@@ -789,7 +779,7 @@ public class TagDataActivity extends AppCompatActivity {
     void loadWriteCounter() {
         int writeCounter;
         if (initialUserDataInitialized) {
-            writeCounter = tagData.getWriteCount();
+            writeCounter = amiiboData.getWriteCount();
         } else {
             writeCounter = 0;
         }
@@ -800,10 +790,10 @@ public class TagDataActivity extends AppCompatActivity {
     void onWriteCounterTextChange() {
         try {
             int writeCounter = Integer.parseInt(txtWriteCounter.getText().toString());
-            tagData.checkWriteCount(writeCounter);
+            amiiboData.checkWriteCount(writeCounter);
             txtWriteCounter.setError(null);
         } catch (Exception e) {
-            txtWriteCounter.setError(getString(R.string.min_max_error, TagData.WRITE_COUNT_MIN_VALUE, TagData.WRITE_COUNT_MAX_VALUE));
+            txtWriteCounter.setError(getString(R.string.min_max_error, AmiiboData.WRITE_COUNT_MIN_VALUE, AmiiboData.WRITE_COUNT_MAX_VALUE));
         }
     }
 

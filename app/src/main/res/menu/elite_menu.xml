@@ -4,17 +4,21 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".AmiiboActivity">
     <item
-        android:id="@+id/mnu_write"
-        android:title="@string/write"
+        android:id="@+id/mnu_activate"
+        android:title="@string/activate"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/mnu_restore"
-        android:title="@string/restore"
+        android:id="@+id/mnu_refresh"
+        android:title="@string/refresh"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/mnu_save"
-        android:title="@string/save"
+        android:id="@+id/mnu_replace"
+        android:title="@string/replace"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_backup"
+        android:title="@string/backup_amiibo"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_edit"
         android:title="@string/edit_props"
@@ -22,6 +26,10 @@
     <item
         android:id="@+id/mnu_view_hex"
         android:title="@string/view_hex"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mnu_wipe_bank"
+        android:title="@string/wipe_bank"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_ignore_tag_id"

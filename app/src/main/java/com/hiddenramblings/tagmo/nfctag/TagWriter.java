@@ -62,7 +62,15 @@ public class TagWriter {
 
         if (!isPowerTag) {
             TagReader.validate(mifare, tagData, validateNtag);
-            TagReader.validateBlankTag(mifare);
+            try {
+                TagReader.validateBlankTag(mifare);
+            } catch (Exception e) {
+                if (TagUtils.isElite(mifare)) {
+                    throw new Exception(TagMo.getStringRes(R.string.scan_elite_menu));
+                } else {
+                    throw new Exception(e.getMessage());
+                }
+            }
         }
 
         if (isPowerTag) {

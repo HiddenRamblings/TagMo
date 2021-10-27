@@ -89,14 +89,7 @@ public class AmiiboActivity extends AppCompatActivity {
         if (getCallingActivity() != null) {
             isResponsive = getCallingActivity().getClassName().equals(EliteActivity_.class.getName());
         }
-        toolbar.inflateMenu(R.menu.amiibo_menu);
-        toolbar.getMenu().findItem(R.id.mnu_activate).setVisible(isResponsive);
-        toolbar.getMenu().findItem(R.id.mnu_refresh).setVisible(isResponsive);
-        toolbar.getMenu().findItem(R.id.mnu_backup).setVisible(isResponsive);
-        toolbar.getMenu().findItem(R.id.mnu_write).setVisible(!isResponsive);
-        toolbar.getMenu().findItem(R.id.mnu_restore).setVisible(!isResponsive);
-        toolbar.getMenu().findItem(R.id.mnu_export).setVisible(!isResponsive);
-        toolbar.getMenu().findItem(R.id.mnu_wipe_bank).setVisible(isResponsive);
+        toolbar.inflateMenu(isResponsive ? R.menu.elite_menu : R.menu.amiibo_menu);
         toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.mnu_activate:
@@ -108,17 +101,20 @@ public class AmiiboActivity extends AppCompatActivity {
                     refresh.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
                     onEditTagResult.launch(refresh);
                     return true;
+                case R.id.mnu_replace:
+                    modifyBank(EliteActivity.REPLACE);
+                    return true;
                 case R.id.mnu_write:
                     writeTag();
-                    return true;
-                case R.id.mnu_backup:
-                    modifyBank(EliteActivity.BACKUP);
                     return true;
                 case R.id.mnu_restore:
                     restoreTag();
                     return true;
-                case R.id.mnu_export:
-                    exportTag();
+                case R.id.mnu_save:
+                    displayBackupDialog();
+                    return true;
+                case R.id.mnu_backup:
+                    modifyBank(EliteActivity.BACKUP);
                     return true;
                 case R.id.mnu_edit:
                     openTagEditor();
@@ -310,20 +306,6 @@ public class AmiiboActivity extends AppCompatActivity {
             backupDialog.dismiss();
         });
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
-    }
-
-    void exportTag() {
-        if (isResponsive) {
-            new android.app.AlertDialog.Builder(this)
-                    .setMessage(R.string.export_warning)
-                    .setNegativeButton(R.string.export, (dialog, which) -> {
-                        displayBackupDialog();
-                        dialog.dismiss();
-                    })
-                    .setPositiveButton(R.string.cancel, null).show();
-        } else {
-            displayBackupDialog();
-        }
     }
 
     void viewHex() {

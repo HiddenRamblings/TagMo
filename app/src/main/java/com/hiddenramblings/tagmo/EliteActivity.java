@@ -55,8 +55,9 @@ public class EliteActivity extends AppCompatActivity implements
         EliteBrowserAdapter.OnAmiiboClickListener {
 
     public static final int ACTIVATE = 0;
-    public static final int BACKUP = 1;
-    public static final int WIPE_BANK = 2;
+    public static final int REPLACE = 1;
+    public static final int BACKUP = 2;
+    public static final int WIPE_BANK = 3;
 
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
@@ -375,7 +376,6 @@ public class EliteActivity extends AppCompatActivity implements
         intent.putExtra(TagMo.EXTRA_CURRENT_BANK, TagUtils.getValueForPosition(position));
         intent.putExtras(args);
         onModifierActivity.launch(intent);
-
     }
 
     private void displayWriteDialog(int position) {
@@ -449,6 +449,9 @@ public class EliteActivity extends AppCompatActivity implements
                 activate.putExtra(TagMo.EXTRA_CURRENT_BANK,
                         TagUtils.getValueForPosition(clickedPosition));
                 onActivateActivity.launch(activate);
+                break;
+            case REPLACE:
+                displayWriteDialog(clickedPosition);
                 break;
             case BACKUP:
                 Intent backup = new Intent(this, NfcActivity_.class);

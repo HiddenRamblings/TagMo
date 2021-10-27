@@ -148,7 +148,7 @@ public class TagReader {
         return tags;
     }
 
-    public static byte[] getBankDetails(NTAG215 tag) {
+    public static byte[] getEliteDetails(NTAG215 tag) {
         return tag.amiiboGetVersion();
     }
 
@@ -235,7 +235,7 @@ public class TagReader {
     }
 
     public static boolean needsFirmware(NTAG215 tag) {
-        byte[] version = TagReader.getBankDetails(tag);
+        byte[] version = TagReader.getEliteDetails(tag);
         return !((version.length != 4 || version[3] == (byte) 0x03)
                 && !(version.length == 2 && version[0] == 100 && version[1] == 0));
     }

@@ -458,6 +458,11 @@ public class EliteActivity extends AppCompatActivity implements
                 onBackupActivity.launch(backup);
                 break;
             case WIPE_BANK:
+                if (TagMo.getPrefs().eliteActiveBank().get() ==
+                        TagUtils.getValueForPosition(clickedPosition)) {
+                    showToast(R.string.delete_active);
+                    break;
+                }
                 Intent format = new Intent(EliteActivity.this, NfcActivity_.class);
                 format.setAction(TagMo.ACTION_FORMAT_BANK);
                 format.putExtra(TagMo.EXTRA_CURRENT_BANK,

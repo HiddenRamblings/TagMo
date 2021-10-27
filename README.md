@@ -14,6 +14,9 @@ https://github.com/HiddenRamblings/TagMo/tree/master-archive
 Archived Testing
 https://github.com/HiddenRamblings/TagMo/tree/master2
 
+Reddit Support
+https://www.reddit.com/r/tagmo/
+
 
 # What is TagMo?
 

@@ -215,7 +215,6 @@ public class HexViewerActivity extends AppCompatActivity {
                     view.setText(hexItem.text);
                     view.setTextColor(hexItem instanceof HexHeader && isDarkTheme()
                             ? Color.WHITE : Color.BLACK);
-                    view.setTextColor(Color.BLACK);
                     view.setTypeface(Typeface.MONOSPACE, hexItem.textStyle);
                     view.setBackgroundColor(hexItem.backgroundColor);
                     view.setVisibility(View.VISIBLE);

@@ -54,7 +54,6 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
     private final ArrayList<AmiiboFile> amiiboFiles;
     private ArrayList<AmiiboFile> filteredData;
     private AmiiboFilter filter;
-    private boolean isCollection;
     private final ArrayList<AmiiboFile> amiiboList = new ArrayList<>();
 
     public EliteWriteBlankAdapter(BrowserSettings settings, OnAmiiboClickListener listener, ArrayList<AmiiboFile> amiiboFiles) {
@@ -71,11 +70,6 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
 
         this.filteredData = this.amiiboFiles = amiiboFiles;
         Collections.sort(this.amiiboFiles, new AmiiboComparator());
-    }
-
-    public EliteWriteBlankAdapter withHighlight(boolean isCollection) {
-        this.isCollection = isCollection;
-        return this;
     }
 
     @Override
@@ -112,18 +106,18 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
     public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case BrowserActivity.VIEW_TYPE_COMPACT:
-                if (isCollection)
+                if (collector != null)
                     return new CompactViewHolder(parent, settings, collector);
                 else
                     return new CompactViewHolder(parent, settings, listener);
             case BrowserActivity.VIEW_TYPE_LARGE:
-                if (isCollection)
+                if (collector != null)
                     return new LargeViewHolder(parent, settings, collector);
                 else
                     return new LargeViewHolder(parent, settings, listener);
             case BrowserActivity.VIEW_TYPE_SIMPLE:
             default:
-                if (isCollection)
+                if (collector != null)
                     return new SimpleViewHolder(parent, settings, collector);
                 else
                     return new SimpleViewHolder(parent, settings, listener);
@@ -133,33 +127,30 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
     @Override
     public void onBindViewHolder(final AmiiboVewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
-            if (isCollection) {
+            if (holder.collector != null) {
                 amiiboList.add(filteredData.get(holder.getAbsoluteAdapterPosition()));
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
                         android.R.color.holo_green_light));
-                if (holder.collector != null) {
-                    holder.collector.onAmiiboClicked(amiiboList);
-                }
-            } else {
-                if (holder.listener != null) {
-                    holder.listener.onAmiiboClicked(holder.amiiboFile);
-                }
+                holder.collector.onAmiiboClicked(amiiboList);
+                holder.itemView.setClickable(false);
+                holder.imageAmiibo.setClickable(false);
+            } else if (holder.listener != null) {
+                holder.listener.onAmiiboClicked(holder.amiiboFile);
             }
         });
         if (holder.imageAmiibo != null) {
-            if (isCollection) {
-                holder.imageAmiibo.setOnClickListener(view -> {
-                    if (holder.collector != null) {
-                        holder.collector.onAmiiboImageClicked(amiiboList);
-                    }
-                });
-            } else {
-                holder.imageAmiibo.setOnClickListener(view -> {
-                    if (holder.listener != null) {
-                        holder.listener.onAmiiboImageClicked(holder.amiiboFile);
-                    }
-                });
-            }
+            holder.imageAmiibo.setOnClickListener(view -> {
+                if (holder.collector != null) {
+                    amiiboList.add(filteredData.get(holder.getAbsoluteAdapterPosition()));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
+                            android.R.color.holo_green_light));
+                    holder.collector.onAmiiboImageClicked(amiiboList);
+                    holder.itemView.setClickable(false);
+                    holder.imageAmiibo.setClickable(false);
+                } else if (holder.listener != null) {
+                    holder.listener.onAmiiboImageClicked(holder.amiiboFile);
+                }
+            });
         }
         holder.bind(getItem(position));
         if (amiiboList.contains(holder.amiiboFile)) {

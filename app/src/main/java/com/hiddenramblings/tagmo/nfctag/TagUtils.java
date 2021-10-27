@@ -5,6 +5,7 @@ import android.util.Log;
 import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.nfctag.data.AmiiboData;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -143,7 +144,7 @@ public class TagUtils {
     }
 
     public static long amiiboIdFromTag(byte[] data) throws Exception {
-        return new TagData(data).getAmiiboID();
+        return new AmiiboData(data).getAmiiboID();
     }
 
     public static String amiiboIdToHex(long amiiboId) {

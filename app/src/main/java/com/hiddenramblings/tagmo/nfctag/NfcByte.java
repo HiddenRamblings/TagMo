@@ -2,12 +2,8 @@ package com.hiddenramblings.tagmo.nfctag;
 
 public class NfcByte {
 
-    public static final int NXP_MANUFACTURER_ID = 0x04;
-    public static final int MAX_PAGE_COUNT = 256;
-
     public static final int TAG_FILE_SIZE = 532;
     public static final int PAGE_SIZE = 4;
-    public static final int BULK_READ_PAGE_COUNT = 4;
 
     @SuppressWarnings("unused")
     public static final int CMD_GET_VERSION = 0x60;

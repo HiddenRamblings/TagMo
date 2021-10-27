@@ -38,6 +38,23 @@ public class NTAG215 implements TagTechnology {
         return null;
     }
 
+    public int getTimeout() {
+        if (m_mifare != null)
+            return m_mifare.getTimeout();
+        if (m_nfcA != null) {
+            return m_nfcA.getTimeout();
+        }
+        return 0;
+    }
+
+    public void setTimeout(int timeout) {
+        if (m_mifare != null)
+            m_mifare.setTimeout(timeout);
+        if (m_nfcA != null) {
+            m_nfcA.setTimeout(timeout);
+        }
+    }
+
     public byte[] readPages(int pageOffset) throws IOException {
         if (m_mifare != null)
             return m_mifare.readPages(pageOffset);

@@ -22,9 +22,30 @@ import java.util.Random;
 
 public class TagUtils {
 
-    public static final int STICKER = 0;
-    public static final int POWERTAG = 1;
-    public static final int N2ELITE = 2;
+    public static boolean isPowerTag(NTAG215 mifare) {
+        if (TagMo.getPrefs().enablePowerTagSupport().get()) {
+            try {
+                if (TagUtils.compareRange(mifare.transceive(NfcByte.SIG_CMD), NfcByte.POWERTAG_SIGNATURE,
+                        0, NfcByte.POWERTAG_SIGNATURE.length))
+                    return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public static boolean isElite(NTAG215 mifare) {
+        if (TagMo.getPrefs().enableEliteSupport().get()) {
+            try {
+                if (TagUtils.bytesToHex(mifare.readEliteSingature()).endsWith("FFFFFFFFFF"))
+                    return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
 
     public static int getPositionForValue(int value) {
         return value - 1;
@@ -40,28 +61,6 @@ public class TagUtils {
                 return false;
         }
         return true;
-    }
-
-    public static int getHardware(NTAG215 mifare) {
-        if (TagMo.getPrefs().enablePowerTagSupport().get()) {
-            try {
-                if (TagUtils.compareRange(mifare.transceive(NfcByte.SIG_CMD), NfcByte.POWERTAG_SIGNATURE,
-                        0, NfcByte.POWERTAG_SIGNATURE.length))
-                    return POWERTAG;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (TagMo.getPrefs().enableEliteSupport().get()) {
-            try {
-                String signature = TagUtils.bytesToHex(mifare.readEliteSingature());
-                if (signature.length() > 22 && signature.endsWith("FFFFFFFFFF"))
-                    return N2ELITE;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return STICKER;
     }
 
     public static String bytesToHex(byte[] bytes) {

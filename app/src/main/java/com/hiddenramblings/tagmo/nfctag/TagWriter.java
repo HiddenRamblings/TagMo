@@ -45,7 +45,7 @@ public class TagWriter {
         if (idPages == null || idPages.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
 
-        boolean isPowerTag = TagUtils.getHardware(mifare) == TagUtils.POWERTAG;
+        boolean isPowerTag = TagUtils.isPowerTag(mifare);
 
         TagMo.Debug(TagWriter.class, R.string.power_tag_verify, String.valueOf(isPowerTag));
 

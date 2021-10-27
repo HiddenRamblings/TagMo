@@ -90,7 +90,7 @@ public class AppDataSSBFragment extends AppDataFragment {
 
         this.loadData();
 
-        onAppDataChecked(((TagDataActivity_) requireContext()).isAppDataInitialized());
+        onAppDataChecked(((TagDataActivity_) requireContext()).isAppDataInitialized);
     }
 
     void loadData() {

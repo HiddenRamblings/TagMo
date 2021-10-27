@@ -50,7 +50,8 @@
         <activity
             android:name=".EliteActivity_"
             android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-            android:theme="@style/DialogTheme.NoActionBar">
+            android:theme="@style/DialogTheme.NoActionBar"
+            android:launchMode="singleTop" >
         </activity>
         <activity
             android:name=".NfcActivity_"

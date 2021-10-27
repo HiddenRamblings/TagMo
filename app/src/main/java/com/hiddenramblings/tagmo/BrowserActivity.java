@@ -271,9 +271,9 @@ public class BrowserActivity extends AppCompatActivity implements
         this.loadPTagKeyManager();
     }
 
-    void refresh() {
+    void refresh(boolean indicator) {
         this.loadAmiiboManager();
-        this.onRootFolderChanged();
+        this.onRootFolderChanged(indicator);
     }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
@@ -316,7 +316,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        this.refresh();
+        this.refresh(false);
     });
 
     @Click(R.id.fab)
@@ -408,7 +408,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @OptionsItem(R.id.refresh)
     void onRefreshClicked() {
-        this.refresh();
+        this.refresh(true);
     }
 
     ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
@@ -431,7 +431,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 String fileName = TagReader.writeBytesToFile(directory,
                         input.getText().toString() + ".bin", tagData);
                 showToast(getString(R.string.wrote_file, fileName));
-                this.refresh();
+                this.refresh(false);
             } catch (IOException e) {
                 showToast(e.getMessage());
             }
@@ -723,7 +723,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     this.settings.setBrowserRootFolder(Storage.setFileStorage());
                     this.settings.notifyChanges();
                 }
-                this.onRootFolderChanged();
+                this.onRootFolderChanged(false);
             }
             this.loadPTagKeyManager();
         }
@@ -820,7 +820,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onRefresh() {
-        this.refresh();
+        this.refresh(true);
     }
 
     @Override
@@ -863,7 +863,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         TagMo.friendlyPath(amiiboFile.getFilePath())))
                 .setNegativeButton(R.string.delete, (dialog, which) -> {
                     amiiboFile.getFilePath().delete();
-                    this.refresh();
+                    this.refresh(false);
                     dialog.dismiss();
                 })
                 .setPositiveButton(R.string.cancel, null).show();
@@ -1001,7 +1001,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
-        this.setAmiiboFilesLoadingBarVisibility(true);
         final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
         if (Thread.currentThread().isInterrupted())
             return;
@@ -1029,7 +1028,7 @@ public class BrowserActivity extends AppCompatActivity implements
             onShowMissingChanged();
         }
         if (folderChanged) {
-            onRootFolderChanged();
+            onRootFolderChanged(true);
         }
 
         if (newBrowserSettings.getSort() != oldBrowserSettings.getSort()) {
@@ -1114,9 +1113,10 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    void onRootFolderChanged() {
+    void onRootFolderChanged(boolean indicator) {
         File rootFolder = settings.getBrowserRootFolder();
         this.currentFolderView.setText(TagMo.friendlyPath(rootFolder));
+        this.setAmiiboFilesLoadingBarVisibility(indicator);
         this.loadAmiiboFiles(rootFolder, settings.isRecursiveEnabled());
         this.loadFolders(rootFolder);
     }

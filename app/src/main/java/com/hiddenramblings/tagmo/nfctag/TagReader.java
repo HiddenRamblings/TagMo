@@ -23,6 +23,8 @@ import java.util.Locale;
 
 public class TagReader {
 
+    private static final int BULK_READ_PAGE_COUNT = 4;
+
     static void validateBlankTag(NTAG215 mifare) throws Exception {
         byte[] lockPage = mifare.readPages(0x02);
         TagMo.Debug(TagWriter.class, TagUtils.bytesToHex(lockPage));
@@ -115,13 +117,13 @@ public class TagReader {
         byte[] tagData = new byte[NfcByte.TAG_FILE_SIZE];
         int pageCount = NfcByte.TAG_FILE_SIZE / NfcByte.PAGE_SIZE;
 
-        for (int i = 0; i < pageCount; i += NfcByte.BULK_READ_PAGE_COUNT) {
+        for (int i = 0; i < pageCount; i += BULK_READ_PAGE_COUNT) {
             byte[] pages = tag.readPages(i);
-            if (pages == null || pages.length != NfcByte.PAGE_SIZE * NfcByte.BULK_READ_PAGE_COUNT)
+            if (pages == null || pages.length != NfcByte.PAGE_SIZE * BULK_READ_PAGE_COUNT)
                 throw new Exception(TagMo.getStringRes(R.string.fail_invalid_size));
 
             int dstIndex = i * NfcByte.PAGE_SIZE;
-            int dstCount = Math.min(NfcByte.BULK_READ_PAGE_COUNT * NfcByte.PAGE_SIZE, tagData.length - dstIndex);
+            int dstCount = Math.min(BULK_READ_PAGE_COUNT * NfcByte.PAGE_SIZE, tagData.length - dstIndex);
 
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount);
         }

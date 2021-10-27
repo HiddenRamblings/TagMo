@@ -54,11 +54,6 @@ import java.util.ArrayList;
 public class EliteActivity extends AppCompatActivity implements
         EliteBrowserAdapter.OnAmiiboClickListener {
 
-    public static final int ACTIVATE = 0;
-    public static final int REPLACE = 1;
-    public static final int BACKUP = 2;
-    public static final int WIPE_BANK = 3;
-
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
     @ViewById(R.id.hardware_info)
@@ -79,7 +74,7 @@ public class EliteActivity extends AppCompatActivity implements
     BottomSheetBehavior<View> bottomSheetBehavior;
 
     ArrayList<AmiiboFile> amiiboFiles;
-    ArrayList<Amiibo> amiibos;
+    ArrayList<Amiibo> amiibos = new ArrayList<>();
 
     @InstanceState
     BrowserSettings settings;
@@ -261,8 +256,7 @@ public class EliteActivity extends AppCompatActivity implements
             }
         });
 
-        writerListView.setAdapter(new EliteWriteBlankAdapter(
-                settings, itemClick, amiiboFiles).withHighlight(true));
+        writerListView.setAdapter(new EliteWriteBlankAdapter(settings, itemClick, amiiboFiles));
         this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) writerListView.getAdapter());
         writeDialog.getWindow().setLayout(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -434,46 +428,36 @@ public class EliteActivity extends AppCompatActivity implements
 
     private int clickedPosition;
 
-    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
+    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
-
-        amiibos.get(clickedPosition).data = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-        refreshEliteHardwareAdapter();
-
-        switch (result.getData().getIntExtra(TagMo.EXTRA_BANK_ACTION, 0)) {
-            case ACTIVATE:
-                Intent activate = new Intent(EliteActivity.this, NfcActivity_.class);
-                activate.setAction(TagMo.ACTION_ACTIVATE_BANK);
-                activate.putExtra(TagMo.EXTRA_CURRENT_BANK,
-                        TagUtils.getValueForPosition(clickedPosition));
-                onActivateActivity.launch(activate);
+        Intent modify = new Intent(EliteActivity.this, NfcActivity_.class);
+        modify.putExtra(TagMo.EXTRA_CURRENT_BANK,
+                TagUtils.getValueForPosition(clickedPosition));
+        String action = result.getData().getAction();
+        modify.setAction(action);
+        switch (action) {
+            case TagMo.ACTION_ACTIVATE_BANK:
+                onActivateActivity.launch(modify);
                 break;
-            case REPLACE:
+            case TagMo.ACTION_REPLACE_AMIIBO:
                 displayWriteDialog(clickedPosition);
                 break;
-            case BACKUP:
-                Intent backup = new Intent(this, NfcActivity_.class);
-                backup.setAction(TagMo.ACTION_BACKUP_AMIIBO);
-                backup.putExtra(TagMo.EXTRA_CURRENT_BANK,
-                        TagUtils.getValueForPosition(clickedPosition));
-                onBackupActivity.launch(backup);
+            case TagMo.ACTION_BACKUP_AMIIBO:
+                onBackupActivity.launch(modify);
                 break;
-            case WIPE_BANK:
+            case TagMo.ACTION_FORMAT_BANK:
                 if (TagMo.getPrefs().eliteActiveBank().get() ==
                         TagUtils.getValueForPosition(clickedPosition)) {
                     showToast(R.string.delete_active);
-                    break;
+                } else {
+                    onModifierActivity.launch(modify);
                 }
-                Intent format = new Intent(EliteActivity.this, NfcActivity_.class);
-                format.setAction(TagMo.ACTION_FORMAT_BANK);
-                format.putExtra(TagMo.EXTRA_CURRENT_BANK,
-                        TagUtils.getValueForPosition(clickedPosition));
-                onModifierActivity.launch(format);
                 break;
         }
+
+        amiibos.get(clickedPosition).data = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        refreshEliteHardwareAdapter();
     });
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
@@ -502,10 +486,10 @@ public class EliteActivity extends AppCompatActivity implements
         }
         clickedPosition = position;
         if (amiibo.data != null) {
-            Bundle args = new Bundle();
-            args.putByteArray(TagMo.EXTRA_TAG_DATA, amiibo.data);
             Intent intent = new Intent(this, AmiiboActivity_.class);
             intent.putExtra(TagMo.EXTRA_CURRENT_BANK, TagUtils.getValueForPosition(position));
+            Bundle args = new Bundle();
+            args.putByteArray(TagMo.EXTRA_TAG_DATA, amiibo.data);
             intent.putExtras(args);
             onViewerActivity.launch(intent);
             isAvailable = true;

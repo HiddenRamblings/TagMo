@@ -9,6 +9,9 @@ import java.io.IOException;
 
 public class NTAG215 implements TagTechnology {
 
+    private static final int NXP_MANUFACTURER_ID = 0x04;
+    private static final int MAX_PAGE_COUNT = 256;
+
     private final MifareUltralight m_mifare;
     private final NfcA m_nfcA;
     private final int maxTransceiveLength;
@@ -31,7 +34,7 @@ public class NTAG215 implements TagTechnology {
             return new NTAG215(mifare);
         NfcA nfcA = NfcA.get(tag);
         if (nfcA != null) {
-            if (nfcA.getSak() == 0x00 && tag.getId()[0] == NfcByte.NXP_MANUFACTURER_ID)
+            if (nfcA.getSak() == 0x00 && tag.getId()[0] == NXP_MANUFACTURER_ID)
                 return new NTAG215(nfcA);
         }
 
@@ -102,7 +105,7 @@ public class NTAG215 implements TagTechnology {
         // Note that issuing a command to an out-of-bounds block is safe - the
         // tag will wrap the read to an addressable area. This validation is a
         // helper to guard against obvious programming mistakes.
-        if (pageIndex < 0 || pageIndex >= NfcByte.MAX_PAGE_COUNT) {
+        if (pageIndex < 0 || pageIndex >= MAX_PAGE_COUNT) {
             throw new IndexOutOfBoundsException("page out of bounds: " + pageIndex);
         }
     }

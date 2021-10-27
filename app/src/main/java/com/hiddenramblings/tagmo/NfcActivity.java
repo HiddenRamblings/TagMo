@@ -387,15 +387,12 @@ public class NfcActivity extends AppCompatActivity {
                         Intent active = new Intent(TagMo.ACTION_NFC_SCANNED);
                         active.putExtra(TagMo.EXTRA_ACTIVE_BANK,
                                 TagUtils.getValueForPosition(selection));
-//                        active.putExtra(TagMo.EXTRA_AMIIBO_DATA,
-//                                TagReader.readTagTitles(mifare, bank_count));
                         setResult(Activity.RESULT_OK, active);
                         break;
 
                     case TagMo.ACTION_FORMAT_BANK:
                         TagWriter.wipeBankData(mifare, selection);
                         Intent format = new Intent(TagMo.ACTION_NFC_SCANNED);
-                        format.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
                         format.putExtra(TagMo.EXTRA_AMIIBO_DATA,
                                 TagReader.readTagTitles(mifare, bank_count));
                         setResult(Activity.RESULT_OK, format);

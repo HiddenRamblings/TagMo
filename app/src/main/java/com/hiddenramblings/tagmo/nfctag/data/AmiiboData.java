@@ -1,6 +1,8 @@
-package com.hiddenramblings.tagmo.nfctag;
+package com.hiddenramblings.tagmo.nfctag.data;
 
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.nfctag.NfcByte;
+import com.hiddenramblings.tagmo.nfctag.TagUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -8,7 +10,7 @@ import java.util.BitSet;
 import java.util.Date;
 import java.util.HashMap;
 
-public class TagData {
+public class AmiiboData {
 
     private static final int UID_OFFSET = 0x1D4;
     private static final int UID_LENGTH = 0x9;
@@ -36,7 +38,7 @@ public class TagData {
 
     private final ByteBuffer tagData;
 
-    public TagData(byte[] tagData) throws Exception {
+    public AmiiboData(byte[] tagData) throws Exception {
         if (tagData.length < NfcByte.TAG_FILE_SIZE)
             throw new Exception("Invalid tag data");
 

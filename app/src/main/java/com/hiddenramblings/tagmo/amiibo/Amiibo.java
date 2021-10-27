@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.nfctag.TagUtils;
 
 public class Amiibo implements Comparable<Amiibo> {
 
@@ -24,12 +25,24 @@ public class Amiibo implements Comparable<Amiibo> {
     public final long id;
     public final String name;
     public final AmiiboReleaseDates releaseDates;
+    public final byte[] data;
 
     public Amiibo(AmiiboManager manager, long id, String name, AmiiboReleaseDates releaseDates) {
         this.manager = manager;
         this.id = id;
         this.name = name;
         this.releaseDates = releaseDates;
+        this.data = null;
+    }
+
+    public Amiibo(AmiiboManager manager, byte[] data) throws Exception {
+        this.manager = manager;
+        this.data = data;
+        this.id = TagUtils.amiiboIdFromTag(data);
+        Amiibo amiibo = manager.amiibos.get(this.id);
+        this.name = amiibo != null ? amiibo.name : null;
+        this.releaseDates = amiibo != null ? amiibo.releaseDates : new AmiiboReleaseDates(
+                null, null, null, null);
     }
 
     public Amiibo(AmiiboManager manager, String id, String name, AmiiboReleaseDates releaseDates) {

@@ -143,11 +143,9 @@ public class AmiiboActivity extends AppCompatActivity {
 
     ActivityResultLauncher<Intent> onEditTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
-            return;
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 
-        if (!TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction()))
-            return;
+        if (!TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
 
         this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         this.runOnUiThread(this::updateAmiiboView);
@@ -264,6 +262,7 @@ public class AmiiboActivity extends AppCompatActivity {
 
     void modifyBank(int selection) {
         Intent action = new Intent(TagMo.ACTION_NFC_SCANNED);
+        action.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         action.putExtra(TagMo.EXTRA_BANK_ACTION, selection);
         setResult(Activity.RESULT_OK, action);
         finish();
@@ -296,9 +295,11 @@ public class AmiiboActivity extends AppCompatActivity {
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = new File(TagMo.getStorage(), TagMo.getPrefs().browserRootFolder().get()
-                        + File.separator + TagMo.getStringRes(R.string.tagmo_backup));
-                String fileName = TagReader.writeBytesToFile(directory, input.getText().toString(), tagData);
+                File directory = new File(TagMo.getStorage(),
+                        TagMo.getPrefs().browserRootFolder().get()
+                                + File.separator + TagMo.getStringRes(R.string.tagmo_backup));
+                String fileName = TagReader.writeBytesToFile(directory,
+                        input.getText().toString(), this.tagData);
                 showToast(getString(R.string.wrote_file, fileName));
             } catch (IOException e) {
                 showToast(e.getMessage());
@@ -412,6 +413,10 @@ public class AmiiboActivity extends AppCompatActivity {
                         .into(amiiboImageTarget);
             }
         }
+
+        Intent intent = new Intent(TagMo.ACTION_NFC_SCANNED);
+        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
+        setResult(Activity.RESULT_OK, intent);
     }
 
     void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {

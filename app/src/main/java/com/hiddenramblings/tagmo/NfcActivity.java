@@ -387,8 +387,8 @@ public class NfcActivity extends AppCompatActivity {
                         Intent active = new Intent(TagMo.ACTION_NFC_SCANNED);
                         active.putExtra(TagMo.EXTRA_ACTIVE_BANK,
                                 TagUtils.getValueForPosition(selection));
-                        active.putExtra(TagMo.EXTRA_AMIIBO_DATA,
-                                TagReader.readTagTitles(mifare, bank_count));
+//                        active.putExtra(TagMo.EXTRA_AMIIBO_DATA,
+//                                TagReader.readTagTitles(mifare, bank_count));
                         setResult(Activity.RESULT_OK, active);
                         break;
 

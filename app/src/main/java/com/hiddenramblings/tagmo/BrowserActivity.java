@@ -1248,12 +1248,12 @@ public class BrowserActivity extends AppCompatActivity implements
                 PackageInstaller.SessionParams.MODE_FULL_INSTALL);
         int sessionId = installer.createSession(params);
         PackageInstaller.Session session = installer.openSession(sessionId);
-        OutputStream sessionStream = session.openWrite("NAME", 0,
-                DocumentFile.fromSingleUri(this, apkUri).length());
-        byte[] buf = new byte[8192];
-        int length;
-        while ((length = apkStream.read(buf)) > 0) {
-            sessionStream.write(buf, 0, length);
+        long length = DocumentFile.fromSingleUri(this, apkUri).length();
+        OutputStream sessionStream = session.openWrite("NAME", 0, length);
+        byte[] buf = new byte[(int) length];
+        int size;
+        while ((size = apkStream.read(buf)) > 0) {
+            sessionStream.write(buf, 0, size);
         }
         session.fsync(sessionStream);
         apkStream.close();
@@ -1289,7 +1289,6 @@ public class BrowserActivity extends AppCompatActivity implements
             } else {
                 Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     intent.setDataAndType(
                             FileProvider.getUriForFile(this, TagMo.PROVIDER, apk),
                             "application/vnd.android.package-archive");
@@ -1297,6 +1296,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     intent.setDataAndType(Uri.fromFile(apk),
                             "application/vnd.android.package-archive");
                 }
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
                 intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
                 intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,

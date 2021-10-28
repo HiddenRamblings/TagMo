@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -126,10 +127,10 @@ public class EliteActivity extends AppCompatActivity implements
 
         loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
 
-        int bank_count = getIntent().getIntExtra(
-                TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
-        int active_bank = getIntent().getIntExtra(
-                TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
+        int bank_count = getIntent().getIntExtra(TagMo.EXTRA_BANK_COUNT,
+                TagMo.getPrefs().eliteBankCount().get());
+        int active_bank = getIntent().getIntExtra(TagMo.EXTRA_ACTIVE_BANK,
+                TagMo.getPrefs().eliteActiveBank().get());
 
         hardwareInfo.setText(getString(R.string.elite_signature,
                 getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE)));
@@ -428,7 +429,8 @@ public class EliteActivity extends AppCompatActivity implements
 
     private int clickedPosition;
 
-    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
         Intent modify = new Intent(EliteActivity.this, NfcActivity_.class);

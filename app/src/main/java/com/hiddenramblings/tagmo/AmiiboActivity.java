@@ -81,6 +81,8 @@ public class AmiiboActivity extends AppCompatActivity {
     boolean isResponsive = false;
     int current_bank = -1;
     boolean hasRefreshedData = false;
+    boolean hasClickedEdit = false;
+    boolean hasClickedView = false;
 
     @InstanceState
     boolean ignoreTagTd;
@@ -103,10 +105,7 @@ public class AmiiboActivity extends AppCompatActivity {
                     modifyBank(TagMo.ACTION_ACTIVATE_BANK);
                     return true;
                 case R.id.mnu_refresh:
-                    Intent refresh = new Intent(this, NfcActivity_.class);
-                    refresh.setAction(TagMo.ACTION_SCAN_TAG);
-                    refresh.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
-                    onRefreshTagResult.launch(refresh);
+                    refreshAmiiboData();
                     return true;
                 case R.id.mnu_write:
                     writeTag();
@@ -120,6 +119,8 @@ public class AmiiboActivity extends AppCompatActivity {
                 case R.id.mnu_edit:
                     if (isResponsive && !hasRefreshedData) {
                         showToast(getString(R.string.refresh_required));
+                        hasClickedEdit = true;
+                        refreshAmiiboData();
                     } else {
                         openTagEditor();
                     }
@@ -130,6 +131,8 @@ public class AmiiboActivity extends AppCompatActivity {
                 case R.id.mnu_view_hex:
                     if (isResponsive && !hasRefreshedData) {
                         showToast(getString(R.string.refresh_required));
+                        hasClickedView = true;
+                        refreshAmiiboData();
                     } else {
                         viewHex();
                     }
@@ -162,7 +165,24 @@ public class AmiiboActivity extends AppCompatActivity {
 
         this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         this.runOnUiThread(this::updateAmiiboView);
+
+        if (hasClickedEdit) {
+            hasClickedEdit = false;
+            this.runOnUiThread(this::openTagEditor);
+        }
+
+        if (hasClickedView) {
+            hasClickedView = false;
+            this.runOnUiThread(this::viewHex);
+        }
     });
+
+    private void refreshAmiiboData() {
+        Intent refresh = new Intent(this, NfcActivity_.class);
+        refresh.setAction(TagMo.ACTION_SCAN_TAG);
+        refresh.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
+        onRefreshTagResult.launch(refresh);
+    }
 
     @Click(R.id.container)
     void onContainerClick() {

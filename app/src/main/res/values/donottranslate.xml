@@ -27,7 +27,7 @@
     <string name="settings_elite_bank_count">settings_elite_bank_count</string>
     <string name="settings_elite_bank_slider">settings_elite_bank_slider</string>
     <string name="settings_export_info">settings_export_info</string>
-    <string name="settings_info_amiibos">settings_info_amiibos</string>
+    <string name="settings_info_amiibo">settings_info_amiibo</string>
     <string name="settings_info_game_series">settings_info_game_series</string>
     <string name="settings_info_characters">settings_info_characters</string>
     <string name="settings_info_amiibo_series">settings_info_amiibo_series</string>

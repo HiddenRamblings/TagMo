@@ -474,6 +474,7 @@ public class EliteActivity extends AppCompatActivity implements
         args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
 
         Intent intent = new Intent(this, AmiiboActivity_.class);
+        intent.putExtra(TagMo.EXTRA_CURRENT_BANK, TagUtils.getValueForPosition(clickedPosition));
         intent.putExtras(args);
 
         onViewerActivity.launch(intent);

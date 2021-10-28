@@ -9,7 +9,7 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_refresh"
-        android:title="@string/refresh"
+        android:title="@string/scan"
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_write"

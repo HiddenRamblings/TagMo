@@ -161,9 +161,19 @@ public class TagDataActivity extends AppCompatActivity {
         try {
             this.amiiboData = new AmiiboData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
-            e.printStackTrace();
-            LogError(getString(R.string.failed_decrypt));
-            return;
+            if (TagMo.getPrefs().enableEliteSupport().get()) {
+                try {
+                    this.amiiboData = new AmiiboData(tagData);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    LogError(getString(R.string.invalid_tag_data));
+                    return;
+                }
+            } else {
+                e.printStackTrace();
+                LogError(getString(R.string.failed_decrypt));
+                return;
+            }
         }
 
         loadAmiiboManager();
@@ -183,8 +193,6 @@ public class TagDataActivity extends AppCompatActivity {
         appDataSwitch.setOnCheckedChangeListener((compoundButton, b) -> onAppDataSwitchClicked(b));
 
         loadData();
-
-
     }
 
     CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {

@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
@@ -95,7 +96,8 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
         if (TagUtils.getValueForPosition(position)
                 == TagMo.getPrefs().eliteActiveBank().get()) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                    android.R.color.holo_green_light));
+                    holder.isDarkTheme() ? android.R.color.holo_green_dark
+                            : android.R.color.holo_green_light));
         } else {
             TypedValue a = new TypedValue();
             TagMo.getContext().getTheme().resolveAttribute(
@@ -310,6 +312,11 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
                     textView.setEnabled(true);
                 }
             }
+        }
+
+        private boolean isDarkTheme() {
+            return (TagMo.getContext().getResources().getConfiguration().uiMode
+                    & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         }
     }
 

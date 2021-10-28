@@ -132,6 +132,7 @@ public class TagReader {
         return tagData;
     }
 
+
     public static ArrayList<String> readTagTitles(NTAG215 tag, int numBanks) {
         ArrayList<String> tags = new ArrayList<>();
         int i = 0;

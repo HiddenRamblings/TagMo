@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiddenramblings.tagmo.nfctag.KeyManager;
 import com.hiddenramblings.tagmo.nfctag.TagUtils;
+import com.hiddenramblings.tagmo.nfctag.data.AmiiboData;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -70,18 +71,29 @@ public class HexViewerActivity extends AppCompatActivity {
         decryptTagData(getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
     }
 
-    void decryptTagData(byte[] data) {
+    void decryptTagData(byte[] tagData) {
         KeyManager keyManager = new KeyManager(this);
         try {
-            setTagData(TagUtils.decrypt(keyManager, data));
+            setTagData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
-            TagMo.Error(getClass(), R.string.failed_decrypt, e);
-            finish();
+            if (TagMo.getPrefs().enableEliteSupport().get()) {
+                try {
+                    setTagData(tagData);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    TagMo.Error(getClass(), R.string.invalid_tag_data);
+                    finish();
+                }
+            } else {
+                e.printStackTrace();
+                TagMo.Error(getClass(), R.string.failed_decrypt);
+                finish();
+            }
         }
     }
 
-    void setTagData(byte[] data) {
-        adapter = new HexDumpAdapter(data);
+    void setTagData(byte[] tagData) {
+        adapter = new HexDumpAdapter(tagData);
         listView.setLayoutManager(new LinearLayoutManager(this));
         listView.setAdapter(adapter);
     }

@@ -248,13 +248,14 @@ public class NfcActivity extends AppCompatActivity {
             data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
             if (data == null) throw new Exception(getString(R.string.no_data));
         }
-        if (commandIntent.getAction().equals(TagMo.ACTION_WRITE_TAG_FULL)
-                && !commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
-            TagWriter.writeToTagAuto(mifare, data, this.keyManager,
-                    TagMo.getPrefs().enableTagTypeValidation().get());
-            setResult(Activity.RESULT_OK);
-        } else if (commandIntent.getAction().equals(TagMo.ACTION_SCAN_TAG)) {
-            data = TagReader.readFromTag(mifare);
+        if (!commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
+            if (commandIntent.getAction().equals(TagMo.ACTION_WRITE_TAG_FULL)) {
+                TagWriter.writeToTagAuto(mifare, data, this.keyManager,
+                        TagMo.getPrefs().enableTagTypeValidation().get());
+                setResult(Activity.RESULT_OK);
+            } else if (commandIntent.getAction().equals(TagMo.ACTION_SCAN_TAG)) {
+                data = TagReader.readFromTag(mifare);
+            }
         }
         return data;
     }
@@ -341,8 +342,7 @@ public class NfcActivity extends AppCompatActivity {
 
                     case TagMo.ACTION_BACKUP_AMIIBO:
                         if (isElite) {
-                            data = TagReader.scanBankToBytes(mifare,
-                                    TagUtils.getPositionForValue(bankNumberPicker.getValue()));
+                            data = TagReader.scanBankToBytes(mifare, selection);
                         } else {
                             data = TagReader.scanTagToBytes(mifare);
                         }
@@ -352,24 +352,27 @@ public class NfcActivity extends AppCompatActivity {
                         break;
 
                     case TagMo.ACTION_SCAN_TAG:
-                        if (isElite && !commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
+                        Intent result = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        if (isElite) {
                             if (TagReader.needsFirmware(mifare)) {
                                 if (TagReader.updateFirmware(mifare))
                                     showToast(getString(R.string.firmware_update));
                             }
-                            ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
-                            Intent results = new Intent(TagMo.ACTION_NFC_SCANNED);
-                            results.putExtra(TagMo.EXTRA_SIGNATURE,
-                                    TagReader.getEliteSignature(mifare));
-                            results.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
-                            results.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
-                            results.putExtra(TagMo.EXTRA_AMIIBO_DATA, titles);
-                            setResult(Activity.RESULT_OK, results);
+                            if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
+                                data = TagReader.scanBankToBytes(mifare, selection);
+                                result.putExtra(TagMo.EXTRA_TAG_DATA, data);
+                            } else {
+                                ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
+                                result.putExtra(TagMo.EXTRA_SIGNATURE,
+                                        TagReader.getEliteSignature(mifare));
+                                result.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+                                result.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+                                result.putExtra(TagMo.EXTRA_AMIIBO_DATA, titles);
+                            }
                         } else {
-                            Intent result = new Intent(TagMo.ACTION_NFC_SCANNED);
                             result.putExtra(TagMo.EXTRA_TAG_DATA, data);
-                            setResult(Activity.RESULT_OK, result);
                         }
+                        setResult(Activity.RESULT_OK, result);
                         break;
 
                     case TagMo.ACTION_SET_BANK_COUNT:

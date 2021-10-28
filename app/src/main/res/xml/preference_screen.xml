@@ -1,101 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.preference.PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android" >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/encryption_keys">
+        android:title="@string/encryption_keys"
+        app:iconSpaceReserved="false">
         <androidx.preference.Preference
             android:key="@string/settings_import_keys"
-            android:title="@string/pref_import_keys"/>
+            android:title="@string/pref_import_keys"
+            app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/pref_image_loading">
+        android:title="@string/pref_image_loading"
+        app:iconSpaceReserved="false">
         <androidx.preference.ListPreference
             android:entries="@array/imageNetworkSettings"
             android:entryValues="@array/imageNetworkSettingValues"
             android:key="@string/image_network_settings"
-            android:title="@string/image_loading_details"/>
+            android:title="@string/image_loading_details"
+            app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 
-    <androidx.preference.PreferenceCategory android:title="@string/pref_title_validation">
+    <androidx.preference.PreferenceCategory
+        android:title="@string/pref_title_validation"
+        app:iconSpaceReserved="false" >
         <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_enable_tag_type_validation"
             android:summary="@string/tag_validation_details"
-            android:title="@string/enable_tag_validation"/>
+            android:title="@string/enable_tag_validation"
+            app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
-    <androidx.preference.PreferenceCategory android:title="@string/pref_title_powertag">
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/pref_title_powertag"
+        app:iconSpaceReserved="false">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/settings_enable_power_tag_support"
             android:summary="@string/power_tag_details"
-            android:title="@string/enable_power_tag"/>
+            android:title="@string/enable_power_tag"
+            app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
-    <androidx.preference.PreferenceCategory android:title="@string/pref_title_elite">
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/pref_title_elite"
+        app:iconSpaceReserved="false">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/settings_enable_elite_support"
             android:summary="@string/elite_details"
-            android:title="@string/enable_elite"/>
+            android:title="@string/enable_elite"
+            app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/lock_elite_hardware"
             android:summary="@string/lock_elite_hardware_details"
-            android:title="@string/lock_elite_hardware"/>
-    </androidx.preference.PreferenceCategory>
-    <androidx.preference.PreferenceCategory
-        android:title="@string/amiibo_info">
-        <androidx.preference.Preference
-            android:key="@string/settings_import_info_amiiboapi"
-            android:summary="@string/sync_api_details"
-            android:title="@string/sync_amiibo_info"/>
-        <androidx.preference.Preference
-            android:key="@string/settings_import_info"
-            android:summary="@string/import_json_details"
-            android:title="@string/import_amiibo_info"/>
-        <androidx.preference.Preference
-            android:key="@string/settings_export_info"
-            android:summary="@string/export_json_details"
-            android:title="@string/export_amiibo_info"/>
-        <androidx.preference.Preference
-            android:key="@string/settings_reset_info"
-            android:title="@string/reset_amiibo_info"/>
+            android:title="@string/lock_elite_hardware"
+            app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/amiibo_info_stats">
+        android:title="@string/amiibo_info"
+        app:iconSpaceReserved="false">
+        <androidx.preference.Preference
+            android:key="@string/settings_import_info_amiiboapi"
+            android:summary="@string/sync_api_details"
+            android:title="@string/sync_amiibo_info"
+            app:iconSpaceReserved="false" />
+        <androidx.preference.Preference
+            android:key="@string/settings_import_info"
+            android:summary="@string/import_json_details"
+            android:title="@string/import_amiibo_info"
+            app:iconSpaceReserved="false" />
+        <androidx.preference.Preference
+            android:key="@string/settings_export_info"
+            android:summary="@string/export_json_details"
+            android:title="@string/export_amiibo_info"
+            app:iconSpaceReserved="false" />
+        <androidx.preference.Preference
+            android:key="@string/settings_reset_info"
+            android:title="@string/reset_amiibo_info"
+            app:iconSpaceReserved="false" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/amiibo_info_stats"
+        app:iconSpaceReserved="false">
         <androidx.preference.Preference
             android:key="@string/settings_info_amiibo"
-            android:title="@string/pref_amiibo"/>
+            android:title="@string/pref_amiibo"
+            app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/settings_info_game_series"
-            android:title="@string/pref_amiibo_game"/>
+            android:title="@string/pref_amiibo_game"
+            app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/settings_info_characters"
-            android:title="@string/pref_amiibo_characters"/>
+            android:title="@string/pref_amiibo_characters"
+            app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/settings_info_amiibo_series"
-            android:title="@string/pref_amiibo_series"/>
+            android:title="@string/pref_amiibo_series"
+            app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/settings_info_amiibo_types"
-            android:title="@string/pref_amiibo_types"/>
+            android:title="@string/pref_amiibo_types"
+            app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
+
     <androidx.preference.PreferenceCategory
-        android:title="@string/pref_advanced">
+        android:title="@string/pref_advanced"
+        app:iconSpaceReserved="false">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/settings_disable_debug"
             android:summary="@string/disable_debug_details"
-            android:title="@string/pref_disable_debug"/>
+            android:title="@string/pref_disable_debug"
+            app:iconSpaceReserved="false" />
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/settings_ignore_sdcard"
             android:summary="@string/ignore_sdcard_details"
-            android:title="@string/pref_ignore_sdcard"/>
+            android:title="@string/pref_ignore_sdcard"
+            app:iconSpaceReserved="false" />
         <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_stable_channel"
             android:summary="@string/stable_channel_details"
-            android:title="@string/pref_stable_channel"/>
+            android:title="@string/pref_stable_channel"
+            app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.FragmentManager;
 
@@ -114,12 +115,16 @@ public class TagDataActivity extends AppCompatActivity {
     MaskedEditText txtAppId;
     @ViewById(R.id.txtWriteCounter)
     EditText txtWriteCounter;
+    @ViewById(R.id.txtSerialNumber)
+    EditText txtSerialNumber;
     @ViewById(R.id.txtAppName)
     Spinner txtAppName;
     @ViewById(R.id.appDataSwitch)
     SwitchCompat appDataSwitch;
     @ViewById(R.id.userDataSwitch)
     SwitchCompat userDataSwitch;
+    @ViewById(R.id.generate_serial)
+    AppCompatButton generateSerial;
 
     @Extra(TagMo.EXTRA_TAG_DATA)
     byte[] tagData;
@@ -178,6 +183,8 @@ public class TagDataActivity extends AppCompatActivity {
         appDataSwitch.setOnCheckedChangeListener((compoundButton, b) -> onAppDataSwitchClicked(b));
 
         loadData();
+
+
     }
 
     CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
@@ -359,6 +366,7 @@ public class TagDataActivity extends AppCompatActivity {
         loadNickname();
         loadMiiName();
         loadWriteCounter();
+        loadSerialNumber();
         loadAppId();
     }
 
@@ -430,6 +438,15 @@ public class TagDataActivity extends AppCompatActivity {
                 txtWriteCounter.requestFocus();
                 return;
             }
+
+            try {
+                byte[] serialNumber = TagUtils.hexToByteArray(txtSerialNumber.getText().toString());
+                newAmiiboData.setUID(serialNumber);
+            } catch (Exception e) {
+                txtSerialNumber.requestFocus();
+                return;
+            }
+
             try {
                 int appId = parseAppId();
                 newAmiiboData.setAppId(appId);
@@ -476,6 +493,8 @@ public class TagDataActivity extends AppCompatActivity {
         txtNickname.setEnabled(isUserDataInitialized);
         txtMiiName.setEnabled(isUserDataInitialized);
         txtWriteCounter.setEnabled(isUserDataInitialized);
+        txtSerialNumber.setEnabled(isUserDataInitialized);
+        generateSerial.setEnabled(isUserDataInitialized);
         txtAppId.setEnabled(isUserDataInitialized);
         txtAppName.setEnabled(isUserDataInitialized);
 
@@ -545,6 +564,11 @@ public class TagDataActivity extends AppCompatActivity {
             text = getString(R.string.invalid);
         }
         txtInitDate.setText(text);
+    }
+
+    @Click(R.id.generate_serial)
+    void onGenerateSerialClick() {
+        txtSerialNumber.setText(TagUtils.bytesToHex(TagUtils.generateRandomUID()));
     }
 
     @Click(R.id.txtInitDate)
@@ -784,6 +808,13 @@ public class TagDataActivity extends AppCompatActivity {
             writeCounter = 0;
         }
         txtWriteCounter.setText(String.valueOf(writeCounter));
+    }
+
+    void loadSerialNumber() {
+        txtSerialNumber.setTag(txtSerialNumber.getKeyListener());
+        txtSerialNumber.setKeyListener(null);
+        byte[] value = amiiboData.getUID();
+        txtSerialNumber.setText(TagUtils.bytesToHex(value));
     }
 
     @AfterTextChange(R.id.txtWriteCounter)

@@ -114,11 +114,13 @@
     <string name="mod_date">Modified Date</string>
     <string name="nickname">Nickname</string>
     <string name="write_count">Write Counter</string>
+    <string name="mod_serial">Serial Number</string>
     <string name="edit_bank">Edit Bank</string>
     <string name="view_hex">View Hex Code</string>
     <string name="restore">Restore</string>
     <string name="edit_props">Edit Properties</string>
     <string name="ignore_restrictions">Ignore Restrictions</string>
+    <string name="generate_serial">Generate Random Serial</string>
 
     <string name="properties">Properties</string>
     <string name="mii">Mii</string>

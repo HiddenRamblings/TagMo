@@ -57,7 +57,7 @@ public class AmiiboData {
         return bytes;
     }
 
-    /*
+
     public void setUID(byte[] value) throws Exception {
         if (value.length != UID_LENGTH)
             throw new Exception();
@@ -66,7 +66,7 @@ public class AmiiboData {
         tagData.put(value, 0x0, UID_LENGTH - 1);
         tagData.put(0x0, value[8]);
     }
-    */
+
     public long getAmiiboID() {
         return tagData.getLong(AMIIBO_ID_OFFSET);
     }

@@ -1,7 +1,5 @@
 package com.hiddenramblings.tagmo.nfctag;
 
-import android.util.Log;
-
 import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -200,8 +198,6 @@ public class TagUtils {
 
     public static byte[] patchUid(byte[] uid, byte[] tagData) throws Exception {
         if (uid.length < 9) throw new Exception(TagMo.getStringRes(R.string.invalid_uid_length));
-
-        Log.d("UID", bytesToHex(uid));
 
         byte[] patched = Arrays.copyOf(tagData, tagData.length);
 

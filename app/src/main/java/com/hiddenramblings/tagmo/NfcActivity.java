@@ -496,10 +496,13 @@ public class NfcActivity extends AppCompatActivity {
     }
 
     void listenForTags() {
-        Intent intent = new Intent(this.getApplicationContext(), this.getClass());
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        PendingIntent nfcPendingIntent = PendingIntent.getActivity(this.getApplicationContext(), 0, intent, 0);
+        PendingIntent nfcPendingIntent = PendingIntent.getActivity(TagMo.getContext(), 0,
+                new Intent(TagMo.getContext(), this.getClass()).setFlags(
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                        ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                        : PendingIntent.FLAG_UPDATE_CURRENT);
 
         String[][] nfcTechList = new String[][]{};
 

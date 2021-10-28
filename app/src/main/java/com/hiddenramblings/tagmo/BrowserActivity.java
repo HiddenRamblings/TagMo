@@ -725,7 +725,9 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
                 this.onRootFolderChanged(false);
             }
-            this.loadPTagKeyManager();
+            if (result.getData().getBooleanExtra("POWERTAG", false)) {
+                this.loadPTagKeyManager();
+            }
         }
     });
 

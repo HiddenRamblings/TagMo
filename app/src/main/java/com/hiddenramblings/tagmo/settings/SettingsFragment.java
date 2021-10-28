@@ -162,20 +162,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_enable_power_tag_support)
     void onEnablePowerTagSupportClicked() {
-        if (enablePowerTagSupport.isChecked() && enableEliteSupport.isChecked()) {
-            showToast(R.string.hardware_conflict, Toast.LENGTH_LONG);
-            return;
-        }
-        prefs.enablePowerTagSupport().put(enablePowerTagSupport.isChecked());
+        boolean isEnabled = enablePowerTagSupport.isChecked();
+        prefs.enablePowerTagSupport().put(isEnabled);
+        if (isEnabled) requireActivity().setResult(Activity.RESULT_OK,
+                new Intent().putExtra("POWERTAG", true));
     }
 
     @PreferenceClick(R.string.settings_enable_elite_support)
     void onEnableEliteSupportClicked() {
         boolean isEnabled = enableEliteSupport.isChecked();
-        if (enableEliteSupport.isChecked() && enablePowerTagSupport.isChecked()) {
-            showToast(R.string.hardware_conflict, Toast.LENGTH_LONG);
-            return;
-        }
         prefs.enableEliteSupport().put(enableEliteSupport.isChecked());
         if (isEnabled && prefs.eliteSignature().get().length() > 1)
             enableEliteSupport.setSummary(getString(
@@ -353,7 +348,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_ignore_sdcard)
     void onIgnoreSdcardClicked() {
-        if (getActivity() != null) getActivity().setResult(Activity.RESULT_OK,
+        requireActivity().setResult(Activity.RESULT_OK,
                 new Intent().putExtra("REFRESH", true));
         prefs.ignoreSdcard().put(ignoreSdcard.isChecked());
     }

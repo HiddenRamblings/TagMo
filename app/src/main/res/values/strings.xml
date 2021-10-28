@@ -32,7 +32,7 @@
     <string name="import_json_details">Import Amiibo info from JSON</string>
     <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
     <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard or external storage device</string>
-    <string name="stable_channel_details">Only check application updates on the stable branch of TagMo development</string>
+    <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
 
     <string name="keys_missing_warning">Amiibo keys not found</string>
     <string name="no_decrypt_key">Decryption keys not imported</string>
@@ -184,7 +184,7 @@
     <string name="image_loading_details">Load images</string>
     <string name="pref_title_validation">Tag Validation</string>
     <string name="enable_tag_validation">Enable NTAG215 validation</string>
-    <string name="tag_validation_details">Not all NFC chipsets correctly identify NFC tags. Disabling tag verification will write to tags that may not be Amiibo compatible or may fail in unexpected ways.</string>
+    <string name="tag_validation_details">Not all NFC chipsets correctly identify NFC tags.\nDisabling will write to tags that may be incompatible or fail unexpectedly.</string>
     <string name="pref_title_powertag">Power Tag</string>
     <string name="enable_power_tag">Enable Power Tag support</string>
     <string name="power_tag_details">Support is currently in development.\nSee Github for limitations and use.</string>
@@ -199,7 +199,6 @@
     <string name="write_open_banks">Write %1$d Banks to N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>
     <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
-    <string name="hardware_conflict">Power Tag / N2 Elite are incompatible!</string>
 
     <string name="amiibo_info">Amiibo Info</string>
 

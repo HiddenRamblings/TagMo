@@ -130,13 +130,13 @@ public class NfcActivity extends AppCompatActivity {
         }
         switch (mode) {
             case TagMo.ACTION_WRITE_TAG_FULL:
+            case TagMo.ACTION_WRITE_TAG_RAW:
+            case TagMo.ACTION_WRITE_TAG_DATA:
                 if (!commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
                     bankNumberPicker.setVisibility(View.GONE);
                     bankNumberPicker.setEnabled(false);
                     bankTextView.setVisibility(View.GONE);
                 }
-            case TagMo.ACTION_WRITE_TAG_RAW:
-            case TagMo.ACTION_WRITE_TAG_DATA:
                 bankNumberPicker.setMaxValue(TagMo.getPrefs().eliteBankCount().get());
                 break;
             case TagMo.ACTION_WRITE_ALL_TAGS:
@@ -330,8 +330,8 @@ public class NfcActivity extends AppCompatActivity {
                         ArrayList<AmiiboFile> amiiboList =
                                 commandIntent.getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES);
                         for (int x = 0; x < amiiboList.size(); x++) {
-                            data = TagReader.readTagStream(amiiboList.get(x).getFilePath());
-                            TagWriter.writeEliteAuto(mifare, data, x);
+                            TagWriter.writeEliteAuto(mifare, TagReader.readTagStream(
+                                    amiiboList.get(x).getFilePath()), x);
                         }
                         Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
                         write.putExtra(TagMo.EXTRA_AMIIBO_DATA,

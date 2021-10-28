@@ -80,6 +80,15 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <style name="TagEditor.EditSerial">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">right</item>
+        <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
     <style name="TagEditor.Header">
         <item name="android:background">@drawable/light_header_dither</item>
         <item name="android:layout_width">match_parent</item>

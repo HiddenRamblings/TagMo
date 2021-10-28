@@ -17,7 +17,7 @@
     <string name="fixed_key">Fixed Key</string>
 
     <string name="amiibo_info_stats">Amiibo Info Stats</string>
-    <string name="pref_amiibos">Amiibos</string>
+    <string name="pref_amiibo">Amiibo</string>
     <string name="pref_amiibo_game">Game Series</string>
     <string name="pref_amiibo_characters">Characters</string>
     <string name="pref_amiibo_types">Amiibo Types</string>
@@ -106,7 +106,7 @@
     <string name="unlock_elite">Unlock N2 Elite</string>
     <string name="mnu_write_raw">Write Tag (Raw Mode)</string>
 
-    <string name="not_found">No Amiibos Found</string>
+    <string name="not_found">No Amiibo Found</string>
 
     <string name="uid">UID</string>
     <string name="country_code">Country Code</string>

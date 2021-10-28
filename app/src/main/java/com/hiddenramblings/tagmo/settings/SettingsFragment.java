@@ -90,7 +90,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference enableEliteSupport;
     @PreferenceByKey(R.string.lock_elite_hardware)
     Preference lockEliteHardware;
-    @PreferenceByKey(R.string.settings_info_amiibos)
+    @PreferenceByKey(R.string.settings_info_amiibo)
     Preference amiiboStats;
     @PreferenceByKey(R.string.settings_info_game_series)
     Preference gameSeriesStats;
@@ -242,10 +242,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         resetAmiiboManager();
     }
 
-    @PreferenceClick(R.string.settings_info_amiibos)
+    @PreferenceClick(R.string.settings_info_amiibo)
     void onAmiiboStatsClicked() {
         new AlertDialog.Builder(this.getContext())
-                .setTitle(R.string.pref_amiibos)
+                .setTitle(R.string.pref_amiibo)
                 .setAdapter(new SettingsAmiiboAdapter(new ArrayList<>(
                         amiiboManager.amiibos.values())), null)
                 .setPositiveButton(R.string.close, null)

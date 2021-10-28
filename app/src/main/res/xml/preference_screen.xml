@@ -65,8 +65,8 @@
     <androidx.preference.PreferenceCategory
         android:title="@string/amiibo_info_stats">
         <androidx.preference.Preference
-            android:key="@string/settings_info_amiibos"
-            android:title="@string/pref_amiibos"/>
+            android:key="@string/settings_info_amiibo"
+            android:title="@string/pref_amiibo"/>
         <androidx.preference.Preference
             android:key="@string/settings_info_game_series"
             android:title="@string/pref_amiibo_game"/>

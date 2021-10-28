@@ -130,7 +130,8 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
             if (holder.collector != null) {
                 amiiboList.add(filteredData.get(holder.getAbsoluteAdapterPosition()));
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                        android.R.color.holo_green_light));
+                        holder.isDarkTheme() ? android.R.color.holo_green_dark
+                                : android.R.color.holo_green_light));
                 holder.collector.onAmiiboClicked(amiiboList);
                 holder.itemView.setClickable(false);
                 holder.imageAmiibo.setClickable(false);
@@ -143,7 +144,8 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
                 if (holder.collector != null) {
                     amiiboList.add(filteredData.get(holder.getAbsoluteAdapterPosition()));
                     holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                            android.R.color.holo_green_light));
+                            holder.isDarkTheme() ? android.R.color.holo_green_dark
+                                    : android.R.color.holo_green_light));
                     holder.collector.onAmiiboImageClicked(amiiboList);
                     holder.itemView.setClickable(false);
                     holder.imageAmiibo.setClickable(false);
@@ -155,7 +157,8 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
         holder.bind(getItem(position));
         if (amiiboList.contains(holder.amiiboFile)) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                    android.R.color.holo_green_light));
+                    holder.isDarkTheme() ? android.R.color.holo_green_dark
+                            : android.R.color.holo_green_light));
         } else {
             TypedValue a = new TypedValue();
             TagMo.getContext().getTheme().resolveAttribute(
@@ -433,12 +436,11 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
                 String relativeFile = TagMo.friendlyPath(item.getFilePath()).replace(
                         TagMo.getPrefs().browserRootFolder().get(), "");
                 this.txtPath.setText(boldMatchingText(relativeFile, query));
-                this.txtPath.setTextColor(this.txtPath.getResources().getColor(isDarkTheme() ?
-                        R.color.tag_text_dark : R.color.tag_text_light));
             } else {
                 this.itemView.setEnabled(false);
                 this.txtPath.setText("");
-                this.txtPath.setTextColor(Color.RED);
+                this.txtPath.setTextColor(this.txtPath.getResources().getColor(isDarkTheme() ?
+                        R.color.tag_text_dark : R.color.tag_text_light));
             }
             this.txtPath.setVisibility(View.VISIBLE);
 
@@ -491,7 +493,8 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
         SpannableStringBuilder boldStartText(String text, String query) {
             SpannableStringBuilder str = new SpannableStringBuilder(text);
             if (!query.isEmpty() && text.toLowerCase().startsWith(query)) {
-                str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, query.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                        0, query.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             return str;
         }

@@ -88,7 +88,9 @@ public class AmiiboActivity extends AppCompatActivity {
     @AfterViews
     void afterViews() {
         if (getCallingActivity() != null) {
-            isResponsive = getCallingActivity().getClassName().equals(EliteActivity_.class.getName());
+            String caller = getCallingActivity().getClassName();
+            isResponsive = EliteActivity_.class.getName().equals(caller)
+                    || AmiiboActivity_.class.getName().equals(caller);
         }
         if (getIntent().hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
             current_bank = getIntent().getIntExtra(TagMo.EXTRA_CURRENT_BANK,
@@ -242,6 +244,11 @@ public class AmiiboActivity extends AppCompatActivity {
         this.updateAmiiboView();
     }
 
+    ActivityResultLauncher<Intent> onFakeActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        // getCallingActivity() requires requesting results
+    });
+
     ActivityResultLauncher<Intent> onNFCResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
@@ -250,38 +257,24 @@ public class AmiiboActivity extends AppCompatActivity {
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
-        if (TagMo.getPrefs().enableEliteSupport().get()) {
-            String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
-            int active_bank = result.getData().getIntExtra(
-                    TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
-            int bank_count = result.getData().getIntExtra(
-                    TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
-
-            TagMo.getPrefs().eliteSignature().put(signature);
-            TagMo.getPrefs().eliteActiveBank().put(active_bank);
-            TagMo.getPrefs().eliteBankCount().put(bank_count);
-
+        if (TagMo.getPrefs().enableEliteSupport().get() && !isResponsive) {
             Intent eliteIntent = new Intent(this, EliteActivity_.class);
-            if (isResponsive) {
-                eliteIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
-                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            }
-            eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
-            eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
-            eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+            eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE,
+                    result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE));
+            eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK,
+                    TagMo.getPrefs().eliteActiveBank().get());
+            eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT,
+                    TagMo.getPrefs().eliteBankCount().get());
             eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
                     result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
             startActivity(eliteIntent);
-
             finish(); // Relaunch activity to bring view to front
-
             Intent amiiboIntent = new Intent(this, AmiiboActivity_.class);
             amiiboIntent.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
-            if (active_bank != -1)
-                amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, active_bank);
+            amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK,
+                    TagMo.getPrefs().eliteActiveBank().get());
             amiiboIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(amiiboIntent);
+            onFakeActivity.launch(amiiboIntent);
         }
 
         this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);

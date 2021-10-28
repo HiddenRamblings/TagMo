@@ -1258,10 +1258,11 @@ public class BrowserActivity extends AppCompatActivity implements
         session.fsync(sessionStream);
         apkStream.close();
         sessionStream.close();
-        PendingIntent pi = PendingIntent.getBroadcast(
-                this, 8675309,
+        PendingIntent pi = PendingIntent.getBroadcast(this, 8675309,
                 new Intent(this, InstallReceiver.class),
-                PendingIntent.FLAG_UPDATE_CURRENT
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                        ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                        : PendingIntent.FLAG_UPDATE_CURRENT
         );
         session.commit(pi.getIntentSender());
     }

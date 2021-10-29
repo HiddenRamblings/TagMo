@@ -42,4 +42,14 @@
     <string name="api_database">database/amiibo.json</string>
 
     <string name="git_url">https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/%1$s</string>
+
+    <string name="mifare_classic">Mifare Classic</string>
+    <string name="mifare_plus">Mifare Plus</string>
+    <string name="mifare_pro">Mifare Pro</string>
+    <string name="mifare_ultralight">Mifare UltraLight</string>
+    <string name="mifare_ultralight_c">Mifare UltraLight C</string>
+    <string name="isodep">IsoDep</string>
+    <string name="ndef">Ndef</string>
+    <string name="ndef_formatable">NdefFormatable</string>
+
 </resources>

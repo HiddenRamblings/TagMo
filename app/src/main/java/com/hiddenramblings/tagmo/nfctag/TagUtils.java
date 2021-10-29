@@ -1,5 +1,12 @@
 package com.hiddenramblings.tagmo.nfctag;
 
+import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
+import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
+import android.nfc.tech.Ndef;
+import android.nfc.tech.NdefFormatable;
+
 import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -20,6 +27,43 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 
 public class TagUtils {
+
+    public static String getTagTechnology(Tag tag) {
+        String type = TagMo.getStringRes(R.string.unknown_type);
+        for (String tech : tag.getTechList()) {
+            if (tech.equals(MifareClassic.class.getName())) {
+                switch (MifareClassic.get(tag).getType()) {
+                    default:
+                    case MifareClassic.TYPE_CLASSIC:
+                        type = TagMo.getStringRes(R.string.mifare_classic);
+                        break;
+                    case MifareClassic.TYPE_PLUS:
+                        type = TagMo.getStringRes(R.string.mifare_plus);
+                        break;
+                    case MifareClassic.TYPE_PRO:
+                        type = TagMo.getStringRes(R.string.mifare_pro);
+                        break;
+                }
+            } else if (tech.equals(MifareUltralight.class.getName())) {
+                switch (MifareUltralight.get(tag).getType()) {
+                    default:
+                    case MifareUltralight.TYPE_ULTRALIGHT:
+                        type = TagMo.getStringRes(R.string.mifare_ultralight);
+                        break;
+                    case MifareUltralight.TYPE_ULTRALIGHT_C:
+                        type = TagMo.getStringRes(R.string.mifare_ultralight_c);
+                        break;
+                }
+            } else if (tech.equals(IsoDep.class.getName())) {
+                type = TagMo.getStringRes(R.string.isodep);
+            } else if (tech.equals(Ndef.class.getName())) {
+                type = TagMo.getStringRes(R.string.ndef);
+            } else if (tech.equals(NdefFormatable.class.getName())) {
+                type = TagMo.getStringRes(R.string.ndef_formatable);
+            }
+        }
+        return type;
+    }
 
     public static boolean isPowerTag(NTAG215 mifare) {
         if (TagMo.getPrefs().enablePowerTagSupport().get()) {

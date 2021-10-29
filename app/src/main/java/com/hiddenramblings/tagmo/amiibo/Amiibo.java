@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.nfctag.TagUtils;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 public class Amiibo implements Comparable<Amiibo> {
 

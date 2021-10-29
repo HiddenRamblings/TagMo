@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctag;
+package com.hiddenramblings.tagmo.nfctech;
 
 import android.util.Base64;
 
@@ -23,8 +23,8 @@ public class PowerTagManager {
         try (InputStream stream = TagMo.getContext().getAssets().open(POWERTAG_KEYTABLE_FILE)) {
 //        try (InputStream stream = agMo.getContext().getResources().openRawResource(R.raw.keytable)) {
             byte[] data = new byte[stream.available()];
+            //noinspection ResultOfMethodCallIgnored
             stream.read(data);
-
             JSONObject obj = new JSONObject(new String(data));
             parseKeyTable(obj);
         }
@@ -50,9 +50,9 @@ public class PowerTagManager {
         keys = keytable;
     }
 
-    public static byte[] getPowerTagKey(byte[] uid, String page10bytes) throws Exception {
+    public static byte[] getPowerTagKey(byte[] uid, String page10bytes) throws NullPointerException {
         if (keys == null)
-            throw new Exception(TagMo.getStringRes(R.string.powertag_key_error));
+            throw new NullPointerException(TagMo.getStringRes(R.string.powertag_key_error));
 
         byte[] uidc = new byte[7];
 
@@ -66,11 +66,11 @@ public class PowerTagManager {
 
         HashMap<String, byte[]> keymap = keys.get(TagUtils.bytesToHex(uidc));
         if (keymap == null)
-            throw new Exception(TagMo.getStringRes(R.string.uid_key_missing));
+            throw new NullPointerException(TagMo.getStringRes(R.string.uid_key_missing));
 
         byte[] key = keymap.get(page10bytes);
         if (key == null)
-            throw new Exception(TagMo.getStringRes(R.string.p10_key_missing));
+            throw new NullPointerException(TagMo.getStringRes(R.string.p10_key_missing));
 
         return key;
     }

@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctag.data;
+package com.hiddenramblings.tagmo.nfctech.data;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -15,6 +15,8 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.TextChange;
 import org.androidannotations.annotations.ViewById;
+
+import java.io.IOException;
 
 @SuppressLint("NonConstantResourceId")
 @EFragment(R.layout.fragment_app_data_ssb)
@@ -68,14 +70,16 @@ public class AppDataSSBFragment extends AppDataFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        try {
-            appData = new AppDataSSB(getArguments().getByteArray("app_data"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        if (savedInstanceState == null) {
-            initialAppDataInitialized = getArguments().getBoolean("app_data_init");
+        if (getArguments() != null) {
+            try {
+                appData = new AppDataSSB(getArguments().getByteArray("app_data"));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            if (savedInstanceState == null) {
+                initialAppDataInitialized = getArguments().getBoolean("app_data_init");
+            }
         }
     }
 
@@ -389,11 +393,11 @@ public class AppDataSSBFragment extends AppDataFragment {
     }
 
     @Override
-    public byte[] onAppDataSaved() throws Exception {
+    public byte[] onAppDataSaved() {
         try {
             int appearance = spnAppearance.getSelectedItemPosition();
             appData.setAppearence(appearance);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             spnAppearance.requestFocus();
             throw e;
         }
@@ -410,7 +414,7 @@ public class AppDataSSBFragment extends AppDataFragment {
             if (oldLevel == null || level != oldLevel) {
                 appData.setLevel(level);
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtLevel.requestFocus();
             throw e;
         }
@@ -418,28 +422,28 @@ public class AppDataSSBFragment extends AppDataFragment {
         try {
             int specialNeutral = spnSpecialNeutral.getSelectedItemPosition();
             appData.setSpecialNeutral(specialNeutral);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             spnSpecialNeutral.requestFocus();
             throw e;
         }
         try {
             int specialSide = spnSpecialSide.getSelectedItemPosition();
             appData.setSpecialSide(specialSide);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             spnSpecialSide.requestFocus();
             throw e;
         }
         try {
             int specialUp = spnSpecialUp.getSelectedItemPosition();
             appData.setSpecialUp(specialUp);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             spnSpecialUp.requestFocus();
             throw e;
         }
         try {
             int specialDown = spnSpecialDown.getSelectedItemPosition();
             appData.setSpecialDown(specialDown);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             spnSpecialDown.requestFocus();
             throw e;
         }
@@ -447,21 +451,21 @@ public class AppDataSSBFragment extends AppDataFragment {
         try {
             int statAttack = Integer.parseInt(txtStatAttack.getText().toString());
             appData.setStatAttack(statAttack);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtStatAttack.requestFocus();
             throw e;
         }
         try {
             int statDefense = Integer.parseInt(txtStatDefense.getText().toString());
             appData.setStatDefense(statDefense);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtStatDefense.requestFocus();
             throw e;
         }
         try {
             int statSpeed = Integer.parseInt(txtStatSpeed.getText().toString());
             appData.setStatSpeed(statSpeed);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtStatSpeed.requestFocus();
             throw e;
         }
@@ -469,21 +473,21 @@ public class AppDataSSBFragment extends AppDataFragment {
         try {
             int bonusEffect1 = getEffectValue(spnEffect1);
             appData.setBonusEffect1(bonusEffect1);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             spnEffect1.requestFocus();
             throw e;
         }
         try {
             int bonusEffect2 = getEffectValue(spnEffect2);
             appData.setBonusEffect2(bonusEffect2);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             spnEffect2.requestFocus();
             throw e;
         }
         try {
             int bonusEffect3 = getEffectValue(spnEffect3);
             appData.setBonusEffect3(bonusEffect3);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             spnEffect3.requestFocus();
             throw e;
         }

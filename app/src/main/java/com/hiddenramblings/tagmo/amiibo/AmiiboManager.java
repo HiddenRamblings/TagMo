@@ -52,6 +52,7 @@ public class AmiiboManager {
 
     public static AmiiboManager parse(InputStream inputStream) throws IOException, JSONException, ParseException {
         byte[] data = new byte[inputStream.available()];
+        //noinspection ResultOfMethodCallIgnored
         inputStream.read(data);
         inputStream.close();
 

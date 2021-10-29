@@ -1,8 +1,9 @@
-package com.hiddenramblings.tagmo.nfctag.data;
+package com.hiddenramblings.tagmo.nfctech.data;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
@@ -12,9 +13,9 @@ public class AppData {
 
     ByteBuffer appData;
 
-    public AppData(byte[] appData) throws Exception {
+    public AppData(byte[] appData) throws IOException {
         if (appData.length < APP_FILE_SIZE)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_app_data));
+            throw new IOException(TagMo.getStringRes(R.string.invalid_app_data));
 
         this.appData = ByteBuffer.wrap(appData);
     }

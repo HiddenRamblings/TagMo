@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctag;
+package com.hiddenramblings.tagmo.nfctech;
 
 import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
@@ -50,6 +50,7 @@ public class NTAG215 implements TagTechnology {
         return 0;
     }
 
+    @SuppressWarnings("unused")
     public void setTimeout(int timeout) {
         if (m_mifare != null)
             m_mifare.setTimeout(timeout);
@@ -138,7 +139,7 @@ public class NTAG215 implements TagTechnology {
     public byte[] getVersion() {
         try {
             return this.transceive(new byte[]{NfcByte.CMD_GET_VERSION});
-        } catch (Exception e) {
+        } catch (IOException e) {
             return null;
         }
     }
@@ -164,7 +165,8 @@ public class NTAG215 implements TagTechnology {
         }
     }
 
-    public byte[] geteliteBankCount() {
+    @SuppressWarnings("unused")
+    public byte[] getEliteBankCount() {
         byte[] req = new byte [1];
         byte[] resp;
 
@@ -219,20 +221,20 @@ public class NTAG215 implements TagTechnology {
         }
     }
 
-    public byte[] initFirmware() {
+    public void initFirmware() {
         try {
-            return this.transceive(new byte[]{
-                    (byte) 0xFFF4,              (byte) 0x49,
-                    (byte) 0xFF9B,              (byte) 0xFF99,
-                    (byte) 0xFFC3,              (byte) 0xFFDA,
-                    (byte) 0x57,                (byte) 0x71,
-                    (byte) 0x0A,                (byte) 0x64,
-                    (byte) 0x4A,                (byte) 0xFF9E,
-                    (byte) 0xFFF8,              (byte) NfcByte.CMD_WRITE,
-                    (byte) NfcByte.CMD_READ,    (byte) 0xFFD9
+            this.transceive(new byte[]{
+                    (byte) 0xFFF4, (byte) 0x49,
+                    (byte) 0xFF9B, (byte) 0xFF99,
+                    (byte) 0xFFC3, (byte) 0xFFDA,
+                    (byte) 0x57, (byte) 0x71,
+                    (byte) 0x0A, (byte) 0x64,
+                    (byte) 0x4A, (byte) 0xFF9E,
+                    (byte) 0xFFF8, (byte) NfcByte.CMD_WRITE,
+                    (byte) NfcByte.CMD_READ, (byte) 0xFFD9
             });
-        } catch (Exception e) {
-            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -319,6 +321,7 @@ public class NTAG215 implements TagTechnology {
         return true;
     }
 
+    @SuppressWarnings("unused")
     public boolean amiiboWrite(int addr, int bank, byte[] data) {
         if (data != null && data.length % 4 == 0) {
             return internalWrite((startAddr, bank1, data1) -> {
@@ -381,13 +384,13 @@ public class NTAG215 implements TagTechnology {
         }, addr, bank, data);
     }
 
-    public byte[] amiiboLock() {
+    public void amiiboLock() {
         try {
-            return this.transceive(new byte[]{
+            this.transceive(new byte[]{
                     NfcByte.N2_LOCK
             });
-        } catch (Exception e) {
-            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -396,18 +399,18 @@ public class NTAG215 implements TagTechnology {
             return this.transceive(new byte[]{
                     NfcByte.N2_UNLOCK_1
             });
-        } catch (Exception e) {
+        } catch (IOException e) {
             return null;
         }
     }
 
-    public byte[] amiiboUnlock() {
+    public void amiiboUnlock() {
         try {
-            return this.transceive(new byte[]{
+            this.transceive(new byte[]{
                     NfcByte.N2_UNLOCK_2
             });
-        } catch (Exception e) {
-            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -172,9 +172,9 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuShowMissing;
     @OptionsMenuItem(R.id.refresh)
     MenuItem menuRefresh;
-    @OptionsMenuItem(R.id.dump_amiibo)
+    @OptionsMenuItem(R.id.amiibo_backup)
     MenuItem menuBackup;
-    @OptionsMenuItem(R.id.dump_logcat)
+    @OptionsMenuItem(R.id.export_logcat)
     MenuItem menuLogcat;
     @OptionsMenuItem(R.id.unlock_elite)
     MenuItem menuUnlockElite;
@@ -271,9 +271,9 @@ public class BrowserActivity extends AppCompatActivity implements
         this.loadPTagKeyManager();
     }
 
-    void refresh(boolean indicator) {
+    void refreshBackground() {
         this.loadAmiiboManager();
-        this.onRootFolderChanged(indicator);
+        this.onRootFolderChanged(false);
     }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
@@ -316,7 +316,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        this.refresh(false);
+        this.refreshBackground();
     });
 
     @Click(R.id.fab)
@@ -406,11 +406,6 @@ public class BrowserActivity extends AppCompatActivity implements
         this.settings.notifyChanges();
     }
 
-    @OptionsItem(R.id.refresh)
-    void onRefreshClicked() {
-        this.refresh(true);
-    }
-
     ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
@@ -431,7 +426,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 String fileName = TagReader.writeBytesToFile(directory,
                         input.getText().toString() + ".bin", tagData);
                 showToast(getString(R.string.wrote_file, fileName));
-                this.refresh(false);
+                this.refreshBackground();
             } catch (IOException e) {
                 showToast(e.getMessage());
             }
@@ -440,15 +435,31 @@ public class BrowserActivity extends AppCompatActivity implements
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
     });
 
-    @OptionsItem(R.id.dump_amiibo)
-    void onDumpAmiiboClicked() {
+    @OptionsItem(R.id.amiibo_backup)
+    void onAmiiboBackupClicked() {
         Intent backup = new Intent(this, NfcActivity_.class);
         backup.setAction(TagMo.ACTION_BACKUP_AMIIBO);
         onBackupActivity.launch(backup);
     }
 
+    @UiThread
+    public void showLogcatSnackbar(String message, Uri fileUri) {
+        Snackbar snackbar = buildSnackbar(message, Snackbar.LENGTH_LONG);
+        if (fileUri != null) {
+            snackbar.setAction(R.string.view, v -> {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, fileUri);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                    browserIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(browserIntent);
+                snackbar.dismiss();
+            });
+        }
+        snackbar.show();
+    }
+
+    @OptionsItem(R.id.export_logcat)
     @Background
-    void dumpLogcat() {
+    void onExportLogcatClicked() {
         try {
             File file = new File(TagMo.getTagMoFiles(), "tagmo_logcat.txt");
             final StringBuilder log = new StringBuilder();
@@ -495,26 +506,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (Exception e) {
             showLogcatSnackbar(getString(R.string.write_error, e.getMessage()), null);
         }
-    }
-
-    @UiThread
-    public void showLogcatSnackbar(String message, Uri fileUri) {
-        Snackbar snackbar = buildSnackbar(message, Snackbar.LENGTH_LONG);
-        if (fileUri != null) {
-            snackbar.setAction(R.string.view, v -> {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, fileUri);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                    browserIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(browserIntent);
-                snackbar.dismiss();
-            });
-        }
-        snackbar.show();
-    }
-
-    @OptionsItem(R.id.dump_logcat)
-    void onDumpLogcatClicked() {
-        dumpLogcat();
     }
 
     @OptionsItem(R.id.unlock_elite)
@@ -723,7 +714,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     this.settings.setBrowserRootFolder(Storage.setFileStorage());
                     this.settings.notifyChanges();
                 }
-                this.onRootFolderChanged(false);
+                this.refreshBackground();
             }
             if (result.getData().getBooleanExtra("POWERTAG", false)) {
                 this.loadPTagKeyManager();
@@ -820,9 +811,11 @@ public class BrowserActivity extends AppCompatActivity implements
         return result;
     }
 
+    @OptionsItem(R.id.refresh)
     @Override
     public void onRefresh() {
-        this.refresh(true);
+        this.loadAmiiboManager();
+        this.onRootFolderChanged(true);
     }
 
     @Override
@@ -865,7 +858,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         TagMo.friendlyPath(amiiboFile.getFilePath())))
                 .setNegativeButton(R.string.delete, (dialog, which) -> {
                     amiiboFile.getFilePath().delete();
-                    this.refresh(false);
+                    this.refreshBackground();
                     dialog.dismiss();
                 })
                 .setPositiveButton(R.string.cancel, null).show();

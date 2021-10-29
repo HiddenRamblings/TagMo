@@ -8,7 +8,7 @@
         android:title="@string/activate"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/mnu_refresh"
+        android:id="@+id/mnu_scan"
         android:title="@string/scan"
         app:showAsAction="always"/>
     <item
@@ -29,7 +29,7 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_backup"
-        android:title="@string/backup_amiibo"
+        android:title="@string/amiibo_backup"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_wipe_bank"

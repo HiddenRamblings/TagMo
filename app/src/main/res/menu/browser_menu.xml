@@ -130,12 +130,12 @@
         android:title="@string/refresh"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/dump_logcat"
+        android:id="@+id/export_logcat"
         android:title="@string/logcat"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/dump_amiibo"
-        android:title="@string/backup_amiibo"
+        android:id="@+id/amiibo_backup"
+        android:title="@string/amiibo_backup"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/unlock_elite"

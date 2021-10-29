@@ -1,6 +1,7 @@
 package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -9,8 +10,10 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,6 +138,7 @@ public class TagDataActivity extends AppCompatActivity {
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
     AmiiboData amiiboData;
+    boolean isEncryptionMissing;
 
     @InstanceState
     boolean initialUserDataInitialized;
@@ -161,7 +165,8 @@ public class TagDataActivity extends AppCompatActivity {
         try {
             this.amiiboData = new AmiiboData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
-            if (TagMo.getPrefs().enableEliteSupport().get()) {
+            isEncryptionMissing = !TagUtils.isEncrypted(tagData);
+            if (isEncryptionMissing) {
                 try {
                     this.amiiboData = new AmiiboData(tagData);
                 } catch (Exception ex) {
@@ -474,12 +479,16 @@ public class TagDataActivity extends AppCompatActivity {
         }
 
         byte[] tagData;
-        try {
-            tagData = TagUtils.encrypt(keyManager, newAmiiboData.array());
-        } catch (Exception e) {
-            e.printStackTrace();
-            LogError(getString(R.string.failed_encrypt));
-            return;
+        if (isEncryptionMissing) {
+            tagData = newAmiiboData.array();
+        } else {
+            try {
+                tagData = TagUtils.encrypt(keyManager, newAmiiboData.array());
+            } catch (Exception e) {
+                e.printStackTrace();
+                LogError(getString(R.string.failed_encrypt));
+                return;
+            }
         }
 
         Intent intent = new Intent(TagMo.ACTION_EDIT_COMPLETE);
@@ -846,7 +855,7 @@ public class TagDataActivity extends AppCompatActivity {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
 //            dateFormat = new SimpleDateFormat(getDateFormat(locale), locale);
 //        } else {
-        dateFormat = new SimpleDateFormat("dd/MM/yyyy", locale);
+            dateFormat = new SimpleDateFormat("dd/MM/yyyy", locale);
 //        }
 
         return dateFormat.format(date);

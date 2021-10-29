@@ -179,7 +179,7 @@ public class NfcActivity extends AppCompatActivity {
                 setTitle(R.string.write_collection);
                 break;
             case TagMo.ACTION_BACKUP_AMIIBO:
-                setTitle(R.string.backup_amiibo);
+                setTitle(R.string.amiibo_backup);
                 break;
             case TagMo.ACTION_SCAN_TAG:
                 setTitle(R.string.scan_tag);
@@ -310,7 +310,7 @@ public class NfcActivity extends AppCompatActivity {
 
                     case TagMo.ACTION_WRITE_TAG_FULL:
                         if (isElite) {
-                            TagWriter.writeEliteAuto(mifare, data, selection);
+                            TagWriter.writeEliteAuto(mifare, data, this.keyManager, selection);
                             Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
                             write.putExtra(TagMo.EXTRA_SIGNATURE,
                                     TagReader.getEliteSignature(mifare));
@@ -336,7 +336,7 @@ public class NfcActivity extends AppCompatActivity {
                                 commandIntent.getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES);
                         for (int x = 0; x < amiiboList.size(); x++) {
                             TagWriter.writeEliteAuto(mifare, TagReader.readTagStream(
-                                    amiiboList.get(x).getFilePath()), x);
+                                    amiiboList.get(x).getFilePath()), this.keyManager, x);
                         }
                         Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
                         write.putExtra(TagMo.EXTRA_AMIIBO_DATA,
@@ -560,10 +560,9 @@ public class NfcActivity extends AppCompatActivity {
     }
 
     private String getTagTechnology(Tag tag) {
-         String[] techList = tag.getTechList();
-        String type = "Unknown";
-        for (String s : techList) {
-            if (s.equals(MifareClassic.class.getName())) {
+        String type = getString(R.string.unknown_type);
+        for (String tech : tag.getTechList()) {
+            if (tech.equals(MifareClassic.class.getName())) {
                 type = "Mifare Classic";
                 switch (MifareClassic.get(tag).getType()) {
                     case MifareClassic.TYPE_CLASSIC:
@@ -577,7 +576,7 @@ public class NfcActivity extends AppCompatActivity {
                         break;
                 }
                 type += "Mifare " + type;
-            } else if (s.equals(MifareUltralight.class.getName())) {
+            } else if (tech.equals(MifareUltralight.class.getName())) {
                 type = "Mifare UltraLight";
                 switch (MifareUltralight.get(tag).getType()) {
                     case MifareUltralight.TYPE_ULTRALIGHT:
@@ -588,11 +587,11 @@ public class NfcActivity extends AppCompatActivity {
                         break;
                 }
                 type += "Mifare " + type;
-            } else if (s.equals(IsoDep.class.getName())) {
+            } else if (tech.equals(IsoDep.class.getName())) {
                 type = "IsoDep";
-            } else if (s.equals(Ndef.class.getName())) {
+            } else if (tech.equals(Ndef.class.getName())) {
                 type = "Ndef";
-            } else if (s.equals(NdefFormatable.class.getName())) {
+            } else if (tech.equals(NdefFormatable.class.getName())) {
                 type = "NdefFormatable";
             }
         }

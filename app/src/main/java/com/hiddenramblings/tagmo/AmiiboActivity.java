@@ -80,7 +80,7 @@ public class AmiiboActivity extends AppCompatActivity {
     AmiiboManager amiiboManager = null;
     boolean isResponsive = false;
     int current_bank = -1;
-    boolean hasRefreshedData = false;
+    boolean hasScannedData = false;
     boolean hasClickedEdit = false;
     boolean hasClickedView = false;
 
@@ -104,8 +104,8 @@ public class AmiiboActivity extends AppCompatActivity {
                 case R.id.mnu_activate:
                     modifyBank(TagMo.ACTION_ACTIVATE_BANK);
                     return true;
-                case R.id.mnu_refresh:
-                    refreshAmiiboData();
+                case R.id.mnu_scan:
+                    scanAmiiboData();
                     return true;
                 case R.id.mnu_write:
                     writeTag();
@@ -117,10 +117,10 @@ public class AmiiboActivity extends AppCompatActivity {
                     displayBackupDialog();
                     return true;
                 case R.id.mnu_edit:
-                    if (isResponsive && !hasRefreshedData) {
+                    if (isResponsive && !hasScannedData) {
                         showToast(getString(R.string.refresh_required));
                         hasClickedEdit = true;
-                        refreshAmiiboData();
+                        scanAmiiboData();
                     } else {
                         openTagEditor();
                     }
@@ -129,10 +129,10 @@ public class AmiiboActivity extends AppCompatActivity {
                     modifyBank(TagMo.ACTION_REPLACE_AMIIBO);
                     return true;
                 case R.id.mnu_view_hex:
-                    if (isResponsive && !hasRefreshedData) {
+                    if (isResponsive && !hasScannedData) {
                         showToast(getString(R.string.refresh_required));
                         hasClickedView = true;
-                        refreshAmiiboData();
+                        scanAmiiboData();
                     } else {
                         viewHex();
                     }
@@ -155,13 +155,13 @@ public class AmiiboActivity extends AppCompatActivity {
         updateAmiiboView();
     }
 
-    ActivityResultLauncher<Intent> onRefreshTagResult = registerForActivityResult(
+    ActivityResultLauncher<Intent> onScanTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
-        hasRefreshedData = true;
+        hasScannedData = true;
 
         this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         this.runOnUiThread(this::updateAmiiboView);
@@ -177,11 +177,11 @@ public class AmiiboActivity extends AppCompatActivity {
         }
     });
 
-    private void refreshAmiiboData() {
-        Intent refresh = new Intent(this, NfcActivity_.class);
-        refresh.setAction(TagMo.ACTION_SCAN_TAG);
-        refresh.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
-        onRefreshTagResult.launch(refresh);
+    private void scanAmiiboData() {
+        Intent scan = new Intent(this, NfcActivity_.class);
+        scan.setAction(TagMo.ACTION_SCAN_TAG);
+        scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
+        onScanTagResult.launch(scan);
     }
 
     @Click(R.id.container)

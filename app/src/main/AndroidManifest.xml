@@ -45,7 +45,7 @@
                 <data android:mimeType="text/plain"/>
             </intent-filter>
             <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
-                android:resource="@xml/nfc_tech_list"/>
+                android:resource="@xml/nfc_technology_list"/>
         </activity>
         <activity
             android:name=".EliteActivity_"

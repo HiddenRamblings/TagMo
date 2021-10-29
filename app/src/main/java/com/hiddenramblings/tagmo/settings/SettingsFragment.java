@@ -124,7 +124,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             if (result != null && prefs.lastModified().get() < result) {
                 showInstallSnackbar();
             }
-        }).execute(TagMo.getStringRes(R.string.amiibo_api_raw, R.string.api_database));
+        }).execute(TagMo.getStringRes(R.string.api_raw_url, R.string.api_database));
     }
 
     @AfterPreferences
@@ -200,7 +200,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_import_info)
     void onImportInfoClicked() {
-        showFileChooser(getString(R.string.import_json_details), "application/json", RESULT_IMPORT_AMIIBO_DATABASE);
+        showFileChooser(getString(R.string.import_json_details),
+                "application/json", RESULT_IMPORT_AMIIBO_DATABASE);
     }
 
     @PreferenceClick(R.string.settings_export_info)
@@ -240,7 +241,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_info_amiibo)
     void onAmiiboStatsClicked() {
         new AlertDialog.Builder(this.getContext())
-                .setTitle(R.string.pref_amiibo)
+                .setTitle(R.string.amiibo)
                 .setAdapter(new SettingsAmiiboAdapter(new ArrayList<>(
                         amiiboManager.amiibos.values())), null)
                 .setPositiveButton(R.string.close, null)
@@ -257,8 +258,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Collections.sort(items);
 
         new AlertDialog.Builder(this.getContext())
-                .setTitle(R.string.pref_amiibo_game)
-                .setAdapter(new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, items), null)
+                .setTitle(R.string.amiibo_game)
+                .setAdapter(new ArrayAdapter<>(this.getContext(),
+                        android.R.layout.simple_list_item_1, items), null)
                 .setPositiveButton(R.string.close, null)
                 .show();
     }
@@ -286,7 +288,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         new AlertDialog.Builder(this.getContext())
                 .setTitle(R.string.pref_amiibo_characters)
-                .setAdapter(new ArrayAdapter<Character>(this.getContext(), android.R.layout.simple_list_item_2, android.R.id.text1, items) {
+                .setAdapter(new ArrayAdapter<Character>(this.getContext(),
+                        android.R.layout.simple_list_item_2, android.R.id.text1, items) {
                     @NonNull
                     @Override
                     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
@@ -317,8 +320,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Collections.sort(items);
 
         new AlertDialog.Builder(this.getContext())
-                .setTitle(R.string.pref_amiibo_series)
-                .setAdapter(new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, items), null)
+                .setTitle(R.string.amiibo_series)
+                .setAdapter(new ArrayAdapter<>(this.getContext(),
+                        android.R.layout.simple_list_item_1, items), null)
                 .setPositiveButton(R.string.close, null)
                 .show();
     }
@@ -572,8 +576,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Background(id = BACKGROUND_SYNC_AMIIBO_MANAGER)
     void downloadAmiiboAPIDataTask() {
-        showSnackbar(getString(R.string.sync_amiibo_status,
-                getString(R.string.sync_processing)), Snackbar.LENGTH_INDEFINITE);
+        showSnackbar(getString(R.string.sync_amiibo_process), Snackbar.LENGTH_INDEFINITE);
         try {
             URL url = new URL(getString(R.string.amiibo_api_url));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -608,8 +611,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                 AmiiboManager.saveDatabase(amiiboManager);
                 setAmiiboManager(amiiboManager);
-                showSnackbar(getString(R.string.sync_amiibo_status,
-                        getString(R.string.sync_complete)), Snackbar.LENGTH_SHORT);
+                showSnackbar(getString(R.string.sync_amiibo_complete), Snackbar.LENGTH_SHORT);
                 prefs.lastModified().put(System.currentTimeMillis());
             } else {
                 throw new Exception(String.valueOf(statusCode));
@@ -618,24 +620,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             e.printStackTrace();
             if (Thread.currentThread().isInterrupted())
                 return;
-            showSnackbar(getString(R.string.sync_amiibo_status,
-                    getString(R.string.sync_failed)), Snackbar.LENGTH_SHORT);
+            showSnackbar(getString(R.string.sync_amiibo_failed), Snackbar.LENGTH_SHORT);
         }
     }
 
     ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK
-                || result.getData() == null)
-            return;
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+
         updateKeys(result.getData().getData());
     });
 
     ActivityResultLauncher<Intent> onImportAmiiboDatabase = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK
-                || result.getData() == null)
-            return;
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+
         updateAmiiboManager(result.getData().getData());
     });
 

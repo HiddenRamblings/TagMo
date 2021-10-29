@@ -60,7 +60,6 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
         this.listener = listener;
 
         this.filteredData = this.amiiboFiles = amiiboFiles;
-        Collections.sort(this.amiiboFiles, new AmiiboComparator());
     }
 
     public EliteWriteBlankAdapter(BrowserSettings settings, OnHighlightListener collector, ArrayList<AmiiboFile> amiiboFiles) {
@@ -123,38 +122,8 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
         }
     }
 
-    @Override
-    public void onBindViewHolder(final AmiiboVewHolder holder, int position) {
-        holder.itemView.setOnClickListener(view -> {
-            if (holder.collector != null) {
-                amiiboList.add(filteredData.get(holder.getAbsoluteAdapterPosition()));
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                        holder.isDarkTheme() ? android.R.color.holo_green_dark
-                                : android.R.color.holo_green_light));
-                holder.collector.onAmiiboClicked(amiiboList);
-                holder.itemView.setClickable(false);
-                holder.imageAmiibo.setClickable(false);
-            } else if (holder.listener != null) {
-                holder.listener.onAmiiboClicked(holder.amiiboFile);
-            }
-        });
-        if (holder.imageAmiibo != null) {
-            holder.imageAmiibo.setOnClickListener(view -> {
-                if (holder.collector != null) {
-                    amiiboList.add(filteredData.get(holder.getAbsoluteAdapterPosition()));
-                    holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                            holder.isDarkTheme() ? android.R.color.holo_green_dark
-                                    : android.R.color.holo_green_light));
-                    holder.collector.onAmiiboImageClicked(amiiboList);
-                    holder.itemView.setClickable(false);
-                    holder.imageAmiibo.setClickable(false);
-                } else if (holder.listener != null) {
-                    holder.listener.onAmiiboImageClicked(holder.amiiboFile);
-                }
-            });
-        }
-        holder.bind(getItem(position));
-        if (amiiboList.contains(holder.amiiboFile)) {
+    private void setIsHighlighted(AmiiboVewHolder holder, boolean isHighlighted) {
+        if (isHighlighted) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
                     holder.isDarkTheme() ? android.R.color.holo_green_dark
                             : android.R.color.holo_green_light));
@@ -170,6 +139,46 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
             } else {
                 holder.itemView.setBackgroundResource(a.resourceId);
             }
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(final AmiiboVewHolder holder, int position) {
+        holder.itemView.setOnClickListener(view -> {
+            if (holder.collector != null) {
+                if (amiiboList.contains(holder.amiiboFile)) {
+                    amiiboList.remove(filteredData.get(holder.getAbsoluteAdapterPosition()));
+                    setIsHighlighted(holder, false);
+                } else {
+                    amiiboList.add(filteredData.get(holder.getAbsoluteAdapterPosition()));
+                    setIsHighlighted(holder, true);
+                }
+                holder.collector.onAmiiboClicked(amiiboList);
+            } else if (holder.listener != null) {
+                holder.listener.onAmiiboClicked(holder.amiiboFile);
+            }
+        });
+        if (holder.imageAmiibo != null) {
+            holder.imageAmiibo.setOnClickListener(view -> {
+                if (holder.collector != null) {
+                    if (amiiboList.contains(holder.amiiboFile)) {
+                        amiiboList.remove(filteredData.get(holder.getAbsoluteAdapterPosition()));
+                        setIsHighlighted(holder, false);
+                    } else {
+                        amiiboList.add(filteredData.get(holder.getAbsoluteAdapterPosition()));
+                        setIsHighlighted(holder, true);
+                    }
+                    holder.collector.onAmiiboImageClicked(amiiboList);
+                } else if (holder.listener != null) {
+                    holder.listener.onAmiiboImageClicked(holder.amiiboFile);
+                }
+            });
+        }
+        holder.bind(getItem(position));
+        if (amiiboList.contains(holder.amiiboFile)) {
+            setIsHighlighted(holder, true);
+        } else {
+            setIsHighlighted(holder, false);
         }
     }
 

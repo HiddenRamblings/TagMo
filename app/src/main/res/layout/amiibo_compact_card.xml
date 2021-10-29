@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:padding="8dp"
-            android:text="@string/amiibo_error_caps"
+            android:text="@string/error_caps"
             android:textAlignment="center"
             android:gravity="center_horizontal"
             android:textColor="@color/tag_text_light"

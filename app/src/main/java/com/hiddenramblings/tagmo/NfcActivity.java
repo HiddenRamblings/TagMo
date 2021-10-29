@@ -118,22 +118,24 @@ public class NfcActivity extends AppCompatActivity {
         String mode = commandIntent.getAction();
 
         if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK))
-            bankNumberPicker.setValue(commandIntent.getIntExtra(
-                    TagMo.EXTRA_CURRENT_BANK, bankNumberPicker.getValue()));
+            bankNumberPicker.setValue(TagUtils.getValueForPosition(commandIntent.getIntExtra(
+                    TagMo.EXTRA_CURRENT_BANK, bankNumberPicker.getValue())));
         else if (TagMo.getPrefs().enableEliteSupport().get()) {
-            bankNumberPicker.setValue(TagMo.getPrefs().eliteActiveBank().get());
+            bankNumberPicker.setValue(TagUtils.getValueForPosition(
+                    TagMo.getPrefs().eliteActiveBank().get()));
         } else {
             bankTextView.setVisibility(View.GONE);
             bankNumberPicker.setVisibility(View.GONE);
         }
         if (commandIntent.hasExtra(TagMo.EXTRA_BANK_COUNT)) {
-            write_count = commandIntent.getIntExtra(TagMo.EXTRA_BANK_COUNT, 1);
+            write_count = commandIntent.getIntExtra(TagMo.EXTRA_BANK_COUNT, 200);
         }
         switch (mode) {
             case TagMo.ACTION_WRITE_TAG_FULL:
             case TagMo.ACTION_WRITE_TAG_RAW:
             case TagMo.ACTION_WRITE_TAG_DATA:
-                if (!commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
+                if (!commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)
+                        || !TagMo.getPrefs().enableEliteSupport().get()) {
                     bankNumberPicker.setVisibility(View.GONE);
                     bankNumberPicker.setEnabled(false);
                     bankTextView.setVisibility(View.GONE);
@@ -146,19 +148,17 @@ public class NfcActivity extends AppCompatActivity {
             case TagMo.ACTION_LOCK_AMIIBO:
             case TagMo.ACTION_UNLOCK_UNIT:
                 bankNumberPicker.setVisibility(View.GONE);
-            case TagMo.ACTION_ACTIVATE_BANK:
                 bankNumberPicker.setEnabled(false);
                 bankTextView.setVisibility(View.GONE);
                 break;
+            case TagMo.ACTION_ACTIVATE_BANK:
             case TagMo.ACTION_BACKUP_AMIIBO:
-                if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)
+            case TagMo.ACTION_FORMAT_BANK:
+                if (!commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)
                         || !TagMo.getPrefs().enableEliteSupport().get()) {
                     bankNumberPicker.setVisibility(View.GONE);
-                    bankNumberPicker.setEnabled(false);
                     bankTextView.setVisibility(View.GONE);
                 }
-                break;
-            case TagMo.ACTION_FORMAT_BANK:
                 break;
         }
         switch (mode) {
@@ -198,7 +198,7 @@ public class NfcActivity extends AppCompatActivity {
                 break;
 
             default:
-                setTitle(R.string.error);
+                setTitle(R.string.error_caps);
                 finish();
         }
     }
@@ -247,7 +247,7 @@ public class NfcActivity extends AppCompatActivity {
         byte[] data = new byte[0];
         if (commandIntent.hasExtra(TagMo.EXTRA_TAG_DATA)) {
             data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-            if (data == null) throw new IOException(getString(R.string.no_data));
+            if (data == null) throw new IOException(getString(R.string.error_no_data));
         }
         if (!commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
             if (commandIntent.getAction().equals(TagMo.ACTION_WRITE_TAG_FULL)) {
@@ -270,7 +270,7 @@ public class NfcActivity extends AppCompatActivity {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             mifare = NTAG215.get(tag);
             if (mifare == null) {
-                throw new Exception(getString(R.string.tag_type_error,
+                throw new Exception(getString(R.string.error_tag_type,
                         TagUtils.getTagTechnology(tag)));
             }
             mifare.connect();
@@ -280,8 +280,7 @@ public class NfcActivity extends AppCompatActivity {
             byte[] bank_details;
             int bank_count;
             int active_bank;
-            if (!isElite || mode.equals(TagMo.ACTION_UNLOCK_UNIT)
-                    || mode.equals(TagMo.ACTION_BACKUP_AMIIBO)) {
+            if (!isElite || mode.equals(TagMo.ACTION_UNLOCK_UNIT)) {
                 selection = 0;
                 bank_count = -1;
                 active_bank = -1;
@@ -342,12 +341,13 @@ public class NfcActivity extends AppCompatActivity {
                         break;
 
                     case TagMo.ACTION_BACKUP_AMIIBO:
-                        if (isElite) {
+                        Intent backup = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
                             data = TagReader.scanBankToBytes(mifare, selection);
+                            backup.putExtra(TagMo.EXTRA_CURRENT_BANK, selection);
                         } else {
                             data = TagReader.scanTagToBytes(mifare);
                         }
-                        Intent backup = new Intent(TagMo.ACTION_NFC_SCANNED);
                         backup.putExtra(TagMo.EXTRA_TAG_DATA, data);
                         setResult(Activity.RESULT_OK, backup);
                         break;
@@ -362,6 +362,7 @@ public class NfcActivity extends AppCompatActivity {
                             if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
                                 data = TagReader.scanBankToBytes(mifare, selection);
                                 result.putExtra(TagMo.EXTRA_TAG_DATA, data);
+                                result.putExtra(TagMo.EXTRA_CURRENT_BANK, selection);
                             } else {
                                 ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
                                 result.putExtra(TagMo.EXTRA_SIGNATURE,
@@ -424,14 +425,14 @@ public class NfcActivity extends AppCompatActivity {
                        break;
 
                     default:
-                        throw new Exception(getString(R.string.state_error, mode));
+                        throw new Exception(getString(R.string.error_state, mode));
                 }
             } finally {
                 mifare.close();
             }
             finish();
         } catch (Exception e) {
-            TagMo.Error(getClass(), R.string.error, e);
+            TagMo.Error(getClass(), R.string.error_caps, e);
             String error = e.getMessage();
             if (e.getCause() != null) {
                 error = error + "\n" + e.getCause().toString();

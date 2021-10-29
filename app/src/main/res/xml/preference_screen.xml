@@ -90,11 +90,11 @@
         app:iconSpaceReserved="false">
         <androidx.preference.Preference
             android:key="@string/settings_info_amiibo"
-            android:title="@string/pref_amiibo"
+            android:title="@string/amiibo"
             app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/settings_info_game_series"
-            android:title="@string/pref_amiibo_game"
+            android:title="@string/amiibo_game"
             app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/settings_info_characters"
@@ -102,7 +102,7 @@
             app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/settings_info_amiibo_series"
-            android:title="@string/pref_amiibo_series"
+            android:title="@string/amiibo_series"
             app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/settings_info_amiibo_types"

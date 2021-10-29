@@ -5,37 +5,17 @@
     <string name="shadow_cave_progress">Shadow Cave progress</string>
     <string name="edit_tp_data">Edit TP Data</string>
     <string name="editor_error_outofbounds">Amiibo contains an invalid current state.</string>
+
+    <string name="fixed_key">Fixed Key</string>
     <string name="fixed_key_found">Locked Key found.</string>
     <string name="fixed_key_missing">No Locked Key!</string>
     <string name="unfixed_key_found">Unfixed Key found.</string>
     <string name="unfixed_key_missing">No Unfixed Key!</string>
+
     <string name="nfc_unsupported">NFC Not Supported!</string>
     <string name="nfc_disabled">NFC Disabled!</string>
     <string name="nfc_enabled">NFC Enabled!</string>
     <string name="nfc_query">NFC is currently disabled. Enable NFC?</string>
-
-    <string name="fixed_key">Fixed Key</string>
-
-    <string name="amiibo_info_stats">Amiibo Info Stats</string>
-    <string name="pref_amiibo">Amiibo</string>
-    <string name="pref_amiibo_game">Game Series</string>
-    <string name="pref_amiibo_characters">Characters</string>
-    <string name="pref_amiibo_types">Amiibo Types</string>
-    <string name="pref_amiibo_series">Amiibo Series</string>
-    <string name="pref_advanced">Advanced</string>
-    <string name="pref_disable_debug">Disable Debug Logs</string>
-    <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
-    <string name="pref_stable_channel">Stable Update Checks</string>
-    <string name="pref_resources">Resources</string>
-    <string name="pref_wiki_link">View Instructions Wiki</string>
-    <string name="pref_reddit_link">Visit the TagMo reddit</string>
-
-    <string name="sync_api_details">Sync Amiibo info with AmiiboAPI.com</string>
-    <string name="export_json_details">Export Amiibo info to JSON</string>
-    <string name="import_json_details">Import Amiibo info from JSON</string>
-    <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
-    <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard or external storage device</string>
-    <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
 
     <string name="keys_missing_warning">Amiibo keys not found</string>
     <string name="no_decrypt_key">Decryption keys not imported</string>
@@ -43,8 +23,6 @@
     <string name="open_settings_action">Settings</string>
     <string name="edit_ssb_data">Edit SSB Data</string>
     <string name="edit_mii_data">Edit Mii Data</string>
-
-    <string name="amiibo">Amiibo</string>
 
     <string name="search">Search</string>
     <string name="filter">Filter</string>
@@ -58,6 +36,7 @@
     <string name="unlock">Unlock</string>
     <string name="scan">Scan</string>
 
+    <string name="amiibo">Amiibo</string>
     <string name="amiibo_id">ID</string>
     <string name="amiibo_name">Name</string>
     <string name="amiibo_game">Game Series</string>
@@ -66,13 +45,9 @@
     <string name="amiibo_type">Amiibo Type</string>
     <string name="amiibo_path">File Path</string>
 
-    <string name="series">Series</string>
-    <string name="variant">Variant</string>
-    <string name="form">Form</string>
-    <string name="id_number">ID #</string>
-    <string name="set">Set</string>
+    <string name="pref_amiibo_characters">Characters</string>
+    <string name="pref_amiibo_types">Amiibo Types</string>
 
-    <string name="amiibo_error_caps">ERROR</string>
     <string name="amiibo_name_caps">NAME</string>
     <string name="amiibo_id_caps">TAGID</string>
     <string name="amiibo_type_caps">AMIIBO TYPE</string>
@@ -81,14 +56,22 @@
     <string name="amiibo_character_caps">CHARACTER</string>
     <string name="amiibo_path_caps">PATH</string>
 
+    <string name="not_found">No Amiibo Found</string>
+
+    <string name="recurse_folders">Recursive Folders</string>
+    <string name="show_missing">Show Missing Bins</string>
+
+    <string name="missing_amiibo">Amiibo bin not available</string>
+
     <string name="simple">Simple</string>
     <string name="compact">Compact</string>
     <string name="large">Large</string>
 
-    <string name="recurse">Recursive Folders</string>
-    <string name="missing">Show Missing Bins</string>
-
-    <string name="missing_amiibo">Amiibo bin not available</string>
+    <string name="series">Series</string>
+    <string name="variant">Variant</string>
+    <string name="form">Form</string>
+    <string name="id_number">ID #</string>
+    <string name="set">Set</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -100,17 +83,13 @@
     <string name="delete">Delete</string>
     <string name="parent">Parent</string>
     <string name="unknown">Unknown</string>
-    <string name="error">ERROR</string>
     <string name="invalid">Invalid</string>
     <string name="unspecified">Unspecified</string>
+    <string name="install">Install</string>
+    <string name="sync">Sync</string>
+    <string name="setup">Setup</string>
 
-    <string name="change_view">Change View</string>
-    <string name="settings">Settings</string>
-    <string name="logcat">Logcat</string>
-    <string name="unlock_elite">Unlock N2 Elite</string>
-    <string name="mnu_write_raw">Write Tag (Raw Mode)</string>
-
-    <string name="not_found">No Amiibo Found</string>
+    <string name="error_caps">ERROR</string>
 
     <string name="uid">UID</string>
     <string name="country_code">Country Code</string>
@@ -147,11 +126,14 @@
     <string name="bonus_two">Bonus Effect 2</string>
     <string name="bonus_three">Bonus Effect 2</string>
 
+    <string name="change_view">Change View</string>
+    <string name="settings">Settings</string>
+    <string name="logcat">Logcat</string>
+    <string name="unlock_elite">Unlock N2 Elite</string>
+    <string name="mnu_write_raw">Write Tag (Raw Mode)</string>
+
     <string name="wrote_file">File saved to %1$s</string>
     <string name="tagmo_backup">TagMo Backup</string>
-    <string name="write_error">Error: %1$s</string>
-    <string name="no_data">No data to write</string>
-    <string name="tag_type_error">NTAG215 required, found %1$s!</string>
     <string name="tag_detected">Tag detected&#8230;</string>
 
     <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
@@ -182,6 +164,22 @@
     <string name="delete_active">Cannot delete the active bank!</string>
     <string name="refresh_required">Amiibo bank data required!</string>
     <string name="write_suggested">Save Amiibo to retain changes!</string>
+
+    <string name="amiibo_info_stats">Amiibo Info Stats</string>
+    <string name="pref_advanced">Advanced</string>
+    <string name="pref_disable_debug">Disable Debug Logs</string>
+    <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
+    <string name="pref_stable_channel">Stable Update Checks</string>
+    <string name="pref_resources">Resources</string>
+    <string name="pref_wiki_link">View Instructions Wiki</string>
+    <string name="pref_reddit_link">Visit the TagMo reddit</string>
+
+    <string name="sync_api_details">Sync Amiibo info with AmiiboAPI.com</string>
+    <string name="export_json_details">Export Amiibo info to JSON</string>
+    <string name="import_json_details">Import Amiibo info from JSON</string>
+    <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
+    <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard or external storage device</string>
+    <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
 
     <string name="encryption_keys">Encryption Keys</string>
     <string name="pref_import_keys">Import Keys</string>
@@ -221,14 +219,11 @@
     <string name="export_amiibo_info">Export Amiibo info</string>
     <string name="reset_amiibo_info">Reset amiibo info</string>
 
-    <string name="sync_amiibo_status">Syncing with AmiiboAPI %1$s</string>
-    <string name="sync_complete"> complete!</string>
-    <string name="sync_failed"> failed!</string>
+    <string name="sync_amiibo_process">Syncing with AmiiboAPI&#8230;</string>
+    <string name="sync_amiibo_complete">AmiiboAPI sync successful!</string>
+    <string name="sync_amiibo_failed">AmiiboAPI sync has failed!</string>
 
     <string name="total">Total: %1$s</string>
-
-    <string name="locked">locked</string>
-    <string name="unlocked">unlocked</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>
@@ -247,63 +242,29 @@
 
     <string name="validation_success">Validation successful</string>
 
-    <string name="media_scan_fail">Failed to refresh media scanner</string>
-    <string name="no_tag_loaded">&lt;No Tag Loaded&gt;</string>
-    <string name="read_error">&lt;Error Reading Tag&gt;</string>
-    <string name="blank_tag">&lt;Blank Tag&gt;</string>
-    <string name="blank_bank">%1$s: &lt;Blank Bank&gt;</string>
-    <string name="tag_close_error">Error closing tag %1$s</string>
-    <string name="state_error">State error. Invalid action: %1$s</string>
-    <string name="length_error">Must be 8 characters</string>
-    <string name="input_error">Invalid input</string>
-    <string name="tag_data_error">Failed to save tag data</string>
+    <string name="error_generic">Error: %1$s</string>
+    <string name="error_no_data">No data to write</string>
+    <string name="error_tag_type">NTAG215 required, found %1$s!</string>
+    <string name="error_tag_close">Error closing tag %1$s</string>
+    <string name="error_state">State error. Invalid action: %1$s</string>
+    <string name="error_length">Must be 8 characters</string>
+    <string name="error_input">Invalid input</string>
+    <string name="error_min_max">Must be between %1$d and %2$d</string>
+    <string name="error_data_write">Error while writing main data (stage 1)</string>
+    <string name="error_password_write">Error while setting password (stage 2)</string>
+    <string name="error_lock_write">Error while setting lock info (stage 3)</string>
+    <string name="error_tag_rewrite">Tag already an Amiibo. Use \'Restore Tag\' to write data.</string>
+    <string name="error_tag_format">Tag is not an NTAG215</string>
+    <string name="error_tag_version">Tag version error</string>
+    <string name="error_version">Version information error</string>
+    <string name="error_amiibo_parse">Amiibo parse error</string>
+    <string name="error_powertag_key">Power Tag keys not loaded</string>
+    <string name="error_elite_write">Error while writing data to N2 Elite</string>
+    <string name="error_elite_auth">Error while authenticating N2 Elite</string>
+    <string name="error_amiitool_init">Failed to initialise amiitool</string>
 
-    <string name="key_not_present">Key files not loaded!</string>
-    <string name="key_load_error">Failed to load keys: </string>
-    <string name="key_size_error">Key file size does not match.</string>
-    <string name="key_size_invalid">Invalid key file size</string>
-    <string name="key_signature_error">Key file signature does not match.</string>
-    <string name="invalid_key_error">No valid key in file.</string>
-    <string name="key_read_error">Error reading key from local storage</string>
-
-    <string name="amiitool_init_error">Failed to initialise amiitool</string>
-
-    <string name="failed_decrypt">Failed to decrypt tag data</string>
-    <string name="failed_encrypt">Failed to encrypt tag data</string>
-    <string name="invalid_tag_data">Invalid tag data.</string>
-    <string name="invalid_tag_file">Invalid tag file. %1$s</string>
-    <string name="invalid_tag_prefix">Tag must start with a 0x04.</string>
-    <string name="invalid_tag_lock">Lock signature mismatch.</string>
-    <string name="invalid_tag_cc">CC signature mismatch.</string>
-    <string name="invalid_tag_dynamic">Dynamic lock signature mismatch.</string>
-    <string name="invalid_tag_cfg_zero">CFG0 signature mismatch.</string>
-    <string name="invalid_tag_cfg_one">CFG1 signature mismatch.</string>
-    <string name="invalid_uid_length">Invalid UID length</string>
-    <string name="invalid_file_size">%1$s size invalid (%2$d expected)!</string>
-    <string name="invalid_app_data">Invalid app data</string>
-
-    <string name="min_max_error">Must be between %1$d and %2$d</string>
-
-    <string name="amiibo_parse_error">Amiibo parse error</string>
-    <string name="powertag_key_error">Power Tag keys not loaded</string>
-
-    <string name="uid_key_missing">No available key for UID</string>
-    <string name="p10_key_missing">No available key for P10_ID</string>
-
-    <string name="amiibo_info_parse_error">Unable to parse Amiibo info</string>
-    <string name="amiibo_info_not_loaded">Amiibo info not loaded</string>
-    <string name="amiibo_info_export_fail">Failed to export Amiibo info to %1$s</string>
-    <string name="amiibo_info_exported">Exported Amiibo info to %1$s</string>
-    <string name="amiibo_failure_load">Failed to load Amiibo info</string>
-    <string name="amiibo_failure_parse">Failed to parse Amiibo info</string>
-    <string name="amiibo_failure_read">Failed to read Amiibo info</string>
-    <string name="amiibo_failure_update">Failed to update Amiibo info</string>
-    <string name="amiibo_failure_parse_default">Failed to parse default Amiibo info</string>
-
-    <string name="data_write_error">Error while writing main data (stage 1)</string>
-    <string name="password_write_error">Error while setting password (stage 2)</string>
-    <string name="lock_write_error">Error while setting lock info (stage 3)</string>
-    <string name="tag_already_written">Tag already an Amiibo. Use \'Restore Tag\' to write data.</string>
+    <string name="fail_save_data">Failed to save tag data</string>
+    <string name="fail_media_scan">Failed to refresh media scanner</string>
     <string name="fail_read_size">Read failed! Unexpected read size.</string>
     <string name="fail_read_uid">Could not read old UID</string>
     <string name="fail_mismatch_uid">Source UID does not match the target!</string>
@@ -316,32 +277,62 @@
     <string name="fail_write_amiibo">Writing Amiibo data failed!</string>
     <string name="fail_early_remove">Amiibo removed too early!</string>
     <string name="fail_amiibo_null">Please scan the Amiibo again</string>
+    <string name="fail_read">Read failed</string>
+    <string name="fail_auth">Authenticaiton failed</string>
+    <string name="fail_decrypt">Failed to decrypt tag data</string>
+    <string name="fail_encrypt">Failed to encrypt tag data</string>
 
-    <string name="elite_write_error">Error while writing data to N2 Elite</string>
-    <string name="elite_auth_error">Error while authenticating N2 Elite</string>
+    <string name="no_tag_loaded">&lt;No Tag Loaded&gt;</string>
+    <string name="read_error">&lt;Error Reading Tag&gt;</string>
+    <string name="blank_tag">&lt;Blank Tag&gt;</string>
+    <string name="blank_bank">%1$s: &lt;Blank Bank&gt;</string>
 
-    <string name="tag_format_error">Tag is not an NTAG215</string>
-    <string name="no_source_data">Cannot validate: no source data loaded to compare.</string>
-    <string name="tag_version_error">Tag version error</string>
+    <string name="key_not_present">Key files not loaded!</string>
+    <string name="key_load_error">Failed to load keys: </string>
+    <string name="key_size_error">Key file size does not match.</string>
+    <string name="key_size_invalid">Invalid key file size</string>
+    <string name="key_signature_error">Key file signature does not match.</string>
+    <string name="invalid_key_error">No valid key in file.</string>
+    <string name="key_read_error">Error reading key from local storage</string>
+
+    <string name="invalid_tag_data">Invalid tag data.</string>
+    <string name="invalid_tag_file">Invalid tag file. %1$s</string>
+    <string name="invalid_tag_prefix">Tag must start with a 0x04.</string>
+    <string name="invalid_tag_lock">Lock signature mismatch.</string>
+    <string name="invalid_tag_cc">CC signature mismatch.</string>
+    <string name="invalid_tag_dynamic">Dynamic lock signature mismatch.</string>
+    <string name="invalid_tag_cfg_zero">CFG0 signature mismatch.</string>
+    <string name="invalid_tag_cfg_one">CFG1 signature mismatch.</string>
+    <string name="invalid_uid_length">Invalid UID length</string>
+    <string name="invalid_file_size">%1$s size invalid (%2$d expected)!</string>
+    <string name="invalid_app_data">Invalid app data</string>
+
+    <string name="uid_key_missing">No available key for UID</string>
+    <string name="p10_key_missing">No available key for P10_ID</string>
     <string name="power_tag_verify">Power Tag Confirmed: %1$s</string>
+
+    <string name="amiibo_info_parse_error">Unable to parse Amiibo info</string>
+    <string name="amiibo_info_not_loaded">Amiibo info not loaded</string>
+    <string name="amiibo_info_export_fail">Failed to export Amiibo info to %1$s</string>
+    <string name="amiibo_info_exported">Exported Amiibo info to %1$s</string>
+    <string name="amiibo_failure_load">Failed to load Amiibo info</string>
+    <string name="amiibo_failure_parse">Failed to parse Amiibo info</string>
+    <string name="amiibo_failure_read">Failed to read Amiibo info</string>
+    <string name="amiibo_failure_update">Failed to update Amiibo info</string>
+    <string name="amiibo_failure_parse_default">Failed to parse default Amiibo info</string>
+
+    <string name="no_source_data">Cannot validate: no source data loaded to compare.</string>
 
     <string name="bank_select_details">Set Bank Number</string>
     <string name="bank_count_details">Set Bank Count</string>
     <string name="write_confirm">Write selections to N2 Elite?</string>
     <string name="feature_unavailable">Coming Soon!</string>
 
-    <string name="read_failed">Read failed</string>
-    <string name="version_error">Version information error</string>
-
     <string name="auth_null">Auth result was null</string>
-    <string name="auth_failed">Authenticaiton failed</string>
 
     <string name="update_tagmo_apk">New TagMo version released!</string>
     <string name="update_amiibo_api">AmiiboAPI database updated!</string>
     <string name="config_required">Encryption keys not loaded!</string>
-    <string name="install">Install</string>
-    <string name="sync">Sync</string>
-    <string name="setup">Setup</string>
 
     <string name="firmware_update">N2 Elite Firmware Updated!</string>
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>

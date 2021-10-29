@@ -363,7 +363,7 @@ public class EliteActivity extends AppCompatActivity implements
 
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
-        intent.putExtra(TagMo.EXTRA_CURRENT_BANK, TagUtils.getValueForPosition(position));
+        intent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
         intent.putExtras(args);
         onModifierActivity.launch(intent);
     }
@@ -431,9 +431,10 @@ public class EliteActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
+        int current_bank = result.getData().getIntExtra(TagMo.EXTRA_CURRENT_BANK, clickedPosition);
+
         Intent modify = new Intent(EliteActivity.this, NfcActivity_.class);
-        modify.putExtra(TagMo.EXTRA_CURRENT_BANK,
-                TagUtils.getValueForPosition(clickedPosition));
+        modify.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
         String action = result.getData().getAction();
         modify.setAction(action);
         switch (action) {
@@ -441,14 +442,13 @@ public class EliteActivity extends AppCompatActivity implements
                 onActivateActivity.launch(modify);
                 break;
             case TagMo.ACTION_REPLACE_AMIIBO:
-                displayWriteDialog(clickedPosition);
+                displayWriteDialog(current_bank);
                 break;
             case TagMo.ACTION_BACKUP_AMIIBO:
                 onBackupActivity.launch(modify);
                 break;
             case TagMo.ACTION_FORMAT_BANK:
-                if (TagMo.getPrefs().eliteActiveBank().get() ==
-                        TagUtils.getValueForPosition(clickedPosition)) {
+                if (TagMo.getPrefs().eliteActiveBank().get() == current_bank) {
                     showToast(R.string.delete_active);
                 } else {
                     onModifierActivity.launch(modify);
@@ -456,7 +456,7 @@ public class EliteActivity extends AppCompatActivity implements
                 break;
         }
 
-        amiibos.get(clickedPosition).data = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        amiibos.get(current_bank).data = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         refreshEliteHardwareAdapter();
     });
 
@@ -472,7 +472,8 @@ public class EliteActivity extends AppCompatActivity implements
         args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
 
         Intent intent = new Intent(this, AmiiboActivity_.class);
-        intent.putExtra(TagMo.EXTRA_CURRENT_BANK, TagUtils.getValueForPosition(clickedPosition));
+        intent.putExtra(TagMo.EXTRA_CURRENT_BANK, result.getData().getIntExtra(
+                TagMo.EXTRA_CURRENT_BANK, clickedPosition));
         intent.putExtras(args);
 
         onViewerActivity.launch(intent);
@@ -488,7 +489,7 @@ public class EliteActivity extends AppCompatActivity implements
         clickedPosition = position;
         if (amiibo.data != null) {
             Intent intent = new Intent(this, AmiiboActivity_.class);
-            intent.putExtra(TagMo.EXTRA_CURRENT_BANK, TagUtils.getValueForPosition(position));
+            intent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
             Bundle args = new Bundle();
             args.putByteArray(TagMo.EXTRA_TAG_DATA, amiibo.data);
             intent.putExtras(args);
@@ -506,7 +507,7 @@ public class EliteActivity extends AppCompatActivity implements
                         continue;
                     }
                     Intent intent = new Intent(this, AmiiboActivity_.class);
-                    intent.putExtra(TagMo.EXTRA_CURRENT_BANK, TagUtils.getValueForPosition(position));
+                    intent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
                     intent.putExtras(args);
                     onViewerActivity.launch(intent);
                     isAvailable = true;
@@ -517,7 +518,7 @@ public class EliteActivity extends AppCompatActivity implements
 
         if (!isAvailable) {
             Intent amiiboIntent = new Intent(EliteActivity.this, NfcActivity_.class);
-            amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, TagUtils.getValueForPosition(position));
+            amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
             amiiboIntent.setAction(TagMo.ACTION_SCAN_TAG);
             onNFCActivity.launch(amiiboIntent);
         }

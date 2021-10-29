@@ -48,7 +48,6 @@ public class TagMo extends Application {
     public static final String EXTRA_ACTIVE_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_ACTIVE_BANK";
     public static final String EXTRA_BANK_COUNT = BuildConfig.APPLICATION_ID + ".EXTRA_BANK_COUNT";
     public static final String EXTRA_CURRENT_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_CURRENT_BANK";
-    public static final String EXTRA_BANK_ACTION = BuildConfig.APPLICATION_ID + ".EXTRA_BANK_ACTION";
 
     @Pref
     Preferences_ prefs;
@@ -169,7 +168,7 @@ public class TagMo extends Application {
                     file.getAbsolutePath()
             }, null, null);
         } catch (Exception e) {
-            Error(TagWriter.class, R.string.media_scan_fail, e);
+            Error(TagWriter.class, R.string.fail_media_scan, e);
         }
     }
 }

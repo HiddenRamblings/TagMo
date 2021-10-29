@@ -16,19 +16,19 @@ public class TagWriter {
             writePages(mifare, 3, 129, pages);
             TagMo.Debug(TagWriter.class, R.string.data_write);
         } catch (Exception e) {
-            throw new Exception(TagMo.getStringRes(R.string.data_write_error), e);
+            throw new Exception(TagMo.getStringRes(R.string.error_data_write), e);
         }
         try {
             writePassword(mifare);
             TagMo.Debug(TagWriter.class, R.string.password_write);
         } catch (Exception e) {
-            throw new Exception(TagMo.getStringRes(R.string.password_write_error), e);
+            throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
         }
         try {
             writeLockInfo(mifare);
             TagMo.Debug(TagWriter.class, R.string.lock_write);
         } catch (Exception e) {
-            throw new Exception(TagMo.getStringRes(R.string.lock_write_error), e);
+            throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
         }
     }
 
@@ -111,19 +111,19 @@ public class TagWriter {
                 writePages(mifare, 3, 129, pages);
                 TagMo.Debug(TagWriter.class, R.string.data_write);
             } catch (Exception e) {
-                throw new Exception(TagMo.getStringRes(R.string.data_write_error), e);
+                throw new Exception(TagMo.getStringRes(R.string.error_data_write), e);
             }
             try {
                 writePassword(mifare);
                 TagMo.Debug(TagWriter.class, R.string.password_write);
             } catch (Exception e) {
-                throw new Exception(TagMo.getStringRes(R.string.password_write_error), e);
+                throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
             }
             try {
                 writeLockInfo(mifare);
                 TagMo.Debug(TagWriter.class, R.string.lock_write);
             } catch (Exception e) {
-                throw new Exception(TagMo.getStringRes(R.string.lock_write_error), e);
+                throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
             }
         }
     }
@@ -141,10 +141,10 @@ public class TagWriter {
                 System.arraycopy(tagData, 84, result, 0, result.length);
                 return result;
             } else {
-                throw new Exception(TagMo.getStringRes(R.string.elite_write_error));
+                throw new Exception(TagMo.getStringRes(R.string.error_elite_write));
             }
         } else {
-            throw new Exception(TagMo.getStringRes(R.string.elite_auth_error));
+            throw new Exception(TagMo.getStringRes(R.string.error_elite_auth));
         }
     }
 
@@ -194,7 +194,7 @@ public class TagWriter {
         byte[] pages0_1 = tag.readPages(0);
 
         if (pages0_1 == null || pages0_1.length != NfcByte.PAGE_SIZE * 4)
-            throw new Exception(TagMo.getStringRes(R.string.read_failed));
+            throw new Exception(TagMo.getStringRes(R.string.fail_read));
 
         byte[] uid = uidFromPages(pages0_1);
         byte[] password = TagUtils.keygen(uid);
@@ -214,7 +214,7 @@ public class TagWriter {
         String respStr = TagUtils.bytesToHex(response);
         TagMo.Error(TagWriter.class, R.string.auth_response, respStr);
         if (!"8080".equals(respStr)) {
-            throw new Exception(TagMo.getStringRes(R.string.auth_failed));
+            throw new Exception(TagMo.getStringRes(R.string.fail_auth));
         }
     }
 
@@ -241,7 +241,7 @@ public class TagWriter {
         byte[] pages0_1 = tag.readPages(0);
 
         if (pages0_1 == null || pages0_1.length != NfcByte.PAGE_SIZE * 4)
-            throw new IOException(TagMo.getStringRes(R.string.read_failed));
+            throw new IOException(TagMo.getStringRes(R.string.fail_read));
 
         byte[] uid = uidFromPages(pages0_1);
         byte[] password = TagUtils.keygen(uid);
@@ -259,7 +259,7 @@ public class TagWriter {
         byte[] pages = tag.readPages(0);
 
         if (pages == null || pages.length != NfcByte.PAGE_SIZE * 4)
-            throw new IOException(TagMo.getStringRes(R.string.read_failed));
+            throw new IOException(TagMo.getStringRes(R.string.fail_read));
 
         tag.writePage(2, new byte[]{pages[2 * NfcByte.PAGE_SIZE],
                 pages[(2 * NfcByte.PAGE_SIZE) + 1], (byte) 0x0F, (byte) 0xE0}); // lock bits
@@ -279,10 +279,10 @@ public class TagWriter {
                 System.arraycopy(tagData, 84, result, 0, result.length);
                 return result;
             } else {
-                throw new Exception(TagMo.getStringRes(R.string.elite_write_error));
+                throw new Exception(TagMo.getStringRes(R.string.error_elite_write));
             }
         } else {
-            throw new Exception(TagMo.getStringRes(R.string.elite_write_error));
+            throw new Exception(TagMo.getStringRes(R.string.error_elite_write));
         }
     }
 }

@@ -14,8 +14,6 @@
 
     <string name="middleCenterError"> </string>
 
-    <string name="sync_processing">&#8230;</string>
-
     <string name="settings_import_keys">import_keys</string>
     <string name="settings_import_info">import_info</string>
     <string name="settings_reset_info">reset_info</string>
@@ -39,7 +37,7 @@
     <string name="image_network_settings">\@string/image_network_settings</string>
 
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
-    <string name="amiibo_api_raw">https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/%1$s</string>
+    <string name="api_raw_url">https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/%1$s</string>
     <string name="api_image_url">images/icon_%1$08x-%2$08x.png</string>
     <string name="api_database">database/amiibo.json</string>
 

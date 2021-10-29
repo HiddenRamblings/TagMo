@@ -9,6 +9,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
+import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
+import android.nfc.tech.Ndef;
+import android.nfc.tech.NdefFormatable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -267,10 +272,9 @@ public class NfcActivity extends AppCompatActivity {
         setResult(Activity.RESULT_CANCELED);
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            TagMo.Debug(getClass(), tag.toString());
             mifare = NTAG215.get(tag);
             if (mifare == null) {
-                throw new Exception(getString(R.string.tag_type_error));
+                throw new Exception(getString(R.string.tag_type_error, getTagTechnology(tag)));
             }
             mifare.connect();
             byte[] data = cheapTagQuickTest(commandIntent);
@@ -553,5 +557,45 @@ public class NfcActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private String getTagTechnology(Tag tag) {
+         String[] techList = tag.getTechList();
+        String type = "Unknown";
+        for (String s : techList) {
+            if (s.equals(MifareClassic.class.getName())) {
+                type = "Mifare Classic";
+                switch (MifareClassic.get(tag).getType()) {
+                    case MifareClassic.TYPE_CLASSIC:
+                        type = "Classic";
+                        break;
+                    case MifareClassic.TYPE_PLUS:
+                        type = "Plus";
+                        break;
+                    case MifareClassic.TYPE_PRO:
+                        type = "Pro";
+                        break;
+                }
+                type += "Mifare " + type;
+            } else if (s.equals(MifareUltralight.class.getName())) {
+                type = "Mifare UltraLight";
+                switch (MifareUltralight.get(tag).getType()) {
+                    case MifareUltralight.TYPE_ULTRALIGHT:
+                        type = "Ultralight";
+                        break;
+                    case MifareUltralight.TYPE_ULTRALIGHT_C:
+                        type = "Ultralight C";
+                        break;
+                }
+                type += "Mifare " + type;
+            } else if (s.equals(IsoDep.class.getName())) {
+                type = "IsoDep";
+            } else if (s.equals(Ndef.class.getName())) {
+                type = "Ndef";
+            } else if (s.equals(NdefFormatable.class.getName())) {
+                type = "NdefFormatable";
+            }
+        }
+        return type;
     }
 }

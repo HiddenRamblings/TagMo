@@ -975,8 +975,15 @@ public class BrowserActivity extends AppCompatActivity implements
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
 
         File[] files = rootFolder.listFiles();
-        if (files == null)
-            return amiiboFiles;
+        if (files == null) {
+            if (!TagMo.getPrefs().ignoreSdcard().get()) {
+                TagMo.getPrefs().ignoreSdcard().put(true);
+                this.onRootFolderChanged(false);
+                return listAmiibos(settings.getBrowserRootFolder(), recursiveFiles);
+            } else {
+                return amiiboFiles;
+            }
+        }
 
         for (File file : files) {
             if (file.isDirectory() && recursiveFiles) {
@@ -990,6 +997,11 @@ public class BrowserActivity extends AppCompatActivity implements
                     //
                 }
             }
+        }
+        if (amiiboFiles.isEmpty() && !TagMo.getPrefs().ignoreSdcard().get()) {
+            TagMo.getPrefs().ignoreSdcard().put(true);
+            this.onRootFolderChanged(false);
+            return listAmiibos(settings.getBrowserRootFolder(), recursiveFiles);
         }
         return amiiboFiles;
     }

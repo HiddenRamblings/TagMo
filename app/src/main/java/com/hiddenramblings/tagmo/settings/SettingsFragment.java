@@ -427,8 +427,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast(R.string.amiibo_failure_generic,
-                    getString(R.string.amiibo_failure_load), Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_failure_load, Toast.LENGTH_SHORT);
             return;
         }
         if (Thread.currentThread().isInterrupted())
@@ -449,13 +448,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             amiiboManager = AmiiboManager.parse(requireContext(), data);
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
-            showToast(R.string.amiibo_failure_generic,
-                    getString(R.string.amiibo_failure_parse), Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_failure_parse, Toast.LENGTH_SHORT);
             return;
         } catch (IOException e) {
             e.printStackTrace();
-            showToast(R.string.amiibo_failure_generic,
-                    getString(R.string.amiibo_failure_read), Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_failure_read, Toast.LENGTH_SHORT);
             return;
         }
         if (Thread.currentThread().isInterrupted())
@@ -465,8 +462,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             AmiiboManager.saveDatabase(amiiboManager);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
-            showToast(R.string.amiibo_failure_generic,
-                    getString(R.string.amiibo_failure_update), Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_failure_update, Toast.LENGTH_SHORT);
             return;
         }
         if (Thread.currentThread().isInterrupted())
@@ -490,8 +486,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             amiiboManager = AmiiboManager.getDefaultAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
-            showToast(R.string.amiibo_failure_generic,
-                    getString(R.string.amiibo_failure_parse_default), Snackbar.LENGTH_SHORT);
+            showToast(R.string.amiibo_failure_parse_default, Snackbar.LENGTH_SHORT);
         }
         if (Thread.currentThread().isInterrupted())
             return;

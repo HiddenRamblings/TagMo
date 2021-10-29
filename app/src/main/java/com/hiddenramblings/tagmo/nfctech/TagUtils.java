@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctag;
+package com.hiddenramblings.tagmo.nfctech;
 
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
@@ -10,7 +10,7 @@ import android.nfc.tech.NdefFormatable;
 import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.nfctag.data.AmiiboData;
+import com.hiddenramblings.tagmo.nfctech.data.AmiiboData;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -195,7 +195,7 @@ public class TagUtils {
 
     public static byte[][] splitPages(byte[] data) throws Exception {
         if (data.length < NfcByte.TAG_FILE_SIZE)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_data));
+            throw new IOException(TagMo.getStringRes(R.string.invalid_tag_data));
 
         byte[][] pages = new byte[data.length / NfcByte.PAGE_SIZE][];
         for (int i = 0, j = 0; i < data.length; i += NfcByte.PAGE_SIZE, j++) {
@@ -241,7 +241,7 @@ public class TagUtils {
     }
 
     public static byte[] patchUid(byte[] uid, byte[] tagData) throws Exception {
-        if (uid.length < 9) throw new Exception(TagMo.getStringRes(R.string.invalid_uid_length));
+        if (uid.length < 9) throw new IOException(TagMo.getStringRes(R.string.invalid_uid_length));
 
         byte[] patched = Arrays.copyOf(tagData, tagData.length);
 
@@ -262,6 +262,7 @@ public class TagUtils {
         return uid;
     }
 
+    @SuppressWarnings("unused")
     public static String randomizeSerial(String serial) {
         Random random = new Random();
         String week = new DecimalFormat("00").format(

@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,8 +30,8 @@ import com.hiddenramblings.tagmo.adapter.EliteWriteBlankAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfctag.TagReader;
-import com.hiddenramblings.tagmo.nfctag.TagUtils;
+import com.hiddenramblings.tagmo.nfctech.TagReader;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 
 import org.androidannotations.annotations.AfterViews;
@@ -99,7 +98,7 @@ public class EliteActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
 
@@ -325,7 +324,7 @@ public class EliteActivity extends AppCompatActivity implements
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
-        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.backup_dialog, amiibosView, false);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagReader.generateFileName(settings.getAmiiboManager(), tagData));

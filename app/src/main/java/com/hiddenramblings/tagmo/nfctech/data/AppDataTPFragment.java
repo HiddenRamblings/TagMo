@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctag.data;
+package com.hiddenramblings.tagmo.nfctech.data;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,6 +18,8 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.TextChange;
 import org.androidannotations.annotations.ViewById;
+
+import java.io.IOException;
 
 @SuppressLint("NonConstantResourceId")
 @EFragment(R.layout.fragment_app_data_tp)
@@ -50,20 +52,22 @@ public class AppDataTPFragment extends AppDataFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        try {
-            appData = new AppDataTP(getArguments().getByteArray("app_data"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        if (savedInstanceState == null) {
-            initialAppDataInitialized = getArguments().getBoolean("app_data_init");
+        if (getArguments() != null) {
+            try {
+                appData = new AppDataTP(getArguments().getByteArray("app_data"));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            if (savedInstanceState == null) {
+                initialAppDataInitialized = getArguments().getBoolean("app_data_init");
+            }
         }
     }
 
     @AfterViews
     void afterViews() {
-        setListForSpinners(txtHearts2, R.array.editor_tp_hearts);
+        setListForSpinners(txtHearts2);
 
         loadLevel();
         loadHearts();
@@ -143,9 +147,9 @@ public class AppDataTPFragment extends AppDataFragment {
         }
     }
 
-    void setListForSpinners(Spinner control, int list) {
+    void setListForSpinners(Spinner control) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this.getContext(), list, R.layout.spinner_text);
+                this.getContext(), R.array.editor_tp_hearts, R.layout.spinner_text);
         adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         control.setAdapter(adapter);
     }
@@ -161,11 +165,11 @@ public class AppDataTPFragment extends AppDataFragment {
     }
 
     @Override
-    public byte[] onAppDataSaved() throws Exception {
+    public byte[] onAppDataSaved() {
         try {
             int level = Integer.parseInt(txtLevel.getText().toString());
             appData.setLevel(level);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtLevel.requestFocus();
             throw e;
         }
@@ -173,11 +177,10 @@ public class AppDataTPFragment extends AppDataFragment {
             int hearts1 = Integer.parseInt(txtHearts1.getText().toString());
             int hearts2 = txtHearts2.getSelectedItemPosition();
             appData.setHearts((hearts1 * 4) + hearts2);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             txtHearts1.requestFocus();
             throw e;
         }
-
 
         return appData.array();
     }

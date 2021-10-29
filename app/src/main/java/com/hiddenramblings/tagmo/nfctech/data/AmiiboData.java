@@ -1,9 +1,11 @@
-package com.hiddenramblings.tagmo.nfctag.data;
+package com.hiddenramblings.tagmo.nfctech.data;
 
+import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.nfctag.NfcByte;
-import com.hiddenramblings.tagmo.nfctag.TagUtils;
+import com.hiddenramblings.tagmo.nfctech.NfcByte;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.BitSet;
@@ -40,7 +42,7 @@ public class AmiiboData {
 
     public AmiiboData(byte[] tagData) throws Exception {
         if (tagData.length < NfcByte.TAG_FILE_SIZE)
-            throw new Exception("Invalid tag data");
+            throw new IOException(TagMo.getStringRes(R.string.invalid_tag_data));
 
         this.tagData = ByteBuffer.wrap(tagData);
     }
@@ -58,9 +60,9 @@ public class AmiiboData {
     }
 
 
-    public void setUID(byte[] value) throws Exception {
+    public void setUID(byte[] value) throws NumberFormatException {
         if (value.length != UID_LENGTH)
-            throw new Exception();
+            throw new NumberFormatException(TagMo.getStringRes(R.string.invalid_uid_length));
 
         tagData.position(UID_OFFSET);
         tagData.put(value, 0x0, UID_LENGTH - 1);
@@ -104,35 +106,35 @@ public class AmiiboData {
         setSettingFlags(bitSet);
     }
 
-    public void checkCountryCode(int value) throws Exception {
+    public void checkCountryCode(int value) throws NumberFormatException {
         if (value < 0 || value > 20)
-            throw new Exception();
+            throw new NumberFormatException();
     }
 
-    public int getCountryCode() throws Exception {
+    public int getCountryCode() throws NumberFormatException {
         int value = tagData.get(COUNTRY_CODE) & 0xFF;
         checkCountryCode(value);
         return value;
     }
 
-    public void setCountryCode(int value) throws Exception {
+    public void setCountryCode(int value) throws NumberFormatException {
         checkCountryCode(value);
         tagData.put(COUNTRY_CODE, (byte) value);
     }
 
-    public Date getInitializedDate() throws Exception {
+    public Date getInitializedDate() throws NumberFormatException {
         return TagUtils.getDate(tagData, INIT_DATA_OFFSET);
     }
 
-    public void setInitializedDate(Date value) throws Exception {
+    public void setInitializedDate(Date value) throws NumberFormatException {
         TagUtils.putDate(tagData, INIT_DATA_OFFSET, value);
     }
 
-    public Date getModifiedDate() throws Exception {
+    public Date getModifiedDate() throws NumberFormatException {
         return TagUtils.getDate(tagData, MODIFIED_DATA_OFFSET);
     }
 
-    public void setModifiedDate(Date value) throws Exception {
+    public void setModifiedDate(Date value) throws NumberFormatException {
         TagUtils.putDate(tagData, MODIFIED_DATA_OFFSET, value);
     }
 
@@ -162,16 +164,16 @@ public class AmiiboData {
         tagData.putLong(TITLE_ID_OFFSET, value);
     }
 
-    public void checkWriteCount(int value) throws Exception {
+    public void checkWriteCount(int value) throws NumberFormatException {
         if (value < WRITE_COUNT_MIN_VALUE || value > WRITE_COUNT_MAX_VALUE)
-            throw new Exception();
+            throw new NumberFormatException();
     }
 
     public int getWriteCount() {
         return tagData.getShort(WRITE_COUNT_OFFSET) & 0xFFFF;
     }
 
-    public void setWriteCount(int value) throws Exception {
+    public void setWriteCount(int value) throws NumberFormatException {
         checkWriteCount(value);
         tagData.putShort(WRITE_COUNT_OFFSET, (short) value);
     }
@@ -190,7 +192,7 @@ public class AmiiboData {
 
     public void setAppData(byte[] value) throws Exception {
         if (value.length != APP_DATA_LENGTH)
-            throw new Exception();
+            throw new IOException(TagMo.getStringRes(R.string.invalid_app_data));
 
         TagUtils.putBytes(tagData, APP_DATA_OFFSET, value);
     }

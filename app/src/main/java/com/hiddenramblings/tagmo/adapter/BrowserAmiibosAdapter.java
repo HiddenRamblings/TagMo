@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo.adapter;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -35,7 +34,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
-import com.hiddenramblings.tagmo.nfctag.TagUtils;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
@@ -485,17 +484,18 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
 
             String query = settings.getQuery().toLowerCase();
 
-            if (tagInfo == null) {
-                this.txtError.setVisibility(View.GONE);
-            } else {
+            boolean hasTagInfo = tagInfo != null;
+            if (hasTagInfo) {
                 setAmiiboInfoText(this.txtError, tagInfo, false);
+            } else {
+                this.txtError.setVisibility(View.GONE);
             }
             setAmiiboInfoText(this.txtName, amiiboName, false);
-            setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query), tagInfo != null);
-            setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), tagInfo != null);
-            setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query), tagInfo != null);
-            setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query), tagInfo != null);
-            // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), tagInfo != null);
+            setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query), hasTagInfo);
+            setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), hasTagInfo);
+            setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query), hasTagInfo);
+            setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query), hasTagInfo);
+            // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), hasTagInfo);
             if (item.getFilePath() != null) {
                 this.itemView.setEnabled(true);
                 String relativeFile = TagMo.friendlyPath(item.getFilePath()).replace(

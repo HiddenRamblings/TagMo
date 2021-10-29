@@ -132,4 +132,17 @@
             android:title="@string/pref_stable_channel"
             app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/pref_resources"
+        app:iconSpaceReserved="false">
+    <androidx.preference.Preference
+        android:key="@string/settings_view_wiki"
+        android:title="@string/pref_wiki_link"
+        app:iconSpaceReserved="false" />
+    <androidx.preference.Preference
+        android:key="@string/settings_view_reddit"
+        android:title="@string/pref_reddit_link"
+        app:iconSpaceReserved="false" />
+    </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

@@ -56,10 +56,10 @@ import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.RequestCommit;
-import com.hiddenramblings.tagmo.nfctag.KeyManager;
-import com.hiddenramblings.tagmo.nfctag.PowerTagManager;
-import com.hiddenramblings.tagmo.nfctag.TagReader;
-import com.hiddenramblings.tagmo.nfctag.TagUtils;
+import com.hiddenramblings.tagmo.nfctech.KeyManager;
+import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
+import com.hiddenramblings.tagmo.nfctech.TagReader;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
@@ -214,7 +214,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
 
@@ -315,9 +315,8 @@ public class BrowserActivity extends AppCompatActivity implements
     });
 
     ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        this.refreshBackground();
-    });
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> this.refreshBackground());
 
     @Click(R.id.fab)
     public void onFabClicked() {
@@ -414,7 +413,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
-        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.backup_dialog, amiibosView, false);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagReader.generateFileName(settings.getAmiiboManager(), tagData));
@@ -857,6 +856,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .setMessage(getString(R.string.delete_amiibo,
                         TagMo.friendlyPath(amiiboFile.getFilePath())))
                 .setNegativeButton(R.string.delete, (dialog, which) -> {
+                    //noinspection ResultOfMethodCallIgnored
                     amiiboFile.getFilePath().delete();
                     this.refreshBackground();
                     dialog.dismiss();
@@ -1255,7 +1255,10 @@ public class BrowserActivity extends AppCompatActivity implements
                 PackageInstaller.SessionParams.MODE_FULL_INSTALL);
         int sessionId = installer.createSession(params);
         PackageInstaller.Session session = installer.openSession(sessionId);
-        long length = DocumentFile.fromSingleUri(this, apkUri).length();
+        DocumentFile document = DocumentFile.fromSingleUri(this, apkUri);
+        if (document == null)
+            throw new IOException(getString(R.string.fail_invalid_size));
+        long length = document.length();
         OutputStream sessionStream = session.openWrite("NAME", 0, length);
         byte[] buf = new byte[(int) length];
         int size;

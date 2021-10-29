@@ -25,11 +25,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
-import com.hiddenramblings.tagmo.nfctag.KeyManager;
-import com.hiddenramblings.tagmo.nfctag.NTAG215;
-import com.hiddenramblings.tagmo.nfctag.TagReader;
-import com.hiddenramblings.tagmo.nfctag.TagUtils;
-import com.hiddenramblings.tagmo.nfctag.TagWriter;
+import com.hiddenramblings.tagmo.nfctech.KeyManager;
+import com.hiddenramblings.tagmo.nfctech.NTAG215;
+import com.hiddenramblings.tagmo.nfctech.TagReader;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
+import com.hiddenramblings.tagmo.nfctech.TagWriter;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -38,6 +38,7 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 @SuppressLint("NonConstantResourceId")
@@ -246,7 +247,7 @@ public class NfcActivity extends AppCompatActivity {
         byte[] data = new byte[0];
         if (commandIntent.hasExtra(TagMo.EXTRA_TAG_DATA)) {
             data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-            if (data == null) throw new Exception(getString(R.string.no_data));
+            if (data == null) throw new IOException(getString(R.string.no_data));
         }
         if (!commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
             if (commandIntent.getAction().equals(TagMo.ACTION_WRITE_TAG_FULL)) {

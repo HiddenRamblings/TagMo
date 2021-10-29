@@ -39,7 +39,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.RequestStamp;
-import com.hiddenramblings.tagmo.nfctag.KeyManager;
+import com.hiddenramblings.tagmo.nfctech.KeyManager;
 
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.Background;
@@ -356,6 +356,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_stable_channel)
     void onStableChannelClicked() {
         prefs.stableChannel().put(stableChannel.isChecked());
+    }
+
+    @PreferenceClick(R.string.settings_view_wiki)
+    void onViewWikiClicked() {
+        startActivity(new Intent(Intent.ACTION_VIEW,
+                Uri.parse(getString(R.string.wiki_url))));
+    }
+
+    @PreferenceClick(R.string.settings_view_reddit)
+    void onViewRedditClicked() {
+        startActivity(new Intent(Intent.ACTION_VIEW,
+                Uri.parse(getString(R.string.reddit_url))));
     }
 
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";

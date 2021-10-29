@@ -26,6 +26,9 @@
     <string name="pref_disable_debug">Disable Debug Logs</string>
     <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
+    <string name="pref_resources">Resources</string>
+    <string name="pref_wiki_link">View Instructions Wiki</string>
+    <string name="pref_reddit_link">Visit the TagMo reddit</string>
 
     <string name="sync_api_details">Sync Amiibo info with AmiiboAPI.com</string>
     <string name="export_json_details">Export Amiibo info to JSON</string>
@@ -312,7 +315,7 @@
     <string name="fail_read_amiibo">Reading Amiibo data failed!</string>
     <string name="fail_write_amiibo">Writing Amiibo data failed!</string>
     <string name="fail_early_remove">Amiibo removed too early!</string>
-    <string name="fail_amiibo_npe">Please scan the Amiibo again</string>
+    <string name="fail_amiibo_null">Please scan the Amiibo again</string>
 
     <string name="elite_write_error">Error while writing data to N2 Elite</string>
     <string name="elite_auth_error">Error while authenticating N2 Elite</string>

@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctag.data;
+package com.hiddenramblings.tagmo.nfctech.data;
 
 import androidx.fragment.app.Fragment;
 
@@ -9,5 +9,5 @@ public abstract class AppDataFragment extends Fragment implements AppDataInterfa
 interface AppDataInterface {
     void onAppDataChecked(boolean enabled);
 
-    byte[] onAppDataSaved() throws Exception;
+    byte[] onAppDataSaved() throws NumberFormatException;
 }

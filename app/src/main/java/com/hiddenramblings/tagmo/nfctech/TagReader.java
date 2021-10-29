@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctag;
+package com.hiddenramblings.tagmo.nfctech;
 
 import android.net.Uri;
 import android.os.Build;
@@ -30,7 +30,7 @@ public class TagReader {
         TagMo.Debug(TagWriter.class, TagUtils.bytesToHex(lockPage));
         if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {
             TagMo.Debug(TagWriter.class, R.string.locked);
-            throw new Exception(TagMo.getStringRes(R.string.tag_already_written));
+            throw new IOException(TagMo.getStringRes(R.string.tag_already_written));
         }
         TagMo.Debug(TagWriter.class, R.string.unlocked);
     }
@@ -89,7 +89,7 @@ public class TagReader {
         try (FileInputStream inputStream = new FileInputStream(file)) {
             int len = inputStream.read(data);
             if (len != NfcByte.TAG_FILE_SIZE)
-                throw new Exception(TagMo.getStringRes(R.string.invalid_file_size,
+                throw new IOException(TagMo.getStringRes(R.string.invalid_file_size,
                         file.getName(), NfcByte.TAG_FILE_SIZE));
             return data;
         }
@@ -107,7 +107,7 @@ public class TagReader {
             byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
             int len = inputStream.read(data);
             if (len != NfcByte.TAG_FILE_SIZE)
-                throw new Exception(TagMo.getStringRes(R.string.invalid_file_size,
+                throw new IOException(TagMo.getStringRes(R.string.invalid_file_size,
                         file.getName(), NfcByte.TAG_FILE_SIZE));
             return data;
         }
@@ -120,7 +120,7 @@ public class TagReader {
         for (int i = 0; i < pageCount; i += BULK_READ_PAGE_COUNT) {
             byte[] pages = tag.readPages(i);
             if (pages == null || pages.length != NfcByte.PAGE_SIZE * BULK_READ_PAGE_COUNT)
-                throw new Exception(TagMo.getStringRes(R.string.fail_invalid_size));
+                throw new IOException(TagMo.getStringRes(R.string.fail_invalid_size));
 
             int dstIndex = i * NfcByte.PAGE_SIZE;
             int dstCount = Math.min(BULK_READ_PAGE_COUNT * NfcByte.PAGE_SIZE, tagData.length - dstIndex);
@@ -140,7 +140,7 @@ public class TagReader {
             try {
                 byte[] tagData = tag.amiiboFastRead(0x15, 0x16, i);
                 if (tagData == null || tagData.length != 8) {
-                    throw new Exception();
+                    throw new NullPointerException();
                 }
                 tags.add(TagUtils.bytesToHex(tagData));
                 i++;
@@ -163,6 +163,7 @@ public class TagReader {
     }
 
     public static String writeBytesToFile(File backupDir, String name, byte[] tagData) throws IOException {
+        //noinspection ResultOfMethodCallIgnored
         backupDir.mkdirs();
         File binFile = new File(backupDir, name);
         try (FileOutputStream fos = new FileOutputStream(binFile)) {
@@ -213,9 +214,9 @@ public class TagReader {
             System.arraycopy(data, 0, output, 540, data.length);
             return output;
         } catch (IllegalStateException e) {
-            throw new Exception(TagMo.getStringRes(R.string.fail_early_remove));
+            throw new IllegalStateException(TagMo.getStringRes(R.string.fail_early_remove));
         } catch (NullPointerException e2) {
-            throw new Exception(TagMo.getStringRes(R.string.fail_amiibo_npe));
+            throw new NullPointerException(TagMo.getStringRes(R.string.fail_amiibo_null));
         }
     }
 
@@ -224,16 +225,16 @@ public class TagReader {
         try {
             byte[] data = tag.amiiboFastRead(0x00, 0x86, bank);
             if (data == null) {
-                throw new Exception(TagMo.getStringRes(R.string.fail_read_amiibo));
+                throw new NullPointerException(TagMo.getStringRes(R.string.fail_read_amiibo));
             }
             System.arraycopy(data, 0, output, 0, 540);
             data = tag.readSignature();
             System.arraycopy(data, 0, output, 540, data.length);
             return output;
         } catch (IllegalStateException e) {
-            throw new Exception(TagMo.getStringRes(R.string.fail_early_remove));
-        } catch (NullPointerException e2) {
-            throw new Exception(TagMo.getStringRes(R.string.fail_amiibo_npe));
+            throw new IllegalStateException(TagMo.getStringRes(R.string.fail_early_remove));
+        } catch (NullPointerException npe) {
+            throw new NullPointerException(TagMo.getStringRes(R.string.fail_amiibo_null));
         }
     }
 

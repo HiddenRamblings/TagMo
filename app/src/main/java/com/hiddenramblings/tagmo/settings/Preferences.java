@@ -40,7 +40,7 @@ public interface Preferences {
     @DefaultString(keyRes = R.string.settings_elite_signature, value = "")
     String eliteSignature();
 
-    @DefaultInt(keyRes = R.string.settings_elite_bank_count, value = 1)
+    @DefaultInt(keyRes = R.string.settings_elite_bank_count, value = 200)
     int eliteBankCount();
 
     @DefaultInt(0)

@@ -353,12 +353,11 @@ public class EliteActivity extends AppCompatActivity implements
 
         updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
     });
-
+    
     private void writeAmiiboFile(AmiiboFile amiiboFile, int position) {
         Bundle args = new Bundle();
         try {
-            args.putByteArray(TagMo.EXTRA_TAG_DATA,
-                    TagReader.readTagStream(amiiboFile.getFilePath()));
+            args.putByteArray(TagMo.EXTRA_TAG_DATA, TagReader.readTagStream(amiiboFile.getFilePath()));
         } catch (Exception e) {
             e.printStackTrace();
         }

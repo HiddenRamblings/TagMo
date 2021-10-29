@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiddenramblings.tagmo.nfctag.KeyManager;
 import com.hiddenramblings.tagmo.nfctag.TagUtils;
-import com.hiddenramblings.tagmo.nfctag.data.AmiiboData;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -61,6 +60,7 @@ public class HexViewerActivity extends AppCompatActivity {
             new TagMap(0x00, Color.GRAY, "Lock/CC"),
     };
 
+    boolean isEncryptionMissing;
 
     @ViewById(R.id.gridView)
     RecyclerView listView;
@@ -74,11 +74,12 @@ public class HexViewerActivity extends AppCompatActivity {
     void decryptTagData(byte[] tagData) {
         KeyManager keyManager = new KeyManager(this);
         try {
-            setTagData(TagUtils.decrypt(keyManager, tagData));
+            setAdapterTagData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
-            if (TagMo.getPrefs().enableEliteSupport().get()) {
+            isEncryptionMissing = !TagUtils.isEncrypted(tagData);
+            if (isEncryptionMissing) {
                 try {
-                    setTagData(tagData);
+                    setAdapterTagData(tagData);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     TagMo.Error(getClass(), R.string.invalid_tag_data);
@@ -92,7 +93,7 @@ public class HexViewerActivity extends AppCompatActivity {
         }
     }
 
-    void setTagData(byte[] tagData) {
+    void setAdapterTagData(byte[] tagData) {
         adapter = new HexDumpAdapter(tagData);
         listView.setLayoutManager(new LinearLayoutManager(this));
         listView.setAdapter(adapter);

@@ -503,7 +503,7 @@ public class BrowserActivity extends AppCompatActivity implements
             showLogcatSnackbar(getString(R.string.wrote_file,
                     TagMo.friendlyPath(file)), fileUri);
         } catch (Exception e) {
-            showLogcatSnackbar(getString(R.string.write_error, e.getMessage()), null);
+            showLogcatSnackbar(getString(R.string.error_generic, e.getMessage()), null);
         }
     }
 

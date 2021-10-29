@@ -45,7 +45,7 @@ public class HexViewerActivity extends AppCompatActivity {
                 }
             } else {
                 e.printStackTrace();
-                TagMo.Error(getClass(), R.string.failed_decrypt);
+                TagMo.Error(getClass(), R.string.fail_decrypt);
                 finish();
             }
         }

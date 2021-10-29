@@ -29,10 +29,9 @@ public class TagReader {
         byte[] lockPage = mifare.readPages(0x02);
         TagMo.Debug(TagWriter.class, TagUtils.bytesToHex(lockPage));
         if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {
-            TagMo.Debug(TagWriter.class, R.string.locked);
-            throw new IOException(TagMo.getStringRes(R.string.tag_already_written));
+            throw new IOException(TagMo.getStringRes(R.string.error_tag_rewrite));
         }
-        TagMo.Debug(TagWriter.class, R.string.unlocked);
+        TagMo.Debug(TagWriter.class, R.string.validation_success);
     }
 
     public static void validateTag(byte[] data) throws Exception {
@@ -65,11 +64,11 @@ public class TagReader {
             try {
                 byte[] versionInfo = mifare.transceive(new byte[]{(byte) 0x60});
                 if (versionInfo == null || versionInfo.length != 8)
-                    throw new Exception(TagMo.getStringRes(R.string.tag_version_error));
+                    throw new Exception(TagMo.getStringRes(R.string.error_tag_version));
                 if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
-                    throw new Exception(TagMo.getStringRes(R.string.tag_format_error));
+                    throw new Exception(TagMo.getStringRes(R.string.error_tag_format));
             } catch (Exception e) {
-                TagMo.Error(TagWriter.class, R.string.version_error, e);
+                TagMo.Error(TagWriter.class, R.string.error_version, e);
                 throw e;
             }
         }

@@ -104,10 +104,10 @@ public class AppDataTPFragment extends AppDataFragment {
                 appData.checkLevel(level);
                 txtLevel.setError(null);
             } catch (Exception e) {
-                txtLevel.setError(getString(R.string.min_max_error, 0, 40));
+                txtLevel.setError(getString(R.string.error_min_max, 0, 40));
             }
         } catch (NumberFormatException e) {
-            txtLevel.setError(getString(R.string.min_max_error, 0, 40));
+            txtLevel.setError(getString(R.string.error_min_max, 0, 40));
         }
     }
 
@@ -139,10 +139,10 @@ public class AppDataTPFragment extends AppDataFragment {
                 appData.checkHearts(hearts * 4);
                 txtHearts1.setError(null);
             } catch (Exception e) {
-                txtHearts1.setError(getString(R.string.min_max_error, 0, 20));
+                txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
             }
         } catch (NumberFormatException e) {
-            txtHearts1.setError(getString(R.string.min_max_error, 0, 20));
+            txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
             txtHearts2.setEnabled(txtHearts1.isEnabled());
         }
     }

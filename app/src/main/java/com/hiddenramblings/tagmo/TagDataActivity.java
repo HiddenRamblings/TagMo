@@ -173,7 +173,7 @@ public class TagDataActivity extends AppCompatActivity {
                 }
             } else {
                 e.printStackTrace();
-                LogError(getString(R.string.failed_decrypt));
+                LogError(getString(R.string.fail_decrypt));
                 return;
             }
         }
@@ -399,7 +399,7 @@ public class TagDataActivity extends AppCompatActivity {
             newAmiiboData.setAppDataInitialized(isUserDataInitialized && isAppDataInitialized);
         } catch (Exception e) {
             e.printStackTrace();
-            LogError(getString(R.string.tag_data_error));
+            LogError(getString(R.string.fail_save_data));
             return;
         }
 
@@ -483,7 +483,7 @@ public class TagDataActivity extends AppCompatActivity {
                 tagData = TagUtils.encrypt(keyManager, newAmiiboData.array());
             } catch (Exception e) {
                 e.printStackTrace();
-                LogError(getString(R.string.failed_encrypt));
+                LogError(getString(R.string.fail_encrypt));
                 return;
             }
         }
@@ -717,12 +717,12 @@ public class TagDataActivity extends AppCompatActivity {
         if (text != null) {
             text = text.trim();
             if (text.length() != 8) {
-                throw new IOException(getString(R.string.length_error));
+                throw new IOException(getString(R.string.error_length));
             }
             try {
                 return (int) Long.parseLong(text, 16);
             } catch (NumberFormatException e) {
-                throw new NumberFormatException(getString(R.string.input_error));
+                throw new NumberFormatException(getString(R.string.error_input));
             }
         } else {
             throw new IOException(getString(R.string.invalid_app_data));
@@ -843,7 +843,7 @@ public class TagDataActivity extends AppCompatActivity {
             amiiboData.checkWriteCount(writeCounter);
             txtWriteCounter.setError(null);
         } catch (Exception e) {
-            txtWriteCounter.setError(getString(R.string.min_max_error, AmiiboData.WRITE_COUNT_MIN_VALUE, AmiiboData.WRITE_COUNT_MAX_VALUE));
+            txtWriteCounter.setError(getString(R.string.error_min_max, AmiiboData.WRITE_COUNT_MIN_VALUE, AmiiboData.WRITE_COUNT_MAX_VALUE));
         }
     }
 
@@ -983,7 +983,7 @@ public class TagDataActivity extends AppCompatActivity {
     @UiThread
     void LogError(String msg) {
         new AlertDialog.Builder(this)
-                .setTitle(R.string.error)
+                .setTitle(R.string.error_caps)
                 .setMessage(msg)
                 .setPositiveButton(R.string.close, null)
                 .show();

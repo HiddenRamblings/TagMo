@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctag;
+package com.hiddenramblings.tagmo.nfctech;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;

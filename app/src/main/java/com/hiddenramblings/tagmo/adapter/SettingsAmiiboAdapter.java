@@ -23,7 +23,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.nfctag.TagUtils;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
@@ -63,7 +63,6 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        String tagInfo = null;
         String amiiboHexId;
         String amiiboName = "";
         String amiiboSeries = "";
@@ -87,12 +86,12 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         //     character = amiibo.getCharacter().name;
 
         holder.txtError.setVisibility(android.view.View.GONE);
-        setAmiiboInfoText(holder.txtName, amiiboName, false);
-        setAmiiboInfoText(holder.txtTagId, amiiboHexId, tagInfo != null);
-        setAmiiboInfoText(holder.txtAmiiboSeries, amiiboSeries, tagInfo != null);
-        setAmiiboInfoText(holder.txtAmiiboType, amiiboType, tagInfo != null);
-        setAmiiboInfoText(holder.txtGameSeries, gameSeries, tagInfo != null);
-        // setAmiiboInfoText(holder.txtCharacter, character, tagInfo != null);
+        setAmiiboInfoText(holder.txtName, amiiboName);
+        setAmiiboInfoText(holder.txtTagId, amiiboHexId);
+        setAmiiboInfoText(holder.txtAmiiboSeries, amiiboSeries);
+        setAmiiboInfoText(holder.txtAmiiboType, amiiboType);
+        setAmiiboInfoText(holder.txtGameSeries, gameSeries);
+        // setAmiiboInfoText(holder.txtCharacter, character);
         holder.txtPath.setVisibility(android.view.View.GONE);
 
         if (holder.imageAmiibo != null) {
@@ -110,10 +109,8 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         return convertView;
     }
 
-    void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
-        if (hasTagInfo) {
-            textView.setText("");
-        } else if (text.length() == 0) {
+    void setAmiiboInfoText(TextView textView, CharSequence text) {
+        if (text.length() == 0) {
             textView.setText(R.string.unknown);
             textView.setTextColor(Color.RED);
         } else {

@@ -34,6 +34,8 @@
     <string name="settings_disable_debug">settings_disable_debug</string>
     <string name="settings_ignore_sdcard">settings_ignore_sdcard</string>
     <string name="settings_stable_channel">settings_stable_channel</string>
+    <string name="settings_view_wiki">settings_view_wiki</string>
+    <string name="settings_view_reddit">settings_view_reddit</string>
     <string name="image_network_settings">\@string/image_network_settings</string>
 
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
@@ -42,6 +44,8 @@
     <string name="api_database">database/amiibo.json</string>
 
     <string name="git_url">https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/%1$s</string>
+    <string name="wiki_url">https://github.com/HiddenRamblings/TagMo/wiki/Instructions</string>
+    <string name="reddit_url">https://www.reddit.com/r/tagmo/</string>
 
     <string name="mifare_classic">Mifare Classic</string>
     <string name="mifare_plus">Mifare Plus</string>

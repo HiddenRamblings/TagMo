@@ -120,12 +120,9 @@ public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAd
         public ParentFolderViewHolder(View itemView) {
             super(itemView);
 
-            this.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    settings.setBrowserRootFolder(folder);
-                    settings.notifyChanges();
-                }
+            this.itemView.setOnClickListener(view -> {
+                settings.setBrowserRootFolder(folder);
+                settings.notifyChanges();
             });
         }
 

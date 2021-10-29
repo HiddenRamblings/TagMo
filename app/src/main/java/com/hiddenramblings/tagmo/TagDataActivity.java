@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -10,10 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,13 +40,13 @@ import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.adapter.NothingSelectedSpinnerAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfctag.KeyManager;
-import com.hiddenramblings.tagmo.nfctag.TagUtils;
-import com.hiddenramblings.tagmo.nfctag.data.AmiiboData;
-import com.hiddenramblings.tagmo.nfctag.data.AppData;
-import com.hiddenramblings.tagmo.nfctag.data.AppDataFragment;
-import com.hiddenramblings.tagmo.nfctag.data.AppDataSSBFragment;
-import com.hiddenramblings.tagmo.nfctag.data.AppDataTPFragment;
+import com.hiddenramblings.tagmo.nfctech.KeyManager;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
+import com.hiddenramblings.tagmo.nfctech.data.AmiiboData;
+import com.hiddenramblings.tagmo.nfctech.data.AppData;
+import com.hiddenramblings.tagmo.nfctech.data.AppDataFragment;
+import com.hiddenramblings.tagmo.nfctech.data.AppDataSSBFragment;
+import com.hiddenramblings.tagmo.nfctech.data.AppDataTPFragment;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
@@ -716,14 +713,19 @@ public class TagDataActivity extends AppCompatActivity {
     }
 
     int parseAppId() throws Exception {
-        String text = txtAppId.getUnMaskedText().trim();
-        if (text.length() != 8) {
-            throw new Exception(getString(R.string.length_error));
-        }
-        try {
-            return (int) Long.parseLong(text, 16);
-        } catch (NumberFormatException e) {
-            throw new Exception(getString(R.string.input_error));
+        String text = txtAppId.getUnMaskedText();
+        if (text != null) {
+            text = text.trim();
+            if (text.length() != 8) {
+                throw new IOException(getString(R.string.length_error));
+            }
+            try {
+                return (int) Long.parseLong(text, 16);
+            } catch (NumberFormatException e) {
+                throw new NumberFormatException(getString(R.string.input_error));
+            }
+        } else {
+            throw new IOException(getString(R.string.invalid_app_data));
         }
     }
 

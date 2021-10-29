@@ -8,7 +8,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.endgames.environment.Storage;
-import com.hiddenramblings.tagmo.nfctag.TagWriter;
+import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 
 import org.androidannotations.annotations.EApplication;

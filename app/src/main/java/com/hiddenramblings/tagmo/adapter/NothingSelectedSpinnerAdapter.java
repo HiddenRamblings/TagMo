@@ -71,9 +71,6 @@ public class NothingSelectedSpinnerAdapter implements SpinnerAdapter, ListAdapte
     /**
      * View to show in Spinner with Nothing Selected
      * Override this to do something dynamic... e.g. "37 Options Found"
-     *
-     * @param parent
-     * @return
      */
     protected View getNothingSelectedView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
@@ -99,13 +96,10 @@ public class NothingSelectedSpinnerAdapter implements SpinnerAdapter, ListAdapte
     /**
      * Override this to do something dynamic... For example, "Pick your favorite
      * of these 37".
-     *
-     * @param parent
-     * @return
      */
     protected View getNothingSelectedDropdownView(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext())
-                .inflate(nothingSelectedDropdownLayout, parent, false);
+        return LayoutInflater.from(parent.getContext()).inflate(
+                nothingSelectedDropdownLayout, parent, false);
     }
 
     @Override

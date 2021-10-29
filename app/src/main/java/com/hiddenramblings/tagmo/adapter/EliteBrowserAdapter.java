@@ -31,7 +31,7 @@ import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.nfctag.TagUtils;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
@@ -189,7 +189,6 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
         void bind(final Amiibo amiibo) {
             this.amiiboItem = amiibo;
 
-            String tagInfo = null;
             String amiiboHexId = "";
             String amiiboName = "";
             String amiiboSeries = "";
@@ -218,23 +217,14 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
             String position = String.valueOf(TagUtils.getValueForPosition(
                     getAbsoluteAdapterPosition()));
 
-            if (tagInfo == null) {
-                this.txtError.setVisibility(View.GONE);
-            } else {
-                setAmiiboInfoText(this.txtError, tagInfo, false);
-            }
+            this.txtError.setVisibility(View.GONE);
             if (isAmiibo) {
-                setAmiiboInfoText(this.txtName, position + ": " + amiiboName, false);
-                setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query),
-                        tagInfo != null);
-                setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query),
-                        tagInfo != null);
-                setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query),
-                        tagInfo != null);
-                setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query),
-                        tagInfo != null);
-                // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query),
-                //         tagInfo != null);
+                setAmiiboInfoText(this.txtName, position + ": " + amiiboName);
+                setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query));
+                setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query));
+                setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query));
+                setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query));
+                // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query));
             } else {
                 this.txtName.setVisibility(View.VISIBLE);
                 this.txtName.setText(TagMo.getStringRes(R.string.blank_bank, position));
@@ -299,18 +289,14 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
             return str;
         }
 
-        void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
-            if (hasTagInfo) {
-                textView.setVisibility(View.GONE);
+        void setAmiiboInfoText(TextView textView, CharSequence text) {
+            textView.setVisibility(View.VISIBLE);
+            if (text.length() == 0) {
+                textView.setText(R.string.unknown);
+                textView.setEnabled(false);
             } else {
-                textView.setVisibility(View.VISIBLE);
-                if (text.length() == 0) {
-                    textView.setText(R.string.unknown);
-                    textView.setEnabled(false);
-                } else {
-                    textView.setText(text);
-                    textView.setEnabled(true);
-                }
+                textView.setText(text);
+                textView.setEnabled(true);
             }
         }
 

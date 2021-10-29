@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+@SuppressWarnings("deprecation")
 public class RequestCommit extends AsyncTask<String, Integer, String> {
 
     private RequestCommitListener listener;

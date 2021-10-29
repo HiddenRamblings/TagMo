@@ -1,4 +1,6 @@
-package com.hiddenramblings.tagmo.nfctag.data;
+package com.hiddenramblings.tagmo.nfctech.data;
+
+import java.io.IOException;
 
 public class AppDataSSB extends AppData {
     public static final int APPEARANCE_OFFSET = 0x08;
@@ -28,163 +30,163 @@ public class AppDataSSB extends AppData {
     public static final int EXPERIENCE_MAX_VALUE = 0x093E;
     public static final int EXPERIENCE_OFFSET = 0x7C;
 
-    public AppDataSSB(byte[] appData) throws Exception {
+    public AppDataSSB(byte[] appData) throws IOException {
         super(appData);
     }
 
-    public void checkAppearence(int value) throws Exception {
+    public void checkAppearence(int value) throws NumberFormatException {
         if (value < APPEARANCE_MIN_VALUE || value > APPEARANCE_MAX_VALUE)
-            throw new Exception();
+            throw new NumberFormatException();
     }
 
-    public int getAppearence() throws Exception {
+    public int getAppearence() throws NumberFormatException {
         int value = appData.get(APPEARANCE_OFFSET) & 0xFF;
         checkAppearence(value);
         return value;
     }
 
-    public void setAppearence(int value) throws Exception {
+    public void setAppearence(int value) throws NumberFormatException {
         checkAppearence(value);
         appData.put(APPEARANCE_OFFSET, (byte) value);
     }
 
-    public void checkSpecial(int value) throws Exception {
+    public void checkSpecial(int value) throws NumberFormatException {
         if (value < SPECIAL_MIN_VALUE || value > SPECIAL_MAX_VALUE)
-            throw new Exception();
+            throw new NumberFormatException();
     }
 
-    public int getSpecialNeutral() throws Exception {
+    public int getSpecialNeutral() throws NumberFormatException {
         int value = appData.get(SPECIAL_NEUTRAL_OFFSET) & 0xFF;
         checkSpecial(value);
         return value;
     }
 
-    public void setSpecialNeutral(int value) throws Exception {
+    public void setSpecialNeutral(int value) throws NumberFormatException {
         checkSpecial(value);
         appData.put(SPECIAL_NEUTRAL_OFFSET, (byte) value);
     }
 
-    public int getSpecialSide() throws Exception {
+    public int getSpecialSide() throws NumberFormatException {
         int value = appData.get(SPECIAL_SIDE_OFFSET) & 0xFF;
         checkSpecial(value);
         return value;
     }
 
-    public void setSpecialSide(int value) throws Exception {
+    public void setSpecialSide(int value) throws NumberFormatException {
         checkSpecial(value);
         appData.put(SPECIAL_SIDE_OFFSET, (byte) value);
     }
 
-    public int getSpecialUp() throws Exception {
+    public int getSpecialUp() throws NumberFormatException {
         int value = appData.get(SPECIAL_UP_OFFSET) & 0xFF;
         checkSpecial(value);
         return value;
     }
 
-    public void setSpecialUp(int value) throws Exception {
+    public void setSpecialUp(int value) throws NumberFormatException {
         checkSpecial(value);
         appData.put(SPECIAL_UP_OFFSET, (byte) value);
     }
 
-    public int getSpecialDown() throws Exception {
+    public int getSpecialDown() throws NumberFormatException {
         int value = appData.get(SPECIAL_DOWN_OFFSET) & 0xFF;
         checkSpecial(value);
         return value;
     }
 
-    public void setSpecialDown(int value) throws Exception {
+    public void setSpecialDown(int value) throws NumberFormatException {
         checkSpecial(value);
         appData.put(SPECIAL_DOWN_OFFSET, (byte) value);
     }
 
-    public void checkStat(int value) throws Exception {
+    public void checkStat(int value) throws NumberFormatException {
         if (value < STATS_MIN_VALUE || value > STATS_MAX_VALUE)
-            throw new Exception();
+            throw new NumberFormatException();
     }
 
-    public int getStatAttack() throws Exception {
+    public int getStatAttack() throws NumberFormatException {
         int value = appData.getShort(STATS_ATTACK_OFFSET) & 0xFFFF;
         checkStat(value);
         return value;
     }
 
-    public void setStatAttack(int value) throws Exception {
+    public void setStatAttack(int value) throws NumberFormatException {
         checkStat(value);
         appData.putShort(STATS_ATTACK_OFFSET, (short) value);
     }
 
-    public int getStatDefense() throws Exception {
+    public int getStatDefense() throws NumberFormatException {
         int value = appData.getShort(STATS_DEFENSE_OFFSET) & 0xFFFF;
         checkStat(value);
         return value;
     }
 
-    public void setStatDefense(int value) throws Exception {
+    public void setStatDefense(int value) throws NumberFormatException {
         checkStat(value);
         appData.putShort(STATS_DEFENSE_OFFSET, (short) value);
     }
 
-    public int getStatSpeed() throws Exception {
+    public int getStatSpeed() throws NumberFormatException {
         int value = appData.getShort(STATS_SPEED_OFFSET) & 0xFFFF;
         checkStat(value);
         return value;
     }
 
-    public void setStatSpeed(int value) throws Exception {
+    public void setStatSpeed(int value) throws NumberFormatException {
         checkStat(value);
         appData.putShort(STATS_SPEED_OFFSET, (short) value);
     }
 
-    public void checkBonus(int value) throws Exception {
+    public void checkBonus(int value) throws NumberFormatException {
         if (value < BONUS_MIN_VALUE || value > BONUS_MAX_VALUE)
-            throw new Exception();
+            throw new NumberFormatException();
     }
 
-    public int getBonusEffect1() throws Exception {
+    public int getBonusEffect1() throws NumberFormatException {
         int value = appData.get(BONUS_EFFECT1_OFFSET) & 0xFF;
         checkBonus(value);
         return value;
     }
 
-    public void setBonusEffect1(int value) throws Exception {
+    public void setBonusEffect1(int value) throws NumberFormatException {
         checkBonus(value);
         appData.put(BONUS_EFFECT1_OFFSET, (byte) value);
     }
 
-    public int getBonusEffect2() throws Exception {
+    public int getBonusEffect2() throws NumberFormatException {
         int value = appData.get(BONUS_EFFECT2_OFFSET) & 0xFF;
         checkBonus(value);
         return value;
     }
 
-    public void setBonusEffect2(int value) throws Exception {
+    public void setBonusEffect2(int value) throws NumberFormatException {
         checkBonus(value);
         appData.put(BONUS_EFFECT2_OFFSET, (byte) value);
     }
 
-    public int getBonusEffect3() throws Exception {
+    public int getBonusEffect3() throws NumberFormatException {
         int value = appData.get(BONUS_EFFECT3_OFFSET) & 0xFF;
         checkBonus(value);
         return value;
     }
 
-    public void setBonusEffect3(int value) throws Exception {
+    public void setBonusEffect3(int value) throws NumberFormatException {
         checkBonus(value);
         appData.put(BONUS_EFFECT3_OFFSET, (byte) value);
     }
 
-    public void checkExperience(int value) throws Exception {
+    public void checkExperience(int value) throws NumberFormatException {
         if (value < EXPERIENCE_MIN_VALUE || value > EXPERIENCE_MAX_VALUE)
-            throw new Exception();
+            throw new NumberFormatException();
     }
 
-    public int getExperience() throws Exception {
+    public int getExperience() throws NumberFormatException {
         int value = appData.getShort(EXPERIENCE_OFFSET) & 0xFFFF;
         checkExperience(value);
         return value;
     }
 
-    public void setExperience(int value) throws Exception {
+    public void setExperience(int value) throws NumberFormatException {
         checkExperience(value);
         appData.putShort(EXPERIENCE_OFFSET, (short) value);
     }
@@ -197,16 +199,16 @@ public class AppDataSSB extends AppData {
             0x06FC, 0x072E, 0x075D, 0x07B9, 0x07E7, 0x0844, 0x0875, 0x08D3, 0x0902, 0x093E,
     };
 
-    public int getLevel() throws Exception {
+    public int getLevel() throws NumberFormatException {
         int value = getExperience();
         for (int i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
             if (LEVEL_THRESHOLDS[i] <= value)
                 return i + 1;
         }
-        throw new Exception();
+        throw new NumberFormatException();
     }
 
-    public void setLevel(int level) throws Exception {
+    public void setLevel(int level) throws NumberFormatException {
         setExperience(LEVEL_THRESHOLDS[level - 1]);
     }
 }

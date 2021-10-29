@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctag;
+package com.hiddenramblings.tagmo.nfctech;
 
 import android.content.Context;
 import android.net.Uri;
@@ -61,14 +61,12 @@ public class KeyManager {
         return fixedKey == null || unfixedKey == null;
     }
 
-    private byte[] loadKeyFromStorage(String file) throws Exception {
-        try {
-            try (FileInputStream fs = context.openFileInput(file)) {
-                byte[] key = new byte[KEY_FILE_SIZE];
-                if (fs.read(key) != KEY_FILE_SIZE) throw new Exception(
-                        TagMo.getStringRes(R.string.key_size_invalid));
-                return key;
-            }
+    private byte[] loadKeyFromStorage(String file) {
+        try (FileInputStream fs = context.openFileInput(file)) {
+            byte[] key = new byte[KEY_FILE_SIZE];
+            if (fs.read(key) != KEY_FILE_SIZE)
+                throw new IOException(TagMo.getStringRes(R.string.key_size_invalid));
+            return key;
         } catch (Exception e) {
             TagMo.Error(getClass(), R.string.key_read_error, e);
         }
@@ -81,14 +79,14 @@ public class KeyManager {
         }
     }
 
-    boolean readKey(InputStream strm) throws Exception {
+    boolean readKey(InputStream strm) throws IOException {
         byte[] data = new byte[KEY_FILE_SIZE];
         int rlen = strm.read(data, 0, data.length);
         if (rlen <= 0)
             return false;
 
         if (rlen < KEY_FILE_SIZE)
-            throw new Exception(TagMo.getStringRes(R.string.key_size_error));
+            throw new IOException(TagMo.getStringRes(R.string.key_size_error));
 
         String md5 = TagUtils.md5(data);
         if (FIXED_KEY_MD5.equals(md5)) {
@@ -98,14 +96,15 @@ public class KeyManager {
             saveKeyFile(UNFIXED_KEY_FILE, data);
             this.unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
         } else
-            throw new Exception(TagMo.getStringRes(R.string.key_signature_error));
+            throw new IOException(TagMo.getStringRes(R.string.key_signature_error));
         return true;
     }
 
-    public void loadKey(Uri file) throws Exception {
+    public void loadKey(Uri file) throws IOException {
         try (InputStream strm = context.getContentResolver().openInputStream(file)) {
             if (!readKey(strm))
-                throw new Exception(TagMo.getStringRes(R.string.invalid_key_error)); //if we can't even read one key then it's completely wrong
+                throw new IOException(TagMo.getStringRes(R.string.invalid_key_error));
+            // if we can't even read one key then it's completely wrong
             readKey(strm);
         }
     }

@@ -240,7 +240,7 @@ public class AmiiboManager {
                         TagMo.getContext().openFileInput(AMIIBO_DATABASE_FILE));
             } catch (IOException | JSONException | ParseException e) {
                 amiiboManager = null;
-                TagMo.Error(AmiiboManager.class, R.string.amiibo_parse_error, e);
+                TagMo.Error(AmiiboManager.class, R.string.error_amiibo_parse, e);
             }
         } else {
             amiiboManager = null;

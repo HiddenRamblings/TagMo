@@ -52,7 +52,7 @@ public class PowerTagManager {
 
     public static byte[] getPowerTagKey(byte[] uid, String page10bytes) throws NullPointerException {
         if (keys == null)
-            throw new NullPointerException(TagMo.getStringRes(R.string.powertag_key_error));
+            throw new NullPointerException(TagMo.getStringRes(R.string.error_powertag_key));
 
         byte[] uidc = new byte[7];
 

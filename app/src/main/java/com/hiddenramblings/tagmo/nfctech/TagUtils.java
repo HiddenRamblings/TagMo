@@ -210,12 +210,12 @@ public class TagUtils {
 
         AmiiTool tool = new AmiiTool();
         if (tool.setKeysFixed(keyManager.fixedKey, keyManager.fixedKey.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
+            throw new Exception(TagMo.getStringRes(R.string.error_amiitool_init));
         if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
+            throw new Exception(TagMo.getStringRes(R.string.error_amiitool_init));
         byte[] decrypted = new byte[NfcByte.TAG_FILE_SIZE];
         if (tool.unpack(tagData, tagData.length, decrypted, decrypted.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.failed_decrypt));
+            throw new Exception(TagMo.getStringRes(R.string.fail_decrypt));
 
         return decrypted;
     }
@@ -226,12 +226,12 @@ public class TagUtils {
 
         AmiiTool tool = new AmiiTool();
         if (tool.setKeysFixed(keyManager.fixedKey, keyManager.fixedKey.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
+            throw new Exception(TagMo.getStringRes(R.string.error_amiitool_init));
         if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.amiitool_init_error));
+            throw new Exception(TagMo.getStringRes(R.string.error_amiitool_init));
         byte[] encrypted = new byte[NfcByte.TAG_FILE_SIZE];
         if (tool.pack(tagData, tagData.length, encrypted, encrypted.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.failed_encrypt));
+            throw new Exception(TagMo.getStringRes(R.string.fail_encrypt));
 
         return encrypted;
     }

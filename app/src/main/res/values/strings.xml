@@ -24,7 +24,7 @@
     <string name="pref_amiibo_series">Amiibo Series</string>
     <string name="pref_advanced">Advanced</string>
     <string name="pref_disable_debug">Disable Debug Logs</string>
-    <string name="pref_ignore_sdcard">Internal Storage Mode</string>
+    <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
 
     <string name="sync_api_details">Sync Amiibo info with AmiiboAPI.com</string>
@@ -291,12 +291,11 @@
     <string name="amiibo_info_not_loaded">Amiibo info not loaded</string>
     <string name="amiibo_info_export_fail">Failed to export Amiibo info to %1$s</string>
     <string name="amiibo_info_exported">Exported Amiibo info to %1$s</string>
-    <string name="amiibo_failure_generic">Failed to %1$s Amiibo info</string>
-    <string name="amiibo_failure_load">load</string>
-    <string name="amiibo_failure_parse">parse</string>
-    <string name="amiibo_failure_read">read</string>
-    <string name="amiibo_failure_update">read</string>
-    <string name="amiibo_failure_parse_default">parse default</string>
+    <string name="amiibo_failure_load">Failed to load Amiibo info</string>
+    <string name="amiibo_failure_parse">Failed to parse Amiibo info</string>
+    <string name="amiibo_failure_read">Failed to read Amiibo info</string>
+    <string name="amiibo_failure_update">Failed to update Amiibo info</string>
+    <string name="amiibo_failure_parse_default">Failed to parse default Amiibo info</string>
 
     <string name="data_write_error">Error while writing main data (stage 1)</string>
     <string name="password_write_error">Error while setting password (stage 2)</string>

@@ -68,13 +68,13 @@ import static android.os.Environment.isExternalStorageEmulated;
 public class Storage {
     private static final String STORAGE_ROOT = "/storage";
 
-    private static File storagePath;
+    private static File storageFile;
 
     private static File getRootPath(File directory) {
         return directory.getParentFile().getParentFile().getParentFile().getParentFile();
     }
 
-    private static File setFileStorageGeneric() {
+    private static File setFileGeneric() {
         File emulated = null;
         File physical = null;
         try {
@@ -88,33 +88,33 @@ public class Storage {
             Log.d("EMULATED", emulated.getAbsolutePath());
             Log.d("PHYSICAL", physical.getAbsolutePath());
         } catch (NullPointerException e) {
-            return storagePath = Environment.getExternalStorageDirectory();
+            return storageFile = Environment.getExternalStorageDirectory();
         }
         if (TagMo.getPrefs().ignoreSdcard().get())
-            return storagePath = emulated != null ? emulated : physical;
-        return storagePath = physical != null ? physical : emulated;
+            return storageFile = emulated != null ? emulated : physical;
+        return storageFile = physical != null ? physical : emulated;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private static File setFileStorageLollipop() {
+    private static File setFileLollipop() {
         File[] storage = ContextCompat.getExternalFilesDirs(TagMo.getContext(), null);
         if (TagMo.getPrefs().ignoreSdcard().get()) {
-            return storagePath = storage[0] != null && storage[0].canRead()
-                    ? getRootPath(storage[0]) : setFileStorageGeneric();
+            return storageFile = storage[0] != null && storage[0].canRead()
+                    ? getRootPath(storage[0]) : setFileGeneric();
         }
         try {
-            return storagePath = storage.length > 1 && storage[1] != null
+            return storageFile = storage.length > 1 && storage[1] != null
                     && storage[1].canRead() && !isExternalStorageEmulated(storage[1])
                     ? getRootPath(storage[1]) : storage[0] != null && storage[0].canRead()
-                    ? getRootPath(storage[0]) : setFileStorageGeneric();
+                    ? getRootPath(storage[0]) : setFileGeneric();
             // [TARGET]/Android/data/[PACKAGE]/files
         } catch (IllegalArgumentException | NullPointerException e) {
-            return setFileStorageGeneric();
+            return setFileGeneric();
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
-    private static File setFileStorageRedVelvet() {
+    private static File setFileRedVelvet() {
         File emulated = null;
         File physical = null;
         try {
@@ -128,23 +128,36 @@ public class Storage {
             Log.d("EMULATED", emulated.getAbsolutePath());
             Log.d("PHYSICAL", physical.getAbsolutePath());
         } catch (IllegalArgumentException | NullPointerException e) {
-            return setFileStorageLollipop();
+            return setFileLollipop();
         }
         if (TagMo.getPrefs().ignoreSdcard().get())
-            return storagePath = emulated != null ? emulated : physical;
-        return storagePath = physical != null ? physical : emulated;
+            return storageFile = emulated != null ? emulated : physical;
+        return storageFile = physical != null ? physical : emulated;
     }
 
-    public static File setFileStorage() {
+    public static File setFile() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-            return setFileStorageRedVelvet();
+            return setFileRedVelvet();
         else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            return setFileStorageLollipop();
+            return setFileLollipop();
         else
-            return setFileStorageGeneric();
+            return setFileGeneric();
     }
 
-    public static File getStorageFile() {
-        return storagePath != null ? storagePath : setFileStorage();
+    public static File getFile() {
+        return storageFile != null ? storageFile : setFile();
+    }
+
+    public static String getPath() {
+        return (storageFile != null ? storageFile : setFile()).getAbsolutePath();
+    }
+
+    public static String getRelativePath(File file) {
+        String filePath = file.getAbsolutePath();
+        String storagePath = getPath();
+        if (filePath.startsWith(storagePath)) {
+            filePath = filePath.substring(storagePath.length());
+        }
+        return filePath;
     }
 }

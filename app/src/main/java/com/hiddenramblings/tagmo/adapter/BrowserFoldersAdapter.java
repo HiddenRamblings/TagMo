@@ -8,8 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.endgames.environment.Storage;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 
 import java.io.File;
@@ -81,8 +81,8 @@ public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAd
     }
 
     public boolean showParentFolder() {
-        return (rootFolder != null && !rootFolder.equals(TagMo.getStorage()))
-                && rootFolder.getAbsolutePath().startsWith(TagMo.getStorage().getAbsolutePath());
+        return (rootFolder != null && !rootFolder.equals(Storage.getFile()))
+                && rootFolder.getAbsolutePath().startsWith(Storage.getPath());
     }
 
     @Override

@@ -26,6 +26,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.endgames.environment.Storage;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
@@ -211,14 +212,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return;
         }
 
-        File file = new File(TagMo.getTagMoFiles(), AmiiboManager.AMIIBO_DATABASE_FILE);
+        File file = new File(TagMo.getExternalFiles(), AmiiboManager.AMIIBO_DATABASE_FILE);
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(file);
             AmiiboManager.saveDatabase(this.amiiboManager, fileOutputStream);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
-            showToast(R.string.amiibo_info_export_fail, TagMo.friendlyPath(file), Toast.LENGTH_SHORT);
+            showToast(R.string.amiibo_info_export_fail, Storage.getRelativePath(file), Toast.LENGTH_SHORT);
             return;
         } finally {
             if (fileOutputStream != null) {
@@ -230,7 +231,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         }
         showSnackbar(getString(R.string.amiibo_info_exported,
-                TagMo.friendlyPath(file)), Snackbar.LENGTH_LONG);
+                Storage.getRelativePath(file)), Snackbar.LENGTH_LONG);
     }
 
     @PreferenceClick(R.string.settings_reset_info)

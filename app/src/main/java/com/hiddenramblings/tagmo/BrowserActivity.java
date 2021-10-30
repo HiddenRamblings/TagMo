@@ -188,7 +188,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        File[] files = TagMo.getTagMoFiles().listFiles((dir, name) ->
+        File[] files = getFilesDir().listFiles((dir, name) ->
                 name.toLowerCase(Locale.getDefault()).endsWith(".apk"));
         if (files != null) {
             for (File file : files) {
@@ -239,7 +239,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (this.settings == null) {
             this.settings = new BrowserSettings();
-            this.settings.setBrowserRootFolder(new File(TagMo.getStorage(), TagMo.getPrefs().browserRootFolder().get()));
+            this.settings.setBrowserRootFolder(new File(Storage.getFile(), TagMo.getPrefs().browserRootFolder().get()));
             this.settings.setQuery(TagMo.getPrefs().query().get());
             this.settings.setSort(TagMo.getPrefs().sort().get());
             this.settings.setAmiiboSeriesFilter(TagMo.getPrefs().filterAmiiboSeries().get());
@@ -251,7 +251,7 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.setRecursiveEnabled(TagMo.getPrefs().recursiveFolders().get());
             this.settings.setShowMissingFiles(TagMo.getPrefs().showMissingFiles().get());
         } else {
-            this.currentFolderView.setText(TagMo.friendlyPath(settings.getBrowserRootFolder()));
+            this.currentFolderView.setText(Storage.getRelativePath(settings.getBrowserRootFolder()));
             this.onFilterGameSeriesChanged();
             this.onFilterCharacterChanged();
             this.onFilterAmiiboSeriesChanged();
@@ -460,7 +460,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background
     void onExportLogcatClicked() {
         try {
-            File file = new File(TagMo.getTagMoFiles(), "tagmo_logcat.txt");
+            File file = new File(TagMo.getExternalFiles(), "tagmo_logcat.txt");
             final StringBuilder log = new StringBuilder();
             String separator = System.getProperty("line.separator");
             log.append(android.os.Build.MANUFACTURER);
@@ -501,7 +501,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 fileUri = Uri.fromFile(file);
             }
             showLogcatSnackbar(getString(R.string.wrote_file,
-                    TagMo.friendlyPath(file)), fileUri);
+                    Storage.getRelativePath(file)), fileUri);
         } catch (Exception e) {
             showLogcatSnackbar(getString(R.string.error_generic, e.getMessage()), null);
         }
@@ -710,7 +710,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
             if (result.getData().getBooleanExtra("REFRESH", false)) {
                 if (TagMo.getPrefs().ignoreSdcard().get()) {
-                    this.settings.setBrowserRootFolder(Storage.setFileStorage());
+                    this.settings.setBrowserRootFolder(Storage.setFile());
                     this.settings.notifyChanges();
                 }
                 this.refreshBackground();
@@ -854,7 +854,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onAmiiboLongClicked(AmiiboFile amiiboFile) {
         new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.delete_amiibo,
-                        TagMo.friendlyPath(amiiboFile.getFilePath())))
+                        Storage.getRelativePath(amiiboFile.getFilePath())))
                 .setNegativeButton(R.string.delete, (dialog, which) -> {
                     //noinspection ResultOfMethodCallIgnored
                     amiiboFile.getFilePath().delete();
@@ -1061,7 +1061,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
 
         TagMo.getPrefs().edit()
-                .browserRootFolder().put(TagMo.friendlyPath(newBrowserSettings.getBrowserRootFolder()))
+                .browserRootFolder().put(Storage.getRelativePath(newBrowserSettings.getBrowserRootFolder()))
                 .query().put(newBrowserSettings.getQuery())
                 .sort().put(newBrowserSettings.getSort())
                 .filterGameSeries().put(newBrowserSettings.getGameSeriesFilter())
@@ -1122,7 +1122,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     void onRootFolderChanged(boolean indicator) {
         File rootFolder = settings.getBrowserRootFolder();
-        this.currentFolderView.setText(TagMo.friendlyPath(rootFolder));
+        this.currentFolderView.setText(Storage.getRelativePath(rootFolder));
         this.setAmiiboFilesLoadingBarVisibility(indicator);
         this.loadAmiiboFiles(rootFolder, settings.isRecursiveEnabled());
         this.loadFolders(rootFolder);
@@ -1279,7 +1279,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background
     void downloadUpdate(String apkUrl) {
-        File apk = new File(TagMo.getTagMoFiles(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
+        File apk = new File(getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
         try {
             URL u = new URL(apkUrl);
             InputStream is = u.openStream();

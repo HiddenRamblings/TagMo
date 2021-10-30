@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -156,23 +157,46 @@ public class AmiiboActivity extends AppCompatActivity {
         updateAmiiboView();
     }
 
+    private void launchEliteActivity(Intent resultData) {
+        if (TagMo.getPrefs().enableEliteSupport().get() && !isResponsive
+                && resultData.hasExtra(TagMo.EXTRA_SIGNATURE)) {
+            Intent eliteIntent = new Intent(this, EliteActivity_.class);
+            eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE,
+                    resultData.getStringExtra(TagMo.EXTRA_SIGNATURE));
+            eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK,
+                    TagMo.getPrefs().eliteActiveBank().get());
+            eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT,
+                    TagMo.getPrefs().eliteBankCount().get());
+            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
+                    resultData.getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
+            startActivity(eliteIntent);
+            finish(); // Relaunch activity to bring view to front
+        }
+    }
+
     ActivityResultLauncher<Intent> onScanTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
+        // If we're supporting, didn't arrive from, but scanned an N2...
+        if (TagMo.getPrefs().enableEliteSupport().get() && !isResponsive
+                && result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
+            launchEliteActivity(result.getData());
+        }
+
         hasScannedData = true;
 
         this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         this.runOnUiThread(this::updateAmiiboView);
 
-        if (hasClickedEdit) {
+        if (isResponsive && hasClickedEdit) {
             hasClickedEdit = false;
             this.runOnUiThread(this::openTagEditor);
         }
 
-        if (hasClickedView) {
+        if (isResponsive && hasClickedView) {
             hasClickedView = false;
             this.runOnUiThread(this::viewHex);
         }
@@ -181,7 +205,8 @@ public class AmiiboActivity extends AppCompatActivity {
     private void scanAmiiboData() {
         Intent scan = new Intent(this, NfcActivity_.class);
         scan.setAction(TagMo.ACTION_SCAN_TAG);
-        scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
+        if (isResponsive)
+            scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
         onScanTagResult.launch(scan);
     }
 
@@ -278,18 +303,10 @@ public class AmiiboActivity extends AppCompatActivity {
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
             return;
 
-        if (TagMo.getPrefs().enableEliteSupport().get() && !isResponsive) {
-            Intent eliteIntent = new Intent(this, EliteActivity_.class);
-            eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE,
-                    result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE));
-            eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK,
-                    TagMo.getPrefs().eliteActiveBank().get());
-            eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT,
-                    TagMo.getPrefs().eliteBankCount().get());
-            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
-                    result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
-            startActivity(eliteIntent);
-            finish(); // Relaunch activity to bring view to front
+        // If we're supporting, didn't arrive from, but scanned an N2...
+        if (TagMo.getPrefs().enableEliteSupport().get() && !isResponsive
+                && result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
+            launchEliteActivity(result.getData());
             Intent amiiboIntent = new Intent(this, AmiiboActivity_.class);
             amiiboIntent.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
             amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK,

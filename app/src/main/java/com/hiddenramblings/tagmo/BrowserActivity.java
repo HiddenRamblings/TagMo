@@ -61,6 +61,7 @@ import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
 
@@ -104,7 +105,7 @@ import java.util.Set;
 public class BrowserActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
         SwipeRefreshLayout.OnRefreshListener,
-        BrowserSettings.BrowserSettingsListener,
+        BrowserSettingsListener,
         BrowserAmiibosAdapter.OnAmiiboClickListener {
 
     public static final int SORT_ID = 0x0;
@@ -197,19 +198,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     file.delete();
             }
         }
-        new RequestCommit().setListener(result -> {
-            try {
-                JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-                String lastCommit = ((String) jsonObject.get("name")).substring(6);
-                if (!lastCommit.equals(BuildConfig.COMMIT)) {
-                    JSONObject assets = (JSONObject) ((JSONArray) jsonObject.get("assets")).get(0);
-                    showInstallSnackbar((String) assets.get("browser_download_url"));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).execute(getString(R.string.git_url,
-                TagMo.getPrefs().stableChannel().get() ? "master" : "experimental"));
         requestStoragePermissions();
     }
 
@@ -261,19 +249,17 @@ public class BrowserActivity extends AppCompatActivity implements
         this.settings.addChangeListener(this);
 
         this.swipeRefreshLayout.setOnRefreshListener(this);
+
         this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
         this.amiibosView.setAdapter(new BrowserAmiibosAdapter(settings, this));
+        this.settings.addChangeListener((BrowserSettingsListener) this.amiibosView.getAdapter());
 
         this.foldersView.setLayoutManager(new LinearLayoutManager(this));
         this.foldersView.setAdapter(new BrowserFoldersAdapter(settings));
+        this.settings.addChangeListener((BrowserSettingsListener) this.foldersView.getAdapter());
 
         this.loadAmiiboManager();
         this.loadPTagKeyManager();
-    }
-
-    void refreshBackground() {
-        this.loadAmiiboManager();
-        this.onRootFolderChanged(false);
     }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
@@ -316,7 +302,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            result -> this.refreshBackground());
+            result -> this.onRootFolderChanged(false));
 
     @Click(R.id.fab)
     public void onFabClicked() {
@@ -425,7 +411,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 String fileName = TagReader.writeBytesToFile(directory,
                         input.getText().toString() + ".bin", tagData);
                 showToast(getString(R.string.wrote_file, fileName));
-                this.refreshBackground();
+                this.onRootFolderChanged(false);
             } catch (IOException e) {
                 showToast(e.getMessage());
             }
@@ -707,17 +693,15 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-            if (result.getData().getBooleanExtra("REFRESH", false)) {
-                if (TagMo.getPrefs().ignoreSdcard().get()) {
-                    this.settings.setBrowserRootFolder(Storage.setFile());
-                    this.settings.notifyChanges();
-                }
-                this.refreshBackground();
-            }
-            if (result.getData().getBooleanExtra("POWERTAG", false)) {
-                this.loadPTagKeyManager();
-            }
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+        if (result.getData().getBooleanExtra("REFRESH", false)) {
+            this.settings.setBrowserRootFolder(new File(Storage.getFile(),
+                    TagMo.getPrefs().browserRootFolder().get()));
+            this.settings.notifyChanges();
+            this.onRootFolderChanged(true);
+        }
+        if (result.getData().getBooleanExtra("POWERTAG", false)) {
+            this.loadPTagKeyManager();
         }
     });
 
@@ -728,28 +712,23 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void validateKeys() {
         KeyManager keyManager = new KeyManager(this);
-        if (!keyManager.hasUnFixedKey() || !keyManager.hasFixedKey()) {
+        if (keyManager.isKeyMissing()) {
             showSetupSnackbar();
+        } else {
+            new RequestCommit().setListener(result -> {
+                try {
+                    JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
+                    String lastCommit = ((String) jsonObject.get("name")).substring(6);
+                    if (!BuildConfig.COMMIT.equals(lastCommit)) {
+                        JSONObject assets = (JSONObject) ((JSONArray) jsonObject.get("assets")).get(0);
+                        showInstallSnackbar((String) assets.get("browser_download_url"));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).execute(getString(R.string.git_url,
+                    TagMo.getPrefs().stableChannel().get() ? "master" : "experimental"));
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        this.settings.addChangeListener(this);
-        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) this.amiibosView.getAdapter());
-        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) this.foldersView.getAdapter());
-
-        this.settings.notifyChanges();
-    }
-
-    @Override
-    protected void onPause() {
-        if (this.settings != null) {
-            this.settings.removeAllChangeListeners();
-        }
-        super.onPause();
     }
 
     @Override
@@ -858,7 +837,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .setNegativeButton(R.string.delete, (dialog, which) -> {
                     //noinspection ResultOfMethodCallIgnored
                     amiiboFile.getFilePath().delete();
-                    this.refreshBackground();
+                    this.onRootFolderChanged(false);
                     dialog.dismiss();
                 })
                 .setPositiveButton(R.string.cancel, null).show();
@@ -970,25 +949,17 @@ public class BrowserActivity extends AppCompatActivity implements
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
         loadAmiiboFilesTask(rootFolder, recursiveFiles);
     }
-
+    
     ArrayList<AmiiboFile> listAmiibos(File rootFolder, boolean recursiveFiles) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
-
         File[] files = rootFolder.listFiles();
-        if (files == null) {
-            if (!TagMo.getPrefs().ignoreSdcard().get()) {
-                TagMo.getPrefs().ignoreSdcard().put(true);
-                this.onRootFolderChanged(false);
-                return listAmiibos(settings.getBrowserRootFolder(), recursiveFiles);
-            } else {
-                return amiiboFiles;
-            }
-        }
+        if (files == null)
+            return amiiboFiles;
 
         for (File file : files) {
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiibos(file, true));
-            } else {
+            } else if (file.getName().toLowerCase().endsWith(".bin")) {
                 try {
                     byte[] data = TagReader.readTagFile(file);
                     TagReader.validateTag(data);
@@ -998,17 +969,13 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         }
-        if (amiiboFiles.isEmpty() && !TagMo.getPrefs().ignoreSdcard().get()) {
-            TagMo.getPrefs().ignoreSdcard().put(true);
-            this.onRootFolderChanged(false);
-            return listAmiibos(settings.getBrowserRootFolder(), recursiveFiles);
-        }
         return amiiboFiles;
     }
 
     @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
+
         if (Thread.currentThread().isInterrupted())
             return;
 
@@ -1022,6 +989,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
+        if (newBrowserSettings == null || oldBrowserSettings == null) return;
         boolean folderChanged = false;
         if (!BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
             folderChanged = true;
@@ -1125,6 +1093,13 @@ public class BrowserActivity extends AppCompatActivity implements
         this.currentFolderView.setText(Storage.getRelativePath(rootFolder));
         this.setAmiiboFilesLoadingBarVisibility(indicator);
         this.loadAmiiboFiles(rootFolder, settings.isRecursiveEnabled());
+        if (settings.getAmiiboFiles().isEmpty() && !TagMo.getPrefs().ignoreSdcard().get()) {
+            TagMo.getPrefs().ignoreSdcard().put(true);
+            rootFolder = new File(Storage.getFile(), TagMo.getPrefs().browserRootFolder().get());
+            this.settings.setBrowserRootFolder(rootFolder);
+            this.settings.notifyChanges();
+            this.loadAmiiboFiles(rootFolder, settings.isRecursiveEnabled());
+        }
         this.loadFolders(rootFolder);
     }
 
@@ -1258,9 +1233,8 @@ public class BrowserActivity extends AppCompatActivity implements
         DocumentFile document = DocumentFile.fromSingleUri(this, apkUri);
         if (document == null)
             throw new IOException(getString(R.string.fail_invalid_size));
-        long length = document.length();
-        OutputStream sessionStream = session.openWrite("NAME", 0, length);
-        byte[] buf = new byte[(int) length];
+        OutputStream sessionStream = session.openWrite("NAME", 0, document.length());
+        byte[] buf = new byte[8192];
         int size;
         while ((size = apkStream.read(buf)) > 0) {
             sessionStream.write(buf, 0, size);
@@ -1290,10 +1264,17 @@ public class BrowserActivity extends AppCompatActivity implements
             int length;
 
             FileOutputStream fos = new FileOutputStream(apk);
-            while ((length = dis.read(buffer))>0) {
+            while ((length = dis.read(buffer)) > 0) {
                 fos.write(buffer, 0, length);
             }
             fos.close();
+
+            if (!getString(R.string.mimetype_apk).equals(TagMo.getMimeType(apk))) {
+                //noinspection ResultOfMethodCallIgnored
+                apk.delete();
+                showToast(R.string.download_corrupt);
+                return;
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 installUpdate(FileProvider.getUriForFile(this, TagMo.PROVIDER, apk));
@@ -1302,10 +1283,9 @@ public class BrowserActivity extends AppCompatActivity implements
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     intent.setDataAndType(
                             FileProvider.getUriForFile(this, TagMo.PROVIDER, apk),
-                            "application/vnd.android.package-archive");
+                            getString(R.string.mimetype_apk));
                 } else {
-                    intent.setDataAndType(Uri.fromFile(apk),
-                            "application/vnd.android.package-archive");
+                    intent.setDataAndType(Uri.fromFile(apk), getString(R.string.mimetype_apk));
                 }
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
@@ -1329,6 +1309,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (getPackageManager().canRequestPackageInstalls())
             downloadUpdate(TagMo.getPrefs().downloadUrl().get());
         TagMo.getPrefs().downloadUrl().remove();
+        this.onRefresh();
     });
 
     void requestUpdate(String apkUrl) {

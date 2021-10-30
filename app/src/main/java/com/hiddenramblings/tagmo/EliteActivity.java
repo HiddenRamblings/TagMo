@@ -34,6 +34,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -258,7 +259,7 @@ public class EliteActivity extends AppCompatActivity implements
         });
 
         writerListView.setAdapter(new EliteWriteBlankAdapter(settings, itemClick, amiiboFiles));
-        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) writerListView.getAdapter());
+        this.settings.addChangeListener((BrowserSettingsListener) writerListView.getAdapter());
         writeDialog.getWindow().setLayout(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -288,7 +289,7 @@ public class EliteActivity extends AppCompatActivity implements
 
     @Click(R.id.write_bank_count)
     void onWriteBankCountClick() {
-        if (TagMo.getPrefs().eliteActiveBank().get() >= eliteBankCount.getValue()) {
+        if (TagMo.getPrefs().eliteActiveBank().get() > eliteBankCount.getValue()) {
             showToast(R.string.fail_active_oob);
             return;
         }
@@ -419,7 +420,7 @@ public class EliteActivity extends AppCompatActivity implements
         });
 
         writerListView.setAdapter(new EliteWriteBlankAdapter(settings, itemClick, amiiboFiles));
-        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) writerListView.getAdapter());
+        this.settings.addChangeListener((BrowserSettingsListener) writerListView.getAdapter());
         writeDialog.getWindow().setLayout(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT

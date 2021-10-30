@@ -153,7 +153,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_import_keys)
     void onKeysClicked() {
-        showFileChooser("Fixed Key", "application/octet-stream", RESULT_KEYS);
+        showFileChooser("Fixed Key", getString(R.string.mimetype_bin), RESULT_KEYS);
     }
 
     @PreferenceClick(R.string.settings_enable_tag_type_validation)
@@ -202,7 +202,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_import_info)
     void onImportInfoClicked() {
         showFileChooser(getString(R.string.import_json_details),
-                "application/json", RESULT_IMPORT_AMIIBO_DATABASE);
+                getString(R.string.mimetype_json), RESULT_IMPORT_AMIIBO_DATABASE);
     }
 
     @PreferenceClick(R.string.settings_export_info)

@@ -4,6 +4,10 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".AmiiboActivity">
     <item
+        android:id="@+id/mnu_scan"
+        android:title="@string/scan"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/mnu_write"
         android:title="@string/write"
         app:showAsAction="always"/>

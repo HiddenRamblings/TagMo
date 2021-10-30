@@ -63,6 +63,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
 
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
+        if (newBrowserSettings == null || oldBrowserSettings == null) return;
         boolean refresh = firstRun ||
                 !BrowserSettings.equals(newBrowserSettings.getQuery(), oldBrowserSettings.getQuery()) ||
                 !BrowserSettings.equals(newBrowserSettings.getSort(), oldBrowserSettings.getSort()) ||

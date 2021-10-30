@@ -4,15 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.hiddenramblings.tagmo">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.BIND_NFC_SERVICE"
-        tools:ignore="ProtectedPermissions" />
+        tools:ignore="ProtectedPermissions"/>
     <uses-permission android:name="android.permission.NFC"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="29" />
+        android:maxSdkVersion="29"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+        tools:ignore="ScopedStorage"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
@@ -31,7 +32,7 @@
         <activity
             android:name=".BrowserActivity_"
             android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-            android:exported="true" >
+            android:exported="true">
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable_content"/>
@@ -39,23 +40,25 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.nfc.action.TECH_DISCOVERED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/plain"/>
-            </intent-filter>
-            <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
-                android:resource="@xml/nfc_technology_list"/>
         </activity>
         <activity
             android:name=".EliteActivity_"
             android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-            android:theme="@style/DialogTheme.NoActionBar" >
+            android:theme="@style/DialogTheme.NoActionBar">
         </activity>
         <activity
             android:name=".NfcActivity_"
             android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:exported="true">
+        <intent-filter>
+            <action android:name="android.nfc.action.TECH_DISCOVERED"/>
+            <category android:name="android.intent.category.DEFAULT"/>
+            <data android:mimeType="text/plain"/>
+        </intent-filter>
+        <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
+            android:resource="@xml/nfc_technology_list"/>
+        </activity>
         <activity
             android:name=".HexViewerActivity_"/>
         <activity
@@ -67,7 +70,7 @@
             android:theme="@style/AppTheme2.NoActionBar"/>
         <activity
             android:name=".TagDataActivity_"/>
-        <receiver android:name=".github.InstallReceiver" />
+        <receiver android:name=".github.InstallReceiver"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

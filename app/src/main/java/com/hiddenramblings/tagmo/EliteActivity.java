@@ -24,6 +24,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.endgames.environment.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.EliteBrowserAdapter;
 import com.hiddenramblings.tagmo.adapter.EliteWriteBlankAdapter;
@@ -84,7 +85,7 @@ public class EliteActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         this.settings = new BrowserSettings();
-        this.settings.setBrowserRootFolder(new File(TagMo.getStorage(), TagMo.getPrefs().browserRootFolder().get()));
+        this.settings.setBrowserRootFolder(new File(Storage.getFile(), TagMo.getPrefs().browserRootFolder().get()));
         this.settings.setQuery(TagMo.getPrefs().query().get());
         this.settings.setSort(TagMo.getPrefs().sort().get());
         this.settings.setAmiiboSeriesFilter(TagMo.getPrefs().filterAmiiboSeries().get());

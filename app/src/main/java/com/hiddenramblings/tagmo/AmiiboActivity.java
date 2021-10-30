@@ -28,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.endgames.environment.Storage;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
@@ -336,7 +337,7 @@ public class AmiiboActivity extends AppCompatActivity {
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = new File(TagMo.getStorage(),
+                File directory = new File(Storage.getFile(),
                         TagMo.getPrefs().browserRootFolder().get()
                                 + File.separator + TagMo.getStringRes(R.string.tagmo_backup));
                 String fileName = TagReader.writeBytesToFile(directory,

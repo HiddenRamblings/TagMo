@@ -144,29 +144,14 @@ public class TagMo extends Application {
         Log.e(TAG(src), getStringRes(resource), e);
     }
 
-    public static File getStorage() {
-        return Storage.getStorageFile();
-    }
-
-    public static File getTagMoFiles() {
+    public static File getExternalFiles() {
         return mContext.get().getExternalFilesDir(null);
-    }
-
-    public static String friendlyPath(File file) {
-        String dirPath = file.getAbsolutePath();
-        String sdcardPath = getStorage().getAbsolutePath();
-        if (dirPath.startsWith(sdcardPath)) {
-            dirPath = dirPath.substring(sdcardPath.length());
-        }
-
-        return dirPath;
     }
 
     public static void scanFile(File file) {
         try {
-            MediaScannerConnection.scanFile(TagMo.getContext(), new String[]{
-                    file.getAbsolutePath()
-            }, null, null);
+            MediaScannerConnection.scanFile(TagMo.getContext(),
+                    new String[]{file.getAbsolutePath()}, null, null);
         } catch (Exception e) {
             Error(TagWriter.class, R.string.fail_media_scan, e);
         }

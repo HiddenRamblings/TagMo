@@ -234,7 +234,7 @@ public class AmiiboManager {
 
     public static AmiiboManager getAmiiboManager() throws IOException, JSONException, ParseException {
         AmiiboManager amiiboManager;
-        if (new File(TagMo.getTagMoFiles(), AMIIBO_DATABASE_FILE).exists()) {
+        if (new File(TagMo.getExternalFiles(), AMIIBO_DATABASE_FILE).exists()) {
             try {
                 amiiboManager = AmiiboManager.parse(
                         TagMo.getContext().openFileInput(AMIIBO_DATABASE_FILE));

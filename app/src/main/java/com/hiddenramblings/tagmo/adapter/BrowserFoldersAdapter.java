@@ -32,6 +32,7 @@ public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAd
 
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
+        if (newBrowserSettings == null || oldBrowserSettings == null) return;
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
             this.rootFolder = newBrowserSettings.getBrowserRootFolder();
             this.showUpFolder = showParentFolder();
@@ -81,7 +82,7 @@ public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAd
     }
 
     public boolean showParentFolder() {
-        return (rootFolder != null && !rootFolder.equals(Storage.getFile()))
+        return (rootFolder != null && !Storage.getFile().equals(rootFolder))
                 && rootFolder.getAbsolutePath().startsWith(Storage.getPath());
     }
 

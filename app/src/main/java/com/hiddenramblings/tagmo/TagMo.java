@@ -6,8 +6,8 @@ import android.content.res.Resources;
 import android.media.MediaScannerConnection;
 import android.os.Build;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
-import com.endgames.environment.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 
@@ -155,5 +155,15 @@ public class TagMo extends Application {
         } catch (Exception e) {
             Error(TagWriter.class, R.string.fail_media_scan, e);
         }
+    }
+
+    public static String getMimeType(File file) {
+        String type = "*/*";
+        final String url = file.toString();
+        final String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
+        }
+        return type;
     }
 }

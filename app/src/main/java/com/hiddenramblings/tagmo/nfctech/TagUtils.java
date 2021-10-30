@@ -31,7 +31,7 @@ public class TagUtils {
     public static String getTagTechnology(Tag tag) {
         String type = TagMo.getStringRes(R.string.unknown_type);
         for (String tech : tag.getTechList()) {
-            if (tech.equals(MifareClassic.class.getName())) {
+            if (MifareClassic.class.getName().equals(tech)) {
                 switch (MifareClassic.get(tag).getType()) {
                     default:
                     case MifareClassic.TYPE_CLASSIC:
@@ -44,7 +44,7 @@ public class TagUtils {
                         type = TagMo.getStringRes(R.string.mifare_pro);
                         break;
                 }
-            } else if (tech.equals(MifareUltralight.class.getName())) {
+            } else if (MifareUltralight.class.getName().equals(tech)) {
                 switch (MifareUltralight.get(tag).getType()) {
                     default:
                     case MifareUltralight.TYPE_ULTRALIGHT:
@@ -54,11 +54,11 @@ public class TagUtils {
                         type = TagMo.getStringRes(R.string.mifare_ultralight_c);
                         break;
                 }
-            } else if (tech.equals(IsoDep.class.getName())) {
+            } else if (IsoDep.class.getName().equals(tech)) {
                 type = TagMo.getStringRes(R.string.isodep);
-            } else if (tech.equals(Ndef.class.getName())) {
+            } else if (Ndef.class.getName().equals(tech)) {
                 type = TagMo.getStringRes(R.string.ndef);
-            } else if (tech.equals(NdefFormatable.class.getName())) {
+            } else if (NdefFormatable.class.getName().equals(tech)) {
                 type = TagMo.getStringRes(R.string.ndef_formatable);
             }
         }

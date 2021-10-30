@@ -16,12 +16,12 @@
         android:title="@string/write"
         app:showAsAction="always"/>
     <item
+        android:id="@+id/mnu_replace"
+        android:title="@string/replace"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/mnu_edit"
         android:title="@string/edit_props"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/mnu_replace"
-        android:title="@string/replace_bank"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_view_hex"

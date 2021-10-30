@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.endgames.environment.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -219,7 +220,7 @@ public class ImageActivity extends AppCompatActivity {
         (new AlertDialog.Builder(this))
                 .setTitle(R.string.save_image)
                 .setNegativeButton(R.string.save, (dialogInterface, i) -> {
-                    final File file = new File(TagMo.getTagMoFiles().getAbsolutePath(),
+                    final File file = new File(TagMo.getExternalFiles().getAbsolutePath(),
                             editText.getText().toString() + ".png");
 
                     Glide.with(ImageActivity.this)
@@ -233,7 +234,7 @@ public class ImageActivity extends AppCompatActivity {
                                         fos = new FileOutputStream(file);
                                         resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
 
-                                        String text = "Saved file as " + TagMo.friendlyPath(file);
+                                        String text = "Saved file as " + Storage.getRelativePath(file);
                                         Toast.makeText(ImageActivity.this, text, Toast.LENGTH_SHORT).show();
                                     } catch (FileNotFoundException e) {
                                         e.printStackTrace();

@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.endgames.environment.Storage;
 import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -442,7 +443,7 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
             // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), hasTagInfo);
             if (item.getFilePath() != null) {
                 this.itemView.setEnabled(true);
-                String relativeFile = TagMo.friendlyPath(item.getFilePath()).replace(
+                String relativeFile = Storage.getRelativePath(item.getFilePath()).replace(
                         TagMo.getPrefs().browserRootFolder().get(), "");
                 this.txtPath.setText(boldMatchingText(relativeFile, query));
             } else {

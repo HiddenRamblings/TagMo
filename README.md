@@ -1,4 +1,8 @@
-# TagMo's default branch is stable. 
+# What is TagMo?
+
+TagMo is an Android app for cloning Amiibo to blank NTAG215 NFC tags, Power Tags, and Amiiqo / N2 Elite devices.
+
+It was created as a result of the "[DIY Amiibo cards](https://gbatemp.net/threads/diy-amiibo-cards.406978/)" thread and all the collaboration that took place in it.
 
 If you want to contribute, please make sure to adress your PRs to the 'experimental' branch. Thank you.
 
@@ -9,13 +13,6 @@ If you want to contribute, please make sure to adress your PRs to the 'experimen
     * [Archived Testing - "master2"](https://github.com/HiddenRamblings/TagMo/tree/master2)
 
 * https://www.reddit.com/r/tagmo/
-
-
-# What is TagMo?
-
-TagMo is an Android app for cloning Amiibo to blank NTAG215 NFC tags, Power Tags, and Amiiqo / N2 Elite devices.
-
-It was created as a result of the "[DIY Amiibo cards](https://gbatemp.net/threads/diy-amiibo-cards.406978/)" thread and all the collaboration that took place in it.
 
 # Submitting Issues:
 * master and experimental contain the latest features, but some may be incomplete. 
@@ -51,7 +48,10 @@ It was created as a result of the "[DIY Amiibo cards](https://gbatemp.net/thread
 * Releases published from the experimental branch are also tagged as "Pre-Release" and will not appear on the main repository page. You must click on the "Releases" label to download these builds.
 * Both tags include a signed copy of the apk in their assets. Builds from either tag can be installed over each other without uninstalling. Please include the branch or hash in any issue reports.
 
-### Additional instructions are found in the [Instructions Wiki page](https://github.com/HiddenRamblings/TagMo/wiki/Instructions), including guides for using a [Power Tag (PowerSaves)](<https://github.com/HiddenRamblings/TagMo/wiki/Power-Tag-(PowerSaves)>) or [N2 Elite (or Amiiqo)](<https://github.com/HiddenRamblings/TagMo/wiki/N2-Elite-(or-Amiiqo)>) and [Editing Super Smash Bros (SSB) / Wolf Link / Custom data](https://github.com/HiddenRamblings/TagMo/wiki/Instructions#editing-super-smash-bros-ssb--wolf-link--custom-data)
+#### Additional guides can be found in the [Instructions Wiki](https://github.com/HiddenRamblings/TagMo/wiki/Instructions), including:
+* Using a [Power Tag (PowerSaves)](<https://github.com/HiddenRamblings/TagMo/wiki/Power-Tag-(PowerSaves)>)
+* Using an [N2 Elite (or Amiiqo)](<https://github.com/HiddenRamblings/TagMo/wiki/N2-Elite-(or-Amiiqo)>)
+* [Editing Super Smash Bros / Wolf Link / Custom data](https://github.com/HiddenRamblings/TagMo/wiki/Instructions#editing-super-smash-bros--wolf-link--custom-data)
 
 # Credits
 This app is a result of work by many others. Thanks go out to (In alphabetical order):

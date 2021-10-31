@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -83,6 +84,7 @@ public class HexDumpAdapter extends RecyclerView.Adapter<HexDumpAdapter.ViewHold
                 .inflate(R.layout.hexdump_line, parent, false));
     }
 
+    @SuppressLint("WrongConstant")
     @Override
     public void onBindViewHolder(HexDumpAdapter.ViewHolder holder, int position) {
         HexItem[] row = getItem(position);

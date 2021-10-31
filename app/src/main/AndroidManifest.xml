@@ -51,13 +51,20 @@
             android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
             android:launchMode="singleTop"
             android:exported="true">
-        <intent-filter>
-            <action android:name="android.nfc.action.TECH_DISCOVERED"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-            <data android:mimeType="text/plain"/>
-        </intent-filter>
-        <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
-            android:resource="@xml/nfc_technology_list"/>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_technology_list" />
+            <intent-filter>
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".HexViewerActivity_"/>

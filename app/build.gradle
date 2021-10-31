@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     def commit = 'git rev-parse --short HEAD'.execute().text.trim()
 
     defaultConfig {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 9
         versionName "2.7.5"
 

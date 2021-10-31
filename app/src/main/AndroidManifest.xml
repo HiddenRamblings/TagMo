@@ -50,7 +50,7 @@
             android:name=".NfcActivity_"
             android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
             android:launchMode="singleTop"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />

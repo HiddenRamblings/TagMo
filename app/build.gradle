@@ -1,15 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion '29.0.2'
+    compileSdkVersion 30
 
     def commit = 'git rev-parse --short HEAD'.execute().text.trim()
 
     defaultConfig {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
-        targetSdkVersion 31
+        targetSdkVersion 30
         versionCode 9
         versionName "2.7.5"
 
@@ -57,8 +56,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    //noinspection GradleDependency - 2.2.6 build failure
-    implementation 'com.robertlevonyan.view:MaterialChipView:2.2.5'
+    implementation 'com.robertlevonyan.view:MaterialChipView:2.2.7'
     implementation 'org.apmem.tools:layouts:1.10@aar'
     annotationProcessor "org.androidannotations:androidannotations:4.6.0"
     implementation "org.androidannotations:androidannotations-api:4.6.0"

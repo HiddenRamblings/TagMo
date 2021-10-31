@@ -475,10 +475,7 @@ public class NfcActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setMessage(R.string.nfc_query)
                     .setNegativeButton(R.string.yes, (dialog, which) ->
-                            startActivity(new Intent(Build.VERSION.SDK_INT
-                                    >= Build.VERSION_CODES.JELLY_BEAN
-                                    ? Settings.ACTION_NFC_SETTINGS
-                                    : Settings.ACTION_WIRELESS_SETTINGS)
+                            startActivity(new Intent(Settings.ACTION_NFC_SETTINGS)
                     ))
                     .setPositiveButton(R.string.no, null)
                     .show();
@@ -503,16 +500,17 @@ public class NfcActivity extends AppCompatActivity {
     void listenForTags() {
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(TagMo.getContext(), 0,
                 new Intent(TagMo.getContext(), this.getClass()),
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_IMMUTABLE : 0);
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                        ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                        : PendingIntent.FLAG_UPDATE_CURRENT);
 
         String[][] nfcTechList = new String[][]{};
 
-        IntentFilter filter1 = new IntentFilter();
-        filter1.addAction(NfcAdapter.ACTION_TAG_DISCOVERED);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(NfcAdapter.ACTION_TAG_DISCOVERED);
 
-        IntentFilter[] nfcIntentFilter = new IntentFilter[]{filter1};
-
-        nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, nfcIntentFilter, nfcTechList);
+        nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent,
+                new IntentFilter[]{filter}, nfcTechList);
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {

@@ -60,6 +60,7 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
         this.settings = settings;
         this.listener = listener;
 
+        Collections.sort(amiiboFiles, new AmiiboComparator());
         this.filteredData = this.amiiboFiles = amiiboFiles;
     }
 
@@ -67,8 +68,8 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
         this.settings = settings;
         this.collector = collector;
 
+        Collections.sort(amiiboFiles, new AmiiboComparator());
         this.filteredData = this.amiiboFiles = amiiboFiles;
-        Collections.sort(this.amiiboFiles, new AmiiboComparator());
     }
 
     @Override

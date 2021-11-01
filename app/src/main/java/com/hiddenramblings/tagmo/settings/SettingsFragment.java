@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo.settings;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -153,7 +154,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_import_keys)
     void onKeysClicked() {
-        showFileChooser("Fixed Key", getString(R.string.mimetype_bin), RESULT_KEYS);
+        showFileChooser("Fixed Key", "*/*", RESULT_KEYS);
     }
 
     @PreferenceClick(R.string.settings_enable_tag_type_validation)
@@ -647,15 +648,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         switch(resultCode) {
             case RESULT_KEYS:
                 try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        intent.putExtra(Intent.EXTRA_MIME_TYPES,
+                                getResources().getStringArray(R.array.mimetype_bin));
+                    }
                     onLoadKeys.launch(Intent.createChooser(intent, title));
-                } catch (android.content.ActivityNotFoundException ex) {
+                } catch (ActivityNotFoundException ex) {
                     TagMo.Error(getClass(), ex.getMessage());
                 }
                 break;
             case RESULT_IMPORT_AMIIBO_DATABASE:
                 try {
                     onImportAmiiboDatabase.launch(Intent.createChooser(intent, title));
-                } catch (android.content.ActivityNotFoundException ex) {
+                } catch (ActivityNotFoundException ex) {
                     TagMo.Error(getClass(), ex.getMessage());
                 }
                 break;

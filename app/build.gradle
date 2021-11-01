@@ -63,5 +63,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
+    // Required for Lollipop Amiibo API download compatibility
     implementation 'com.google.android.gms:play-services-safetynet:17.0.1'
 }

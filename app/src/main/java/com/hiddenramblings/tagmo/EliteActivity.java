@@ -486,7 +486,6 @@ public class EliteActivity extends AppCompatActivity implements
 
     @Override
     public void onAmiiboClicked(Amiibo amiibo, int position) {
-        boolean isAvailable = false;
         if (amiibo == null) {
             displayWriteDialog(position);
             return;
@@ -499,29 +498,12 @@ public class EliteActivity extends AppCompatActivity implements
             args.putByteArray(TagMo.EXTRA_TAG_DATA, amiibo.data);
             intent.putExtras(args);
             onViewerActivity.launch(intent);
-            isAvailable = true;
+        } else if (amiibos.get(position).id != 0) {
+            Intent intent = new Intent(this, AmiiboActivity_.class);
+            intent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
+            intent.putExtra(TagMo.EXTRA_AMIIBO_ID, amiibos.get(position).id);
+            onViewerActivity.launch(intent);
         } else {
-            for (int x = 0; x < amiiboFiles.size(); x++) {
-                if (amiiboFiles.get(x).getId() == amiibo.id) {
-                    Bundle args = new Bundle();
-                    try {
-                        args.putByteArray(TagMo.EXTRA_TAG_DATA, TagReader.readTagStream(
-                                amiiboFiles.get(x).getFilePath()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        continue;
-                    }
-                    Intent intent = new Intent(this, AmiiboActivity_.class);
-                    intent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
-                    intent.putExtras(args);
-                    onViewerActivity.launch(intent);
-                    isAvailable = true;
-                    break;
-                }
-            }
-        }
-
-        if (!isAvailable) {
             Intent amiiboIntent = new Intent(EliteActivity.this, NfcActivity_.class);
             amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
             amiiboIntent.setAction(TagMo.ACTION_SCAN_TAG);
@@ -552,20 +534,6 @@ public class EliteActivity extends AppCompatActivity implements
     @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
-
-        // force use of showMissingFiles locally for complete list
-//        AmiiboManager amiiboManager = settings.getAmiiboManager();
-//        if (amiiboManager != null) {
-//            HashSet<Long> amiiboIds = new HashSet<>();
-//            for (AmiiboFile amiiboFile : amiiboFiles) {
-//                amiiboIds.add(amiiboFile.getId());
-//            }
-//            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-//                if (!amiiboIds.contains(amiibo.id)) {
-//                    amiiboFiles.add(new AmiiboFile(null, amiibo.id));
-//                }
-//            }
-//        }
     }
 
     ArrayList<AmiiboFile> listAmiibos(File rootFolder, boolean recursiveFiles) {

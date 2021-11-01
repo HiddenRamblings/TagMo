@@ -46,4 +46,15 @@ public class BankNumberPicker extends NumberPicker {
         }
     }
 
+    public int getPosition() {
+        return this.getValue() - this.getMinValue();
+    }
+
+    public void setPosition(int position) {
+        this.setValue(position + this.getMinValue());
+    }
+
+    public int getValueForPosition(int value) {
+        return value + this.getMinValue();
+    }
 }

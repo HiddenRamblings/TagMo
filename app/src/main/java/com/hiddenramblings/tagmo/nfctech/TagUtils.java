@@ -90,14 +90,6 @@ public class TagUtils {
         return false;
     }
 
-    public static int getPositionForValue(int value) {
-        return value - 1;
-    }
-
-    public static int getValueForPosition(int value) {
-        return value + 1;
-    }
-
     static boolean compareRange(byte[] data, byte[] data2, int data2offset, int len) {
         for (int i = data2offset, j = 0; j < len; i++, j++) {
             if (data[j] != data2[i])

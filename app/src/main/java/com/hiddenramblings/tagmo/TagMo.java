@@ -48,6 +48,8 @@ public class TagMo extends Application {
     public static final String EXTRA_ACTIVE_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_ACTIVE_BANK";
     public static final String EXTRA_BANK_COUNT = BuildConfig.APPLICATION_ID + ".EXTRA_BANK_COUNT";
     public static final String EXTRA_CURRENT_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_CURRENT_BANK";
+    public static final String EXTRA_SCANNED_DATA = BuildConfig.APPLICATION_ID + ".EXTRA_SCANNED_DATA";
+    public static final String EXTRA_ELITE_INTENT = BuildConfig.APPLICATION_ID + ".EXTRA_ELITE_INTENT";
 
     @Pref
     Preferences_ prefs;
@@ -158,12 +160,7 @@ public class TagMo extends Application {
     }
 
     public static String getMimeType(File file) {
-        String type = "*/*";
-        final String url = file.toString();
-        final String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-        if (extension != null) {
-            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
-        }
-        return type;
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase());
     }
 }

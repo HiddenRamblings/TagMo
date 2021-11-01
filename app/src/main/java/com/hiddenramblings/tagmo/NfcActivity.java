@@ -58,10 +58,11 @@ public class NfcActivity extends AppCompatActivity {
     @ViewById(R.id.bank_number_details)
     TextView bankTextView;
 
-    NfcAdapter nfcAdapter;
-    KeyManager keyManager;
-    Animation nfcAnimation;
+    private NfcAdapter nfcAdapter;
+    private KeyManager keyManager;
+    private Animation nfcAnimation;
 
+    boolean isEliteIntent = false;
     private NTAG215 mifare;
     private volatile boolean isUnlocking;
     private int write_count;
@@ -117,10 +118,17 @@ public class NfcActivity extends AppCompatActivity {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
 
-        if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK))
-            bankNumberPicker.setValue(TagUtils.getValueForPosition(commandIntent.getIntExtra(
-                    TagMo.EXTRA_CURRENT_BANK, bankNumberPicker.getValue())));
-        else if (TagMo.getPrefs().enableEliteSupport().get()) {
+        if (getCallingActivity() != null)
+            isEliteIntent = EliteActivity_.class.getName().equals(getCallingActivity().getClassName());
+        if (getIntent().hasExtra(TagMo.EXTRA_ELITE_INTENT))
+            isEliteIntent = getIntent().getBooleanExtra(TagMo.EXTRA_ELITE_INTENT, isEliteIntent);
+
+        int current_bank = -1;
+        if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
+            current_bank = TagUtils.getValueForPosition(commandIntent.getIntExtra(
+                    TagMo.EXTRA_CURRENT_BANK, bankNumberPicker.getValue()));
+            bankNumberPicker.setValue(current_bank);
+        } else if (isEliteIntent) {
             bankNumberPicker.setValue(TagUtils.getValueForPosition(
                     TagMo.getPrefs().eliteActiveBank().get()));
         } else {
@@ -134,8 +142,7 @@ public class NfcActivity extends AppCompatActivity {
             case TagMo.ACTION_WRITE_TAG_FULL:
             case TagMo.ACTION_WRITE_TAG_RAW:
             case TagMo.ACTION_WRITE_TAG_DATA:
-                if (!commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)
-                        || !TagMo.getPrefs().enableEliteSupport().get()) {
+                if (!isEliteIntent || !commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
                     bankNumberPicker.setVisibility(View.GONE);
                     bankNumberPicker.setEnabled(false);
                     bankTextView.setVisibility(View.GONE);
@@ -154,8 +161,7 @@ public class NfcActivity extends AppCompatActivity {
             case TagMo.ACTION_ACTIVATE_BANK:
             case TagMo.ACTION_BACKUP_AMIIBO:
             case TagMo.ACTION_FORMAT_BANK:
-                if (!commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)
-                        || !TagMo.getPrefs().enableEliteSupport().get()) {
+                if (!isEliteIntent || !commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
                     bankNumberPicker.setVisibility(View.GONE);
                     bankTextView.setVisibility(View.GONE);
                 }
@@ -178,7 +184,13 @@ public class NfcActivity extends AppCompatActivity {
                 setTitle(R.string.amiibo_backup);
                 break;
             case TagMo.ACTION_SCAN_TAG:
-                setTitle(R.string.scan_tag);
+                if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
+                    setTitle(getString(R.string.scan_bank, current_bank));
+                } else if (isEliteIntent) {
+                    setTitle(R.string.scan_elite);
+                } else {
+                    setTitle(R.string.scan_tag);
+                }
                 break;
             case TagMo.ACTION_SET_BANK_COUNT:
                 setTitle(R.string.set_bank_count);

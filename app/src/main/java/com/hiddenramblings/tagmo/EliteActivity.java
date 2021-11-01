@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.elite_browser)
@@ -469,6 +470,7 @@ public class EliteActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        amiibos.get(clickedPosition).data = tagData;
 
         Bundle args = new Bundle();
         args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
@@ -476,6 +478,7 @@ public class EliteActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, AmiiboActivity_.class);
         intent.putExtra(TagMo.EXTRA_CURRENT_BANK, result.getData().getIntExtra(
                 TagMo.EXTRA_CURRENT_BANK, clickedPosition));
+        intent.putExtra(TagMo.EXTRA_SCANNED_DATA, true);
         intent.putExtras(args);
 
         onViewerActivity.launch(intent);
@@ -549,6 +552,20 @@ public class EliteActivity extends AppCompatActivity implements
     @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
+
+        // force use of showMissingFiles locally for complete list
+//        AmiiboManager amiiboManager = settings.getAmiiboManager();
+//        if (amiiboManager != null) {
+//            HashSet<Long> amiiboIds = new HashSet<>();
+//            for (AmiiboFile amiiboFile : amiiboFiles) {
+//                amiiboIds.add(amiiboFile.getId());
+//            }
+//            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+//                if (!amiiboIds.contains(amiibo.id)) {
+//                    amiiboFiles.add(new AmiiboFile(null, amiibo.id));
+//                }
+//            }
+//        }
     }
 
     ArrayList<AmiiboFile> listAmiibos(File rootFolder, boolean recursiveFiles) {

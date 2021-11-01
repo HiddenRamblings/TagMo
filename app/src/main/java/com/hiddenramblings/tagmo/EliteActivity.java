@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -144,6 +145,9 @@ public class EliteActivity extends AppCompatActivity implements
         updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
         bankStats.setText(getString(R.string.elite_bank_stats, active_bank, bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
+
+        eliteBankCount.setOnValueChangedListener((numberPicker, valueOld, valueNew)
+                -> writeOpenBanks.setText(getString(R.string.write_open_banks, valueNew)));
     }
 
     private void refreshEliteHardwareAdapter() {
@@ -192,16 +196,26 @@ public class EliteActivity extends AppCompatActivity implements
 
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
+        int bank_count = result.getData().getIntExtra(TagMo.EXTRA_BANK_COUNT,
+                TagMo.getPrefs().eliteBankCount().get());
+
+        TagMo.getPrefs().eliteBankCount().put(bank_count);
+
+        eliteBankCount.setValue(bank_count);
         updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
+        bankStats.setText(getString(R.string.elite_bank_stats,
+                TagMo.getPrefs().eliteActiveBank().get(), bank_count));
+        writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
     });
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList, Dialog writeDialog) {
-        if (amiiboList != null && amiiboList.size() == TagMo.getPrefs().eliteBankCount().get()) {
+        if (amiiboList != null && amiiboList.size() == eliteBankCount.getValue()) {
             new AlertDialog.Builder(EliteActivity.this)
                     .setMessage(R.string.write_confirm)
                     .setNegativeButton(R.string.proceed, (dialog, which) -> {
                         Intent collection = new Intent(this, NfcActivity_.class);
                         collection.setAction(TagMo.ACTION_WRITE_ALL_TAGS);
+                        collection.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
                         collection.putExtra(TagMo.EXTRA_AMIIBO_FILES, amiiboList);
                         onWriteOpenBanksActivity.launch(collection);
                         dialog.dismiss();

@@ -340,6 +340,7 @@ public class NfcActivity extends AppCompatActivity {
                         break;
 
                     case TagMo.ACTION_WRITE_ALL_TAGS:
+                        mifare.setBankCount(write_count);
                         ArrayList<AmiiboFile> amiiboList =
                                 commandIntent.getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES);
                         for (int x = 0; x < amiiboList.size(); x++) {
@@ -347,8 +348,9 @@ public class NfcActivity extends AppCompatActivity {
                                     amiiboList.get(x).getFilePath()), this.keyManager, x);
                         }
                         Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        write.putExtra(TagMo.EXTRA_BANK_COUNT, write_count);
                         write.putExtra(TagMo.EXTRA_AMIIBO_DATA,
-                                TagReader.readTagTitles(mifare, bank_count));
+                                TagReader.readTagTitles(mifare, write_count));
                         setResult(Activity.RESULT_OK, write);
                         break;
 

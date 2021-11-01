@@ -393,7 +393,6 @@ public class AmiiboActivity extends AppCompatActivity {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
                 e.printStackTrace();
-                amiiboId = -1;
             }
         }
         if (amiiboId == -1) {
@@ -424,7 +423,6 @@ public class AmiiboActivity extends AppCompatActivity {
                 amiiboId = TagUtils.amiiboIdFromTag(this.tagData);
             } catch (Exception e) {
                 e.printStackTrace();
-                amiiboId = -1;
             }
         }
         if (amiiboId == -1 && !isEliteIntent) {

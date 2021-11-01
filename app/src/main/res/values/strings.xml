@@ -147,6 +147,7 @@
     <string name="write_auto">Write to Tag (Auto)</string>
     <string name="restore_tag">Restore Tag</string>
     <string name="scan_tag">Scan Tag</string>
+    <string name="scan_bank">Scan Bank %1$d</string>
     <string name="scan_elite">Scan N2 Elite</string>
     <string name="wipe_bank">Wipe Bank Data</string>
     <string name="activate">Activate</string>

@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -80,7 +79,7 @@ public class AmiiboActivity extends AppCompatActivity {
     byte[] tagData;
 
     AmiiboManager amiiboManager = null;
-    boolean isResponsive = false;
+    boolean isEliteIntent = false;
     int current_bank = -1;
     boolean hasScannedData = false;
     boolean hasClickedEdit = false;
@@ -91,16 +90,22 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @AfterViews
     void afterViews() {
-        if (getCallingActivity() != null) {
-            String caller = getCallingActivity().getClassName();
-            isResponsive = EliteActivity_.class.getName().equals(caller)
-                    || AmiiboActivity_.class.getName().equals(caller);
+        if (getCallingActivity() != null)
+            isEliteIntent = EliteActivity_.class.getName().equals(getCallingActivity().getClassName());
+        if (getIntent().hasExtra(TagMo.EXTRA_ELITE_INTENT))
+            isEliteIntent = getIntent().getBooleanExtra(TagMo.EXTRA_ELITE_INTENT, isEliteIntent);
+
+        if (isEliteIntent) {
+            if (getIntent().hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
+                current_bank = getIntent().getIntExtra(TagMo.EXTRA_CURRENT_BANK,
+                        TagMo.getPrefs().eliteActiveBank().get());
+            }
+            if (getIntent().hasExtra(TagMo.EXTRA_SCANNED_DATA)) {
+                hasScannedData = getIntent().getBooleanExtra(
+                        TagMo.EXTRA_SCANNED_DATA, false);
+            }
         }
-        if (getIntent().hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
-            current_bank = getIntent().getIntExtra(TagMo.EXTRA_CURRENT_BANK,
-                    TagMo.getPrefs().eliteActiveBank().get());
-        }
-        toolbar.inflateMenu(isResponsive ? R.menu.elite_menu : R.menu.amiibo_menu);
+        toolbar.inflateMenu(isEliteIntent ? R.menu.elite_menu : R.menu.amiibo_menu);
         toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.mnu_activate:
@@ -119,7 +124,7 @@ public class AmiiboActivity extends AppCompatActivity {
                     displayBackupDialog();
                     return true;
                 case R.id.mnu_edit:
-                    if (isResponsive && !hasScannedData) {
+                    if (isEliteIntent && !hasScannedData) {
                         showToast(getString(R.string.refresh_required));
                         hasClickedEdit = true;
                         scanAmiiboData();
@@ -131,7 +136,7 @@ public class AmiiboActivity extends AppCompatActivity {
                     modifyBank(TagMo.ACTION_REPLACE_AMIIBO);
                     return true;
                 case R.id.mnu_view_hex:
-                    if (isResponsive && !hasScannedData) {
+                    if (isEliteIntent && !hasScannedData) {
                         showToast(getString(R.string.refresh_required));
                         hasClickedView = true;
                         scanAmiiboData();
@@ -158,7 +163,7 @@ public class AmiiboActivity extends AppCompatActivity {
     }
 
     private void launchEliteActivity(Intent resultData) {
-        if (TagMo.getPrefs().enableEliteSupport().get() && !isResponsive
+        if (TagMo.getPrefs().enableEliteSupport().get() && !isEliteIntent
                 && resultData.hasExtra(TagMo.EXTRA_SIGNATURE)) {
             Intent eliteIntent = new Intent(this, EliteActivity_.class);
             eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE,
@@ -181,7 +186,7 @@ public class AmiiboActivity extends AppCompatActivity {
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         // If we're supporting, didn't arrive from, but scanned an N2...
-        if (TagMo.getPrefs().enableEliteSupport().get() && !isResponsive
+        if (TagMo.getPrefs().enableEliteSupport().get() && !isEliteIntent
                 && result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
             launchEliteActivity(result.getData());
         }
@@ -191,12 +196,12 @@ public class AmiiboActivity extends AppCompatActivity {
         this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         this.runOnUiThread(this::updateAmiiboView);
 
-        if (isResponsive && hasClickedEdit) {
+        if (isEliteIntent && hasClickedEdit) {
             hasClickedEdit = false;
             this.runOnUiThread(this::openTagEditor);
         }
 
-        if (isResponsive && hasClickedView) {
+        if (isEliteIntent && hasClickedView) {
             hasClickedView = false;
             this.runOnUiThread(this::viewHex);
         }
@@ -205,7 +210,8 @@ public class AmiiboActivity extends AppCompatActivity {
     private void scanAmiiboData() {
         Intent scan = new Intent(this, NfcActivity_.class);
         scan.setAction(TagMo.ACTION_SCAN_TAG);
-        if (isResponsive)
+        scan.putExtra(TagMo.EXTRA_ELITE_INTENT, isEliteIntent);
+        if (isEliteIntent)
             scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
         onScanTagResult.launch(scan);
     }
@@ -227,7 +233,7 @@ public class AmiiboActivity extends AppCompatActivity {
         this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         this.runOnUiThread(this::updateAmiiboView);
 
-        if (!isResponsive) {
+        if (!isEliteIntent) {
             // TODO: Update the AmiiboFile with the modified data
             showToast(getString(R.string.write_suggested));
         }
@@ -304,10 +310,11 @@ public class AmiiboActivity extends AppCompatActivity {
             return;
 
         // If we're supporting, didn't arrive from, but scanned an N2...
-        if (TagMo.getPrefs().enableEliteSupport().get() && !isResponsive
+        if (TagMo.getPrefs().enableEliteSupport().get() && !isEliteIntent
                 && result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
             launchEliteActivity(result.getData());
             Intent amiiboIntent = new Intent(this, AmiiboActivity_.class);
+            amiiboIntent.putExtra(TagMo.EXTRA_ELITE_INTENT, true);
             amiiboIntent.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
             amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK,
                     TagMo.getPrefs().eliteActiveBank().get());
@@ -330,6 +337,7 @@ public class AmiiboActivity extends AppCompatActivity {
     void writeTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
+        intent.putExtra(TagMo.EXTRA_ELITE_INTENT, isEliteIntent);
         if (current_bank != -1)
             intent.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
@@ -339,6 +347,7 @@ public class AmiiboActivity extends AppCompatActivity {
     void restoreTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
+        intent.putExtra(TagMo.EXTRA_ELITE_INTENT, isEliteIntent);
         if (current_bank != -1)
             intent.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);

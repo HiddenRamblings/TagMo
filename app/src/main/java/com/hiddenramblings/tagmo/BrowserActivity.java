@@ -94,6 +94,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
@@ -956,10 +957,11 @@ public class BrowserActivity extends AppCompatActivity implements
         if (files == null)
             return amiiboFiles;
 
+        String[] mimeTypes = getResources().getStringArray(R.array.mimetype_bin);
         for (File file : files) {
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiibos(file, true));
-            } else if (file.getName().toLowerCase().endsWith(".bin")) {
+            } else if (Arrays.asList(mimeTypes).contains(TagMo.getMimeType(file))) {
                 try {
                     byte[] data = TagReader.readTagFile(file);
                     TagReader.validateTag(data);

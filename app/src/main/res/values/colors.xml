@@ -6,4 +6,5 @@
     <color name="tagWarningLight">#FF0000</color>
     <color name="tagWarningDark">#FF00FF</color>
     <color name="background_white">#66FFFFFF</color>
+    <color name="bottom_sheet_tint">#A9333333</color>
 </resources>

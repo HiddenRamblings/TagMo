@@ -90,6 +90,8 @@
     <string name="setup">Setup</string>
     <string name="replace">Replace</string>
     <string name="restore">Restore</string>
+    <string name="activate">Activate</string>
+    <string name="format">Format</string>
 
     <string name="error_caps">ERROR</string>
 
@@ -149,8 +151,7 @@
     <string name="scan_tag">Scan Tag</string>
     <string name="scan_bank">Scan Bank %1$d</string>
     <string name="scan_elite">Scan N2 Elite</string>
-    <string name="wipe_bank">Wipe Bank Data</string>
-    <string name="activate">Activate</string>
+    <string name="format_bank">Format Bank</string>
     <string name="activate_bank">Activate Bank</string>
     <string name="bank_backup">Bank Backup</string>
     <string name="amiibo_backup">Amiibo Backup</string>
@@ -205,6 +206,7 @@
     <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
 
     <string name="amiibo_info">Amiibo Info</string>
+    <string name="bank_number">Bank %1$d</string>
 
     <string name="amiibo_info_updated">Updated Amiibo info</string>
 

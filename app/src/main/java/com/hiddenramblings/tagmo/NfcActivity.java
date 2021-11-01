@@ -120,8 +120,6 @@ public class NfcActivity extends AppCompatActivity {
 
         if (getCallingActivity() != null)
             isEliteIntent = EliteActivity_.class.getName().equals(getCallingActivity().getClassName());
-        if (getIntent().hasExtra(TagMo.EXTRA_ELITE_INTENT))
-            isEliteIntent = getIntent().getBooleanExtra(TagMo.EXTRA_ELITE_INTENT, isEliteIntent);
 
         int current_bank = -1;
         if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
@@ -205,7 +203,7 @@ public class NfcActivity extends AppCompatActivity {
                 setTitle(R.string.activate_bank);
                 break;
             case TagMo.ACTION_FORMAT_BANK:
-                setTitle(R.string.wipe_bank);
+                setTitle(R.string.format_bank);
                 break;
 
             default:

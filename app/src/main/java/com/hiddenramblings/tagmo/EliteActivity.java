@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +50,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.elite_browser)
@@ -143,7 +141,8 @@ public class EliteActivity extends AppCompatActivity implements
         amiibosView.setAdapter(adapter);
         this.settings.addChangeListener(adapter);
         updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
-        bankStats.setText(getString(R.string.elite_bank_stats, active_bank, bank_count));
+        bankStats.setText(getString(R.string.elite_bank_stats,
+                eliteBankCount.getValueForPosition(active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
 
         eliteBankCount.setOnValueChangedListener((numberPicker, valueOld, valueNew)
@@ -304,7 +303,7 @@ public class EliteActivity extends AppCompatActivity implements
 
     @Click(R.id.write_bank_count)
     void onWriteBankCountClick() {
-        if (TagMo.getPrefs().eliteActiveBank().get() > eliteBankCount.getValue()) {
+        if (TagMo.getPrefs().eliteActiveBank().get() >= eliteBankCount.getValue()) {
             showToast(R.string.fail_active_oob);
             return;
         }
@@ -329,7 +328,8 @@ public class EliteActivity extends AppCompatActivity implements
 
         refreshEliteHardwareAdapter();
         int bank_count = TagMo.getPrefs().eliteBankCount().get();
-        bankStats.setText(getString(R.string.elite_bank_stats, active_bank, bank_count));
+        bankStats.setText(getString(R.string.elite_bank_stats,
+                eliteBankCount.getValueForPosition(active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
     });
 

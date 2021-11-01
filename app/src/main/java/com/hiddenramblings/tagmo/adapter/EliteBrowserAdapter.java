@@ -93,8 +93,7 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
 
     @Override
     public void onBindViewHolder(@NonNull final AmiiboVewHolder holder, int position) {
-        if (TagUtils.getValueForPosition(position)
-                == TagMo.getPrefs().eliteActiveBank().get()) {
+        if (TagMo.getPrefs().eliteActiveBank().get() == position) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
                     holder.isDarkTheme() ? android.R.color.holo_green_dark
                             : android.R.color.holo_green_light));
@@ -214,12 +213,11 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
             }
 
             String query = settings.getQuery().toLowerCase();
-            String position = String.valueOf(TagUtils.getValueForPosition(
-                    getAbsoluteAdapterPosition()));
+            String value = String.valueOf(getAbsoluteAdapterPosition() + 1);
 
             this.txtError.setVisibility(View.GONE);
             if (isAmiibo) {
-                setAmiiboInfoText(this.txtName, position + ": " + amiiboName);
+                setAmiiboInfoText(this.txtName, value + ": " + amiiboName);
                 setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query));
                 setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query));
                 setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query));
@@ -227,7 +225,7 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
                 // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query));
             } else {
                 this.txtName.setVisibility(View.VISIBLE);
-                this.txtName.setText(TagMo.getStringRes(R.string.blank_bank, position));
+                this.txtName.setText(TagMo.getStringRes(R.string.blank_bank, value));
                 this.txtTagId.setVisibility(View.GONE);
                 this.txtAmiiboSeries.setVisibility(View.GONE);
                 this.txtAmiiboType.setVisibility(View.GONE);

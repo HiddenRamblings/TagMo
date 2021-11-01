@@ -125,12 +125,11 @@ public class NfcActivity extends AppCompatActivity {
 
         int current_bank = -1;
         if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
-            current_bank = TagUtils.getValueForPosition(commandIntent.getIntExtra(
-                    TagMo.EXTRA_CURRENT_BANK, bankNumberPicker.getValue()));
-            bankNumberPicker.setValue(current_bank);
+            current_bank = commandIntent.getIntExtra(
+                    TagMo.EXTRA_CURRENT_BANK, bankNumberPicker.getPosition());
+            bankNumberPicker.setPosition(current_bank);
         } else if (isEliteIntent) {
-            bankNumberPicker.setValue(TagUtils.getValueForPosition(
-                    TagMo.getPrefs().eliteActiveBank().get()));
+            bankNumberPicker.setPosition(TagMo.getPrefs().eliteActiveBank().get());
         } else {
             bankTextView.setVisibility(View.GONE);
             bankNumberPicker.setVisibility(View.GONE);
@@ -185,7 +184,7 @@ public class NfcActivity extends AppCompatActivity {
                 break;
             case TagMo.ACTION_SCAN_TAG:
                 if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
-                    setTitle(getString(R.string.scan_bank, current_bank));
+                    setTitle(getString(R.string.scan_bank, bankNumberPicker.getValue()));
                 } else if (isEliteIntent) {
                     setTitle(R.string.scan_elite);
                 } else {
@@ -300,10 +299,10 @@ public class NfcActivity extends AppCompatActivity {
                 selection = 0;
                 bank_details = TagReader.getEliteDetails(mifare);
                 bank_count = bank_details[1] & 0xFF;
-                active_bank = TagUtils.getValueForPosition(bank_details[0] & 0xFF);
+                active_bank = bank_details[0] & 0xFF;
                 if (!TagMo.ACTION_SET_BANK_COUNT.equals(mode)
                         && !TagMo.ACTION_WRITE_ALL_TAGS.equals(mode)) {
-                    selection = TagUtils.getPositionForValue(bankNumberPicker.getValue());
+                    selection = bankNumberPicker.getPosition();
                     if (selection > bank_count) {
                         throw new Exception(getString(R.string.fail_bank_oob));
                     }
@@ -341,6 +340,8 @@ public class NfcActivity extends AppCompatActivity {
 
                     case TagMo.ACTION_WRITE_ALL_TAGS:
                         mifare.setBankCount(write_count);
+                        if (active_bank <= write_count)
+                            mifare.activateBank(active_bank);
                         ArrayList<AmiiboFile> amiiboList =
                                 commandIntent.getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES);
                         for (int x = 0; x < amiiboList.size(); x++) {
@@ -393,7 +394,7 @@ public class NfcActivity extends AppCompatActivity {
 
                     case TagMo.ACTION_SET_BANK_COUNT:
                         mifare.setBankCount(write_count);
-                        mifare.activateBank(TagUtils.getPositionForValue(active_bank));
+                        mifare.activateBank(active_bank);
                         ArrayList<String> list = TagReader.readTagTitles(mifare, write_count);
                         Intent configure = new Intent(TagMo.ACTION_NFC_SCANNED);
                         configure.putExtra(TagMo.EXTRA_BANK_COUNT, write_count);
@@ -404,8 +405,7 @@ public class NfcActivity extends AppCompatActivity {
                     case TagMo.ACTION_ACTIVATE_BANK:
                         mifare.activateBank(selection);
                         Intent active = new Intent(TagMo.ACTION_NFC_SCANNED);
-                        active.putExtra(TagMo.EXTRA_ACTIVE_BANK,
-                                TagUtils.getValueForPosition(selection));
+                        active.putExtra(TagMo.EXTRA_ACTIVE_BANK, selection);
                         setResult(Activity.RESULT_OK, active);
                         break;
 

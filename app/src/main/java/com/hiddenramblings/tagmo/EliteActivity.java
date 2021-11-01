@@ -6,6 +6,10 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +21,20 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.endgames.environment.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.EliteBrowserAdapter;
@@ -35,6 +46,7 @@ import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -64,6 +76,32 @@ public class EliteActivity extends AppCompatActivity implements
     ViewGroup bottomSheet;
     @ViewById(R.id.toggle)
     ImageView toggle;
+
+    @ViewById(R.id.amiiboCard)
+    CardView amiiboCard;
+    @ViewById(R.id.toolbar)
+    Toolbar toolbar;
+    @ViewById(R.id.amiiboInfo)
+    View amiiboInfo;
+    @ViewById(R.id.txtError)
+    TextView txtError;
+    @ViewById(R.id.txtTagId)
+    TextView txtTagId;
+    @ViewById(R.id.txtName)
+    TextView txtName;
+    @ViewById(R.id.txtBank)
+    TextView txtBank;
+    @ViewById(R.id.txtGameSeries)
+    TextView txtGameSeries;
+    @ViewById(R.id.txtCharacter)
+    TextView txtCharacter;
+    @ViewById(R.id.txtAmiiboType)
+    TextView txtAmiiboType;
+    @ViewById(R.id.txtAmiiboSeries)
+    TextView txtAmiiboSeries;
+    @ViewById(R.id.imageAmiibo)
+    ImageView imageAmiibo;
+
     @ViewById(R.id.elite_bank_stats)
     TextView bankStats;
     @ViewById(R.id.bank_count_picker)
@@ -75,8 +113,19 @@ public class EliteActivity extends AppCompatActivity implements
 
     BottomSheetBehavior<View> bottomSheetBehavior;
 
-    ArrayList<AmiiboFile> amiiboFiles;
     ArrayList<Amiibo> amiibos = new ArrayList<>();
+    ArrayList<AmiiboFile> amiiboFiles;
+
+    private int clickedPosition;
+    private enum CLICKED {
+        NOTHING,
+        WRITER,
+        EDITOR,
+        HEXVIEW,
+        BACKUP
+
+    }
+    private CLICKED status = CLICKED.NOTHING;
 
     @InstanceState
     BrowserSettings settings;
@@ -114,6 +163,7 @@ public class EliteActivity extends AppCompatActivity implements
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    amiiboCard.setVisibility(View.GONE);
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
@@ -125,6 +175,7 @@ public class EliteActivity extends AppCompatActivity implements
 
             }
         });
+        toolbar.inflateMenu(R.menu.elite_menu);
 
         loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
 
@@ -315,33 +366,8 @@ public class EliteActivity extends AppCompatActivity implements
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
-    ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
-
-        int active_bank = result.getData().getIntExtra(TagMo.EXTRA_ACTIVE_BANK,
-                TagMo.getPrefs().eliteActiveBank().get());
-
-        TagMo.getPrefs().eliteActiveBank().put(active_bank);
-
-        refreshEliteHardwareAdapter();
-        int bank_count = TagMo.getPrefs().eliteBankCount().get();
-        bankStats.setText(getString(R.string.elite_bank_stats,
-                eliteBankCount.getValueForPosition(active_bank), bank_count));
-        writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
-    });
-
-    ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
-
-        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-
-        View view = getLayoutInflater().inflate(R.layout.backup_dialog, amiibosView, false);
+    private void displayBackupDialog(byte[] tagData) {
+        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagReader.generateFileName(settings.getAmiiboManager(), tagData));
@@ -351,7 +377,7 @@ public class EliteActivity extends AppCompatActivity implements
                 File directory = new File(settings.getBrowserRootFolder(),
                         TagMo.getStringRes(R.string.tagmo_backup));
                 String fileName = TagReader.writeBytesToFile(directory,
-                        input.getText().toString() + ".bin", tagData);
+                        input.getText().toString(), tagData);
                 showToast(getString(R.string.wrote_file, fileName));
             } catch (IOException e) {
                 showToast(e.getMessage());
@@ -359,6 +385,18 @@ public class EliteActivity extends AppCompatActivity implements
             backupDialog.dismiss();
         });
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+    }
+
+    ActivityResultLauncher<Intent> onEditTagResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+
+        if (!TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
+
+        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        amiibos.get(clickedPosition).data = tagData;
+        this.runOnUiThread(() -> updateAmiiboView(tagData, clickedPosition));
+        refreshEliteHardwareAdapter();
     });
 
     ActivityResultLauncher<Intent> onModifierActivity = registerForActivityResult(
@@ -369,7 +407,7 @@ public class EliteActivity extends AppCompatActivity implements
 
         updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
     });
-    
+
     private void writeAmiiboFile(AmiiboFile amiiboFile, int position) {
         Bundle args = new Bundle();
         try {
@@ -396,22 +434,22 @@ public class EliteActivity extends AppCompatActivity implements
 
         EliteWriteBlankAdapter.OnAmiiboClickListener itemClick =
                 new EliteWriteBlankAdapter.OnAmiiboClickListener() {
-            @Override
-            public void onAmiiboClicked(AmiiboFile amiiboFile) {
-                if (amiiboFile != null) {
-                    writeAmiiboFile(amiiboFile, position);
-                    writeDialog.dismiss();
-                }
-            }
+                    @Override
+                    public void onAmiiboClicked(AmiiboFile amiiboFile) {
+                        if (amiiboFile != null) {
+                            writeAmiiboFile(amiiboFile, position);
+                            writeDialog.dismiss();
+                        }
+                    }
 
-            @Override
-            public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
-                if (amiiboFile != null) {
-                    writeAmiiboFile(amiiboFile, position);
-                    writeDialog.dismiss();
-                }
-            }
-        };
+                    @Override
+                    public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
+                        if (amiiboFile != null) {
+                            writeAmiiboFile(amiiboFile, position);
+                            writeDialog.dismiss();
+                        }
+                    }
+                };
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = view.findViewById(R.id.amiibo_search);
@@ -442,40 +480,293 @@ public class EliteActivity extends AppCompatActivity implements
         );
     }
 
-    private int clickedPosition;
-
-    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
+    ActivityResultLauncher<Intent> onWriteTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
+            return;
 
-        int current_bank = result.getData().getIntExtra(TagMo.EXTRA_CURRENT_BANK, clickedPosition);
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
+            return;
 
-        Intent modify = new Intent(EliteActivity.this, NfcActivity_.class);
-        modify.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
-        String action = result.getData().getAction();
-        modify.setAction(action);
-        switch (action) {
-            case TagMo.ACTION_ACTIVATE_BANK:
-                onActivateActivity.launch(modify);
-                break;
-            case TagMo.ACTION_REPLACE_AMIIBO:
-                displayWriteDialog(current_bank);
-                break;
-            case TagMo.ACTION_BACKUP_AMIIBO:
-                onBackupActivity.launch(modify);
-                break;
-            case TagMo.ACTION_FORMAT_BANK:
-                if (TagMo.getPrefs().eliteActiveBank().get() == current_bank) {
-                    showToast(R.string.delete_active);
-                } else {
-                    onModifierActivity.launch(modify);
-                }
-                break;
-        }
-
-        amiibos.get(current_bank).data = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        amiibos.get(clickedPosition).data = tagData;
+        this.runOnUiThread(() -> updateAmiiboView(tagData, clickedPosition));
         refreshEliteHardwareAdapter();
     });
+
+    ActivityResultLauncher<Intent> onScanTagResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+
+        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        amiibos.get(clickedPosition).data = tagData;
+        this.runOnUiThread(() -> updateAmiiboView(tagData, clickedPosition));
+        refreshEliteHardwareAdapter();
+
+        switch (status) {
+            case NOTHING:
+                break;
+            case WRITER:
+                Intent modify = new Intent(EliteActivity.this, NfcActivity_.class);
+                modify.setAction(TagMo.ACTION_WRITE_TAG_FULL);
+                modify.putExtra(TagMo.EXTRA_CURRENT_BANK, clickedPosition);
+                modify.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                onWriteTagResult.launch(modify);
+                break;
+            case EDITOR:
+                Intent editor = new Intent(this, TagDataActivity_.class);
+                editor.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                onEditTagResult.launch(editor);
+                break;
+            case HEXVIEW:
+                Intent viewhex = new Intent(this, HexViewerActivity_.class);
+                viewhex.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                startActivity(viewhex);
+                break;
+            case BACKUP:
+                displayBackupDialog(tagData);
+                break;
+
+        }
+        status = CLICKED.NOTHING;
+    });
+
+    private void scanAmiiboData(int current_bank) {
+        Intent scan = new Intent(this, NfcActivity_.class);
+        scan.setAction(TagMo.ACTION_SCAN_TAG);
+        scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
+        onScanTagResult.launch(scan);
+    }
+
+    ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+
+        int active_bank = result.getData().getIntExtra(TagMo.EXTRA_ACTIVE_BANK,
+                TagMo.getPrefs().eliteActiveBank().get());
+
+        TagMo.getPrefs().eliteActiveBank().put(active_bank);
+
+        refreshEliteHardwareAdapter();
+        int bank_count = TagMo.getPrefs().eliteBankCount().get();
+        bankStats.setText(getString(R.string.elite_bank_stats,
+                eliteBankCount.getValueForPosition(active_bank), bank_count));
+        writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
+    });
+
+    CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
+        @Override
+        public void onLoadStarted(@Nullable Drawable placeholder) {
+            imageAmiibo.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+            imageAmiibo.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onLoadCleared(@Nullable Drawable placeholder) {
+
+        }
+
+        @Override
+        public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+            imageAmiibo.setImageBitmap(resource);
+            imageAmiibo.setVisibility(View.VISIBLE);
+        }
+    };
+
+    public void updateAmiiboView(byte[] tagData, long amiiboId, int current_bank) {
+        toolbar.setOnMenuItemClickListener(item -> {
+            Intent modify = new Intent(EliteActivity.this, NfcActivity_.class);
+            modify.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
+            switch (item.getItemId()) {
+                case R.id.mnu_activate:
+                    modify.setAction(TagMo.ACTION_ACTIVATE_BANK);
+                    onActivateActivity.launch(modify);
+                    return true;
+                case R.id.mnu_scan:
+                    scanAmiiboData(current_bank);
+                    return true;
+                case R.id.mnu_write:
+                    if (tagData != null) {
+                        modify.setAction(TagMo.ACTION_WRITE_TAG_FULL);
+                        modify.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                        onWriteTagResult.launch(modify);
+                    } else {
+                        showToast(getString(R.string.refresh_required));
+                        status = CLICKED.WRITER;
+                        scanAmiiboData(current_bank);
+                    }
+                    return true;
+                case R.id.mnu_replace:
+                    displayWriteDialog(current_bank);
+                    return true;
+                case R.id.mnu_format_bank:
+                    if (TagMo.getPrefs().eliteActiveBank().get() == current_bank) {
+                        showToast(R.string.delete_active);
+                    } else {
+                        modify.setAction(TagMo.ACTION_FORMAT_BANK);
+                        onModifierActivity.launch(modify);
+                    }
+                    return true;
+                case R.id.mnu_edit:
+                    if (tagData != null) {
+                        Intent editor = new Intent(this, TagDataActivity_.class);
+                        editor.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                        onEditTagResult.launch(editor);
+                    } else {
+                        showToast(getString(R.string.refresh_required));
+                        status = CLICKED.EDITOR;
+                        scanAmiiboData(current_bank);
+                    }
+                    return true;
+                case R.id.mnu_view_hex:
+                    if (tagData != null) {
+                        Intent viewhex = new Intent(this, HexViewerActivity_.class);
+                        viewhex.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                        startActivity(viewhex);
+                    } else {
+                        showToast(getString(R.string.refresh_required));
+                        status = CLICKED.HEXVIEW;
+                        scanAmiiboData(current_bank);
+                    }
+                    return true;
+                case R.id.mnu_backup:
+                    if (tagData != null) {
+                    displayBackupDialog(tagData);
+                    } else {
+                        showToast(getString(R.string.refresh_required));
+                        status = CLICKED.BACKUP;
+                        scanAmiiboData(current_bank);
+                    }
+                    return true;
+
+            }
+            return false;
+        });
+
+        String amiiboBank = getString(R.string.bank_number, current_bank);
+
+        String tagInfo = null;
+        String amiiboHexId = "";
+        String amiiboName = "";
+        String amiiboSeries = "";
+        String amiiboType = "";
+        String gameSeries = "";
+        // String character = "";
+        String amiiboImageUrl;
+
+        if (tagData != null) {
+            try {
+                amiiboId = TagUtils.amiiboIdFromTag(tagData);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (amiiboId == -1) {
+            tagInfo = getString(R.string.read_error);
+            amiiboImageUrl = null;
+        } else if (amiiboId == 0) {
+            tagInfo = getString(R.string.blank_tag);
+            amiiboImageUrl = null;
+        } else {
+            Amiibo amiibo = null;
+            if (settings.getAmiiboManager() != null) {
+                amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+                if (amiibo == null)
+                    amiibo = new Amiibo(settings.getAmiiboManager(), amiiboId, null, null);
+            }
+            if (amiibo != null) {
+                amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
+                amiiboImageUrl = amiibo.getImageUrl();
+                if (amiibo.name != null)
+                    amiiboName = amiibo.name;
+                if (amiibo.getAmiiboSeries() != null)
+                    amiiboSeries = amiibo.getAmiiboSeries().name;
+                if (amiibo.getAmiiboType() != null)
+                    amiiboType = amiibo.getAmiiboType().name;
+                if (amiibo.getGameSeries() != null)
+                    gameSeries = amiibo.getGameSeries().name;
+                // if (amiibo.getCharacter() != null)
+                //     character = amiibo.getCharacter().name;
+            } else {
+                tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
+                amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
+            }
+        }
+
+        boolean hasTagInfo = tagInfo != null;
+
+        if (hasTagInfo) {
+            setAmiiboInfoText(txtError, tagInfo, false);
+            amiiboInfo.setVisibility(View.GONE);
+        } else {
+            txtError.setVisibility(View.GONE);
+            amiiboInfo.setVisibility(View.VISIBLE);
+        }
+        setAmiiboInfoText(txtBank, amiiboBank, hasTagInfo);
+        setAmiiboInfoText(txtName, amiiboName, hasTagInfo);
+        setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo);
+        setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo);
+        setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo);
+        setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo);
+        // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
+
+        if (imageAmiibo != null) {
+            imageAmiibo.setVisibility(View.GONE);
+            Glide.with(this).clear(amiiboImageTarget);
+            if (amiiboImageUrl != null) {
+                Glide.with(this)
+                        .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
+                        .asBitmap()
+                        .load(amiiboImageUrl)
+                        .into(amiiboImageTarget);
+            }
+        }
+    }
+
+    public void updateAmiiboView(long amiiboId, int current_bank) {
+        updateAmiiboView(null, amiiboId, current_bank);
+    }
+
+    public void updateAmiiboView(byte[] tagData, int current_bank) {
+        updateAmiiboView(tagData, -1, current_bank);
+    }
+
+    void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+        if (hasTagInfo) {
+            textView.setVisibility(View.GONE);
+        } else {
+            textView.setVisibility(View.VISIBLE);
+            if (text.length() == 0) {
+                textView.setText(getString(R.string.unknown));
+                textView.setEnabled(false);
+            } else {
+                textView.setText(text);
+                textView.setEnabled(true);
+            }
+        }
+    }
+
+    boolean onlyRetrieveFromCache() {
+        String imageNetworkSetting = TagMo.getPrefs().imageNetworkSetting().get();
+        if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
+            return true;
+        } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
+            ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI;
+        } else {
+            return false;
+        }
+    }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -484,18 +775,8 @@ public class EliteActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-        amiibos.get(clickedPosition).data = tagData;
-
-        Bundle args = new Bundle();
-        args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
-
-        Intent intent = new Intent(this, AmiiboActivity_.class);
-        intent.putExtra(TagMo.EXTRA_CURRENT_BANK, result.getData().getIntExtra(
-                TagMo.EXTRA_CURRENT_BANK, clickedPosition));
-        intent.putExtra(TagMo.EXTRA_SCANNED_DATA, true);
-        intent.putExtras(args);
-
-        onViewerActivity.launch(intent);
+        this.runOnUiThread(() -> updateAmiiboView(tagData, clickedPosition));
+        refreshEliteHardwareAdapter();
     });
 
     @Override
@@ -505,24 +786,19 @@ public class EliteActivity extends AppCompatActivity implements
             return;
         }
         clickedPosition = position;
+        this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        amiiboCard.setVisibility(View.VISIBLE);
         if (amiibo.data != null) {
-            Intent intent = new Intent(this, AmiiboActivity_.class);
-            intent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
-            Bundle args = new Bundle();
-            args.putByteArray(TagMo.EXTRA_TAG_DATA, amiibo.data);
-            intent.putExtras(args);
-            onViewerActivity.launch(intent);
+            updateAmiiboView(amiibo.data, position);
         } else if (amiibos.get(position).id != 0) {
-            Intent intent = new Intent(this, AmiiboActivity_.class);
-            intent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
-            intent.putExtra(TagMo.EXTRA_AMIIBO_ID, amiibos.get(position).id);
-            onViewerActivity.launch(intent);
+            updateAmiiboView(amiibos.get(position).id, position);
         } else {
             Intent amiiboIntent = new Intent(EliteActivity.this, NfcActivity_.class);
             amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
             amiiboIntent.setAction(TagMo.ACTION_SCAN_TAG);
             onNFCActivity.launch(amiiboIntent);
         }
+        this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @Override

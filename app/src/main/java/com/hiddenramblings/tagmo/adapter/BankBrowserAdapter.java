@@ -2,16 +2,13 @@ package com.hiddenramblings.tagmo.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,14 +34,14 @@ import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
 
-public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapter.AmiiboVewHolder>
+public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.AmiiboVewHolder>
         implements BrowserSettings.BrowserSettingsListener {
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
     private ArrayList<Amiibo> amiibos = new ArrayList<>();
 
-    public EliteBrowserAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
+    public BankBrowserAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
     }

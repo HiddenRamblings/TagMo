@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
-import android.webkit.MimeTypeMap;
+
+import androidx.core.content.FileProvider;
 
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.Preferences_;
@@ -25,8 +27,6 @@ import java.nio.charset.StandardCharsets;
 @EApplication
 public class TagMo extends Application {
 
-    public static final String PROVIDER = BuildConfig.APPLICATION_ID + ".provider";
-
     public static final String ACTION_EDIT_COMPLETE = BuildConfig.APPLICATION_ID + ".EDIT_COMPLETE";
     public static final String ACTION_SCAN_TAG = BuildConfig.APPLICATION_ID + ".SCAN_TAG";
     public static final String ACTION_WRITE_TAG_FULL = BuildConfig.APPLICATION_ID + ".WRITE_TAG_FULL";
@@ -35,7 +35,6 @@ public class TagMo extends Application {
     public static final String ACTION_WRITE_ALL_TAGS = BuildConfig.APPLICATION_ID + ".WRITE_ALL_TAGS";
     public static final String ACTION_ACTIVATE_BANK = BuildConfig.APPLICATION_ID + ".ACTIVATE_BANK";
     public static final String ACTION_SET_BANK_COUNT = BuildConfig.APPLICATION_ID + ".SET_BANK_COUNT";
-    public static final String ACTION_REPLACE_AMIIBO = BuildConfig.APPLICATION_ID + ".REPLACE_AMIIBO";
     public static final String ACTION_FORMAT_BANK = BuildConfig.APPLICATION_ID + ".FORMAT_BANK";
     public static final String ACTION_LOCK_AMIIBO = BuildConfig.APPLICATION_ID + ".LOCK_AMIIBO";
     public static final String ACTION_UNLOCK_UNIT = BuildConfig.APPLICATION_ID + ".UNLOCK_UNIT";
@@ -150,6 +149,17 @@ public class TagMo extends Application {
         return mContext.get().getExternalFilesDir(null);
     }
 
+    public static Uri getFileUri(File file) {
+        Uri fileUri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            fileUri = FileProvider.getUriForFile(mContext.get(),
+                    BuildConfig.APPLICATION_ID + ".provider", file);
+        } else {
+            fileUri = Uri.fromFile(file);
+        }
+        return fileUri;
+    }
+
     public static void scanFile(File file) {
         try {
             MediaScannerConnection.scanFile(TagMo.getContext(),
@@ -159,27 +169,8 @@ public class TagMo extends Application {
         }
     }
 
-    public static String getMimeType(File file) {
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase());
-    }
-
     public static boolean isDarkTheme() {
         return (mContext.get().getResources().getConfiguration().uiMode
                 & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
-    }
-
-    public static void setViewThemeAttributes(View view, int attrDark, int attrLight) {
-        TypedValue a = new TypedValue();
-        mContext.get().getTheme().resolveAttribute(isDarkTheme()
-                ? attrDark : attrLight, a, true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
-            view.setBackgroundColor(a.data);
-        } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
-                && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-            view.setBackgroundColor(a.data);
-        } else {
-            view.setBackgroundResource(a.resourceId);
-        }
     }
 }

@@ -20,7 +20,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ffff"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="?android:textColorSecondary"
         android:textSize="18sp"
         android:typeface="monospace"/>
 
@@ -36,7 +36,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -53,7 +53,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -70,7 +70,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -87,7 +87,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -104,7 +104,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -121,7 +121,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -138,7 +138,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -155,7 +155,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -172,7 +172,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -189,7 +189,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -206,7 +206,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -223,7 +223,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -240,7 +240,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -257,7 +257,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -274,7 +274,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>
@@ -291,7 +291,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/hex_ff"
-        android:textColor="@android:color/black"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:typeface="monospace"/>

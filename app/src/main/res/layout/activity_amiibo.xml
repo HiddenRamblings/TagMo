@@ -170,7 +170,7 @@
                 android:id="@+id/toolbar_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
+                app:theme="@style/PopupThemeOverlay"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.Toolbar
@@ -181,8 +181,8 @@
                     android:paddingLeft="2dp"
                     android:paddingRight="2dp"
                     android:layout_gravity="center"
-                    app:popupTheme="@style/PopupTheme"
-                    app:theme="@style/PopupThemeOverlay"/>
+                    app:theme="@style/PopupThemeOverlay"
+                    app:popupTheme="@style/PopupTheme" />
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

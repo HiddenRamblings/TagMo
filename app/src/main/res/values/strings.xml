@@ -56,6 +56,7 @@
     <string name="amiibo_character_caps">CHARACTER</string>
     <string name="amiibo_path_caps">PATH</string>
 
+    <string name="keys_not_loaded">Keys Not Loaded</string>
     <string name="not_found">No Amiibo Found</string>
 
     <string name="recurse_folders">Recursive Folders</string>
@@ -88,6 +89,7 @@
     <string name="install">Install</string>
     <string name="sync">Sync</string>
     <string name="setup">Setup</string>
+    <string name="enable">Enable</string>
     <string name="replace">Replace</string>
     <string name="restore">Restore</string>
     <string name="activate">Activate</string>
@@ -160,7 +162,8 @@
     <string name="write_collection">Write Collection</string>
 
     <string name="permission_required">Storage permission required!</string>
-    <string name="allow_permission">Allow</string>
+    <string name="allow">Allow</string>
+    <string name="emulated_storage">Emulated storage may contain Amiibo.</string>
 
     <string name="delete_amiibo">Deleting %1$s. Are you sure?</string>
     <string name="delete_active">Cannot delete the active bank!</string>
@@ -211,7 +214,6 @@
     <string name="amiibo_info_updated">Updated Amiibo info</string>
 
     <string name="backup_filename">Amiibo Backup Name</string>
-    <string name="bank_number_file">N2EliteBank%1$d.bin</string>
 
     <string name="prepare_unlock">Once scanned, do not remove the unit from the NFC field until complete.</string>
     <string name="progress_unlock">Press and hold the N2 button and continue to wait for unlock to complete.</string>

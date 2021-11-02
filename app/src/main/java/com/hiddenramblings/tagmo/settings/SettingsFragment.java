@@ -33,6 +33,7 @@ import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.SettingsActivity;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.adapter.SettingsAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -154,7 +155,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_import_keys)
     void onKeysClicked() {
-        showFileChooser("Fixed Key", "*/*", RESULT_KEYS);
+        showFileChooser("Fixed Key", RESULT_KEYS);
     }
 
     @PreferenceClick(R.string.settings_enable_tag_type_validation)
@@ -166,8 +167,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void onEnablePowerTagSupportClicked() {
         boolean isEnabled = enablePowerTagSupport.isChecked();
         prefs.enablePowerTagSupport().put(isEnabled);
-        if (isEnabled) requireActivity().setResult(Activity.RESULT_OK,
-                new Intent().putExtra("POWERTAG", true));
+        if (isEnabled) ((SettingsActivity) requireActivity()).setPowerTagResult();
     }
 
     @PreferenceClick(R.string.settings_enable_elite_support)
@@ -202,8 +202,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_import_info)
     void onImportInfoClicked() {
-        showFileChooser(getString(R.string.import_json_details),
-                getString(R.string.mimetype_json), RESULT_IMPORT_AMIIBO_DATABASE);
+        showFileChooser(getString(R.string.import_json_details), RESULT_IMPORT_AMIIBO_DATABASE);
     }
 
     @PreferenceClick(R.string.settings_export_info)
@@ -354,8 +353,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_ignore_sdcard)
     void onIgnoreSdcardClicked() {
-        requireActivity().setResult(Activity.RESULT_OK,
-                new Intent().putExtra("REFRESH", true));
+        ((SettingsActivity) requireActivity()).setRefreshResult();
         prefs.ignoreSdcard().put(ignoreSdcard.isChecked());
     }
 
@@ -394,6 +392,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (Thread.currentThread().isInterrupted())
             return;
 
+        ((SettingsActivity) requireActivity()).setRefreshResult();
         updateKeySummary();
     }
 
@@ -640,9 +639,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         updateAmiiboManager(result.getData().getData());
     });
 
-    private void showFileChooser(String title, String mimeType, int resultCode) {
+    private void showFileChooser(String title, int resultCode) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType(mimeType);
+        intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         switch(resultCode) {
@@ -659,6 +658,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 break;
             case RESULT_IMPORT_AMIIBO_DATABASE:
                 try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        intent.putExtra(Intent.EXTRA_MIME_TYPES,
+                                getResources().getStringArray(R.array.mimetype_json));
+                    }
                     onImportAmiiboDatabase.launch(Intent.createChooser(intent, title));
                 } catch (ActivityNotFoundException ex) {
                     TagMo.Error(getClass(), ex.getMessage());

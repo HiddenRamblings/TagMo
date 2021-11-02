@@ -91,8 +91,6 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @AfterViews
     void afterViews() {
-        TagMo.setViewThemeAttributes(toolbarWrapper, R.attr.colorPrimary, R.attr.colorAccent);
-
         toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {

@@ -28,16 +28,7 @@ public class KeyManager {
 
     public KeyManager(Context context) {
         this.context = context;
-
-        try {
-            if (hasLocalFile(FIXED_KEY_FILE))
-                fixedKey = loadKeyFromStorage(FIXED_KEY_FILE);
-
-            if (hasLocalFile(UNFIXED_KEY_FILE))
-                unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
-        } catch (Exception e) {
-            TagMo.Error(getClass(), R.string.key_load_error, e);
-        }
+        isKeyMissing();
     }
 
     boolean hasLocalFile(String file) {
@@ -47,18 +38,6 @@ public class KeyManager {
                 return true;
         }
         return false;
-    }
-
-    public boolean hasFixedKey() {
-        return fixedKey != null;
-    }
-
-    public boolean hasUnFixedKey() {
-        return unfixedKey != null;
-    }
-
-    public boolean isKeyMissing() {
-        return fixedKey == null || unfixedKey == null;
     }
 
     private byte[] loadKeyFromStorage(String file) {
@@ -71,6 +50,22 @@ public class KeyManager {
             TagMo.Error(getClass(), R.string.key_read_error, e);
         }
         return null;
+    }
+
+    public boolean hasFixedKey() {
+        if (hasLocalFile(FIXED_KEY_FILE))
+            fixedKey = loadKeyFromStorage(FIXED_KEY_FILE);
+        return fixedKey != null;
+    }
+
+    public boolean hasUnFixedKey() {
+        if (hasLocalFile(UNFIXED_KEY_FILE))
+            unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
+        return unfixedKey != null;
+    }
+
+    public boolean isKeyMissing() {
+        return !hasFixedKey() || !hasUnFixedKey();
     }
 
     void saveKeyFile(String file, byte[] key) throws IOException {

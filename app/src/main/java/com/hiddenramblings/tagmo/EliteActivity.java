@@ -37,8 +37,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.hiddenramblings.tagmo.adapter.EliteBrowserAdapter;
-import com.hiddenramblings.tagmo.adapter.EliteWriteBlankAdapter;
+import com.hiddenramblings.tagmo.adapter.BankBrowserAdapter;
+import com.hiddenramblings.tagmo.adapter.WriteBlankAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -64,9 +64,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 @SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.elite_browser)
+@EActivity(R.layout.bank_browser)
 public class EliteActivity extends AppCompatActivity implements
-        EliteBrowserAdapter.OnAmiiboClickListener {
+        BankBrowserAdapter.OnAmiiboClickListener {
 
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
@@ -147,9 +147,6 @@ public class EliteActivity extends AppCompatActivity implements
     void afterViews() {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-        TagMo.setViewThemeAttributes(toolbarWrapper, R.attr.colorPrimary, R.attr.colorAccent);
-        TagMo.setViewThemeAttributes(bottomSheet, R.attr.colorPrimaryDark, R.attr.colorPrimary);
-
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -181,7 +178,7 @@ public class EliteActivity extends AppCompatActivity implements
                 getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE)));
         eliteBankCount.setValue(bank_count);
         amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        EliteBrowserAdapter adapter = new EliteBrowserAdapter(settings, this);
+        BankBrowserAdapter adapter = new BankBrowserAdapter(settings, this);
         amiibosView.setAdapter(adapter);
         this.settings.addChangeListener(adapter);
         updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
@@ -196,7 +193,7 @@ public class EliteActivity extends AppCompatActivity implements
     private void refreshEliteHardwareAdapter() {
         if (amiibosView.getAdapter() != null) {
             this.runOnUiThread(() -> {
-                ((EliteBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
+                ((BankBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
                 amiibosView.getAdapter().notifyDataSetChanged();
             });
         }
@@ -278,7 +275,7 @@ public class EliteActivity extends AppCompatActivity implements
 
     @Click(R.id.write_open_banks)
     void onWriteOpenBanksClick() {
-        View view = getLayoutInflater().inflate( R.layout.elite_writer, null);
+        View view = getLayoutInflater().inflate( R.layout.bank_write_list, null);
 
         RecyclerView writerListView = view.findViewById(R.id.amiibos_list);
         writerListView.setLayoutManager(new LinearLayoutManager(this));
@@ -286,8 +283,8 @@ public class EliteActivity extends AppCompatActivity implements
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         Dialog writeDialog = dialog.setView(view).show();
 
-        EliteWriteBlankAdapter.OnHighlightListener itemClick =
-                new EliteWriteBlankAdapter.OnHighlightListener() {
+        WriteBlankAdapter.OnHighlightListener itemClick =
+                new WriteBlankAdapter.OnHighlightListener() {
             @Override
             public void onAmiiboClicked(ArrayList<AmiiboFile> amiiboList) {
                 writeAmiiboCollection(amiiboList, writeDialog);
@@ -320,7 +317,7 @@ public class EliteActivity extends AppCompatActivity implements
             }
         });
 
-        writerListView.setAdapter(new EliteWriteBlankAdapter(settings, itemClick, amiiboFiles));
+        writerListView.setAdapter(new WriteBlankAdapter(settings, itemClick, amiiboFiles));
         this.settings.addChangeListener((BrowserSettingsListener) writerListView.getAdapter());
         writeDialog.getWindow().setLayout(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -408,7 +405,7 @@ public class EliteActivity extends AppCompatActivity implements
     }
 
     private void displayWriteDialog(int position) {
-        View view = getLayoutInflater().inflate( R.layout.elite_writer, null);
+        View view = getLayoutInflater().inflate( R.layout.bank_write_list, null);
 
         RecyclerView writerListView = view.findViewById(R.id.amiibos_list);
         writerListView.setLayoutManager(new LinearLayoutManager(this));
@@ -416,8 +413,8 @@ public class EliteActivity extends AppCompatActivity implements
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         Dialog writeDialog = dialog.setView(view).show();
 
-        EliteWriteBlankAdapter.OnAmiiboClickListener itemClick =
-                new EliteWriteBlankAdapter.OnAmiiboClickListener() {
+        WriteBlankAdapter.OnAmiiboClickListener itemClick =
+                new WriteBlankAdapter.OnAmiiboClickListener() {
                     @Override
                     public void onAmiiboClicked(AmiiboFile amiiboFile) {
                         if (amiiboFile != null) {
@@ -456,7 +453,7 @@ public class EliteActivity extends AppCompatActivity implements
             }
         });
 
-        writerListView.setAdapter(new EliteWriteBlankAdapter(settings, itemClick, amiiboFiles));
+        writerListView.setAdapter(new WriteBlankAdapter(settings, itemClick, amiiboFiles));
         this.settings.addChangeListener((BrowserSettingsListener) writerListView.getAdapter());
         writeDialog.getWindow().setLayout(
                 ViewGroup.LayoutParams.MATCH_PARENT,

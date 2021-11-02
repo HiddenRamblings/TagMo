@@ -73,7 +73,7 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bottom_sheet_tint"
+        android:background="@color/bottomSheetTint"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"

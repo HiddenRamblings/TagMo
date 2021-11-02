@@ -2,10 +2,13 @@ package com.hiddenramblings.tagmo;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.MediaScannerConnection;
 import android.os.Build;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
 import android.webkit.MimeTypeMap;
 
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
@@ -160,5 +163,24 @@ public class TagMo extends Application {
     public static String getMimeType(File file) {
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(
                 file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase());
+    }
+
+    public static boolean isDarkTheme() {
+        return (TagMo.getContext().getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    public static void setViewThemeAttributes(View view, int attrDark, int attrLight) {
+        TypedValue a = new TypedValue();
+        TagMo.getContext().getTheme().resolveAttribute(TagMo.isDarkTheme()
+                ? attrDark : attrLight, a, true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+            view.setBackgroundColor(a.data);
+        } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+            view.setBackgroundColor(a.data);
+        } else {
+            view.setBackgroundResource(a.resourceId);
+        }
     }
 }

@@ -14,16 +14,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.nfctech.hex.HexHeader;
-import com.hiddenramblings.tagmo.nfctech.hex.HexItem;
-import com.hiddenramblings.tagmo.nfctech.hex.TagMap;
+import com.hiddenramblings.tagmo.nfctech.code.HexHeader;
+import com.hiddenramblings.tagmo.nfctech.code.HexItem;
+import com.hiddenramblings.tagmo.nfctech.code.TagMap;
 
-public class HexDumpAdapter extends RecyclerView.Adapter<HexDumpAdapter.ViewHolder> {
+public class HexCodeDumpAdapter extends RecyclerView.Adapter<HexCodeDumpAdapter.ViewHolder> {
 
     private static final int HEX = 16;
     private final HexItem[][] data;
 
-    public HexDumpAdapter(byte[] tagData) {
+    public HexCodeDumpAdapter(byte[] tagData) {
         this.setHasStableIds(true);
         int rowCount = ((tagData.length - 1) / HEX) + 2;
 
@@ -78,15 +78,15 @@ public class HexDumpAdapter extends RecyclerView.Adapter<HexDumpAdapter.ViewHold
 
     @NonNull
     @Override
-    public HexDumpAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new HexDumpAdapter.ViewHolder(LayoutInflater
+    public HexCodeDumpAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new HexCodeDumpAdapter.ViewHolder(LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.hexdump_line, parent, false));
     }
 
     @SuppressLint("WrongConstant")
     @Override
-    public void onBindViewHolder(HexDumpAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(HexCodeDumpAdapter.ViewHolder holder, int position) {
         HexItem[] row = getItem(position);
         for (int i = 0; i < holder.textView.length; i++) {
             HexItem hexItem = row[i];
@@ -96,18 +96,13 @@ public class HexDumpAdapter extends RecyclerView.Adapter<HexDumpAdapter.ViewHold
                 view.setBackgroundColor(Color.TRANSPARENT);
             } else {
                 view.setText(hexItem.getText());
-                view.setTextColor(hexItem instanceof HexHeader && isDarkTheme()
+                view.setTextColor(hexItem instanceof HexHeader && TagMo.isDarkTheme()
                         ? Color.WHITE : Color.BLACK);
                 view.setTypeface(Typeface.MONOSPACE, hexItem.getTextStyle());
                 view.setBackgroundColor(hexItem.getBackgroundColor());
                 view.setVisibility(View.VISIBLE);
             }
         }
-    }
-
-    private boolean isDarkTheme() {
-        return (TagMo.getContext().getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

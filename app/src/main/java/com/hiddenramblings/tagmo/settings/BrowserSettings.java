@@ -3,6 +3,8 @@ package com.hiddenramblings.tagmo.settings;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.endgames.environment.Storage;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
@@ -61,6 +63,22 @@ public class BrowserSettings implements Parcelable {
         if (duplicate) {
             this.oldBrowserSettings = this.copy();
         }
+    }
+
+    public BrowserSettings initialize() {
+        this.setBrowserRootFolder(new File(Storage.getFile(),
+                TagMo.getPrefs().browserRootFolder().get()));
+        this.setQuery(TagMo.getPrefs().query().get());
+        this.setSort(TagMo.getPrefs().sort().get());
+        this.setAmiiboSeriesFilter(TagMo.getPrefs().filterAmiiboSeries().get());
+        this.setAmiiboTypeFilter(TagMo.getPrefs().filterAmiiboType().get());
+        this.setCharacterFilter(TagMo.getPrefs().filterCharacter().get());
+        this.setGameSeriesFilter(TagMo.getPrefs().filterGameSeries().get());
+        this.setAmiiboView(TagMo.getPrefs().browserAmiiboView().get());
+        this.setImageNetworkSettings(TagMo.getPrefs().imageNetworkSetting().get());
+        this.setRecursiveEnabled(TagMo.getPrefs().recursiveFolders().get());
+        this.setShowMissingFiles(TagMo.getPrefs().showMissingFiles().get());
+        return this;
     }
 
     public AmiiboManager getAmiiboManager() {

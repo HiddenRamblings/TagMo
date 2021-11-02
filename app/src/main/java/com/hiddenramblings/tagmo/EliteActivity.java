@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +36,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.endgames.environment.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.EliteBrowserAdapter;
 import com.hiddenramblings.tagmo.adapter.EliteWriteBlankAdapter;
@@ -79,6 +79,8 @@ public class EliteActivity extends AppCompatActivity implements
 
     @ViewById(R.id.amiiboCard)
     CardView amiiboCard;
+    @ViewById(R.id.toolbar_wrapper)
+    LinearLayout toolbarWrapper;
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
     @ViewById(R.id.amiiboInfo)
@@ -121,9 +123,8 @@ public class EliteActivity extends AppCompatActivity implements
         NOTHING,
         WRITER,
         EDITOR,
-        HEXVIEW,
+        HEXCODE,
         BACKUP
-
     }
     private CLICKED status = CLICKED.NOTHING;
 
@@ -133,19 +134,8 @@ public class EliteActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.settings = new BrowserSettings();
-        this.settings.setBrowserRootFolder(new File(Storage.getFile(), TagMo.getPrefs().browserRootFolder().get()));
-        this.settings.setQuery(TagMo.getPrefs().query().get());
-        this.settings.setSort(TagMo.getPrefs().sort().get());
-        this.settings.setAmiiboSeriesFilter(TagMo.getPrefs().filterAmiiboSeries().get());
-        this.settings.setAmiiboTypeFilter(TagMo.getPrefs().filterAmiiboType().get());
-        this.settings.setCharacterFilter(TagMo.getPrefs().filterCharacter().get());
-        this.settings.setGameSeriesFilter(TagMo.getPrefs().filterGameSeries().get());
-        this.settings.setAmiiboView(TagMo.getPrefs().browserAmiiboView().get());
-        this.settings.setImageNetworkSettings(TagMo.getPrefs().imageNetworkSetting().get());
-        this.settings.setRecursiveEnabled(TagMo.getPrefs().recursiveFolders().get());
-        this.settings.setShowMissingFiles(TagMo.getPrefs().showMissingFiles().get());
+        setTheme(R.style.DialogTheme_NoActionBar);
+        this.settings = new BrowserSettings().initialize();
     }
 
     @Override
@@ -156,6 +146,9 @@ public class EliteActivity extends AppCompatActivity implements
     @AfterViews
     void afterViews() {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+        TagMo.setViewThemeAttributes(toolbarWrapper, R.attr.colorPrimary, R.attr.colorAccent);
+        TagMo.setViewThemeAttributes(bottomSheet, R.attr.colorPrimaryDark, R.attr.colorPrimary);
 
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -520,7 +513,7 @@ public class EliteActivity extends AppCompatActivity implements
                 editor.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
                 onEditTagResult.launch(editor);
                 break;
-            case HEXVIEW:
+            case HEXCODE:
                 Intent viewhex = new Intent(this, HexViewerActivity_.class);
                 viewhex.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
                 startActivity(viewhex);
@@ -633,7 +626,7 @@ public class EliteActivity extends AppCompatActivity implements
                         startActivity(viewhex);
                     } else {
                         showToast(getString(R.string.refresh_required));
-                        status = CLICKED.HEXVIEW;
+                        status = CLICKED.HEXCODE;
                         scanAmiiboData(current_bank);
                     }
                     return true;
@@ -728,6 +721,20 @@ public class EliteActivity extends AppCompatActivity implements
                         .load(amiiboImageUrl)
                         .into(amiiboImageTarget);
             }
+            final long amiiboTagId = amiiboId;
+            imageAmiibo.setOnClickListener(view -> {
+                if (amiiboTagId == -1) {
+                    return;
+                }
+
+                Bundle bundle = new Bundle();
+                bundle.putLong(TagMo.EXTRA_AMIIBO_ID, amiiboTagId);
+
+                Intent intent = new Intent(EliteActivity.this, ImageActivity_.class);
+                intent.putExtras(bundle);
+
+                startActivity(intent);
+            });
         }
     }
 

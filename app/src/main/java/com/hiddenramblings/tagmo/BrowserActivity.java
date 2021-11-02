@@ -227,18 +227,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
 
         if (this.settings == null) {
-            this.settings = new BrowserSettings();
-            this.settings.setBrowserRootFolder(new File(Storage.getFile(), TagMo.getPrefs().browserRootFolder().get()));
-            this.settings.setQuery(TagMo.getPrefs().query().get());
-            this.settings.setSort(TagMo.getPrefs().sort().get());
-            this.settings.setAmiiboSeriesFilter(TagMo.getPrefs().filterAmiiboSeries().get());
-            this.settings.setAmiiboTypeFilter(TagMo.getPrefs().filterAmiiboType().get());
-            this.settings.setCharacterFilter(TagMo.getPrefs().filterCharacter().get());
-            this.settings.setGameSeriesFilter(TagMo.getPrefs().filterGameSeries().get());
-            this.settings.setAmiiboView(TagMo.getPrefs().browserAmiiboView().get());
-            this.settings.setImageNetworkSettings(TagMo.getPrefs().imageNetworkSetting().get());
-            this.settings.setRecursiveEnabled(TagMo.getPrefs().recursiveFolders().get());
-            this.settings.setShowMissingFiles(TagMo.getPrefs().showMissingFiles().get());
+            this.settings = new BrowserSettings().initialize();
         } else {
             this.currentFolderView.setText(Storage.getRelativePath(settings.getBrowserRootFolder()));
             this.onFilterGameSeriesChanged();

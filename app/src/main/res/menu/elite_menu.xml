@@ -21,8 +21,8 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_format_bank"
-        android:title="@string/format"
-        app:showAsAction="always"/>
+        android:title="@string/delete_amiibo"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_edit"
         android:title="@string/edit_props"

@@ -37,7 +37,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -834,7 +833,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onAmiiboLongClicked(AmiiboFile amiiboFile) {
         new AlertDialog.Builder(this)
-                .setMessage(getString(R.string.delete_amiibo,
+                .setMessage(getString(R.string.warn_delete_file,
                         Storage.getRelativePath(amiiboFile.getFilePath())))
                 .setNegativeButton(R.string.delete, (dialog, which) -> {
                     //noinspection ResultOfMethodCallIgnored

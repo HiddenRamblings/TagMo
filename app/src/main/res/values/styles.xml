@@ -26,7 +26,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="DialogTheme.Picker" parent="Theme.AppCompat.DayNight" >
+    <style name="DialogTheme.Picker" parent="DialogTheme" >
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="colorControlNormal">@android:color/background_light</item>
     </style>

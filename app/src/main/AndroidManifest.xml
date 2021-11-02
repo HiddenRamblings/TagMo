@@ -74,7 +74,7 @@
             android:name=".SettingsActivity_"/>
         <activity
             android:name=".AmiiboActivity_"
-            android:theme="@style/AppTheme2.NoActionBar"/>
+            android:theme="@style/FloatingTheme.NoActionBar"/>
         <activity
             android:name=".TagDataActivity_"/>
         <receiver android:name=".github.InstallReceiver"/>

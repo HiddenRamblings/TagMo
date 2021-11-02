@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.adapter;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
@@ -127,7 +126,7 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
     private void setIsHighlighted(AmiiboVewHolder holder, boolean isHighlighted) {
         if (isHighlighted) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                    holder.isDarkTheme() ? android.R.color.holo_green_dark
+                    TagMo.isDarkTheme() ? android.R.color.holo_green_dark
                             : android.R.color.holo_green_light));
         } else {
             TypedValue a = new TypedValue();
@@ -450,8 +449,8 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
             } else {
                 this.itemView.setEnabled(false);
                 this.txtPath.setText("");
-                this.txtPath.setTextColor(this.txtPath.getResources().getColor(isDarkTheme() ?
-                        R.color.tag_text_dark : R.color.tag_text_light));
+                this.txtPath.setTextColor(this.txtPath.getResources().getColor(
+                        TagMo.isDarkTheme() ? R.color.tag_text_dark : R.color.tag_text_light));
             }
             this.txtPath.setVisibility(View.VISIBLE);
 
@@ -523,11 +522,6 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
                     textView.setEnabled(true);
                 }
             }
-        }
-
-        private boolean isDarkTheme() {
-            return (TagMo.getContext().getResources().getConfiguration().uiMode
-                    & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         }
     }
 

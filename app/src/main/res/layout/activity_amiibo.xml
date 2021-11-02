@@ -1,6 +1,5 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,7 +16,6 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
-        android:clickable="true"
         android:focusable="true"
         android:foreground="@drawable/card_foreground"
         app:cardCornerRadius="@dimen/card_radius">
@@ -45,6 +43,7 @@
                     android:textSize="16sp"/>
 
                 <RelativeLayout
+                    xmlns:tools="http://schemas.android.com/tools"
                     android:id="@+id/amiiboInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -171,17 +170,13 @@
                 android:id="@+id/toolbar_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:minHeight="?attr/actionBarSize"
-                app:popupTheme="@style/PopupTheme"
-                app:theme="@style/PopupThemeOverlay"
+                android:background="?attr/colorPrimary"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
                     android:minHeight="?attr/actionBarSize"
                     android:paddingLeft="2dp"
                     android:paddingRight="2dp"

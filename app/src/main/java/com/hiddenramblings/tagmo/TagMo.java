@@ -65,7 +65,6 @@ public class TagMo extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         setTheme(R.style.AppTheme);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -166,13 +165,13 @@ public class TagMo extends Application {
     }
 
     public static boolean isDarkTheme() {
-        return (TagMo.getContext().getResources().getConfiguration().uiMode
+        return (mContext.get().getResources().getConfiguration().uiMode
                 & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
     public static void setViewThemeAttributes(View view, int attrDark, int attrLight) {
         TypedValue a = new TypedValue();
-        TagMo.getContext().getTheme().resolveAttribute(TagMo.isDarkTheme()
+        mContext.get().getTheme().resolveAttribute(isDarkTheme()
                 ? attrDark : attrLight, a, true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
             view.setBackgroundColor(a.data);

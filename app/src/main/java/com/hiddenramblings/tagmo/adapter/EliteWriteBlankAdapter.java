@@ -124,22 +124,14 @@ public class EliteWriteBlankAdapter extends RecyclerView.Adapter<EliteWriteBlank
     }
 
     private void setIsHighlighted(AmiiboVewHolder holder, boolean isHighlighted) {
+        View highlight = holder.itemView.findViewById(R.id.highlight);
         if (isHighlighted) {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
+            highlight.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
                     TagMo.isDarkTheme() ? android.R.color.holo_green_dark
                             : android.R.color.holo_green_light));
         } else {
-            TypedValue a = new TypedValue();
-            TagMo.getContext().getTheme().resolveAttribute(
-                    android.R.attr.windowBackground, a, true);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
-                holder.itemView.setBackgroundColor(a.data);
-            } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
-                    && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-                holder.itemView.setBackgroundColor(a.data);
-            } else {
-                holder.itemView.setBackgroundResource(a.resourceId);
-            }
+            highlight.setBackgroundColor(ContextCompat.getColor(
+                    TagMo.getContext(), android.R.color.transparent));
         }
     }
 

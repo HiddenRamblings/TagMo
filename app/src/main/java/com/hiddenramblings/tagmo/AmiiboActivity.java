@@ -143,11 +143,12 @@ public class AmiiboActivity extends AppCompatActivity {
         }
     }
 
-    ActivityResultLauncher<Intent> onScanTagResult = registerForActivityResult(
+    ActivityResultLauncher<Intent> onUpdateTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())
+                && !TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
 
         // If we're supporting, didn't arrive from, but scanned an N2...
         if (TagMo.getPrefs().enableEliteSupport().get()
@@ -162,7 +163,7 @@ public class AmiiboActivity extends AppCompatActivity {
     private void scanAmiiboData() {
         Intent scan = new Intent(this, NfcActivity_.class);
         scan.setAction(TagMo.ACTION_SCAN_TAG);
-        onScanTagResult.launch(scan);
+        onUpdateTagResult.launch(scan);
     }
 
     @Click(R.id.container)
@@ -173,48 +174,17 @@ public class AmiiboActivity extends AppCompatActivity {
         finish();
     }
 
-    ActivityResultLauncher<Intent> onEditTagResult = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
-
-        if (!TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
-
-        this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-        this.runOnUiThread(this::updateAmiiboView);
-
-        // TODO: Update the AmiiboFile with the modified data
-            showToast(getString(R.string.write_suggested));
-    });
-
     void openTagEditor() {
         Intent intent = new Intent(this, TagDataActivity_.class);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
-        onEditTagResult.launch(intent);
+        onUpdateTagResult.launch(intent);
     }
-
-    ActivityResultLauncher<Intent> onNFCResult = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
-            return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction()))
-            return;
-
-        // If we're supporting, didn't arrive from, but scanned an N2...
-        if (TagMo.getPrefs().enableEliteSupport().get()
-                && result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
-            launchEliteActivity(result.getData());
-        } else {
-            this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-            this.runOnUiThread(this::updateAmiiboView);
-        }
-    });
 
     void writeTag() {
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
-        onNFCResult.launch(intent);
+        onUpdateTagResult.launch(intent);
     }
 
     void restoreTag() {
@@ -222,7 +192,7 @@ public class AmiiboActivity extends AppCompatActivity {
         intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
         intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         intent.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
-        onNFCResult.launch(intent);
+        onUpdateTagResult.launch(intent);
     }
 
     private void displayBackupDialog() {

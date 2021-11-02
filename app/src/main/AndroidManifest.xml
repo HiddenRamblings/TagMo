@@ -31,7 +31,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".BrowserActivity_"
-            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize"
             android:exported="true">
             <meta-data
                 android:name="android.app.searchable"
@@ -43,12 +43,12 @@
         </activity>
         <activity
             android:name=".EliteActivity_"
-            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize"
             android:theme="@style/DialogTheme.NoActionBar">
         </activity>
         <activity
             android:name=".NfcActivity_"
-            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop"
             android:exported="false">
             <intent-filter>

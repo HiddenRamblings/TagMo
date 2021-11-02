@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hiddenramblings.tagmo.adapter.HexDumpAdapter;
+import com.hiddenramblings.tagmo.adapter.HexCodeDumpAdapter;
 import com.hiddenramblings.tagmo.nfctech.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
@@ -22,7 +22,7 @@ public class HexViewerActivity extends AppCompatActivity {
 
     @ViewById(R.id.gridView)
     RecyclerView listView;
-    HexDumpAdapter adapter;
+    HexCodeDumpAdapter adapter;
 
     @AfterViews
     void afterViews() {
@@ -52,7 +52,7 @@ public class HexViewerActivity extends AppCompatActivity {
     }
 
     void setAdapterTagData(byte[] tagData) {
-        adapter = new HexDumpAdapter(tagData);
+        adapter = new HexCodeDumpAdapter(tagData);
         listView.setLayoutManager(new LinearLayoutManager(this));
         listView.setAdapter(adapter);
     }

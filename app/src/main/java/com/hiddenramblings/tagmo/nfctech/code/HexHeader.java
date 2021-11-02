@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctech.hex;
+package com.hiddenramblings.tagmo.nfctech.code;
 
 import android.graphics.Typeface;
 

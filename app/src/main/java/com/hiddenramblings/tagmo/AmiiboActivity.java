@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,8 @@ import java.text.ParseException;
 @EActivity(R.layout.activity_amiibo)
 public class AmiiboActivity extends AppCompatActivity {
 
+    @ViewById(R.id.toolbar_wrapper)
+    LinearLayout toolbarWrapper;
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
     @ViewById(R.id.amiiboInfo)
@@ -88,6 +91,8 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @AfterViews
     void afterViews() {
+        TagMo.setViewThemeAttributes(toolbarWrapper, R.attr.colorPrimary, R.attr.colorAccent);
+
         toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
@@ -339,7 +344,7 @@ public class AmiiboActivity extends AppCompatActivity {
             }
         }
         if (amiiboId == -1) {
-            tagInfo = getString(R.string.no_tag_loaded);
+            tagInfo = getString(R.string.read_error);
             amiiboImageUrl = null;
         } else if (amiiboId == 0) {
             tagInfo = getString(R.string.blank_tag);

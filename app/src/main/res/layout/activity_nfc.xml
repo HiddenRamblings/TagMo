@@ -59,6 +59,7 @@
         android:id="@+id/bank_number_picker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/picker_border_dark"
         android:layout_alignParentBottom="true" />
 
     <TextView
@@ -66,7 +67,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/bank_number_picker"
+        android:layout_marginBottom="6dp"
         android:layout_centerHorizontal="true"
+        android:gravity="center"
         android:text="@string/bank_select_details"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="16.5sp" />

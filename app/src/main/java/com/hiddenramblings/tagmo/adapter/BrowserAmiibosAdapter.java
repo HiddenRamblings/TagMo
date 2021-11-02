@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.adapter;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
@@ -506,8 +505,8 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             } else {
                 this.itemView.setEnabled(false);
                 this.txtPath.setText("");
-                this.txtPath.setTextColor(this.txtPath.getResources().getColor(isDarkTheme() ?
-                        R.color.tag_text_dark : R.color.tag_text_light));
+                this.txtPath.setTextColor(this.txtPath.getResources().getColor(
+                        TagMo.isDarkTheme() ? R.color.tag_text_dark : R.color.tag_text_light));
             }
             this.txtPath.setVisibility(View.VISIBLE);
 
@@ -579,11 +578,6 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
                     textView.setEnabled(true);
                 }
             }
-        }
-
-        private boolean isDarkTheme() {
-            return (TagMo.getContext().getResources().getConfiguration().uiMode
-                    & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         }
     }
 

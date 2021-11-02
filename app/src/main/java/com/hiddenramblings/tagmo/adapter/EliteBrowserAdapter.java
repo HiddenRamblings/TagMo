@@ -95,7 +95,7 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
     public void onBindViewHolder(@NonNull final AmiiboVewHolder holder, int position) {
         if (TagMo.getPrefs().eliteActiveBank().get() == position) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                    holder.isDarkTheme() ? android.R.color.holo_green_dark
+                    TagMo.isDarkTheme() ? android.R.color.holo_green_dark
                             : android.R.color.holo_green_light));
         } else {
             TypedValue a = new TypedValue();
@@ -296,11 +296,6 @@ public class EliteBrowserAdapter extends RecyclerView.Adapter<EliteBrowserAdapte
                 textView.setText(text);
                 textView.setEnabled(true);
             }
-        }
-
-        private boolean isDarkTheme() {
-            return (TagMo.getContext().getResources().getConfiguration().uiMode
-                    & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         }
     }
 

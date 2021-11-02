@@ -51,6 +51,8 @@
 
 package com.endgames.environment;
 
+import static android.os.Environment.isExternalStorageEmulated;
+
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
@@ -61,8 +63,6 @@ import androidx.core.content.ContextCompat;
 import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.File;
-
-import static android.os.Environment.isExternalStorageEmulated;
 
 @SuppressWarnings("ConstantConditions")
 public class Storage {

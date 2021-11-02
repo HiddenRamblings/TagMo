@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator">
 
     <RelativeLayout
@@ -40,7 +39,7 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bottom_sheet_tint"
+        android:background="?attr/colorPrimaryDark"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
@@ -94,7 +93,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="16dp"
-            android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/card_foreground"
             app:cardCornerRadius="@dimen/card_radius"
@@ -123,6 +121,7 @@
                         android:textSize="16sp"/>
 
                     <RelativeLayout
+                        xmlns:tools="http://schemas.android.com/tools"
                         android:id="@+id/amiiboInfo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -272,17 +271,13 @@
                     android:id="@+id/toolbar_wrapper"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:minHeight="?attr/actionBarSize"
-                    app:popupTheme="@style/PopupTheme"
-                    app:theme="@style/PopupThemeOverlay"
+                    android:background="?attr/colorPrimary"
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.Toolbar
                         android:id="@+id/toolbar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/colorPrimary"
                         android:minHeight="?attr/actionBarSize"
                         android:paddingLeft="2dp"
                         android:paddingRight="2dp"
@@ -319,7 +314,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
-            android:background="@color/background_white" />
+            android:theme="@style/DialogTheme.Picker"
+            android:background="@drawable/picker_border_dark" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/write_bank_count"
@@ -327,12 +323,6 @@
             android:layout_height="wrap_content"
             android:minHeight="36dp"
             android:text="@string/write_bank_count" />
-
-        <!-- <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/unlock_elite"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/unlock_elite" /> -->
 
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -95,14 +95,8 @@ public class TagReader {
     }
 
     public static byte[] readTagStream(File file) throws Exception {
-        Uri fileUri;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            fileUri = FileProvider.getUriForFile(TagMo.getContext(),
-                    TagMo.PROVIDER, file);
-        } else {
-            fileUri = Uri.fromFile(file);
-        }
-        try (InputStream inputStream = TagMo.getContext().getContentResolver().openInputStream(fileUri)) {
+        try (InputStream inputStream = TagMo.getContext().getContentResolver().openInputStream(
+                TagMo.getFileUri(file))) {
             byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
             int len = inputStream.read(data);
             if (len != NfcByte.TAG_FILE_SIZE)

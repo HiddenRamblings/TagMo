@@ -2,11 +2,14 @@ package com.hiddenramblings.tagmo;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.settings.SettingsFragment_;
 
@@ -25,5 +28,20 @@ public class SettingsActivity extends AppCompatActivity {
                     .replace(R.id.coordinator, fragment)
                     .commit();
         }
+    }
+
+    public void setPowerTagResult() {
+        setResult(Activity.RESULT_OK, new Intent().setAction(
+                BuildConfig.APPLICATION_ID + ".POWERTAG"));
+    }
+
+    public void setRefreshResult() {
+        setResult(Activity.RESULT_OK, new Intent().setAction(
+                BuildConfig.APPLICATION_ID + ".REFRESH"));
+    }
+    
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

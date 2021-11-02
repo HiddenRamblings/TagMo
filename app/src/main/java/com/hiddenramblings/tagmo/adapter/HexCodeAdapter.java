@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -13,17 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.nfctech.code.HexHeader;
 import com.hiddenramblings.tagmo.nfctech.code.HexItem;
 import com.hiddenramblings.tagmo.nfctech.code.TagMap;
 
-public class HexCodeDumpAdapter extends RecyclerView.Adapter<HexCodeDumpAdapter.ViewHolder> {
+public class HexCodeAdapter extends RecyclerView.Adapter<HexCodeAdapter.ViewHolder> {
 
     private static final int HEX = 16;
     private final HexItem[][] data;
 
-    public HexCodeDumpAdapter(byte[] tagData) {
+    public HexCodeAdapter(byte[] tagData) {
         this.setHasStableIds(true);
         int rowCount = ((tagData.length - 1) / HEX) + 2;
 
@@ -78,15 +76,15 @@ public class HexCodeDumpAdapter extends RecyclerView.Adapter<HexCodeDumpAdapter.
 
     @NonNull
     @Override
-    public HexCodeDumpAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new HexCodeDumpAdapter.ViewHolder(LayoutInflater
+    public HexCodeAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new HexCodeAdapter.ViewHolder(LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.hexdump_line, parent, false));
+                .inflate(R.layout.hexcode_line, parent, false));
     }
 
     @SuppressLint("WrongConstant")
     @Override
-    public void onBindViewHolder(HexCodeDumpAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(HexCodeAdapter.ViewHolder holder, int position) {
         HexItem[] row = getItem(position);
         for (int i = 0; i < holder.textView.length; i++) {
             HexItem hexItem = row[i];
@@ -96,8 +94,8 @@ public class HexCodeDumpAdapter extends RecyclerView.Adapter<HexCodeDumpAdapter.
                 view.setBackgroundColor(Color.TRANSPARENT);
             } else {
                 view.setText(hexItem.getText());
-                view.setTextColor(hexItem instanceof HexHeader && TagMo.isDarkTheme()
-                        ? Color.WHITE : Color.BLACK);
+                if (!(hexItem instanceof HexHeader))
+                    view.setTextColor(Color.BLACK);
                 view.setTypeface(Typeface.MONOSPACE, hexItem.getTextStyle());
                 view.setBackgroundColor(hexItem.getBackgroundColor());
                 view.setVisibility(View.VISIBLE);

@@ -30,6 +30,7 @@ import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
@@ -58,7 +59,7 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
         this.settings = settings;
         this.listener = listener;
 
-        Collections.sort(amiiboFiles, new AmiiboComparator());
+        Collections.sort(amiiboFiles, new AmiiboComparator(settings));
         this.filteredData = this.amiiboFiles = amiiboFiles;
     }
 
@@ -66,7 +67,7 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
         this.settings = settings;
         this.collector = collector;
 
-        Collections.sort(amiiboFiles, new AmiiboComparator());
+        Collections.sort(amiiboFiles, new AmiiboComparator(settings));
         this.filteredData = this.amiiboFiles = amiiboFiles;
     }
 
@@ -170,44 +171,6 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
         setIsHighlighted(holder, amiiboList.contains(holder.amiiboFile));
     }
 
-    class AmiiboComparator implements Comparator<AmiiboFile> {
-        @Override
-        public int compare(AmiiboFile amiiboFile1, AmiiboFile amiiboFile2) {
-            int value = 0;
-
-            long amiiboId1 = amiiboFile1.getId();
-            long amiiboId2 = amiiboFile2.getId();
-
-            Amiibo amiibo1 = settings.getAmiiboManager().amiibos.get(amiiboId1);
-            Amiibo amiibo2 = settings.getAmiiboManager().amiibos.get(amiiboId2);
-            if (amiibo1 != null || amiibo2 != null) {
-                if (amiibo1 == null)
-                    value = 1;
-                else if (amiibo2 == null)
-                    value = -1;
-                else
-                    value = compareAmiiboName(amiibo1, amiibo2);
-            }
-            if (value == 0 && amiibo1 != null)
-                value = amiibo1.compareTo(amiibo2);
-
-            return value;
-        }
-        int compareAmiiboName(Amiibo amiibo1, Amiibo amiibo2) {
-            String name1 = amiibo1.name;
-            String name2 = amiibo2.name;
-            if (name1 == null && name2 == null) {
-                return 0;
-            }
-            if (name1 == null) {
-                return 1;
-            } else if (name2 == null) {
-                return -1;
-            }
-            return name1.compareTo(name2);
-        }
-    }
-
     public void refresh() {
         this.getFilter().filter(settings.getQuery());
     }
@@ -297,7 +260,7 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             //noinspection unchecked
             filteredData = (ArrayList<AmiiboFile>) filterResults.values;
-            Collections.sort(filteredData, new AmiiboComparator());
+            Collections.sort(filteredData, new AmiiboComparator(settings));
             notifyDataSetChanged();
         }
     }

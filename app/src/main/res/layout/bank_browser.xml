@@ -75,7 +75,7 @@
                 android:layout_weight="1"
                 android:singleLine="true"
                 android:ellipsize="middle"
-                android:text="@string/not_found"
+                android:text="@string/amiibo_not_found"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"/>
 
@@ -297,7 +297,7 @@
             android:gravity="center"
             android:singleLine="true"
             android:ellipsize="middle"
-            android:text="@string/not_found"
+            android:text="@string/amiibo_not_found"
             android:textColor="@android:color/white"
             android:textSize="16sp"/>
 

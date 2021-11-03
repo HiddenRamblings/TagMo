@@ -79,8 +79,6 @@ public class EliteActivity extends AppCompatActivity implements
 
     @ViewById(R.id.amiiboCard)
     CardView amiiboCard;
-    @ViewById(R.id.toolbar_wrapper)
-    LinearLayout toolbarWrapper;
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
     @ViewById(R.id.amiiboInfo)
@@ -247,8 +245,8 @@ public class EliteActivity extends AppCompatActivity implements
 
         eliteBankCount.setValue(bank_count);
         updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
-        bankStats.setText(getString(R.string.elite_bank_stats,
-                TagMo.getPrefs().eliteActiveBank().get(), bank_count));
+        bankStats.setText(getString(R.string.elite_bank_stats, eliteBankCount.getValueForPosition(
+                TagMo.getPrefs().eliteActiveBank().get()), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
     });
 

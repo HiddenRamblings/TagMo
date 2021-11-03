@@ -167,7 +167,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/toolbar_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:theme="@style/PopupThemeOverlay"
@@ -178,8 +177,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minHeight="?attr/actionBarSize"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp"
+                    app:contentInsetLeft="4dp"
+                    app:contentInsetRight="4dp"
                     android:layout_gravity="center"
                     app:theme="@style/PopupThemeOverlay"
                     app:popupTheme="@style/PopupTheme" />

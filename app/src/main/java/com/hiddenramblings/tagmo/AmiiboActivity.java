@@ -55,8 +55,6 @@ import java.text.ParseException;
 @EActivity(R.layout.activity_amiibo)
 public class AmiiboActivity extends AppCompatActivity {
 
-    @ViewById(R.id.toolbar_wrapper)
-    LinearLayout toolbarWrapper;
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
     @ViewById(R.id.amiiboInfo)

@@ -5,14 +5,10 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.View;
 
-import androidx.core.content.FileProvider;
-
+import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 
@@ -76,6 +72,7 @@ public class TagMo extends Application {
         mContext = new WeakReference<>(this);
         setTheme(R.style.AppTheme);
         mPrefs = new WeakReference<>(prefs);
+        Storage.setContext(this);
     }
 
     public static Context getContext() {
@@ -146,17 +143,6 @@ public class TagMo extends Application {
 
     public static File getExternalFiles() {
         return mContext.get().getExternalFilesDir(null);
-    }
-
-    public static Uri getFileUri(File file) {
-        Uri fileUri;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            fileUri = FileProvider.getUriForFile(mContext.get(),
-                    BuildConfig.APPLICATION_ID + ".provider", file);
-        } else {
-            fileUri = Uri.fromFile(file);
-        }
-        return fileUri;
     }
 
     public static void scanFile(File file) {

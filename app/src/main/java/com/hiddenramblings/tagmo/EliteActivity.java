@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.eightbit.content.ScaledContext;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.BankBrowserAdapter;
 import com.hiddenramblings.tagmo.adapter.WriteBlankAdapter;
@@ -59,6 +60,7 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 
@@ -132,6 +134,9 @@ public class EliteActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ScaledContext.restore(this).setTheme(R.style.DialogTheme_NoActionBar);
+        if (TagMo.getPrefs().enableScaling().get())
+            ScaledContext.wrap(this).setTheme(R.style.DialogTheme_NoActionBar);
         this.settings = new BrowserSettings().initialize();
     }
 
@@ -169,7 +174,7 @@ public class EliteActivity extends AppCompatActivity implements
         hardwareInfo.setText(getString(R.string.elite_signature,
                 getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE)));
         eliteBankCount.setValue(bank_count);
-        amiibosView.setLayoutManager(new LinearLayoutManager(this));
+        amiibosView.setLayoutManager(new LinearLayoutManager(ScaledContext.wrap(this)));
         BankBrowserAdapter adapter = new BankBrowserAdapter(settings, this);
         amiibosView.setAdapter(adapter);
         this.settings.addChangeListener(adapter);
@@ -247,7 +252,7 @@ public class EliteActivity extends AppCompatActivity implements
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList, Dialog writeDialog) {
         if (amiiboList != null && amiiboList.size() == eliteBankCount.getValue()) {
-            new AlertDialog.Builder(EliteActivity.this)
+            new AlertDialog.Builder(this)
                     .setMessage(R.string.write_confirm)
                     .setNegativeButton(R.string.proceed, (dialog, which) -> {
                         Intent collection = new Intent(this, NfcActivity_.class);
@@ -370,7 +375,7 @@ public class EliteActivity extends AppCompatActivity implements
             byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
             if (amiibos.get(clickedPosition) != null)
                 amiibos.get(clickedPosition).data = tagData;
-            this.runOnUiThread(() -> updateAmiiboView(tagData, clickedPosition));
+            updateAmiiboView(tagData, clickedPosition);
         }
         refreshEliteHardwareAdapter();
 
@@ -461,14 +466,11 @@ public class EliteActivity extends AppCompatActivity implements
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         if (amiibos.get(clickedPosition) != null)
             amiibos.get(clickedPosition).data = tagData;
-        this.runOnUiThread(() -> updateAmiiboView(tagData, clickedPosition));
-        refreshEliteHardwareAdapter();
-
         switch (status) {
             case NOTHING:
                 break;
             case WRITER:
-                Intent modify = new Intent(EliteActivity.this, NfcActivity_.class);
+                Intent modify = new Intent(this, NfcActivity_.class);
                 modify.setAction(TagMo.ACTION_WRITE_TAG_FULL);
                 modify.putExtra(TagMo.EXTRA_CURRENT_BANK, clickedPosition);
                 modify.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
@@ -490,6 +492,8 @@ public class EliteActivity extends AppCompatActivity implements
 
         }
         status = CLICKED.NOTHING;
+        updateAmiiboView(tagData, clickedPosition);
+        refreshEliteHardwareAdapter();
     });
 
     private void scanAmiiboData(int current_bank) {
@@ -542,7 +546,7 @@ public class EliteActivity extends AppCompatActivity implements
 
     public void updateAmiiboView(byte[] tagData, long amiiboId, int current_bank) {
         toolbar.setOnMenuItemClickListener(item -> {
-            Intent modify = new Intent(EliteActivity.this, NfcActivity_.class);
+            Intent modify = new Intent(this, NfcActivity_.class);
             modify.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
             switch (item.getItemId()) {
                 case R.id.mnu_activate:
@@ -607,8 +611,10 @@ public class EliteActivity extends AppCompatActivity implements
             return false;
         });
 
-        String amiiboBank = getString(R.string.bank_number,
-                eliteBankCount.getValueForPosition(current_bank));
+        int selected_item = eliteBankCount.getValueForPosition(current_bank);
+        toolbar.getMenu().findItem(R.id.mnu_scan).setTitle(getString(
+                R.string.scan_bank, new DecimalFormat("000").format(selected_item)));
+        String amiiboBank = getString(R.string.bank_number, selected_item);
 
         String tagInfo = null;
         String amiiboHexId = "";
@@ -677,9 +683,9 @@ public class EliteActivity extends AppCompatActivity implements
 
         if (imageAmiibo != null) {
             imageAmiibo.setVisibility(View.GONE);
-            Glide.with(this).clear(amiiboImageTarget);
+            Glide.with(ScaledContext.wrap(this)).clear(amiiboImageTarget);
             if (amiiboImageUrl != null) {
-                Glide.with(this)
+                Glide.with(ScaledContext.wrap(this))
                         .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
                         .asBitmap()
                         .load(amiiboImageUrl)
@@ -694,7 +700,7 @@ public class EliteActivity extends AppCompatActivity implements
                 Bundle bundle = new Bundle();
                 bundle.putLong(TagMo.EXTRA_AMIIBO_ID, amiiboTagId);
 
-                Intent intent = new Intent(EliteActivity.this, ImageActivity_.class);
+                Intent intent = new Intent(this, ImageActivity_.class);
                 intent.putExtras(bundle);
 
                 startActivity(intent);
@@ -730,7 +736,8 @@ public class EliteActivity extends AppCompatActivity implements
         if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
             return true;
         } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
-            ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager cm = (ConnectivityManager)
+                    this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
             return activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI;
@@ -753,7 +760,7 @@ public class EliteActivity extends AppCompatActivity implements
         } else if (amiibos.get(position).id != 0) {
             updateAmiiboView(amiibos.get(position).id, position);
         } else {
-            Intent amiiboIntent = new Intent(EliteActivity.this, NfcActivity_.class);
+            Intent amiiboIntent = new Intent(this, NfcActivity_.class);
             amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
             amiiboIntent.setAction(TagMo.ACTION_SCAN_TAG);
             onUpdateTagResult.launch(amiiboIntent);
@@ -770,7 +777,7 @@ public class EliteActivity extends AppCompatActivity implements
             Intent intent = new Intent(this, ImageActivity_.class);
             intent.putExtras(bundle);
 
-            this.startActivity(intent);
+            startActivity(intent);
         }
     }
 
@@ -817,5 +824,12 @@ public class EliteActivity extends AppCompatActivity implements
     @UiThread
     public void showToast(int msgRes) {
         Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (TagMo.getPrefs().enableScaling().get())
+            ScaledContext.restore(this).setTheme(R.style.DialogTheme_NoActionBar);
+        super.onBackPressed();
     }
 }

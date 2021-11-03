@@ -81,7 +81,8 @@ public class TagUtils {
     public static boolean isElite(NTAG215 mifare) {
         if (TagMo.getPrefs().enableEliteSupport().get()) {
             try {
-                if (TagUtils.bytesToHex(mifare.readEliteSingature()).endsWith("FFFFFFFFFF"))
+                String signature = TagUtils.bytesToHex(mifare.readEliteSingature());
+                if (signature.length() > 22 && signature.endsWith("FFFFFFFFFF"))
                     return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -129,22 +130,22 @@ public class TagUtils {
         byte hi = (byte) hex.charAt(0);
         byte lo = (byte) hex.charAt(1);
         if (hi >= NfcByte.CMD_READ && hi <= NfcByte.CMD_READ_CNT) {
-            ret = (byte) (((hi - 48) << 4) | 0);
-        } else if (hi >= (byte) 65 && hi <= NfcByte.N2_LOCK) {
-            ret = (byte) ((((hi - 65) + 10) << 4) | 0);
-        } else if (hi >= (byte) 97 && hi <= (byte) 102) {
-            ret = (byte) ((((hi - 97) + 10) << 4) | 0);
+            ret = (byte) (((hi - 0x30) << 4));
+        } else if (hi >= (byte) 0x41 && hi <= NfcByte.N2_LOCK) {
+            ret = (byte) ((((hi - 0x41) + 0x0A) << 4));
+        } else if (hi >= (byte) 0x61 && hi <= (byte) 0x66) {
+            ret = (byte) ((((hi - 0x61) + 0x0A) << 4));
         }
         if (lo >= NfcByte.CMD_READ && lo <= NfcByte.CMD_READ_CNT) {
-            return (byte) ((lo - 48) | ret);
+            return (byte) ((lo - 0x30) | ret);
         }
-        if (lo >= (byte) 65 && lo <= NfcByte.N2_LOCK) {
-            return (byte) (((lo - 65) + 10) | ret);
+        if (lo >= (byte) 0x41 && lo <= NfcByte.N2_LOCK) {
+            return (byte) (((lo - 0x41) + 0x0A) | ret);
         }
-        if (lo < (byte) 97 || lo > (byte) 102) {
+        if (lo < (byte) 0x61 || lo > (byte) 0x66) {
             return ret;
         }
-        return (byte) (((lo - 97) + 10) | ret);
+        return (byte) (((lo - 0x61) + 0x0A) | ret);
     }
 
     public static String md5(byte[] data) {

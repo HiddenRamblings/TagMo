@@ -69,6 +69,12 @@ public interface Preferences {
     @DefaultBoolean(keyRes = R.string.settings_stable_channel, value = true)
     boolean stableChannel();
 
+    @DefaultBoolean(keyRes = R.string.settings_enable_scale, value = false)
+    boolean enableScaling();
+
+    @DefaultInt(keyRes = R.string.settings_layout_scale, value = 28)
+    int layoutScaling();
+
     @DefaultLong(-1)
     long lastModified();
 

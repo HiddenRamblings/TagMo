@@ -8,6 +8,7 @@ import android.media.MediaScannerConnection;
 import android.os.Build;
 import android.util.Log;
 
+import com.eightbit.content.ScaledContext;
 import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.Preferences_;
@@ -70,8 +71,8 @@ public class TagMo extends Application {
             UTF_16LE = Charset.forName("UTF-16LE");
         }
         mContext = new WeakReference<>(this);
-        setTheme(R.style.AppTheme);
         mPrefs = new WeakReference<>(prefs);
+        ScaledContext.restore(this).setTheme(R.style.AppTheme);
         Storage.setContext(this);
     }
 

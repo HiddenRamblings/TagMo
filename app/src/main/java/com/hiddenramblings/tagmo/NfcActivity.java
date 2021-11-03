@@ -254,7 +254,7 @@ public class NfcActivity extends AppCompatActivity {
     }
     
     private byte[] verifyQuickReadWrite(Intent commandIntent) throws Exception {
-        byte[] data = new byte[0];
+        byte[] data = new byte[572];
         if (commandIntent.hasExtra(TagMo.EXTRA_TAG_DATA)) {
             data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
             if (data == null) throw new IOException(getString(R.string.error_no_data));
@@ -374,7 +374,11 @@ public class NfcActivity extends AppCompatActivity {
                                     showToast(getString(R.string.firmware_update));
                             }
                             if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
-                                data = TagReader.scanBankToBytes(mifare, selection);
+                                mifare.activateBank(selection);
+                                data = TagReader.readFromTag(mifare);
+                                mifare.activateBank(active_bank);
+                                // TODO: FIx reading banks by bank number
+                                // data = TagReader.scanBankToBytes(mifare, selection);
                                 result.putExtra(TagMo.EXTRA_TAG_DATA, data);
                                 result.putExtra(TagMo.EXTRA_CURRENT_BANK, selection);
                             } else {

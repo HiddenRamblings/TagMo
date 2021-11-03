@@ -168,13 +168,14 @@
 
     <string name="warn_delete_file">Deleting %1$s. Are you sure?</string>
     <string name="delete_active">Cannot delete the active bank!</string>
-    <string name="write_suggested">Save Amiibo to retain changes!</string>
 
     <string name="amiibo_info_stats">Amiibo Info Stats</string>
     <string name="pref_advanced">Advanced</string>
     <string name="pref_disable_debug">Disable Debug Logs</string>
     <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
+    <string name="pref_enable_scale">Scale N2 Browser View</string>
+    <string name="pref_layout_scale">Layout Scaling Factor</string>
     <string name="pref_resources">Resources</string>
     <string name="pref_wiki_link">View Instructions Wiki</string>
     <string name="pref_reddit_link">Visit the TagMo reddit</string>
@@ -185,6 +186,7 @@
     <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
     <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard or external storage device</string>
     <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
+    <string name="layout_scale_details">Scales the N2 Elite browser for phones with smaller screen dimensions</string>
 
     <string name="encryption_keys">Encryption Keys</string>
     <string name="pref_import_keys">Import Keys</string>

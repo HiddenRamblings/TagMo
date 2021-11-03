@@ -56,6 +56,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
@@ -66,6 +67,7 @@ import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 @SuppressWarnings({"ConstantConditions", "unused"})
 public class Storage extends Environment {
@@ -167,6 +169,16 @@ public class Storage extends Environment {
         String storagePath = getPath();
         return filePath.startsWith(storagePath)
                 ? filePath.substring(storagePath.length()) : filePath;
+    }
+
+    public static String getMimeType(String fileName) {
+        String extension = fileName.substring(fileName.lastIndexOf(".")
+                + 1).toLowerCase(Locale.getDefault());
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+    }
+
+    public static String getMimeType(File file) {
+        return getMimeType(file.getName());
     }
 
     public static Uri getFileUri(File file) {

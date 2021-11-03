@@ -192,7 +192,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         File[] files = getFilesDir().listFiles((dir, name) ->
-                getString(R.string.mimetype_apk).equals(getMimeType(name)));
+                getString(R.string.mimetype_apk).equals(Storage.getMimeType(name)));
         if (files != null) {
             for (File file : files) {
                 if (!file.isDirectory())
@@ -264,6 +264,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 this.onRefresh();
             }
         }
+
+        this.loadPTagKeyManager();
 
         new RequestCommit().setListener(result -> {
             try {
@@ -447,7 +449,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @UiThread
     public void showLogcatSnackbar(String message, Uri fileUri) {
-        Snackbar snackbar = buildSnackbar(message, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = new IconifiedSnackbar(this).buildSnackbar(
+                message, Snackbar.LENGTH_LONG);
         if (fileUri != null) {
             snackbar.setAction(R.string.view, v -> {
                 startActivity(new ActionIntent(Intent.ACTION_VIEW, fileUri));
@@ -704,14 +707,16 @@ public class BrowserActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
-        if (result.getData().getAction().equals(BuildConfig.APPLICATION_ID + ".REFRESH")) {
+        if (result.getData().hasExtra(SettingsActivity.STORAGE)) {
             this.settings.setBrowserRootFolder(new File(Storage.getFile(),
                     TagMo.getPrefs().browserRootFolder().get()));
             this.settings.notifyChanges();
-            this.onRootFolderChanged(true);
         }
-        if (result.getData().getAction().equals(BuildConfig.APPLICATION_ID + ".POWERTAG")) {
+        if (result.getData().hasExtra(SettingsActivity.POWERTAG)) {
             this.loadPTagKeyManager();
+        }
+        if (result.getData().hasExtra(SettingsActivity.REFRESH)) {
+            this.onRefresh();
         }
     });
 
@@ -782,7 +787,6 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onRefresh() {
         this.loadAmiiboManager();
-        this.loadPTagKeyManager();
         this.onRootFolderChanged(true);
     }
 
@@ -1104,7 +1108,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     void onFilterGameSeriesChanged() {
-        addFilterItemView(settings.getGameSeriesFilter(), "filter_game_series", onFilterGameSeriesChipCloseClick);
+        addFilterItemView(settings.getGameSeriesFilter(),
+                "filter_game_series", onFilterGameSeriesChipCloseClick);
     }
 
     OnCloseClickListener onFilterGameSeriesChipCloseClick = new OnCloseClickListener() {
@@ -1193,27 +1198,10 @@ public class BrowserActivity extends AppCompatActivity implements
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
-    public Snackbar buildSnackbar(String msg, int length) {
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.coordinator), msg, length);
-        View snackbarLayout = snackbar.getView();
-        TextView textView = snackbarLayout.findViewById(
-                com.google.android.material.R.id.snackbar_text);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_stat_notice, 0, 0, 0);
-        } else {
-            textView.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_stat_notice, 0, 0, 0);
-        }
-        textView.setGravity(Gravity.CENTER_VERTICAL);
-        textView.setCompoundDrawablePadding(getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
-        return snackbar;
-    }
-
     @UiThread
     public void showStorageSnackbar() {
-        Snackbar snackbar = buildSnackbar(getString(
-                R.string.emulated_storage), Snackbar.LENGTH_LONG);
+        Snackbar snackbar = new IconifiedSnackbar(this).buildSnackbar(
+                getString(R.string.emulated_storage), Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.enable, v -> {
             TagMo.getPrefs().ignoreSdcard().put(true);
             this.settings.setBrowserRootFolder(new File(Storage.getFile(),
@@ -1226,7 +1214,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @UiThread
     public void showSetupSnackbar() {
-        Snackbar snackbar = buildSnackbar(getString(
+        Snackbar snackbar = new IconifiedSnackbar(this).buildSnackbar(
+                getString(
                 R.string.config_required), Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.setup, v -> {
             openSettings();
@@ -1282,7 +1271,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
             fos.close();
 
-            if (!getString(R.string.mimetype_apk).equals(getMimeType(apk.getName()))) {
+            if (!getString(R.string.mimetype_apk).equals(Storage.getMimeType(apk))) {
                 //noinspection ResultOfMethodCallIgnored
                 apk.delete();
                 showToast(R.string.download_corrupt);
@@ -1320,7 +1309,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @UiThread
     public void showInstallSnackbar(String apkUrl) {
-        Snackbar snackbar = buildSnackbar(getString(
+        Snackbar snackbar = new IconifiedSnackbar(this).buildSnackbar(
+                getString(
                 R.string.update_tagmo_apk), Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.install, v -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -1384,11 +1374,5 @@ public class BrowserActivity extends AppCompatActivity implements
             intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
         }
         onRequestScopedStorage.launch(intent);
-    }
-
-    private String getMimeType(String fileName) {
-        String extension = fileName.substring(fileName.lastIndexOf(".")
-                + 1).toLowerCase(Locale.getDefault());
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
     }
 }

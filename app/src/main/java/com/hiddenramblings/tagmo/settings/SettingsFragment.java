@@ -31,6 +31,7 @@ import com.eightbit.os.Storage;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.SettingsActivity;
@@ -353,7 +354,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_ignore_sdcard)
     void onIgnoreSdcardClicked() {
-        ((SettingsActivity) requireActivity()).setRefreshResult();
+        ((SettingsActivity) requireActivity()).setStorageResult();
         prefs.ignoreSdcard().put(ignoreSdcard.isChecked());
     }
 
@@ -670,32 +671,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    public Snackbar buildSnackbar(String msg, int length) {
-        Snackbar snackbar = Snackbar.make(requireActivity().findViewById(
-                R.id.coordinator), msg, length);
-        View snackbarLayout = snackbar.getView();
-        TextView textView = snackbarLayout.findViewById(
-                com.google.android.material.R.id.snackbar_text);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_stat_notice, 0, 0, 0);
-        } else {
-            textView.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_stat_notice, 0, 0, 0);
-        }
-        textView.setGravity(Gravity.CENTER_VERTICAL);
-        textView.setCompoundDrawablePadding(getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
-        return snackbar;
-    }
-
     @UiThread
     public void showSnackbar(String msg, int length) {
-        buildSnackbar(msg, length).show();
+        new IconifiedSnackbar(requireActivity()).buildSnackbar(msg, length).show();
     }
 
     @UiThread
     public void showInstallSnackbar() {
-        Snackbar snackbar = buildSnackbar(getString(
+        Snackbar snackbar =  new IconifiedSnackbar(requireActivity()).buildSnackbar(
+                getString(
                 R.string.update_amiibo_api), Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.sync, v -> downloadAmiiboAPIData());
         snackbar.show();

@@ -17,6 +17,10 @@ import org.androidannotations.annotations.EActivity;
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.settings_layout)
 public class SettingsActivity extends AppCompatActivity {
+    public static final String REFRESH = "REFRESH";
+    public static final String STORAGE = "STORAGE";
+    public static final String POWERTAG = "POWERTAG";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,14 +33,20 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    public void setPowerTagResult() {
-        setResult(Activity.RESULT_OK, new Intent().setAction(
-                BuildConfig.APPLICATION_ID + ".POWERTAG"));
-    }
+    Intent resultIntent = new Intent();
 
     public void setRefreshResult() {
-        setResult(Activity.RESULT_OK, new Intent().setAction(
-                BuildConfig.APPLICATION_ID + ".REFRESH"));
+        setResult(Activity.RESULT_OK, resultIntent.putExtra(REFRESH, true));
+    }
+
+    public void setStorageResult() {
+        setResult(Activity.RESULT_OK, resultIntent
+                .putExtra(STORAGE, true)
+                .putExtra(REFRESH, true));
+    }
+
+    public void setPowerTagResult() {
+        setResult(Activity.RESULT_OK, resultIntent.putExtra(POWERTAG, true));
     }
     
     @Override

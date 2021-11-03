@@ -49,26 +49,34 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.endgames.environment;
+package com.eightbit.os;
 
-import static android.os.Environment.isExternalStorageEmulated;
-
+import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
+import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 
-@SuppressWarnings("ConstantConditions")
-public class Storage {
+@SuppressWarnings({"ConstantConditions", "unused"})
+public class Storage extends Environment {
     private static final String STORAGE_ROOT = "/storage";
 
     private static File storageFile;
+    private static WeakReference<Context> mContext;
+
+    public static void setContext(Context context) {
+        mContext = new WeakReference<>(context);
+    }
 
     private static File getRootPath(File directory) {
         return directory.getParentFile().getParentFile().getParentFile().getParentFile();
@@ -88,7 +96,7 @@ public class Storage {
             Log.d("EMULATED", emulated.getAbsolutePath());
             Log.d("PHYSICAL", physical.getAbsolutePath());
         } catch (NullPointerException e) {
-            return storageFile = Environment.getExternalStorageDirectory();
+            return storageFile = getExternalStorageDirectory();
         }
         if (TagMo.getPrefs().ignoreSdcard().get())
             return storageFile = emulated != null ? emulated : physical;
@@ -97,7 +105,8 @@ public class Storage {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private static File setFileLollipop() {
-        File[] storage = ContextCompat.getExternalFilesDirs(TagMo.getContext(), null);
+        File[] storage = ContextCompat.getExternalFilesDirs(
+                mContext.get().getApplicationContext(), null);
         if (TagMo.getPrefs().ignoreSdcard().get()) {
             return storageFile = storage[0] != null && storage[0].canRead()
                     ? getRootPath(storage[0]) : setFileGeneric();
@@ -118,7 +127,7 @@ public class Storage {
         File emulated = null;
         File physical = null;
         try {
-            for (File directory : Environment.getStorageDirectory().listFiles()) {
+            for (File directory : getStorageDirectory().listFiles()) {
                 if (directory.getAbsolutePath().endsWith("emulated"))
                     emulated = new File(directory, "0");
                 else if (!directory.getAbsolutePath().endsWith("self"))
@@ -132,7 +141,8 @@ public class Storage {
         }
         if (TagMo.getPrefs().ignoreSdcard().get())
             return storageFile = emulated != null ? emulated : physical;
-        return storageFile = physical != null ? physical : emulated;
+        else
+            return storageFile = physical != null ? physical : emulated;
     }
 
     public static File setFile() {
@@ -155,9 +165,14 @@ public class Storage {
     public static String getRelativePath(File file) {
         String filePath = file.getAbsolutePath();
         String storagePath = getPath();
-        if (filePath.startsWith(storagePath)) {
-            filePath = filePath.substring(storagePath.length());
-        }
-        return filePath;
+        return filePath.startsWith(storagePath)
+                ? filePath.substring(storagePath.length()) : filePath;
+    }
+
+    public static Uri getFileUri(File file) {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                ? FileProvider.getUriForFile(mContext.get(),
+                BuildConfig.APPLICATION_ID + ".provider", file)
+                : Uri.fromFile(file);
     }
 }

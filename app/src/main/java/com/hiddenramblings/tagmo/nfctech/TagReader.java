@@ -1,10 +1,6 @@
 package com.hiddenramblings.tagmo.nfctech;
 
-import android.net.Uri;
-import android.os.Build;
-
-import androidx.core.content.FileProvider;
-
+import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -96,7 +92,7 @@ public class TagReader {
 
     public static byte[] readTagStream(File file) throws Exception {
         try (InputStream inputStream = TagMo.getContext().getContentResolver().openInputStream(
-                TagMo.getFileUri(file))) {
+                Storage.getFileUri(file))) {
             byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
             int len = inputStream.read(data);
             if (len != NfcByte.TAG_FILE_SIZE)

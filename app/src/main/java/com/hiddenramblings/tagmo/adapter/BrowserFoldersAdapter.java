@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.endgames.environment.Storage;
+import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 

@@ -18,8 +18,6 @@ import org.androidannotations.annotations.ViewById;
 @EActivity(R.layout.activity_hex_viewer)
 public class HexViewerActivity extends AppCompatActivity {
 
-    boolean isEncryptionMissing;
-
     @ViewById(R.id.gridView)
     RecyclerView listView;
     HexCodeAdapter adapter;
@@ -34,8 +32,11 @@ public class HexViewerActivity extends AppCompatActivity {
         try {
             setAdapterTagData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
-            isEncryptionMissing = !TagUtils.isEncrypted(tagData);
-            if (isEncryptionMissing) {
+            if (TagUtils.isEncrypted(tagData)) {
+                e.printStackTrace();
+                TagMo.Error(getClass(), R.string.fail_decrypt);
+                finish();
+            } else {
                 try {
                     setAdapterTagData(tagData);
                 } catch (Exception ex) {
@@ -43,10 +44,6 @@ public class HexViewerActivity extends AppCompatActivity {
                     TagMo.Error(getClass(), R.string.invalid_tag_data);
                     finish();
                 }
-            } else {
-                e.printStackTrace();
-                TagMo.Error(getClass(), R.string.fail_decrypt);
-                finish();
             }
         }
     }

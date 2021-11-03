@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -26,6 +25,7 @@ import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SeekBarPreference;
 
 import com.eightbit.os.Storage;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -112,6 +112,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference ignoreSdcard;
     @PreferenceByKey(R.string.settings_stable_channel)
     CheckBoxPreference stableChannel;
+    @PreferenceByKey(R.string.settings_enable_scale)
+    CheckBoxPreference enableScaling;
+    @PreferenceByKey(R.string.settings_layout_scale)
+    SeekBarPreference layoutScaling;
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -137,6 +141,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.disableDebug.setChecked(prefs.disableDebug().get());
         this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
         this.stableChannel.setChecked(prefs.stableChannel().get());
+        boolean isScaling = prefs.enableScaling().get();
+        this.enableScaling.setChecked(isScaling);
+        this.layoutScaling.setVisible(isScaling);
 
         this.keyManager = new KeyManager(this.getContext());
 
@@ -361,6 +368,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_stable_channel)
     void onStableChannelClicked() {
         prefs.stableChannel().put(stableChannel.isChecked());
+    }
+
+    @PreferenceClick(R.string.settings_enable_scale)
+    void onEnableScalingClicked() {
+        boolean isScaling = enableScaling.isChecked();
+        prefs.enableScaling().put(isScaling);
+        layoutScaling.setVisible(isScaling);
+    }
+
+    @PreferenceChange(R.string.settings_layout_scale)
+    void onLayoutScalingChanged() {
+        prefs.layoutScaling().put(layoutScaling.getValue());
     }
 
     @PreferenceClick(R.string.settings_view_wiki)

@@ -122,13 +122,11 @@ public class NfcActivity extends AppCompatActivity {
         String mode = commandIntent.getAction();
 
         if (getCallingActivity() != null)
-            isEliteIntent = EliteActivity_.class.getName().equals(getCallingActivity().getClassName());
-
-        int current_bank = -1;
+            isEliteIntent = EliteActivity_.class.getName().equals(
+                    getCallingActivity().getClassName());
         if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
-            current_bank = commandIntent.getIntExtra(
-                    TagMo.EXTRA_CURRENT_BANK, bankNumberPicker.getPosition());
-            bankNumberPicker.setPosition(current_bank);
+            bankNumberPicker.setPosition(commandIntent.getIntExtra(
+                    TagMo.EXTRA_CURRENT_BANK, bankNumberPicker.getPosition()));
         } else if (isEliteIntent) {
             bankNumberPicker.setPosition(TagMo.getPrefs().eliteActiveBank().get());
         } else {

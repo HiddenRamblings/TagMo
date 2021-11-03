@@ -135,11 +135,6 @@ public class EliteActivity extends AppCompatActivity implements
         this.settings = new BrowserSettings().initialize();
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
     @AfterViews
     void afterViews() {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -187,6 +182,7 @@ public class EliteActivity extends AppCompatActivity implements
                 -> writeOpenBanks.setText(getString(R.string.write_open_banks, valueNew)));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void refreshEliteHardwareAdapter() {
         if (amiibosView.getAdapter() != null) {
             this.runOnUiThread(() -> {
@@ -375,10 +371,8 @@ public class EliteActivity extends AppCompatActivity implements
             if (amiibos.get(clickedPosition) != null)
                 amiibos.get(clickedPosition).data = tagData;
             this.runOnUiThread(() -> updateAmiiboView(tagData, clickedPosition));
-            refreshEliteHardwareAdapter();
-        } else {
-            refreshEliteHardwareAdapter();
         }
+        refreshEliteHardwareAdapter();
 
         if (status == CLICKED.FORMAT) {
             status = CLICKED.NOTHING;

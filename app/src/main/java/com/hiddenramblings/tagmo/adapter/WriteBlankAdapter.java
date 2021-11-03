@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -166,11 +167,7 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
             });
         }
         holder.bind(getItem(position));
-        if (amiiboList.contains(holder.amiiboFile)) {
-            setIsHighlighted(holder, true);
-        } else {
-            setIsHighlighted(holder, false);
-        }
+        setIsHighlighted(holder, amiiboList.contains(holder.amiiboFile));
     }
 
     class AmiiboComparator implements Comparator<AmiiboFile> {
@@ -295,10 +292,12 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
             return true;
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            Collections.sort((ArrayList<AmiiboFile>) filterResults.values, new AmiiboComparator());
+            //noinspection unchecked
             filteredData = (ArrayList<AmiiboFile>) filterResults.values;
+            Collections.sort(filteredData, new AmiiboComparator());
             notifyDataSetChanged();
         }
     }

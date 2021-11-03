@@ -17,7 +17,6 @@
     <string name="nfc_enabled">NFC Enabled!</string>
     <string name="nfc_query">NFC is currently disabled. Enable NFC?</string>
 
-    <string name="keys_missing_warning">Amiibo keys not found</string>
     <string name="no_decrypt_key">Decryption keys not imported</string>
     <string name="nfc_enable_action">Enable</string>
     <string name="open_settings_action">Settings</string>
@@ -168,7 +167,6 @@
 
     <string name="warn_delete_file">Deleting %1$s. Are you sure?</string>
     <string name="delete_active">Cannot delete the active bank!</string>
-    <string name="refresh_required">Amiibo bank data required!</string>
     <string name="write_suggested">Save Amiibo to retain changes!</string>
 
     <string name="amiibo_info_stats">Amiibo Info Stats</string>

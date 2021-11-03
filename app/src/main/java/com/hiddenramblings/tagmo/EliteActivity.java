@@ -558,7 +558,6 @@ public class EliteActivity extends AppCompatActivity implements
                         modify.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
                         onUpdateTagResult.launch(modify);
                     } else {
-                        showToast(getString(R.string.refresh_required));
                         status = CLICKED.WRITER;
                         scanAmiiboData(current_bank);
                     }
@@ -581,7 +580,6 @@ public class EliteActivity extends AppCompatActivity implements
                         editor.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
                         onUpdateTagResult.launch(editor);
                     } else {
-                        showToast(getString(R.string.refresh_required));
                         status = CLICKED.EDITOR;
                         scanAmiiboData(current_bank);
                     }
@@ -592,7 +590,6 @@ public class EliteActivity extends AppCompatActivity implements
                         viewhex.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
                         startActivity(viewhex);
                     } else {
-                        showToast(getString(R.string.refresh_required));
                         status = CLICKED.HEXCODE;
                         scanAmiiboData(current_bank);
                     }
@@ -601,7 +598,6 @@ public class EliteActivity extends AppCompatActivity implements
                     if (tagData != null) {
                     displayBackupDialog(tagData);
                     } else {
-                        showToast(getString(R.string.refresh_required));
                         status = CLICKED.BACKUP;
                         scanAmiiboData(current_bank);
                     }
@@ -611,7 +607,8 @@ public class EliteActivity extends AppCompatActivity implements
             return false;
         });
 
-        String amiiboBank = getString(R.string.bank_number, current_bank);
+        String amiiboBank = getString(R.string.bank_number,
+                eliteBankCount.getValueForPosition(current_bank));
 
         String tagInfo = null;
         String amiiboHexId = "";

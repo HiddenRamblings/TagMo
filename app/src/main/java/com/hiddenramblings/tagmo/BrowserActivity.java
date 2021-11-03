@@ -42,7 +42,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.endgames.environment.Storage;
+import com.eightbit.content.ActionIntent;
+import com.eightbit.os.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
@@ -437,10 +438,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Snackbar snackbar = buildSnackbar(message, Snackbar.LENGTH_LONG);
         if (fileUri != null) {
             snackbar.setAction(R.string.view, v -> {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, fileUri);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                    browserIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(browserIntent);
+                startActivity(new ActionIntent(Intent.ACTION_VIEW, fileUri));
                 snackbar.dismiss();
             });
         }
@@ -487,7 +485,7 @@ public class BrowserActivity extends AppCompatActivity implements
             TagMo.scanFile(file);
 
             showLogcatSnackbar(getString(R.string.wrote_file,
-                    Storage.getRelativePath(file)), TagMo.getFileUri(file));
+                    Storage.getRelativePath(file)), Storage.getFileUri(file));
         } catch (Exception e) {
             showLogcatSnackbar(getString(R.string.error_generic, e.getMessage()), null);
         }
@@ -1296,15 +1294,11 @@ public class BrowserActivity extends AppCompatActivity implements
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                installUpdate(TagMo.getFileUri(apk));
+                installUpdate(Storage.getFileUri(apk));
             } else {
-                Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    intent.setDataAndType(TagMo.getFileUri(apk), getString(R.string.mimetype_apk));
-                } else {
-                    intent.setDataAndType(Uri.fromFile(apk), getString(R.string.mimetype_apk));
-                }
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Intent intent = new ActionIntent(Intent.ACTION_INSTALL_PACKAGE);
+                intent.setDataAndType(Storage.getFileUri(apk),
+                        getString(R.string.mimetype_apk));
                 intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
                 intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
                 intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,

@@ -29,6 +29,7 @@ import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
@@ -128,136 +129,6 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
     @Override
     public void onBindViewHolder(final AmiiboVewHolder holder, int position) {
         holder.bind(getItem(position));
-    }
-
-    class AmiiboComparator implements Comparator<AmiiboFile> {
-        @Override
-        public int compare(AmiiboFile amiiboFile1, AmiiboFile amiiboFile2) {
-            int value = 0;
-            int sort = settings.getSort();
-
-            File filePath1 = amiiboFile1.getFilePath();
-            File filePath2 = amiiboFile2.getFilePath();
-            if (sort == BrowserActivity.SORT_FILE_PATH && !(filePath1 == null && filePath2 == null))
-                value = compareFilePath(filePath1, filePath2);
-
-            long amiiboId1 = amiiboFile1.getId();
-            long amiiboId2 = amiiboFile2.getId();
-            if (sort == BrowserActivity.SORT_ID) {
-                value = compareAmiiboId(amiiboId1, amiiboId2);
-            } else if (value == 0) {
-                AmiiboManager amiiboManager = settings.getAmiiboManager();
-                if (amiiboManager != null) {
-                    Amiibo amiibo1 = amiiboManager.amiibos.get(amiiboId1);
-                    Amiibo amiibo2 = amiiboManager.amiibos.get(amiiboId2);
-                    if (amiibo1 == null) {
-                        value = 1;
-                    } else if (amiibo2 == null) {
-                        value = -1;
-                    } else if (sort == BrowserActivity.SORT_NAME) {
-                        value = compareAmiiboName(amiibo1, amiibo2);
-                    } else if (sort == BrowserActivity.SORT_AMIIBO_SERIES) {
-                        value = compareAmiiboSeries(amiibo1, amiibo2);
-                    } else if (sort == BrowserActivity.SORT_AMIIBO_TYPE) {
-                        value = compareAmiiboType(amiibo1, amiibo2);
-                    } else if (sort == BrowserActivity.SORT_GAME_SERIES) {
-                        value = compareGameSeries(amiibo1, amiibo2);
-                    } else if (sort == BrowserActivity.SORT_CHARACTER) {
-                        value = compareCharacter(amiibo1, amiibo2);
-                    } else {
-                        value = amiibo1.compareTo(amiibo2);
-                    }
-                }
-                if (value == 0)
-                    value = compareAmiiboId(amiiboId1, amiiboId2);
-            }
-
-            if (value == 0)
-                value = compareFilePath(filePath1, filePath2);
-
-            return value;
-        }
-
-        int compareFilePath(File filePath1, File filePath2) {
-            if (filePath1 == null && filePath2 == null) {
-                return 0;
-            } else if (filePath1 == null) {
-                return 1;
-            } else if (filePath2 == null) {
-                return -1;
-            } else {
-                return filePath1.compareTo(filePath2);
-            }
-        }
-
-        int compareAmiiboId(long amiiboId1, long amiiboId2) {
-            return Long.compare(amiiboId1, amiiboId2);
-        }
-
-        int compareAmiiboName(Amiibo amiibo1, Amiibo amiibo2) {
-            String name1 = amiibo1.name;
-            String name2 = amiibo2.name;
-            if (name1 == null && name2 == null) {
-                return 0;
-            } else if (name1 == null) {
-                return 1;
-            } else if (name2 == null) {
-                return -1;
-            }
-            return name1.compareTo(name2);
-        }
-
-        int compareAmiiboSeries(Amiibo amiibo1, Amiibo amiibo2) {
-            AmiiboSeries amiiboSeries1 = amiibo1.getAmiiboSeries();
-            AmiiboSeries amiiboSeries2 = amiibo2.getAmiiboSeries();
-            if (amiiboSeries1 == null && amiiboSeries2 == null ) {
-                return 0;
-            } else if (amiiboSeries1 == null) {
-                return 1;
-            } else if (amiiboSeries2 == null) {
-                return -1;
-            }
-            return amiiboSeries1.compareTo(amiiboSeries2);
-        }
-
-        int compareAmiiboType(Amiibo amiibo1, Amiibo amiibo2) {
-            AmiiboType amiiboType1 = amiibo1.getAmiiboType();
-            AmiiboType amiiboType2 = amiibo2.getAmiiboType();
-            if (amiiboType1 == null && amiiboType2 == null ) {
-                return 0;
-            } else if (amiiboType1 == null) {
-                return 1;
-            } else if (amiiboType2 == null) {
-                return -1;
-            }
-            return amiiboType1.compareTo(amiiboType2);
-        }
-
-        int compareGameSeries(Amiibo amiibo1, Amiibo amiibo2) {
-            GameSeries gameSeries1 = amiibo1.getGameSeries();
-            GameSeries gameSeries2 = amiibo2.getGameSeries();
-            if (gameSeries1 == null && gameSeries2 == null) {
-                return 0;
-            } else if (gameSeries1 == null) {
-                return 1;
-            } else if (gameSeries2 == null) {
-                return -1;
-            }
-            return gameSeries1.compareTo(gameSeries2);
-        }
-
-        int compareCharacter(Amiibo amiibo1, Amiibo amiibo2) {
-            Character character1 = amiibo1.getCharacter();
-            Character character2 = amiibo2.getCharacter();
-            if (character1 == null && character2 == null) {
-                return 0;
-            } else if (character1 == null) {
-                return 1;
-            } else if (character2 == null) {
-                return -1;
-            }
-            return character1.compareTo(character2);
-        }
     }
 
     public void refresh() {
@@ -369,7 +240,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             //noinspection unchecked
             filteredData = (ArrayList<AmiiboFile>) filterResults.values;
-            Collections.sort(filteredData, new AmiiboComparator());
+            Collections.sort(filteredData, new AmiiboComparator(settings));
             notifyDataSetChanged();
         }
     }

@@ -93,6 +93,7 @@
     <string name="replace">Replace</string>
     <string name="restore">Restore</string>
     <string name="activate">Activate</string>
+    <string name="format">Format</string>
 
     <string name="error_caps">ERROR</string>
 
@@ -150,7 +151,8 @@
     <string name="write_auto">Write to Tag (Auto)</string>
     <string name="restore_tag">Restore Tag</string>
     <string name="scan_tag">Scan Tag</string>
-    <string name="scan_bank">Scan Bank %1$d</string>
+    <string name="scan_bank_no">Scan Bank %1$d</string>
+    <string name="scan_bank">Scan Bank %1$s</string>
     <string name="scan_elite">Scan N2 Elite</string>
     <string name="format_bank">Format Bank</string>
     <string name="activate_bank">Activate Bank</string>
@@ -159,7 +161,6 @@
     <string name="set_bank_count">Set Bank Count</string>
     <string name="lock_amiibo">Lock N2 Elite</string>
     <string name="write_collection">Write Collection</string>
-    <string name="delete_amiibo">Delete Amiibo</string>
 
     <string name="permission_required">Storage permission required!</string>
     <string name="allow">Allow</string>

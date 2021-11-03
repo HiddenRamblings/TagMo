@@ -183,7 +183,7 @@ public class NfcActivity extends AppCompatActivity {
                 break;
             case TagMo.ACTION_SCAN_TAG:
                 if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
-                    setTitle(getString(R.string.scan_bank, bankNumberPicker.getValue()));
+                    setTitle(getString(R.string.scan_bank_no, bankNumberPicker.getValue()));
                 } else if (isEliteIntent) {
                     setTitle(R.string.scan_elite);
                 } else {

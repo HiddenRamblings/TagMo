@@ -8,10 +8,6 @@
         android:title="@string/activate"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/mnu_scan"
-        android:title="@string/scan"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/mnu_write"
         android:title="@string/write"
         app:showAsAction="always"/>
@@ -21,7 +17,11 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_format_bank"
-        android:title="@string/delete_amiibo"
+        android:title="@string/format"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_scan"
+        android:title="@string/scan_bank"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_edit"

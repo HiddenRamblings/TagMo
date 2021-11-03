@@ -91,7 +91,7 @@ public class TagWriter {
 
             TagMo.Debug(TagWriter.class, R.string.ptag_key, TagUtils.bytesToHex(ptagKey));
 
-            mifare.transceive(NfcByte.COMP_WRITE_CMD);
+            mifare.transceive(NfcByte.POWERTAG_WRITE);
             mifare.transceive(ptagKey);
 
             if (!(idPages[0] == (byte) 0xFF && idPages[1] == (byte) 0xFF))

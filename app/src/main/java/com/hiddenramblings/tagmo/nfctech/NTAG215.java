@@ -41,6 +41,7 @@ public class NTAG215 implements TagTechnology {
         return null;
     }
 
+    @SuppressWarnings("unused")
     public int getTimeout() {
         if (m_mifare != null)
             return m_mifare.getTimeout();
@@ -204,7 +205,7 @@ public class NTAG215 implements TagTechnology {
     public void setBankCount(int i) {
         try {
             this.transceive(new byte[]{
-                    NfcByte.N2_SET_BANK_CNT,
+                    NfcByte.N2_SET_BANKCOUNT,
                     (byte) (i & 0xFF)
             });
         } catch (Exception ignored) {
@@ -214,7 +215,7 @@ public class NTAG215 implements TagTechnology {
     public void activateBank(int i) {
         try {
             this.transceive(new byte[]{
-                    NfcByte.N2_SELECT_BANK,
+                    NfcByte.N2_ACTIVATE_BANK,
                     (byte) (i & 0xFF)
             });
         } catch (Exception ignored) {

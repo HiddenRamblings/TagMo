@@ -121,13 +121,16 @@ public class TagReader {
         return tagData;
     }
 
+    public static byte[] readBankTitle(NTAG215 tag, int bank) {
+        return tag.amiiboFastRead(0x15, 0x16, bank);
+    }
 
     public static ArrayList<String> readTagTitles(NTAG215 tag, int numBanks) {
         ArrayList<String> tags = new ArrayList<>();
         int i = 0;
         while (i < (numBanks & 0xFF)) {
             try {
-                byte[] tagData = tag.amiiboFastRead(0x15, 0x16, i);
+                byte[] tagData = readBankTitle(tag, i);
                 if (tagData == null || tagData.length != 8) {
                     throw new NullPointerException();
                 }
@@ -201,6 +204,7 @@ public class TagReader {
             System.arraycopy(data, 0, output, 0, 540);
             data = tag.readSignature();
             System.arraycopy(data, 0, output, 540, data.length);
+            TagMo.Debug(TagReader.class, TagUtils.bytesToHex(output));
             return output;
         } catch (IllegalStateException e) {
             throw new IllegalStateException(TagMo.getStringRes(R.string.fail_early_remove));
@@ -219,6 +223,7 @@ public class TagReader {
             System.arraycopy(data, 0, output, 0, 540);
             data = tag.readSignature();
             System.arraycopy(data, 0, output, 540, data.length);
+            TagMo.Debug(TagReader.class, TagUtils.bytesToHex(output));
             return output;
         } catch (IllegalStateException e) {
             throw new IllegalStateException(TagMo.getStringRes(R.string.fail_early_remove));

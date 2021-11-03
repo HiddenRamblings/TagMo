@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.view.Gravity;
@@ -15,7 +14,7 @@ import java.lang.ref.WeakReference;
 public class IconifiedSnackbar {
 
     private final WeakReference<Activity> mActivity;
-    private Resources resources;
+    private final Resources resources;
 
     public IconifiedSnackbar(Activity activity) {
         mActivity = new WeakReference<>(activity);

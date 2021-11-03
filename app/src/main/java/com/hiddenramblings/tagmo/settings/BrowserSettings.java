@@ -211,6 +211,7 @@ public class BrowserSettings implements Parcelable {
         this.listeners.remove(listener);
     }
 
+    @SuppressWarnings("unused")
     public void removeAllChangeListeners() {
         this.listeners.clear();
     }

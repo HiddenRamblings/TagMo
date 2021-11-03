@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -363,10 +364,12 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             return true;
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            Collections.sort((ArrayList<AmiiboFile>) filterResults.values, new AmiiboComparator());
+            //noinspection unchecked
             filteredData = (ArrayList<AmiiboFile>) filterResults.values;
+            Collections.sort(filteredData, new AmiiboComparator());
             notifyDataSetChanged();
         }
     }

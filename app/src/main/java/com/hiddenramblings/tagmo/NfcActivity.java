@@ -255,7 +255,7 @@ public class NfcActivity extends AppCompatActivity {
         imgNfcBar.setAnimation(nfcAnimation);
     }
     
-    private byte[] basicTagQuickTest(Intent commandIntent) throws Exception {
+    private byte[] verifyQuickReadWrite(Intent commandIntent) throws Exception {
         byte[] data = new byte[0];
         if (commandIntent.hasExtra(TagMo.EXTRA_TAG_DATA)) {
             data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
@@ -282,11 +282,11 @@ public class NfcActivity extends AppCompatActivity {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             mifare = NTAG215.get(tag);
             if (mifare == null) {
-                throw new Exception(getString(R.string.error_tag_type,
+                throw new Exception(getString(R.string.error_tag_protocol,
                         TagUtils.getTagTechnology(tag)));
             }
             mifare.connect();
-            byte[] data = basicTagQuickTest(commandIntent);
+            byte[] data = verifyQuickReadWrite(commandIntent);
             boolean isElite = TagUtils.isElite(mifare);
             int selection;
             byte[] bank_details;

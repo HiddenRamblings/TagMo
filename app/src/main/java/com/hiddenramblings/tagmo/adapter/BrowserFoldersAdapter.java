@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.adapter;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAd
         this.settings = settings;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
         if (newBrowserSettings == null || oldBrowserSettings == null) return;

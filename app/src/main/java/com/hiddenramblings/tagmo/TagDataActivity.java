@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -405,7 +406,9 @@ public class TagDataActivity extends AppCompatActivity {
 
         if (isUserDataInitialized) {
             try {
-                int countryCode = ((HashMap.Entry<Integer, String>) txtCountryCode.getSelectedItem()).getKey();
+                //noinspection unchecked
+                int countryCode = ((HashMap.Entry<Integer, String>)
+                        txtCountryCode.getSelectedItem()).getKey();
                 newAmiiboData.setCountryCode(countryCode);
             } catch (Exception e) {
                 txtCountryCode.requestFocus();
@@ -755,8 +758,10 @@ public class TagDataActivity extends AppCompatActivity {
     void updateAppNameView() {
         int index = 0;
         for (int i = 0; i < appIdAdapter.getCount(); i++) {
-            Object item = appIdAdapter.getItem(i);
-            if (item != null && ((HashMap.Entry<Integer, String>) item).getKey().equals(appId)) {
+            //noinspection unchecked
+            HashMap.Entry<Integer, String> item =
+                    (HashMap.Entry<Integer, String>) appIdAdapter.getItem(i);
+            if (item != null && item.getKey().equals(appId)) {
                 index = i;
             }
         }
@@ -775,8 +780,10 @@ public class TagDataActivity extends AppCompatActivity {
             }
 
             Object selectedItem = adapterView.getItemAtPosition(i);
-            if (selectedItem != null)
+            if (selectedItem != null) {
+                //noinspection unchecked
                 appId = ((HashMap.Entry<Integer, String>) selectedItem).getKey();
+            }
 
             updateAppIdView();
             updateAppDataView();
@@ -873,7 +880,12 @@ public class TagDataActivity extends AppCompatActivity {
 
         public CountryCodesAdapter(HashMap<Integer, String> data) {
             this.data = new ArrayList<>(data.entrySet());
-            Collections.sort(this.data, (entry1, entry2) -> entry1.getKey().compareTo(entry2.getKey()));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Collections.sort(this.data, Map.Entry.comparingByKey());
+            } else {
+                Collections.sort(this.data, (entry1, entry2)
+                        -> entry1.getKey().compareTo(entry2.getKey()));
+            }
         }
 
         @Override
@@ -938,7 +950,12 @@ public class TagDataActivity extends AppCompatActivity {
 
         public AppIdAdapter(HashMap<Integer, String> data) {
             this.data = new ArrayList<>(data.entrySet());
-            Collections.sort(this.data, (entry1, entry2) -> entry1.getKey().compareTo(entry2.getKey()));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Collections.sort(this.data, Map.Entry.comparingByKey());
+            } else {
+                Collections.sort(this.data, (entry1, entry2)
+                        -> entry1.getKey().compareTo(entry2.getKey()));
+            }
         }
 
         @Override

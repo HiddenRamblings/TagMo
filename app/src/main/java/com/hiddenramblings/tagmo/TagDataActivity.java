@@ -853,10 +853,6 @@ public class TagDataActivity extends AppCompatActivity {
         }
     }
 
-    public static String getDateString(Date date) {
-        return getDateString(Locale.getDefault(), date);
-    }
-
     public static String getDateString(Locale locale, Date date) {
         SimpleDateFormat dateFormat;
 
@@ -867,6 +863,10 @@ public class TagDataActivity extends AppCompatActivity {
 //        }
 
         return dateFormat.format(date);
+    }
+
+    public static String getDateString(Date date) {
+        return getDateString(Locale.US, date);
     }
 
 //    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)

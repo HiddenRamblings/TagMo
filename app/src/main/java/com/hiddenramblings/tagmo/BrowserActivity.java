@@ -947,7 +947,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiibos(file, true));
             } else {
-                if (file.getName().toLowerCase(Locale.getDefault()).endsWith(".bin")) {
+                if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
                         byte[] data = TagReader.readTagFile(file);
                         TagReader.validateTag(data);
@@ -1264,11 +1264,10 @@ public class BrowserActivity extends AppCompatActivity implements
             }
             fos.close();
 
-            if (!getString(R.string.mimetype_apk).equals(Storage.getMimeType(apk))) {
+            if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk")) {
                 //noinspection ResultOfMethodCallIgnored
                 apk.delete();
                 showToast(R.string.download_corrupt);
-                return;
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

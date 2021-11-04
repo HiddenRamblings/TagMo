@@ -28,11 +28,11 @@
         android:title="@string/view_hex"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/mnu_backup"
-        android:title="@string/amiibo_backup"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/mnu_scan"
         android:title="@string/scan_bank"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mnu_backup"
+        android:title="@string/amiibo_backup"
         app:showAsAction="ifRoom"/>
 </menu>

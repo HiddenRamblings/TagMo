@@ -134,9 +134,6 @@ public class EliteActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ScaledContext.restore(this).setTheme(R.style.DialogTheme_NoActionBar);
-        if (TagMo.getPrefs().enableScaling().get())
-            ScaledContext.wrap(this).setTheme(R.style.DialogTheme_NoActionBar);
         this.settings = new BrowserSettings().initialize();
     }
 
@@ -828,8 +825,6 @@ public class EliteActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (TagMo.getPrefs().enableScaling().get())
-            ScaledContext.restore(this).setTheme(R.style.DialogTheme_NoActionBar);
         super.onBackPressed();
     }
 }

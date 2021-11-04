@@ -41,6 +41,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.eightbit.content.ActionIntent;
+import com.eightbit.content.ScaledContext;
 import com.eightbit.os.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
@@ -710,6 +711,9 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (result.getData().hasExtra(SettingsActivity.REFRESH)) {
             this.onRefresh();
+        }
+        if (result.getData().hasExtra(SettingsActivity.SCALING)) {
+            TagMo.setScaledTheme(this, R.style.AppTheme);
         }
     });
 

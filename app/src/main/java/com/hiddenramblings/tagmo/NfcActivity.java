@@ -254,7 +254,7 @@ public class NfcActivity extends AppCompatActivity {
     }
     
     private byte[] verifyQuickReadWrite(Intent commandIntent) throws Exception {
-        byte[] data = new byte[572];
+        byte[] data = new byte[0];
         if (commandIntent.hasExtra(TagMo.EXTRA_TAG_DATA)) {
             data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
             if (data == null) throw new IOException(getString(R.string.error_no_data));
@@ -265,7 +265,7 @@ public class NfcActivity extends AppCompatActivity {
                         TagMo.getPrefs().enableTagTypeValidation().get());
                 setResult(Activity.RESULT_OK);
             } else if (TagMo.ACTION_SCAN_TAG.equals(commandIntent.getAction())) {
-                data = TagReader.readFromTag(mifare);
+                return TagReader.readFromTag(mifare);
             }
         }
         return data;
@@ -524,6 +524,8 @@ public class NfcActivity extends AppCompatActivity {
         String[][] nfcTechList = new String[][]{};
 
         IntentFilter filter = new IntentFilter();
+        filter.addAction(NfcAdapter.ACTION_NDEF_DISCOVERED);
+        filter.addAction(NfcAdapter.ACTION_TECH_DISCOVERED);
         filter.addAction(NfcAdapter.ACTION_TAG_DISCOVERED);
 
         nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent,

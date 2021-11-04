@@ -7,7 +7,6 @@ import com.hiddenramblings.tagmo.R;
 
 import org.androidannotations.annotations.sharedpreferences.DefaultBoolean;
 import org.androidannotations.annotations.sharedpreferences.DefaultInt;
-import org.androidannotations.annotations.sharedpreferences.DefaultLong;
 import org.androidannotations.annotations.sharedpreferences.DefaultString;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
 
@@ -71,9 +70,6 @@ public interface Preferences {
 
     @DefaultBoolean(keyRes = R.string.settings_enable_scale, value = false)
     boolean enableScaling();
-
-    @DefaultInt(keyRes = R.string.settings_layout_scale, value = 20)
-    int layoutScaling();
 
     String lastUpdated();
 

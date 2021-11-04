@@ -175,7 +175,6 @@
     <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
     <string name="pref_enable_scale">Enable Layout Scaling</string>
-    <string name="pref_layout_scale">Layout Scaling Multiple</string>
     <string name="pref_resources">Resources</string>
     <string name="pref_wiki_link">View Instructions Wiki</string>
     <string name="pref_reddit_link">Visit the TagMo reddit</string>

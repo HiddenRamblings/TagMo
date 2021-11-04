@@ -133,7 +133,6 @@ public class EliteActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TagMo.setScaledTheme(this, R.style.DialogTheme_NoActionBar);
         this.settings = new BrowserSettings().initialize();
     }
 

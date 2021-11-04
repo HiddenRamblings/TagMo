@@ -25,7 +25,6 @@ import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SeekBarPreference;
 
 import com.eightbit.os.Storage;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -115,8 +114,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference stableChannel;
     @PreferenceByKey(R.string.settings_enable_scale)
     CheckBoxPreference enableScaling;
-    @PreferenceByKey(R.string.settings_layout_scale)
-    SeekBarPreference layoutScaling;
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -148,10 +145,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.disableDebug.setChecked(prefs.disableDebug().get());
         this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
         this.stableChannel.setChecked(prefs.stableChannel().get());
-        boolean isScaling = prefs.enableScaling().get();
-        this.enableScaling.setChecked(isScaling);
-        this.layoutScaling.setUpdatesContinuously(false);
-        this.layoutScaling.setVisible(isScaling);
+        this.enableScaling.setChecked(prefs.enableScaling().get());
 
         this.keyManager = new KeyManager(this.getContext());
 
@@ -387,15 +381,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_enable_scale)
     void onEnableScalingClicked() {
-        boolean isScaling = enableScaling.isChecked();
-        prefs.enableScaling().put(isScaling);
-        layoutScaling.setVisible(isScaling);
-        ((SettingsActivity) requireActivity()).setScalingResult();
-    }
-
-    @PreferenceChange(R.string.settings_layout_scale)
-    void onLayoutScalingChanged() {
-        prefs.layoutScaling().put(layoutScaling.getValue());
+        prefs.enableScaling().put(enableScaling.isChecked());
         ((SettingsActivity) requireActivity()).setScalingResult();
     }
 

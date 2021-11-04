@@ -8,15 +8,10 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="collapseActionView|always"/>
     <item
-        android:id="@+id/settings"
-        android:title="@string/settings"
-        android:icon="@drawable/ic_settings_white_24dp"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/filter"
         android:icon="@drawable/ic_filter_list_white_24dp"
         android:title="@string/filter"
-        app:showAsAction="ifRoom">
+        app:showAsAction="always">
         <menu>
             <item
                 android:id="@+id/filter_game_series"
@@ -60,7 +55,7 @@
         android:id="@+id/sort"
         android:icon="@drawable/ic_sort_white_24dp"
         android:title="@string/sorting"
-        app:showAsAction="ifRoom">
+        app:showAsAction="always">
         <menu>
             <group android:checkableBehavior="single">
                 <item
@@ -87,6 +82,11 @@
             </group>
         </menu>
     </item>
+    <item
+        android:id="@+id/settings"
+        android:title="@string/settings"
+        android:icon="@drawable/ic_settings_white_24dp"
+        app:showAsAction="always" />
     <item
         android:id="@+id/view"
         android:icon="@drawable/ic_view_array_white_24dp"

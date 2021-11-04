@@ -457,6 +457,24 @@ public class EliteActivity extends AppCompatActivity implements
         );
     }
 
+    ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+
+        int active_bank = result.getData().getIntExtra(TagMo.EXTRA_ACTIVE_BANK,
+                TagMo.getPrefs().eliteActiveBank().get());
+
+        TagMo.getPrefs().eliteActiveBank().put(active_bank);
+
+        refreshEliteHardwareAdapter();
+        int bank_count = TagMo.getPrefs().eliteBankCount().get();
+        bankStats.setText(getString(R.string.elite_bank_stats,
+                eliteBankCount.getValueForPosition(active_bank), bank_count));
+        writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
+    });
+
     ActivityResultLauncher<Intent> onScanTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
@@ -503,24 +521,6 @@ public class EliteActivity extends AppCompatActivity implements
         onScanTagResult.launch(scan);
     }
 
-    ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
-
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
-
-        int active_bank = result.getData().getIntExtra(TagMo.EXTRA_ACTIVE_BANK,
-                TagMo.getPrefs().eliteActiveBank().get());
-
-        TagMo.getPrefs().eliteActiveBank().put(active_bank);
-
-        refreshEliteHardwareAdapter();
-        int bank_count = TagMo.getPrefs().eliteBankCount().get();
-        bankStats.setText(getString(R.string.elite_bank_stats,
-                eliteBankCount.getValueForPosition(active_bank), bank_count));
-        writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
-    });
-
     CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
         @Override
         public void onLoadStarted(@Nullable Drawable placeholder) {
@@ -552,9 +552,6 @@ public class EliteActivity extends AppCompatActivity implements
                 case R.id.mnu_activate:
                     modify.setAction(TagMo.ACTION_ACTIVATE_BANK);
                     onActivateActivity.launch(modify);
-                    return true;
-                case R.id.mnu_scan:
-                    scanAmiiboData(current_bank);
                     return true;
                 case R.id.mnu_write:
                     if (tagData != null) {
@@ -605,6 +602,9 @@ public class EliteActivity extends AppCompatActivity implements
                         status = CLICKED.BACKUP;
                         scanAmiiboData(current_bank);
                     }
+                    return true;
+                case R.id.mnu_scan:
+                    scanAmiiboData(current_bank);
                     return true;
 
             }

@@ -136,14 +136,6 @@
             android:title="@string/pref_enable_scale"
             android:summary="@string/layout_scale_details"
             app:iconSpaceReserved="false" />
-        <androidx.preference.SeekBarPreference
-            android:key="@string/settings_layout_scale"
-            android:title="@string/pref_layout_scale"
-            app:showSeekBarValue="true"
-            app:min="10" android:max="30"
-            android:persistent="true"
-            app:iconSpaceReserved="false"
-            android:shouldDisableView="true"/>
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

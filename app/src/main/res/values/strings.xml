@@ -139,6 +139,7 @@
     <string name="wrote_file">File saved to %1$s</string>
     <string name="tagmo_backup">TagMo Backup</string>
     <string name="tag_detected">Tag detected&#8230;</string>
+    <string name="tag_scanning">%1$s scanning&#8230;</string>
 
     <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
     <string name="super_smash">Super Smash Bros. for Nintendo 3DS and Wii U</string>
@@ -170,10 +171,11 @@
 
     <string name="amiibo_info_stats">Amiibo Info Stats</string>
     <string name="pref_advanced">Advanced</string>
-    <string name="pref_disable_debug">Disable Debug Logs</string>
+    <string name="pref_disable_debug">Disable Debug Logger</string>
     <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
-    <string name="pref_enable_scale">Scale Browser Layouts</string>
+    <string name="pref_enable_scale">Enable Layout Scaling</string>
+    <string name="pref_layout_scale">Layout Scaling Multiple</string>
     <string name="pref_resources">Resources</string>
     <string name="pref_wiki_link">View Instructions Wiki</string>
     <string name="pref_reddit_link">Visit the TagMo reddit</string>
@@ -184,7 +186,7 @@
     <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
     <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard / external storage device</string>
     <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
-    <string name="layout_scale_details">Scales the browser layouts to standardize appearance across screen sizes</string>
+    <string name="layout_scale_details">Scales the view layouts to standardize appearance across screen sizes</string>
 
     <string name="encryption_keys">Encryption Keys</string>
     <string name="pref_import_keys">Import Keys</string>

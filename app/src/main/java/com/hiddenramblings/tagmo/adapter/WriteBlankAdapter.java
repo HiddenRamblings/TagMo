@@ -43,7 +43,6 @@ import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.AmiiboVewHolder>
         implements Filterable, BrowserSettings.BrowserSettingsListener {

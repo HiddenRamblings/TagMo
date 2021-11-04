@@ -142,7 +142,8 @@
             app:showSeekBarValue="true"
             app:min="10" android:max="30"
             android:persistent="true"
-            app:iconSpaceReserved="false" />
+            app:iconSpaceReserved="false"
+            android:shouldDisableView="true"/>
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

@@ -18,6 +18,7 @@ import org.androidannotations.annotations.EActivity;
 @EActivity(R.layout.settings_layout)
 public class SettingsActivity extends AppCompatActivity {
     public static final String REFRESH = "REFRESH";
+    public static final String SCALING = "SCALING";
     public static final String STORAGE = "STORAGE";
     public static final String POWERTAG = "POWERTAG";
 
@@ -37,6 +38,11 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void setRefreshResult() {
         setResult(Activity.RESULT_OK, resultIntent.putExtra(REFRESH, true));
+    }
+
+    public void setScalingResult() {
+        setResult(Activity.RESULT_OK, resultIntent
+                .putExtra(SCALING, true));
     }
 
     public void setStorageResult() {

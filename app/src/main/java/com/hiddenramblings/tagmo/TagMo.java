@@ -70,40 +70,55 @@ public class TagMo extends Application {
             UTF_16BE = Charset.forName("UTF-16BE");
             UTF_16LE = Charset.forName("UTF-16LE");
         }
-        mContext = new WeakReference<>(this);
         mPrefs = new WeakReference<>(prefs);
-        ScaledContext.restore(this).setTheme(R.style.AppTheme);
+        mContext = new WeakReference<>(this);
+        setScaledTheme(this, R.style.AppTheme);
         Storage.setContext(this);
-    }
-
-    public static Context getContext() {
-        return mContext.get();
     }
 
     public static Preferences_ getPrefs() {
         return mPrefs.get();
     }
 
+    public static Context getContext() {
+        if (getPrefs().enableScaling().get())
+            return ScaledContext.wrap(mContext.get());
+        else
+            return ScaledContext.restore(mContext.get());
+    }
+
+    public static void setScaledTheme(Context context, int theme) {
+        setScaledTheme();
+        if (getPrefs().enableScaling().get())
+            ScaledContext.wrap(context).setTheme(theme);
+        else
+            ScaledContext.restore(context).setTheme(theme);
+    }
+
+    public static void setScaledTheme() {
+        getContext().setTheme(R.style.AppTheme);
+    }
+
     public static String getStringRes(int resource) {
-        return mContext.get().getString(resource);
+        return getContext().getString(resource);
     }
 
     public static String getStringRes(int resource, String params) {
-        return mContext.get().getString(resource, params);
+        return getContext().getString(resource, params);
     }
 
     public static String getStringRes(int resource, String params, int digits) {
-        return mContext.get().getString(resource, params, digits);
+        return getContext().getString(resource, params, digits);
     }
 
     public static String getStringRes(int resource, int params) {
         try {
-            Resources res = mContext.get().getResources();
+            Resources res = getContext().getResources();
             res.getIdentifier(res.getResourceName(params),
                     "string", BuildConfig.APPLICATION_ID);
-            return mContext.get().getString(resource, mContext.get().getString(params));
+            return getContext().getString(resource, getContext().getString(params));
         } catch (Resources.NotFoundException ignore) {
-            return mContext.get().getString(resource, params);
+            return getContext().getString(resource, params);
         }
     }
 
@@ -112,17 +127,17 @@ public class TagMo extends Application {
     }
 
     public static void Debug(Class<?> src, String params) {
-        if (!mPrefs.get().disableDebug().get())
+        if (!getPrefs().disableDebug().get())
             Log.d(TAG(src), params);
     }
 
     public static void Debug(Class<?> src, int resource) {
-        if (!mPrefs.get().disableDebug().get())
+        if (!getPrefs().disableDebug().get())
             Log.d(TAG(src), getStringRes(resource));
     }
 
     public static void Debug(Class<?> src, int resource, String params) {
-        if (!mPrefs.get().disableDebug().get())
+        if (!getPrefs().disableDebug().get())
             Log.d(TAG(src), getStringRes(resource, params));
     }
 
@@ -143,7 +158,7 @@ public class TagMo extends Application {
     }
 
     public static File getExternalFiles() {
-        return mContext.get().getExternalFilesDir(null);
+        return getContext().getExternalFilesDir(null);
     }
 
     public static void scanFile(File file) {
@@ -156,7 +171,7 @@ public class TagMo extends Application {
     }
 
     public static boolean isDarkTheme() {
-        return (mContext.get().getResources().getConfiguration().uiMode
+        return (getContext().getResources().getConfiguration().uiMode
                 & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 }

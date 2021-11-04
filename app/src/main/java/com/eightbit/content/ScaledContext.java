@@ -100,8 +100,8 @@ public class ScaledContext extends ContextWrapper {
             }
         }
 
-        // metrics.density = 2.0f;
-        metrics.density = TagMo.getPrefs().layoutScaling().get() / 10;
+        metrics.density = 2.5f;
+        // metrics.density = TagMo.getPrefs().layoutScaling().get() / 10f;
         metrics.densityDpi = 320;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             metrics.heightPixels = fullscreen != 0 ? 2960 : 2560;
@@ -111,8 +111,8 @@ public class ScaledContext extends ContextWrapper {
             metrics.heightPixels = 1440;
             metrics.widthPixels = fullscreen != 0 ? 2960 : 2560;
         }
-        // metrics.scaledDensity = 2.0f;
-        metrics.scaledDensity = TagMo.getPrefs().layoutScaling().get() / 10;
+        metrics.scaledDensity = 2.5f;
+        // metrics.scaledDensity = TagMo.getPrefs().layoutScaling().get() / 10f;
         metrics.xdpi = 521.0f;
         metrics.ydpi = 521.0f;
         metrics.setTo(metrics);
@@ -120,11 +120,11 @@ public class ScaledContext extends ContextWrapper {
         return new ScaledContext(context);
     }
 
-    public static ScaledContext restore(Context context) {
+    public static Context restore(Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
 
         metrics.setToDefaults();
-        return new ScaledContext(context);
+        return context;
     }
 }

@@ -143,7 +143,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.stableChannel.setChecked(prefs.stableChannel().get());
         boolean isScaling = prefs.enableScaling().get();
         this.enableScaling.setChecked(isScaling);
-        this.layoutScaling.setVisible(isScaling);
+        this.layoutScaling.setEnabled(/*isScaling*/ false);
 
         this.keyManager = new KeyManager(this.getContext());
 
@@ -374,13 +374,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void onEnableScalingClicked() {
         boolean isScaling = enableScaling.isChecked();
         prefs.enableScaling().put(isScaling);
-        layoutScaling.setVisible(isScaling);
+//        layoutScaling.setEnabled(isScaling);
+        ((SettingsActivity) requireActivity()).setScalingResult();
     }
 
-    @PreferenceChange(R.string.settings_layout_scale)
-    void onLayoutScalingChanged() {
-        prefs.layoutScaling().put(layoutScaling.getValue());
-    }
+//    @PreferenceChange(R.string.settings_layout_scale)
+//    void onLayoutScalingChanged() {
+//        prefs.layoutScaling().put(layoutScaling.getValue());
+//        ((SettingsActivity) requireActivity()).setScalingResult();
+//    }
 
     @PreferenceClick(R.string.settings_view_wiki)
     void onViewWikiClicked() {

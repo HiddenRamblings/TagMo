@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -294,11 +295,7 @@ public class BrowserActivity extends AppCompatActivity implements
             TagMo.getPrefs().eliteBankCount().put(bank_count);
 
             Intent eliteIntent = new Intent(this, EliteActivity_.class);
-            eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
-            eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
-            eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
-            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
-                    result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
+            eliteIntent.putExtras(result.getData());
             eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
             startActivity(eliteIntent);
         } else {
@@ -709,11 +706,13 @@ public class BrowserActivity extends AppCompatActivity implements
         if (result.getData().hasExtra(SettingsActivity.POWERTAG)) {
             this.loadPTagKeyManager();
         }
+        if (result.getData().hasExtra(SettingsActivity.SCALING)) {
+            TagMo.setScaledTheme(); // refresh application theme
+            TagMo.setScaledTheme(this, R.style.AppTheme);
+            this.recreate();
+        }
         if (result.getData().hasExtra(SettingsActivity.REFRESH)) {
             this.onRefresh();
-        }
-        if (result.getData().hasExtra(SettingsActivity.SCALING)) {
-            TagMo.setScaledTheme(this, R.style.AppTheme);
         }
     });
 
@@ -1371,4 +1370,18 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         onRequestScopedStorage.launch(intent);
     }
+
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        super.onNewIntent(intent);
+//
+//        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
+//                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
+//                || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+//            Intent reader = new Intent(this, NfcActivity_.class);
+//            reader.setAction(intent.getAction());
+//            reader.putExtras(intent.getExtras());
+//            startActivity(reader);
+//        }
+//    }
 }

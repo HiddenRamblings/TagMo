@@ -40,18 +40,6 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".EliteActivity_"
-            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize"
-            android:launchMode="singleTop"
-            android:theme="@style/DialogTheme.NoActionBar">
-        </activity>
-        <activity
-            android:name=".NfcActivity_"
-            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize"
-            android:launchMode="singleTop"
-            android:exported="false">
             <!--
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
@@ -68,6 +56,17 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             -->
+        </activity>
+        <activity
+            android:name=".EliteActivity_"
+            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize"
+            android:launchMode="singleTop"
+            android:theme="@style/DialogTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".NfcActivity_"
+            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize"
+            android:launchMode="singleTop">
         </activity>
         <activity
             android:name=".HexViewerActivity_"/>

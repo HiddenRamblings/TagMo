@@ -72,7 +72,7 @@ public class TagMo extends Application {
         }
         mPrefs = new WeakReference<>(prefs);
         mContext = new WeakReference<>(this);
-        setScaledTheme(this, R.style.AppTheme);
+        setScaledTheme();
         Storage.setContext(this);
     }
 

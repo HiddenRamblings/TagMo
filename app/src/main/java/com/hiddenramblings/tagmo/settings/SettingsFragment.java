@@ -114,8 +114,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference stableChannel;
     @PreferenceByKey(R.string.settings_enable_scale)
     CheckBoxPreference enableScaling;
-    @PreferenceByKey(R.string.settings_layout_scale)
-    SeekBarPreference layoutScaling;
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -141,9 +139,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.disableDebug.setChecked(prefs.disableDebug().get());
         this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
         this.stableChannel.setChecked(prefs.stableChannel().get());
-        boolean isScaling = prefs.enableScaling().get();
-        this.enableScaling.setChecked(isScaling);
-        this.layoutScaling.setEnabled(/*isScaling*/ false);
+        this.enableScaling.setChecked(prefs.enableScaling().get());
 
         this.keyManager = new KeyManager(this.getContext());
 
@@ -372,17 +368,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_enable_scale)
     void onEnableScalingClicked() {
-        boolean isScaling = enableScaling.isChecked();
-        prefs.enableScaling().put(isScaling);
-//        layoutScaling.setEnabled(isScaling);
+        prefs.enableScaling().put(enableScaling.isChecked());
         ((SettingsActivity) requireActivity()).setScalingResult();
     }
-
-//    @PreferenceChange(R.string.settings_layout_scale)
-//    void onLayoutScalingChanged() {
-//        prefs.layoutScaling().put(layoutScaling.getValue());
-//        ((SettingsActivity) requireActivity()).setScalingResult();
-//    }
 
     @PreferenceClick(R.string.settings_view_wiki)
     void onViewWikiClicked() {

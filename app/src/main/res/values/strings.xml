@@ -82,6 +82,7 @@
     <string name="cancel">Cancel</string>
     <string name="start">Start</string>
     <string name="delete">Delete</string>
+    <string name="activate">Activate</string>
     <string name="parent">Parent</string>
     <string name="unknown">Unknown</string>
     <string name="invalid">Invalid</string>
@@ -92,8 +93,6 @@
     <string name="enable">Enable</string>
     <string name="replace">Replace</string>
     <string name="restore">Restore</string>
-    <string name="activate">Activate</string>
-    <string name="format">Format</string>
 
     <string name="error_caps">ERROR</string>
 

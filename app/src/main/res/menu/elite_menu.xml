@@ -17,12 +17,8 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_format_bank"
-        android:title="@string/format"
+        android:title="@string/delete"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/mnu_scan"
-        android:title="@string/scan_bank"
-        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_edit"
         android:title="@string/edit_props"
@@ -34,5 +30,9 @@
     <item
         android:id="@+id/mnu_backup"
         android:title="@string/amiibo_backup"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mnu_scan"
+        android:title="@string/scan_bank"
         app:showAsAction="ifRoom"/>
 </menu>

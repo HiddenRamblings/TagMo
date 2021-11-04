@@ -72,8 +72,8 @@ public class TagMo extends Application {
         }
         mPrefs = new WeakReference<>(prefs);
         mContext = new WeakReference<>(this);
-        setScaledTheme();
         Storage.setContext(this);
+        setScaledTheme(this, R.style.AppTheme);
     }
 
     public static Preferences_ getPrefs() {
@@ -92,10 +92,6 @@ public class TagMo extends Application {
             ScaledContext.wrap(context).setTheme(theme);
         else
             ScaledContext.restore(context).setTheme(theme);
-    }
-
-    public static void setScaledTheme() {
-        getContext().setTheme(R.style.AppTheme);
     }
 
     public static String getStringRes(int resource) {

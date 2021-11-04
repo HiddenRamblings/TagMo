@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -42,7 +41,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.eightbit.content.ActionIntent;
-import com.eightbit.content.ScaledContext;
 import com.eightbit.os.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
@@ -191,6 +189,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TagMo.setScaledTheme(this, R.style.AppTheme);
         File[] files = getFilesDir().listFiles((dir, name) ->
                 getString(R.string.mimetype_apk).equals(Storage.getMimeType(name)));
         if (files != null) {
@@ -273,7 +272,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }).execute(getString(R.string.git_url,
+        }).execute(getString(R.string.repo_url,
                 TagMo.getPrefs().stableChannel().get() ? "master" : "experimental"));
     }
 
@@ -695,6 +694,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
+    @SuppressLint("RestrictedApi")
     ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
@@ -707,7 +707,6 @@ public class BrowserActivity extends AppCompatActivity implements
             this.loadPTagKeyManager();
         }
         if (result.getData().hasExtra(SettingsActivity.SCALING)) {
-            TagMo.setScaledTheme(); // refresh application theme
             TagMo.setScaledTheme(this, R.style.AppTheme);
             this.recreate();
         }
@@ -721,13 +720,11 @@ public class BrowserActivity extends AppCompatActivity implements
         onSettingsActivity.launch(new Intent(this, SettingsActivity_.class));
     }
 
+    @OptionsItem(R.id.refresh)
     @Override
-    public void onBackPressed() {
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        } else {
-            super.onBackPressed();
-        }
+    public void onRefresh() {
+        this.loadAmiiboManager();
+        this.onRootFolderChanged(true);
     }
 
     @Override
@@ -777,13 +774,6 @@ public class BrowserActivity extends AppCompatActivity implements
         }
 
         return result;
-    }
-
-    @OptionsItem(R.id.refresh)
-    @Override
-    public void onRefresh() {
-        this.loadAmiiboManager();
-        this.onRootFolderChanged(true);
     }
 
     @Override
@@ -1384,4 +1374,13 @@ public class BrowserActivity extends AppCompatActivity implements
 //            startActivity(reader);
 //        }
 //    }
+
+    @Override
+    public void onBackPressed() {
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
+    }
 }

@@ -266,9 +266,9 @@ public class NfcActivity extends AppCompatActivity {
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             mifare = NTAG215.get(tag);
+            String tagTech = TagUtils.getTagTechnology(tag);
             if (mifare == null) {
-                throw new Exception(getString(R.string.error_tag_protocol,
-                        TagUtils.getTagTechnology(tag)));
+                throw new Exception(getString(R.string.error_tag_protocol, tagTech));
             }
             mifare.connect();
             if (!hasTestedElite && !TagUtils.isPowerTag(mifare)) {
@@ -280,6 +280,7 @@ public class NfcActivity extends AppCompatActivity {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
+                    showToast(getString(R.string.tag_scanning, tagTech));
                     return;
                 }
             }

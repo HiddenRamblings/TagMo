@@ -72,8 +72,10 @@ public interface Preferences {
     @DefaultBoolean(keyRes = R.string.settings_enable_scale, value = false)
     boolean enableScaling();
 
-    @DefaultLong(-1)
-    long lastModified();
+    @DefaultInt(keyRes = R.string.settings_layout_scale, value = 20)
+    int layoutScaling();
+
+    String lastUpdated();
 
     String downloadUrl();
 }

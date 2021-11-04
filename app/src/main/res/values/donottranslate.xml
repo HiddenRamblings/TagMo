@@ -33,16 +33,16 @@
     <string name="settings_ignore_sdcard">settings_ignore_sdcard</string>
     <string name="settings_stable_channel">settings_stable_channel</string>
     <string name="settings_enable_scale">settings_enable_scale</string>
+    <string name="settings_layout_scale">settings_layout_scale</string>
     <string name="settings_view_wiki">settings_view_wiki</string>
     <string name="settings_view_reddit">settings_view_reddit</string>
     <string name="image_network_settings">\@string/image_network_settings</string>
 
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
-    <string name="api_raw_url">https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/%1$s</string>
-    <string name="api_image_url">images/icon_%1$08x-%2$08x.png</string>
-    <string name="api_database">database/amiibo.json</string>
+    <string name="amiibo_api_utc">https://www.amiiboapi.com/api/lastupdated</string>
+    <string name="amiibo_api_img">https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%1$08x-%2$08x.png</string>
 
-    <string name="git_url">https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/%1$s</string>
+    <string name="repo_url">https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/%1$s</string>
     <string name="wiki_url">https://github.com/HiddenRamblings/TagMo/wiki/Instructions</string>
     <string name="reddit_url">https://www.reddit.com/r/tagmo/</string>
 

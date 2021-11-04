@@ -42,7 +42,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
-import com.hiddenramblings.tagmo.github.RequestStamp;
+import com.hiddenramblings.tagmo.github.RequestCommit;
 import com.hiddenramblings.tagmo.nfctech.KeyManager;
 
 import org.androidannotations.annotations.AfterPreferences;
@@ -56,6 +56,7 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -114,6 +115,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference stableChannel;
     @PreferenceByKey(R.string.settings_enable_scale)
     CheckBoxPreference enableScaling;
+    @PreferenceByKey(R.string.settings_layout_scale)
+    SeekBarPreference layoutScaling;
 
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -126,11 +129,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new RequestStamp().setListener(result -> {
-            if (result != null && prefs.lastModified().get() < result) {
-                showInstallSnackbar();
+        new RequestCommit().setListener(result -> {
+            try {
+                JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
+                String lastUpdated = (String) jsonObject.get("lastUpdated");
+                if (!prefs.lastUpdated().get().equals(lastUpdated)) {
+                    showInstallSnackbar(lastUpdated);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }).execute(TagMo.getStringRes(R.string.api_raw_url, R.string.api_database));
+        }).execute(TagMo.getStringRes(R.string.amiibo_api_utc));
     }
 
     @AfterPreferences
@@ -139,7 +148,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.disableDebug.setChecked(prefs.disableDebug().get());
         this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
         this.stableChannel.setChecked(prefs.stableChannel().get());
-        this.enableScaling.setChecked(prefs.enableScaling().get());
+        boolean isScaling = prefs.enableScaling().get();
+        this.enableScaling.setChecked(isScaling);
+        this.layoutScaling.setUpdatesContinuously(false);
+        this.layoutScaling.setVisible(isScaling);
 
         this.keyManager = new KeyManager(this.getContext());
 
@@ -201,7 +213,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_import_info_amiiboapi)
     void onSyncAmiiboAPIClicked() {
-        downloadAmiiboAPIData();
+        new RequestCommit().setListener(result -> {
+            try {
+                JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
+                downloadAmiiboAPIData((String) jsonObject.get("lastUpdated"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).execute(TagMo.getStringRes(R.string.amiibo_api_utc));
     }
 
     @PreferenceClick(R.string.settings_import_info)
@@ -368,7 +387,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_enable_scale)
     void onEnableScalingClicked() {
-        prefs.enableScaling().put(enableScaling.isChecked());
+        boolean isScaling = enableScaling.isChecked();
+        prefs.enableScaling().put(isScaling);
+        layoutScaling.setVisible(isScaling);
+        ((SettingsActivity) requireActivity()).setScalingResult();
+    }
+
+    @PreferenceChange(R.string.settings_layout_scale)
+    void onLayoutScalingChanged() {
+        prefs.layoutScaling().put(layoutScaling.getValue());
         ((SettingsActivity) requireActivity()).setScalingResult();
     }
 
@@ -576,13 +603,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    void downloadAmiiboAPIData() {
+    void downloadAmiiboAPIData(String lastUpdated) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
             downloadAmiiboAPIDataTask();
         } else {
             downloadAmiiboAPIDataCompat();
         }
+        prefs.lastUpdated().put(lastUpdated);
     }
 
     @Background(id = BACKGROUND_SYNC_AMIIBO_MANAGER)
@@ -623,7 +651,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 AmiiboManager.saveDatabase(amiiboManager);
                 setAmiiboManager(amiiboManager);
                 showSnackbar(getString(R.string.sync_amiibo_complete), Snackbar.LENGTH_SHORT);
-                prefs.lastModified().put(System.currentTimeMillis());
             } else {
                 throw new Exception(String.valueOf(statusCode));
             }
@@ -686,11 +713,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     @UiThread
-    public void showInstallSnackbar() {
+    public void showInstallSnackbar(String lastUpdated) {
         Snackbar snackbar =  new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 getString(
                 R.string.update_amiibo_api), Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.sync, v -> downloadAmiiboAPIData());
+        snackbar.setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated));
         snackbar.show();
     }
 

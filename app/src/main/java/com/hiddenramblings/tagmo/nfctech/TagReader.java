@@ -187,7 +187,7 @@ public class TagReader {
 
             byte[] uId = Arrays.copyOfRange(tagData, 0, 9);
             String uIds = TagUtils.bytesToHex(uId);
-            return String.format(Locale.ENGLISH, "%1$s [%2$s] %3$s.bin", name, uIds, status);
+            return String.format(Locale.ROOT, "%1$s [%2$s] %3$s.bin", name, uIds, status);
         } catch (Exception e) {
             TagMo.Debug(TagReader.class, e.getMessage());
         }

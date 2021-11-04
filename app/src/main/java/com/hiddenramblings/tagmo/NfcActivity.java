@@ -224,7 +224,9 @@ public class NfcActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
+                || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             showMessage(getString(R.string.tag_detected));
             this.onTagDiscovered(intent);
         }
@@ -571,11 +573,8 @@ public class NfcActivity extends AppCompatActivity {
         cancelAction();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return super.onCreateOptionsMenu(menu);
     }
-
-
 }

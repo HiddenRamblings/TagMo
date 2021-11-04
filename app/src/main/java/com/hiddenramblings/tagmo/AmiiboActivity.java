@@ -125,14 +125,7 @@ public class AmiiboActivity extends AppCompatActivity {
         if (TagMo.getPrefs().enableEliteSupport().get()
                 && resultData.hasExtra(TagMo.EXTRA_SIGNATURE)) {
             Intent eliteIntent = new Intent(this, EliteActivity_.class);
-            eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE,
-                    resultData.getStringExtra(TagMo.EXTRA_SIGNATURE));
-            eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK,
-                    TagMo.getPrefs().eliteActiveBank().get());
-            eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT,
-                    TagMo.getPrefs().eliteBankCount().get());
-            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_DATA,
-                    resultData.getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
+            eliteIntent.putExtras(resultData.getExtras());
             startActivity(eliteIntent);
             finish(); // Relaunch activity to bring view to front
         }

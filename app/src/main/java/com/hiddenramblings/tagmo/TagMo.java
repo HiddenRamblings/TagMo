@@ -88,7 +88,6 @@ public class TagMo extends Application {
     }
 
     public static void setScaledTheme(Context context, int theme) {
-        setScaledTheme();
         if (getPrefs().enableScaling().get())
             ScaledContext.wrap(context).setTheme(theme);
         else

@@ -134,6 +134,7 @@ public class EliteActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TagMo.setScaledTheme(this, R.style.DialogTheme_NoActionBar);
         this.settings = new BrowserSettings().initialize();
     }
 
@@ -171,7 +172,7 @@ public class EliteActivity extends AppCompatActivity implements
         hardwareInfo.setText(getString(R.string.elite_signature,
                 getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE)));
         eliteBankCount.setValue(bank_count);
-        amiibosView.setLayoutManager(new LinearLayoutManager(ScaledContext.wrap(this)));
+        amiibosView.setLayoutManager(new LinearLayoutManager(this));
         BankBrowserAdapter adapter = new BankBrowserAdapter(settings, this);
         amiibosView.setAdapter(adapter);
         this.settings.addChangeListener(adapter);
@@ -680,9 +681,9 @@ public class EliteActivity extends AppCompatActivity implements
 
         if (imageAmiibo != null) {
             imageAmiibo.setVisibility(View.GONE);
-            Glide.with(ScaledContext.wrap(this)).clear(amiiboImageTarget);
+            Glide.with(this).clear(amiiboImageTarget);
             if (amiiboImageUrl != null) {
-                Glide.with(ScaledContext.wrap(this))
+                Glide.with(this)
                         .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
                         .asBitmap()
                         .load(amiiboImageUrl)

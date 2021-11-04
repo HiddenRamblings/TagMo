@@ -42,7 +42,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void setScalingResult() {
         setResult(Activity.RESULT_OK, resultIntent
-                .putExtra(SCALING, true));
+                .putExtra(SCALING, true)
+                .putExtra(REFRESH, true));
     }
 
     public void setStorageResult() {

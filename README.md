@@ -15,10 +15,10 @@ It was created as a result of the "[DIY Amiibo cards](https://gbatemp.net/thread
 If you want to contribute, please make sure to adress your PRs to the 'experimental' branch. Thank you.
 
 ## Downloading TagMo
-* Releases are tagged with the master and experimental branches, respectively.
-* Each build is labeled with the hashtag for the last commit included in that build.
-* Releases published from the experimental branch are also tagged as "Pre-Release" and will not appear on the main repository page. You must click on the "Releases" label to download these builds.
-* Both tags include a signed copy of the apk in their assets. Builds from either tag can be installed over each other without uninstalling. Please include the branch or hash in any issue reports.
+* Releases are separated and tagged for the [master](https://github.com/HiddenRamblings/TagMo/releases/tag/master) and [experimental](https://github.com/HiddenRamblings/TagMo/releases/tag/experimental) branch builds.
+* Each release is labeled with the hashtag for the last commit included in the build.
+* Releases from either branch can be installed over each other without uninstalling. 
+* Please update before posting issues and include the branch or hash in the resport.
 
 ## [Features](https://github.com/HiddenRamblings/TagMo/wiki#features)
 

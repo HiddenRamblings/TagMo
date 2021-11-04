@@ -189,6 +189,8 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TagMo.setScaledTheme(this, R.style.AppTheme);
+        this.supportInvalidateOptionsMenu();
         File[] files = getFilesDir().listFiles((dir, name) ->
                 getString(R.string.mimetype_apk).equals(Storage.getMimeType(name)));
         if (files != null) {
@@ -707,6 +709,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (result.getData().hasExtra(SettingsActivity.SCALING)) {
             TagMo.setScaledTheme(this, R.style.AppTheme);
+            this.supportInvalidateOptionsMenu();
             this.recreate();
         }
         if (result.getData().hasExtra(SettingsActivity.REFRESH)) {

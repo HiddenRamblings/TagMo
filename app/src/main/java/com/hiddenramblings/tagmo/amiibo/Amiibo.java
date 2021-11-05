@@ -18,8 +18,8 @@ public class Amiibo implements Comparable<Amiibo> {
     public static long AMIIBO_MODEL_MASK = 0x00000000FFFF0000L;
     public static long UNKNOWN_MASK = 0x00000000000000FFL;
 
-    public static String AMIIBO_API_IMAGE_URL = TagMo.getStringRes(
-            R.string.amiibo_api_img);
+    public static String AMIIBO_API_IMAGE_URL =
+            TagMo.getStringRes(R.string.amiibo_api_img);
 
     public AmiiboManager manager;
     public final long id;

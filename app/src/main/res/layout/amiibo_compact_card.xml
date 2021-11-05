@@ -36,7 +36,6 @@
             android:id="@+id/txtError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:padding="8dp"
             android:text="@string/error_caps"
             android:textAlignment="center"

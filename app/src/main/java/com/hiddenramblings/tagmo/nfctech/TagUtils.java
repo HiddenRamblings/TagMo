@@ -82,12 +82,8 @@ public class TagUtils {
 
     public static boolean isElite(NTAG215 mifare) {
         if (TagMo.getPrefs().enableEliteSupport().get()) {
-            try {
-                if (TagUtils.bytesToHex(mifare.readEliteSingature()).endsWith("FFFFFFFFFF"))
-                    return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            byte[] signature = mifare.readEliteSingature();
+            return signature != null && TagUtils.bytesToHex(signature).endsWith("FFFFFFFFFF");
         }
         return false;
     }

@@ -281,13 +281,7 @@ public class NfcActivity extends AppCompatActivity {
                 if (isEliteDevice) {
                     showMessage(getString(R.string.tag_scanning, getString(R.string.elite_device)));
                 } else {
-                    try {
-                        mifare.close();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
                     showMessage(getString(R.string.tag_scanning, tagTech));
-                    return;
                 }
             }
             int selection;
@@ -470,7 +464,15 @@ public class NfcActivity extends AppCompatActivity {
                 error = error + "\n" + e.getCause().toString();
             }
             if (error != null && TagMo.getPrefs().enableEliteSupport().get()) {
-                if (TagMo.getStringRes(R.string.null_array_tag).equals(error)) {
+                if (TagMo.getStringRes(R.string.nfc_tag_lost).equals(error)) {
+                    try {
+                        mifare.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    return;
+                }
+                if (TagMo.getStringRes(R.string.nfc_null_array).equals(error)) {
                     runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                             .setTitle(R.string.possible_lock)
                             .setMessage(R.string.prepare_unlock)

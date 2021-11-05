@@ -6,20 +6,17 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.MediaScannerConnection;
 import android.os.Build;
-import android.util.Log;
 
 import com.eightbit.content.ScaledContext;
+import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 
 import org.androidannotations.annotations.EApplication;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.ref.WeakReference;
@@ -82,10 +79,10 @@ public class TagMo extends Application {
         Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
-            Error(error.getClass(), exception.toString());
+            Debug.Error(error.getClass(), exception.toString());
             error.printStackTrace();
             try {
-                exportLogcat();
+                Debug.generateLogcat(new File(TagMo.getExternalFiles(), "crash_logcat.txt"));
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
@@ -135,86 +132,6 @@ public class TagMo extends Application {
         }
     }
 
-    public static String TAG(Class<?> src) {
-        return src.getSimpleName();
-    }
-
-    public static void Debug(Class<?> src, String params) {
-        if (!getPrefs().disableDebug().get())
-            Log.d(TAG(src), params);
-    }
-
-    public static void Debug(Class<?> src, int resource) {
-        if (!getPrefs().disableDebug().get())
-            Log.d(TAG(src), getStringRes(resource));
-    }
-
-    public static void Debug(Class<?> src, int resource, String params) {
-        if (!getPrefs().disableDebug().get())
-            Log.d(TAG(src), getStringRes(resource, params));
-    }
-
-    public static void Error(Class<?> src, String params) {
-        Log.e(TAG(src), params);
-    }
-
-    public static void Error(Class<?> src, int resource) {
-        Log.e(TAG(src), getStringRes(resource));
-    }
-
-    public static void Error(Class<?> src, int resource, String params) {
-        Log.e(TAG(src), getStringRes(resource, params));
-    }
-
-    public static void Error(Exception error) {
-        if (error.getStackTrace().length > 0) {
-            StringWriter exception = new StringWriter();
-            error.printStackTrace(new PrintWriter(exception));
-            TagMo.Error(error.getClass(), exception.toString());
-        }
-    }
-
-    public static void Error(int resource, Exception error) {
-        Log.e(TAG(error.getClass()), getStringRes(resource), error);
-    }
-
-    public static File exportLogcat() throws IOException {
-        File file = new File(TagMo.getExternalFiles(), "tagmo_logcat.txt");
-        final StringBuilder log = new StringBuilder();
-        String separator = System.getProperty("line.separator");
-        log.append(android.os.Build.MANUFACTURER);
-        log.append(" ");
-        log.append(android.os.Build.MODEL);
-        log.append(separator);
-        log.append("Android SDK ");
-        log.append(Build.VERSION.SDK_INT);
-        log.append(" (");
-        log.append(Build.VERSION.RELEASE);
-        log.append(")");
-        log.append(separator);
-        log.append("TagMo Version " + BuildConfig.VERSION_NAME);
-        Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
-                "logcat", "-d",
-                BuildConfig.APPLICATION_ID,
-                "com.smartrac.nfc",
-                "-t", "2048"
-        });
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                mLogcatProc.getInputStream()));
-        log.append(separator);
-        log.append(separator);
-        String line;
-        while ((line = reader.readLine()) != null) {
-            log.append(line);
-            log.append(separator);
-        }
-        reader.close();
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            fos.write(log.toString().getBytes());
-        }
-        return file;
-    }
-
     public static File getExternalFiles() {
         return getContext().getExternalFilesDir(null);
     }
@@ -224,7 +141,7 @@ public class TagMo extends Application {
             MediaScannerConnection.scanFile(TagMo.getContext(),
                     new String[]{file.getAbsolutePath()}, null, null);
         } catch (Exception e) {
-            Error(R.string.fail_media_scan, e);
+            Debug.Error(R.string.fail_media_scan, e);
         }
     }
 

@@ -7,6 +7,7 @@ import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 
+import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -74,7 +75,7 @@ public class TagUtils {
                         0, NfcByte.POWERTAG_SIGNATURE.length))
                     return true;
             } catch (IOException e) {
-                TagMo.Error(e);
+                Debug.Error(e);
             }
         }
         return false;
@@ -151,7 +152,7 @@ public class TagUtils {
             byte[] result = digest.digest(data);
             return bytesToHex(result);
         } catch (NoSuchAlgorithmException e) {
-            TagMo.Error(TagUtils.class, e.getMessage());
+            Debug.Error(TagUtils.class, e.getMessage());
         }
         return null;
     }

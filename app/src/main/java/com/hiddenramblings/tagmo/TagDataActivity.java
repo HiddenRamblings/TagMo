@@ -38,6 +38,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.adapter.NothingSelectedSpinnerAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -162,7 +163,7 @@ public class TagDataActivity extends AppCompatActivity {
         try {
             this.amiiboData = new AmiiboData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             LogError(getString(R.string.fail_decrypt));
             return;
         }
@@ -222,7 +223,7 @@ public class TagDataActivity extends AppCompatActivity {
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             showToast(getString(R.string.amiibo_info_parse_error));
         }
 
@@ -255,7 +256,7 @@ public class TagDataActivity extends AppCompatActivity {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
-                TagMo.Error(e);
+                Debug.Error(e);
                 amiiboId = -1;
             }
             if (amiiboId == 0) {
@@ -387,7 +388,7 @@ public class TagDataActivity extends AppCompatActivity {
             newAmiiboData.setUserDataInitialized(isUserDataInitialized);
             newAmiiboData.setAppDataInitialized(isUserDataInitialized && isAppDataInitialized);
         } catch (Exception e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             LogError(getString(R.string.fail_save_data));
             return;
         }
@@ -470,7 +471,7 @@ public class TagDataActivity extends AppCompatActivity {
         try {
             tagData = TagUtils.encrypt(keyManager, newAmiiboData.array());
         } catch (Exception e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             LogError(getString(R.string.fail_encrypt));
             return;
         }

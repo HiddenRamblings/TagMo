@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.nfctech;
 
+import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -23,11 +24,11 @@ public class TagReader {
 
     static void validateBlankTag(NTAG215 mifare) throws Exception {
         byte[] lockPage = mifare.readPages(0x02);
-        TagMo.Debug(TagWriter.class, TagUtils.bytesToHex(lockPage));
+        Debug.Log(TagWriter.class, TagUtils.bytesToHex(lockPage));
         if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {
             throw new IOException(TagMo.getStringRes(R.string.error_tag_rewrite));
         }
-        TagMo.Debug(TagWriter.class, R.string.validation_success);
+        Debug.Log(TagWriter.class, R.string.validation_success);
     }
 
     public static void validateTag(byte[] data) throws Exception {
@@ -64,7 +65,7 @@ public class TagReader {
                 if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
                     throw new Exception(TagMo.getStringRes(R.string.error_tag_format));
             } catch (Exception e) {
-                TagMo.Error(R.string.error_version, e);
+                Debug.Error(R.string.error_version, e);
                 throw e;
             }
         }
@@ -76,7 +77,7 @@ public class TagReader {
         if (!TagUtils.compareRange(pages, tagData, 0, 9))
             throw new Exception(TagMo.getStringRes(R.string.fail_mismatch_uid));
 
-        TagMo.Error(TagWriter.class, R.string.validation_success);
+        Debug.Error(TagWriter.class, R.string.validation_success);
     }
 
     public static byte[] readTagFile(File file) throws Exception {
@@ -117,7 +118,7 @@ public class TagReader {
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount);
         }
 
-        TagMo.Debug(TagReader.class, TagUtils.bytesToHex(tagData));
+        Debug.Log(TagReader.class, TagUtils.bytesToHex(tagData));
         return tagData;
     }
 
@@ -137,7 +138,7 @@ public class TagReader {
                 tags.add(TagUtils.bytesToHex(tagData));
                 i++;
             } catch (Exception e) {
-                TagMo.Debug(TagReader.class, TagMo.getStringRes(R.string.fail_elite_bank_parse));
+                Debug.Log(TagReader.class, TagMo.getStringRes(R.string.fail_elite_bank_parse));
             }
         }
         return tags;
@@ -171,7 +172,7 @@ public class TagReader {
             validateTag(tagData);
         } catch (Exception e) {
             status = "(Corrupted)";
-            TagMo.Debug(TagReader.class, e.getMessage());
+            Debug.Log(TagReader.class, e.getMessage());
         }
         try {
             long amiiboId = TagUtils.amiiboIdFromTag(tagData);
@@ -189,7 +190,7 @@ public class TagReader {
             String uIds = TagUtils.bytesToHex(uId);
             return String.format(Locale.ROOT, "%1$s [%2$s] %3$s.bin", name, uIds, status);
         } catch (Exception e) {
-            TagMo.Debug(TagReader.class, e.getMessage());
+            Debug.Log(TagReader.class, e.getMessage());
         }
         return "";
     }
@@ -204,7 +205,7 @@ public class TagReader {
             System.arraycopy(data, 0, output, 0, 540);
             data = tag.readSignature();
             System.arraycopy(data, 0, output, 540, data.length);
-            TagMo.Debug(TagReader.class, TagUtils.bytesToHex(output));
+            Debug.Log(TagReader.class, TagUtils.bytesToHex(output));
             return output;
         } catch (IllegalStateException e) {
             throw new IllegalStateException(TagMo.getStringRes(R.string.fail_early_remove));
@@ -223,7 +224,7 @@ public class TagReader {
             System.arraycopy(data, 0, output, 0, 540);
             data = tag.readSignature();
             System.arraycopy(data, 0, output, 540, data.length);
-            TagMo.Debug(TagReader.class, TagUtils.bytesToHex(output));
+            Debug.Log(TagReader.class, TagUtils.bytesToHex(output));
             return output;
         } catch (IllegalStateException e) {
             throw new IllegalStateException(TagMo.getStringRes(R.string.fail_early_remove));

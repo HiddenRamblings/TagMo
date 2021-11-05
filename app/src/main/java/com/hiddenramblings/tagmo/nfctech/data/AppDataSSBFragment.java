@@ -8,9 +8,9 @@ import android.widget.Spinner;
 
 import androidx.annotation.Nullable;
 
+import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagDataActivity_;
-import com.hiddenramblings.tagmo.TagMo;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -75,7 +75,7 @@ public class AppDataSSBFragment extends AppDataFragment {
             try {
                 appData = new AppDataSSB(getArguments().getByteArray("app_data"));
             } catch (IOException e) {
-                TagMo.Error(e);
+                Debug.Error(e);
                 return;
             }
             if (savedInstanceState == null) {

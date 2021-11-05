@@ -28,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -217,7 +218,7 @@ public class AmiiboActivity extends AppCompatActivity {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
-                TagMo.Error(e);
+                Debug.Error(e);
             }
         }
         if (amiiboId == -1) {
@@ -246,7 +247,7 @@ public class AmiiboActivity extends AppCompatActivity {
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             showToast(getString(R.string.amiibo_info_parse_error));
         }
 
@@ -298,7 +299,7 @@ public class AmiiboActivity extends AppCompatActivity {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(this.tagData);
             } catch (Exception e) {
-                TagMo.Error(e);
+                Debug.Error(e);
             }
         }
         if (amiiboId == -1) {

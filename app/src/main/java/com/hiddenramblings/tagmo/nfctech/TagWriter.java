@@ -65,11 +65,7 @@ public class TagWriter {
             try {
                 TagReader.validateBlankTag(mifare);
             } catch (Exception e) {
-                if (TagUtils.isElite(mifare)) {
-                    throw new Exception(TagMo.getStringRes(R.string.scan_elite_menu));
-                } else {
-                    throw new Exception(e.getMessage());
-                }
+                throw new Exception(e.getMessage());
             }
         }
 

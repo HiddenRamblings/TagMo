@@ -315,6 +315,5 @@
     <string name="firmware_update">N2 Elite Firmware Updated!</string>
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 
-    <string name="scan_elite_menu">N2 Elite scan required!</string>
     <string name="speed_scan">Lift tag slightly to improve scan</string>
 </resources>

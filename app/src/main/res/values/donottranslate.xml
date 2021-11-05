@@ -64,4 +64,7 @@
     <string name="ndef">Ndef</string>
     <string name="ndef_formatable">NdefFormatable</string>
 
+    <string name="nfc_tag_lost">Tag was lost.</string>
+    <string name="nfc_null_array">Attempt to read from null array</string>
+
 </resources>

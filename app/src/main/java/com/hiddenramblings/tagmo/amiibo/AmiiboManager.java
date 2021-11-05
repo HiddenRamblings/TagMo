@@ -228,7 +228,6 @@ public class AmiiboManager {
     }
 
     public static AmiiboManager getDefaultAmiiboManager() throws IOException, JSONException, ParseException {
-//        return AmiiboManager.parse(TagMo.getContext().getAssets().open(AMIIBO_DATABASE_FILE));
         return AmiiboManager.parse(TagMo.getContext().getResources().openRawResource(R.raw.amiibo));
     }
 

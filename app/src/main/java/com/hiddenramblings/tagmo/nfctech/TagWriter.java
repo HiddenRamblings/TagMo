@@ -131,11 +131,9 @@ public class TagWriter {
     public static byte[] writeEliteAuto(NTAG215 tag, byte[] tagData, KeyManager keyManager,
                                         int active_bank) throws Exception {
         if (doEliteAuth(tag, tag.fastRead(0, 0))) {
-            if (TagUtils.isEncrypted(tagData)) {
-                tagData = TagUtils.decrypt(keyManager, tagData);
-                // tagData = TagUtils.patchUid(tag.readPages(0), tagData);
-                // TagUtils.encrypt(keyManager, tagData);
-            }
+            // tagData = TagUtils.decrypt(keyManager, tagData);
+            // tagData = TagUtils.patchUid(tag.readPages(0), tagData);
+            // TagUtils.encrypt(keyManager, tagData);
             if (tag.amiiboFastWrite(0, active_bank, tagData)) {
                 byte[] result = new byte[8];
                 System.arraycopy(tagData, 84, result, 0, result.length);
@@ -210,7 +208,7 @@ public class TagWriter {
         };
         byte[] response = tag.transceive(auth);
         if (response == null)
-            throw new Exception(TagMo.getStringRes(R.string.auth_null));
+            throw new Exception(TagMo.getStringRes(R.string.error_auth_null));
         String respStr = TagUtils.bytesToHex(response);
         TagMo.Error(TagWriter.class, R.string.auth_response, respStr);
         if (!"8080".equals(respStr)) {

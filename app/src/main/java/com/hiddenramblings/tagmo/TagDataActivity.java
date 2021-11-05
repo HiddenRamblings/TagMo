@@ -136,7 +136,6 @@ public class TagDataActivity extends AppCompatActivity {
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
     AmiiboData amiiboData;
-    boolean isEncrypted;
 
     @InstanceState
     boolean initialUserDataInitialized;
@@ -163,19 +162,9 @@ public class TagDataActivity extends AppCompatActivity {
         try {
             this.amiiboData = new AmiiboData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
-            if (isEncrypted = TagUtils.isEncrypted(tagData)) {
-                e.printStackTrace();
-                LogError(getString(R.string.fail_decrypt));
-                return;
-            } else {
-                try {
-                    this.amiiboData = new AmiiboData(tagData);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    LogError(getString(R.string.invalid_tag_data));
-                    return;
-                }
-            }
+            e.printStackTrace();
+            LogError(getString(R.string.fail_decrypt));
+            return;
         }
 
         loadAmiiboManager();
@@ -478,16 +467,12 @@ public class TagDataActivity extends AppCompatActivity {
         }
 
         byte[] tagData;
-        if (isEncrypted) {
-            try {
-                tagData = TagUtils.encrypt(keyManager, newAmiiboData.array());
-            } catch (Exception e) {
-                e.printStackTrace();
-                LogError(getString(R.string.fail_encrypt));
-                return;
-            }
-        } else {
-            tagData = newAmiiboData.array();
+        try {
+            tagData = TagUtils.encrypt(keyManager, newAmiiboData.array());
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogError(getString(R.string.fail_encrypt));
+            return;
         }
 
         Intent intent = new Intent(TagMo.ACTION_EDIT_COMPLETE);

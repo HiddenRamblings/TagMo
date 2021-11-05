@@ -32,19 +32,9 @@ public class HexViewerActivity extends AppCompatActivity {
         try {
             setAdapterTagData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
-            if (TagUtils.isEncrypted(tagData)) {
-                e.printStackTrace();
-                TagMo.Error(getClass(), R.string.fail_decrypt);
-                finish();
-            } else {
-                try {
-                    setAdapterTagData(tagData);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    TagMo.Error(getClass(), R.string.invalid_tag_data);
-                    finish();
-                }
-            }
+            e.printStackTrace();
+            TagMo.Error(getClass(), R.string.fail_decrypt);
+            finish();
         }
     }
 

@@ -44,6 +44,7 @@ public class TagUtils {
                         type = TagMo.getStringRes(R.string.mifare_pro);
                         break;
                 }
+                return type;
             } else if (MifareUltralight.class.getName().equals(tech)) {
                 switch (MifareUltralight.get(tag).getType()) {
                     default:
@@ -54,12 +55,13 @@ public class TagUtils {
                         type = TagMo.getStringRes(R.string.mifare_ultralight_c);
                         break;
                 }
+                return type;
             } else if (IsoDep.class.getName().equals(tech)) {
-                type = TagMo.getStringRes(R.string.isodep);
+                return TagMo.getStringRes(R.string.isodep);
             } else if (Ndef.class.getName().equals(tech)) {
-                type = TagMo.getStringRes(R.string.ndef);
+                return TagMo.getStringRes(R.string.ndef);
             } else if (NdefFormatable.class.getName().equals(tech)) {
-                type = TagMo.getStringRes(R.string.ndef_formatable);
+                return TagMo.getStringRes(R.string.ndef_formatable);
             }
         }
         return type;
@@ -226,10 +228,6 @@ public class TagUtils {
             throw new Exception(TagMo.getStringRes(R.string.fail_encrypt));
 
         return encrypted;
-    }
-
-    public static boolean isEncrypted(byte[] tagData) {
-        return tagData[10] == 0x0F && tagData[11] == 0xE0;
     }
 
     public static byte[] patchUid(byte[] uid, byte[] tagData) throws Exception {

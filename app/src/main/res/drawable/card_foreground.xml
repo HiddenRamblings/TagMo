@@ -6,9 +6,7 @@
         </shape>
     </item>
     <item>
-        <inset
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:drawable="@drawable/card_foreground_selector"
+        <inset android:drawable="@drawable/card_foreground_selector"
             android:insetBottom="4dp"
             android:insetLeft="2dp"
             android:insetRight="2dp"

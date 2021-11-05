@@ -279,7 +279,7 @@ public class NfcActivity extends AppCompatActivity {
                 hasTestedElite = true;
                 isEliteDevice = TagUtils.isElite(mifare);
                 if (isEliteDevice) {
-                    showMessage(getString(R.string.tag_scanning, getString(R.string.amiiqo)));
+                    showMessage(getString(R.string.tag_scanning, getString(R.string.elite_device)));
                 } else {
                     try {
                         mifare.close();

@@ -470,6 +470,7 @@ public class NfcActivity extends AppCompatActivity {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
+                    showToast(getString(R.string.speed_scan));
                     return;
                 }
                 if (TagMo.getStringRes(R.string.nfc_null_array).equals(error)) {

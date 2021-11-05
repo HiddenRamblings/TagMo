@@ -135,7 +135,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     showInstallSnackbar(lastUpdated);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                TagMo.Error(e);
             }
         }).execute(TagMo.getStringRes(R.string.amiibo_api_utc));
     }
@@ -229,7 +229,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             fileOutputStream = new FileOutputStream(file);
             AmiiboManager.saveDatabase(this.amiiboManager, fileOutputStream);
         } catch (JSONException | IOException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             showToast(R.string.amiibo_info_export_fail, Storage.getRelativePath(file), Toast.LENGTH_SHORT);
             return;
         } finally {
@@ -237,7 +237,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 try {
                     fileOutputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    TagMo.Error(e);
                 }
             }
         }
@@ -403,7 +403,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             this.keyManager.loadKey(data);
         } catch (Exception e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             showSnackbar(e.getMessage(), Snackbar.LENGTH_SHORT);
         }
         if (Thread.currentThread().isInterrupted())
@@ -460,7 +460,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             showToast(R.string.amiibo_failure_load, Toast.LENGTH_SHORT);
             return;
         }
@@ -481,11 +481,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             amiiboManager = AmiiboManager.parse(requireContext(), data);
         } catch (JSONException | ParseException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             showToast(R.string.amiibo_failure_parse, Toast.LENGTH_SHORT);
             return;
         } catch (IOException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             showToast(R.string.amiibo_failure_read, Toast.LENGTH_SHORT);
             return;
         }
@@ -495,7 +495,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             AmiiboManager.saveDatabase(amiiboManager);
         } catch (JSONException | IOException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             showToast(R.string.amiibo_failure_update, Toast.LENGTH_SHORT);
             return;
         }
@@ -519,7 +519,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             amiiboManager = AmiiboManager.getDefaultAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             showToast(R.string.amiibo_failure_parse_default, Snackbar.LENGTH_SHORT);
         }
         if (Thread.currentThread().isInterrupted())
@@ -618,7 +618,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         try {
                             reader.close();
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            TagMo.Error(e);
                         }
                     }
                 }
@@ -635,7 +635,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 throw new Exception(String.valueOf(statusCode));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             if (Thread.currentThread().isInterrupted())
                 return;
             showSnackbar(getString(R.string.sync_amiibo_failed), Snackbar.LENGTH_SHORT);

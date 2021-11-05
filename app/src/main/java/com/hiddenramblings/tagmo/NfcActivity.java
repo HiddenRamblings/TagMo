@@ -39,6 +39,8 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 @SuppressLint("NonConstantResourceId")
@@ -458,17 +460,15 @@ public class NfcActivity extends AppCompatActivity {
             }
             finish();
         } catch (Exception e) {
-            TagMo.Error(getClass(), R.string.error_caps, e);
+            TagMo.Error(e);
             String error = e.getMessage();
-            if (e.getCause() != null) {
-                error = error + "\n" + e.getCause().toString();
-            }
+            error = e.getCause() != null ? error + "\n" + e.getCause().toString() : error;
             if (error != null && TagMo.getPrefs().enableEliteSupport().get()) {
                 if (TagMo.getStringRes(R.string.nfc_tag_lost).equals(error)) {
                     try {
                         mifare.close();
                     } catch (IOException ex) {
-                        ex.printStackTrace();
+                        TagMo.Error(ex);
                     }
                     showToast(getString(R.string.speed_scan));
                     return;
@@ -569,7 +569,7 @@ public class NfcActivity extends AppCompatActivity {
             try {
                 mifare.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                TagMo.Error(e);
             }
         }
         setResult(Activity.RESULT_CANCELED);

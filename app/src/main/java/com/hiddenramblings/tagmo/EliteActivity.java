@@ -198,7 +198,7 @@ public class EliteActivity extends AppCompatActivity implements
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             amiiboManager = null;
         }
         if (amiiboManager == null) return;
@@ -386,7 +386,7 @@ public class EliteActivity extends AppCompatActivity implements
         try {
             args.putByteArray(TagMo.EXTRA_TAG_DATA, TagReader.readTagStream(amiiboFile.getFilePath()));
         } catch (Exception e) {
-            e.printStackTrace();
+            TagMo.Error(e);
         }
 
         Intent intent = new Intent(this, NfcActivity_.class);
@@ -625,7 +625,7 @@ public class EliteActivity extends AppCompatActivity implements
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
-                e.printStackTrace();
+                TagMo.Error(e);
             }
         }
         if (amiiboId == -1) {
@@ -805,7 +805,7 @@ public class EliteActivity extends AppCompatActivity implements
                     TagReader.validateTag(data);
                     amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    TagMo.Error(e);
                 }
             }
         }

@@ -125,7 +125,7 @@ public class ImageActivity extends AppCompatActivity {
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
         }
         if (Thread.currentThread().isInterrupted())
             return;
@@ -237,13 +237,13 @@ public class ImageActivity extends AppCompatActivity {
                                         String text = "Saved file as " + Storage.getRelativePath(file);
                                         Toast.makeText(ImageActivity.this, text, Toast.LENGTH_SHORT).show();
                                     } catch (FileNotFoundException e) {
-                                        e.printStackTrace();
+                                        TagMo.Error(e);
                                     } finally {
                                         if (fos != null) {
                                             try {
                                                 fos.close();
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
+                                            } catch (IOException ioe) {
+                                                TagMo.Error(ioe);
                                             }
                                         }
                                     }

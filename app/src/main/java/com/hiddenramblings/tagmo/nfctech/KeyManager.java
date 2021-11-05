@@ -47,7 +47,7 @@ public class KeyManager {
                 throw new IOException(TagMo.getStringRes(R.string.key_size_invalid));
             return key;
         } catch (Exception e) {
-            TagMo.Error(getClass(), R.string.key_read_error, e);
+            TagMo.Error(R.string.key_read_error, e);
         }
         return null;
     }

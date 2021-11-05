@@ -217,7 +217,7 @@ public class AmiiboActivity extends AppCompatActivity {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
-                e.printStackTrace();
+                TagMo.Error(e);
             }
         }
         if (amiiboId == -1) {
@@ -246,7 +246,7 @@ public class AmiiboActivity extends AppCompatActivity {
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             showToast(getString(R.string.amiibo_info_parse_error));
         }
 
@@ -298,7 +298,7 @@ public class AmiiboActivity extends AppCompatActivity {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(this.tagData);
             } catch (Exception e) {
-                e.printStackTrace();
+                TagMo.Error(e);
             }
         }
         if (amiiboId == -1) {

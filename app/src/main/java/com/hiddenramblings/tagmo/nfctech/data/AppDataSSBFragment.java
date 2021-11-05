@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagDataActivity_;
+import com.hiddenramblings.tagmo.TagMo;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -74,7 +75,7 @@ public class AppDataSSBFragment extends AppDataFragment {
             try {
                 appData = new AppDataSSB(getArguments().getByteArray("app_data"));
             } catch (IOException e) {
-                e.printStackTrace();
+                TagMo.Error(e);
                 return;
             }
             if (savedInstanceState == null) {

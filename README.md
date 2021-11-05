@@ -14,11 +14,7 @@ It was created as a result of the "[DIY Amiibo cards](https://gbatemp.net/thread
 
 If you want to contribute, please make sure to adress your PRs to the 'experimental' branch. Thank you.
 
-## Downloading TagMo
-* Releases are separated and tagged for the [master](https://github.com/HiddenRamblings/TagMo/releases/tag/master) and [experimental](https://github.com/HiddenRamblings/TagMo/releases/tag/experimental) branch builds.
-* Each release is labeled with the hashtag for the last commit included in the build.
-* Releases from either branch can be installed over each other without uninstalling. 
-* Please update before posting issues and include the branch or hash in the resport.
+## [Downloading](https://github.com/HiddenRamblings/TagMo/wiki/Instructions#downloading-tagmo)
 
 ## [Features](https://github.com/HiddenRamblings/TagMo/wiki#features)
 

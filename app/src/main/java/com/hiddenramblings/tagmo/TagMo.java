@@ -16,7 +16,13 @@ import com.hiddenramblings.tagmo.settings.Preferences_;
 import org.androidannotations.annotations.EApplication;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -73,6 +79,18 @@ public class TagMo extends Application {
         mPrefs = new WeakReference<>(prefs);
         mContext = new WeakReference<>(this);
         Storage.setContext(this);
+
+        Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
+            StringWriter exception = new StringWriter();
+            error.printStackTrace(new PrintWriter(exception));
+            Error(error.getClass(), exception.toString());
+            error.printStackTrace();
+            try {
+                exportLogcat();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        });
     }
 
     public static Preferences_ getPrefs() {
@@ -147,8 +165,53 @@ public class TagMo extends Application {
         Log.e(TAG(src), getStringRes(resource, params));
     }
 
-    public static void Error(Class<?> src, int resource, Exception e) {
-        Log.e(TAG(src), getStringRes(resource), e);
+    public static void Error(Exception error) {
+        if (error.getStackTrace().length > 0) {
+            StringWriter exception = new StringWriter();
+            error.printStackTrace(new PrintWriter(exception));
+            TagMo.Error(error.getClass(), exception.toString());
+        }
+    }
+
+    public static void Error(int resource, Exception error) {
+        Log.e(TAG(error.getClass()), getStringRes(resource), error);
+    }
+
+    public static File exportLogcat() throws IOException {
+        File file = new File(TagMo.getExternalFiles(), "tagmo_logcat.txt");
+        final StringBuilder log = new StringBuilder();
+        String separator = System.getProperty("line.separator");
+        log.append(android.os.Build.MANUFACTURER);
+        log.append(" ");
+        log.append(android.os.Build.MODEL);
+        log.append(separator);
+        log.append("Android SDK ");
+        log.append(Build.VERSION.SDK_INT);
+        log.append(" (");
+        log.append(Build.VERSION.RELEASE);
+        log.append(")");
+        log.append(separator);
+        log.append("TagMo Version " + BuildConfig.VERSION_NAME);
+        Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
+                "logcat", "-d",
+                BuildConfig.APPLICATION_ID,
+                "com.smartrac.nfc",
+                "-t", "2048"
+        });
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                mLogcatProc.getInputStream()));
+        log.append(separator);
+        log.append(separator);
+        String line;
+        while ((line = reader.readLine()) != null) {
+            log.append(line);
+            log.append(separator);
+        }
+        reader.close();
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(log.toString().getBytes());
+        }
+        return file;
     }
 
     public static File getExternalFiles() {
@@ -160,7 +223,7 @@ public class TagMo extends Application {
             MediaScannerConnection.scanFile(TagMo.getContext(),
                     new String[]{file.getAbsolutePath()}, null, null);
         } catch (Exception e) {
-            Error(TagWriter.class, R.string.fail_media_scan, e);
+            Error(R.string.fail_media_scan, e);
         }
     }
 

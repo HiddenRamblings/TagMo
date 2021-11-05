@@ -5,6 +5,8 @@ import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.NfcA;
 import android.nfc.tech.TagTechnology;
 
+import com.hiddenramblings.tagmo.TagMo;
+
 import java.io.IOException;
 
 public class NTAG215 implements TagTechnology {
@@ -235,7 +237,7 @@ public class NTAG215 implements TagTechnology {
                     (byte) NfcByte.CMD_READ, (byte) 0xFFD9
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
         }
     }
 
@@ -391,7 +393,7 @@ public class NTAG215 implements TagTechnology {
                     NfcByte.N2_LOCK
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
         }
     }
 
@@ -411,7 +413,7 @@ public class NTAG215 implements TagTechnology {
                     NfcByte.N2_UNLOCK_2
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
         }
     }
 }

@@ -115,8 +115,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceByKey(R.string.settings_enable_scale)
     CheckBoxPreference enableScaling;
 
-    KeyManager keyManager;
-    AmiiboManager amiiboManager = null;
+    private KeyManager keyManager;
+    private AmiiboManager amiiboManager = null;
+    private String lastUpdated;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -129,7 +130,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         new RequestCommit().setListener(result -> {
             try {
                 JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-                String lastUpdated = (String) jsonObject.get("lastUpdated");
+                lastUpdated = (String) jsonObject.get("lastUpdated");
                 if (!prefs.lastUpdated().get().equals(lastUpdated)) {
                     showInstallSnackbar(lastUpdated);
                 }
@@ -207,14 +208,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_import_info_amiiboapi)
     void onSyncAmiiboAPIClicked() {
-        new RequestCommit().setListener(result -> {
-            try {
-                JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-                downloadAmiiboAPIData((String) jsonObject.get("lastUpdated"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).execute(TagMo.getStringRes(R.string.amiibo_api_utc));
+        downloadAmiiboAPIData(lastUpdated);
     }
 
     @PreferenceClick(R.string.settings_import_info)

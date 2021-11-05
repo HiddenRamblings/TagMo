@@ -67,6 +67,8 @@ public class NfcActivity extends AppCompatActivity {
     private NTAG215 mifare;
     private volatile boolean isUnlocking;
     private int write_count;
+    private String tagTech;
+    private boolean hasTestedElite;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -227,7 +229,8 @@ public class NfcActivity extends AppCompatActivity {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            showMessage(getString(R.string.tag_detected));
+            String tech = tagTech != null ? tagTech : getString(R.string.nfc_tag);
+            showMessage(getString(R.string.tag_detected, tech));
             this.onTagDiscovered(intent);
         }
     }
@@ -256,8 +259,6 @@ public class NfcActivity extends AppCompatActivity {
         imgNfcBar.setAnimation(nfcAnimation);
     }
 
-    boolean hasTestedElite;
-
     @Background
     void onTagDiscovered(Intent intent) {
         Intent commandIntent = this.getIntent();
@@ -266,7 +267,7 @@ public class NfcActivity extends AppCompatActivity {
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             mifare = NTAG215.get(tag);
-            String tagTech = TagUtils.getTagTechnology(tag);
+            tagTech = TagUtils.getTagTechnology(tag);
             if (mifare == null) {
                 throw new Exception(getString(R.string.error_tag_protocol, tagTech));
             }
@@ -280,7 +281,7 @@ public class NfcActivity extends AppCompatActivity {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                    showToast(getString(R.string.tag_scanning, tagTech));
+                    showMessage(getString(R.string.tag_scanning, tagTech));
                     return;
                 }
             }
@@ -313,7 +314,8 @@ public class NfcActivity extends AppCompatActivity {
                 }
                 switch (mode) {
                     case TagMo.ACTION_WRITE_TAG_RAW:
-                        TagWriter.writeToTagRaw(mifare, data, TagMo.getPrefs().enableTagTypeValidation().get());
+                        TagWriter.writeToTagRaw(mifare, data,
+                                TagMo.getPrefs().enableTagTypeValidation().get());
                         setResult(Activity.RESULT_OK);
                         break;
 
@@ -378,7 +380,7 @@ public class NfcActivity extends AppCompatActivity {
                         if (isEliteDevice) {
                             if (TagReader.needsFirmware(mifare)) {
                                 if (TagReader.updateFirmware(mifare))
-                                    showToast(getString(R.string.firmware_update));
+                                    showMessage(getString(R.string.firmware_update));
                             }
                             if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
                                 mifare.activateBank(selection);
@@ -477,7 +479,7 @@ public class NfcActivity extends AppCompatActivity {
                             .setPositiveButton(R.string.cancel, null).show());
                 } else if (TagMo.getStringRes(R.string.scan_elite_menu).equals(error)) {
                     showToast(TagMo.getStringRes(R.string.scan_elite_menu));
-                    finish();
+                    cancelAction();
                 }
             }
             showError(error);

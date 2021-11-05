@@ -14,14 +14,13 @@ import java.util.Iterator;
 
 public class PowerTagManager {
 
-    public static final String POWERTAG_KEYTABLE_FILE = "keytable.json";
+    // private static final String POWERTAG_KEYTABLE_FILE = "keytable.json";
     private static HashMap<String, HashMap<String, byte[]>> keys;
 
     public static void getPowerTagManager() throws Exception {
         if (keys != null)
             return;
-        try (InputStream stream = TagMo.getContext().getAssets().open(POWERTAG_KEYTABLE_FILE)) {
-//        try (InputStream stream = agMo.getContext().getResources().openRawResource(R.raw.keytable)) {
+        try (InputStream stream = TagMo.getContext().getResources().openRawResource(R.raw.keytable)) {
             byte[] data = new byte[stream.available()];
             //noinspection ResultOfMethodCallIgnored
             stream.read(data);

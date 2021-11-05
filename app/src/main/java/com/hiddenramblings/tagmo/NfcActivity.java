@@ -485,9 +485,6 @@ public class NfcActivity extends AppCompatActivity {
                                 startActivity(unlock);
                             })
                             .setPositiveButton(R.string.cancel, null).show());
-                } else if (TagMo.getStringRes(R.string.scan_elite_menu).equals(error)) {
-                    showToast(TagMo.getStringRes(R.string.scan_elite_menu));
-                    cancelAction();
                 }
             }
             showError(error);

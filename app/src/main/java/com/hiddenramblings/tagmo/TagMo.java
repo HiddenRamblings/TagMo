@@ -10,7 +10,6 @@ import android.util.Log;
 
 import com.eightbit.content.ScaledContext;
 import com.eightbit.os.Storage;
-import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 
 import org.androidannotations.annotations.EApplication;
@@ -90,6 +89,8 @@ public class TagMo extends Application {
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(0);
         });
     }
 

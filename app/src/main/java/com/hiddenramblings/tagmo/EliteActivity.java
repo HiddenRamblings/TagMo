@@ -608,8 +608,8 @@ public class EliteActivity extends AppCompatActivity implements
         });
 
         int selected_item = eliteBankCount.getValueForPosition(current_bank);
-        toolbar.getMenu().findItem(R.id.mnu_scan).setTitle(getString(
-                R.string.scan_bank, new DecimalFormat("000").format(selected_item)));
+        toolbar.getMenu().findItem(R.id.mnu_scan).setTitle(getString(R.string.scan_bank,
+                new DecimalFormat("000").format(selected_item)));
         String amiiboBank = getString(R.string.bank_number, selected_item);
 
         String tagInfo = null;
@@ -628,36 +628,37 @@ public class EliteActivity extends AppCompatActivity implements
                 TagMo.Error(e);
             }
         }
-        if (amiiboId == -1) {
-            tagInfo = getString(R.string.read_error);
-            amiiboImageUrl = null;
-        } else if (amiiboId == 0) {
-            tagInfo = getString(R.string.blank_tag);
-            amiiboImageUrl = null;
-        } else {
-            Amiibo amiibo = null;
-            if (settings.getAmiiboManager() != null) {
-                amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
-                if (amiibo == null)
-                    amiibo = new Amiibo(settings.getAmiiboManager(), amiiboId, null, null);
-            }
-            if (amiibo != null) {
-                amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
-                amiiboImageUrl = amiibo.getImageUrl();
-                if (amiibo.name != null)
-                    amiiboName = amiibo.name;
-                if (amiibo.getAmiiboSeries() != null)
-                    amiiboSeries = amiibo.getAmiiboSeries().name;
-                if (amiibo.getAmiiboType() != null)
-                    amiiboType = amiibo.getAmiiboType().name;
-                if (amiibo.getGameSeries() != null)
-                    gameSeries = amiibo.getGameSeries().name;
-                // if (amiibo.getCharacter() != null)
-                //     character = amiibo.getCharacter().name;
+        Amiibo amiibo = amiibos.get(current_bank);
+        if (amiibo == null) {
+            if (amiiboId == -1) {
+                tagInfo = getString(R.string.read_error);
+            } else if (amiiboId == 0) {
+                tagInfo = getString(R.string.blank_tag);
             } else {
-                tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
-                amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
+                if (settings.getAmiiboManager() != null) {
+                    amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+                    if (amiibo == null)
+                        amiibo = new Amiibo(settings.getAmiiboManager(), amiiboId, null, null);
+                }
             }
+        }
+
+        if (amiibo != null) {
+            amiiboImageUrl = amiibo.getImageUrl();
+            amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
+            if (amiibo.name != null)
+                amiiboName = amiibo.name;
+            if (amiibo.getAmiiboSeries() != null)
+                amiiboSeries = amiibo.getAmiiboSeries().name;
+            if (amiibo.getAmiiboType() != null)
+                amiiboType = amiibo.getAmiiboType().name;
+            if (amiibo.getGameSeries() != null)
+                gameSeries = amiibo.getGameSeries().name;
+            // if (amiibo.getCharacter() != null)
+            //     character = amiibo.getCharacter().name;
+        } else {
+            tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
+            amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
         }
 
         boolean hasTagInfo = tagInfo != null;

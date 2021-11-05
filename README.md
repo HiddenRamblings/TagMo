@@ -30,7 +30,7 @@ If you want to contribute, please make sure to adress your PRs to the 'experimen
 * [Power Tag (PowerSaves)](<https://github.com/HiddenRamblings/TagMo/wiki/Power-Tag-(PowerSaves)>)
 * [N2 Elite (or Amiiqo)](<https://github.com/HiddenRamblings/TagMo/wiki/N2-Elite-(or-Amiiqo)>)
 
-## [Submitting Issues](https://github.com/HiddenRamblings/TagMo/wiki/Submitting-Issues)
+## [Reporting Issues](https://github.com/HiddenRamblings/TagMo/wiki/Reporting-Issues)
 
 # Credits
 This app is a result of work by many others. Thanks go out to (In alphabetical order):

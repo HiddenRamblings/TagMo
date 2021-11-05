@@ -271,7 +271,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     showInstallSnackbar((String) assets.get("browser_download_url"));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                TagMo.Error(e);
             }
         }).execute(getString(R.string.repo_url,
                 TagMo.getPrefs().stableChannel().get() ? "master" : "experimental"));
@@ -455,45 +455,12 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background
     void onExportLogcatClicked() {
         try {
-            File file = new File(TagMo.getExternalFiles(), "tagmo_logcat.txt");
-            final StringBuilder log = new StringBuilder();
-            String separator = System.getProperty("line.separator");
-            log.append(android.os.Build.MANUFACTURER);
-            log.append(" ");
-            log.append(android.os.Build.MODEL);
-            log.append(separator);
-            log.append("Android SDK ");
-            log.append(Build.VERSION.SDK_INT);
-            log.append(" (");
-            log.append(Build.VERSION.RELEASE);
-            log.append(")");
-            log.append(separator);
-            log.append("TagMo Version " + BuildConfig.VERSION_NAME);
-            Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
-                    "logcat", "-d",
-                    BuildConfig.APPLICATION_ID,
-                    "com.smartrac.nfc",
-                    "-t", "2048"
-            });
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    mLogcatProc.getInputStream()));
-            log.append(separator);
-            log.append(separator);
-            String line;
-            while ((line = reader.readLine()) != null) {
-                log.append(line);
-                log.append(separator);
-            }
-            reader.close();
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(log.toString().getBytes());
-            }
+            File file = TagMo.exportLogcat();
             TagMo.scanFile(file);
-
             showLogcatSnackbar(getString(R.string.wrote_file,
                     Storage.getRelativePath(file)), Storage.getFileUri(file));
-        } catch (Exception e) {
-            showLogcatSnackbar(getString(R.string.error_generic, e.getMessage()), null);
+        } catch (IOException e) {
+            showLogcatSnackbar(e.getMessage(), null);
         }
     }
 
@@ -787,7 +754,7 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             tagData = TagReader.readTagStream(amiiboFile.getFilePath());
         } catch (Exception e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             return;
         }
 
@@ -858,7 +825,7 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             PowerTagManager.getPowerTagManager();
         } catch (Exception e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             showToast(R.string.fail_powertag_keys);
         }
     }
@@ -876,7 +843,7 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
             amiiboManager = null;
             showToast(R.string.amiibo_info_parse_error);
         }
@@ -1278,11 +1245,11 @@ public class BrowserActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         } catch (MalformedURLException mue) {
-            mue.printStackTrace();
+            TagMo.Error(mue);
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            TagMo.Error(ioe);
         } catch (SecurityException se) {
-            se.printStackTrace();
+            TagMo.Error(se);
         }
     }
 

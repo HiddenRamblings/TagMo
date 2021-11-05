@@ -24,7 +24,7 @@ public class RequestCommit extends AsyncTask<String, Integer, String> {
 
             return lineReader(conn);
         } catch (IOException e) {
-            e.printStackTrace();
+            TagMo.Error(e);
         }
         return null;
     }

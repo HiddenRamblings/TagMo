@@ -74,7 +74,7 @@ public class TagUtils {
                         0, NfcByte.POWERTAG_SIGNATURE.length))
                     return true;
             } catch (IOException e) {
-                e.printStackTrace();
+                TagMo.Error(e);
             }
         }
         return false;

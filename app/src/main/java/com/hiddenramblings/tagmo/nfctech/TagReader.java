@@ -64,7 +64,7 @@ public class TagReader {
                 if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
                     throw new Exception(TagMo.getStringRes(R.string.error_tag_format));
             } catch (Exception e) {
-                TagMo.Error(TagWriter.class, R.string.error_version, e);
+                TagMo.Error(R.string.error_version, e);
                 throw e;
             }
         }

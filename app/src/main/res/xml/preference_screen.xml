@@ -35,7 +35,7 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/pref_title_powertag"
+        android:title="@string/power_tag"
         app:iconSpaceReserved="false">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
@@ -46,7 +46,7 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/pref_title_elite"
+        android:title="@string/elite_device"
         app:iconSpaceReserved="false">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"

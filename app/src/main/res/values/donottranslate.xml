@@ -53,6 +53,8 @@
         <item>application/javascript</item>
     </string-array>
 
+    <string name="power_tag">Power Tag</string>
+    <string name="elite_device">N2 Elite</string>
     <string name="mifare_classic">Mifare Classic</string>
     <string name="mifare_plus">Mifare Plus</string>
     <string name="mifare_pro">Mifare Pro</string>

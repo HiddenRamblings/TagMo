@@ -172,10 +172,8 @@
     <string name="pref_title_validation">Tag Validation</string>
     <string name="enable_tag_validation">Enable NTAG215 validation</string>
     <string name="tag_validation_details">Not all NFC chipsets correctly identify NFC tags.\nDisabling will write to tags that may be incompatible or fail unexpectedly.</string>
-    <string name="pref_title_powertag">Power Tag</string>
     <string name="enable_power_tag">Enable Power Tag support</string>
     <string name="power_tag_details">Support is currently in development.\nSee Github for limitations and use.</string>
-    <string name="pref_title_elite">N2 Elite</string>
     <string name="enable_elite">Enable N2 Elite support</string>
     <string name="elite_details">Support is currently in development.\nSee Github for limitations and use.</string>
     <string name="elite_details_enabled">Support is currently in development.\nN2 Elite ID: %1$s</string>

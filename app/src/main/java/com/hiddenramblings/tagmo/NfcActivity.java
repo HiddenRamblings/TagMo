@@ -24,6 +24,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.nfctech.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
@@ -458,7 +459,7 @@ public class NfcActivity extends AppCompatActivity {
             }
             finish();
         } catch (Exception e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             String error = e.getMessage();
             error = e.getCause() != null ? error + "\n" + e.getCause().toString() : error;
             if (error != null && TagMo.getPrefs().enableEliteSupport().get()) {
@@ -466,7 +467,7 @@ public class NfcActivity extends AppCompatActivity {
                     try {
                         mifare.close();
                     } catch (IOException ex) {
-                        TagMo.Error(ex);
+                        Debug.Error(ex);
                     }
                     showToast(getString(R.string.speed_scan));
                     return;
@@ -567,7 +568,7 @@ public class NfcActivity extends AppCompatActivity {
             try {
                 mifare.close();
             } catch (Exception e) {
-                TagMo.Error(e);
+                Debug.Error(e);
             }
         }
         setResult(Activity.RESULT_CANCELED);

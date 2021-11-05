@@ -26,6 +26,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
@@ -135,7 +136,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     showInstallSnackbar(lastUpdated);
                 }
             } catch (Exception e) {
-                TagMo.Error(e);
+                Debug.Error(e);
             }
         }).execute(TagMo.getStringRes(R.string.amiibo_api_utc));
     }
@@ -229,7 +230,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             fileOutputStream = new FileOutputStream(file);
             AmiiboManager.saveDatabase(this.amiiboManager, fileOutputStream);
         } catch (JSONException | IOException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             showToast(R.string.amiibo_info_export_fail, Storage.getRelativePath(file), Toast.LENGTH_SHORT);
             return;
         } finally {
@@ -237,7 +238,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 try {
                     fileOutputStream.close();
                 } catch (IOException e) {
-                    TagMo.Error(e);
+                    Debug.Error(e);
                 }
             }
         }
@@ -403,7 +404,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             this.keyManager.loadKey(data);
         } catch (Exception e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             showSnackbar(e.getMessage(), Snackbar.LENGTH_SHORT);
         }
         if (Thread.currentThread().isInterrupted())
@@ -460,7 +461,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             showToast(R.string.amiibo_failure_load, Toast.LENGTH_SHORT);
             return;
         }
@@ -481,11 +482,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             amiiboManager = AmiiboManager.parse(requireContext(), data);
         } catch (JSONException | ParseException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             showToast(R.string.amiibo_failure_parse, Toast.LENGTH_SHORT);
             return;
         } catch (IOException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             showToast(R.string.amiibo_failure_read, Toast.LENGTH_SHORT);
             return;
         }
@@ -495,7 +496,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             AmiiboManager.saveDatabase(amiiboManager);
         } catch (JSONException | IOException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             showToast(R.string.amiibo_failure_update, Toast.LENGTH_SHORT);
             return;
         }
@@ -519,7 +520,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             amiiboManager = AmiiboManager.getDefaultAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             showToast(R.string.amiibo_failure_parse_default, Snackbar.LENGTH_SHORT);
         }
         if (Thread.currentThread().isInterrupted())
@@ -618,7 +619,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         try {
                             reader.close();
                         } catch (IOException e) {
-                            TagMo.Error(e);
+                            Debug.Error(e);
                         }
                     }
                 }
@@ -635,7 +636,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 throw new Exception(String.valueOf(statusCode));
             }
         } catch (Exception e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             if (Thread.currentThread().isInterrupted())
                 return;
             showSnackbar(getString(R.string.sync_amiibo_failed), Snackbar.LENGTH_SHORT);
@@ -670,7 +671,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     }
                     onLoadKeys.launch(Intent.createChooser(intent, title));
                 } catch (ActivityNotFoundException ex) {
-                    TagMo.Error(getClass(), ex.getMessage());
+                    Debug.Error(getClass(), ex.getMessage());
                 }
                 break;
             case RESULT_IMPORT_AMIIBO_DATABASE:
@@ -681,7 +682,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     }
                     onImportAmiiboDatabase.launch(Intent.createChooser(intent, title));
                 } catch (ActivityNotFoundException ex) {
-                    TagMo.Error(getClass(), ex.getMessage());
+                    Debug.Error(getClass(), ex.getMessage());
                 }
                 break;
         }

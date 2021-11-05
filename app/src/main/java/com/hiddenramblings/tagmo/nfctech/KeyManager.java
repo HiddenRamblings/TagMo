@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo.nfctech;
 import android.content.Context;
 import android.net.Uri;
 
+import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 
@@ -47,7 +48,7 @@ public class KeyManager {
                 throw new IOException(TagMo.getStringRes(R.string.key_size_invalid));
             return key;
         } catch (Exception e) {
-            TagMo.Error(R.string.key_read_error, e);
+            Debug.Error(R.string.key_read_error, e);
         }
         return null;
     }

@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.nfctech;
 
+import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 
@@ -14,19 +15,19 @@ public class TagWriter {
         try {
             byte[][] pages = TagUtils.splitPages(tagData);
             writePages(mifare, 3, 129, pages);
-            TagMo.Debug(TagWriter.class, R.string.data_write);
+            Debug.Log(TagWriter.class, R.string.data_write);
         } catch (Exception e) {
             throw new Exception(TagMo.getStringRes(R.string.error_data_write), e);
         }
         try {
             writePassword(mifare);
-            TagMo.Debug(TagWriter.class, R.string.password_write);
+            Debug.Log(TagWriter.class, R.string.password_write);
         } catch (Exception e) {
             throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
         }
         try {
             writeLockInfo(mifare);
-            TagMo.Debug(TagWriter.class, R.string.lock_write);
+            Debug.Log(TagWriter.class, R.string.lock_write);
         } catch (Exception e) {
             throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
         }
@@ -35,7 +36,7 @@ public class TagWriter {
     static void writePages(NTAG215 tag, int pagestart, int pageend, byte[][] data) throws IOException {
         for (int i = pagestart; i <= pageend; i++) {
             tag.writePage(i, data[i]);
-            TagMo.Debug(TagWriter.class, R.string.write_page, String.valueOf(i));
+            Debug.Log(TagWriter.class, R.string.write_page, String.valueOf(i));
         }
     }
 
@@ -47,7 +48,7 @@ public class TagWriter {
 
         boolean isPowerTag = TagUtils.isPowerTag(mifare);
 
-        TagMo.Debug(TagWriter.class, R.string.power_tag_verify, String.valueOf(isPowerTag));
+        Debug.Log(TagWriter.class, R.string.power_tag_verify, String.valueOf(isPowerTag));
 
         tagData = TagUtils.decrypt(keyManager, tagData);
         if (isPowerTag) {
@@ -58,7 +59,7 @@ public class TagWriter {
         }
         tagData = TagUtils.encrypt(keyManager, tagData);
 
-        TagMo.Debug(TagWriter.class, TagUtils.bytesToHex(tagData));
+        Debug.Log(TagWriter.class, TagUtils.bytesToHex(tagData));
 
         if (!isPowerTag) {
             TagReader.validate(mifare, tagData, validateNtag);
@@ -74,10 +75,10 @@ public class TagWriter {
             if (oldid == null || oldid.length != 7)
                 throw new Exception(TagMo.getStringRes(R.string.fail_read_uid));
 
-            TagMo.Debug(TagWriter.class, R.string.old_uid, TagUtils.bytesToHex(oldid));
+            Debug.Log(TagWriter.class, R.string.old_uid, TagUtils.bytesToHex(oldid));
 
             byte[] page10 = mifare.readPages(0x10);
-            TagMo.Debug(TagWriter.class, R.string.page_ten, TagUtils.bytesToHex(page10));
+            Debug.Log(TagWriter.class, R.string.page_ten, TagUtils.bytesToHex(page10));
 
             String page10bytes = TagUtils.bytesToHex(new byte[]{page10[0], page10[3]});
 
@@ -85,7 +86,7 @@ public class TagWriter {
             byte[] ptagKey = TagUtils.hexToByteArray(NfcByte.POWERTAG_KEY);
             System.arraycopy(ptagKeySuffix, 0, ptagKey, 8, 8);
 
-            TagMo.Debug(TagWriter.class, R.string.ptag_key, TagUtils.bytesToHex(ptagKey));
+            Debug.Log(TagWriter.class, R.string.ptag_key, TagUtils.bytesToHex(ptagKey));
 
             mifare.transceive(NfcByte.POWERTAG_WRITE);
             mifare.transceive(ptagKey);
@@ -105,19 +106,19 @@ public class TagWriter {
         } else {
             try {
                 writePages(mifare, 3, 129, pages);
-                TagMo.Debug(TagWriter.class, R.string.data_write);
+                Debug.Log(TagWriter.class, R.string.data_write);
             } catch (Exception e) {
                 throw new Exception(TagMo.getStringRes(R.string.error_data_write), e);
             }
             try {
                 writePassword(mifare);
-                TagMo.Debug(TagWriter.class, R.string.password_write);
+                Debug.Log(TagWriter.class, R.string.password_write);
             } catch (Exception e) {
                 throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
             }
             try {
                 writeLockInfo(mifare);
-                TagMo.Debug(TagWriter.class, R.string.lock_write);
+                Debug.Log(TagWriter.class, R.string.lock_write);
             } catch (Exception e) {
                 throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
             }
@@ -193,7 +194,7 @@ public class TagWriter {
         byte[] uid = uidFromPages(pages0_1);
         byte[] password = TagUtils.keygen(uid);
 
-        TagMo.Debug(TagWriter.class, R.string.password, TagUtils.bytesToHex(password));
+        Debug.Log(TagWriter.class, R.string.password, TagUtils.bytesToHex(password));
 
         byte[] auth = new byte[]{
                 (byte) 0x1B,
@@ -206,7 +207,7 @@ public class TagWriter {
         if (response == null)
             throw new Exception(TagMo.getStringRes(R.string.error_auth_null));
         String respStr = TagUtils.bytesToHex(response);
-        TagMo.Error(TagWriter.class, R.string.auth_response, respStr);
+        Debug.Error(TagWriter.class, R.string.auth_response, respStr);
         if (!"8080".equals(respStr)) {
             throw new Exception(TagMo.getStringRes(R.string.fail_auth));
         }
@@ -240,12 +241,12 @@ public class TagWriter {
         byte[] uid = uidFromPages(pages0_1);
         byte[] password = TagUtils.keygen(uid);
 
-        TagMo.Debug(TagWriter.class, R.string.password, TagUtils.bytesToHex(password));
+        Debug.Log(TagWriter.class, R.string.password, TagUtils.bytesToHex(password));
 
-        TagMo.Debug(TagWriter.class, R.string.write_pack);
+        Debug.Log(TagWriter.class, R.string.write_pack);
         tag.writePage(0x86, new byte[]{(byte) 0x80, (byte) 0x80, (byte) 0, (byte) 0});
 
-        TagMo.Debug(TagWriter.class, R.string.write_pwd);
+        Debug.Log(TagWriter.class, R.string.write_pwd);
         tag.writePage(0x85, password);
     }
 

@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo.github;
 
 import android.os.AsyncTask;
 
+import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.BufferedReader;
@@ -24,7 +25,7 @@ public class RequestCommit extends AsyncTask<String, Integer, String> {
 
             return lineReader(conn);
         } catch (IOException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
         }
         return null;
     }

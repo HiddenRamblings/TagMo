@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -125,7 +126,7 @@ public class ImageActivity extends AppCompatActivity {
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
         }
         if (Thread.currentThread().isInterrupted())
             return;
@@ -237,13 +238,13 @@ public class ImageActivity extends AppCompatActivity {
                                         String text = "Saved file as " + Storage.getRelativePath(file);
                                         Toast.makeText(ImageActivity.this, text, Toast.LENGTH_SHORT).show();
                                     } catch (FileNotFoundException e) {
-                                        TagMo.Error(e);
+                                        Debug.Error(e);
                                     } finally {
                                         if (fos != null) {
                                             try {
                                                 fos.close();
                                             } catch (IOException ioe) {
-                                                TagMo.Error(ioe);
+                                                Debug.Error(ioe);
                                             }
                                         }
                                     }

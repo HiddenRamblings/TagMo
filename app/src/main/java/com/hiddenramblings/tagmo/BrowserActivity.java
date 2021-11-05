@@ -41,6 +41,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.eightbit.content.ActionIntent;
+import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
@@ -269,7 +270,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     showInstallSnackbar((String) assets.get("browser_download_url"));
                 }
             } catch (Exception e) {
-                TagMo.Error(e);
+                Debug.Error(e);
             }
         }).execute(getString(R.string.repo_url,
                 TagMo.getPrefs().stableChannel().get() ? "master" : "experimental"));
@@ -453,7 +454,8 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background
     void onExportLogcatClicked() {
         try {
-            File file = TagMo.exportLogcat();
+            File file = Debug.generateLogcat(new File(
+                    TagMo.getExternalFiles(), "tagmo_logcat.txt"));
             TagMo.scanFile(file);
             showLogcatSnackbar(getString(R.string.wrote_file,
                     Storage.getRelativePath(file)), Storage.getFileUri(file));
@@ -752,7 +754,7 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             tagData = TagReader.readTagStream(amiiboFile.getFilePath());
         } catch (Exception e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             return;
         }
 
@@ -823,7 +825,7 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             PowerTagManager.getPowerTagManager();
         } catch (Exception e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             showToast(R.string.fail_powertag_keys);
         }
     }
@@ -841,7 +843,7 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             amiiboManager = null;
             showToast(R.string.amiibo_info_parse_error);
         }
@@ -1243,11 +1245,11 @@ public class BrowserActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         } catch (MalformedURLException mue) {
-            TagMo.Error(mue);
+            Debug.Error(mue);
         } catch (IOException ioe) {
-            TagMo.Error(ioe);
+            Debug.Error(ioe);
         } catch (SecurityException se) {
-            TagMo.Error(se);
+            Debug.Error(se);
         }
     }
 

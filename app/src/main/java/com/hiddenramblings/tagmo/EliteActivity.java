@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.eightbit.io.Debug;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.BankBrowserAdapter;
 import com.hiddenramblings.tagmo.adapter.WriteBlankAdapter;
@@ -198,7 +199,7 @@ public class EliteActivity extends AppCompatActivity implements
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            TagMo.Error(e);
+            Debug.Error(e);
             amiiboManager = null;
         }
         if (amiiboManager == null) return;
@@ -386,7 +387,7 @@ public class EliteActivity extends AppCompatActivity implements
         try {
             args.putByteArray(TagMo.EXTRA_TAG_DATA, TagReader.readTagStream(amiiboFile.getFilePath()));
         } catch (Exception e) {
-            TagMo.Error(e);
+            Debug.Error(e);
         }
 
         Intent intent = new Intent(this, NfcActivity_.class);
@@ -625,7 +626,7 @@ public class EliteActivity extends AppCompatActivity implements
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
-                TagMo.Error(e);
+                Debug.Error(e);
             }
         }
         Amiibo amiibo = amiibos.get(current_bank);
@@ -806,7 +807,7 @@ public class EliteActivity extends AppCompatActivity implements
                     TagReader.validateTag(data);
                     amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
                 } catch (Exception e) {
-                    TagMo.Error(e);
+                    Debug.Error(e);
                 }
             }
         }

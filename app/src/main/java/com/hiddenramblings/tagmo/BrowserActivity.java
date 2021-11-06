@@ -97,9 +97,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 @SuppressLint("NonConstantResourceId")
@@ -175,8 +175,12 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuViewImage;
     @OptionsMenuItem(R.id.recursive)
     MenuItem menuRecursiveFiles;
+    @OptionsMenuItem(R.id.show_downloads)
+    MenuItem menuIncludeDownloads;
     @OptionsMenuItem(R.id.show_missing)
     MenuItem menuShowMissing;
+    @OptionsMenuItem(R.id.enable_scale)
+    MenuItem menuEnableScale;
     @OptionsMenuItem(R.id.refresh)
     MenuItem menuRefresh;
     @OptionsMenuItem(R.id.amiibo_backup)
@@ -189,6 +193,8 @@ public class BrowserActivity extends AppCompatActivity implements
     BottomSheetBehavior<View> bottomSheetBehavior;
     KeyManager keyManager;
     SearchView searchView;
+    private AmiiboFile clickedAmiibo = null;
+    private Handler handler = new Handler();
 
     @InstanceState
     BrowserSettings settings;
@@ -232,7 +238,6 @@ public class BrowserActivity extends AppCompatActivity implements
         if (this.settings == null) {
             this.settings = new BrowserSettings().initialize();
         } else {
-            setFolderText(Storage.getRelativePath(settings.getBrowserRootFolder()));
             this.onFilterGameSeriesChanged();
             this.onFilterCharacterChanged();
             this.onFilterAmiiboSeriesChanged();
@@ -320,10 +325,6 @@ public class BrowserActivity extends AppCompatActivity implements
             startActivity(intent);
         }
     });
-
-    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> this.onRootFolderChanged(false));
 
     @Click(R.id.fab)
     public void onFabClicked() {
@@ -419,10 +420,23 @@ public class BrowserActivity extends AppCompatActivity implements
         this.settings.notifyChanges();
     }
 
+    @OptionsItem(R.id.show_downloads)
+    void OnIncludeDownloadsCicked() {
+        this.settings.setIncludeDownloads(!this.settings.isShowingDownloads());
+        this.settings.notifyChanges();
+    }
+
     @OptionsItem(R.id.show_missing)
     void OnShowMissingCicked() {
         this.settings.setShowMissingFiles(!this.settings.isShowingMissingFiles());
         this.settings.notifyChanges();
+    }
+
+    @OptionsItem(R.id.enable_scale)
+    void onEnableScaleClicked() {
+        TagMo.getPrefs().enableScaling().put(!menuEnableScale.isChecked());
+        this.recreate();
+        this.supportInvalidateOptionsMenu();
     }
 
     ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
@@ -440,8 +454,8 @@ public class BrowserActivity extends AppCompatActivity implements
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = new File(settings.getBrowserRootFolder(),
-                        TagMo.getStringRes(R.string.tagmo_backup));
+                File directory = Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DOWNLOADS);
                 String fileName = TagReader.writeBytesToFile(directory,
                         input.getText().toString() + ".bin", tagData);
                 showToast(getString(R.string.wrote_file, fileName));
@@ -698,11 +712,6 @@ public class BrowserActivity extends AppCompatActivity implements
         if (result.getData().hasExtra(SettingsActivity.POWERTAG)) {
             this.loadPTagKeyManager();
         }
-        if (result.getData().hasExtra(SettingsActivity.SCALING)) {
-            TagMo.setScaledTheme(this, R.style.AppTheme);
-            this.supportInvalidateOptionsMenu();
-            this.recreate();
-        }
         if (result.getData().hasExtra(SettingsActivity.REFRESH)) {
             this.onRefresh();
         }
@@ -727,7 +736,9 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onSortChanged();
         this.onViewChanged();
         this.onRecursiveFilesChanged();
+        this.onIncludeDownloadsChanged();
         this.onShowMissingChanged();
+        this.onEnableScaleChanged();
 
         menuUnlockElite.setVisible(TagMo.getPrefs().enableEliteSupport().get());
 
@@ -769,11 +780,29 @@ public class BrowserActivity extends AppCompatActivity implements
         return result;
     }
 
-    @Override
-    public void onAmiiboClicked(AmiiboFile amiiboFile) {
-        if (amiiboFile.getFilePath() == null)
-            return;
+    ActivityResultLauncher<Intent> onViewerActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        this.onRootFolderChanged(false);
 
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+        if (!TagMo.ACTION_DELETE_AMIIBO.equals(result.getData().getAction())) return;
+
+        new AlertDialog.Builder(this)
+                .setMessage(getString(R.string.warn_delete_file,
+                        Storage.getRelativePath(clickedAmiibo.getFilePath())))
+                .setPositiveButton(R.string.delete, (dialog, which) -> {
+                    //noinspection ResultOfMethodCallIgnored
+                    clickedAmiibo.getFilePath().delete();
+                    this.onRootFolderChanged(false);
+                    dialog.dismiss();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    openAmiiboViewer(clickedAmiibo);
+                    dialog.dismiss();
+                }).show();
+    });
+
+    private void openAmiiboViewer(AmiiboFile amiiboFile) {
         byte[] tagData;
         try {
             tagData = TagReader.readTagStream(amiiboFile.getFilePath());
@@ -792,6 +821,15 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onAmiiboClicked(AmiiboFile amiiboFile) {
+        if (amiiboFile.getFilePath() == null)
+            return;
+
+        clickedAmiibo = amiiboFile;
+        openAmiiboViewer(amiiboFile);
+    }
+
+    @Override
     public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
         Bundle bundle = new Bundle();
         bundle.putLong(TagMo.EXTRA_AMIIBO_ID, amiiboFile.getId());
@@ -800,20 +838,6 @@ public class BrowserActivity extends AppCompatActivity implements
         intent.putExtras(bundle);
 
         this.startActivity(intent);
-    }
-
-    @Override
-    public void onAmiiboLongClicked(AmiiboFile amiiboFile) {
-        new AlertDialog.Builder(this)
-                .setMessage(getString(R.string.warn_delete_file,
-                        Storage.getRelativePath(amiiboFile.getFilePath())))
-                .setNegativeButton(R.string.delete, (dialog, which) -> {
-                    //noinspection ResultOfMethodCallIgnored
-                    amiiboFile.getFilePath().delete();
-                    this.onRootFolderChanged(false);
-                    dialog.dismiss();
-                })
-                .setPositiveButton(R.string.cancel, null).show();
     }
 
     @Override
@@ -929,11 +953,14 @@ public class BrowserActivity extends AppCompatActivity implements
         if (files == null)
             return amiiboFiles;
 
+        String[] mimeTypes = getResources().getStringArray(R.array.mimetype_bin);
+
         for (File file : files) {
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiibos(file, true));
             } else {
-                if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
+                if (Arrays.asList(mimeTypes).contains(Storage.getMimeType(file))) {
+                // if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
                         byte[] data = TagReader.readTagFile(file);
                         TagReader.validateTag(data);
@@ -951,16 +978,19 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
+        if (TagMo.getPrefs().includeDownloads().get()) {
+            amiiboFiles.addAll(listAmiibos(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), recursiveFiles));
+        }
 
         if (Thread.currentThread().isInterrupted())
             return;
 
         this.setAmiiboFilesLoadingBarVisibility(false);
 
-        if (amiiboFiles.isEmpty()) {
+        if (amiiboFiles.isEmpty() && !TagMo.getPrefs().ignoreSdcard().get()) {
             emptyText.setText(R.string.amiibo_not_found);
-            if (recursiveFiles && !TagMo.getPrefs().ignoreSdcard().get())
-                showStorageSnackbar();
+            if (recursiveFiles) showStorageSnackbar();
         }
 
         this.runOnUiThread(() -> {
@@ -979,6 +1009,10 @@ public class BrowserActivity extends AppCompatActivity implements
         if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
             folderChanged = true;
             onRecursiveFilesChanged();
+        }
+        if (newBrowserSettings.isShowingDownloads() != oldBrowserSettings.isShowingDownloads()) {
+            folderChanged = true;
+            onIncludeDownloadsChanged();
         }
         if (newBrowserSettings.isShowingMissingFiles() != oldBrowserSettings.isShowingMissingFiles()) {
             folderChanged = true;
@@ -1021,6 +1055,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
                 .imageNetworkSetting().put(newBrowserSettings.getImageNetworkSettings())
                 .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
+                .includeDownloads().put(newBrowserSettings.isShowingDownloads())
                 .showMissingFiles().put(newBrowserSettings.isShowingMissingFiles())
                 .apply();
     }
@@ -1085,7 +1120,6 @@ public class BrowserActivity extends AppCompatActivity implements
     void onRootFolderChanged(boolean indicator) {
         if (this.settings != null) {
             File rootFolder = this.settings.getBrowserRootFolder();
-            setFolderText(Storage.getRelativePath(rootFolder));
             if (keyManager.isKeyMissing()) {
                 emptyText.setText(R.string.keys_not_loaded);
                 showSetupSnackbar();
@@ -1095,6 +1129,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 this.loadAmiiboFiles(rootFolder, this.settings.isRecursiveEnabled());
             }
             this.loadFolders(rootFolder);
+            setFolderText(Storage.getRelativePath(rootFolder));
         }
     }
 
@@ -1146,11 +1181,25 @@ public class BrowserActivity extends AppCompatActivity implements
         menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
     }
 
+    void onIncludeDownloadsChanged() {
+        if (menuIncludeDownloads == null)
+            return;
+
+        menuIncludeDownloads.setChecked(settings.isShowingDownloads());
+    }
+
     void onShowMissingChanged() {
         if (menuShowMissing == null)
             return;
 
         menuShowMissing.setChecked(settings.isShowingMissingFiles());
+    }
+
+    void onEnableScaleChanged() {
+        if (menuEnableScale == null)
+            return;
+
+        menuEnableScale.setChecked(TagMo.getPrefs().enableScaling().get());
     }
 
     OnCloseClickListener onAmiiboTypeChipCloseClick = new OnCloseClickListener() {
@@ -1182,7 +1231,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private void setFolderText(String text) {
         this.currentFolderView.setGravity(Gravity.NO_GRAVITY);
         this.currentFolderView.setText(text);
-        new Handler().postDelayed(() -> {
+        handler.removeCallbacksAndMessages(null);
+        handler.postDelayed(() -> {
             this.currentFolderView.setGravity(Gravity.CENTER);
             currentFolderView.setText(getString(R.string.collected,
                     settings.getAmiiboFiles().size()));
@@ -1273,7 +1323,8 @@ public class BrowserActivity extends AppCompatActivity implements
             }
             fos.close();
 
-            if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk")) {
+            if (!getString(R.string.mimetype_apk).equals(Storage.getMimeType(apk))) {
+            // if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk")) {
                 //noinspection ResultOfMethodCallIgnored
                 apk.delete();
                 showToast(R.string.download_corrupt);

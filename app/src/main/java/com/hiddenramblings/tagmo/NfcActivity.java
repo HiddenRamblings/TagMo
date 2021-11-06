@@ -476,14 +476,14 @@ public class NfcActivity extends AppCompatActivity {
                     runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                             .setTitle(R.string.possible_lock)
                             .setMessage(R.string.prepare_unlock)
-                            .setNegativeButton(R.string.unlock, (dialog, which) -> {
+                            .setPositiveButton(R.string.unlock, (dialog, which) -> {
                                 dialog.dismiss();
                                 finish();
                                 Intent unlock = new Intent(this, NfcActivity_.class);
                                 unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
                                 startActivity(unlock);
                             })
-                            .setPositiveButton(R.string.cancel, null).show());
+                            .setNegativeButton(R.string.cancel, null).show());
                 }
             }
             showError(error);
@@ -505,10 +505,10 @@ public class NfcActivity extends AppCompatActivity {
             showError(getString(R.string.nfc_disabled));
             new AlertDialog.Builder(this)
                     .setMessage(R.string.nfc_query)
-                    .setNegativeButton(R.string.yes, (dialog, which) ->
+                    .setPositiveButton(R.string.yes, (dialog, which) ->
                             startActivity(new Intent(Settings.ACTION_NFC_SETTINGS)
                     ))
-                    .setPositiveButton(R.string.no, null)
+                    .setNegativeButton(R.string.no, null)
                     .show();
         }
 

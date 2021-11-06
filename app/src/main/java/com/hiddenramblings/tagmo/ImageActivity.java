@@ -220,7 +220,7 @@ public class ImageActivity extends AppCompatActivity {
 
         (new AlertDialog.Builder(this))
                 .setTitle(R.string.save_image)
-                .setNegativeButton(R.string.save, (dialogInterface, i) -> {
+                .setPositiveButton(R.string.save, (dialogInterface, i) -> {
                     final File file = new File(TagMo.getExternalFiles().getAbsolutePath(),
                             editText.getText().toString() + ".png");
 
@@ -255,7 +255,7 @@ public class ImageActivity extends AppCompatActivity {
                                 }
                             });
                 })
-                .setPositiveButton(R.string.cancel, null)
+                .setNegativeButton(R.string.cancel, null)
                 .setView(view)
                 .show();
     }

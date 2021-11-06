@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,7 +30,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.eightbit.io.Debug;
-import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
@@ -110,6 +110,9 @@ public class AmiiboActivity extends AppCompatActivity {
                 case R.id.mnu_view_hex:
                     viewHex();
                     return true;
+                case R.id.mnu_delete:
+                    deleteFile();
+                    return true;
                 case R.id.mnu_ignore_tag_id:
                     ignoreTagTd = !item.isChecked();
                     item.setChecked(ignoreTagTd);
@@ -184,6 +187,11 @@ public class AmiiboActivity extends AppCompatActivity {
         onUpdateTagResult.launch(intent);
     }
 
+    void deleteFile() {
+        setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_DELETE_AMIIBO));
+        finish();
+    }
+
     private void displayBackupDialog() {
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
@@ -192,9 +200,8 @@ public class AmiiboActivity extends AppCompatActivity {
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = new File(Storage.getFile(),
-                        TagMo.getPrefs().browserRootFolder().get()
-                                + File.separator + TagMo.getStringRes(R.string.tagmo_backup));
+                File directory = Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DOWNLOADS);
                 String fileName = TagReader.writeBytesToFile(directory,
                         input.getText().toString(), this.tagData);
                 showToast(getString(R.string.wrote_file, fileName));

@@ -9,7 +9,7 @@ android {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
         targetSdkVersion 31
-        versionCode 9
+        versionCode 11
         versionName "2.7.5"
 
         javaCompileOptions {
@@ -23,9 +23,15 @@ android {
 
     buildTypes {
         release {
+            getIsDefault().set(true)
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        publish {
+            initWith release
+            applicationIdSuffix ".eightbit"
+        }
+
     }
 
     project.archivesBaseName = "TagMo-" + commit

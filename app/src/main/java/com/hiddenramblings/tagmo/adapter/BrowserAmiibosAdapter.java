@@ -118,6 +118,8 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
                 return new CompactViewHolder(parent, settings, listener);
             case BrowserActivity.VIEW_TYPE_LARGE:
                 return new LargeViewHolder(parent, settings, listener);
+            case BrowserActivity.VIEW_TYPE_IMAGE:
+                return new ImageViewHolder(parent, settings, listener);
             case BrowserActivity.VIEW_TYPE_SIMPLE:
             default:
                 return new SimpleViewHolder(parent, settings, listener);
@@ -126,6 +128,27 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
 
     @Override
     public void onBindViewHolder(final AmiiboVewHolder holder, int position) {
+        holder.itemView.setOnClickListener(view -> {
+            if (holder.listener != null) {
+                holder.listener.onAmiiboClicked(holder.amiiboFile);
+            }
+        });
+        holder.itemView.setOnLongClickListener(view -> {
+            if (holder.listener != null) {
+                holder.listener.onAmiiboLongClicked(holder.amiiboFile);
+            }
+            return true;
+        });
+        if (holder.imageAmiibo != null) {
+            holder.imageAmiibo.setOnClickListener(view -> {
+                if (holder.listener != null) {
+                    if (settings.getAmiiboView() == BrowserActivity.VIEW_TYPE_IMAGE)
+                        holder.listener.onAmiiboClicked(holder.amiiboFile);
+                    else
+                        holder.listener.onAmiiboImageClicked(holder.amiiboFile);
+                }
+            });
+        }
         holder.bind(getItem(position));
     }
 
@@ -287,17 +310,6 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
 
             this.settings = settings;
             this.listener = listener;
-            this.itemView.setOnClickListener(view -> {
-                if (AmiiboVewHolder.this.listener != null) {
-                    AmiiboVewHolder.this.listener.onAmiiboClicked(amiiboFile);
-                }
-            });
-            this.itemView.setOnLongClickListener(view -> {
-                if (AmiiboVewHolder.this.listener != null) {
-                    AmiiboVewHolder.this.listener.onAmiiboLongClicked(amiiboFile);
-                }
-                return true;
-            });
 
             this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
@@ -308,13 +320,6 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             // this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
             this.txtPath = itemView.findViewById(R.id.txtPath);
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
-            if (this.imageAmiibo != null) {
-                this.imageAmiibo.setOnClickListener(view -> {
-                    if (AmiiboVewHolder.this.listener != null) {
-                        AmiiboVewHolder.this.listener.onAmiiboImageClicked(amiiboFile);
-                    }
-                });
-            }
         }
 
         void bind(final AmiiboFile item) {
@@ -357,37 +362,38 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
 
             String query = settings.getQuery().toLowerCase();
 
-            boolean hasTagInfo = tagInfo != null;
-            if (hasTagInfo) {
-                setAmiiboInfoText(this.txtError, tagInfo, false);
-            } else {
-                this.txtError.setVisibility(View.GONE);
+            if (settings.getAmiiboView() != BrowserActivity.VIEW_TYPE_IMAGE) {
+                boolean hasTagInfo = tagInfo != null;
+                if (hasTagInfo) {
+                    setAmiiboInfoText(this.txtError, tagInfo, false);
+                } else {
+                    this.txtError.setVisibility(View.GONE);
+                }
+                setAmiiboInfoText(this.txtName, amiiboName, false);
+                setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query), hasTagInfo);
+                setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), hasTagInfo);
+                setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query), hasTagInfo);
+                setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query), hasTagInfo);
+                // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), hasTagInfo);
+                if (item.getFilePath() != null) {
+                    this.itemView.setEnabled(true);
+                    String relativeFile = Storage.getRelativePath(item.getFilePath()).replace(
+                            TagMo.getPrefs().browserRootFolder().get(), "");
+                    this.txtPath.setText(boldMatchingText(relativeFile, query));
+                } else {
+                    this.itemView.setEnabled(false);
+                    this.txtPath.setText("");
+                    this.txtPath.setTextColor(this.txtPath.getResources().getColor(
+                            TagMo.isDarkTheme() ? R.color.tag_text_dark : R.color.tag_text_light));
+                }
+                this.txtPath.setVisibility(View.VISIBLE);
             }
-            setAmiiboInfoText(this.txtName, amiiboName, false);
-            setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query), hasTagInfo);
-            setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), hasTagInfo);
-            setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query), hasTagInfo);
-            setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query), hasTagInfo);
-            // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), hasTagInfo);
-            if (item.getFilePath() != null) {
-                this.itemView.setEnabled(true);
-                String relativeFile = Storage.getRelativePath(item.getFilePath()).replace(
-                        TagMo.getPrefs().browserRootFolder().get(), "");
-                this.txtPath.setText(boldMatchingText(relativeFile, query));
-            } else {
-                this.itemView.setEnabled(false);
-                this.txtPath.setText("");
-                this.txtPath.setTextColor(this.txtPath.getResources().getColor(
-                        TagMo.isDarkTheme() ? R.color.tag_text_dark : R.color.tag_text_light));
-            }
-            this.txtPath.setVisibility(View.VISIBLE);
-
             if (this.imageAmiibo != null) {
                 this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(itemView).clear(target);
                 if (amiiboImageUrl != null) {
                     Glide.with(itemView)
-                            .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
+                            .setDefaultRequestOptions(onlyRetrieveFromCache())
                             .asBitmap()
                             .load(amiiboImageUrl)
                             .into(target);
@@ -395,22 +401,23 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             }
         }
 
-        boolean onlyRetrieveFromCache() {
+        private RequestOptions onlyRetrieveFromCache() {
             String imageNetworkSetting = settings.getImageNetworkSettings();
             if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
-                return true;
+                return new RequestOptions().onlyRetrieveFromCache(true);
             } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
                 ConnectivityManager cm = (ConnectivityManager)
                         itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                return activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI;
+                return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+                        || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
             } else {
-                return false;
+                return new RequestOptions().onlyRetrieveFromCache(false);
             }
         }
 
-        SpannableStringBuilder boldMatchingText(String text, String query) {
+        private SpannableStringBuilder boldMatchingText(String text, String query) {
             SpannableStringBuilder str = new SpannableStringBuilder(text);
             if (query.isEmpty())
                 return str;
@@ -428,7 +435,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             return str;
         }
 
-        SpannableStringBuilder boldStartText(String text, String query) {
+        private SpannableStringBuilder boldStartText(String text, String query) {
             SpannableStringBuilder str = new SpannableStringBuilder(text);
             if (!query.isEmpty() && text.toLowerCase().startsWith(query)) {
                 str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
@@ -478,6 +485,16 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
+                    settings, listener
+            );
+        }
+    }
+
+    static class ImageViewHolder extends AmiiboVewHolder {
+        public ImageViewHolder(ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener) {
+            super(
+                    LayoutInflater.from(parent.getContext()).inflate(
+                            R.layout.amiibo_image_card, parent, false),
                     settings, listener
             );
         }

@@ -410,7 +410,7 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
                 Glide.with(itemView).clear(target);
                 if (amiiboImageUrl != null) {
                     Glide.with(itemView)
-                            .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
+                            .setDefaultRequestOptions(onlyRetrieveFromCache())
                             .asBitmap()
                             .load(amiiboImageUrl)
                             .into(target);
@@ -418,22 +418,23 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
             }
         }
 
-        boolean onlyRetrieveFromCache() {
+        private RequestOptions onlyRetrieveFromCache() {
             String imageNetworkSetting = settings.getImageNetworkSettings();
             if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
-                return true;
+                return new RequestOptions().onlyRetrieveFromCache(true);
             } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
                 ConnectivityManager cm = (ConnectivityManager)
                         itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                return activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI;
+                return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+                        || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
             } else {
-                return false;
+                return new RequestOptions().onlyRetrieveFromCache(false);
             }
         }
 
-        SpannableStringBuilder boldMatchingText(String text, String query) {
+        private SpannableStringBuilder boldMatchingText(String text, String query) {
             SpannableStringBuilder str = new SpannableStringBuilder(text);
             if (query.isEmpty())
                 return str;
@@ -451,7 +452,7 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
             return str;
         }
 
-        SpannableStringBuilder boldStartText(String text, String query) {
+        private SpannableStringBuilder boldStartText(String text, String query) {
             SpannableStringBuilder str = new SpannableStringBuilder(text);
             if (!query.isEmpty() && text.toLowerCase().startsWith(query)) {
                 str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),

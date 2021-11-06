@@ -55,6 +55,7 @@
     <string name="simple">Simple</string>
     <string name="compact">Compact</string>
     <string name="large">Large</string>
+    <string name="image">Image</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -206,6 +207,7 @@
     <string name="sync_amiibo_failed">AmiiboAPI sync has failed!</string>
 
     <string name="total">Total: %1$s</string>
+    <string name="collected">%1$d Amiibo Collected</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>

@@ -14,12 +14,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -36,6 +40,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -117,6 +122,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public static final int VIEW_TYPE_SIMPLE = 0;
     public static final int VIEW_TYPE_COMPACT = 1;
     public static final int VIEW_TYPE_LARGE = 2;
+    public static final int VIEW_TYPE_IMAGE = 3;
 
     @ViewById(R.id.chip_list)
     FlowLayout chipList;
@@ -165,6 +171,8 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuViewCompact;
     @OptionsMenuItem(R.id.view_large)
     MenuItem menuViewLarge;
+    @OptionsMenuItem(R.id.view_image)
+    MenuItem menuViewImage;
     @OptionsMenuItem(R.id.recursive)
     MenuItem menuRecursiveFiles;
     @OptionsMenuItem(R.id.show_missing)
@@ -224,7 +232,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (this.settings == null) {
             this.settings = new BrowserSettings().initialize();
         } else {
-            this.currentFolderView.setText(Storage.getRelativePath(settings.getBrowserRootFolder()));
+            setFolderText(Storage.getRelativePath(settings.getBrowserRootFolder()));
             this.onFilterGameSeriesChanged();
             this.onFilterCharacterChanged();
             this.onFilterAmiiboSeriesChanged();
@@ -235,7 +243,10 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.swipeRefreshLayout.setOnRefreshListener(this);
 
-        this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
+        if (this.settings.getAmiiboView() == VIEW_TYPE_IMAGE)
+            this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+        else
+            this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
         this.amiibosView.setAdapter(new BrowserAmiibosAdapter(settings, this));
         this.settings.addChangeListener((BrowserSettingsListener) this.amiibosView.getAdapter());
 
@@ -373,19 +384,32 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @OptionsItem(R.id.view_simple)
     void onViewSimpleClick() {
+        if (this.settings.getAmiiboView() == VIEW_TYPE_IMAGE)
+            this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
         settings.setAmiiboView(VIEW_TYPE_SIMPLE);
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.view_compact)
     void onViewCompactClick() {
+        if (this.settings.getAmiiboView() == VIEW_TYPE_IMAGE)
+            this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
         settings.setAmiiboView(VIEW_TYPE_COMPACT);
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.view_large)
     void onViewLargeClick() {
+        if (this.settings.getAmiiboView() == VIEW_TYPE_IMAGE)
+            this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
         settings.setAmiiboView(VIEW_TYPE_LARGE);
+        settings.notifyChanges();
+    }
+
+    @OptionsItem(R.id.view_image)
+    void onViewImageClick() {
+        this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+        settings.setAmiiboView(VIEW_TYPE_IMAGE);
         settings.notifyChanges();
     }
 
@@ -1032,6 +1056,16 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    private int getColumnCount() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+            mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
+        else
+            mWindowManager.getDefaultDisplay().getMetrics(metrics);
+        return (int) ((metrics.widthPixels / metrics.density) / 96 + 0.5);
+    }
+
     void onViewChanged() {
         if (menuViewSimple == null)
             return;
@@ -1043,13 +1077,15 @@ public class BrowserActivity extends AppCompatActivity implements
             menuViewCompact.setChecked(true);
         } else if (view == VIEW_TYPE_LARGE) {
             menuViewLarge.setChecked(true);
+        } else if (view == VIEW_TYPE_IMAGE) {
+            menuViewImage.setChecked(true);
         }
     }
 
     void onRootFolderChanged(boolean indicator) {
         if (this.settings != null) {
             File rootFolder = this.settings.getBrowserRootFolder();
-            this.currentFolderView.setText(Storage.getRelativePath(rootFolder));
+            setFolderText(Storage.getRelativePath(rootFolder));
             if (keyManager.isKeyMissing()) {
                 emptyText.setText(R.string.keys_not_loaded);
                 showSetupSnackbar();
@@ -1141,6 +1177,17 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (chipList.getChildCount() == 0) {
             chipList.setVisibility(View.GONE);
         }
+    }
+
+    private void setFolderText(String text) {
+        this.currentFolderView.setGravity(Gravity.NO_GRAVITY);
+        this.currentFolderView.setText(text);
+        new Handler().postDelayed(() -> {
+            this.currentFolderView.setGravity(Gravity.CENTER);
+            currentFolderView.setText(getString(R.string.collected,
+                    settings.getAmiiboFiles().size()));
+        }, 5000);
+
     }
 
     @UiThread

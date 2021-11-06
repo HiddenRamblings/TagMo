@@ -2,19 +2,17 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    app:cardBackgroundColor="@android:color/transparent"
     android:foreground="@drawable/card_foreground"
-    app:cardCornerRadius="@dimen/card_radius"
-    tools:ignore="SmallSp">
+    app:cardBackgroundColor="@android:color/transparent"
+    app:cardCornerRadius="@dimen/card_radius">
 
     <ImageView
         android:id="@+id/imageAmiibo"
-        android:contentDescription="@string/imageview_icon"
+        android:contentDescription="@string/imageview_amiibo"
         android:src="@mipmap/ic_launcher"
         android:layout_width="80dp"
         android:layout_height="80dp"
@@ -22,6 +20,6 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+        android:foreground="@drawable/card_foreground"
+        android:layout_gravity="center" />
 </androidx.cardview.widget.CardView>

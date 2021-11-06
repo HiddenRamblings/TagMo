@@ -117,7 +117,7 @@ public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAd
         public ParentFolderViewHolder(ViewGroup parent) {
             this(LayoutInflater
                     .from(parent.getContext())
-                    .inflate(R.layout.parent_folder_view, parent, false));
+                    .inflate(R.layout.folder_view_parent, parent, false));
         }
 
         public ParentFolderViewHolder(View itemView) {
@@ -144,7 +144,7 @@ public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAd
         public ChildFolderViewHolder(ViewGroup parent) {
             this(LayoutInflater
                     .from(parent.getContext())
-                    .inflate(R.layout.child_folder_view, parent, false));
+                    .inflate(R.layout.folder_view_child, parent, false));
         }
 
         public ChildFolderViewHolder(View itemView) {

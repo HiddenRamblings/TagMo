@@ -57,13 +57,13 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:contentDescription="@string/imageview_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginRight="4dp"
                 android:layout_marginEnd="4dp"
-                android:src="@drawable/ic_stat_notice"
-                android:contentDescription="@string/imageview_folder"/>
+                android:src="@drawable/ic_stat_notice" />
 
             <TextView
                 android:id="@+id/hardware_info"

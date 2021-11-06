@@ -2,11 +2,13 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/imageAmiibo"
+        android:contentDescription="@string/imageview_amiibo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="@dimen/activity_vertical_margin"
@@ -20,7 +22,8 @@
         android:layout_height="wrap_content"
         android:background="#A9333333"
         android:padding="8dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:ignore="SmallSp">
 
         <LinearLayout
             android:id="@+id/group0"
@@ -37,10 +40,11 @@
                 android:layout_weight="1"
                 android:text="@string/amiibo_name_caps"
                 android:textColor="@android:color/white"
-                android:textSize="16dp"/>
+                android:textSize="16sp"/>
 
             <ImageView
                 android:id="@+id/toggle"
+                android:contentDescription="@string/imageview_toggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -62,7 +66,7 @@
                 android:gravity="start"
                 android:text="@string/amiibo_id_caps"
                 android:textColor="@android:color/white"
-                android:textSize="10sp"/>
+                android:textSize="10sp" />
 
             <View
                 android:layout_width="4dp"

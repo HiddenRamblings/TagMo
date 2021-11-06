@@ -52,7 +52,7 @@
     <string name="recurse_folders">Recursive Folders</string>
     <string name="show_downloads">Include Downloads</string>
     <string name="show_missing">Show Missing Bins</string>
-    <string name="enable_scale">Scale View Layout</string>
+    <string name="enable_scale">Scale Mode</string>
 
     <string name="simple">Simple</string>
     <string name="compact">Compact</string>

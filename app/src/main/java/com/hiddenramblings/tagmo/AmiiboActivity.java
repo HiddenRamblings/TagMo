@@ -160,31 +160,35 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @Click(R.id.container)
     void onContainerClick() {
+        Bundle args = new Bundle();
+        args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
         Intent intent = new Intent(TagMo.ACTION_NFC_SCANNED);
-        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
-        setResult(Activity.RESULT_OK, intent);
+        setResult(Activity.RESULT_OK, intent.putExtras(args));
         finish();
     }
 
     void openTagEditor() {
+        Bundle args = new Bundle();
+        args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
         Intent intent = new Intent(this, TagDataActivity_.class);
-        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
-        onUpdateTagResult.launch(intent);
+        onUpdateTagResult.launch(intent.putExtras(args));
     }
 
     void writeTag() {
+        Bundle args = new Bundle();
+        args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
-        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
-        onUpdateTagResult.launch(intent);
+        onUpdateTagResult.launch(intent.putExtras(args));
     }
 
     void restoreTag() {
+        Bundle args = new Bundle();
+        args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
         Intent intent = new Intent(this, NfcActivity_.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
-        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
         intent.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
-        onUpdateTagResult.launch(intent);
+        onUpdateTagResult.launch(intent.putExtras(args));
     }
 
     void deleteFile() {

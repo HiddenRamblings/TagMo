@@ -218,7 +218,7 @@ public class AmiiboActivity extends AppCompatActivity {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
-                Debug.Error(e);
+                Debug.Log(e);
             }
         }
         if (amiiboId == -1) {
@@ -299,7 +299,7 @@ public class AmiiboActivity extends AppCompatActivity {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(this.tagData);
             } catch (Exception e) {
-                Debug.Error(e);
+                Debug.Log(e);
             }
         }
         if (amiiboId == -1) {

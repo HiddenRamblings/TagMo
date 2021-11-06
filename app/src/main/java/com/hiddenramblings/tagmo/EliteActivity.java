@@ -208,10 +208,18 @@ public class EliteActivity extends AppCompatActivity implements
             settings.setAmiiboManager(uiAmiiboManager);
             settings.notifyChanges();
         });
-        amiibos.clear();
-        for (int x = 0; x < amiiboList.size(); x++) {
-            Amiibo amiibo = amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x)));
-            amiibos.add(amiibo);
+
+        if (amiibos.isEmpty()) {
+            for (int x = 0; x < amiiboList.size(); x++) {
+                Amiibo amiibo = amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x)));
+                amiibos.add(amiibo);
+            }
+        } else {
+            for (int x = 0; x < amiiboList.size(); x++) {
+                Amiibo amiibo = amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x)));
+                if (amiibos.get(x) == null || amiibo == null || amiibos.get(x).id != amiibo.id)
+                    amiibos.add(x, amiibo);
+            }
         }
         if (refresh) refreshEliteHardwareAdapter();
     }
@@ -626,7 +634,7 @@ public class EliteActivity extends AppCompatActivity implements
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
-                Debug.Error(e);
+                Debug.Log(e);
             }
         }
         Amiibo amiibo = amiibos.get(current_bank);
@@ -807,7 +815,7 @@ public class EliteActivity extends AppCompatActivity implements
                     TagReader.validateTag(data);
                     amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
                 } catch (Exception e) {
-                    Debug.Error(e);
+                    Debug.Log(e);
                 }
             }
         }

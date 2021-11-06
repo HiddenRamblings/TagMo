@@ -215,10 +215,9 @@ public class EliteActivity extends AppCompatActivity implements
             }
         } else {
             for (int x = 0; x < amiiboList.size(); x++) {
-                // Amiibo amiibo = amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x)));
-                // if (amiibos.get(x) == null || amiibo == null || amiibos.get(x).id != amiibo.id)
-                if (amiibos.get(x) == null || amiibos.get(x).bank != x)
-                    amiibos.add(x, amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
+                if (amiibos.get(x) == null || amiibos.get(x).bank != x) {
+                    amiibos.set(x, amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
+                }
             }
         }
         refreshEliteHardwareAdapter();
@@ -382,6 +381,7 @@ public class EliteActivity extends AppCompatActivity implements
         if (status == CLICKED.FORMAT) {
             status = CLICKED.NOTHING;
             this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            amiibos.set(clickedPosition, null);
         }
     });
 

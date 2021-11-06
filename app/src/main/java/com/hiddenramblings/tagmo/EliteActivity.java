@@ -194,7 +194,7 @@ public class EliteActivity extends AppCompatActivity implements
         }
     }
 
-    private void updateEliteHardwareAdapter(ArrayList<String> amiiboList, boolean refresh) {
+    private void updateEliteHardwareAdapter(ArrayList<String> amiiboList) {
         AmiiboManager amiiboManager;
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
@@ -221,11 +221,7 @@ public class EliteActivity extends AppCompatActivity implements
                     amiibos.add(x, amiibo);
             }
         }
-        if (refresh) refreshEliteHardwareAdapter();
-    }
-
-    private void updateEliteHardwareAdapter(ArrayList<String> amiiboList) {
-        updateEliteHardwareAdapter(amiiboList, true);
+        refreshEliteHardwareAdapter();
     }
 
     @Click(R.id.toggle)
@@ -372,17 +368,16 @@ public class EliteActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())
                 && !TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
 
-        if (result.getData().hasExtra(TagMo.EXTRA_AMIIBO_DATA))
-            updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(
-                    TagMo.EXTRA_AMIIBO_DATA), false);
-
         if (result.getData().hasExtra(TagMo.EXTRA_TAG_DATA)) {
             byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
             if (amiibos.get(clickedPosition) != null)
                 amiibos.get(clickedPosition).data = tagData;
             updateAmiiboView(tagData, clickedPosition);
         }
-        refreshEliteHardwareAdapter();
+
+        if (result.getData().hasExtra(TagMo.EXTRA_AMIIBO_DATA))
+            updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(
+                    TagMo.EXTRA_AMIIBO_DATA));
 
         if (status == CLICKED.FORMAT) {
             status = CLICKED.NOTHING;
@@ -630,15 +625,15 @@ public class EliteActivity extends AppCompatActivity implements
         // String character = "";
         String amiiboImageUrl;
 
-        if (tagData != null) {
-            try {
-                amiiboId = TagUtils.amiiboIdFromTag(tagData);
-            } catch (Exception e) {
-                Debug.Log(e);
-            }
-        }
         Amiibo amiibo = amiibos.get(current_bank);
         if (amiibo == null) {
+            if (tagData != null) {
+                try {
+                    amiiboId = TagUtils.amiiboIdFromTag(tagData);
+                } catch (Exception e) {
+                    Debug.Log(e);
+                }
+            }
             if (amiiboId == -1) {
                 tagInfo = getString(R.string.read_error);
             } else if (amiiboId == 0) {
@@ -759,12 +754,13 @@ public class EliteActivity extends AppCompatActivity implements
             return;
         }
         clickedPosition = position;
+        status = CLICKED.NOTHING;
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         amiiboCard.setVisibility(View.VISIBLE);
-        if (amiibo.data != null) {
+        if (amiibo.data != null && amiibo.bank == position) {
             updateAmiiboView(amiibo.data, position);
-        } else if (amiibos.get(position).id != 0) {
-            updateAmiiboView(amiibos.get(position).id, position);
+        } else if (amiibo.id != 0) {
+            updateAmiiboView(amiibo.id, position);
         } else {
             Intent amiiboIntent = new Intent(this, NfcActivity_.class);
             amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);

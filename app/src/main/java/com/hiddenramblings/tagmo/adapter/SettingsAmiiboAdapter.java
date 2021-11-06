@@ -100,7 +100,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
             Glide.with(convertView).clear(holder.target);
             if (amiiboImageUrl != null) {
                 Glide.with(convertView)
-                        .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache(convertView)))
+                        .setDefaultRequestOptions(onlyRetrieveFromCache())
                         .asBitmap()
                         .load(amiiboImageUrl)
                         .into(holder.target);
@@ -110,7 +110,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         return convertView;
     }
 
-    void setAmiiboInfoText(TextView textView, CharSequence text) {
+    private void setAmiiboInfoText(TextView textView, CharSequence text) {
         if (text.length() == 0) {
             textView.setText(R.string.unknown);
             textView.setTextColor(Color.RED);
@@ -120,18 +120,19 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         }
     }
 
-    boolean onlyRetrieveFromCache(View view) {
+    private RequestOptions onlyRetrieveFromCache() {
         String imageNetworkSetting = TagMo.getPrefs().imageNetworkSetting().get();
         if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
-            return true;
+            return new RequestOptions().onlyRetrieveFromCache(true);
         } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
             ConnectivityManager cm = (ConnectivityManager)
-                    view.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                    TagMo.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI;
+            return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+                    || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
         } else {
-            return false;
+            return new RequestOptions().onlyRetrieveFromCache(false);
         }
     }
 

@@ -223,29 +223,30 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
                 this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(itemView).clear(target);
                 Glide.with(itemView)
-                        .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
+                        .setDefaultRequestOptions(onlyRetrieveFromCache())
                         .asBitmap()
                         .load(amiiboImageUrl != null ? amiiboImageUrl: R.mipmap.ic_launcher)
                         .into(target);
             }
         }
 
-        boolean onlyRetrieveFromCache() {
+        private RequestOptions onlyRetrieveFromCache() {
             String imageNetworkSetting = settings.getImageNetworkSettings();
             if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
-                return true;
+                return new RequestOptions().onlyRetrieveFromCache(true);
             } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
                 ConnectivityManager cm = (ConnectivityManager)
                         itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                return activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI;
+                return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+                        || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
             } else {
-                return false;
+                return new RequestOptions().onlyRetrieveFromCache(false);
             }
         }
 
-        SpannableStringBuilder boldMatchingText(String text, String query) {
+        private SpannableStringBuilder boldMatchingText(String text, String query) {
             SpannableStringBuilder str = new SpannableStringBuilder(text);
             if (query.isEmpty())
                 return str;
@@ -264,7 +265,7 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
             return str;
         }
 
-        SpannableStringBuilder boldStartText(String text, String query) {
+        private SpannableStringBuilder boldStartText(String text, String query) {
             SpannableStringBuilder str = new SpannableStringBuilder(text);
             if (!query.isEmpty() && text.toLowerCase().startsWith(query)) {
                 str.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
@@ -273,7 +274,7 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
             return str;
         }
 
-        void setAmiiboInfoText(TextView textView, CharSequence text) {
+        private void setAmiiboInfoText(TextView textView, CharSequence text) {
             textView.setVisibility(View.VISIBLE);
             if (text.length() == 0) {
                 textView.setText(R.string.unknown);

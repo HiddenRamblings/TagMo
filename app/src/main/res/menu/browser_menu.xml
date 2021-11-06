@@ -103,6 +103,9 @@
                 <item
                     android:id="@+id/view_large"
                     android:title="@string/large"/>
+                <item
+                    android:id="@+id/view_image"
+                    android:title="@string/image"/>
             </group>
         </menu>
     </item>

@@ -389,7 +389,8 @@ public class EliteActivity extends AppCompatActivity implements
     private void writeAmiiboFile(AmiiboFile amiiboFile, int position) {
         Bundle args = new Bundle();
         try {
-            args.putByteArray(TagMo.EXTRA_TAG_DATA, TagReader.readTagStream(amiiboFile.getFilePath()));
+            args.putByteArray(TagMo.EXTRA_TAG_DATA,
+                    TagReader.readTagStream(amiiboFile.getFilePath()));
         } catch (Exception e) {
             Debug.Error(e);
         }
@@ -483,6 +484,8 @@ public class EliteActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        Bundle args = new Bundle();
+        args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
         if (amiibos.get(clickedPosition) != null)
             amiibos.get(clickedPosition).data = tagData;
         switch (status) {
@@ -492,18 +495,15 @@ public class EliteActivity extends AppCompatActivity implements
                 Intent modify = new Intent(this, NfcActivity_.class);
                 modify.setAction(TagMo.ACTION_WRITE_TAG_FULL);
                 modify.putExtra(TagMo.EXTRA_CURRENT_BANK, clickedPosition);
-                modify.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
-                onUpdateTagResult.launch(modify);
+                onUpdateTagResult.launch(modify.putExtras(args));
                 break;
             case EDITOR:
-                Intent editor = new Intent(this, TagDataActivity_.class);
-                editor.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
-                onUpdateTagResult.launch(editor);
+                onUpdateTagResult.launch(new Intent(this,
+                        TagDataActivity_.class).putExtras(args));
                 break;
             case HEXCODE:
-                Intent viewhex = new Intent(this, HexViewerActivity_.class);
-                viewhex.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
-                startActivity(viewhex);
+                startActivity(new Intent(this,
+                        HexViewerActivity_.class).putExtras(args));
                 break;
             case BACKUP:
                 displayBackupDialog(tagData);

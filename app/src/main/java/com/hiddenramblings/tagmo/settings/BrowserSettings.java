@@ -29,6 +29,7 @@ public class BrowserSettings implements Parcelable {
     protected int browserAmiiboView;
     protected String imageNetworkSettings;
     protected boolean recursiveFolders;
+    protected boolean includeDownloads;
     protected boolean showMissingFiles;
 
     public BrowserSettings() {
@@ -40,7 +41,8 @@ public class BrowserSettings implements Parcelable {
             ArrayList<AmiiboFile> amiiboFiles, ArrayList<File> folders, File browserFolder,
             String query, int sort, String filterGameSeries, String filterCharacter,
             String filterAmiiboSeries, String filterAmiiboType, int browserAmiiboView,
-            String imageNetworkSettings, boolean recursiveFolders, boolean showMissingFiles
+            String imageNetworkSettings, boolean recursiveFolders, boolean includeDownloads,
+            boolean showMissingFiles
     ) {
         super();
 
@@ -56,6 +58,7 @@ public class BrowserSettings implements Parcelable {
         this.browserAmiiboView = browserAmiiboView;
         this.imageNetworkSettings = imageNetworkSettings;
         this.recursiveFolders = recursiveFolders;
+        this.includeDownloads = includeDownloads;
         this.showMissingFiles = showMissingFiles;
     }
 
@@ -77,6 +80,7 @@ public class BrowserSettings implements Parcelable {
         this.setAmiiboView(TagMo.getPrefs().browserAmiiboView().get());
         this.setImageNetworkSettings(TagMo.getPrefs().imageNetworkSetting().get());
         this.setRecursiveEnabled(TagMo.getPrefs().recursiveFolders().get());
+        this.setIncludeDownloads(TagMo.getPrefs().includeDownloads().get());
         this.setShowMissingFiles(TagMo.getPrefs().showMissingFiles().get());
         return this;
     }
@@ -187,6 +191,14 @@ public class BrowserSettings implements Parcelable {
         this.recursiveFolders = recursiveFolders;
     }
 
+    public boolean isShowingDownloads() {
+        return includeDownloads;
+    }
+
+    public void setIncludeDownloads(boolean includeDownloads) {
+        this.includeDownloads = includeDownloads;
+    }
+
     public boolean isShowingMissingFiles() {
         return showMissingFiles;
     }
@@ -235,6 +247,7 @@ public class BrowserSettings implements Parcelable {
         copy.setBrowserRootFolder(this.getBrowserRootFolder());
         copy.setImageNetworkSettings(this.getImageNetworkSettings());
         copy.setRecursiveEnabled(this.isRecursiveEnabled());
+        copy.setIncludeDownloads(this.isShowingDownloads());
         copy.setShowMissingFiles(this.isShowingMissingFiles());
 
         return copy;

@@ -50,7 +50,9 @@
     <string name="amiibo_not_found">No Amiibo Found</string>
 
     <string name="recurse_folders">Recursive Folders</string>
+    <string name="show_downloads">Include Downloads</string>
     <string name="show_missing">Show Missing Bins</string>
+    <string name="enable_scale">Scale View Layout</string>
 
     <string name="simple">Simple</string>
     <string name="compact">Compact</string>
@@ -87,6 +89,7 @@
     <string name="mod_serial">Serial Number</string>
     <string name="view_hex">View Hex Code</string>
     <string name="edit_props">Edit Properties</string>
+    <string name="delete_amiibo">Delete Bin File</string>
     <string name="ignore_restrictions">Ignore Restrictions</string>
     <string name="generate_serial">Generate Random Serial</string>
 
@@ -115,7 +118,6 @@
     <string name="logcat">Logcat</string>
 
     <string name="wrote_file">File saved to %1$s</string>
-    <string name="tagmo_backup">TagMo Backup</string>
     <string name="nfc_tag">NFC tag</string>
     <string name="tag_detected">%1$s detected&#8230;</string>
     <string name="tag_scanning">%1$s scanning&#8230;</string>
@@ -153,7 +155,6 @@
     <string name="pref_disable_debug">Disable Debug Logger</string>
     <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
-    <string name="pref_enable_scale">Enable Layout Scaling</string>
     <string name="pref_resources">Resources</string>
     <string name="pref_wiki_link">View Instructions Wiki</string>
     <string name="pref_reddit_link">Visit the TagMo reddit</string>
@@ -164,7 +165,6 @@
     <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
     <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard / external storage device</string>
     <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
-    <string name="layout_scale_details">Scales the view layouts to standardize appearance across screen sizes</string>
 
     <string name="encryption_keys">Encryption Keys</string>
     <string name="pref_import_keys">Import Keys</string>
@@ -172,7 +172,7 @@
     <string name="image_loading_details">Load images</string>
     <string name="pref_title_validation">Tag Validation</string>
     <string name="enable_tag_validation">Enable NTAG215 validation</string>
-    <string name="tag_validation_details">Not all NFC chipsets correctly identify NFC tags.\nDisabling will write to tags that may be incompatible or fail unexpectedly.</string>
+    <string name="tag_validation_details">Not all NFC chipsets correctly identify valid NFC tags.\nDisabling will write to tags that may be incompatible or fail unexpectedly.</string>
     <string name="enable_power_tag">Enable Power Tag support</string>
     <string name="power_tag_details">Support is currently in development.\nSee Github for limitations and use.</string>
     <string name="enable_elite">Enable N2 Elite support</string>

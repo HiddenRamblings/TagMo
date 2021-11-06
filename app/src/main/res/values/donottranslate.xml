@@ -31,7 +31,6 @@
     <string name="settings_disable_debug">settings_disable_debug</string>
     <string name="settings_ignore_sdcard">settings_ignore_sdcard</string>
     <string name="settings_stable_channel">settings_stable_channel</string>
-    <string name="settings_enable_scale">settings_enable_scale</string>
     <string name="settings_view_wiki">settings_view_wiki</string>
     <string name="settings_view_reddit">settings_view_reddit</string>
     <string name="image_network_settings">\@string/image_network_settings</string>

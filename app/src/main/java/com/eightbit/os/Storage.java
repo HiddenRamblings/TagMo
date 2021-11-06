@@ -172,8 +172,8 @@ public class Storage extends Environment {
     }
 
     public static String getMimeType(String fileName) {
-        String extension = fileName.substring(fileName.lastIndexOf(".")
-                + 1).toLowerCase(Locale.ROOT);
+        String extension = fileName.substring(
+                fileName.lastIndexOf(".") + 1).toLowerCase(Locale.ROOT);
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
     }
 

@@ -17,6 +17,7 @@ local.properties
 # Generated
 app/.cxx/
 app/release/
+app/publish/
 
 # User-specific configurations
 .idea/

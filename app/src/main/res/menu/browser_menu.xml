@@ -121,9 +121,19 @@
                 android:title="@string/recurse_folders"
                 app:showAsAction="ifRoom"/>
             <item
+                android:id="@+id/show_downloads"
+                android:checkable="true"
+                android:title="@string/show_downloads"
+                app:showAsAction="ifRoom"/>
+            <item
                 android:id="@+id/show_missing"
                 android:checkable="true"
                 android:title="@string/show_missing"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/enable_scale"
+                android:checkable="true"
+                android:title="@string/enable_scale"
                 app:showAsAction="ifRoom"/>
         </menu>
     </item>

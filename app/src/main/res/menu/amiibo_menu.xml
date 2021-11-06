@@ -28,6 +28,10 @@
         android:title="@string/view_hex"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/mnu_delete"
+        android:title="@string/delete_amiibo"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/mnu_ignore_tag_id"
         android:checkable="true"
         android:title="@string/ignore_restrictions"

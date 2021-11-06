@@ -314,15 +314,11 @@ public class BrowserActivity extends AppCompatActivity implements
             eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
             startActivity(eliteIntent);
         } else {
-            byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-
             Bundle args = new Bundle();
-            args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
+            args.putByteArray(TagMo.EXTRA_TAG_DATA,
+                    result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
 
-            Intent intent = new Intent(this, AmiiboActivity_.class);
-            intent.putExtras(args);
-
-            startActivity(intent);
+            startActivity(new Intent(this, AmiiboActivity_.class).putExtras(args));
         }
     });
 
@@ -803,20 +799,17 @@ public class BrowserActivity extends AppCompatActivity implements
     });
 
     private void openAmiiboViewer(AmiiboFile amiiboFile) {
-        byte[] tagData;
+        Bundle args = new Bundle();
         try {
-            tagData = TagReader.readTagStream(amiiboFile.getFilePath());
+            args.putByteArray(TagMo.EXTRA_TAG_DATA,
+                    TagReader.readTagStream(amiiboFile.getFilePath()));
         } catch (Exception e) {
             Debug.Error(e);
             return;
         }
 
-        Bundle args = new Bundle();
-        args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
-
         Intent intent = new Intent(this, AmiiboActivity_.class);
         intent.putExtras(args);
-
         onViewerActivity.launch(intent);
     }
 
@@ -895,6 +888,7 @@ public class BrowserActivity extends AppCompatActivity implements
             amiiboManager = null;
             showToast(R.string.amiibo_info_parse_error);
         }
+
         if (Thread.currentThread().isInterrupted())
             return;
 
@@ -931,6 +925,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void loadFoldersTask(File rootFolder) {
         final ArrayList<File> folders = listFolders(rootFolder);
         Collections.sort(folders, (file1, file2) -> file1.getPath().compareToIgnoreCase(file2.getPath()));
+
         if (Thread.currentThread().isInterrupted())
             return;
 
@@ -954,7 +949,6 @@ public class BrowserActivity extends AppCompatActivity implements
             return amiiboFiles;
 
         String[] mimeTypes = getResources().getStringArray(R.array.mimetype_bin);
-
         for (File file : files) {
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiibos(file, true));
@@ -985,14 +979,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (Thread.currentThread().isInterrupted())
             return;
-
         this.setAmiiboFilesLoadingBarVisibility(false);
 
         if (amiiboFiles.isEmpty() && !TagMo.getPrefs().ignoreSdcard().get()) {
             emptyText.setText(R.string.amiibo_not_found);
             if (recursiveFiles) showStorageSnackbar();
         }
-
         this.runOnUiThread(() -> {
             settings.setAmiiboFiles(amiiboFiles);
             settings.notifyChanges();

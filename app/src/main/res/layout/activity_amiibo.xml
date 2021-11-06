@@ -169,7 +169,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:theme="@style/PopupThemeOverlay"
+                android:theme="@style/PopupThemeOverlay"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.Toolbar
@@ -180,7 +180,7 @@
                     app:contentInsetLeft="0dp"
                     app:contentInsetStart="0dp"
                     android:layout_gravity="center"
-                    app:theme="@style/PopupThemeOverlay"
+                    android:theme="@style/PopupThemeOverlay"
                     app:popupTheme="@style/PopupTheme" />
             </LinearLayout>
         </LinearLayout>

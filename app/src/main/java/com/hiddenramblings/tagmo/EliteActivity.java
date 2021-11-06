@@ -211,14 +211,14 @@ public class EliteActivity extends AppCompatActivity implements
 
         if (amiibos.isEmpty()) {
             for (int x = 0; x < amiiboList.size(); x++) {
-                Amiibo amiibo = amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x)));
-                amiibos.add(amiibo);
+                amiibos.add(amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
             }
         } else {
             for (int x = 0; x < amiiboList.size(); x++) {
-                Amiibo amiibo = amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x)));
-                if (amiibos.get(x) == null || amiibo == null || amiibos.get(x).id != amiibo.id)
-                    amiibos.add(x, amiibo);
+                // Amiibo amiibo = amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x)));
+                // if (amiibos.get(x) == null || amiibo == null || amiibos.get(x).id != amiibo.id)
+                if (amiibos.get(x) == null || amiibos.get(x).bank != x)
+                    amiibos.add(x, amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
             }
         }
         refreshEliteHardwareAdapter();

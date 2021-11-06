@@ -103,7 +103,7 @@ import java.util.Locale;
 import java.util.Set;
 
 @SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.browser_layout)
+@EActivity(R.layout.activity_browser)
 @OptionsMenu({R.menu.browser_menu})
 public class BrowserActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
@@ -433,7 +433,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
-        View view = getLayoutInflater().inflate(R.layout.backup_dialog, amiibosView, false);
+        View view = getLayoutInflater().inflate(R.layout.dialog_backup, amiibosView, false);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagReader.generateFileName(settings.getAmiiboManager(), tagData));

@@ -92,13 +92,23 @@ public class Debug {
     }
 
     public static void Log(Class<?> src, int resource) {
-        if (!TagMo.getPrefs().disableDebug().get())
-            Log.d(TAG(src), TagMo.getStringRes(resource));
+        Log(src, TagMo.getStringRes(resource));
     }
 
     public static void Log(Class<?> src, int resource, String params) {
-        if (!TagMo.getPrefs().disableDebug().get())
-            Log.d(TAG(src), TagMo.getStringRes(resource, params));
+        Log(src, TagMo.getStringRes(resource, params));
+    }
+
+    public static void Log(Exception ex) {
+        if (ex.getStackTrace().length > 0) {
+            StringWriter exception = new StringWriter();
+            ex.printStackTrace(new PrintWriter(exception));
+            Log(ex.getClass(), exception.toString());
+        }
+    }
+
+    public static void Log(int resource, Exception ex) {
+        Log.d(TAG(ex.getClass()), TagMo.getStringRes(resource), ex);
     }
 
     public static void Error(Class<?> src, String params) {
@@ -106,23 +116,23 @@ public class Debug {
     }
 
     public static void Error(Class<?> src, int resource) {
-        Log.e(TAG(src), TagMo.getStringRes(resource));
+        Error(src, TagMo.getStringRes(resource));
     }
 
     public static void Error(Class<?> src, int resource, String params) {
-        Log.e(TAG(src), TagMo.getStringRes(resource, params));
+        Error(src, TagMo.getStringRes(resource, params));
     }
 
-    public static void Error(Exception error) {
-        if (error.getStackTrace().length > 0) {
+    public static void Error(Exception ex) {
+        if (ex.getStackTrace().length > 0) {
             StringWriter exception = new StringWriter();
-            error.printStackTrace(new PrintWriter(exception));
-            Error(error.getClass(), exception.toString());
+            ex.printStackTrace(new PrintWriter(exception));
+            Error(ex.getClass(), exception.toString());
         }
     }
 
-    public static void Error(int resource, Exception error) {
-        Log.e(TAG(error.getClass()), TagMo.getStringRes(resource), error);
+    public static void Error(int resource, Exception ex) {
+        Log.e(TAG(ex.getClass()), TagMo.getStringRes(resource), ex);
     }
 
     public static File generateLogcat(File file) throws IOException {

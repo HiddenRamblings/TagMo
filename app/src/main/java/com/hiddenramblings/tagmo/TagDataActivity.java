@@ -306,7 +306,7 @@ public class TagDataActivity extends AppCompatActivity {
             Glide.with(this).clear(amiiboImageTarget);
             if (amiiboImageUrl != null) {
                 Glide.with(this)
-                        .setDefaultRequestOptions(new RequestOptions().onlyRetrieveFromCache(onlyRetrieveFromCache()))
+                        .setDefaultRequestOptions(onlyRetrieveFromCache())
                         .asBitmap()
                         .load(amiiboImageUrl)
                         .into(amiiboImageTarget);
@@ -329,17 +329,19 @@ public class TagDataActivity extends AppCompatActivity {
         }
     }
 
-    boolean onlyRetrieveFromCache() {
+    private RequestOptions onlyRetrieveFromCache() {
         String imageNetworkSetting = TagMo.getPrefs().imageNetworkSetting().get();
         if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
-            return true;
+            return new RequestOptions().onlyRetrieveFromCache(true);
         } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
-            ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager cm = (ConnectivityManager)
+                    TagMo.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI;
+            return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+                    || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
         } else {
-            return false;
+            return new RequestOptions().onlyRetrieveFromCache(false);
         }
     }
 

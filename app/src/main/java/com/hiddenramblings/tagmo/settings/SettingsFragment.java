@@ -671,7 +671,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     }
                     onLoadKeys.launch(Intent.createChooser(intent, title));
                 } catch (ActivityNotFoundException ex) {
-                    Debug.Error(getClass(), ex.getMessage());
+                    Debug.Error(ex);
                 }
                 break;
             case RESULT_IMPORT_AMIIBO_DATABASE:
@@ -682,7 +682,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     }
                     onImportAmiiboDatabase.launch(Intent.createChooser(intent, title));
                 } catch (ActivityNotFoundException ex) {
-                    Debug.Error(getClass(), ex.getMessage());
+                    Debug.Error(ex);
                 }
                 break;
         }

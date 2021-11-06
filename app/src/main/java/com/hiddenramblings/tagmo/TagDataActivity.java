@@ -256,7 +256,7 @@ public class TagDataActivity extends AppCompatActivity {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
-                Debug.Error(e);
+                Debug.Log(e);
                 amiiboId = -1;
             }
             if (amiiboId == 0) {

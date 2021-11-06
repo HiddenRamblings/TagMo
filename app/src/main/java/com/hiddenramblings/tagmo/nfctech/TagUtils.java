@@ -152,7 +152,7 @@ public class TagUtils {
             byte[] result = digest.digest(data);
             return bytesToHex(result);
         } catch (NoSuchAlgorithmException e) {
-            Debug.Error(TagUtils.class, e.getMessage());
+            Debug.Error(e);
         }
         return null;
     }

@@ -467,7 +467,7 @@ public class NfcActivity extends AppCompatActivity {
                     try {
                         mifare.close();
                     } catch (IOException ex) {
-                        Debug.Error(ex);
+                        Debug.Log(ex);
                     }
                     showToast(getString(R.string.speed_scan));
                     return;
@@ -568,7 +568,7 @@ public class NfcActivity extends AppCompatActivity {
             try {
                 mifare.close();
             } catch (Exception e) {
-                Debug.Error(e);
+                Debug.Log(e);
             }
         }
         setResult(Activity.RESULT_CANCELED);

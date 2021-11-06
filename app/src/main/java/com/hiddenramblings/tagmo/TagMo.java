@@ -141,7 +141,7 @@ public class TagMo extends Application {
             MediaScannerConnection.scanFile(TagMo.getContext(),
                     new String[]{file.getAbsolutePath()}, null, null);
         } catch (Exception e) {
-            Debug.Error(R.string.fail_media_scan, e);
+            Debug.Log(R.string.fail_media_scan, e);
         }
     }
 

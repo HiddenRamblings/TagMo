@@ -99,6 +99,16 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
             highlight.setBackgroundColor(ContextCompat.getColor(
                     TagMo.getContext(), android.R.color.transparent));
         }
+        holder.itemView.setOnClickListener(view -> {
+            if (holder.listener != null)
+                holder.listener.onAmiiboClicked(holder.amiiboItem, position);
+        });
+        if (holder.imageAmiibo != null) {
+            holder.imageAmiibo.setOnClickListener(view -> {
+                if (holder.listener != null)
+                    holder.listener.onAmiiboImageClicked(holder.amiiboItem, position);
+            });
+        }
         holder.bind(getItem(position));
     }
 
@@ -148,12 +158,6 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
 
             this.settings = settings;
             this.listener = listener;
-            this.itemView.setOnClickListener(view -> {
-                if (AmiiboVewHolder.this.listener != null) {
-                    AmiiboVewHolder.this.listener.onAmiiboClicked(
-                            amiiboItem, getAbsoluteAdapterPosition());
-                }
-            });
             this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
             this.txtTagId = itemView.findViewById(R.id.txtTagId);
@@ -163,14 +167,6 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
             // this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
             this.txtPath = itemView.findViewById(R.id.txtPath);
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
-            if (this.imageAmiibo != null) {
-                this.imageAmiibo.setOnClickListener(view -> {
-                    if (AmiiboVewHolder.this.listener != null) {
-                        AmiiboVewHolder.this.listener.onAmiiboImageClicked(
-                                amiiboItem, getAbsoluteAdapterPosition());
-                    }
-                });
-            }
         }
 
         @SuppressLint("SetTextI18n")
@@ -187,6 +183,7 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
             boolean isAmiibo = amiibo != null;
 
             if (isAmiibo) {
+                this.amiiboItem.bank = getAbsoluteAdapterPosition();
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
                 if (amiibo.name != null)

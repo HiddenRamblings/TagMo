@@ -131,11 +131,6 @@
             android:summary="@string/stable_channel_details"
             android:title="@string/pref_stable_channel"
             app:iconSpaceReserved="false" />
-        <androidx.preference.CheckBoxPreference
-            android:key="@string/settings_enable_scale"
-            android:title="@string/pref_enable_scale"
-            android:summary="@string/layout_scale_details"
-            app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

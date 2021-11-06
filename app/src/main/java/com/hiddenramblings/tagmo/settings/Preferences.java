@@ -56,6 +56,9 @@ public interface Preferences {
     @DefaultBoolean(true)
     boolean recursiveFolders();
 
+    @DefaultBoolean(true)
+    boolean includeDownloads();
+
     @DefaultBoolean(false)
     boolean showMissingFiles();
 
@@ -68,7 +71,7 @@ public interface Preferences {
     @DefaultBoolean(keyRes = R.string.settings_stable_channel, value = true)
     boolean stableChannel();
 
-    @DefaultBoolean(keyRes = R.string.settings_enable_scale, value = false)
+    @DefaultBoolean(false)
     boolean enableScaling();
 
     String lastUpdated();

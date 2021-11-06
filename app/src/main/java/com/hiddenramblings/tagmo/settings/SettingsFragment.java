@@ -113,8 +113,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference ignoreSdcard;
     @PreferenceByKey(R.string.settings_stable_channel)
     CheckBoxPreference stableChannel;
-    @PreferenceByKey(R.string.settings_enable_scale)
-    CheckBoxPreference enableScaling;
 
     private KeyManager keyManager;
     private AmiiboManager amiiboManager = null;
@@ -147,7 +145,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.disableDebug.setChecked(prefs.disableDebug().get());
         this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
         this.stableChannel.setChecked(prefs.stableChannel().get());
-        this.enableScaling.setChecked(prefs.enableScaling().get());
 
         this.keyManager = new KeyManager(this.getContext());
 
@@ -372,12 +369,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_stable_channel)
     void onStableChannelClicked() {
         prefs.stableChannel().put(stableChannel.isChecked());
-    }
-
-    @PreferenceClick(R.string.settings_enable_scale)
-    void onEnableScalingClicked() {
-        prefs.enableScaling().put(enableScaling.isChecked());
-        ((SettingsActivity) requireActivity()).setScalingResult();
     }
 
     @PreferenceClick(R.string.settings_view_wiki)
@@ -659,6 +650,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void showFileChooser(String title, int resultCode) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        }
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 

@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -254,7 +255,7 @@ public class EliteActivity extends AppCompatActivity implements
         if (amiiboList != null && amiiboList.size() == eliteBankCount.getValue()) {
             new AlertDialog.Builder(this)
                     .setMessage(R.string.write_confirm)
-                    .setNegativeButton(R.string.proceed, (dialog, which) -> {
+                    .setPositiveButton(R.string.proceed, (dialog, which) -> {
                         Intent collection = new Intent(this, NfcActivity_.class);
                         collection.setAction(TagMo.ACTION_WRITE_ALL_TAGS);
                         collection.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
@@ -263,7 +264,7 @@ public class EliteActivity extends AppCompatActivity implements
                         dialog.dismiss();
                         writeDialog.dismiss();
                     })
-                    .setPositiveButton(R.string.cancel, (dialog, which) -> {
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
                         amiiboList.clear();
                         dialog.dismiss();
                     })
@@ -347,8 +348,8 @@ public class EliteActivity extends AppCompatActivity implements
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = new File(settings.getBrowserRootFolder(),
-                        TagMo.getStringRes(R.string.tagmo_backup));
+                File directory = Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DOWNLOADS);
                 String fileName = TagReader.writeBytesToFile(directory,
                         input.getText().toString(), tagData);
                 showToast(getString(R.string.wrote_file, fileName));

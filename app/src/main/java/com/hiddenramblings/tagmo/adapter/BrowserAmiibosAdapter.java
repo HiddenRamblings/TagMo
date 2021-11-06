@@ -133,12 +133,6 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
                 holder.listener.onAmiiboClicked(holder.amiiboFile);
             }
         });
-        holder.itemView.setOnLongClickListener(view -> {
-            if (holder.listener != null) {
-                holder.listener.onAmiiboLongClicked(holder.amiiboFile);
-            }
-            return true;
-        });
         if (holder.imageAmiibo != null) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (holder.listener != null) {
@@ -504,7 +498,5 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         void onAmiiboClicked(AmiiboFile amiiboFile);
 
         void onAmiiboImageClicked(AmiiboFile amiiboFile);
-
-        void onAmiiboLongClicked(AmiiboFile amiiboFile);
     }
 }

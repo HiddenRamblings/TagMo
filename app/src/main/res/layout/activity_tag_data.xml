@@ -42,12 +42,12 @@
 
                 <ImageView
                     android:id="@+id/imageAmiibo"
+                    android:contentDescription="@string/imageview_amiibo"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_marginBottom="4dp"
                     android:foreground="@drawable/card_foreground"
                     android:visibility="gone"
-                    android:contentDescription="@string/imageview_icon"
                     tools:ignore="UnusedAttribute" />
 
                 <View
@@ -232,7 +232,9 @@
 
                     <EditText
                         android:id="@+id/txtInitDate"
-                        style="@style/TagEditor.EditDate"/>
+                        android:importantForAutofill="no"
+                        style="@style/TagEditor.EditDate"
+                        tools:ignore="LabelFor,TextFields" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -247,7 +249,9 @@
 
                     <EditText
                         android:id="@+id/txtModifiedDate"
-                        style="@style/TagEditor.EditDate"/>
+                        android:importantForAutofill="no"
+                        style="@style/TagEditor.EditDate"
+                        tools:ignore="LabelFor,TextFields" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -262,10 +266,12 @@
 
                 <EditText
                     android:id="@+id/txtNickname"
+                    android:importantForAutofill="no"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLength="10"
-                    android:maxLines="1"/>
+                    android:maxLines="1"
+                    tools:ignore="LabelFor,TextFields" />
             </LinearLayout>
 
             <LinearLayout
@@ -287,7 +293,9 @@
 
                     <EditText
                         android:id="@+id/txtWriteCounter"
-                        style="@style/TagEditor.EditNumber"/>
+                        android:importantForAutofill="no"
+                        style="@style/TagEditor.EditNumber"
+                        tools:ignore="LabelFor,TextFields" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -305,10 +313,11 @@
 
                     <EditText
                         android:id="@+id/txtSerialNumber"
+                        android:importantForAutofill="no"
                         style="@style/TagEditor.EditSerial"
                         android:paddingLeft="6dp"
                         android:paddingRight="6dp"
-                        tools:ignore="TextFields" />
+                        tools:ignore="LabelFor,TextFields" />
                 </LinearLayout>
             </LinearLayout>
             <androidx.appcompat.widget.AppCompatButton
@@ -337,10 +346,12 @@
 
             <EditText
                 android:id="@+id/txtMiiName"
+                android:importantForAutofill="no"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLength="10"
-                android:maxLines="1"/>
+                android:maxLines="1"
+                tools:ignore="LabelFor,TextFields" />
         </LinearLayout>
 
         <TextView

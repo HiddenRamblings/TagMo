@@ -24,6 +24,7 @@
 
         <ImageView
             android:id="@+id/imageAmiibo"
+            android:contentDescription="@string/imageview_amiibo"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center_vertical"

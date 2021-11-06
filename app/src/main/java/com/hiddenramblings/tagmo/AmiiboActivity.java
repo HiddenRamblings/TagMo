@@ -185,7 +185,7 @@ public class AmiiboActivity extends AppCompatActivity {
     }
 
     private void displayBackupDialog() {
-        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagReader.generateFileName(this.amiiboManager, tagData));

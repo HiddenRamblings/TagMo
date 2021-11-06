@@ -15,7 +15,7 @@ import com.hiddenramblings.tagmo.settings.SettingsFragment_;
 import org.androidannotations.annotations.EActivity;
 
 @SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.settings_layout)
+@EActivity(R.layout.activity_settings)
 public class SettingsActivity extends AppCompatActivity {
     public static final String REFRESH = "REFRESH";
     public static final String SCALING = "SCALING";

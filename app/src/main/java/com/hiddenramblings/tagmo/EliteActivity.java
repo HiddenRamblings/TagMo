@@ -65,7 +65,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 @SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.bank_browser)
+@EActivity(R.layout.activity_bank_browser)
 public class EliteActivity extends AppCompatActivity implements
         BankBrowserAdapter.OnAmiiboClickListener {
 
@@ -273,7 +273,7 @@ public class EliteActivity extends AppCompatActivity implements
 
     @Click(R.id.write_open_banks)
     void onWriteOpenBanksClick() {
-        View view = getLayoutInflater().inflate( R.layout.bank_write_list, null);
+        View view = getLayoutInflater().inflate( R.layout.dialog_write_banks, null);
 
         RecyclerView writerListView = view.findViewById(R.id.amiibos_list);
         writerListView.setLayoutManager(new LinearLayoutManager(this));
@@ -340,7 +340,7 @@ public class EliteActivity extends AppCompatActivity implements
     }
 
     private void displayBackupDialog(byte[] tagData) {
-        View view = getLayoutInflater().inflate(R.layout.backup_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagReader.generateFileName(settings.getAmiiboManager(), tagData));
@@ -401,7 +401,7 @@ public class EliteActivity extends AppCompatActivity implements
     }
 
     private void displayWriteDialog(int position) {
-        View view = getLayoutInflater().inflate( R.layout.bank_write_list, null);
+        View view = getLayoutInflater().inflate( R.layout.dialog_write_banks, null);
 
         RecyclerView writerListView = view.findViewById(R.id.amiibos_list);
         writerListView.setLayoutManager(new LinearLayoutManager(this));

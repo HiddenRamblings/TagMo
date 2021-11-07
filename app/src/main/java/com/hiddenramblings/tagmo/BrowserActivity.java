@@ -1227,7 +1227,21 @@ public class BrowserActivity extends AppCompatActivity implements
             int size = settings.getAmiiboFiles().size();
             if (size <= 0) return;
             this.currentFolderView.setGravity(Gravity.CENTER);
-            currentFolderView.setText(getString(R.string.collected, size));
+            if (settings.getAmiiboManager() != null) {
+                int count = 0;
+                for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+                    for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
+                        if (amiibo.id == amiiboFile.getId()) {
+                            count += 1;
+                            break;
+                        }
+                    }
+                }
+                currentFolderView.setText(getString(R.string.amiibo_collected, size, count,
+                        settings.getAmiiboManager().amiibos.values().size()));
+            } else {
+                currentFolderView.setText(getString(R.string.files_displayed, size));
+            }
         }, 5000);
 
     }

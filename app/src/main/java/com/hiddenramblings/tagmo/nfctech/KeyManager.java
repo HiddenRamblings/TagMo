@@ -14,10 +14,10 @@ import java.io.InputStream;
 
 public class KeyManager {
 
-    private static final String FIXED_KEY_FILE = "fixed_key.bin";
+    private static final String FIXED_KEY_FILE = "fixed-key.bin";
     private static final String FIXED_KEY_MD5 = "0AD86557C7BA9E75C79A7B43BB466333";
 
-    private static final String UNFIXED_KEY_FILE = "unfixed_key.bin";
+    private static final String UNFIXED_KEY_FILE = "unfixed-key.bin";
     private static final String UNFIXED_KEY_MD5 = "2551AFC7C8813008819836E9B619F7ED";
 
     private static final int KEY_FILE_SIZE = 80;

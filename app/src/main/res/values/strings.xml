@@ -206,7 +206,11 @@
     <string name="sync_amiibo_complete">AmiiboAPI sync successful!</string>
     <string name="sync_amiibo_failed">AmiiboAPI sync has failed!</string>
 
-    <string name="total">Total: %1$d</string>
+    <string name="number_amiibo">%1$d Amiibo</string>
+    <string name="number_game">%1$d Game Series</string>
+    <string name="number_character">%1$d Character(s)</string>
+    <string name="number_series">%1$d Amiibo Series</string>
+    <string name="number_type">%1$d Amiibo Type(s)</string>
     <string name="files_displayed">%1$d Files: ? / ? Amiibo</string>
     <string name="amiibo_collected">%1$d Files: %2$d / %3$d Amiibo</string>
 

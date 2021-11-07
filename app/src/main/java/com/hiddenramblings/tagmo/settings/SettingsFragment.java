@@ -529,15 +529,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     void updateAmiiboStats() {
         boolean hasAmiibo = amiiboManager != null;
-        this.amiiboStats.setSummary(getString(R.string.total,
+        this.amiiboStats.setTitle(getString(R.string.number_amiibo,
                 hasAmiibo ? amiiboManager.amiibos.size() : 0));
-        this.gameSeriesStats.setSummary(getString(R.string.total,
+        this.gameSeriesStats.setTitle(getString(R.string.number_game,
                 hasAmiibo ? amiiboManager.gameSeries.size() : 0));
-        this.characterStats.setSummary(getString(R.string.total,
+        this.characterStats.setTitle(getString(R.string.number_character,
                 hasAmiibo ? amiiboManager.characters.size() : 0));
-        this.amiiboSeriesStats.setSummary(getString(R.string.total,
+        this.amiiboSeriesStats.setTitle(getString(R.string.number_series,
                 hasAmiibo ? amiiboManager.amiiboSeries.size() : 0));
-        this.amiiboTypeStats.setSummary(getString(R.string.total,
+        this.amiiboTypeStats.setTitle(getString(R.string.number_type,
                 hasAmiibo ? amiiboManager.amiiboTypes.size() : 0));
     }
 

@@ -126,7 +126,7 @@ public class NfcActivity extends AppCompatActivity {
         String mode = commandIntent.getAction();
 
         if (getCallingActivity() != null)
-            isEliteIntent = EliteActivity_.class.getName().equals(
+            isEliteIntent = BankListActivity_.class.getName().equals(
                     getCallingActivity().getClassName());
         if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
             bankNumberPicker.setPosition(commandIntent.getIntExtra(

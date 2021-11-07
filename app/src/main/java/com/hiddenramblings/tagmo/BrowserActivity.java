@@ -1119,7 +1119,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 this.loadAmiiboFiles(rootFolder, this.settings.isRecursiveEnabled());
             }
             this.loadFolders(rootFolder);
-            setFolderText(Storage.getRelativePath(rootFolder));
+            String relativeRoot = Storage.getRelativePath(rootFolder);
+            setFolderText(relativeRoot.length() > 1 ? relativeRoot : rootFolder.getAbsolutePath());
         }
     }
 
@@ -1223,9 +1224,10 @@ public class BrowserActivity extends AppCompatActivity implements
         this.currentFolderView.setText(text);
         handler.removeCallbacksAndMessages(null);
         handler.postDelayed(() -> {
+            int size = settings.getAmiiboFiles().size();
+            if (size <= 0) return;
             this.currentFolderView.setGravity(Gravity.CENTER);
-            currentFolderView.setText(getString(R.string.collected,
-                    settings.getAmiiboFiles().size()));
+            currentFolderView.setText(getString(R.string.collected, size));
         }, 5000);
 
     }

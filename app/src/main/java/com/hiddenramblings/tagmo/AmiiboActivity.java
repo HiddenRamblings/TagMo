@@ -128,7 +128,7 @@ public class AmiiboActivity extends AppCompatActivity {
     private void launchEliteActivity(Intent resultData) {
         if (TagMo.getPrefs().enableEliteSupport().get()
                 && resultData.hasExtra(TagMo.EXTRA_SIGNATURE)) {
-            Intent eliteIntent = new Intent(this, EliteActivity_.class);
+            Intent eliteIntent = new Intent(this, BankListActivity_.class);
             eliteIntent.putExtras(resultData.getExtras());
             startActivity(eliteIntent);
             finish(); // Relaunch activity to bring view to front

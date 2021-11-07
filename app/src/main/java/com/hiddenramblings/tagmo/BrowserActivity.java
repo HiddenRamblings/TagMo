@@ -97,9 +97,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 @SuppressLint("NonConstantResourceId")
@@ -205,7 +205,7 @@ public class BrowserActivity extends AppCompatActivity implements
         TagMo.setScaledTheme(this, R.style.AppTheme);
         this.supportInvalidateOptionsMenu();
         File[] files = getFilesDir().listFiles((dir, name) ->
-                getString(R.string.mimetype_apk).equals(Storage.getMimeType(name)));
+                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
         if (files != null) {
             for (File file : files) {
                 if (!file.isDirectory())
@@ -948,13 +948,11 @@ public class BrowserActivity extends AppCompatActivity implements
         if (files == null)
             return amiiboFiles;
 
-        String[] mimeTypes = getResources().getStringArray(R.array.mimetype_bin);
         for (File file : files) {
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiibos(file, true));
             } else {
-                if (Arrays.asList(mimeTypes).contains(Storage.getMimeType(file))) {
-                // if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
+                if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
                         byte[] data = TagReader.readTagFile(file);
                         TagReader.validateTag(data);
@@ -1315,8 +1313,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
             fos.close();
 
-            if (!getString(R.string.mimetype_apk).equals(Storage.getMimeType(apk))) {
-            // if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk")) {
+            if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk")) {
                 //noinspection ResultOfMethodCallIgnored
                 apk.delete();
                 showToast(R.string.download_corrupt);

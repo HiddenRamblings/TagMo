@@ -162,7 +162,8 @@ public class BankListActivity extends AppCompatActivity implements
                 View mainLayout = findViewById(R.id.main_layout);
                 mainLayout.setPadding(0, 0, 0, slideOffset > 0
                         ? (int) (bottomHeight * slideOffset) : 0);
-                amiibosView.smoothScrollToPosition(clickedPosition);
+                if (slideOffset > 0)
+                    amiibosView.smoothScrollToPosition(clickedPosition);
             }
         });
         toolbar.inflateMenu(R.menu.elite_menu);

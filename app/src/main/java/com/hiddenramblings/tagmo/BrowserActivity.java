@@ -309,7 +309,7 @@ public class BrowserActivity extends AppCompatActivity implements
             TagMo.getPrefs().eliteActiveBank().put(active_bank);
             TagMo.getPrefs().eliteBankCount().put(bank_count);
 
-            Intent eliteIntent = new Intent(this, EliteActivity_.class);
+            Intent eliteIntent = new Intent(this, BankListActivity_.class);
             eliteIntent.putExtras(result.getData());
             eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
             startActivity(eliteIntent);

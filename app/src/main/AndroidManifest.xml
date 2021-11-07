@@ -58,7 +58,7 @@
             -->
         </activity>
         <activity
-            android:name=".EliteActivity_"
+            android:name=".BankListActivity_"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop"
             android:theme="@style/DialogTheme.NoActionBar">

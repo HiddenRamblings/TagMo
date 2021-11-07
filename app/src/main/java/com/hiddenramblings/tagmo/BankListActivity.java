@@ -66,8 +66,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 @SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.activity_bank_browser)
-public class EliteActivity extends AppCompatActivity implements
+@EActivity(R.layout.activity_bank_list)
+public class BankListActivity extends AppCompatActivity implements
         BankBrowserAdapter.OnAmiiboClickListener {
 
     @ViewById(R.id.amiibos_list)
@@ -157,7 +157,12 @@ public class EliteActivity extends AppCompatActivity implements
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
+                int bottomHeight = bottomSheet.getMeasuredHeight()
+                        - bottomSheetBehavior.getPeekHeight();
+                View mainLayout = findViewById(R.id.main_layout);
+                mainLayout.setPadding(0, 0, 0, slideOffset > 0
+                        ? (int) (bottomHeight * slideOffset) : 0);
+                amiibosView.smoothScrollToPosition(clickedPosition);
             }
         });
         toolbar.inflateMenu(R.menu.elite_menu);

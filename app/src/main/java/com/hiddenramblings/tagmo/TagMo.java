@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.MediaScannerConnection;
@@ -87,6 +88,7 @@ public class TagMo extends Application {
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
+            mPrefs.get().edit().clear().apply();
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(0);
         });

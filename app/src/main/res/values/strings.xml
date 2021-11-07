@@ -279,7 +279,7 @@
     <string name="key_size_invalid">Invalid key file size</string>
     <string name="key_signature_error">Key file signature does not match.</string>
     <string name="invalid_key_error">No valid key in file.</string>
-    <string name="key_read_error">Error reading key from local storage</string>
+    <string name="key_read_error">Error reading key from storage</string>
 
     <string name="invalid_tag_data">Invalid tag data.</string>
     <string name="invalid_tag_file">Invalid tag file. %1$s</string>

@@ -528,23 +528,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     void updateAmiiboStats() {
-        String amiiboCount = "0";
-        String gameSeriesCount = "0";
-        String characterCount = "0";
-        String amiiboSeriesCount = "0";
-        String amiiboTypeCount = "0";
-        if (amiiboManager != null) {
-            amiiboCount = String.valueOf(amiiboManager.amiibos.size());
-            gameSeriesCount = String.valueOf(amiiboManager.gameSeries.size());
-            characterCount = String.valueOf(amiiboManager.characters.size());
-            amiiboSeriesCount = String.valueOf(amiiboManager.amiiboSeries.size());
-            amiiboTypeCount = String.valueOf(amiiboManager.amiiboTypes.size());
-        }
-        this.amiiboStats.setSummary(getString(R.string.total, amiiboCount));
-        this.gameSeriesStats.setSummary(getString(R.string.total, gameSeriesCount));
-        this.characterStats.setSummary(getString(R.string.total, characterCount));
-        this.amiiboSeriesStats.setSummary(getString(R.string.total, amiiboSeriesCount));
-        this.amiiboTypeStats.setSummary(getString(R.string.total, amiiboTypeCount));
+        boolean hasAmiibo = amiiboManager != null;
+        this.amiiboStats.setSummary(getString(R.string.total,
+                hasAmiibo ? amiiboManager.amiibos.size() : 0));
+        this.gameSeriesStats.setSummary(getString(R.string.total,
+                hasAmiibo ? amiiboManager.gameSeries.size() : 0));
+        this.characterStats.setSummary(getString(R.string.total,
+                hasAmiibo ? amiiboManager.characters.size() : 0));
+        this.amiiboSeriesStats.setSummary(getString(R.string.total,
+                hasAmiibo ? amiiboManager.amiiboSeries.size() : 0));
+        this.amiiboTypeStats.setSummary(getString(R.string.total,
+                hasAmiibo ? amiiboManager.amiiboTypes.size() : 0));
     }
 
     private static final String BACKGROUND_SYNC_AMIIBO_MANAGER = "sync_amiibo_manager";

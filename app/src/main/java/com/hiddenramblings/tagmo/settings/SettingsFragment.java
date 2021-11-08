@@ -441,6 +441,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
+    void deleteDir(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory())
+                    deleteDir(file);
+                else
+                    file.delete();
+            }
+        }
+        dir.delete();
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void unzipFile(File zipFile) {
         dialog = ProgressDialog.show(requireActivity(),
                 getString(R.string.wait_unzip), "", true);
@@ -781,19 +795,5 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @UiThread
     public void showToast(int msgRes, String params, int length) {
         Toast.makeText(this.getContext(), getString(msgRes, params), length).show();
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    void deleteDir(File dir) {
-        File[] files = dir.listFiles();
-        if (files == null)
-            return;
-        for (File file : files) {
-            if (file.isDirectory())
-                deleteDir(file);
-            else
-                file.delete();
-        }
-        dir.delete();
     }
 }

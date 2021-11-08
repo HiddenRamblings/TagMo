@@ -36,6 +36,7 @@ import com.eightbit.os.Storage;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.R;
@@ -47,7 +48,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
-import com.hiddenramblings.tagmo.github.RequestCommit;
 import com.hiddenramblings.tagmo.nfctech.KeyManager;
 
 import org.androidannotations.annotations.AfterPreferences;
@@ -59,6 +59,7 @@ import org.androidannotations.annotations.PreferenceClick;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.api.BackgroundExecutor;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -76,6 +77,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -135,17 +138,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new RequestCommit().setListener(result -> {
-            try {
-                JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-                lastUpdated = (String) jsonObject.get("lastUpdated");
-                if (!prefs.lastUpdated().get().equals(lastUpdated)) {
-                    showInstallSnackbar(lastUpdated);
-                }
-            } catch (Exception e) {
-                Debug.Error(e);
-            }
-        }).execute(TagMo.getStringRes(R.string.amiibo_api_utc));
+
+        this.keyManager = new KeyManager(this.getContext());
+        if (!keyManager.isKeyMissing()) {
+            this.checkForUpdates(requireContext().getString(R.string.amiibo_api_utc));
+        }
     }
 
     @AfterPreferences
@@ -156,8 +153,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.disableDebug.setChecked(prefs.disableDebug().get());
         this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
         this.stableChannel.setChecked(prefs.stableChannel().get());
-
-        this.keyManager = new KeyManager(this.getContext());
 
         loadAmiiboManager();
         updateKeySummary();
@@ -457,7 +452,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void unzipFile(File zipFile) {
-        dialog = ProgressDialog.show(requireActivity(),
+        dialog = ProgressDialog.show(requireContext(),
                 getString(R.string.wait_unzip), "", true);
         File destination = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS), getString(R.string.decrypted_files));
@@ -786,6 +781,48 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 R.string.update_amiibo_api), Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated));
         snackbar.show();
+    }
+
+    private void parseUpdateJSON(String result) {
+        try {
+            JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
+            lastUpdated = (String) jsonObject.get(getString(R.string.json_updated));
+            if (!prefs.lastUpdated().get().equals(lastUpdated)) {
+                showInstallSnackbar(lastUpdated);
+            }
+        } catch (Exception e) {
+            Debug.Error(e);
+        }
+    }
+
+    private void checkForUpdates(String url) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            String result = null;
+            try {
+                HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+                conn.setDoInput(true);
+                InputStream in = conn.getInputStream();
+
+                BufferedReader streamReader = new BufferedReader(
+                        new InputStreamReader(in, TagMo.UTF_8));
+                StringBuilder responseStrBuilder = new StringBuilder();
+
+                String inputStr;
+                while ((inputStr = streamReader.readLine()) != null)
+                    responseStrBuilder.append(inputStr);
+
+                result = responseStrBuilder.toString();
+            } catch (IOException e) {
+                Debug.Error(e);
+            }
+            String finalResult = result;
+            handler.post(() -> {
+                if (finalResult != null) parseUpdateJSON(finalResult);
+            });
+        });
     }
 
     @UiThread

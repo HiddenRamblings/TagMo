@@ -742,9 +742,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void unzipFile(File zipFile) {
         dialog = ProgressDialog.show(requireActivity(),
                 getString(R.string.wait_unzip), "", true);
-        File destination = new File(new File(Storage.getFile(),
-                TagMo.getPrefs().browserRootFolder().get())
-                + File.separator + getString(R.string.decrypted_files));
+        File destination = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS), getString(R.string.decrypted_files));
         if (destination.exists())
             deleteDir(destination);
         destination.mkdirs();
@@ -793,6 +792,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             } finally {
                 this.archive.delete();
                 dialog.dismiss();
+                TagMo.getPrefs().includeDownloads().put(true);
             }
         }
     }

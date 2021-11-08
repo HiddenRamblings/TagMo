@@ -158,6 +158,7 @@
     <string name="pref_resources">Resources</string>
     <string name="pref_wiki_link">View Instructions Wiki</string>
     <string name="pref_reddit_link">Visit the TagMo reddit</string>
+    <string name="pref_amiibo_link">Get Decrypted Amiibo</string>
 
     <string name="sync_api_details">Sync Amiibo info with AmiiboAPI.com</string>
     <string name="export_json_details">Export Amiibo info to JSON</string>
@@ -322,4 +323,9 @@
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 
     <string name="speed_scan">Lift tag slightly to improve scan</string>
+    <string name="download_notice">Wait for download to complete!</string>
+    <string name="decrypted_files">Amiibo (Decrypted)</string>
+    <string name="wait_unzip">Unzipping Amiibo Collection&#8230;</string>
+    <string name="unzip_item">Unzipping %1$s&#8230;</string>
+    <string name="mkdir_failed">Folder "%1$s" failed!</string>
 </resources>

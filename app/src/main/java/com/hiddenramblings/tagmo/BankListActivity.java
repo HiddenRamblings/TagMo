@@ -43,6 +43,7 @@ import com.hiddenramblings.tagmo.adapter.WriteBlankAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.nfctech.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -64,6 +65,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_bank_list)
@@ -116,7 +118,6 @@ public class BankListActivity extends AppCompatActivity implements
     BottomSheetBehavior<View> bottomSheetBehavior;
 
     ArrayList<Amiibo> amiibos = new ArrayList<>();
-    ArrayList<AmiiboFile> amiiboFiles;
 
     private int clickedPosition;
     private enum CLICKED {
@@ -140,11 +141,13 @@ public class BankListActivity extends AppCompatActivity implements
 
     @AfterViews
     void afterViews() {
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
 
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        this.bottomSheetBehavior.addBottomSheetCallback(
+                new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -168,7 +171,7 @@ public class BankListActivity extends AppCompatActivity implements
         });
         toolbar.inflateMenu(R.menu.elite_menu);
 
-        loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
+        this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
 
         int bank_count = getIntent().getIntExtra(TagMo.EXTRA_BANK_COUNT,
                 TagMo.getPrefs().eliteBankCount().get());
@@ -322,7 +325,8 @@ public class BankListActivity extends AppCompatActivity implements
             }
         });
 
-        writerListView.setAdapter(new WriteBlankAdapter(settings, itemClick, amiiboFiles));
+        writerListView.setAdapter(new WriteBlankAdapter(
+                settings, itemClick, settings.getAmiiboFiles()));
         this.settings.addChangeListener((BrowserSettingsListener) writerListView.getAdapter());
         writeDialog.getWindow().setLayout(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -457,7 +461,8 @@ public class BankListActivity extends AppCompatActivity implements
             }
         });
 
-        writerListView.setAdapter(new WriteBlankAdapter(settings, itemClick, amiiboFiles));
+        writerListView.setAdapter(new WriteBlankAdapter(
+                settings, itemClick, settings.getAmiiboFiles()));
         this.settings.addChangeListener((BrowserSettingsListener) writerListView.getAdapter());
         writeDialog.getWindow().setLayout(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -798,14 +803,8 @@ public class BankListActivity extends AppCompatActivity implements
         loadAmiiboFilesTask(rootFolder, recursiveFiles);
     }
 
-    @Background(id = BACKGROUND_AMIIBO_FILES)
-    void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
-        amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
-    }
-
     ArrayList<AmiiboFile> listAmiibos(File rootFolder, boolean recursiveFiles) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
-
         File[] files = rootFolder.listFiles();
         if (files == null)
             return amiiboFiles;
@@ -814,16 +813,43 @@ public class BankListActivity extends AppCompatActivity implements
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiibos(file, true));
             } else {
-                try {
-                    byte[] data = TagReader.readTagFile(file);
-                    TagReader.validateTag(data);
-                    amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
-                } catch (Exception e) {
-                    Debug.Log(e);
+                if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
+                    try {
+                        byte[] data = TagReader.readTagFile(file);
+                        try {
+                            TagReader.validateTag(data);
+                        } catch (Exception ex) {
+                            data = TagUtils.encrypt(new KeyManager(this), data);
+                            amiiboFiles.add(new AmiiboFile(file,
+                                    TagUtils.amiiboIdFromTag(data), true));
+                            TagReader.validateTag(data);
+                        }
+                        amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
+                    } catch (Exception e) {
+                        //
+                    }
                 }
+
             }
         }
         return amiiboFiles;
+    }
+
+    @Background(id = BACKGROUND_AMIIBO_FILES)
+    void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
+        final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
+        if (TagMo.getPrefs().includeDownloads().get()) {
+            amiiboFiles.addAll(listAmiibos(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), recursiveFiles));
+        }
+
+        if (Thread.currentThread().isInterrupted())
+            return;
+
+        this.runOnUiThread(() -> {
+            settings.setAmiiboFiles(amiiboFiles);
+            settings.notifyChanges();
+        });
     }
 
     @UiThread

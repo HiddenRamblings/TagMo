@@ -92,6 +92,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InvalidObjectException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -220,7 +221,8 @@ public class BrowserActivity extends AppCompatActivity implements
     void afterViews() {
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        this.bottomSheetBehavior.addBottomSheetCallback(
+                new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -955,7 +957,14 @@ public class BrowserActivity extends AppCompatActivity implements
                 if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
                         byte[] data = TagReader.readTagFile(file);
-                        TagReader.validateTag(data);
+                        try {
+                            TagReader.validateTag(data);
+                        } catch (Exception ex) {
+                            data = TagUtils.encrypt(keyManager, data);
+                            amiiboFiles.add(new AmiiboFile(file,
+                                    TagUtils.amiiboIdFromTag(data), true));
+                            TagReader.validateTag(data);
+                        }
                         amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
                     } catch (Exception e) {
                         //

@@ -16,10 +16,7 @@ import java.util.Locale;
 
 public class KeyManager {
 
-    private static final String FIXED_KEY_FILE = "fixed_key.bin";
     private static final String FIXED_KEY_MD5 = "0AD86557C7BA9E75C79A7B43BB466333";
-
-    private static final String UNFIXED_KEY_FILE = "unfixed_key.bin";
     private static final String UNFIXED_KEY_MD5 = "2551AFC7C8813008819836E9B619F7ED";
 
     private static final int KEY_FILE_SIZE = 80;
@@ -56,14 +53,14 @@ public class KeyManager {
     }
 
     public boolean hasFixedKey() {
-        if (hasLocalFile(FIXED_KEY_FILE))
-            fixedKey = loadKeyFromStorage(FIXED_KEY_FILE);
+        if (hasLocalFile(FIXED_KEY_MD5))
+            fixedKey = loadKeyFromStorage(FIXED_KEY_MD5);
         return fixedKey != null;
     }
 
     public boolean hasUnFixedKey() {
-        if (hasLocalFile(UNFIXED_KEY_FILE))
-            unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
+        if (hasLocalFile(UNFIXED_KEY_MD5))
+            unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5);
         return unfixedKey != null;
     }
 
@@ -77,52 +74,25 @@ public class KeyManager {
         }
     }
 
-    boolean readKey(InputStream strm) throws IOException {
-        byte[] data = new byte[KEY_FILE_SIZE];
-        int rlen = strm.read(data, 0, data.length);
-        if (rlen <= 0)
-            return false;
-
-        if (rlen < KEY_FILE_SIZE)
-            throw new IOException(context.getString(R.string.key_size_error));
-
-        String md5 = TagUtils.md5(data);
-        if (FIXED_KEY_MD5.equals(md5)) {
-            saveKeyFile(FIXED_KEY_FILE, data);
-            this.fixedKey = loadKeyFromStorage(FIXED_KEY_FILE);
-        } else if (UNFIXED_KEY_MD5.equals(md5)) {
-            saveKeyFile(UNFIXED_KEY_FILE, data);
-            this.unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
-        } else
-            throw new IOException(context.getString(R.string.key_signature_error));
-        return true;
-    }
-
-    private void verifyKey(Uri file) throws IOException {
-        String keyPath = DocumentsUri.getPath(context, file);
-        if (keyPath == null)
-            throw new IOException(context.getString(R.string.key_read_error));
-        File keyFile = new File(keyPath);
-        String fileName = keyFile.getName().toLowerCase(Locale.ROOT);
-        if (!fileName.equals(FIXED_KEY_FILE) && !fileName.equals(UNFIXED_KEY_FILE)) {
-            if (fileName.startsWith("unfixed") && fileName.endsWith("key.bin")) {
-                //noinspection ResultOfMethodCallIgnored
-                keyFile.renameTo(new File(keyFile.getParent(), UNFIXED_KEY_FILE));
-            }
-            if (fileName.startsWith("fixed") && fileName.endsWith("key.bin")) {
-                //noinspection ResultOfMethodCallIgnored
-                keyFile.renameTo(new File(keyFile.getParent(), FIXED_KEY_FILE));
-            }
-        }
-    }
-
     public void loadKey(Uri file) throws IOException {
-        verifyKey(file);
         try (InputStream strm = context.getContentResolver().openInputStream(file)) {
-            if (!readKey(strm))
+            byte[] data = new byte[KEY_FILE_SIZE];
+            int rlen = strm.read(data, 0, data.length);
+            if (rlen <= 0)
                 throw new IOException(context.getString(R.string.invalid_key_error));
-            // if we can't even read one key then it's completely wrong
-            readKey(strm);
+
+            if (rlen < KEY_FILE_SIZE)
+                throw new IOException(context.getString(R.string.key_size_error));
+
+            String md5 = TagUtils.md5(data);
+            if (FIXED_KEY_MD5.equals(md5)) {
+                saveKeyFile(FIXED_KEY_MD5, data);
+                this.fixedKey = loadKeyFromStorage(FIXED_KEY_MD5);
+            } else if (UNFIXED_KEY_MD5.equals(md5)) {
+                saveKeyFile(UNFIXED_KEY_MD5, data);
+                this.unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5);
+            } else
+                throw new IOException(context.getString(R.string.key_signature_error));
         }
     }
 }

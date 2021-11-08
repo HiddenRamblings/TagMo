@@ -740,8 +740,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void unzipFile(File zipFile) {
-        dialog = ProgressDialog.show(requireActivity(), "",
-                getString(R.string.wait_unzip), true);
+        dialog = ProgressDialog.show(requireActivity(),
+                getString(R.string.wait_unzip), "", true);
         File destination = new File(new File(Storage.getFile(),
                 TagMo.getPrefs().browserRootFolder().get())
                 + File.separator + getString(R.string.decrypted_files));

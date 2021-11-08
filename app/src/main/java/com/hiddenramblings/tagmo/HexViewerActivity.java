@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +14,7 @@ import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
 @SuppressLint("NonConstantResourceId")
@@ -34,7 +36,7 @@ public class HexViewerActivity extends AppCompatActivity {
             setAdapterTagData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
             Debug.Error(R.string.fail_decrypt, e);
-            finish();
+            LogError(R.string.fail_decrypt);
         }
     }
 
@@ -42,5 +44,14 @@ public class HexViewerActivity extends AppCompatActivity {
         adapter = new HexCodeAdapter(tagData);
         listView.setLayoutManager(new LinearLayoutManager(this));
         listView.setAdapter(adapter);
+    }
+
+    @UiThread
+    void LogError(int msgRes) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.error_caps)
+                .setMessage(msgRes)
+                .setPositiveButton(R.string.close, (dialog, which) -> finish())
+                .show();
     }
 }

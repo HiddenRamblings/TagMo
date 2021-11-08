@@ -38,9 +38,13 @@
 
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
     <string name="amiibo_api_utc">https://www.amiiboapi.com/api/lastupdated</string>
+    <string name="json_updated">lastUpdated</string>
     <string name="amiibo_api_img">https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08x-%08x.png</string>
 
     <string name="repo_url">https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/%1$s</string>
+    <string name="json_name">name</string>
+    <string name="json_assets">assets</string>
+    <string name="json_download_url">browser_download_url</string>
     <string name="wiki_url">https://github.com/HiddenRamblings/TagMo/wiki/Instructions</string>
     <string name="reddit_url">https://www.reddit.com/r/tagmo/</string>
     <string name="amiibo_url">https://hax0kartik.github.io/amiibo-generator</string>

@@ -3,14 +3,12 @@ package com.hiddenramblings.tagmo.settings;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Spannable;
@@ -36,7 +34,7 @@ import com.eightbit.os.Storage;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.BuildConfig;
+import com.hiddenramblings.tagmo.GeneratorActivity_;
 import com.hiddenramblings.tagmo.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.R;
@@ -59,7 +57,6 @@ import org.androidannotations.annotations.PreferenceClick;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.api.BackgroundExecutor;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -67,7 +64,6 @@ import org.json.JSONTokener;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,8 +75,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 @SuppressLint("NonConstantResourceId")
 @EFragment
@@ -128,7 +122,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private KeyManager keyManager;
     private AmiiboManager amiiboManager = null;
     private String lastUpdated;
-    private ProgressDialog dialog;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -389,90 +382,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 Uri.parse(getString(R.string.reddit_url))));
     }
 
-    private class UnZip implements Runnable {
-        File archive;
-        File outputDir;
-
-        UnZip(File ziparchive, File directory) {
-            this.archive = ziparchive;
-            this.outputDir = directory;
-        }
-
-        private final Handler handler = new Handler(Looper.getMainLooper());
-        @SuppressWarnings("ResultOfMethodCallIgnored")
-        @Override
-        public void run() {
-            try {
-                ZipInputStream zipIn = new ZipInputStream(new FileInputStream(this.archive));
-                ZipEntry entry;
-                while ((entry = zipIn.getNextEntry()) != null) {
-                    ZipEntry finalEntry = entry;
-                    handler.post(() -> dialog.setMessage(
-                            getString(R.string.unzip_item, finalEntry.getName())));
-                    if (finalEntry.isDirectory()) {
-                        if (!new File(outputDir, finalEntry.getName()).mkdirs())
-                            throw new RuntimeException(
-                                    getString(R.string.mkdir_failed, finalEntry.getName()));
-                    } else {
-                        FileOutputStream fileOut = new FileOutputStream(
-                                new File(outputDir, finalEntry.getName()));
-                        byte[] buffer = new byte[8192];
-                        int len;
-                        while ((len = zipIn.read(buffer)) != -1)
-                            fileOut.write(buffer, 0, len);
-                        fileOut.close();
-                        zipIn.closeEntry();
-                    }
-                }
-                zipIn.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                dialog.dismiss();
-                ((SettingsActivity) requireActivity()).setRefreshResult();
-                this.archive.delete();
-                TagMo.getPrefs().includeDownloads().put(true);
-            }
-        }
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    void deleteDir(File dir) {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory())
-                    deleteDir(file);
-                else
-                    file.delete();
-            }
-        }
-        dir.delete();
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void unzipFile(File zipFile) {
-        dialog = ProgressDialog.show(requireContext(),
-                getString(R.string.wait_unzip), "", true);
-        File destination = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), getString(R.string.decrypted_files));
-        if (destination.exists()) deleteDir(destination);
-        destination.mkdirs();
-        new Thread(new UnZip(zipFile, destination)).start();
-    }
-
     ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        File directory = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS);
-        File amiiboZip = new File(directory, "amiibo.zip");
-        if (amiiboZip.exists()) unzipFile(amiiboZip);
+        if (result.getResultCode() != Activity.RESULT_OK) return;
+
+        TagMo.getPrefs().includeDownloads().put(true);
+        ((SettingsActivity) requireActivity()).setRefreshResult();
     });
 
     @PreferenceClick(R.string.settings_get_amiibo)
     void onGetAmiiboClicked() {
-        onDownloadZip.launch(new Intent(Intent.ACTION_VIEW,
-                Uri.parse(getString(R.string.amiibo_url))));
+        onDownloadZip.launch(new Intent(requireContext(), GeneratorActivity_.class));
         showToast(R.string.download_notice, Toast.LENGTH_LONG);
     }
 

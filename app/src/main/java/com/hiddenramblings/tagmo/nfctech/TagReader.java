@@ -171,7 +171,7 @@ public class TagReader {
         try {
             validateTag(tagData);
         } catch (Exception e) {
-            status = "(Corrupted)";
+            status = " (Corrupted)";
             Debug.Log(TagReader.class, e.getMessage());
         }
         try {
@@ -188,7 +188,7 @@ public class TagReader {
 
             byte[] uId = Arrays.copyOfRange(tagData, 0, 9);
             String uIds = TagUtils.bytesToHex(uId);
-            return String.format(Locale.ROOT, "%1$s [%2$s] %3$s.bin", name, uIds, status);
+            return String.format(Locale.ROOT, "%1$s[%2$s]%3$s.bin", name, uIds, status);
         } catch (Exception e) {
             Debug.Log(TagReader.class, e.getMessage());
         }

@@ -23,6 +23,10 @@ public class AmiiboFile implements Parcelable {
         this.decrypted = false;
     }
 
+    public boolean isDecrypted() {
+        return decrypted;
+    }
+
     public File getFilePath() {
         return filePath;
     }

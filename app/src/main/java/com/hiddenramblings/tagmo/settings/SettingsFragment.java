@@ -3,17 +3,22 @@ package com.hiddenramblings.tagmo.settings;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +66,7 @@ import org.json.JSONTokener;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,6 +76,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @SuppressLint("NonConstantResourceId")
 @EFragment
@@ -117,6 +125,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private KeyManager keyManager;
     private AmiiboManager amiiboManager = null;
     private String lastUpdated;
+    private ProgressDialog dialog;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -141,6 +150,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @AfterPreferences
     protected void afterViews() {
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         this.enableTagTypeValidation.setChecked(prefs.enableTagTypeValidation().get());
         this.disableDebug.setChecked(prefs.disableDebug().get());
         this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
@@ -381,6 +392,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void onViewRedditClicked() {
         startActivity(new Intent(Intent.ACTION_VIEW,
                 Uri.parse(getString(R.string.reddit_url))));
+    }
+
+    ActivityResultLauncher<Intent> onBrowserView = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        File directory = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS);
+        File amiiboZip = new File(directory, "amiibo.zip");
+        if (amiiboZip.exists()) unzipFile(amiiboZip);
+    });
+
+    @PreferenceClick(R.string.settings_get_amiibo)
+    void onGetAmiiboClicked() {
+        onBrowserView.launch(new Intent(Intent.ACTION_VIEW,
+                Uri.parse(getString(R.string.amiibo_url))));
+        showToast(R.string.download_notice, Toast.LENGTH_LONG);
     }
 
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";
@@ -698,5 +724,76 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @UiThread
     public void showToast(int msgRes, String params, int length) {
         Toast.makeText(this.getContext(), getString(msgRes, params), length).show();
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    void deleteDir(File dir) {
+        if (dir == null || !dir.exists())
+            return;
+        for (File temp : dir.listFiles()) {
+            if (temp.isDirectory())
+                deleteDir(temp);
+            temp.delete();
+        }
+        dir.delete();
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void unzipFile(File zipFile) {
+        dialog = ProgressDialog.show(requireActivity(), "",
+                getString(R.string.wait_unzip), true);
+        File destination = new File(new File(Storage.getFile(),
+                TagMo.getPrefs().browserRootFolder().get())
+                + File.separator + getString(R.string.decrypted_files));
+        if (destination.exists())
+            deleteDir(destination);
+        destination.mkdirs();
+        new Thread(new UnZip(zipFile, destination)).start();
+    }
+
+    private class UnZip implements Runnable {
+        File archive;
+        File outputDir;
+
+        UnZip(File ziparchive, File directory) {
+            this.archive = ziparchive;
+            this.outputDir = directory;
+        }
+
+        private final Handler handler = new Handler(Looper.getMainLooper());
+        @SuppressWarnings("ResultOfMethodCallIgnored")
+        @Override
+        public void run() {
+            try {
+                FileInputStream fileIn = new FileInputStream(this.archive);
+                ZipInputStream zipIn = new ZipInputStream(fileIn);
+                ZipEntry entry;
+                while ((entry = zipIn.getNextEntry()) != null) {
+                    ZipEntry finalEntry = entry;
+                    handler.post(() -> dialog.setMessage(
+                            getString(R.string.unzip_item, finalEntry.getName())));
+                    if (finalEntry.isDirectory()) {
+                        if (!new File(outputDir, finalEntry.getName()).mkdirs())
+                            throw new RuntimeException(
+                                    getString(R.string.mkdir_failed, finalEntry.getName()));
+                    } else {
+                        FileOutputStream fileOut = new FileOutputStream(
+                                new File(outputDir, finalEntry.getName()));
+                        byte[] buffer = new byte[8192];
+                        int len;
+                        while ((len = zipIn.read(buffer)) != -1)
+                            fileOut.write(buffer, 0, len);
+                        fileOut.close();
+                        zipIn.closeEntry();
+                    }
+                }
+                zipIn.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                this.archive.delete();
+                dialog.dismiss();
+            }
+        }
     }
 }

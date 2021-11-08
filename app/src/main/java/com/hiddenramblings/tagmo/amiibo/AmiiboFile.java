@@ -9,10 +9,18 @@ public class AmiiboFile implements Parcelable {
 
     protected File filePath;
     protected long id;
+    protected boolean decrypted;
+
+    public AmiiboFile(File filePath, long id, boolean decrypted) {
+        this.filePath = filePath;
+        this.id = id;
+        this.decrypted = decrypted;
+    }
 
     public AmiiboFile(File filePath, long id) {
         this.filePath = filePath;
         this.id = id;
+        this.decrypted = false;
     }
 
     public File getFilePath() {

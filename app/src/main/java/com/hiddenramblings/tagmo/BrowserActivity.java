@@ -803,8 +803,9 @@ public class BrowserActivity extends AppCompatActivity implements
     private void openAmiiboViewer(AmiiboFile amiiboFile) {
         Bundle args = new Bundle();
         try {
-            args.putByteArray(TagMo.EXTRA_TAG_DATA,
-                    TagReader.readTagStream(amiiboFile.getFilePath()));
+            byte[] data = TagReader.readTagStream(amiiboFile.getFilePath());
+            if (amiiboFile.isDecrypted()) data = TagUtils.encrypt(keyManager, data);
+            args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
         } catch (Exception e) {
             Debug.Error(e);
             return;

@@ -191,9 +191,9 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsMenuItem(R.id.unlock_elite)
     MenuItem menuUnlockElite;
 
-    BottomSheetBehavior<View> bottomSheetBehavior;
-    KeyManager keyManager;
-    SearchView searchView;
+    private BottomSheetBehavior<View> bottomSheetBehavior;
+    private KeyManager keyManager;
+    private SearchView searchView;
     private AmiiboFile clickedAmiibo = null;
     private Handler handler = new Handler();
 
@@ -205,13 +205,12 @@ public class BrowserActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         TagMo.setScaledTheme(this, R.style.AppTheme);
         this.supportInvalidateOptionsMenu();
-        File[] files = getFilesDir().listFiles((dir, name) ->
-                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
+        File[] files = getFilesDir().listFiles((file, name) -> !file.isDirectory()
+                && name.toLowerCase(Locale.ROOT).endsWith(".apk"));
         if (files != null) {
             for (File file : files) {
-                if (!file.isDirectory())
-                    //noinspection ResultOfMethodCallIgnored
-                    file.delete();
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
             }
         }
         keyManager = new KeyManager(this);
@@ -911,11 +910,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ArrayList<File> listFolders(File rootFolder) {
         ArrayList<File> folders = new ArrayList<>();
-
         File[] files = rootFolder.listFiles();
         if (files == null)
             return folders;
-
         for (File file : files) {
             if (file.isDirectory()) {
                 folders.add(file);
@@ -944,45 +941,15 @@ public class BrowserActivity extends AppCompatActivity implements
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
         loadAmiiboFilesTask(rootFolder, recursiveFiles);
     }
-    
-    ArrayList<AmiiboFile> listAmiibos(File rootFolder, boolean recursiveFiles) {
-        ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
-        File[] files = rootFolder.listFiles();
-        if (files == null)
-            return amiiboFiles;
-
-        for (File file : files) {
-            if (file.isDirectory() && recursiveFiles) {
-                amiiboFiles.addAll(listAmiibos(file, true));
-            } else {
-                if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
-                    try {
-                        byte[] data = TagReader.readTagFile(file);
-                        try {
-                            TagReader.validateTag(data);
-                        } catch (Exception ex) {
-                            data = TagUtils.encrypt(keyManager, data);
-                            amiiboFiles.add(new AmiiboFile(file,
-                                    TagUtils.amiiboIdFromTag(data), true));
-                            TagReader.validateTag(data);
-                        }
-                        amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
-                    } catch (Exception e) {
-                        //
-                    }
-                }
-
-            }
-        }
-        return amiiboFiles;
-    }
 
     @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
-        final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
+        final ArrayList<AmiiboFile> amiiboFiles =
+                AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (TagMo.getPrefs().includeDownloads().get()) {
-            amiiboFiles.addAll(listAmiibos(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), recursiveFiles));
+            amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
+                    Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_DOWNLOADS), recursiveFiles));
         }
 
         if (Thread.currentThread().isInterrupted())

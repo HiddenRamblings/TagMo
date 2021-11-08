@@ -40,7 +40,7 @@ public class AmiiboData {
 
     private final ByteBuffer tagData;
 
-    public AmiiboData(byte[] tagData) throws Exception {
+    public AmiiboData(byte[] tagData) throws IOException {
         if (tagData.length < NfcByte.TAG_FILE_SIZE)
             throw new IOException(TagMo.getStringRes(R.string.invalid_tag_data));
 

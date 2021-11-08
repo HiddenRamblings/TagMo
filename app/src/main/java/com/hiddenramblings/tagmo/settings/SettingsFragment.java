@@ -394,6 +394,63 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 Uri.parse(getString(R.string.reddit_url))));
     }
 
+    private class UnZip implements Runnable {
+        File archive;
+        File outputDir;
+
+        UnZip(File ziparchive, File directory) {
+            this.archive = ziparchive;
+            this.outputDir = directory;
+        }
+
+        private final Handler handler = new Handler(Looper.getMainLooper());
+        @SuppressWarnings("ResultOfMethodCallIgnored")
+        @Override
+        public void run() {
+            try {
+                ZipInputStream zipIn = new ZipInputStream(new FileInputStream(this.archive));
+                ZipEntry entry;
+                while ((entry = zipIn.getNextEntry()) != null) {
+                    ZipEntry finalEntry = entry;
+                    handler.post(() -> dialog.setMessage(
+                            getString(R.string.unzip_item, finalEntry.getName())));
+                    if (finalEntry.isDirectory()) {
+                        if (!new File(outputDir, finalEntry.getName()).mkdirs())
+                            throw new RuntimeException(
+                                    getString(R.string.mkdir_failed, finalEntry.getName()));
+                    } else {
+                        FileOutputStream fileOut = new FileOutputStream(
+                                new File(outputDir, finalEntry.getName()));
+                        byte[] buffer = new byte[8192];
+                        int len;
+                        while ((len = zipIn.read(buffer)) != -1)
+                            fileOut.write(buffer, 0, len);
+                        fileOut.close();
+                        zipIn.closeEntry();
+                    }
+                }
+                zipIn.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                this.archive.delete();
+                dialog.dismiss();
+                TagMo.getPrefs().includeDownloads().put(true);
+            }
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void unzipFile(File zipFile) {
+        dialog = ProgressDialog.show(requireActivity(),
+                getString(R.string.wait_unzip), "", true);
+        File destination = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS), getString(R.string.decrypted_files));
+        if (destination.exists()) deleteDir(destination);
+        destination.mkdirs();
+        new Thread(new UnZip(zipFile, destination)).start();
+    }
+
     ActivityResultLauncher<Intent> onBrowserView = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         File directory = Environment.getExternalStoragePublicDirectory(
@@ -738,64 +795,5 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 file.delete();
         }
         dir.delete();
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void unzipFile(File zipFile) {
-        dialog = ProgressDialog.show(requireActivity(),
-                getString(R.string.wait_unzip), "", true);
-        File destination = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), getString(R.string.decrypted_files));
-        if (destination.exists())
-            deleteDir(destination);
-        destination.mkdirs();
-        new Thread(new UnZip(zipFile, destination)).start();
-    }
-
-    private class UnZip implements Runnable {
-        File archive;
-        File outputDir;
-
-        UnZip(File ziparchive, File directory) {
-            this.archive = ziparchive;
-            this.outputDir = directory;
-        }
-
-        private final Handler handler = new Handler(Looper.getMainLooper());
-        @SuppressWarnings("ResultOfMethodCallIgnored")
-        @Override
-        public void run() {
-            try {
-                FileInputStream fileIn = new FileInputStream(this.archive);
-                ZipInputStream zipIn = new ZipInputStream(fileIn);
-                ZipEntry entry;
-                while ((entry = zipIn.getNextEntry()) != null) {
-                    ZipEntry finalEntry = entry;
-                    handler.post(() -> dialog.setMessage(
-                            getString(R.string.unzip_item, finalEntry.getName())));
-                    if (finalEntry.isDirectory()) {
-                        if (!new File(outputDir, finalEntry.getName()).mkdirs())
-                            throw new RuntimeException(
-                                    getString(R.string.mkdir_failed, finalEntry.getName()));
-                    } else {
-                        FileOutputStream fileOut = new FileOutputStream(
-                                new File(outputDir, finalEntry.getName()));
-                        byte[] buffer = new byte[8192];
-                        int len;
-                        while ((len = zipIn.read(buffer)) != -1)
-                            fileOut.write(buffer, 0, len);
-                        fileOut.close();
-                        zipIn.closeEntry();
-                    }
-                }
-                zipIn.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                this.archive.delete();
-                dialog.dismiss();
-                TagMo.getPrefs().includeDownloads().put(true);
-            }
-        }
     }
 }

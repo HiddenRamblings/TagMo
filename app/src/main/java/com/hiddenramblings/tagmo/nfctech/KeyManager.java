@@ -6,7 +6,6 @@ import android.net.Uri;
 import com.eightbit.content.DocumentsUri;
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,7 +47,7 @@ public class KeyManager {
         try (FileInputStream fs = context.openFileInput(file)) {
             byte[] key = new byte[KEY_FILE_SIZE];
             if (fs.read(key) != KEY_FILE_SIZE)
-                throw new IOException(TagMo.getStringRes(R.string.key_size_invalid));
+                throw new IOException(context.getString(R.string.key_size_invalid));
             return key;
         } catch (Exception e) {
             Debug.Error(R.string.key_read_error, e);
@@ -85,7 +84,7 @@ public class KeyManager {
             return false;
 
         if (rlen < KEY_FILE_SIZE)
-            throw new IOException(TagMo.getStringRes(R.string.key_size_error));
+            throw new IOException(context.getString(R.string.key_size_error));
 
         String md5 = TagUtils.md5(data);
         if (FIXED_KEY_MD5.equals(md5)) {
@@ -95,14 +94,14 @@ public class KeyManager {
             saveKeyFile(UNFIXED_KEY_FILE, data);
             this.unfixedKey = loadKeyFromStorage(UNFIXED_KEY_FILE);
         } else
-            throw new IOException(TagMo.getStringRes(R.string.key_signature_error));
+            throw new IOException(context.getString(R.string.key_signature_error));
         return true;
     }
 
-    public void loadKey(Uri file) throws IOException {
-        String keyPath = DocumentsUri.getPath(TagMo.getContext(), file);
+    private void verifyKey(Uri file) throws IOException {
+        String keyPath = DocumentsUri.getPath(context, file);
         if (keyPath == null)
-            throw new IOException(TagMo.getStringRes(R.string.key_read_error));
+            throw new IOException(context.getString(R.string.key_read_error));
         File keyFile = new File(keyPath);
         String fileName = keyFile.getName().toLowerCase(Locale.ROOT);
         if (!fileName.equals(FIXED_KEY_FILE) && !fileName.equals(UNFIXED_KEY_FILE)) {
@@ -115,9 +114,13 @@ public class KeyManager {
                 keyFile.renameTo(new File(keyFile.getParent(), FIXED_KEY_FILE));
             }
         }
+    }
+
+    public void loadKey(Uri file) throws IOException {
+        verifyKey(file);
         try (InputStream strm = context.getContentResolver().openInputStream(file)) {
             if (!readKey(strm))
-                throw new IOException(TagMo.getStringRes(R.string.invalid_key_error));
+                throw new IOException(context.getString(R.string.invalid_key_error));
             // if we can't even read one key then it's completely wrong
             readKey(strm);
         }

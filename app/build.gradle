@@ -24,9 +24,8 @@ android {
     buildTypes {
         release {
             getIsDefault().set(true)
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable true
         }
         debug {
             initWith release

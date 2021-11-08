@@ -290,15 +290,6 @@ public class AmiiboManager {
         }
     }
 
-    private static boolean isDataValid(byte[] data) {
-        try {
-            TagReader.validateTag(data);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
     public static ArrayList<AmiiboFile> listAmiibos(
             KeyManager keyManager, File rootFolder, boolean recursiveFiles) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
@@ -318,6 +309,7 @@ public class AmiiboManager {
                         } catch (Exception e) {
                             try {
                                 data = TagUtils.encrypt(keyManager, data);
+                                TagReader.validateTag(data);
                                 amiiboFiles.add(new AmiiboFile(file,
                                         TagUtils.amiiboIdFromTag(data), true));
                             } catch (RuntimeException ex) {

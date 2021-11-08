@@ -323,7 +323,6 @@
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 
     <string name="speed_scan">Lift tag slightly to improve scan</string>
-    <string name="download_notice">Wait for download to complete!</string>
     <string name="decrypted_files">Amiibo (Decrypted)</string>
     <string name="wait_unzip">Unzipping Amiibo Collection&#8230;</string>
     <string name="unzip_item">Unzipping %1$s&#8230;</string>

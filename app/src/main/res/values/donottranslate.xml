@@ -33,6 +33,7 @@
     <string name="settings_stable_channel">settings_stable_channel</string>
     <string name="settings_view_wiki">settings_view_wiki</string>
     <string name="settings_view_reddit">settings_view_reddit</string>
+    <string name="settings_get_amiibo">settings_get_amiibo</string>
     <string name="image_network_settings">\@string/image_network_settings</string>
 
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
@@ -42,6 +43,7 @@
     <string name="repo_url">https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/%1$s</string>
     <string name="wiki_url">https://github.com/HiddenRamblings/TagMo/wiki/Instructions</string>
     <string name="reddit_url">https://www.reddit.com/r/tagmo/</string>
+    <string name="amiibo_url">https://hax0kartik.github.io/amiibo-generator</string>
 
     <string name="mimetype_apk">application/vnd.android.package-archive</string>
     <string-array name="mimetype_bin">

@@ -728,12 +728,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void deleteDir(File dir) {
-        if (dir == null || !dir.exists())
+        File[] files = dir.listFiles();
+        if (files == null)
             return;
-        for (File temp : dir.listFiles()) {
-            if (temp.isDirectory())
-                deleteDir(temp);
-            temp.delete();
+        for (File file : files) {
+            if (file.isDirectory())
+                deleteDir(file);
+            else
+                file.delete();
         }
         dir.delete();
     }

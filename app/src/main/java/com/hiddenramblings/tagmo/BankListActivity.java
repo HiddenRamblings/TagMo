@@ -115,9 +115,10 @@ public class BankListActivity extends AppCompatActivity implements
     @ViewById(R.id.write_bank_count)
     AppCompatButton writeBankCount;
 
-    BottomSheetBehavior<View> bottomSheetBehavior;
+    private BottomSheetBehavior<View> bottomSheetBehavior;
+    private KeyManager keyManager;
 
-    ArrayList<Amiibo> amiibos = new ArrayList<>();
+    private ArrayList<Amiibo> amiibos = new ArrayList<>();
 
     private int clickedPosition;
     private enum CLICKED {
@@ -137,6 +138,7 @@ public class BankListActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.settings = new BrowserSettings().initialize();
+        keyManager = new KeyManager(this);
     }
 
     @AfterViews
@@ -803,44 +805,14 @@ public class BankListActivity extends AppCompatActivity implements
         loadAmiiboFilesTask(rootFolder, recursiveFiles);
     }
 
-    ArrayList<AmiiboFile> listAmiibos(File rootFolder, boolean recursiveFiles) {
-        ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
-        File[] files = rootFolder.listFiles();
-        if (files == null)
-            return amiiboFiles;
-
-        for (File file : files) {
-            if (file.isDirectory() && recursiveFiles) {
-                amiiboFiles.addAll(listAmiibos(file, true));
-            } else {
-                if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
-                    try {
-                        byte[] data = TagReader.readTagFile(file);
-                        try {
-                            TagReader.validateTag(data);
-                        } catch (Exception ex) {
-                            data = TagUtils.encrypt(new KeyManager(this), data);
-                            amiiboFiles.add(new AmiiboFile(file,
-                                    TagUtils.amiiboIdFromTag(data), true));
-                            TagReader.validateTag(data);
-                        }
-                        amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
-                    } catch (Exception e) {
-                        //
-                    }
-                }
-
-            }
-        }
-        return amiiboFiles;
-    }
-
     @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
-        final ArrayList<AmiiboFile> amiiboFiles = listAmiibos(rootFolder, recursiveFiles);
+        final ArrayList<AmiiboFile> amiiboFiles =
+                AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (TagMo.getPrefs().includeDownloads().get()) {
-            amiiboFiles.addAll(listAmiibos(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), recursiveFiles));
+            amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
+                    Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_DOWNLOADS), recursiveFiles));
         }
 
         if (Thread.currentThread().isInterrupted())

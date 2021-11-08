@@ -6,6 +6,9 @@ import android.net.Uri;
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.nfctech.KeyManager;
+import com.hiddenramblings.tagmo.nfctech.TagReader;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +22,7 @@ import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -284,5 +288,36 @@ public class AmiiboManager {
                 }
             }
         }
+    }
+
+    public static ArrayList<AmiiboFile> listAmiibos(
+            KeyManager keyManager, File rootFolder, boolean recursiveFiles) {
+        ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
+        File[] files = rootFolder.listFiles();
+        if (files == null)
+            return amiiboFiles;
+        for (File file : files) {
+            if (file.isDirectory() && recursiveFiles) {
+                amiiboFiles.addAll(listAmiibos(keyManager, file, true));
+            } else {
+                if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
+                    try {
+                        byte[] data = TagReader.readTagFile(file);
+                        try {
+                            TagReader.validateTag(data);
+                        } catch (Exception ex) {
+                            data = TagUtils.encrypt(keyManager, data);
+                            amiiboFiles.add(new AmiiboFile(file,
+                                    TagUtils.amiiboIdFromTag(data), true));
+                            TagReader.validateTag(data);
+                        }
+                        amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
+                    } catch (Exception e) {
+                        //
+                    }
+                }
+            }
+        }
+        return amiiboFiles;
     }
 }

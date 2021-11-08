@@ -433,8 +433,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                this.archive.delete();
                 dialog.dismiss();
+                ((SettingsActivity) requireActivity()).setRefreshResult();
+                this.archive.delete();
                 TagMo.getPrefs().includeDownloads().put(true);
             }
         }
@@ -465,7 +466,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         new Thread(new UnZip(zipFile, destination)).start();
     }
 
-    ActivityResultLauncher<Intent> onBrowserView = registerForActivityResult(
+    ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         File directory = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
@@ -475,7 +476,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_get_amiibo)
     void onGetAmiiboClicked() {
-        onBrowserView.launch(new Intent(Intent.ACTION_VIEW,
+        onDownloadZip.launch(new Intent(Intent.ACTION_VIEW,
                 Uri.parse(getString(R.string.amiibo_url))));
         showToast(R.string.download_notice, Toast.LENGTH_LONG);
     }

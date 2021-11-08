@@ -176,7 +176,7 @@ public class TagUtils {
         return null;
     }
 
-    public static long amiiboIdFromTag(byte[] data) throws Exception {
+    public static long amiiboIdFromTag(byte[] data) throws NumberFormatException, IOException {
         return new AmiiboData(data).getAmiiboID();
     }
 
@@ -211,18 +211,18 @@ public class TagUtils {
         return decrypted;
     }
 
-    public static byte[] encrypt(KeyManager keyManager, byte[] tagData) throws Exception {
+    public static byte[] encrypt(KeyManager keyManager, byte[] tagData) throws RuntimeException {
         if (!keyManager.hasFixedKey() || !keyManager.hasUnFixedKey())
-            throw new Exception(TagMo.getStringRes(R.string.key_not_present));
+            throw new RuntimeException(TagMo.getStringRes(R.string.key_not_present));
 
         AmiiTool tool = new AmiiTool();
         if (tool.setKeysFixed(keyManager.fixedKey, keyManager.fixedKey.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.error_amiitool_init));
+            throw new RuntimeException(TagMo.getStringRes(R.string.error_amiitool_init));
         if (tool.setKeysUnfixed(keyManager.unfixedKey, keyManager.unfixedKey.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.error_amiitool_init));
+            throw new RuntimeException(TagMo.getStringRes(R.string.error_amiitool_init));
         byte[] encrypted = new byte[NfcByte.TAG_FILE_SIZE];
         if (tool.pack(tagData, tagData.length, encrypted, encrypted.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.fail_encrypt));
+            throw new RuntimeException(TagMo.getStringRes(R.string.fail_encrypt));
 
         return encrypted;
     }

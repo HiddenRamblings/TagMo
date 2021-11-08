@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -60,7 +61,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
-import com.hiddenramblings.tagmo.github.RequestCommit;
 import com.hiddenramblings.tagmo.nfctech.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
@@ -87,13 +87,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InvalidObjectException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -102,6 +104,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_browser)
@@ -193,9 +197,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private KeyManager keyManager;
-    private SearchView searchView;
     private AmiiboFile clickedAmiibo = null;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     @InstanceState
     BrowserSettings settings;
@@ -278,18 +281,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.loadPTagKeyManager();
 
-        new RequestCommit().setListener(result -> {
-            try {
-                JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-                String lastCommit = ((String) jsonObject.get("name")).substring(6);
-                if (!BuildConfig.COMMIT.equals(lastCommit)) {
-                    JSONObject assets = (JSONObject) ((JSONArray) jsonObject.get("assets")).get(0);
-                    showInstallSnackbar((String) assets.get("browser_download_url"));
-                }
-            } catch (Exception e) {
-                Debug.Error(e);
-            }
-        }).execute(getString(R.string.repo_url,
+        this.checkForUpdates(getString(R.string.repo_url,
                 TagMo.getPrefs().stableChannel().get() ? "master" : "experimental"));
     }
 
@@ -743,7 +735,7 @@ public class BrowserActivity extends AppCompatActivity implements
         String query = settings.getQuery();
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menuSearch.getActionView();
+        SearchView searchView = (SearchView) menuSearch.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(this);
@@ -947,9 +939,14 @@ public class BrowserActivity extends AppCompatActivity implements
         final ArrayList<AmiiboFile> amiiboFiles =
                 AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (TagMo.getPrefs().includeDownloads().get()) {
-            amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
-                    Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOWNLOADS), recursiveFiles));
+            File download = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS);
+            File[] files = rootFolder.listFiles((file, name) -> file.isDirectory()
+                    && name.equals(download.getName()));
+            if (files == null || files.length == 0)
+                amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
+                        Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_DOWNLOADS), recursiveFiles));
         }
 
         if (Thread.currentThread().isInterrupted())
@@ -1361,6 +1358,50 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         });
         snackbar.show();
+    }
+
+    private void parseUpdateJSON(String result) {
+        try {
+            JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
+            String lastCommit = (String) jsonObject.get(getString(R.string.json_name));
+            if (!BuildConfig.COMMIT.equals(lastCommit.substring(6))) {
+                JSONArray assets = (JSONArray) jsonObject.get(getString(R.string.json_assets));
+                JSONObject asset = (JSONObject) assets.get(0);
+                showInstallSnackbar((String) asset.get(getString(R.string.json_download_url)));
+            }
+        } catch (JSONException e) {
+            Debug.Error(e);
+        }
+    }
+
+    private void checkForUpdates(String url) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            String result = null;
+            try {
+                HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+                conn.setDoInput(true);
+                InputStream in = conn.getInputStream();
+
+                BufferedReader streamReader = new BufferedReader(
+                        new InputStreamReader(in, TagMo.UTF_8));
+                StringBuilder responseStrBuilder = new StringBuilder();
+
+                String inputStr;
+                while ((inputStr = streamReader.readLine()) != null)
+                    responseStrBuilder.append(inputStr);
+
+                result = responseStrBuilder.toString();
+            } catch (IOException e) {
+                Debug.Error(e);
+            }
+            String finalResult = result;
+            handler.post(() -> {
+                if (finalResult != null) parseUpdateJSON(finalResult);
+            });
+        });
     }
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;

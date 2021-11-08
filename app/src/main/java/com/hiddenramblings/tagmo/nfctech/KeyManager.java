@@ -74,25 +74,31 @@ public class KeyManager {
         }
     }
 
+    private void readKey(InputStream strm) throws IOException {
+        byte[] data = new byte[KEY_FILE_SIZE];
+        int rlen = strm.read(data, 0, data.length);
+        if (rlen <= 0)
+            throw new IOException(context.getString(R.string.invalid_key_error));
+
+        if (rlen < KEY_FILE_SIZE)
+            throw new IOException(context.getString(R.string.key_size_error));
+
+        String md5 = TagUtils.md5(data);
+        if (FIXED_KEY_MD5.equals(md5)) {
+            saveKeyFile(FIXED_KEY_MD5, data);
+            this.fixedKey = loadKeyFromStorage(FIXED_KEY_MD5);
+        } else if (UNFIXED_KEY_MD5.equals(md5)) {
+            saveKeyFile(UNFIXED_KEY_MD5, data);
+            this.unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5);
+            if (!hasFixedKey()) readKey(strm);
+        } else {
+            throw new IOException(context.getString(R.string.key_signature_error));
+        }
+    }
+
     public void loadKey(Uri file) throws IOException {
         try (InputStream strm = context.getContentResolver().openInputStream(file)) {
-            byte[] data = new byte[KEY_FILE_SIZE];
-            int rlen = strm.read(data, 0, data.length);
-            if (rlen <= 0)
-                throw new IOException(context.getString(R.string.invalid_key_error));
-
-            if (rlen < KEY_FILE_SIZE)
-                throw new IOException(context.getString(R.string.key_size_error));
-
-            String md5 = TagUtils.md5(data);
-            if (FIXED_KEY_MD5.equals(md5)) {
-                saveKeyFile(FIXED_KEY_MD5, data);
-                this.fixedKey = loadKeyFromStorage(FIXED_KEY_MD5);
-            } else if (UNFIXED_KEY_MD5.equals(md5)) {
-                saveKeyFile(UNFIXED_KEY_MD5, data);
-                this.unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5);
-            } else
-                throw new IOException(context.getString(R.string.key_signature_error));
+            readKey(strm);
         }
     }
 }

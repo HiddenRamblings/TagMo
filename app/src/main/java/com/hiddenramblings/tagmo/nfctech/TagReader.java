@@ -184,25 +184,27 @@ public class TagReader {
         return binFile.getAbsolutePath();
     }
 
-    public static String generateFileName(AmiiboManager amiiboManager, byte[] tagData) {
+    public static String generateBinName(AmiiboManager amiiboManager,
+                                         byte[] tagData, boolean decrypted) {
         String status = "";
-        try {
-            validateTag(tagData);
-        } catch (Exception e) {
+        if (decrypted) {
             status = "(Decrypted)";
-            Debug.Log(TagReader.class, e.getMessage());
+        } else {
+            try {
+                validateTag(tagData);
+            } catch (Exception e) {
+                status = "(Invalid)";
+            }
         }
         try {
             long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-            String name = null;
+            String name = TagUtils.amiiboIdToHex(amiiboId);
             if (amiiboManager != null) {
                 Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
                 if (amiibo != null && amiibo.name != null) {
                     name = amiibo.name.replace("/", "-");
                 }
             }
-            if (name == null)
-                name = TagUtils.amiiboIdToHex(amiiboId);
 
             byte[] uId = Arrays.copyOfRange(tagData, 0, 9);
             String uIds = TagUtils.bytesToHex(uId);
@@ -211,6 +213,10 @@ public class TagReader {
             Debug.Log(TagReader.class, e.getMessage());
         }
         return "";
+    }
+
+    public static String generateFilename(AmiiboManager amiiboManager, byte[] tagData) {
+        return generateBinName(amiiboManager, tagData, false);
     }
 
     public static byte[] scanTagToBytes(NTAG215 tag) throws Exception {

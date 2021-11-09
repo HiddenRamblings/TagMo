@@ -123,7 +123,7 @@
             <item
                 android:id="@+id/recursive"
                 android:checkable="true"
-                android:title="@string/recurse_folders"
+                android:title="@string/recursive_folders"
                 app:showAsAction="ifRoom"/>
             <item
                 android:id="@+id/show_downloads"
@@ -138,19 +138,19 @@
         </menu>
     </item>
     <item
-        android:id="@+id/export_logcat"
-        android:title="@string/show_logcat"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/amiibo_backup"
         android:title="@string/amiibo_backup"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/collect_amiibo"
-        android:title="@string/collect_amiibo"
+        android:id="@+id/build_wumiibo"
+        android:title="@string/build_wumiibo"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/unlock_elite"
         android:title="@string/unlock_elite"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/export_logcat"
+        android:title="@string/show_logcat"
         app:showAsAction="ifRoom"/>
 </menu>

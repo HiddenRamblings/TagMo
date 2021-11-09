@@ -37,7 +37,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -74,7 +73,7 @@ public class WebViewActivity extends AppCompatActivity {
         }
 
         if (getIntent().getAction() != null
-                && getIntent().getAction().equals(TagMo.ACTION_COLLECT_AMIIBO)) {
+                && getIntent().getAction().equals(TagMo.ACTION_BUILD_WUMIIBO)) {
             JavaScriptInterface download = new JavaScriptInterface();
             mWebView.getSettings().setJavaScriptEnabled(true);
             mWebView.getSettings().setAllowUniversalAccessFromFileURLs(true);
@@ -189,7 +188,7 @@ public class WebViewActivity extends AppCompatActivity {
     private void saveBinFile(byte[] tagData, String name) {
         try {
             File filePath = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), name + ".bin");
+                    Environment.DIRECTORY_DOWNLOADS), name + "(Decrypted).bin");
             FileOutputStream os = new FileOutputStream(filePath, false);
             os.write(tagData);
             os.flush();
@@ -205,18 +204,15 @@ public class WebViewActivity extends AppCompatActivity {
     void setBinName(String base64File, String mimeType) {
         byte[] tagData = Base64.decode(base64File.replaceFirst(
                 "^data:" + mimeType + ";base64,", ""), 0);
-        AmiiboManager amiiboManager;
-        try {
-            amiiboManager = AmiiboManager.getAmiiboManager();
-        } catch (IOException | JSONException | ParseException e) {
-            Debug.Error(e);
-            amiiboManager = null;
-        }
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(amiiboManager != null
-                ? TagReader.generateFileName(amiiboManager, tagData) : "");
+        try {
+            AmiiboManager amiiboManager = AmiiboManager.getAmiiboManager();
+            input.setText(TagReader.generateBinName(amiiboManager, tagData, true));
+        } catch (IOException | JSONException | ParseException e) {
+            Debug.Log(e);
+        }
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             saveBinFile(tagData, input.getText().toString());

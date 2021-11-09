@@ -65,7 +65,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Locale;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_bank_list)
@@ -356,7 +355,7 @@ public class BankListActivity extends AppCompatActivity implements
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagReader.generateFileName(settings.getAmiiboManager(), tagData));
+        input.setText(TagReader.generateFilename(settings.getAmiiboManager(), tagData));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
@@ -810,7 +809,7 @@ public class BankListActivity extends AppCompatActivity implements
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         final ArrayList<AmiiboFile> amiiboFiles =
                 AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
-        if (TagMo.getPrefs().includeDownloads().get()) {
+        if (TagMo.getPrefs().insertDownloads().get()) {
             amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
                     Environment.getExternalStoragePublicDirectory(
                             Environment.DIRECTORY_DOWNLOADS), recursiveFiles));

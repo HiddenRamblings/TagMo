@@ -262,6 +262,33 @@ public class BrowserActivity extends AppCompatActivity implements
         this.foldersView.setAdapter(new BrowserFoldersAdapter(settings));
         this.settings.addChangeListener((BrowserSettingsListener) this.foldersView.getAdapter());
 
+// TODO: Storage Access Framework
+
+//        ActivityResultLauncher<Intent> onDocumentTree = registerForActivityResult(
+//                new ActivityResultContracts.StartActivityForResult(), result -> {
+//            if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+//
+//            Uri treeUri = result.getData().getData();
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+//            getContentResolver().takePersistableUriPermission(treeUri,
+//                    Intent.FLAG_GRANT_READ_URI_PERMISSION |
+//                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//            DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
+//
+//            // List all existing files inside picked directory
+//            for (DocumentFile file : pickedDir.listFiles()) {
+//                Log.d(TAG, "Found file " + file.getName() + " with size " + file.length());
+//            }
+//
+//            // Create a new file and write into it
+//            DocumentFile newFile = pickedDir.createFile("text/plain", "My Novel");
+//            OutputStream out = getContentResolver().openOutputStream(newFile.getUri());
+//            out.write("A long time ago...".getBytes());
+//            out.close();
+//
+//        });
+//        onDocumentTree.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (Environment.isExternalStorageManager()) {
                 this.onRefresh();
@@ -471,8 +498,8 @@ public class BrowserActivity extends AppCompatActivity implements
                     TagMo.getExternalFiles(), "tagmo_logcat.txt"));
             TagMo.scanFile(file);
             showToast(getString(R.string.wrote_file, Storage.getRelativePath(file)));
-            startActivity(new Intent(this,
-                    WebViewActivity_.class).setData(Storage.getFileUri(file)));
+            startActivity(new ActionIntent(this, WebViewActivity_.class)
+                    .setData(Storage.getFileUri(file)));
         } catch (IOException e) {
             showToast(e.getMessage());
         }

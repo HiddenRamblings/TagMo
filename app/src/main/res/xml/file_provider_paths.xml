@@ -2,5 +2,4 @@
 <paths>
     <files-path name="files_path" path="."/>
     <external-path name="external_path" path="."/>
-    <root-path name="root_path" path="/storage/"/>
 </paths>

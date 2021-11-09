@@ -62,7 +62,9 @@ public class ActionIntent extends Intent {
 
     public ActionIntent(Intent intent) {
         super(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                ? intent
+                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 : intent
         );
     }
@@ -70,7 +72,9 @@ public class ActionIntent extends Intent {
     @TargetApi(Build.VERSION_CODES.N)
     public ActionIntent(String action) {
         super(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? new Intent(action).setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                ? new Intent(action)
+                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 : new Intent(action)
         );
     }
@@ -78,7 +82,9 @@ public class ActionIntent extends Intent {
     @TargetApi(Build.VERSION_CODES.N)
     public ActionIntent(Context context, Class<?> cls) {
         super(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? new Intent(context, cls).setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                ? new Intent(context, cls)
+                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 : new Intent(context, cls)
         );
     }
@@ -86,7 +92,9 @@ public class ActionIntent extends Intent {
     @TargetApi(Build.VERSION_CODES.N)
     public ActionIntent(String action, Uri uri) {
         super(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? new Intent(action, uri).setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                ? new Intent(action, uri)
+                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 : new Intent(action, uri)
         );
     }
@@ -94,7 +102,9 @@ public class ActionIntent extends Intent {
     @TargetApi(Build.VERSION_CODES.N)
     public ActionIntent(String action, Uri uri, Context context, Class<?> cls) {
         super(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? new Intent(action, uri, context, cls).setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                ? new Intent(action, uri, context, cls)
+                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 : new Intent(action, uri, context, cls)
         );
     }

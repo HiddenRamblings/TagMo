@@ -138,12 +138,12 @@
         </menu>
     </item>
     <item
-        android:id="@+id/amiibo_backup"
-        android:title="@string/amiibo_backup"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/build_wumiibo"
         android:title="@string/build_wumiibo"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/amiibo_backup"
+        android:title="@string/amiibo_backup"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/unlock_elite"

@@ -1411,9 +1411,17 @@ public class BrowserActivity extends AppCompatActivity implements
             String result = null;
             try {
                 HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-                conn.setDoInput(true);
-                InputStream in = conn.getInputStream();
+                conn.setRequestMethod("GET");
+                conn.setUseCaches(false);
+                conn.setDefaultUseCaches(false);
 
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM)
+                    conn = (HttpURLConnection) new URL(
+                            conn.getHeaderField("Location")).openConnection();
+                else if (responseCode != 200) return;
+
+                InputStream in = conn.getInputStream();
                 BufferedReader streamReader = new BufferedReader(
                         new InputStreamReader(in, TagMo.UTF_8));
                 StringBuilder responseStrBuilder = new StringBuilder();

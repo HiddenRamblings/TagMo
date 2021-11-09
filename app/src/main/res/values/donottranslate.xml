@@ -39,8 +39,7 @@
     <string name="logcat_file">tagmo_logcat.txt</string>
 
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
-    <!--string name="amiibo_api_utc">https://www.amiiboapi.com/api/lastupdated</string-->
-    <string name="amiibo_api_utc">https://raw.githubusercontent.com/N3evin/AmiiboAPI/a52cb882ca386cc4e9d1a6056dc093cb54f6e9f5/last-updated.json</string>
+    <string name="amiibo_api_utc">https://www.amiiboapi.com/api/lastupdated/</string>
     <string name="amiibo_api_img">https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08x-%08x.png</string>
     <string name="repo_url">https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/%1$s</string>
     <string name="wiki_url">https://github.com/HiddenRamblings/TagMo/wiki/Instructions</string>

@@ -583,6 +583,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             URL url = new URL(getString(R.string.amiibo_api_url));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
+            urlConnection.setUseCaches(false);
+            urlConnection.setDefaultUseCaches(false);
 
             int statusCode = urlConnection.getResponseCode();
             if (statusCode == 200) {
@@ -689,8 +691,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void parseUpdateJSON(String result) {
         try {
             JSONObject jsonObject = (JSONObject) new JSONObject(result);
-            // lastUpdated = (String) jsonObject.get("lastUpdated");
-            lastUpdated = (String) jsonObject.get("timestamp");
+            lastUpdated = (String) jsonObject.get("lastUpdated");
             if (!prefs.lastUpdated().get().equals(lastUpdated)) {
                 showInstallSnackbar(lastUpdated);
             }
@@ -706,14 +707,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         executor.execute(() -> {
             try {
                 HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-                conn.setDoInput(true);
-                int responseCode = conn.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM) {
-                    String redirect = conn.getHeaderField("Location");
-                    conn = (HttpURLConnection) new URL(redirect).openConnection();
-                }
-                InputStream in = conn.getInputStream();
+                conn.setRequestMethod("GET");
+                conn.setUseCaches(false);
+                conn.setDefaultUseCaches(false);
 
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM)
+                    conn = (HttpURLConnection) new URL(
+                            conn.getHeaderField("Location")).openConnection();
+                else if (responseCode != 200) return;
+
+                InputStream in = conn.getInputStream();
                 BufferedReader streamReader = new BufferedReader(
                         new InputStreamReader(in, TagMo.UTF_8));
                 StringBuilder responseStrBuilder = new StringBuilder();

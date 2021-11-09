@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,17 +33,21 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.json.JSONException;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.activity_generator)
-public class GeneratorActivity extends AppCompatActivity {
+@EActivity(R.layout.activity_webview)
+public class WebViewActivity extends AppCompatActivity {
 
     @ViewById(R.id.webview_content)
     WebView mWebView;
@@ -60,29 +65,51 @@ public class GeneratorActivity extends AppCompatActivity {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
 
-        JavaScriptInterface download = new JavaScriptInterface();
-
         mWebView.setScrollbarFadingEnabled(true);
-        mWebView.getSettings().setUseWideViewPort(true);
         mWebView.getSettings().setLoadWithOverviewMode(true);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setAllowUniversalAccessFromFileURLs(true);
-        mWebView.addJavascriptInterface(download, "Android");
-        mWebView.getSettings().setDomStorageEnabled(true);
+        mWebView.getSettings().setUseWideViewPort(true);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             mWebView.getSettings().setPluginState(WebSettings.PluginState.ON);
         }
-        mWebView.loadUrl(getString(R.string.amiibo_url));
 
-        mWebView.setDownloadListener((url, userAgent, contentDisposition, mimeType, contentLength) -> {
-            if (url.startsWith("blob") || url.startsWith("data")) {
-                Log.d("DATA", url);
-                mWebView.loadUrl(download.getBase64StringFromBlob(url, mimeType));
-            }
-        });
-
+        if (getIntent().getAction() != null
+                && getIntent().getAction().equals(TagMo.ACTION_COLLECT_AMIIBO)) {
+            JavaScriptInterface download = new JavaScriptInterface();
+            mWebView.getSettings().setJavaScriptEnabled(true);
+            mWebView.getSettings().setAllowUniversalAccessFromFileURLs(true);
+            mWebView.addJavascriptInterface(download, "Android");
+            mWebView.getSettings().setDomStorageEnabled(true);
+            mWebView.loadUrl(getString(R.string.amiibo_url));
+            mWebView.setDownloadListener((url, userAgent, contentDisposition, mimeType, contentLength) -> {
+                if (url.startsWith("blob") || url.startsWith("data")) {
+                    Log.d("DATA", url);
+                    mWebView.loadUrl(download.getBase64StringFromBlob(url, mimeType));
+                }
+            });
+        } else {
+            mWebView.getSettings().setBuiltInZoomControls(true);
+            mWebView.getSettings().setSupportZoom(true);
+            mWebView.getSettings().setAllowFileAccess(true);
+            mWebView.loadData(readTextFromUri(getIntent().getData()),
+                    "text/html; charset=UTF-8", null);
+        }
         setResult(RESULT_CANCELED);
+    }
+
+    private String readTextFromUri(Uri fileUri) {
+        try {
+            InputStream in = getContentResolver().openInputStream(fileUri);
+            BufferedReader r = new BufferedReader(new InputStreamReader(in));
+            StringBuilder total = new StringBuilder();
+            for (String line; (line = r.readLine()) != null; ) {
+                total.append(line).append("<br />");
+            }
+            return total.toString();
+        } catch (Exception e) {
+            Debug.Log(e);
+        }
+        return null;
     }
 
     private class UnZip implements Runnable {
@@ -159,7 +186,7 @@ public class GeneratorActivity extends AppCompatActivity {
         new Thread(new UnZip(zipFile, destination)).start();
     }
 
-    private void saveBinFile(byte[] tagData, String mimeType, String name) {
+    private void saveBinFile(byte[] tagData, String name) {
         try {
             File filePath = new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS), name + ".bin");
@@ -192,7 +219,7 @@ public class GeneratorActivity extends AppCompatActivity {
                 ? TagReader.generateFileName(amiiboManager, tagData) : "");
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
-            saveBinFile(tagData, mimeType, input.getText().toString());
+            saveBinFile(tagData, input.getText().toString());
             backupDialog.dismiss();
         });
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());

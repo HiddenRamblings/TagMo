@@ -401,8 +401,9 @@ public class BankListActivity extends AppCompatActivity implements
     private void writeAmiiboFile(AmiiboFile amiiboFile, int position) {
         Bundle args = new Bundle();
         try {
-            args.putByteArray(TagMo.EXTRA_TAG_DATA,
-                    TagReader.readTagStream(amiiboFile.getFilePath()));
+            byte[] data = amiiboFile.getData() != null ? amiiboFile.getData()
+                    : TagReader.getVerifiedData(keyManager, amiiboFile.getFilePath());
+            args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
         } catch (Exception e) {
             Debug.Error(e);
         }

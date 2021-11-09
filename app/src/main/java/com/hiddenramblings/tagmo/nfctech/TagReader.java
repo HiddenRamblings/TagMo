@@ -1,10 +1,13 @@
 package com.hiddenramblings.tagmo.nfctech;
 
+import android.net.Uri;
+
 import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import java.io.BufferedReader;
@@ -80,26 +83,40 @@ public class TagReader {
         Debug.Error(TagWriter.class, R.string.validation_success);
     }
 
-    public static byte[] readTagFile(File file) throws Exception {
+    public static byte[] getVerifiedData(KeyManager keyManager, File file) throws Exception {
+        byte[] data = TagReader.readTagFile(file);
+        try {
+            TagReader.validateTag(data);
+        } catch (Exception e) {
+            try {
+                data = TagUtils.encrypt(keyManager, data);
+                TagReader.validateTag(data);
+            } catch (RuntimeException ex) {
+                Debug.Log(ex);
+            }
+        }
+        return data;
+    }
+
+    private static byte[] getTagData(String path, InputStream inputStream) throws Exception {
         byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
+        int len = inputStream.read(data);
+        if (len != NfcByte.TAG_FILE_SIZE)
+            throw new IOException(TagMo.getStringRes(R.string.invalid_file_size,
+                    path, NfcByte.TAG_FILE_SIZE));
+        return data;
+    }
+
+    public static byte[] readTagFile(File file) throws Exception {
         try (FileInputStream inputStream = new FileInputStream(file)) {
-            int len = inputStream.read(data);
-            if (len != NfcByte.TAG_FILE_SIZE)
-                throw new IOException(TagMo.getStringRes(R.string.invalid_file_size,
-                        file.getName(), NfcByte.TAG_FILE_SIZE));
-            return data;
+            return getTagData(file.getPath(), inputStream);
         }
     }
 
-    public static byte[] readTagStream(File file) throws Exception {
-        try (InputStream inputStream = TagMo.getContext().getContentResolver().openInputStream(
-                Storage.getFileUri(file))) {
-            byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
-            int len = inputStream.read(data);
-            if (len != NfcByte.TAG_FILE_SIZE)
-                throw new IOException(TagMo.getStringRes(R.string.invalid_file_size,
-                        file.getName(), NfcByte.TAG_FILE_SIZE));
-            return data;
+    public static byte[] readTagStream(Uri file) throws Exception {
+        try (InputStream inputStream = TagMo.getContext()
+                .getContentResolver().openInputStream(file)) {
+            return getTagData(file.getPath(), inputStream);
         }
     }
 

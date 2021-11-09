@@ -33,7 +33,6 @@
     <string name="settings_stable_channel">settings_stable_channel</string>
     <string name="settings_view_wiki">settings_view_wiki</string>
     <string name="settings_view_reddit">settings_view_reddit</string>
-    <string name="settings_get_amiibo">settings_get_amiibo</string>
     <string name="image_network_settings">\@string/image_network_settings</string>
 
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>

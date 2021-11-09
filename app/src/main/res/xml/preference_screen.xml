@@ -66,22 +66,19 @@
         app:iconSpaceReserved="false">
         <androidx.preference.Preference
             android:key="@string/settings_import_info_amiiboapi"
-            android:summary="@string/sync_api_details"
             android:title="@string/sync_amiibo_info"
-            app:iconSpaceReserved="false" />
-        <androidx.preference.Preference
-            android:key="@string/settings_import_info"
-            android:summary="@string/import_json_details"
-            android:title="@string/import_amiibo_info"
-            app:iconSpaceReserved="false" />
-        <androidx.preference.Preference
-            android:key="@string/settings_export_info"
-            android:summary="@string/export_json_details"
-            android:title="@string/export_amiibo_info"
             app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/settings_reset_info"
             android:title="@string/reset_amiibo_info"
+            app:iconSpaceReserved="false" />
+        <androidx.preference.Preference
+            android:key="@string/settings_import_info"
+            android:title="@string/import_json_details"
+            app:iconSpaceReserved="false" />
+        <androidx.preference.Preference
+            android:key="@string/settings_export_info"
+            android:title="@string/export_json_details"
             app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 
@@ -143,10 +140,6 @@
         <androidx.preference.Preference
             android:key="@string/settings_view_reddit"
             android:title="@string/pref_reddit_link"
-            app:iconSpaceReserved="false" />
-        <androidx.preference.Preference
-            android:key="@string/settings_get_amiibo"
-            android:title="@string/pref_amiibo_link"
             app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

@@ -3,16 +3,13 @@ package com.hiddenramblings.tagmo.nfctech;
 import android.content.Context;
 import android.net.Uri;
 
-import com.eightbit.content.DocumentsUri;
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
 
 public class KeyManager {
 

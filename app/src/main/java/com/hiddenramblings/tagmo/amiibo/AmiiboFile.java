@@ -3,13 +3,7 @@ package com.hiddenramblings.tagmo.amiibo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.hiddenramblings.tagmo.nfctech.KeyManager;
-import com.hiddenramblings.tagmo.nfctech.TagReader;
-import com.hiddenramblings.tagmo.nfctech.TagUtils;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Locale;
 
 public class AmiiboFile implements Parcelable {
 

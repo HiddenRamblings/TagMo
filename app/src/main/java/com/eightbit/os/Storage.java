@@ -63,20 +63,16 @@ import androidx.core.content.FileProvider;
 
 import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.TagMo_;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 
 @SuppressWarnings({"ConstantConditions", "unused"})
 public class Storage extends Environment {
     private static final String STORAGE_ROOT = "/storage";
 
     private static File storageFile;
-    private static WeakReference<Context> mContext;
-
-    public static void setContext(Context context) {
-        mContext = new WeakReference<>(context);
-    }
 
     private static File getRootPath(File directory) {
         return directory.getParentFile().getParentFile().getParentFile().getParentFile();
@@ -105,8 +101,7 @@ public class Storage extends Environment {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private static File setFileLollipop() {
-        File[] storage = ContextCompat.getExternalFilesDirs(
-                mContext.get().getApplicationContext(), null);
+        File[] storage = ContextCompat.getExternalFilesDirs(TagMo.getContext(), null);
         if (TagMo.getPrefs().ignoreSdcard().get()) {
             return storageFile = storage[0] != null && storage[0].canRead()
                     ? getRootPath(storage[0]) : setFileGeneric();
@@ -171,7 +166,7 @@ public class Storage extends Environment {
 
     public static Uri getFileUri(File file) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                ? FileProvider.getUriForFile(mContext.get(),
+                ? FileProvider.getUriForFile(TagMo.getContext(),
                 BuildConfig.APPLICATION_ID + ".provider", file)
                 : Uri.fromFile(file);
     }

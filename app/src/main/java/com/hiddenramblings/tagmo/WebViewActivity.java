@@ -89,7 +89,17 @@ public class WebViewActivity extends AppCompatActivity {
             final WebViewAssetLoader assetLoader =
                     new WebViewAssetLoader.Builder().addPathHandler("/assets/",
                             new AssetsPathHandler(WebViewActivity.this)).build();
+
             mWebView.setWebViewClient(new WebViewClientCompat() {
+                @Override
+                public void onReceivedHttpError (
+                        @NonNull WebView view, @NonNull WebResourceRequest request,
+                        @NonNull WebResourceResponse errorResponse) {
+                    if (errorResponse.getStatusCode() == 404 && !request.getUrl()
+                            .toString().equals(getString(R.string.wumiibo_url)))
+                        view.loadUrl(getString(R.string.wumiibo_url));
+                }
+
                 @Override
                 public WebResourceResponse shouldInterceptRequest(
                         WebView view, WebResourceRequest request) {
@@ -109,9 +119,9 @@ public class WebViewActivity extends AppCompatActivity {
             }
         }
         webViewSettings.setAllowFileAccessFromFileURLs(
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP);
         webViewSettings.setAllowUniversalAccessFromFileURLs(
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP);
 
         if (getIntent().getAction() != null
                 && getIntent().getAction().equals(TagMo.ACTION_BUILD_WUMIIBO)) {
@@ -129,7 +139,7 @@ public class WebViewActivity extends AppCompatActivity {
             // mWebView.loadUrl(getString(R.string.wumiibo_url));
             mWebView.loadUrl(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                     ? getString(R.string.wumiibo_app)
-                    : getString(R.string.wumiibo_url));
+                    : getString(R.string.wumiibo_uri));
         } else {
             webViewSettings.setBuiltInZoomControls(true);
             webViewSettings.setSupportZoom(true);
@@ -253,7 +263,7 @@ public class WebViewActivity extends AppCompatActivity {
         final EditText input = view.findViewById(R.id.backup_entry);
         try {
             AmiiboManager amiiboManager = AmiiboManager.getAmiiboManager();
-            input.setText(TagReader.generateBinName(amiiboManager, tagData, true));
+            input.setText(TagReader.decipherBinName(amiiboManager, tagData, true));
         } catch (IOException | JSONException | ParseException e) {
             Debug.Log(e);
         }

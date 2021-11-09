@@ -150,7 +150,7 @@
         android:title="@string/unlock_elite"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/export_logcat"
-        android:title="@string/show_logcat"
+        android:id="@+id/capture_logcat"
+        android:title="@string/display_logcat"
         app:showAsAction="ifRoom"/>
 </menu>

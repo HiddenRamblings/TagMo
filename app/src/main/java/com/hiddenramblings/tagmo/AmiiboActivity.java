@@ -200,7 +200,7 @@ public class AmiiboActivity extends AppCompatActivity {
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagReader.generateFilename(this.amiiboManager, tagData));
+        input.setText(TagReader.decipherFilename(this.amiiboManager, tagData));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {

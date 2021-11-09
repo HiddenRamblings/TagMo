@@ -64,7 +64,7 @@
             android:theme="@style/DialogTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".GeneratorActivity_"
+            android:name=".WebViewActivity_"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop"
             android:theme="@style/DialogTheme.NoActionBar">

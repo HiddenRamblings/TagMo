@@ -138,17 +138,16 @@
         </menu>
     </item>
     <item
-        android:id="@+id/refresh"
-        android:icon="@drawable/ic_refresh_white_24dp"
-        android:title="@string/refresh"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/export_logcat"
-        android:title="@string/logcat"
+        android:title="@string/show_logcat"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/amiibo_backup"
         android:title="@string/amiibo_backup"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/collect_amiibo"
+        android:title="@string/collect_amiibo"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/unlock_elite"

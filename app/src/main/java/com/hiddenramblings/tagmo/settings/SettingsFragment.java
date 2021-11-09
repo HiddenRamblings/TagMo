@@ -34,7 +34,6 @@ import com.eightbit.os.Storage;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.GeneratorActivity_;
 import com.hiddenramblings.tagmo.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.R;
@@ -208,6 +207,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         downloadAmiiboAPIData(lastUpdated);
     }
 
+    @PreferenceClick(R.string.settings_reset_info)
+    void onResetInfoClicked() {
+        resetAmiiboManager();
+    }
+
     @PreferenceClick(R.string.settings_import_info)
     void onImportInfoClicked() {
         showFileChooser(getString(R.string.import_json_details), RESULT_IMPORT_AMIIBO_DATABASE);
@@ -240,11 +244,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
         showSnackbar(getString(R.string.amiibo_info_exported,
                 Storage.getRelativePath(file)), Snackbar.LENGTH_LONG);
-    }
-
-    @PreferenceClick(R.string.settings_reset_info)
-    void onResetInfoClicked() {
-        resetAmiiboManager();
     }
 
     @PreferenceClick(R.string.settings_info_amiibo)
@@ -382,20 +381,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 Uri.parse(getString(R.string.reddit_url))));
     }
 
-    ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK) return;
-
-        TagMo.getPrefs().includeDownloads().put(true);
-        ((SettingsActivity) requireActivity()).setRefreshResult();
-    });
-
-    @PreferenceClick(R.string.settings_get_amiibo)
-    void onGetAmiiboClicked() {
-        onDownloadZip.launch(new Intent(requireContext(), GeneratorActivity_.class));
-        showToast(R.string.download_notice, Toast.LENGTH_LONG);
-    }
-
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";
 
     void updateKeys(Uri data) {
@@ -531,7 +516,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return;
 
         setAmiiboManager(amiiboManager);
-        showSnackbar(getString(R.string.reset_amiibo_info), Snackbar.LENGTH_SHORT);
+        showSnackbar(getString(R.string.removing_amiibo_info), Snackbar.LENGTH_SHORT);
     }
 
     @UiThread

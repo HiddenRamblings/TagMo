@@ -115,7 +115,7 @@
     <string name="bonus_three">Bonus Effect 2</string>
 
     <string name="settings">Settings</string>
-    <string name="logcat">Logcat</string>
+    <string name="show_logcat">Display Logcat</string>
 
     <string name="wrote_file">File saved to %1$s</string>
     <string name="nfc_tag">NFC tag</string>
@@ -139,6 +139,7 @@
     <string name="format_bank">Format Bank</string>
     <string name="activate_bank">Activate Bank</string>
     <string name="amiibo_backup">Amiibo Backup</string>
+    <string name="collect_amiibo">Collect Amiibo</string>
     <string name="set_bank_count">Set Bank Count</string>
     <string name="lock_amiibo">Lock N2 Elite</string>
     <string name="write_collection">Write Collection</string>
@@ -158,11 +159,7 @@
     <string name="pref_resources">Resources</string>
     <string name="pref_wiki_link">View Instructions Wiki</string>
     <string name="pref_reddit_link">Visit the TagMo reddit</string>
-    <string name="pref_amiibo_link">Get Decrypted Amiibo</string>
 
-    <string name="sync_api_details">Sync Amiibo info with AmiiboAPI.com</string>
-    <string name="export_json_details">Export Amiibo info to JSON</string>
-    <string name="import_json_details">Import Amiibo info from JSON</string>
     <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
     <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard / external storage device</string>
     <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
@@ -173,7 +170,7 @@
     <string name="image_loading_details">Load images</string>
     <string name="pref_title_validation">Tag Validation</string>
     <string name="enable_tag_validation">Enable NTAG215 validation</string>
-    <string name="tag_validation_details">Not all NFC chipsets correctly identify valid NFC tags.\nDisabling will write to tags that may be incompatible or fail unexpectedly.</string>
+    <string name="tag_validation_details">Not all NFC chipsets correctly identify valid NFC tags.\nDisabling will write to tags that may be incompatible.</string>
     <string name="enable_power_tag">Enable Power Tag support</string>
     <string name="power_tag_details">Support is currently in development.\nSee Github for limitations and use.</string>
     <string name="enable_elite">Enable N2 Elite support</string>
@@ -198,14 +195,15 @@
     <string name="progress_unlock">Press and hold the N2 button and continue to wait for unlock to complete.</string>
     <string name="possible_lock">Is this N2 Elite locked?</string>
 
-    <string name="sync_amiibo_info">Sync with AmiiboAPI</string>
-    <string name="import_amiibo_info">Import Amiibo info</string>
-    <string name="export_amiibo_info">Export Amiibo info</string>
-    <string name="reset_amiibo_info">Reset amiibo info</string>
+    <string name="sync_amiibo_info">Sync with AmiiboAPI.com</string>
+    <string name="reset_amiibo_info">Reset cached Amiibo info</string>
+    <string name="export_json_details">Export Amiibo info (JSON)</string>
+    <string name="import_json_details">Import Amiibo info (JSON)</string>
 
     <string name="sync_amiibo_process">Syncing with AmiiboAPI&#8230;</string>
     <string name="sync_amiibo_complete">AmiiboAPI sync successful!</string>
     <string name="sync_amiibo_failed">AmiiboAPI sync has failed!</string>
+    <string name="removing_amiibo_info">Clearing Amiibo info&#8230;</string>
 
     <string name="number_amiibo">%1$d Amiibo</string>
     <string name="number_game">%1$d Game Series</string>

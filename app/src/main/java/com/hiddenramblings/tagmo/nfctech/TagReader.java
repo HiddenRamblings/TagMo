@@ -3,11 +3,9 @@ package com.hiddenramblings.tagmo.nfctech;
 import android.net.Uri;
 
 import com.eightbit.io.Debug;
-import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import java.io.BufferedReader;
@@ -184,7 +182,7 @@ public class TagReader {
         return binFile.getAbsolutePath();
     }
 
-    public static String generateBinName(AmiiboManager amiiboManager,
+    public static String decipherBinName(AmiiboManager amiiboManager,
                                          byte[] tagData, boolean decrypted) {
         String status = "";
         if (decrypted) {
@@ -215,8 +213,8 @@ public class TagReader {
         return "";
     }
 
-    public static String generateFilename(AmiiboManager amiiboManager, byte[] tagData) {
-        return generateBinName(amiiboManager, tagData, false);
+    public static String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
+        return decipherBinName(amiiboManager, tagData, false);
     }
 
     public static byte[] scanTagToBytes(NTAG215 tag) throws Exception {

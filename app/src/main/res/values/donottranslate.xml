@@ -36,7 +36,6 @@
     <string name="image_network_settings">\@string/image_network_settings</string>
 
     <string name="descrypt_verity">Decrypted).bin</string>
-    <string name="logcat_file">tagmo_logcat.txt</string>
 
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
     <string name="amiibo_api_utc">https://www.amiiboapi.com/api/lastupdated/</string>
@@ -45,7 +44,8 @@
     <string name="wiki_url">https://github.com/HiddenRamblings/TagMo/wiki/Instructions</string>
     <string name="reddit_url">https://www.reddit.com/r/tagmo/</string>
     <string name="wumiibo_app">https://appassets.androidplatform.net/assets/wumiibo/index.html</string>
-    <string name="wumiibo_url">file:///android_asset/aboutcertified.html</string>
+    <string name="wumiibo_uri">file:///android_asset/wumiibo/index.html</string>
+    <string name="wumiibo_url">https://8bitdream.github.io/amiibo-generator/</string>
 
     <string name="mimetype_apk">application/vnd.android.package-archive</string>
     <string-array name="mimetype_bin">
@@ -69,7 +69,6 @@
     <string name="ndef">Ndef</string>
     <string name="ndef_formatable">NdefFormatable</string>
 
-    <string name="nfc_tag_lost">Tag was lost.</string>
     <string name="nfc_null_array">Attempt to read from null array</string>
 
 </resources>

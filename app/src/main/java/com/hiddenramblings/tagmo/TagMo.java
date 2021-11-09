@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -59,12 +59,13 @@ public class TagMo extends Application {
     public static Charset UTF_16BE;
     public static Charset UTF_16LE;
 
-    private static WeakReference<Context> mContext;
-    private static WeakReference<Preferences_> mPrefs;
+    private static SoftReference<Context> mContext;
+    private static SoftReference<Preferences_> mPrefs;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             UTF_8 = StandardCharsets.UTF_8;
             UTF_16BE = StandardCharsets.UTF_16BE;
@@ -74,9 +75,9 @@ public class TagMo extends Application {
             UTF_16BE = Charset.forName("UTF-16BE");
             UTF_16LE = Charset.forName("UTF-16LE");
         }
-        mPrefs = new WeakReference<>(prefs);
-        mContext = new WeakReference<>(this);
-        Storage.setContext(this);
+
+        mPrefs = new SoftReference<>(this.prefs);
+        mContext = new SoftReference<>(this);
 
         Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
             StringWriter exception = new StringWriter();
@@ -84,11 +85,11 @@ public class TagMo extends Application {
             Debug.Error(error.getClass(), exception.toString());
             error.printStackTrace();
             try {
-                Debug.generateLogcat(new File(TagMo.getExternalFiles(), "crash_logcat.txt"));
+                Debug.processLogcat(new File(TagMo.getExternalFiles(), "crash_logcat.txt"));
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
-            mPrefs.get().edit().clear().apply();
+            prefs.edit().clear().apply();
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(0);
         });
@@ -99,49 +100,49 @@ public class TagMo extends Application {
     }
 
     public static Context getContext() {
-        if (getPrefs().enableScaling().get())
+        if (mPrefs != null && mPrefs.get().enableScaling().get())
             return ScaledContext.wrap(mContext.get());
         else
             return ScaledContext.restore(mContext.get());
     }
 
     public static void setScaledTheme(Context context, int theme) {
-        if (getPrefs().enableScaling().get())
+        if (mPrefs != null && mPrefs.get().enableScaling().get())
             ScaledContext.wrap(context).setTheme(theme);
         else
             ScaledContext.restore(context).setTheme(theme);
     }
 
     public static String getStringRes(int resource) {
-        return getContext().getString(resource);
+        return mContext.get().getString(resource);
     }
 
     public static String getStringRes(int resource, String params) {
-        return getContext().getString(resource, params);
+        return mContext.get().getString(resource, params);
     }
 
     public static String getStringRes(int resource, String params, int digits) {
-        return getContext().getString(resource, params, digits);
+        return mContext.get().getString(resource, params, digits);
     }
 
     public static String getStringRes(int resource, int params) {
         try {
-            Resources res = getContext().getResources();
+            Resources res = mContext.get().getResources();
             res.getIdentifier(res.getResourceName(params),
                     "string", BuildConfig.APPLICATION_ID);
-            return getContext().getString(resource, getContext().getString(params));
+            return mContext.get().getString(resource, mContext.get().getString(params));
         } catch (Resources.NotFoundException ignore) {
-            return getContext().getString(resource, params);
+            return mContext.get().getString(resource, params);
         }
     }
 
     public static File getExternalFiles() {
-        return getContext().getExternalFilesDir(null);
+        return mContext.get().getExternalFilesDir(null);
     }
 
     public static void scanFile(File file) {
         try {
-            MediaScannerConnection.scanFile(TagMo.getContext(),
+            MediaScannerConnection.scanFile(mContext.get(),
                     new String[]{file.getAbsolutePath()}, null, null);
         } catch (Exception e) {
             Debug.Log(R.string.fail_media_scan, e);

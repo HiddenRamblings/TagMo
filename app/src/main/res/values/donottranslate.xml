@@ -45,7 +45,7 @@
     <string name="repo_url">https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/%1$s</string>
     <string name="wiki_url">https://github.com/HiddenRamblings/TagMo/wiki/Instructions</string>
     <string name="reddit_url">https://www.reddit.com/r/tagmo/</string>
-    <string name="amiibo_url">file:///android_asset/wumiibo/index.html</string>
+    <string name="amiibo_url">https://8bitdream.github.io/amiibo-generator/</string>
 
     <string name="mimetype_apk">application/vnd.android.package-archive</string>
     <string-array name="mimetype_bin">

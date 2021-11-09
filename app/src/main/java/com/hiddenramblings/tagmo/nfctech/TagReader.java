@@ -113,6 +113,7 @@ public class TagReader {
         }
     }
 
+    @SuppressWarnings("unused")
     public static byte[] readTagStream(Uri file) throws Exception {
         try (InputStream inputStream = TagMo.getContext()
                 .getContentResolver().openInputStream(file)) {
@@ -188,7 +189,7 @@ public class TagReader {
         try {
             validateTag(tagData);
         } catch (Exception e) {
-            status = " (Corrupted)";
+            status = "(Decrypted)";
             Debug.Log(TagReader.class, e.getMessage());
         }
         try {

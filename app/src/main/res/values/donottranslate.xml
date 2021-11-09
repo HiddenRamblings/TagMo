@@ -35,6 +35,8 @@
     <string name="settings_view_reddit">settings_view_reddit</string>
     <string name="image_network_settings">\@string/image_network_settings</string>
 
+    <string name="descrypt_verity">Decrypted).bin</string>
+
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
     <string name="amiibo_api_utc">https://www.amiiboapi.com/api/lastupdated</string>
     <string name="json_updated">lastUpdated</string>

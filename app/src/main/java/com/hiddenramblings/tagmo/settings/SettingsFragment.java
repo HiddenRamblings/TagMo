@@ -162,7 +162,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_import_keys)
     void onKeysClicked() {
-        showFileChooser("Fixed Key", RESULT_KEYS);
+        showFileChooser(getString(R.string.decryption_keys), RESULT_KEYS);
     }
 
     @PreferenceClick(R.string.settings_enable_tag_type_validation)

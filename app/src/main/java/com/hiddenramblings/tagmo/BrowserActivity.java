@@ -180,19 +180,19 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsMenuItem(R.id.recursive)
     MenuItem menuRecursiveFiles;
     @OptionsMenuItem(R.id.show_downloads)
-    MenuItem menuIncludeDownloads;
+    MenuItem menuInsertDownloads;
     @OptionsMenuItem(R.id.show_missing)
     MenuItem menuShowMissing;
     @OptionsMenuItem(R.id.enable_scale)
     MenuItem menuEnableScale;
     @OptionsMenuItem(R.id.amiibo_backup)
     MenuItem menuBackup;
-    @OptionsMenuItem(R.id.collect_amiibo)
-    MenuItem menuCollect;
-    @OptionsMenuItem(R.id.export_logcat)
-    MenuItem menuLogcat;
+    @OptionsMenuItem(R.id.build_wumiibo)
+    MenuItem menuWumiibo;
     @OptionsMenuItem(R.id.unlock_elite)
     MenuItem menuUnlockElite;
+    @OptionsMenuItem(R.id.export_logcat)
+    MenuItem menuLogcat;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private KeyManager keyManager;
@@ -437,7 +437,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @OptionsItem(R.id.show_downloads)
     void OnIncludeDownloadsCicked() {
-        this.settings.setIncludeDownloads(!this.settings.isShowingDownloads());
+        this.settings.setInsertDownloads(!this.settings.isShowingDownloads());
         this.settings.notifyChanges();
     }
 
@@ -465,7 +465,7 @@ public class BrowserActivity extends AppCompatActivity implements
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, amiibosView, false);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagReader.generateFileName(settings.getAmiiboManager(), tagData));
+        input.setText(TagReader.generateFilename(settings.getAmiiboManager(), tagData));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
@@ -490,21 +490,6 @@ public class BrowserActivity extends AppCompatActivity implements
         onBackupActivity.launch(backup);
     }
 
-    @OptionsItem(R.id.export_logcat)
-    @Background
-    void onExportLogcatClicked() {
-        try {
-            File file = Debug.generateLogcat(new File(
-                    TagMo.getExternalFiles(), "tagmo_logcat.txt"));
-            TagMo.scanFile(file);
-            showToast(getString(R.string.wrote_file, Storage.getRelativePath(file)));
-            startActivity(new ActionIntent(this, WebViewActivity_.class)
-                    .setData(Storage.getFileUri(file)));
-        } catch (IOException e) {
-            showToast(e.getMessage());
-        }
-    }
-
     @OptionsItem(R.id.unlock_elite)
     void onUnlockEliteClicked() {
         new AlertDialog.Builder(this)
@@ -515,6 +500,21 @@ public class BrowserActivity extends AppCompatActivity implements
                     startActivity(unlock);
                     dialog.dismiss();
                 }).show();
+    }
+
+    @OptionsItem(R.id.export_logcat)
+    @Background
+    void onExportLogcatClicked() {
+        try {
+            File file = Debug.generateLogcat(new File(
+                    TagMo.getExternalFiles(), getString(R.string.logcat_file)));
+            TagMo.scanFile(file);
+            showToast(getString(R.string.wrote_file, Storage.getRelativePath(file)));
+            startActivity(new ActionIntent(this, WebViewActivity_.class)
+                    .setData(Storage.getFileUri(file)));
+        } catch (IOException e) {
+            showToast(e.getMessage());
+        }
     }
 
     @OptionsItem(R.id.filter_game_series)
@@ -729,14 +729,14 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() != Activity.RESULT_OK) return;
 
-                TagMo.getPrefs().includeDownloads().put(true);
+                TagMo.getPrefs().insertDownloads().put(true);
                 this.onRefresh();
             });
 
-    @OptionsItem(R.id.collect_amiibo)
-    void onCollectClicked() {
+    @OptionsItem(R.id.build_wumiibo)
+    void onWumiiboClicked() {
         onDownloadZip.launch(new Intent(this,
-                WebViewActivity_.class).setAction(TagMo.ACTION_COLLECT_AMIIBO));
+                WebViewActivity_.class).setAction(TagMo.ACTION_BUILD_WUMIIBO));
     }
 
     @Override
@@ -752,7 +752,7 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onSortChanged();
         this.onViewChanged();
         this.onRecursiveFilesChanged();
-        this.onIncludeDownloadsChanged();
+        this.onInsertDownloadsChanged();
         this.onShowMissingChanged();
         this.onEnableScaleChanged();
 
@@ -965,7 +965,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         final ArrayList<AmiiboFile> amiiboFiles =
                 AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
-        if (TagMo.getPrefs().includeDownloads().get()) {
+        if (TagMo.getPrefs().insertDownloads().get()) {
             File download = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS);
             File[] files = rootFolder.listFiles((file, name) -> file.isDirectory()
@@ -1003,7 +1003,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (newBrowserSettings.isShowingDownloads() != oldBrowserSettings.isShowingDownloads()) {
             folderChanged = true;
-            onIncludeDownloadsChanged();
+            onInsertDownloadsChanged();
         }
         if (newBrowserSettings.isShowingMissingFiles() != oldBrowserSettings.isShowingMissingFiles()) {
             folderChanged = true;
@@ -1046,7 +1046,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
                 .imageNetworkSetting().put(newBrowserSettings.getImageNetworkSettings())
                 .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
-                .includeDownloads().put(newBrowserSettings.isShowingDownloads())
+                .insertDownloads().put(newBrowserSettings.isShowingDownloads())
                 .showMissingFiles().put(newBrowserSettings.isShowingMissingFiles())
                 .apply();
     }
@@ -1173,11 +1173,11 @@ public class BrowserActivity extends AppCompatActivity implements
         menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
     }
 
-    void onIncludeDownloadsChanged() {
-        if (menuIncludeDownloads == null)
+    void onInsertDownloadsChanged() {
+        if (menuInsertDownloads == null)
             return;
 
-        menuIncludeDownloads.setChecked(settings.isShowingDownloads());
+        menuInsertDownloads.setChecked(settings.isShowingDownloads());
     }
 
     void onShowMissingChanged() {

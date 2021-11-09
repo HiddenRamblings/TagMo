@@ -9,17 +9,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class WebExecutor {
 
-    ResponseListener listener;
+    ResultListener listener;
 
     public WebExecutor(String url) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-
-        executor.execute(() -> {
+        Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
                 conn.setRequestMethod("GET");
@@ -41,18 +38,18 @@ public class WebExecutor {
                 while ((inputStr = streamReader.readLine()) != null)
                     responseStrBuilder.append(inputStr);
 
-                listener.onResponse(responseStrBuilder.toString());
+                listener.onResults(responseStrBuilder.toString());
             } catch (IOException e) {
                 Debug.Error(e);
             }
         });
     }
 
-    public interface ResponseListener {
-        void onResponse(String response);
+    public interface ResultListener {
+        void onResults(String result);
     }
 
-    public void setResponseListener(ResponseListener listener) {
+    public void setResultListener(ResultListener listener) {
         this.listener = listener;
     }
 }

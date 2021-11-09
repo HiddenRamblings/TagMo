@@ -87,15 +87,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -104,8 +101,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_browser)
@@ -308,12 +303,10 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.loadPTagKeyManager();
 
-        Handler handler = new Handler(Looper.getMainLooper());
-        WebExecutor executor = new WebExecutor(getString(R.string.repo_url,
-                TagMo.getPrefs().stableChannel().get() ? "master" : "experimental"));
-        executor.setResponseListener(response -> handler.post(() -> {
-            if (response != null) parseUpdateJSON(response);
-        }));
+        new WebExecutor(getString(R.string.repo_url, TagMo.getPrefs().stableChannel().get()
+                ? "master" : "experimental")).setResultListener(result -> {
+            if (result != null) parseUpdateJSON(result);
+        });
     }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(

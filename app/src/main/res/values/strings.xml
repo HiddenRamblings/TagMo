@@ -117,7 +117,7 @@
     <string name="bonus_three">Bonus Effect 2</string>
 
     <string name="settings">Settings</string>
-    <string name="show_logcat">Display Logcat</string>
+    <string name="display_logcat">Display Logcat</string>
 
     <string name="wrote_file">File saved to %1$s</string>
     <string name="nfc_tag">NFC tag</string>

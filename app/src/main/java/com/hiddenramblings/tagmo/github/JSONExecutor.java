@@ -11,11 +11,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Executors;
 
-public class WebExecutor {
+public class JSONExecutor {
 
     ResultListener listener;
 
-    public WebExecutor(String url) {
+    public JSONExecutor(String url) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();

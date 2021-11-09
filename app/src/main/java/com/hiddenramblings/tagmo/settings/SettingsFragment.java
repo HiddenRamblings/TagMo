@@ -9,8 +9,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -45,7 +43,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
-import com.hiddenramblings.tagmo.github.WebExecutor;
+import com.hiddenramblings.tagmo.github.JSONExecutor;
 import com.hiddenramblings.tagmo.nfctech.KeyManager;
 
 import org.androidannotations.annotations.AfterPreferences;
@@ -131,8 +129,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
-            new WebExecutor(requireContext().getString(
-                    R.string.amiibo_api_utc)).setResultListener(result -> {
+            new JSONExecutor(requireContext().getString(R.string.amiibo_api_utc))
+                    .setResultListener(result -> {
                 if (result != null) parseUpdateJSON(result);
             });
         }

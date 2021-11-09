@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -61,7 +60,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
-import com.hiddenramblings.tagmo.github.WebExecutor;
+import com.hiddenramblings.tagmo.github.JSONExecutor;
 import com.hiddenramblings.tagmo.nfctech.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
@@ -187,7 +186,7 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuBackup;
     @OptionsMenuItem(R.id.unlock_elite)
     MenuItem menuUnlockElite;
-    @OptionsMenuItem(R.id.export_logcat)
+    @OptionsMenuItem(R.id.capture_logcat)
     MenuItem menuLogcat;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
@@ -202,20 +201,26 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TagMo.setScaledTheme(this, R.style.AppTheme);
-        this.supportInvalidateOptionsMenu();
-        File[] files = getFilesDir().listFiles((file, name) -> !file.isDirectory()
-                && name.toLowerCase(Locale.ROOT).endsWith(".apk"));
-        if (files != null) {
-            for (File file : files) {
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
-            }
-        }
         keyManager = new KeyManager(this);
     }
 
     @AfterViews
     void afterViews() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()) {
+                this.onRefresh();
+            } else {
+                requestScopedStorage();
+            }
+        } else {
+            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            } else {
+                this.onRefresh();
+            }
+        }
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(
@@ -285,26 +290,19 @@ public class BrowserActivity extends AppCompatActivity implements
 //        });
 //        onDocumentTree.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
-                this.onRefresh();
-            } else {
-                requestScopedStorage();
-            }
-        } else {
-            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
-            } else {
-                this.onRefresh();
-            }
-        }
-
         this.loadPTagKeyManager();
 
-        new WebExecutor(getString(R.string.repo_url, TagMo.getPrefs().stableChannel().get()
-                ? "master" : "experimental")).setResultListener(result -> {
+        File[] files = getFilesDir().listFiles((file, name) -> !file.isDirectory()
+                && name.toLowerCase(Locale.ROOT).endsWith(".apk"));
+        if (files != null) {
+            for (File file : files) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            }
+        }
+        new JSONExecutor(getString(R.string.repo_url,
+                TagMo.getPrefs().stableChannel().get() ? "master" : "experimental"))
+                .setResultListener(result -> {
             if (result != null) parseUpdateJSON(result);
         });
     }
@@ -449,7 +447,6 @@ public class BrowserActivity extends AppCompatActivity implements
     void onEnableScaleClicked() {
         TagMo.getPrefs().enableScaling().put(!menuEnableScale.isChecked());
         this.recreate();
-        this.supportInvalidateOptionsMenu();
     }
 
     ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
@@ -477,7 +474,7 @@ public class BrowserActivity extends AppCompatActivity implements
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, amiibosView, false);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagReader.generateFilename(settings.getAmiiboManager(), tagData));
+        input.setText(TagReader.decipherFilename(settings.getAmiiboManager(), tagData));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
@@ -514,12 +511,12 @@ public class BrowserActivity extends AppCompatActivity implements
                 }).show();
     }
 
-    @OptionsItem(R.id.export_logcat)
+    @OptionsItem(R.id.capture_logcat)
     @Background
-    void onExportLogcatClicked() {
+    void onCaptureLogcatClicked() {
         try {
-            File file = Debug.generateLogcat(new File(
-                    TagMo.getExternalFiles(), getString(R.string.logcat_file)));
+            File file = Debug.processLogcat(new File(
+                    TagMo.getExternalFiles(), "tagmo_logcat.txt"));
             TagMo.scanFile(file);
             showToast(getString(R.string.wrote_file, Storage.getRelativePath(file)));
             startActivity(new ActionIntent(this, WebViewActivity_.class)

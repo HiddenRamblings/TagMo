@@ -73,7 +73,7 @@ public class Debug {
  *         Error(error.getClass(), exception.toString());
  *         error.printStackTrace();
  *         try {
- *             Debug.generateLogcat(file);
+ *             Debug.processLogcat(file);
  *         } catch (IOException ioe) {
  *             ioe.printStackTrace();
  *         }
@@ -135,7 +135,7 @@ public class Debug {
         Log.e(TAG(ex.getClass()), TagMo.getStringRes(resource), ex);
     }
 
-    public static File generateLogcat(File file) throws IOException {
+    public static File processLogcat(File file) throws IOException {
         final StringBuilder log = new StringBuilder();
         String separator = System.getProperty("line.separator");
         log.append(android.os.Build.MANUFACTURER);

@@ -355,7 +355,7 @@ public class BankListActivity extends AppCompatActivity implements
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagReader.generateFilename(settings.getAmiiboManager(), tagData));
+        input.setText(TagReader.decipherFilename(settings.getAmiiboManager(), tagData));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {

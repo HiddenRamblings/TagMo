@@ -302,20 +302,9 @@ public class AmiiboManager {
             } else {
                 if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
-                        byte[] data = TagReader.readTagFile(file);
-                        try {
-                            TagReader.validateTag(data);
-                            amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data)));
-                        } catch (Exception e) {
-                            try {
-                                data = TagUtils.encrypt(keyManager, data);
-                                TagReader.validateTag(data);
-                                amiiboFiles.add(new AmiiboFile(file,
-                                        TagUtils.amiiboIdFromTag(data), true));
-                            } catch (RuntimeException ex) {
-                                Debug.Log(ex);
-                            }
-                        }
+                        byte[] data = TagReader.getVerifiedData(keyManager, file);
+                        amiiboFiles.add(new AmiiboFile(file,
+                                TagUtils.amiiboIdFromTag(data), data));
                     } catch (Exception e) {
                         Debug.Log(e);
                     }

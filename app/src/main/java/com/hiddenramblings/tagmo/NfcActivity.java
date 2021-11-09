@@ -351,10 +351,12 @@ public class NfcActivity extends AppCompatActivity {
                         mifare.setBankCount(write_count);
                         if (active_bank <= write_count)
                             mifare.activateBank(active_bank);
-                        ArrayList<AmiiboFile> amiiboList =
-                                commandIntent.getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES);
+                        ArrayList<AmiiboFile> amiiboList = commandIntent
+                                .getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES);
                         for (int x = 0; x < amiiboList.size(); x++) {
-                            TagWriter.writeEliteAuto(mifare, TagReader.readTagStream(
+                            TagWriter.writeEliteAuto(mifare, amiiboList.get(x).getData() != null
+                                    ? amiiboList.get(x).getData()
+                                    : TagReader.getVerifiedData(keyManager,
                                     amiiboList.get(x).getFilePath()), this.keyManager, x);
                         }
                         Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);

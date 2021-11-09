@@ -64,7 +64,6 @@ import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.nfctech.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
-import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.robertlevonyan.views.chip.Chip;
@@ -186,10 +185,10 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuShowMissing;
     @OptionsMenuItem(R.id.enable_scale)
     MenuItem menuEnableScale;
-    @OptionsMenuItem(R.id.refresh)
-    MenuItem menuRefresh;
     @OptionsMenuItem(R.id.amiibo_backup)
     MenuItem menuBackup;
+    @OptionsMenuItem(R.id.collect_amiibo)
+    MenuItem menuCollect;
     @OptionsMenuItem(R.id.export_logcat)
     MenuItem menuLogcat;
     @OptionsMenuItem(R.id.unlock_elite)
@@ -464,19 +463,6 @@ public class BrowserActivity extends AppCompatActivity implements
         onBackupActivity.launch(backup);
     }
 
-    @UiThread
-    public void showLogcatSnackbar(String message, Uri fileUri) {
-        Snackbar snackbar = new IconifiedSnackbar(this).buildSnackbar(
-                message, Snackbar.LENGTH_LONG);
-        if (fileUri != null) {
-            snackbar.setAction(R.string.view, v -> {
-                startActivity(new ActionIntent(Intent.ACTION_VIEW, fileUri));
-                snackbar.dismiss();
-            });
-        }
-        snackbar.show();
-    }
-
     @OptionsItem(R.id.export_logcat)
     @Background
     void onExportLogcatClicked() {
@@ -484,10 +470,11 @@ public class BrowserActivity extends AppCompatActivity implements
             File file = Debug.generateLogcat(new File(
                     TagMo.getExternalFiles(), "tagmo_logcat.txt"));
             TagMo.scanFile(file);
-            showLogcatSnackbar(getString(R.string.wrote_file,
-                    Storage.getRelativePath(file)), Storage.getFileUri(file));
+            showToast(getString(R.string.wrote_file, Storage.getRelativePath(file)));
+            startActivity(new Intent(this,
+                    WebViewActivity_.class).setData(Storage.getFileUri(file)));
         } catch (IOException e) {
-            showLogcatSnackbar(e.getMessage(), null);
+            showToast(e.getMessage());
         }
     }
 
@@ -711,7 +698,20 @@ public class BrowserActivity extends AppCompatActivity implements
         onSettingsActivity.launch(new Intent(this, SettingsActivity_.class));
     }
 
-    @OptionsItem(R.id.refresh)
+    ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() != Activity.RESULT_OK) return;
+
+                TagMo.getPrefs().includeDownloads().put(true);
+                this.onRefresh();
+            });
+
+    @OptionsItem(R.id.collect_amiibo)
+    void onCollectClicked() {
+        onDownloadZip.launch(new Intent(this,
+                WebViewActivity_.class).setAction(TagMo.ACTION_COLLECT_AMIIBO));
+    }
+
     @Override
     public void onRefresh() {
         this.loadAmiiboManager();
@@ -794,8 +794,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private void openAmiiboViewer(AmiiboFile amiiboFile) {
         Bundle args = new Bundle();
         try {
-            byte[] data = TagReader.readTagStream(amiiboFile.getFilePath());
-            if (amiiboFile.isDecrypted()) data = TagUtils.encrypt(keyManager, data);
+            byte[] data = amiiboFile.getData() != null ? amiiboFile.getData()
+                        : TagReader.getVerifiedData(keyManager, amiiboFile.getFilePath());
             args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
         } catch (Exception e) {
             Debug.Error(e);

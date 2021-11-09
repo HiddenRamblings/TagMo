@@ -58,7 +58,6 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -689,8 +688,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void parseUpdateJSON(String result) {
         try {
-            JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-            lastUpdated = (String) jsonObject.get(getString(R.string.json_updated));
+            JSONObject jsonObject = (JSONObject) new JSONObject(result);
+            // lastUpdated = (String) jsonObject.get("lastUpdated");
+            lastUpdated = (String) jsonObject.get("timestamp");
             if (!prefs.lastUpdated().get().equals(lastUpdated)) {
                 showInstallSnackbar(lastUpdated);
             }
@@ -704,10 +704,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Handler handler = new Handler(Looper.getMainLooper());
 
         executor.execute(() -> {
-            String result = null;
             try {
                 HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
                 conn.setDoInput(true);
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM) {
+                    String redirect = conn.getHeaderField("Location");
+                    conn = (HttpURLConnection) new URL(redirect).openConnection();
+                }
                 InputStream in = conn.getInputStream();
 
                 BufferedReader streamReader = new BufferedReader(
@@ -718,14 +722,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 while ((inputStr = streamReader.readLine()) != null)
                     responseStrBuilder.append(inputStr);
 
-                result = responseStrBuilder.toString();
+                handler.post(() -> parseUpdateJSON(responseStrBuilder.toString()));
             } catch (IOException e) {
                 Debug.Error(e);
             }
-            String finalResult = result;
-            handler.post(() -> {
-                if (finalResult != null) parseUpdateJSON(finalResult);
-            });
         });
     }
 

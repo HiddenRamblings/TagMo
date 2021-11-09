@@ -1392,11 +1392,11 @@ public class BrowserActivity extends AppCompatActivity implements
     private void parseUpdateJSON(String result) {
         try {
             JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-            String lastCommit = (String) jsonObject.get(getString(R.string.json_name));
+            String lastCommit = (String) jsonObject.get("name");
             if (!BuildConfig.COMMIT.equals(lastCommit.substring(6))) {
-                JSONArray assets = (JSONArray) jsonObject.get(getString(R.string.json_assets));
+                JSONArray assets = (JSONArray) jsonObject.get("assets");
                 JSONObject asset = (JSONObject) assets.get(0);
-                showInstallSnackbar((String) asset.get(getString(R.string.json_download_url)));
+                showInstallSnackbar((String) asset.get("browser_download_url"));
             }
         } catch (JSONException e) {
             Debug.Error(e);

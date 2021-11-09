@@ -40,7 +40,7 @@ public class TagMo extends Application {
     public static final String ACTION_BACKUP_AMIIBO = BuildConfig.APPLICATION_ID + ".BACKUP_AMIIBO";
     public static final String ACTION_DELETE_AMIIBO = BuildConfig.APPLICATION_ID + ".DELETE_AMIIBO";
     public static final String ACTION_NFC_SCANNED = BuildConfig.APPLICATION_ID + ".NFC_SCANNED";
-    public static final String ACTION_COLLECT_AMIIBO = BuildConfig.APPLICATION_ID + ".COLLECT_AMIIBO";
+    public static final String ACTION_BUILD_WUMIIBO = BuildConfig.APPLICATION_ID + ".BUILD_WUMIIBO";
 
     public static final String EXTRA_TAG_DATA = BuildConfig.APPLICATION_ID + ".EXTRA_TAG_DATA";
     public static final String EXTRA_AMIIBO_DATA = BuildConfig.APPLICATION_ID + ".EXTRA_AMIIBO_DATA";

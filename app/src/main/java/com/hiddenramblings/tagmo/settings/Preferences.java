@@ -56,8 +56,8 @@ public interface Preferences {
     @DefaultBoolean(true)
     boolean recursiveFolders();
 
-    @DefaultBoolean(true)
-    boolean includeDownloads();
+    @DefaultBoolean(false)
+    boolean insertDownloads();
 
     @DefaultBoolean(false)
     boolean showMissingFiles();

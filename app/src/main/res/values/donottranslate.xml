@@ -36,6 +36,7 @@
     <string name="image_network_settings">\@string/image_network_settings</string>
 
     <string name="descrypt_verity">Decrypted).bin</string>
+    <string name="logcat_file">tagmo_logcat.txt</string>
 
     <string name="amiibo_api_url">https://www.amiiboapi.com/api/amiibo/</string>
     <string name="amiibo_api_utc">https://www.amiiboapi.com/api/lastupdated</string>
@@ -47,7 +48,8 @@
     <string name="json_download_url">browser_download_url</string>
     <string name="wiki_url">https://github.com/HiddenRamblings/TagMo/wiki/Instructions</string>
     <string name="reddit_url">https://www.reddit.com/r/tagmo/</string>
-    <string name="amiibo_url">https://8bitdream.github.io/amiibo-generator/</string>
+    <!--string name="amiibo_url">https://8bitdream.github.io/amiibo-generator/</string-->
+    <string name="amiibo_url">file:///android_asset/wumiibo/index.html</string>
 
     <string name="mimetype_apk">application/vnd.android.package-archive</string>
     <string-array name="mimetype_bin">

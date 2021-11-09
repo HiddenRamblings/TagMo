@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -299,6 +300,18 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             }
         };
 
+        private void setIsHighlighted(AmiiboVewHolder holder, boolean isHighlighted) {
+            View highlight = holder.itemView.findViewById(R.id.highlight);
+            if (isHighlighted) {
+                highlight.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
+                        TagMo.isDarkTheme() ? R.color.backgroundWhite
+                                : R.color.backgroundBlack));
+            } else {
+                highlight.setBackgroundColor(ContextCompat.getColor(
+                        TagMo.getContext(), android.R.color.transparent));
+            }
+        }
+
         public AmiiboVewHolder(View itemView, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(itemView);
 
@@ -374,6 +387,8 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
                     String relativeFile = Storage.getRelativePath(item.getFilePath()).replace(
                             TagMo.getPrefs().browserRootFolder().get(), "");
                     this.txtPath.setText(boldMatchingText(relativeFile, query));
+                        setIsHighlighted(this, relativeFile.endsWith(
+                                TagMo.getStringRes(R.string.descrypt_verity)));
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");

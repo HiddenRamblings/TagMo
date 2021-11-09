@@ -24,9 +24,7 @@ public class AmiiboFile implements Parcelable {
     }
 
     public AmiiboFile(File filePath, long id) {
-        this.filePath = filePath;
-        this.id = id;
-        this.data = null;
+        this(filePath, id, null);
     }
 
     public byte[] getData() {

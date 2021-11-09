@@ -189,7 +189,7 @@
 
     <string name="amiibo_info_updated">Updated Amiibo info</string>
 
-    <string name="backup_filename">Amiibo Backup Name</string>
+    <string name="backup_filename">Amiibo Bin Filename</string>
 
     <string name="prepare_unlock">Once scanned, do not remove the unit from the NFC field until complete.</string>
     <string name="progress_unlock">Press and hold the N2 button and continue to wait for unlock to complete.</string>

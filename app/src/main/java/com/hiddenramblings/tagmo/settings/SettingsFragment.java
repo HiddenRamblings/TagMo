@@ -72,8 +72,6 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @SuppressLint("NonConstantResourceId")
 @EFragment
@@ -133,12 +131,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
-            Handler handler = new Handler(Looper.getMainLooper());
-            WebExecutor executor = new WebExecutor(
-                    requireContext().getString(R.string.amiibo_api_utc));
-            executor.setResponseListener(response -> handler.post(() -> {
-                if (response != null) parseUpdateJSON(response);
-            }));
+            new WebExecutor(requireContext().getString(
+                    R.string.amiibo_api_utc)).setResultListener(result -> {
+                if (result != null) parseUpdateJSON(result);
+            });
         }
     }
 

@@ -641,12 +641,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     });
 
     private void showFileChooser(String title, int resultCode) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-        }
+        Intent intent = new Intent(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+                ? Intent.ACTION_OPEN_DOCUMENT : Intent.ACTION_GET_CONTENT);
+        intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+        intent.putExtra("android.content.extra.FANCY", true);
         intent.setType("*/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         switch(resultCode) {
             case RESULT_KEYS:

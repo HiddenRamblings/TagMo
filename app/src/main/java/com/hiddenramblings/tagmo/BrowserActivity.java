@@ -61,6 +61,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
+import com.hiddenramblings.tagmo.github.WebExecutor;
 import com.hiddenramblings.tagmo.nfctech.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
@@ -307,8 +308,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.loadPTagKeyManager();
 
-        this.checkForUpdates(getString(R.string.repo_url,
+        Handler handler = new Handler(Looper.getMainLooper());
+        WebExecutor executor = new WebExecutor(getString(R.string.repo_url,
                 TagMo.getPrefs().stableChannel().get() ? "master" : "experimental"));
+        executor.setResponseListener(response -> handler.post(() -> {
+            if (response != null) parseUpdateJSON(response);
+        }));
     }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
@@ -1401,44 +1406,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (JSONException e) {
             Debug.Error(e);
         }
-    }
-
-    private void checkForUpdates(String url) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-
-        executor.execute(() -> {
-            String result = null;
-            try {
-                HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-                conn.setRequestMethod("GET");
-                conn.setUseCaches(false);
-                conn.setDefaultUseCaches(false);
-
-                int responseCode = conn.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM)
-                    conn = (HttpURLConnection) new URL(
-                            conn.getHeaderField("Location")).openConnection();
-                else if (responseCode != 200) return;
-
-                InputStream in = conn.getInputStream();
-                BufferedReader streamReader = new BufferedReader(
-                        new InputStreamReader(in, TagMo.UTF_8));
-                StringBuilder responseStrBuilder = new StringBuilder();
-
-                String inputStr;
-                while ((inputStr = streamReader.readLine()) != null)
-                    responseStrBuilder.append(inputStr);
-
-                result = responseStrBuilder.toString();
-            } catch (IOException e) {
-                Debug.Error(e);
-            }
-            String finalResult = result;
-            handler.post(() -> {
-                if (finalResult != null) parseUpdateJSON(finalResult);
-            });
-        });
     }
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;

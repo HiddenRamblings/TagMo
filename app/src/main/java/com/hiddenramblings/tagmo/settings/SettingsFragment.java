@@ -45,6 +45,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
+import com.hiddenramblings.tagmo.github.WebExecutor;
 import com.hiddenramblings.tagmo.nfctech.KeyManager;
 
 import org.androidannotations.annotations.AfterPreferences;
@@ -132,7 +133,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
-            this.checkForUpdates(requireContext().getString(R.string.amiibo_api_utc));
+            Handler handler = new Handler(Looper.getMainLooper());
+            WebExecutor executor = new WebExecutor(
+                    requireContext().getString(R.string.amiibo_api_utc));
+            executor.setResponseListener(response -> handler.post(() -> {
+                if (response != null) parseUpdateJSON(response);
+            }));
         }
     }
 
@@ -698,39 +704,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         } catch (Exception e) {
             Debug.Error(e);
         }
-    }
-
-    private void checkForUpdates(String url) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-
-        executor.execute(() -> {
-            try {
-                HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-                conn.setRequestMethod("GET");
-                conn.setUseCaches(false);
-                conn.setDefaultUseCaches(false);
-
-                int responseCode = conn.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM)
-                    conn = (HttpURLConnection) new URL(
-                            conn.getHeaderField("Location")).openConnection();
-                else if (responseCode != 200) return;
-
-                InputStream in = conn.getInputStream();
-                BufferedReader streamReader = new BufferedReader(
-                        new InputStreamReader(in, TagMo.UTF_8));
-                StringBuilder responseStrBuilder = new StringBuilder();
-
-                String inputStr;
-                while ((inputStr = streamReader.readLine()) != null)
-                    responseStrBuilder.append(inputStr);
-
-                handler.post(() -> parseUpdateJSON(responseStrBuilder.toString()));
-            } catch (IOException e) {
-                Debug.Error(e);
-            }
-        });
     }
 
     @UiThread

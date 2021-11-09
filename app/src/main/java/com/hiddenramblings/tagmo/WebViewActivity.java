@@ -16,12 +16,22 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.webkit.ServiceWorkerClientCompat;
+import androidx.webkit.ServiceWorkerControllerCompat;
+import androidx.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewAssetLoader.AssetsPathHandler;
+import androidx.webkit.WebViewClientCompat;
+import androidx.webkit.WebViewFeature;
 
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -63,36 +73,70 @@ public class WebViewActivity extends AppCompatActivity {
     void afterViews() {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
+        WebSettings webViewSettings = mWebView.getSettings();
 
         mWebView.setScrollbarFadingEnabled(true);
-        mWebView.getSettings().setLoadWithOverviewMode(true);
-        mWebView.getSettings().setUseWideViewPort(true);
-        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webViewSettings.setLoadWithOverviewMode(true);
+        webViewSettings.setUseWideViewPort(true);
+        webViewSettings.setAllowFileAccess(true);
+        webViewSettings.setAllowContentAccess(false);
+        webViewSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            mWebView.getSettings().setPluginState(WebSettings.PluginState.ON);
+            webViewSettings.setPluginState(WebSettings.PluginState.ON);
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            final WebViewAssetLoader assetLoader =
+                    new WebViewAssetLoader.Builder().addPathHandler("/assets/",
+                            new AssetsPathHandler(WebViewActivity.this)).build();
+            mWebView.setWebViewClient(new WebViewClientCompat() {
+                @Override
+                public WebResourceResponse shouldInterceptRequest(
+                        WebView view, WebResourceRequest request) {
+                    return assetLoader.shouldInterceptRequest(request.getUrl());
+                }
+            });
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USAGE)) {
+                ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(
+                        new ServiceWorkerClientCompat() {
+                            @Nullable
+                            @Override
+                            public WebResourceResponse shouldInterceptRequest(
+                                    @NonNull WebResourceRequest request) {
+                                return assetLoader.shouldInterceptRequest(request.getUrl());
+                            }
+                        });
+            }
+        }
+        webViewSettings.setAllowFileAccessFromFileURLs(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+        webViewSettings.setAllowUniversalAccessFromFileURLs(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
 
         if (getIntent().getAction() != null
                 && getIntent().getAction().equals(TagMo.ACTION_BUILD_WUMIIBO)) {
+            webViewSettings.setJavaScriptEnabled(true);
+            webViewSettings.setDomStorageEnabled(true);
             JavaScriptInterface download = new JavaScriptInterface();
-            mWebView.getSettings().setJavaScriptEnabled(true);
-            mWebView.getSettings().setAllowUniversalAccessFromFileURLs(true);
             mWebView.addJavascriptInterface(download, "Android");
-            mWebView.getSettings().setDomStorageEnabled(true);
-            mWebView.loadUrl(getString(R.string.amiibo_url));
-            mWebView.setDownloadListener((url, userAgent, contentDisposition, mimeType, contentLength) -> {
+            mWebView.setDownloadListener((url, userAgent, contentDisposition,
+                                          mimeType, contentLength) -> {
                 if (url.startsWith("blob") || url.startsWith("data")) {
                     Log.d("DATA", url);
                     mWebView.loadUrl(download.getBase64StringFromBlob(url, mimeType));
                 }
             });
+            // mWebView.loadUrl(getString(R.string.wumiibo_url));
+            mWebView.loadUrl(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                    ? getString(R.string.wumiibo_app)
+                    : getString(R.string.wumiibo_url));
         } else {
-            mWebView.getSettings().setBuiltInZoomControls(true);
-            mWebView.getSettings().setSupportZoom(true);
-            mWebView.getSettings().setAllowFileAccess(true);
+            webViewSettings.setBuiltInZoomControls(true);
+            webViewSettings.setSupportZoom(true);
             mWebView.loadData(readTextFromUri(getIntent().getData()),
                     "text/html; charset=UTF-8", null);
         }
+
         setResult(RESULT_CANCELED);
     }
 

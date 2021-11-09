@@ -185,10 +185,10 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuShowMissing;
     @OptionsMenuItem(R.id.enable_scale)
     MenuItem menuEnableScale;
-    @OptionsMenuItem(R.id.amiibo_backup)
-    MenuItem menuBackup;
     @OptionsMenuItem(R.id.build_wumiibo)
     MenuItem menuWumiibo;
+    @OptionsMenuItem(R.id.amiibo_backup)
+    MenuItem menuBackup;
     @OptionsMenuItem(R.id.unlock_elite)
     MenuItem menuUnlockElite;
     @OptionsMenuItem(R.id.export_logcat)
@@ -454,6 +454,20 @@ public class BrowserActivity extends AppCompatActivity implements
         this.supportInvalidateOptionsMenu();
     }
 
+    ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK) return;
+
+        TagMo.getPrefs().insertDownloads().put(true);
+        this.onRefresh();
+    });
+
+    @OptionsItem(R.id.build_wumiibo)
+    void onWumiiboClicked() {
+        onDownloadZip.launch(new Intent(this,
+                WebViewActivity_.class).setAction(TagMo.ACTION_BUILD_WUMIIBO));
+    }
+
     ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
@@ -648,7 +662,8 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    MenuItem.OnMenuItemClickListener onFilterAmiiboSeriesItemClick = new MenuItem.OnMenuItemClickListener() {
+    MenuItem.OnMenuItemClickListener onFilterAmiiboSeriesItemClick
+            = new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             settings.setAmiiboSeriesFilter(menuItem.getTitle().toString());
@@ -694,7 +709,8 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    MenuItem.OnMenuItemClickListener onFilterAmiiboTypeItemClick = new MenuItem.OnMenuItemClickListener() {
+    MenuItem.OnMenuItemClickListener onFilterAmiiboTypeItemClick
+            = new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             settings.setAmiiboTypeFilter(menuItem.getTitle().toString());
@@ -723,20 +739,6 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsItem(R.id.settings)
     void openSettings() {
         onSettingsActivity.launch(new Intent(this, SettingsActivity_.class));
-    }
-
-    ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() != Activity.RESULT_OK) return;
-
-                TagMo.getPrefs().insertDownloads().put(true);
-                this.onRefresh();
-            });
-
-    @OptionsItem(R.id.build_wumiibo)
-    void onWumiiboClicked() {
-        onDownloadZip.launch(new Intent(this,
-                WebViewActivity_.class).setAction(TagMo.ACTION_BUILD_WUMIIBO));
     }
 
     @Override

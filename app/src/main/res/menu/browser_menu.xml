@@ -88,6 +88,29 @@
         android:icon="@drawable/ic_settings_white_24dp"
         app:showAsAction="always" />
     <item
+        android:id="@+id/content"
+        android:icon="@drawable/ic_view_array_white_24dp"
+        android:title="@string/content"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/recursive"
+                android:checkable="true"
+                android:title="@string/recursive_folders"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/show_downloads"
+                android:checkable="true"
+                android:title="@string/show_downloads"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/show_missing"
+                android:checkable="true"
+                android:title="@string/show_missing"
+                app:showAsAction="ifRoom"/>
+        </menu>
+    </item>
+    <item
         android:id="@+id/view"
         android:icon="@drawable/ic_view_array_white_24dp"
         android:title="@string/layout"
@@ -112,29 +135,6 @@
                     android:title="@string/enable_scale"
                     app:showAsAction="ifRoom"/>
             </group>
-        </menu>
-    </item>
-    <item
-        android:id="@+id/content"
-        android:icon="@drawable/ic_view_array_white_24dp"
-        android:title="@string/content"
-        app:showAsAction="ifRoom">
-        <menu>
-            <item
-                android:id="@+id/recursive"
-                android:checkable="true"
-                android:title="@string/recursive_folders"
-                app:showAsAction="ifRoom"/>
-            <item
-                android:id="@+id/show_downloads"
-                android:checkable="true"
-                android:title="@string/show_downloads"
-                app:showAsAction="ifRoom"/>
-            <item
-                android:id="@+id/show_missing"
-                android:checkable="true"
-                android:title="@string/show_missing"
-                app:showAsAction="ifRoom"/>
         </menu>
     </item>
     <item

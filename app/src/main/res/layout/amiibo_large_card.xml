@@ -36,7 +36,8 @@
         <RelativeLayout
             android:id="@+id/amiiboInfo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            tools:ignore="SmallSp">
 
             <ImageView
                 android:id="@+id/imageAmiibo"
@@ -44,7 +45,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_marginBottom="4dp"
-                android:foreground="@drawable/card_foreground"
                 android:visibility="gone"/>
 
             <View
@@ -79,7 +79,7 @@
                     android:gravity="start"
                     android:text="@string/amiibo_id_caps"
                     android:textColor="@color/tag_text_light"
-                    android:textSize="10sp"/>
+                    android:textSize="10sp" />
 
                 <View
                     android:layout_width="4dp"

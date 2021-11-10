@@ -20,5 +20,6 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
+        android:foreground="@drawable/card_foreground"
         android:layout_gravity="center" />
 </androidx.cardview.widget.CardView>

@@ -59,6 +59,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         this.listener = listener;
 
         this.filteredData = this.data;
+        this.setHasStableIds(true);
     }
 
     @Override

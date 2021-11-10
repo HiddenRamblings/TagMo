@@ -60,6 +60,7 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
 
         Collections.sort(amiiboFiles, new AmiiboComparator(settings));
         this.filteredData = this.amiiboFiles = amiiboFiles;
+        this.setHasStableIds(true);
     }
 
     public WriteBlankAdapter(BrowserSettings settings, OnHighlightListener collector, ArrayList<AmiiboFile> amiiboFiles) {

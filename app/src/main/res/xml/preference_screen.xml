@@ -83,7 +83,7 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/amiibo_info_stats"
+        android:title="@string/amiibo_api_title"
         app:iconSpaceReserved="false">
         <androidx.preference.Preference
             android:key="@string/settings_info_amiibo"

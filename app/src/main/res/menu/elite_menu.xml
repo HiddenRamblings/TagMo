@@ -35,4 +35,8 @@
         android:id="@+id/mnu_backup"
         android:title="@string/amiibo_backup"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mnu_verify"
+        android:title="@string/verify_amiibo"
+        app:showAsAction="ifRoom"/>
 </menu>

@@ -36,7 +36,7 @@ public class HexViewerActivity extends AppCompatActivity {
             setAdapterTagData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
             Debug.Error(R.string.fail_decrypt, e);
-            LogError(R.string.fail_decrypt);
+            showErrorDialog(R.string.fail_decrypt);
         }
     }
 
@@ -47,7 +47,7 @@ public class HexViewerActivity extends AppCompatActivity {
     }
 
     @UiThread
-    void LogError(int msgRes) {
+    void showErrorDialog(int msgRes) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.error_caps)
                 .setMessage(msgRes)

@@ -310,7 +310,8 @@ public class NfcActivity extends AppCompatActivity {
                 byte[] data = new byte[0];
                 if (commandIntent.hasExtra(TagMo.EXTRA_TAG_DATA)) {
                     data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-                    if (data == null) throw new IOException(getString(R.string.error_no_data));
+                    if (data == null || data.length <= 1)
+                        throw new IOException(getString(R.string.error_no_data));
                 }
                 Bundle args = new Bundle();
                 switch (mode) {

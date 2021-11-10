@@ -273,16 +273,17 @@ public class NfcActivity extends AppCompatActivity {
                 throw new Exception(getString(R.string.error_tag_protocol, tagTech));
             }
             mifare.connect();
-            boolean isPowerTag = TagUtils.isPowerTag(mifare);
-            if (isPowerTag) {
-                showMessage(getString(R.string.tag_scanning, getString(R.string.power_tag)));
-            } else if (!hasTestedElite) {
+            if (!hasTestedElite) {
                 hasTestedElite = true;
-                isEliteDevice = TagUtils.isElite(mifare);
-                if (isEliteDevice) {
-                    showMessage(getString(R.string.tag_scanning, getString(R.string.elite_device)));
+                if (TagUtils.isPowerTag(mifare)) {
+                    showMessage(getString(R.string.tag_scanning, getString(R.string.power_tag)));
                 } else {
-                    showMessage(getString(R.string.tag_scanning, tagTech));
+                    isEliteDevice = TagUtils.isElite(mifare);
+                    if (isEliteDevice) {
+                        showMessage(getString(R.string.tag_scanning, getString(R.string.elite_device)));
+                    } else {
+                        showMessage(getString(R.string.tag_scanning, tagTech));
+                    }
                 }
             }
             int selection;

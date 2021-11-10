@@ -1,3 +1,6 @@
 [submodule "app/src/main/assets/wumiibo"]
 	path = app/src/main/assets/wumiibo
 	url = git@github.com:8BitDream/amiibo-generator.git
+[submodule "app/src/main/jni"]
+	path = app/src/main/jni
+	url = git@github.com:8BitDream/amiitool.git

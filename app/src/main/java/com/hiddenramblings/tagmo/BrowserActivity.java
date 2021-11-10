@@ -184,6 +184,8 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuWumiibo;
     @OptionsMenuItem(R.id.amiibo_backup)
     MenuItem menuBackup;
+    @OptionsMenuItem(R.id.verify_amiibo)
+    MenuItem menuVerify;
     @OptionsMenuItem(R.id.unlock_elite)
     MenuItem menuUnlockElite;
     @OptionsMenuItem(R.id.capture_logcat)
@@ -511,6 +513,26 @@ public class BrowserActivity extends AppCompatActivity implements
         Intent backup = new Intent(this, NfcActivity_.class);
         backup.setAction(TagMo.ACTION_BACKUP_AMIIBO);
         onBackupActivity.launch(backup);
+    }
+
+    ActivityResultLauncher<Intent> onVerifyActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+
+        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+
+        try {
+            TagReader.validateTag(result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
+            showAlertDialog(getString(R.string.validation_success));
+        } catch (Exception e) {
+            showAlertDialog(e.getMessage());
+        }
+    });
+
+    @OptionsItem(R.id.verify_amiibo)
+    void onAmiiboVerifyClicked() {
+        onVerifyActivity.launch(new Intent(this,
+                NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
     }
 
     @OptionsItem(R.id.unlock_elite)
@@ -1269,6 +1291,14 @@ public class BrowserActivity extends AppCompatActivity implements
     @UiThread
     public void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    @UiThread
+    void showAlertDialog(String msg) {
+        new AlertDialog.Builder(this)
+                .setMessage(msg)
+                .setPositiveButton(R.string.close, (dialog, which) -> finish())
+                .show();
     }
 
     @UiThread

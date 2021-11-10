@@ -126,6 +126,7 @@ public class BankListActivity extends AppCompatActivity implements
         EDITOR,
         HEXCODE,
         BACKUP,
+        VERIFY,
         FORMAT
     }
     private CLICKED status = CLICKED.NOTHING;
@@ -526,6 +527,14 @@ public class BankListActivity extends AppCompatActivity implements
             case BACKUP:
                 displayBackupDialog(tagData);
                 break;
+            case VERIFY:
+                try {
+                    TagReader.validateTag(tagData);
+                    showAlertDialog(getString(R.string.validation_success));
+                } catch (Exception e) {
+                    showAlertDialog(e.getMessage());
+                }
+                break;
 
         }
         status = CLICKED.NOTHING;
@@ -616,11 +625,15 @@ public class BankListActivity extends AppCompatActivity implements
                     return true;
                 case R.id.mnu_backup:
                     if (tagData != null && tagData.length > 0) {
-                    displayBackupDialog(tagData);
+                        displayBackupDialog(tagData);
                     } else {
                         status = CLICKED.BACKUP;
                         scanAmiiboData(current_bank);
                     }
+                    return true;
+                case R.id.mnu_verify:
+                    status = CLICKED.VERIFY;
+                    scanAmiiboData(current_bank);
                     return true;
                 case R.id.mnu_scan:
                     scanAmiiboData(current_bank);
@@ -837,6 +850,14 @@ public class BankListActivity extends AppCompatActivity implements
     @UiThread
     public void showToast(int msgRes) {
         Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
+    }
+
+    @UiThread
+    void showAlertDialog(String msg) {
+        new AlertDialog.Builder(this)
+                .setMessage(msg)
+                .setPositiveButton(R.string.close, (dialog, which) -> finish())
+                .show();
     }
 
     @Override

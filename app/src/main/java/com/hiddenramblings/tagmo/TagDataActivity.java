@@ -157,14 +157,14 @@ public class TagDataActivity extends AppCompatActivity {
     void afterViews() {
         keyManager = new KeyManager(this);
         if (keyManager.isKeyMissing()) {
-            LogError(getString(R.string.no_decrypt_key));
+            showErrorDialog(getString(R.string.no_decrypt_key));
             return;
         }
         try {
             this.amiiboData = new AmiiboData(TagUtils.decrypt(keyManager, tagData));
         } catch (Exception e) {
             Debug.Error(e);
-            LogError(getString(R.string.fail_decrypt));
+            showErrorDialog(getString(R.string.fail_decrypt));
             return;
         }
 
@@ -391,7 +391,7 @@ public class TagDataActivity extends AppCompatActivity {
             newAmiiboData.setAppDataInitialized(isUserDataInitialized && isAppDataInitialized);
         } catch (Exception e) {
             Debug.Error(e);
-            LogError(getString(R.string.fail_save_data));
+            showErrorDialog(getString(R.string.fail_save_data));
             return;
         }
 
@@ -474,7 +474,7 @@ public class TagDataActivity extends AppCompatActivity {
             tagData = TagUtils.encrypt(keyManager, newAmiiboData.array());
         } catch (Exception e) {
             Debug.Error(e);
-            LogError(getString(R.string.fail_encrypt));
+            showErrorDialog(getString(R.string.fail_encrypt));
             return;
         }
 
@@ -985,7 +985,7 @@ public class TagDataActivity extends AppCompatActivity {
     }
 
     @UiThread
-    void LogError(String msg) {
+    void showErrorDialog(String msg) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.error_caps)
                 .setMessage(msg)

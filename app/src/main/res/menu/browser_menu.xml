@@ -146,6 +146,10 @@
         android:title="@string/amiibo_backup"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/verify_amiibo"
+        android:title="@string/verify_amiibo"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/unlock_elite"
         android:title="@string/unlock_elite"
         app:showAsAction="ifRoom"/>

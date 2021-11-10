@@ -529,8 +529,8 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background
     void onCaptureLogcatClicked() {
         try {
-            File file = Debug.processLogcat(new File(
-                    TagMo.getExternalFiles(), "tagmo_logcat.txt"));
+            File file = Debug.processLogcat(new File(TagMo.getExternalFiles(),
+                    "tagmo_logcat.txt"));
             TagMo.scanFile(file);
             showToast(getString(R.string.wrote_file, Storage.getRelativePath(file)));
             startActivity(new ActionIntent(this, WebViewActivity_.class)
@@ -557,9 +557,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
             GameSeries gameSeries = amiibo.getGameSeries();
             if (gameSeries != null &&
-                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(), settings.getCharacterFilter()) &&
-                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(), settings.getAmiiboSeriesFilter()) &&
-                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(), settings.getAmiiboTypeFilter())
+                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
+                            settings.getCharacterFilter()) &&
+                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
+                            settings.getAmiiboSeriesFilter()) &&
+                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
+                            settings.getAmiiboTypeFilter())
             ) {
                 items.add(gameSeries.name);
             }

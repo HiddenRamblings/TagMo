@@ -225,7 +225,7 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @Click(R.id.imageAmiibo)
     void onImageClicked() {
-        if (this.tagData != null) {
+        if (this.tagData != null && this.tagData.length > 0) {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
@@ -306,7 +306,7 @@ public class AmiiboActivity extends AppCompatActivity {
         // String character = "";
         String amiiboImageUrl;
 
-        if (this.tagData != null) {
+        if (this.tagData != null && this.tagData.length > 0) {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(this.tagData);
             } catch (Exception e) {

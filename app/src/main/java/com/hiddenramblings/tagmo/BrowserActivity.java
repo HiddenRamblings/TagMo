@@ -300,10 +300,11 @@ public class BrowserActivity extends AppCompatActivity implements
                 file.delete();
             }
         }
-        new JSONExecutor(getString(R.string.repo_url,
-                TagMo.getPrefs().stableChannel().get() ? "master" : "experimental"))
+
+        boolean isMaster = TagMo.getPrefs().stableChannel().get();
+        new JSONExecutor(getString(R.string.repo_url, isMaster ? "master" : "experimental"))
                 .setResultListener(result -> {
-            if (result != null) parseUpdateJSON(result);
+            if (result != null) parseUpdateJSON(result, isMaster);
         });
     }
 
@@ -1384,17 +1385,34 @@ public class BrowserActivity extends AppCompatActivity implements
         snackbar.show();
     }
 
-    private void parseUpdateJSON(String result) {
+    private void parseUpdateJSON(String result, boolean isMaster) {
+        String lastCommit = null, downloadUrl = null;
         try {
             JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-            String lastCommit = (String) jsonObject.get("name");
-            if (!BuildConfig.COMMIT.equals(lastCommit.substring(6))) {
-                JSONArray assets = (JSONArray) jsonObject.get("assets");
-                JSONObject asset = (JSONObject) assets.get(0);
-                showInstallSnackbar((String) asset.get("browser_download_url"));
-            }
+            lastCommit = (String) jsonObject.get("name");
+            JSONArray assets = (JSONArray) jsonObject.get("assets");
+            JSONObject asset = (JSONObject) assets.get(0);
+            downloadUrl = (String) asset.get("browser_download_url");
+            if (!isMaster && !BuildConfig.COMMIT.equals(lastCommit.substring(6)))
+                showInstallSnackbar(downloadUrl);
         } catch (JSONException e) {
             Debug.Error(e);
+        }
+
+        if (isMaster && lastCommit != null && downloadUrl != null) {
+            String finalLastCommit = lastCommit;
+            String finalDownloadUrl = downloadUrl;
+            new JSONExecutor(getString(R.string.repo_url, "experimental"))
+                    .setResultListener(alternate -> {
+                try {
+                    JSONObject jsonObject = (JSONObject) new JSONTokener(alternate).nextValue();
+                    if (!BuildConfig.COMMIT.equals(finalLastCommit.substring(6))
+                            && !BuildConfig.COMMIT.equals((String) jsonObject.get("name")))
+                        showInstallSnackbar(finalDownloadUrl);
+                } catch (JSONException e) {
+                    Debug.Error(e);
+                }
+            });
         }
     }
 

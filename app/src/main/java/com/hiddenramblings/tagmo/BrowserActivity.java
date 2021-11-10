@@ -175,7 +175,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsMenuItem(R.id.recursive)
     MenuItem menuRecursiveFiles;
     @OptionsMenuItem(R.id.show_downloads)
-    MenuItem menuInsertDownloads;
+    MenuItem menuShowDownloads;
     @OptionsMenuItem(R.id.show_missing)
     MenuItem menuShowMissing;
     @OptionsMenuItem(R.id.enable_scale)
@@ -433,8 +433,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @OptionsItem(R.id.show_downloads)
-    void OnIncludeDownloadsCicked() {
-        this.settings.setInsertDownloads(!this.settings.isShowingDownloads());
+    void OnShowDownloadsCicked() {
+        this.settings.setShowDownloads(!this.settings.isShowingDownloads());
         this.settings.notifyChanges();
     }
 
@@ -455,7 +455,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Snackbar snackbar = new IconifiedSnackbar(this)
                 .buildSnackbar(getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.display, v -> {
-            this.settings.setInsertDownloads(true);
+            this.settings.setShowDownloads(true);
             settings.notifyChanges();
             this.onRefresh();
         });
@@ -766,7 +766,7 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onSortChanged();
         this.onViewChanged();
         this.onRecursiveFilesChanged();
-        this.onInsertDownloadsChanged();
+        this.onShowDownloadsChanged();
         this.onShowMissingChanged();
         this.onEnableScaleChanged();
 
@@ -979,7 +979,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         final ArrayList<AmiiboFile> amiiboFiles =
                 AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
-        if (TagMo.getPrefs().insertDownloads().get()) {
+        if (this.settings.isShowingDownloads()) {
             File download = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS);
             File[] files = rootFolder.listFiles((file, name) -> file.isDirectory()
@@ -1017,7 +1017,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (newBrowserSettings.isShowingDownloads() != oldBrowserSettings.isShowingDownloads()) {
             folderChanged = true;
-            onInsertDownloadsChanged();
+            onShowDownloadsChanged();
         }
         if (newBrowserSettings.isShowingMissingFiles() != oldBrowserSettings.isShowingMissingFiles()) {
             folderChanged = true;
@@ -1060,7 +1060,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
                 .imageNetworkSetting().put(newBrowserSettings.getImageNetworkSettings())
                 .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
-                .insertDownloads().put(newBrowserSettings.isShowingDownloads())
+                .showDownloads().put(newBrowserSettings.isShowingDownloads())
                 .showMissingFiles().put(newBrowserSettings.isShowingMissingFiles())
                 .apply();
     }
@@ -1187,11 +1187,11 @@ public class BrowserActivity extends AppCompatActivity implements
         menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
     }
 
-    void onInsertDownloadsChanged() {
-        if (menuInsertDownloads == null)
+    void onShowDownloadsChanged() {
+        if (menuShowDownloads == null)
             return;
 
-        menuInsertDownloads.setChecked(settings.isShowingDownloads());
+        menuShowDownloads.setChecked(settings.isShowingDownloads());
     }
 
     void onShowMissingChanged() {

@@ -25,13 +25,13 @@
     <string name="unlock">Unlock</string>
     <string name="scan">Scan</string>
 
-    <string name="amiibo">Amiibo</string>
+    <string name="amiibo">amiibo™</string>
     <string name="amiibo_id">ID</string>
     <string name="amiibo_name">Name</string>
     <string name="amiibo_game">Game Series</string>
     <string name="amiibo_character">Character</string>
-    <string name="amiibo_series">Amiibo Series</string>
-    <string name="amiibo_type">Amiibo Type</string>
+    <string name="amiibo_series">amiibo™ Series</string>
+    <string name="amiibo_type">amiibo™ Type</string>
     <string name="amiibo_path">File Path</string>
 
     <string name="pref_amiibo_characters">Characters</string>
@@ -46,8 +46,8 @@
     <string name="amiibo_path_caps">PATH</string>
 
     <string name="keys_not_loaded">Keys Not Loaded</string>
-    <string name="refreshing_list">Searching for Amiibo&#8230;</string>
-    <string name="amiibo_not_found">No Amiibo Found</string>
+    <string name="refreshing_list">Searching for amiibo™&#8230;</string>
+    <string name="amiibo_not_found">No amiibo™ Found</string>
 
     <string name="recursive_folders">Recursive Folders</string>
     <string name="show_downloads">Show \'Downloads\'</string>
@@ -141,7 +141,7 @@
     <string name="scan_elite">Scan N2 Elite</string>
     <string name="format_bank">Format Bank</string>
     <string name="activate_bank">Activate Bank</string>
-    <string name="amiibo_backup">Amiibo Backup</string>
+    <string name="amiibo_backup">Cache amiibo™</string>
     <string name="build_wumiibo">Build Wumiibo</string>
     <string name="set_bank_count">Set Bank Count</string>
     <string name="lock_amiibo">Lock N2 Elite</string>
@@ -149,12 +149,12 @@
 
     <string name="permission_required">Storage permission required!</string>
     <string name="allow">Allow</string>
-    <string name="emulated_storage">Emulated storage may contain Amiibo.</string>
+    <string name="emulated_storage">Emulated storage may contain amiibo™.</string>
 
     <string name="warn_delete_file">Deleting %1$s. Are you sure?</string>
     <string name="delete_active">Cannot delete the active bank!</string>
 
-    <string name="amiibo_info_stats">Amiibo Info Stats</string>
+    <string name="amiibo_info_stats">amiibo™ Info Stats</string>
     <string name="pref_advanced">Advanced</string>
     <string name="pref_disable_debug">Disable Debug Logger</string>
     <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
@@ -180,41 +180,41 @@
     <string name="elite_details">Support is currently in development.\nSee Github for limitations and use.</string>
     <string name="elite_details_enabled">Support is currently in development.\nN2 Elite ID: %1$s</string>
     <string name="lock_elite_hardware">Lock N2 Elite Hardware</string>
-    <string name="lock_elite_hardware_details">The active bank will emulate a retail Amiibo.\nOther features will be disabled until unlocked.</string>
+    <string name="lock_elite_hardware_details">The active bank will emulate a retail amiibo™.\nOther features will be disabled until unlocked.</string>
     <string name="lock_elite_warning">Lock N2 Elite Hardware?</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="write_open_banks">Write %1$d Banks to N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>
     <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
 
-    <string name="amiibo_info">Amiibo Info</string>
+    <string name="amiibo_info">amiibo™ Info</string>
     <string name="bank_number">Bank %1$d</string>
 
-    <string name="amiibo_info_updated">Updated Amiibo info</string>
+    <string name="amiibo_info_updated">Updated amiibo™ info</string>
 
-    <string name="backup_filename">Amiibo Bin Filename</string>
+    <string name="backup_filename">amiibo™ Bin Filename</string>
 
     <string name="prepare_unlock">Once scanned, do not remove the unit from the NFC field until complete.</string>
     <string name="progress_unlock">Press and hold the N2 button and continue to wait for unlock to complete.</string>
     <string name="possible_lock">Is this N2 Elite locked?</string>
 
     <string name="sync_amiibo_info">Sync with AmiiboAPI.com</string>
-    <string name="reset_amiibo_info">Reset cached Amiibo info</string>
-    <string name="export_json_details">Export Amiibo info (JSON)</string>
-    <string name="import_json_details">Import Amiibo info (JSON)</string>
+    <string name="reset_amiibo_info">Reset cached amiibo™ info</string>
+    <string name="export_json_details">Export amiibo™ info (JSON)</string>
+    <string name="import_json_details">Import amiibo™ info (JSON)</string>
 
     <string name="sync_amiibo_process">Syncing with AmiiboAPI&#8230;</string>
     <string name="sync_amiibo_complete">AmiiboAPI sync success!</string>
     <string name="sync_amiibo_failed">AmiiboAPI sync failure!</string>
-    <string name="removing_amiibo_info">Clearing Amiibo info&#8230;</string>
+    <string name="removing_amiibo_info">Clearing amiibo™ info&#8230;</string>
 
-    <string name="number_amiibo">%1$d Amiibo</string>
+    <string name="number_amiibo">%1$d amiibo™</string>
     <string name="number_game">%1$d Game Series</string>
     <string name="number_character">%1$d Character(s)</string>
-    <string name="number_series">%1$d Amiibo Series</string>
-    <string name="number_type">%1$d Amiibo Type(s)</string>
-    <string name="files_displayed">%1$d Files: ? / ? Amiibo</string>
-    <string name="amiibo_collected">%1$d Files: %2$d / %3$d Amiibo</string>
+    <string name="number_series">%1$d amiibo™ Series</string>
+    <string name="number_type">%1$d amiibo™ Type(s)</string>
+    <string name="files_displayed">%1$d Files: ? / ? amiibo™</string>
+    <string name="amiibo_collected">%1$d Files: %2$d / %3$d amiibo™</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>
@@ -242,11 +242,11 @@
     <string name="error_data_write">Error while writing main data (stage 1)</string>
     <string name="error_password_write">Error while setting password (stage 2)</string>
     <string name="error_lock_write">Error while setting lock info (stage 3)</string>
-    <string name="error_tag_rewrite">Tag already an Amiibo. Use \'Restore Tag\' to write data.</string>
+    <string name="error_tag_rewrite">Tag already an amiibo™. Use \'Restore Tag\' to write data.</string>
     <string name="error_tag_format">Tag is not an NTAG215</string>
     <string name="error_tag_version">Tag version error</string>
     <string name="error_version">Version information error</string>
-    <string name="error_amiibo_parse">Amiibo parse error</string>
+    <string name="error_amiibo_parse">amiibo™ info parse error</string>
     <string name="error_powertag_key">Power Tag keys not loaded</string>
     <string name="error_elite_write">Error while writing data to N2 Elite</string>
     <string name="error_elite_auth">Error while authenticating N2 Elite</string>
@@ -263,9 +263,9 @@
     <string name="fail_bank_oob">Selected bank exceeds count!</string>
     <string name="fail_active_oob">Active bank beyond new count!</string>
     <string name="fail_elite_bank_parse">Failed to parse banks!</string>
-    <string name="fail_read_amiibo">Reading Amiibo data failed!</string>
-    <string name="fail_early_remove">Amiibo removed too early!</string>
-    <string name="fail_amiibo_null">Please scan the Amiibo again</string>
+    <string name="fail_read_amiibo">Reading amiibo™ data failed!</string>
+    <string name="fail_early_remove">amiibo™ removed too early!</string>
+    <string name="fail_amiibo_null">Please scan the amiibo™ again</string>
     <string name="fail_read">Read failed</string>
     <string name="fail_auth">Authenticaiton failed</string>
     <string name="fail_decrypt">Failed to decrypt tag data</string>
@@ -300,15 +300,15 @@
     <string name="p10_key_missing">No available key for P10_ID</string>
     <string name="power_tag_verify">Power Tag Confirmed: %1$s</string>
 
-    <string name="amiibo_info_parse_error">Unable to parse Amiibo info</string>
-    <string name="amiibo_info_not_loaded">Amiibo info not loaded</string>
-    <string name="amiibo_info_export_fail">Failed to export Amiibo info to %1$s</string>
-    <string name="amiibo_info_exported">Exported Amiibo info to %1$s</string>
-    <string name="amiibo_failure_load">Failed to load Amiibo info</string>
-    <string name="amiibo_failure_parse">Failed to parse Amiibo info</string>
-    <string name="amiibo_failure_read">Failed to read Amiibo info</string>
-    <string name="amiibo_failure_update">Failed to update Amiibo info</string>
-    <string name="amiibo_failure_parse_default">Failed to parse default Amiibo info</string>
+    <string name="amiibo_info_parse_error">Unable to parse amiibo™ info</string>
+    <string name="amiibo_info_not_loaded">amiibo™ info not loaded</string>
+    <string name="amiibo_info_export_fail">Failed to export amiibo™ info to %1$s</string>
+    <string name="amiibo_info_exported">Exported amiibo™ info to %1$s</string>
+    <string name="amiibo_failure_load">Failed to load amiibo™ info</string>
+    <string name="amiibo_failure_parse">Failed to parse amiibo™ info</string>
+    <string name="amiibo_failure_read">Failed to read amiibo™ info</string>
+    <string name="amiibo_failure_update">Failed to update amiibo™ info</string>
+    <string name="amiibo_failure_parse_default">Failed to parse default amiibo™ info</string>
 
     <string name="no_source_data">Cannot validate: no source data loaded to compare.</string>
 
@@ -327,8 +327,8 @@
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 
     <string name="speed_scan">Lift tag slightly to improve scan</string>
-    <string name="decrypted_files">Amiibo (Decrypted)</string>
-    <string name="wait_unzip">Unzipping Amiibo Collection&#8230;</string>
+    <string name="decrypted_files">Wumiibo (Decrypted)</string>
+    <string name="wait_unzip">Unzipping Wumiibo Collection&#8230;</string>
     <string name="unzip_item">Unzipping %1$s&#8230;</string>
     <string name="mkdir_failed">Folder "%1$s" failed!</string>
 </resources>

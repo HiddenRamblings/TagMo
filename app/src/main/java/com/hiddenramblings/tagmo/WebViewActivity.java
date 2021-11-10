@@ -21,6 +21,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -92,6 +93,11 @@ public class WebViewActivity extends AppCompatActivity {
 
             mWebView.setWebViewClient(new WebViewClientCompat() {
                 @Override
+                public WebResourceResponse shouldInterceptRequest(
+                        WebView view, WebResourceRequest request) {
+                    return assetLoader.shouldInterceptRequest(request.getUrl());
+                }
+                @Override
                 public void onReceivedHttpError (
                         @NonNull WebView view, @NonNull WebResourceRequest request,
                         @NonNull WebResourceResponse errorResponse) {
@@ -99,23 +105,17 @@ public class WebViewActivity extends AppCompatActivity {
                             .toString().equals(getString(R.string.wumiibo_url)))
                         view.loadUrl(getString(R.string.wumiibo_url));
                 }
-
-                @Override
-                public WebResourceResponse shouldInterceptRequest(
-                        WebView view, WebResourceRequest request) {
-                    return assetLoader.shouldInterceptRequest(request.getUrl());
-                }
             });
             if (WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USAGE)) {
                 ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(
                         new ServiceWorkerClientCompat() {
-                            @Nullable
-                            @Override
-                            public WebResourceResponse shouldInterceptRequest(
-                                    @NonNull WebResourceRequest request) {
-                                return assetLoader.shouldInterceptRequest(request.getUrl());
-                            }
-                        });
+                    @Nullable
+                    @Override
+                    public WebResourceResponse shouldInterceptRequest(
+                            @NonNull WebResourceRequest request) {
+                        return assetLoader.shouldInterceptRequest(request.getUrl());
+                    }
+                });
             }
         }
         webViewSettings.setAllowFileAccessFromFileURLs(
@@ -143,26 +143,27 @@ public class WebViewActivity extends AppCompatActivity {
         } else {
             webViewSettings.setBuiltInZoomControls(true);
             webViewSettings.setSupportZoom(true);
-            mWebView.loadData(readTextFromUri(getIntent().getData()),
-                    "text/html; charset=UTF-8", null);
+            try (InputStream in = getContentResolver().openInputStream(getIntent().getData());
+                 BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
+                StringBuilder total = new StringBuilder();
+                for (String line; (line = r.readLine()) != null; ) {
+                    total.append(line).append("<br />");
+                }
+                mWebView.loadData(total.toString(),
+                        "text/html; charset=UTF-8", null);
+            } catch (Exception e) {
+                Debug.Log(e);
+                showToast(R.string.fail_logcat);
+                finish();
+            }
         }
 
         setResult(RESULT_CANCELED);
     }
 
-    private String readTextFromUri(Uri fileUri) {
-        try {
-            InputStream in = getContentResolver().openInputStream(fileUri);
-            BufferedReader r = new BufferedReader(new InputStreamReader(in));
-            StringBuilder total = new StringBuilder();
-            for (String line; (line = r.readLine()) != null; ) {
-                total.append(line).append("<br />");
-            }
-            return total.toString();
-        } catch (Exception e) {
-            Debug.Log(e);
-        }
-        return null;
+    @UiThread
+    public void showToast(int msgRes) {
+        Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
     }
 
     private class UnZip implements Runnable {

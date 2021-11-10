@@ -270,6 +270,7 @@
     <string name="fail_auth">Authenticaiton failed</string>
     <string name="fail_decrypt">Failed to decrypt tag data</string>
     <string name="fail_encrypt">Failed to encrypt tag data</string>
+    <string name="fail_logcat">Failed to display logcat!</string>
 
     <string name="no_tag_loaded">&lt;No Tag Loaded&gt;</string>
     <string name="read_error">&lt;Error Reading Tag&gt;</string>

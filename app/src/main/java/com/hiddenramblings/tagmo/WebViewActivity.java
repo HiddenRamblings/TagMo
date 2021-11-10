@@ -228,6 +228,9 @@ public class WebViewActivity extends AppCompatActivity {
     void unzipFile(File zipFile) {
         dialog = ProgressDialog.show(this,
                 getString(R.string.wait_unzip), "", true);
+        File deprecated = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS), "Amiibo (Decrypted)");
+        if (deprecated.exists()) deleteDir(deprecated);
         File destination = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS), getString(R.string.decrypted_files));
         if (destination.exists()) deleteDir(destination);

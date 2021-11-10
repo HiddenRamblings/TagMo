@@ -450,12 +450,25 @@ public class BrowserActivity extends AppCompatActivity implements
         this.recreate();
     }
 
+    @UiThread
+    public void showDownloadsSnackbar() {
+        Snackbar snackbar = new IconifiedSnackbar(this)
+                .buildSnackbar(getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.display, v -> {
+            this.settings.setInsertDownloads(true);
+            settings.notifyChanges();
+            this.onRefresh();
+        });
+        snackbar.show();
+    }
+
     ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK) return;
 
-        TagMo.getPrefs().insertDownloads().put(true);
-        this.onRefresh();
+        if (!this.settings.isShowingDownloads())
+            showDownloadsSnackbar();
+        else this.onRefresh();
     });
 
     @OptionsItem(R.id.build_wumiibo)
@@ -1365,8 +1378,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @UiThread
     public void showInstallSnackbar(String apkUrl) {
-        Snackbar snackbar = new IconifiedSnackbar(this).buildSnackbar(
-                getString(
+        Snackbar snackbar = new IconifiedSnackbar(this)
+                .buildSnackbar(getString(
                 R.string.update_tagmo_apk), Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.install, v -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

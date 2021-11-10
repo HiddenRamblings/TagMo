@@ -16,8 +16,6 @@ public class KeyManager {
     private static final String FIXED_KEY_MD5 = "0AD86557C7BA9E75C79A7B43BB466333";
     private static final String UNFIXED_KEY_MD5 = "2551AFC7C8813008819836E9B619F7ED";
 
-    private static final int KEY_FILE_SIZE = 80;
-
     byte[] fixedKey = null;
     byte[] unfixedKey = null;
 
@@ -39,8 +37,8 @@ public class KeyManager {
 
     private byte[] loadKeyFromStorage(String file) {
         try (FileInputStream fs = context.openFileInput(file)) {
-            byte[] key = new byte[KEY_FILE_SIZE];
-            if (fs.read(key) != KEY_FILE_SIZE)
+            byte[] key = new byte[NfcByte.KEY_FILE_SIZE];
+            if (fs.read(key) != NfcByte.KEY_FILE_SIZE)
                 throw new IOException(context.getString(R.string.key_size_invalid));
             return key;
         } catch (Exception e) {
@@ -72,12 +70,12 @@ public class KeyManager {
     }
 
     private void readKey(InputStream strm) throws IOException {
-        byte[] data = new byte[KEY_FILE_SIZE];
+        byte[] data = new byte[NfcByte.KEY_FILE_SIZE];
         int rlen = strm.read(data, 0, data.length);
         if (rlen <= 0)
             throw new IOException(context.getString(R.string.invalid_key_error));
 
-        if (rlen < KEY_FILE_SIZE)
+        if (rlen < NfcByte.KEY_FILE_SIZE)
             throw new IOException(context.getString(R.string.key_size_error));
 
         String md5 = TagUtils.md5(data);

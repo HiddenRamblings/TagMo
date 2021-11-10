@@ -151,6 +151,6 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/capture_logcat"
-        android:title="@string/display_logcat"
+        android:title="@string/capture_logcat"
         app:showAsAction="ifRoom"/>
 </menu>

@@ -99,7 +99,7 @@ public class TagReader {
     private static byte[] getTagData(String path, InputStream inputStream) throws Exception {
         byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
         int len = inputStream.read(data);
-        if (len != NfcByte.TAG_FILE_SIZE)
+        if (len != NfcByte.TAG_FILE_SIZE && len != NfcByte.KEY_FILE_SIZE)
             throw new IOException(TagMo.getStringRes(R.string.invalid_file_size,
                     path, NfcByte.TAG_FILE_SIZE));
         return data;
@@ -182,8 +182,8 @@ public class TagReader {
         return binFile.getAbsolutePath();
     }
 
-    public static String decipherBinName(AmiiboManager amiiboManager,
-                                         byte[] tagData, boolean decrypted) {
+    public static String decipherBinName(
+            AmiiboManager amiiboManager, byte[] tagData, boolean decrypted) {
         String status = "";
         if (decrypted) {
             status = "(Decrypted)";

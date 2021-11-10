@@ -809,7 +809,7 @@ public class BankListActivity extends AppCompatActivity implements
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         final ArrayList<AmiiboFile> amiiboFiles =
                 AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
-        if (TagMo.getPrefs().insertDownloads().get()) {
+        if (settings.isShowingDownloads()) {
             amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
                     Environment.getExternalStoragePublicDirectory(
                             Environment.DIRECTORY_DOWNLOADS), recursiveFiles));

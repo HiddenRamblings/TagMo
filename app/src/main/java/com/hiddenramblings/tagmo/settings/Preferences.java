@@ -48,7 +48,8 @@ public interface Preferences {
     @DefaultInt(BrowserActivity.VIEW_TYPE_COMPACT)
     int browserAmiiboView();
 
-    @DefaultString(keyRes = R.string.image_network_settings, value = SettingsFragment.IMAGE_NETWORK_ALWAYS)
+    @DefaultString(keyRes = R.string.image_network_settings,
+            value = SettingsFragment.IMAGE_NETWORK_ALWAYS)
     String imageNetworkSetting();
 
     String browserRootFolder();
@@ -57,7 +58,7 @@ public interface Preferences {
     boolean recursiveFolders();
 
     @DefaultBoolean(false)
-    boolean insertDownloads();
+    boolean showDownloads();
 
     @DefaultBoolean(false)
     boolean showMissingFiles();

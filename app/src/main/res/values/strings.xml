@@ -50,7 +50,7 @@
     <string name="amiibo_not_found">No Amiibo Found</string>
 
     <string name="recursive_folders">Recursive Folders</string>
-    <string name="show_downloads">Insert \'Downloads\'</string>
+    <string name="show_downloads">Show \'Downloads\'</string>
     <string name="show_missing">Show Missing Bins</string>
     <string name="enable_scale">Scale Mode</string>
 

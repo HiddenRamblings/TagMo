@@ -226,8 +226,10 @@ public class BankListActivity extends AppCompatActivity implements
             }
         } else {
             for (int x = 0; x < amiiboList.size(); x++) {
-                if (amiibos.get(x) == null || amiibos.get(x).bank != x) {
-                    amiibos.set(x, amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
+                long amiiboId = TagUtils.hexToLong(amiiboList.get(x));
+                if (amiibos.get(x) == null || amiibos.get(x).bank != x
+                        || amiiboId != amiibos.get(x).id) {
+                    amiibos.set(x, amiiboManager.amiibos.get(amiiboId));
                 }
             }
         }
@@ -379,16 +381,19 @@ public class BankListActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())
                 && !TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
 
+        byte[] tagData = new byte[0];
         if (result.getData().hasExtra(TagMo.EXTRA_TAG_DATA)) {
-            byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+            tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
             if (amiibos.get(clickedPosition) != null)
                 amiibos.get(clickedPosition).data = tagData;
-            updateAmiiboView(tagData, clickedPosition);
         }
 
-        if (result.getData().hasExtra(TagMo.EXTRA_AMIIBO_DATA))
+        if (result.getData().hasExtra(TagMo.EXTRA_AMIIBO_DATA)) {
             updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(
                     TagMo.EXTRA_AMIIBO_DATA));
+        }
+        
+        if (tagData != null && tagData.length > 0) updateAmiiboView(tagData, clickedPosition);
 
         if (status == CLICKED.FORMAT) {
             status = CLICKED.NOTHING;
@@ -425,22 +430,22 @@ public class BankListActivity extends AppCompatActivity implements
 
         WriteBlankAdapter.OnAmiiboClickListener itemClick =
                 new WriteBlankAdapter.OnAmiiboClickListener() {
-                    @Override
-                    public void onAmiiboClicked(AmiiboFile amiiboFile) {
-                        if (amiiboFile != null) {
-                            writeAmiiboFile(amiiboFile, position);
-                            writeDialog.dismiss();
-                        }
-                    }
+            @Override
+            public void onAmiiboClicked(AmiiboFile amiiboFile) {
+                if (amiiboFile != null) {
+                    writeAmiiboFile(amiiboFile, position);
+                    writeDialog.dismiss();
+                }
+            }
 
-                    @Override
-                    public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
-                        if (amiiboFile != null) {
-                            writeAmiiboFile(amiiboFile, position);
-                            writeDialog.dismiss();
-                        }
-                    }
-                };
+            @Override
+            public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
+                if (amiiboFile != null) {
+                    writeAmiiboFile(amiiboFile, position);
+                    writeDialog.dismiss();
+                }
+            }
+        };
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = view.findViewById(R.id.amiibo_search);
@@ -568,7 +573,7 @@ public class BankListActivity extends AppCompatActivity implements
                     onActivateActivity.launch(modify);
                     return true;
                 case R.id.mnu_write:
-                    if (tagData != null) {
+                    if (tagData != null && tagData.length > 0) {
                         modify.setAction(TagMo.ACTION_WRITE_TAG_FULL);
                         modify.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
                         onUpdateTagResult.launch(modify);
@@ -590,7 +595,7 @@ public class BankListActivity extends AppCompatActivity implements
                     }
                     return true;
                 case R.id.mnu_edit:
-                    if (tagData != null) {
+                    if (tagData != null && tagData.length > 0) {
                         Intent editor = new Intent(this, TagDataActivity_.class);
                         editor.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
                         onUpdateTagResult.launch(editor);
@@ -600,7 +605,7 @@ public class BankListActivity extends AppCompatActivity implements
                     }
                     return true;
                 case R.id.mnu_view_hex:
-                    if (tagData != null) {
+                    if (tagData != null && tagData.length > 0) {
                         Intent viewhex = new Intent(this, HexViewerActivity_.class);
                         viewhex.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
                         startActivity(viewhex);
@@ -610,7 +615,7 @@ public class BankListActivity extends AppCompatActivity implements
                     }
                     return true;
                 case R.id.mnu_backup:
-                    if (tagData != null) {
+                    if (tagData != null && tagData.length > 0) {
                     displayBackupDialog(tagData);
                     } else {
                         status = CLICKED.BACKUP;
@@ -641,7 +646,7 @@ public class BankListActivity extends AppCompatActivity implements
 
         Amiibo amiibo = amiibos.get(current_bank);
         if (amiibo == null) {
-            if (tagData != null) {
+            if (tagData != null && tagData.length > 0) {
                 try {
                     amiiboId = TagUtils.amiiboIdFromTag(tagData);
                 } catch (Exception e) {

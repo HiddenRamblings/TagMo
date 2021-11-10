@@ -123,6 +123,8 @@ public class WebViewActivity extends AppCompatActivity {
         webViewSettings.setAllowUniversalAccessFromFileURLs(
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP);
 
+        setResult(RESULT_CANCELED);
+
         if (getIntent().getAction() != null
                 && getIntent().getAction().equals(TagMo.ACTION_BUILD_WUMIIBO)) {
             webViewSettings.setJavaScriptEnabled(true);
@@ -157,13 +159,6 @@ public class WebViewActivity extends AppCompatActivity {
                 finish();
             }
         }
-
-        setResult(RESULT_CANCELED);
-    }
-
-    @UiThread
-    public void showToast(int msgRes) {
-        Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
     }
 
     private class UnZip implements Runnable {
@@ -323,5 +318,10 @@ public class WebViewActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @UiThread
+    public void showToast(int msgRes) {
+        Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
     }
 }

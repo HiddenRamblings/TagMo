@@ -1405,11 +1405,11 @@ public class BrowserActivity extends AppCompatActivity implements
         String lastCommit = null, downloadUrl = null;
         try {
             JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-            lastCommit = (String) jsonObject.get("name");
+            lastCommit = ((String) jsonObject.get("name")).substring(6);
             JSONArray assets = (JSONArray) jsonObject.get("assets");
             JSONObject asset = (JSONObject) assets.get(0);
             downloadUrl = (String) asset.get("browser_download_url");
-            if (!isMaster && !BuildConfig.COMMIT.equals(lastCommit.substring(6)))
+            if (!isMaster && !BuildConfig.COMMIT.equals(lastCommit))
                 showInstallSnackbar(downloadUrl);
         } catch (JSONException e) {
             Debug.Error(e);
@@ -1419,11 +1419,12 @@ public class BrowserActivity extends AppCompatActivity implements
             String finalLastCommit = lastCommit;
             String finalDownloadUrl = downloadUrl;
             new JSONExecutor(getString(R.string.repo_url, "experimental"))
-                    .setResultListener(alternate -> {
+                    .setResultListener(experimental -> {
                 try {
-                    JSONObject jsonObject = (JSONObject) new JSONTokener(alternate).nextValue();
-                    if (!BuildConfig.COMMIT.equals(finalLastCommit.substring(6))
-                            && !BuildConfig.COMMIT.equals((String) jsonObject.get("name")))
+                    JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();
+                    String extraCommit = ((String) jsonObject.get("name")).substring(6);
+                    if (!BuildConfig.COMMIT.equals(extraCommit)
+                            && !BuildConfig.COMMIT.equals(finalLastCommit))
                         showInstallSnackbar(finalDownloadUrl);
                 } catch (JSONException e) {
                     Debug.Error(e);

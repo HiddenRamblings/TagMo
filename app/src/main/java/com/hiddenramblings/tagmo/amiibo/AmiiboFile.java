@@ -3,11 +3,14 @@ package com.hiddenramblings.tagmo.amiibo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import java.io.File;
 
 public class AmiiboFile implements Parcelable {
 
     protected File filePath;
+    protected DocumentFile docPath;
     protected long id;
     protected byte[] data;
 
@@ -19,6 +22,12 @@ public class AmiiboFile implements Parcelable {
 
     public AmiiboFile(File filePath, long id) {
         this(filePath, id, null);
+    }
+
+    public AmiiboFile(DocumentFile docPath, long id, byte[] data) {
+        this.docPath = docPath;
+        this.id = id;
+        this.data = data;
     }
 
     public byte[] getData() {

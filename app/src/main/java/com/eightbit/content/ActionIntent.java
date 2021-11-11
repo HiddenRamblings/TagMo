@@ -65,7 +65,8 @@ public class ActionIntent extends Intent {
                 ? intent
                 .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                : intent
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                : intent.addCategory(Intent.CATEGORY_OPENABLE)
         );
     }
 
@@ -75,7 +76,8 @@ public class ActionIntent extends Intent {
                 ? new Intent(action)
                 .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                : new Intent(action)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                : new Intent(action).addCategory(Intent.CATEGORY_OPENABLE)
         );
     }
 
@@ -85,7 +87,8 @@ public class ActionIntent extends Intent {
                 ? new Intent(context, cls)
                 .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                : new Intent(context, cls)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                : new Intent(context, cls).addCategory(Intent.CATEGORY_OPENABLE)
         );
     }
 
@@ -95,7 +98,8 @@ public class ActionIntent extends Intent {
                 ? new Intent(action, uri)
                 .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                : new Intent(action, uri)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                : new Intent(action, uri).addCategory(Intent.CATEGORY_OPENABLE)
         );
     }
 
@@ -105,7 +109,16 @@ public class ActionIntent extends Intent {
                 ? new Intent(action, uri, context, cls)
                 .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                : new Intent(action, uri, context, cls)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                : new Intent(action, uri, context, cls).addCategory(Intent.CATEGORY_OPENABLE)
         );
+    }
+
+    public static Intent getIntent(Intent intent) {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                ? intent.addCategory(Intent.CATEGORY_OPENABLE)
+                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                :intent.addCategory(Intent.CATEGORY_OPENABLE);
     }
 }

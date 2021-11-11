@@ -88,6 +88,7 @@ import org.json.JSONTokener;
 
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -262,33 +263,6 @@ public class BrowserActivity extends AppCompatActivity implements
         this.foldersView.setLayoutManager(new LinearLayoutManager(this));
         this.foldersView.setAdapter(new BrowserFoldersAdapter(settings));
         this.settings.addChangeListener((BrowserSettingsListener) this.foldersView.getAdapter());
-
-// TODO: Storage Access Framework
-
-//        ActivityResultLauncher<Intent> onDocumentTree = registerForActivityResult(
-//                new ActivityResultContracts.StartActivityForResult(), result -> {
-//            if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
-//
-//            Uri treeUri = result.getData().getData();
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-//            getContentResolver().takePersistableUriPermission(treeUri,
-//                    Intent.FLAG_GRANT_READ_URI_PERMISSION |
-//                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//            DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
-//
-//            // List all existing files inside picked directory
-//            for (DocumentFile file : pickedDir.listFiles()) {
-//                Log.d(TAG, "Found file " + file.getName() + " with size " + file.length());
-//            }
-//
-//            // Create a new file and write into it
-//            DocumentFile newFile = pickedDir.createFile("text/plain", "My Novel");
-//            OutputStream out = getContentResolver().openOutputStream(newFile.getUri());
-//            out.write("A long time ago...".getBytes());
-//            out.close();
-//
-//        });
-//        onDocumentTree.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
 
         this.loadPTagKeyManager();
 
@@ -600,9 +574,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
             Character character = amiibo.getCharacter();
             if (character != null &&
-                    Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(), settings.getGameSeriesFilter()) &&
-                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(), settings.getAmiiboSeriesFilter()) &&
-                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(), settings.getAmiiboTypeFilter())
+                    Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
+                            settings.getGameSeriesFilter()) &&
+                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
+                            settings.getAmiiboSeriesFilter()) &&
+                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
+                            settings.getAmiiboTypeFilter())
             ) {
                 items.add(character.name);
             }
@@ -647,9 +624,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
             AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
             if (amiiboSeries != null &&
-                    Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(), settings.getGameSeriesFilter()) &&
-                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(), settings.getCharacterFilter()) &&
-                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(), settings.getAmiiboTypeFilter())
+                    Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
+                            settings.getGameSeriesFilter()) &&
+                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
+                            settings.getCharacterFilter()) &&
+                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
+                            settings.getAmiiboTypeFilter())
             ) {
                 items.add(amiiboSeries.name);
             }
@@ -694,9 +674,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
             AmiiboType amiiboType = amiibo.getAmiiboType();
             if (amiiboType != null &&
-                    Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(), settings.getGameSeriesFilter()) &&
-                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(), settings.getCharacterFilter()) &&
-                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(), settings.getAmiiboSeriesFilter())
+                    Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
+                            settings.getGameSeriesFilter()) &&
+                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
+                            settings.getCharacterFilter()) &&
+                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
+                            settings.getAmiiboSeriesFilter())
             ) {
                 items.add(amiiboType);
             }
@@ -989,7 +972,7 @@ public class BrowserActivity extends AppCompatActivity implements
             File download = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS);
             File[] files = rootFolder.listFiles((dir, name) -> name.equals(download.getName()));
-            if (files != null && files.length > 0)
+            if (files == null || files.length == 0)
                 amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, download, recursiveFiles));
         }
 
@@ -1006,6 +989,40 @@ public class BrowserActivity extends AppCompatActivity implements
             settings.notifyChanges();
         });
     }
+
+    ActivityResultLauncher<Intent> onDocumentTree = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+
+        Uri treeUri = result.getData().getData();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            getContentResolver().takePersistableUriPermission(treeUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
+
+        // List all existing files inside picked directory
+        if (pickedDir != null) {
+            final ArrayList<AmiiboFile> amiiboFiles =
+                    AmiiboManager.listAmiiboDocuments(keyManager, pickedDir,
+                            this.settings.isRecursiveEnabled());
+        }
+
+//            // Create a new file and write into it
+//            DocumentFile newFile = pickedDir.createFile(getResources().getStringArray(
+//                    R.array.mimetype_bin)[0], fileName + ".bin");
+//            if (newFile != null) {
+//                try (OutputStream outputStream = getContentResolver()
+//                        .openOutputStream(newFile.getUri())) {
+//                    outputStream.write(tagData);
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+
+    });
 
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,
@@ -1425,7 +1442,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 installUpdate(Storage.getFileUri(apk));
             } else {
-                Intent intent = new ActionIntent(Intent.ACTION_INSTALL_PACKAGE);
+                Intent intent = ActionIntent.getIntent(new Intent(Intent.ACTION_INSTALL_PACKAGE));
                 intent.setDataAndType(Storage.getFileUri(apk),
                         getString(R.string.mimetype_apk));
                 intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
@@ -1519,10 +1536,12 @@ public class BrowserActivity extends AppCompatActivity implements
         if (Environment.isExternalStorageManager()) {
             this.onStorageEnabled();
         } else {
-            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
-                    R.string.permission_required, Snackbar.LENGTH_LONG);
-            storageBar.setAction(R.string.allow, v -> requestScopedStorage());
-            storageBar.show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Intent intent = ActionIntent.getIntent(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
+                intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+                intent.putExtra("android.content.extra.FANCY", true);
+                onDocumentTree.launch(intent);
+            }
         }
     });
 

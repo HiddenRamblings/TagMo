@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.nfctech;
 
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 
 import androidx.documentfile.provider.DocumentFile;
@@ -10,13 +11,11 @@ import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
@@ -34,64 +33,17 @@ public class TagReader {
         Debug.Log(TagWriter.class, R.string.validation_success);
     }
 
-    public static void validateTag(byte[] data) throws Exception {
-        byte[][] pages = TagUtils.splitPages(data);
 
-        if (pages[0][0] != (byte) 0x04)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_prefix));
-
-        if (pages[2][2] != (byte) 0x0F || pages[2][3] != (byte) 0xE0)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_lock));
-
-        if (pages[3][0] != (byte) 0xF1 || pages[3][1] != (byte) 0x10 || pages[3][2] != (byte) 0xFF || pages[3][3] != (byte) 0xEE)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cc));
-
-        if (pages[0x82][0] != (byte) 0x01 || pages[0x82][1] != (byte) 0x0 || pages[0x82][2] != (byte) 0x0F)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_dynamic));
-
-        if (pages[0x83][0] != (byte) 0x0 || pages[0x83][1] != (byte) 0x0 || pages[0x83][2] != (byte) 0x0 || pages[0x83][3] != (byte) 0x04)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cfg_zero));
-
-        if (pages[0x84][0] != (byte) 0x5F || pages[0x84][1] != (byte) 0x0 || pages[0x84][2] != (byte) 0x0 || pages[0x84][3] != (byte) 0x00)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cfg_one));
-    }
-
-    static void validate(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
-        if (tagData == null)
-            throw new Exception(TagMo.getStringRes(R.string.no_source_data));
-
-        if (validateNtag) {
-            try {
-                byte[] versionInfo = mifare.transceive(new byte[]{(byte) 0x60});
-                if (versionInfo == null || versionInfo.length != 8)
-                    throw new Exception(TagMo.getStringRes(R.string.error_tag_version));
-                if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
-                    throw new Exception(TagMo.getStringRes(R.string.error_tag_format));
-            } catch (Exception e) {
-                Debug.Error(R.string.error_version, e);
-                throw e;
-            }
-        }
-
-        byte[] pages = mifare.readPages(0);
-        if (pages == null || pages.length != NfcByte.PAGE_SIZE * 4)
-            throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
-
-        if (!TagUtils.compareRange(pages, tagData, 0, 9))
-            throw new Exception(TagMo.getStringRes(R.string.fail_mismatch_uid));
-
-        Debug.Error(TagWriter.class, R.string.validation_success);
-    }
 
     public static byte[] getValidatedData(KeyManager keyManager, File file) throws Exception {
         byte[] data = TagReader.readTagFile(file);
         if (data == null) return null;
         try {
-            TagReader.validateTag(data);
+            TagUtils.validateData(data);
         } catch (Exception e) {
             try {
-                data = TagUtils.encrypt(keyManager, data);
-                TagReader.validateTag(data);
+                data = keyManager.encrypt(data);
+                TagUtils.validateData(data);
             } catch (RuntimeException ex) {
                 Debug.Log(ex);
             }
@@ -104,11 +56,11 @@ public class TagReader {
         byte[] data = TagReader.readTagDocument(file.getUri());
         if (data == null) return null;
         try {
-            TagReader.validateTag(data);
+            TagUtils.validateData(data);
         } catch (Exception e) {
             try {
-                data = TagUtils.encrypt(keyManager, data);
-                TagReader.validateTag(data);
+                data = keyManager.encrypt(data);
+                TagUtils.validateData(data);
             } catch (RuntimeException ex) {
                 Debug.Log(ex);
             }
@@ -126,13 +78,13 @@ public class TagReader {
         return data;
     }
 
-    public static byte[] readTagFile(File file) throws Exception {
+    static byte[] readTagFile(File file) throws Exception {
         try (FileInputStream inputStream = new FileInputStream(file)) {
             return getTagData(file.getPath(), inputStream);
         }
     }
 
-    public static byte[] readTagDocument(Uri file) throws Exception {
+    static byte[] readTagDocument(Uri file) throws Exception {
         try (InputStream inputStream = TagMo.getContext()
                 .getContentResolver().openInputStream(file)) {
             return getTagData(file.getPath(), inputStream);
@@ -158,7 +110,7 @@ public class TagReader {
         return tagData;
     }
 
-    public static byte[] readBankTitle(NTAG215 tag, int bank) {
+    static byte[] readBankTitle(NTAG215 tag, int bank) {
         return tag.amiiboFastRead(0x15, 0x16, bank);
     }
 
@@ -191,14 +143,20 @@ public class TagReader {
         return null;
     }
 
-    public static String writeBytesToFile(File backupDir, String name, byte[] tagData) throws IOException {
+    public static String writeBytesToFile(File backupDir, String name, byte[] tagData)
+            throws IOException {
         //noinspection ResultOfMethodCallIgnored
         backupDir.mkdirs();
         File binFile = new File(backupDir, name);
         try (FileOutputStream fos = new FileOutputStream(binFile)) {
             fos.write(tagData);
         }
-        TagMo.scanFile(binFile);
+        try {
+            MediaScannerConnection.scanFile(TagMo.getContext(),
+                    new String[] { binFile.getAbsolutePath() }, null, null);
+        } catch (Exception e) {
+            Debug.Log(R.string.fail_media_scan, e);
+        }
         return binFile.getAbsolutePath();
     }
 
@@ -209,7 +167,7 @@ public class TagReader {
             status = "(Decrypted)";
         } else {
             try {
-                validateTag(tagData);
+                TagUtils.validateData(tagData);
             } catch (Exception e) {
                 status = "(Invalid)";
             }
@@ -276,73 +234,8 @@ public class TagReader {
     }
 
     public static boolean needsFirmware(NTAG215 tag) {
-        byte[] version = TagReader.getEliteDetails(tag);
+        byte[] version = getEliteDetails(tag);
         return !((version.length != 4 || version[3] == (byte) 0x03)
                 && !(version.length == 2 && version[0] == 100 && version[1] == 0));
-    }
-
-    public static boolean updateFirmware(NTAG215 tag) throws Exception {
-        byte[] response = new byte[1];
-        response[0] = (byte) 0xFFFF;
-        tag.initFirmware();
-        tag.getVersion();
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    TagMo.getContext().getResources().openRawResource(R.raw.firmware)));
-            while (true) {
-                String strLine = br.readLine();
-                if (strLine == null) {
-                    break;
-                }
-                String[] parts = strLine.replaceAll("\\s+", " ").split(" ");
-                int i;
-                if (parts.length < 1) {
-                    break;
-                } else if (parts[0].equals("C-APDU")) {
-                    byte[] apdu_buf = new byte[(parts.length - 1)];
-                    for (i = 1; i < parts.length; i++) {
-                        apdu_buf[i - 1] = TagUtils.hexToByte(parts[i]);
-                    }
-                    int sz = apdu_buf[4] & 0xFF;
-                    byte[] iso_cmd = new byte[sz];
-                    if (apdu_buf[4] + 5 <= apdu_buf.length && apdu_buf[4] <= iso_cmd.length) {
-                        for (i = 0; i < sz; i++) {
-                            iso_cmd[i] = apdu_buf[i + 5];
-                        }
-                        boolean done = false;
-                        for (i = 0; i < 10; i++) {
-                            response = tag.transceive(iso_cmd);
-                            if (response != null) {
-                                done = true;
-                                break;
-                            }
-                        }
-                        if (!done) {
-                            throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 1));
-                        }
-                    }
-                    return false;
-                } else if (parts[0].equals("C-RPDU")) {
-                    byte[] rpdu_buf = new byte[(parts.length - 1)];
-                    if (response.length != parts.length - 3) {
-                        throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 2));
-                    }
-                    for (i = 1; i < parts.length; i++) {
-                        rpdu_buf[i - 1] = TagUtils.hexToByte(parts[i]);
-                    }
-                    for (i = 0; i < rpdu_buf.length - 2; i++) {
-                        if (rpdu_buf[i] != response[i]) {
-                            throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 3));
-                        }
-                    }
-                } else if (!parts[0].equals("RESET") && parts[0].equals("LOGIN")) {
-
-                }
-            }
-            br.close();
-            return true;
-        } catch (IOException e) {
-            throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 4));
-        }
     }
 }

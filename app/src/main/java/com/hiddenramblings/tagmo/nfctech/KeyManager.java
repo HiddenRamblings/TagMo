@@ -4,13 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class KeyManager {
 
@@ -79,7 +83,14 @@ public class KeyManager {
         if (rlen < NfcByte.KEY_FILE_SIZE)
             throw new IOException(context.getString(R.string.key_size_error));
 
-        String md5 = TagUtils.md5(data);
+        String md5 = null;
+        try {
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            byte[] result = digest.digest(data);
+            md5 = TagUtils.bytesToHex(result);
+        } catch (NoSuchAlgorithmException e) {
+            Debug.Error(e);
+        }
         if (FIXED_KEY_MD5.equals(md5)) {
             saveKeyFile(FIXED_KEY_MD5, data);
             this.fixedKey = loadKeyFromStorage(FIXED_KEY_MD5);
@@ -102,5 +113,37 @@ public class KeyManager {
         try (FileInputStream inputStream = new FileInputStream(file)) {
             readKey(inputStream);
         }
+    }
+
+    public byte[] decrypt(byte[] tagData) throws Exception {
+        if (!hasFixedKey() || !hasUnFixedKey())
+            throw new Exception(TagMo.getStringRes(R.string.key_not_present));
+
+        AmiiTool tool = new AmiiTool();
+        if (tool.setKeysFixed(fixedKey, fixedKey.length) == 0)
+            throw new Exception(TagMo.getStringRes(R.string.error_amiitool_init));
+        if (tool.setKeysUnfixed(unfixedKey, unfixedKey.length) == 0)
+            throw new Exception(TagMo.getStringRes(R.string.error_amiitool_init));
+        byte[] decrypted = new byte[NfcByte.TAG_FILE_SIZE];
+        if (tool.unpack(tagData, tagData.length, decrypted, decrypted.length) == 0)
+            throw new Exception(TagMo.getStringRes(R.string.fail_decrypt));
+
+        return decrypted;
+    }
+
+    public byte[] encrypt(byte[] tagData) throws RuntimeException {
+        if (!hasFixedKey() || !hasUnFixedKey())
+            throw new RuntimeException(TagMo.getStringRes(R.string.key_not_present));
+
+        AmiiTool tool = new AmiiTool();
+        if (tool.setKeysFixed(fixedKey, fixedKey.length) == 0)
+            throw new RuntimeException(TagMo.getStringRes(R.string.error_amiitool_init));
+        if (tool.setKeysUnfixed(unfixedKey, unfixedKey.length) == 0)
+            throw new RuntimeException(TagMo.getStringRes(R.string.error_amiitool_init));
+        byte[] encrypted = new byte[NfcByte.TAG_FILE_SIZE];
+        if (tool.pack(tagData, tagData.length, encrypted, encrypted.length) == 0)
+            throw new RuntimeException(TagMo.getStringRes(R.string.fail_encrypt));
+
+        return encrypted;
     }
 }

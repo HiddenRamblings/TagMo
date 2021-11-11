@@ -29,7 +29,7 @@ public class PowerTagManager {
         }
     }
 
-    static void parseKeyTable(JSONObject json) throws JSONException {
+    private static void parseKeyTable(JSONObject json) throws JSONException {
         HashMap<String, HashMap<String, byte[]>> keytable = new HashMap<>();
         for (Iterator<String> uidIterator = json.keys(); uidIterator.hasNext(); ) {
             String uid = uidIterator.next();
@@ -49,7 +49,7 @@ public class PowerTagManager {
         keys = keytable;
     }
 
-    public static byte[] getPowerTagKey(byte[] uid, String page10bytes) throws NullPointerException {
+    static byte[] getPowerTagKey(byte[] uid, String page10bytes) throws NullPointerException {
         if (keys == null)
             throw new NullPointerException(TagMo.getStringRes(R.string.error_powertag_key));
 

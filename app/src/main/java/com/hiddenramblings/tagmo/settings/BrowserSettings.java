@@ -292,7 +292,7 @@ public class BrowserSettings implements Parcelable {
         this.recursiveFolders = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<BrowserSettings> CREATOR = new Parcelable.Creator<BrowserSettings>() {
+    static final Parcelable.Creator<BrowserSettings> CREATOR = new Parcelable.Creator<BrowserSettings>() {
         @Override
         public BrowserSettings createFromParcel(Parcel source) {
             return new BrowserSettings(source);

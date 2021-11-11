@@ -103,7 +103,7 @@ public class HexCodeAdapter extends RecyclerView.Adapter<HexCodeAdapter.ViewHold
         }
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    protected static class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         TextView[] textView = new TextView[16 + 1];
 

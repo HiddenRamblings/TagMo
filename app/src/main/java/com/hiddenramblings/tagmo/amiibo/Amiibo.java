@@ -3,23 +3,19 @@ package com.hiddenramblings.tagmo.amiibo;
 
 import androidx.annotation.NonNull;
 
-import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.Website;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 public class Amiibo implements Comparable<Amiibo> {
 
-    public static long HEAD_MASK = 0xFFFFFFFF00000000L;
-    public static long TAIL_MASK = 0x00000000FFFFFFFFL;
-    public static int HEAD_BITSHIFT = 4 * 8;
-    public static int TAIL_BITSHIFT = 4 * 0;
+    static long HEAD_MASK = 0xFFFFFFFF00000000L;
+    static long TAIL_MASK = 0x00000000FFFFFFFFL;
+    static int HEAD_BITSHIFT = 4 * 8;
+    static int TAIL_BITSHIFT = 4 * 0;
 
-    public static long VARIANT_MASK = 0xFFFFFF0000000000L;
-    public static long AMIIBO_MODEL_MASK = 0x00000000FFFF0000L;
-    public static long UNKNOWN_MASK = 0x00000000000000FFL;
-
-    public static String AMIIBO_API_IMAGE_URL =
-            TagMo.getStringRes(R.string.amiibo_api_img);
+    static long VARIANT_MASK = 0xFFFFFF0000000000L;
+    static long AMIIBO_MODEL_MASK = 0x00000000FFFF0000L;
+    static long UNKNOWN_MASK = 0x00000000000000FFL;
 
     public AmiiboManager manager;
     public final long id;
@@ -107,18 +103,18 @@ public class Amiibo implements Comparable<Amiibo> {
         return this.id & UNKNOWN_MASK;
     }
 
-    public static long hexToId(String value) {
+    static long hexToId(String value) {
         return Long.decode(value);
     }
 
     public String getImageUrl() {
-        return String.format(AMIIBO_API_IMAGE_URL, getHead(), getTail());
+        return String.format(Website.AMIIBOAPI_IMAGE, getHead(), getTail());
     }
 
     public static String getImageUrl(long amiiboId) {
         int head = (int) ((amiiboId & HEAD_MASK) >> HEAD_BITSHIFT);
         int tail = (int) ((amiiboId & TAIL_MASK) >> TAIL_BITSHIFT);
-        return String.format(AMIIBO_API_IMAGE_URL, head, tail);
+        return String.format(Website.AMIIBOAPI_IMAGE, head, tail);
     }
 
     @Override

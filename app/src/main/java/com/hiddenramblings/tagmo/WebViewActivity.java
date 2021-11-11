@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -212,7 +211,7 @@ public class WebViewActivity extends AppCompatActivity {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void deleteDir(File dir) {
         File[] files = dir.listFiles();
-        if (files != null) {
+        if (files != null && files.length > 0) {
             for (File file : files) {
                 if (file.isDirectory())
                     deleteDir(file);

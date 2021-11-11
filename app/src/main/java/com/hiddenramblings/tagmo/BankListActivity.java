@@ -407,7 +407,7 @@ public class BankListActivity extends AppCompatActivity implements
         Bundle args = new Bundle();
         try {
             byte[] data = amiiboFile.getData() != null ? amiiboFile.getData()
-                    : TagReader.getVerifiedData(keyManager, amiiboFile.getFilePath());
+                    : TagReader.getValidatedData(keyManager, amiiboFile.getFilePath());
             args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
         } catch (Exception e) {
             Debug.Error(e);
@@ -631,7 +631,7 @@ public class BankListActivity extends AppCompatActivity implements
                         scanAmiiboData(current_bank);
                     }
                     return true;
-                case R.id.mnu_verify:
+                case R.id.mnu_validate:
                     status = CLICKED.VERIFY;
                     scanAmiiboData(current_bank);
                     return true;

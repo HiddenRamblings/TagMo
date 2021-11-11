@@ -397,13 +397,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";
 
-    void updateKeys(Uri data) {
+    void validateKeys(Uri data) {
         BackgroundExecutor.cancelAll(BACKGROUND_LOAD_KEYS, true);
-        updateKeysTask(data);
+        validateKeysTask(data);
     }
 
     @Background(id = BACKGROUND_LOAD_KEYS)
-    void updateKeysTask(Uri data) {
+    void validateKeysTask(Uri data) {
         try {
             this.keyManager.loadKey(data);
         } catch (Exception e) {
@@ -646,7 +646,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 
-        updateKeys(result.getData().getData());
+        validateKeys(result.getData().getData());
     });
 
     ActivityResultLauncher<Intent> onImportAmiiboDatabase = registerForActivityResult(
@@ -707,7 +707,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void showDownloadsSnackbar() {
         Snackbar snackbar = new IconifiedSnackbar(requireActivity())
                 .buildSnackbar(getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.display, v ->
+        snackbar.setAction(R.string.enable, v ->
                 ((SettingsActivity) requireActivity()).setWumiiboResult());
         snackbar.show();
     }

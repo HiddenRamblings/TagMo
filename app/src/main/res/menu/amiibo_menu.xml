@@ -28,12 +28,16 @@
         android:title="@string/view_hex"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/mnu_validate"
+        android:title="@string/validate_data"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/mnu_delete"
         android:title="@string/delete_amiibo"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_ignore_tag_id"
         android:checkable="true"
-        android:title="@string/ignore_restrictions"
+        android:title="@string/ignore_tag_id"
         app:showAsAction="ifRoom"/>
 </menu>

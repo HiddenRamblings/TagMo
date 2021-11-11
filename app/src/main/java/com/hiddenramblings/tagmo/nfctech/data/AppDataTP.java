@@ -3,12 +3,12 @@ package com.hiddenramblings.tagmo.nfctech.data;
 import java.io.IOException;
 
 public class AppDataTP extends AppData {
-    public static final int LEVEL_MIN_VALUE = 0;
-    public static final int LEVEL_MAX_VALUE = 40;
-    public static final int LEVEL_OFFSET = 0x0;
-    public static final int HEARTS_MIN_VALUE = 0;
-    public static final int HEARTS_MAX_VALUE = 20 * 4;
-    public static final int HEARTS_OFFSET = LEVEL_OFFSET + 0x01;
+    static final int LEVEL_MIN_VALUE = 0;
+    static final int LEVEL_MAX_VALUE = 40;
+    static final int LEVEL_OFFSET = 0x0;
+    static final int HEARTS_MIN_VALUE = 0;
+    static final int HEARTS_MAX_VALUE = 20 * 4;
+    static final int HEARTS_OFFSET = LEVEL_OFFSET + 0x01;
 
     public AppDataTP(byte[] appData) throws IOException {
         super(appData);

@@ -43,6 +43,12 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
+        <item name="overlapAnchor">false</item>
+        <item name="android:dropDownVerticalOffset">-8dp</item>
+    </style>
+
+
     <style name="PopupThemeOverlay" parent="ThemeOverlay.AppCompat.DayNight">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

@@ -136,7 +136,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         }
     }
 
-    static class ViewHolder {
+    protected static class ViewHolder {
         TextView txtError;
         TextView txtName;
         TextView txtTagId;

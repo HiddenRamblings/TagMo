@@ -265,7 +265,7 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
         }
     }
 
-    static abstract class AmiiboVewHolder extends RecyclerView.ViewHolder {
+    protected static abstract class AmiiboVewHolder extends RecyclerView.ViewHolder {
         private final BrowserSettings settings;
         private OnAmiiboClickListener listener = null;
         private OnHighlightListener collector = null;

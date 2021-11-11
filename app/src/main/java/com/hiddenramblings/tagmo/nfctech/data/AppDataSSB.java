@@ -3,32 +3,32 @@ package com.hiddenramblings.tagmo.nfctech.data;
 import java.io.IOException;
 
 public class AppDataSSB extends AppData {
-    public static final int APPEARANCE_OFFSET = 0x08;
-    public static final int APPEARANCE_MIN_VALUE = 0;
-    public static final int APPEARANCE_MAX_VALUE = 7;
+    static final int APPEARANCE_OFFSET = 0x08;
+    static final int APPEARANCE_MIN_VALUE = 0;
+    static final int APPEARANCE_MAX_VALUE = 7;
 
-    public static final int SPECIAL_MIN_VALUE = 0;
-    public static final int SPECIAL_MAX_VALUE = 2;
-    public static final int SPECIAL_NEUTRAL_OFFSET = 0x09;
-    public static final int SPECIAL_SIDE_OFFSET = 0x0A;
-    public static final int SPECIAL_UP_OFFSET = 0x0B;
-    public static final int SPECIAL_DOWN_OFFSET = 0x0C;
+    static final int SPECIAL_MIN_VALUE = 0;
+    static final int SPECIAL_MAX_VALUE = 2;
+    static final int SPECIAL_NEUTRAL_OFFSET = 0x09;
+    static final int SPECIAL_SIDE_OFFSET = 0x0A;
+    static final int SPECIAL_UP_OFFSET = 0x0B;
+    static final int SPECIAL_DOWN_OFFSET = 0x0C;
 
-    public static final int STATS_MIN_VALUE = -200;
-    public static final int STATS_MAX_VALUE = 200;
-    public static final int STATS_ATTACK_OFFSET = 0x10;
-    public static final int STATS_DEFENSE_OFFSET = 0x12;
-    public static final int STATS_SPEED_OFFSET = 0x14;
+    static final int STATS_MIN_VALUE = -200;
+    static final int STATS_MAX_VALUE = 200;
+    static final int STATS_ATTACK_OFFSET = 0x10;
+    static final int STATS_DEFENSE_OFFSET = 0x12;
+    static final int STATS_SPEED_OFFSET = 0x14;
 
-    public static final int BONUS_MIN_VALUE = 0;
-    public static final int BONUS_MAX_VALUE = 0xFF;
-    public static final int BONUS_EFFECT1_OFFSET = 0x0D;
-    public static final int BONUS_EFFECT2_OFFSET = 0x0E;
-    public static final int BONUS_EFFECT3_OFFSET = 0x0F;
+    static final int BONUS_MIN_VALUE = 0;
+    static final int BONUS_MAX_VALUE = 0xFF;
+    static final int BONUS_EFFECT1_OFFSET = 0x0D;
+    static final int BONUS_EFFECT2_OFFSET = 0x0E;
+    static final int BONUS_EFFECT3_OFFSET = 0x0F;
 
-    public static final int EXPERIENCE_MIN_VALUE = 0x0000;
-    public static final int EXPERIENCE_MAX_VALUE = 0x093E;
-    public static final int EXPERIENCE_OFFSET = 0x7C;
+    static final int EXPERIENCE_MIN_VALUE = 0x0000;
+    static final int EXPERIENCE_MAX_VALUE = 0x093E;
+    static final int EXPERIENCE_OFFSET = 0x7C;
 
     public AppDataSSB(byte[] appData) throws IOException {
         super(appData);

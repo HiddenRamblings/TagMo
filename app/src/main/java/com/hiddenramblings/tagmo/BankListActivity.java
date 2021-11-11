@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -117,7 +116,7 @@ public class BankListActivity extends AppCompatActivity implements
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private KeyManager keyManager;
 
-    private ArrayList<Amiibo> amiibos = new ArrayList<>();
+    private final ArrayList<Amiibo> amiibos = new ArrayList<>();
 
     private int clickedPosition;
     private enum CLICKED {
@@ -164,14 +163,14 @@ public class BankListActivity extends AppCompatActivity implements
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 int bottomHeight = bottomSheet.getMeasuredHeight()
                         - bottomSheetBehavior.getPeekHeight();
-                View mainLayout = findViewById(R.id.main_layout);
+                ViewGroup mainLayout = findViewById(R.id.main_layout);
                 mainLayout.setPadding(0, 0, 0, slideOffset > 0
                         ? (int) (bottomHeight * slideOffset) : 0);
                 if (slideOffset > 0)
                     amiibosView.smoothScrollToPosition(clickedPosition);
             }
         });
-        toolbar.inflateMenu(R.menu.elite_menu);
+        toolbar.inflateMenu(R.menu.bank_menu);
 
         this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
 
@@ -196,16 +195,6 @@ public class BankListActivity extends AppCompatActivity implements
                 -> writeOpenBanks.setText(getString(R.string.write_open_banks, valueNew)));
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private void refreshEliteHardwareAdapter() {
-        if (amiibosView.getAdapter() != null) {
-            this.runOnUiThread(() -> {
-                ((BankBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
-                amiibosView.getAdapter().notifyDataSetChanged();
-            });
-        }
-    }
-
     private void updateEliteHardwareAdapter(ArrayList<String> amiiboList) {
         AmiiboManager amiiboManager;
         try {
@@ -225,16 +214,22 @@ public class BankListActivity extends AppCompatActivity implements
             for (int x = 0; x < amiiboList.size(); x++) {
                 amiibos.add(amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
             }
+            if (amiibosView.getAdapter() != null) {
+                ((BankBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
+                //noinspection NotifyDataSetChanged
+                amiibosView.getAdapter().notifyDataSetChanged();
+            }
         } else {
             for (int x = 0; x < amiiboList.size(); x++) {
                 long amiiboId = TagUtils.hexToLong(amiiboList.get(x));
                 if (amiibos.get(x) == null || amiibos.get(x).bank != x
                         || amiiboId != amiibos.get(x).id) {
                     amiibos.set(x, amiiboManager.amiibos.get(amiiboId));
+                    if (amiibosView.getAdapter() != null)
+                        amiibosView.getAdapter().notifyItemChanged(x);
                 }
             }
         }
-        refreshEliteHardwareAdapter();
     }
 
     @Click(R.id.toggle)
@@ -343,7 +338,7 @@ public class BankListActivity extends AppCompatActivity implements
     @Click(R.id.write_bank_count)
     void onWriteBankCountClick() {
         if (TagMo.getPrefs().eliteActiveBank().get() >= eliteBankCount.getValue()) {
-            showToast(R.string.fail_active_oob);
+            new Toasty(this).Short(R.string.fail_active_oob);
             return;
         }
         Intent configure = new Intent(this, NfcActivity_.class);
@@ -366,9 +361,9 @@ public class BankListActivity extends AppCompatActivity implements
                         Environment.DIRECTORY_DOWNLOADS);
                 String fileName = TagReader.writeBytesToFile(directory,
                         input.getText().toString(), tagData);
-                showToast(getString(R.string.wrote_file, fileName));
+                new Toasty(this).Long(getString(R.string.wrote_file, fileName));
             } catch (IOException e) {
-                showToast(e.getMessage());
+                new Toasty(this).Short(e.getMessage());
             }
             backupDialog.dismiss();
         });
@@ -487,9 +482,13 @@ public class BankListActivity extends AppCompatActivity implements
         int active_bank = result.getData().getIntExtra(TagMo.EXTRA_ACTIVE_BANK,
                 TagMo.getPrefs().eliteActiveBank().get());
 
+        if (amiibosView.getAdapter() != null) {
+            amiibosView.getAdapter().notifyItemChanged(TagMo.getPrefs().eliteActiveBank().get());
+            amiibosView.getAdapter().notifyItemChanged(active_bank);
+        }
+
         TagMo.getPrefs().eliteActiveBank().put(active_bank);
 
-        refreshEliteHardwareAdapter();
         int bank_count = TagMo.getPrefs().eliteBankCount().get();
         bankStats.setText(getString(R.string.elite_bank_stats,
                 eliteBankCount.getValueForPosition(active_bank), bank_count));
@@ -529,7 +528,7 @@ public class BankListActivity extends AppCompatActivity implements
                 break;
             case VERIFY:
                 try {
-                    TagReader.validateTag(tagData);
+                    TagUtils.validateData(tagData);
                     showAlertDialog(getString(R.string.validation_success));
                 } catch (Exception e) {
                     showAlertDialog(e.getMessage());
@@ -539,7 +538,8 @@ public class BankListActivity extends AppCompatActivity implements
         }
         status = CLICKED.NOTHING;
         updateAmiiboView(tagData, clickedPosition);
-        refreshEliteHardwareAdapter();
+        if (amiibosView.getAdapter() != null)
+            amiibosView.getAdapter().notifyItemChanged(clickedPosition);
     });
 
     private void scanAmiiboData(int current_bank) {
@@ -574,18 +574,18 @@ public class BankListActivity extends AppCompatActivity implements
 
     public void updateAmiiboView(byte[] tagData, long amiiboId, int current_bank) {
         toolbar.setOnMenuItemClickListener(item -> {
-            Intent modify = new Intent(this, NfcActivity_.class);
-            modify.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
+            Intent scan = new Intent(this, NfcActivity_.class);
+            scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
             switch (item.getItemId()) {
                 case R.id.mnu_activate:
-                    modify.setAction(TagMo.ACTION_ACTIVATE_BANK);
-                    onActivateActivity.launch(modify);
+                    scan.setAction(TagMo.ACTION_ACTIVATE_BANK);
+                    onActivateActivity.launch(scan);
                     return true;
                 case R.id.mnu_write:
                     if (tagData != null && tagData.length > 0) {
-                        modify.setAction(TagMo.ACTION_WRITE_TAG_FULL);
-                        modify.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
-                        onUpdateTagResult.launch(modify);
+                        scan.setAction(TagMo.ACTION_WRITE_TAG_FULL);
+                        scan.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                        onUpdateTagResult.launch(scan);
                     } else {
                         status = CLICKED.WRITER;
                         scanAmiiboData(current_bank);
@@ -596,10 +596,10 @@ public class BankListActivity extends AppCompatActivity implements
                     return true;
                 case R.id.mnu_format_bank:
                     if (TagMo.getPrefs().eliteActiveBank().get() == current_bank) {
-                        showToast(R.string.delete_active);
+                        new Toasty(this).Short(R.string.delete_active);
                     } else {
-                        modify.setAction(TagMo.ACTION_FORMAT_BANK);
-                        onUpdateTagResult.launch(modify);
+                        scan.setAction(TagMo.ACTION_FORMAT_BANK);
+                        onUpdateTagResult.launch(scan);
                         status = CLICKED.FORMAT;
                     }
                     return true;
@@ -632,8 +632,17 @@ public class BankListActivity extends AppCompatActivity implements
                     }
                     return true;
                 case R.id.mnu_validate:
-                    status = CLICKED.VERIFY;
-                    scanAmiiboData(current_bank);
+                    try {
+                        TagUtils.validateData(tagData);
+                        showAlertDialog(getString(R.string.validation_success));
+                    } catch (Exception e) {
+                        if (e instanceof IOException) {
+                            status = CLICKED.VERIFY;
+                            scanAmiiboData(current_bank);
+                        } else {
+                            showAlertDialog(e.getMessage());
+                        }
+                    }
                     return true;
                 case R.id.mnu_scan:
                     scanAmiiboData(current_bank);
@@ -816,7 +825,7 @@ public class BankListActivity extends AppCompatActivity implements
         }
     }
 
-    public static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
+    static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
 
     void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
@@ -843,20 +852,10 @@ public class BankListActivity extends AppCompatActivity implements
     }
 
     @UiThread
-    public void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-    }
-
-    @UiThread
-    public void showToast(int msgRes) {
-        Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
-    }
-
-    @UiThread
     void showAlertDialog(String msg) {
         new AlertDialog.Builder(this)
                 .setMessage(msg)
-                .setPositiveButton(R.string.close, (dialog, which) -> finish())
+                .setPositiveButton(R.string.close, null)
                 .show();
     }
 

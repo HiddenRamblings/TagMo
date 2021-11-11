@@ -24,7 +24,6 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,6 +68,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -78,6 +78,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_tag_data)
@@ -161,7 +162,7 @@ public class TagDataActivity extends AppCompatActivity {
             return;
         }
         try {
-            this.amiiboData = new AmiiboData(TagUtils.decrypt(keyManager, tagData));
+            this.amiiboData = new AmiiboData(keyManager.decrypt(tagData));
         } catch (Exception e) {
             Debug.Error(e);
             showErrorDialog(getString(R.string.fail_decrypt));
@@ -210,7 +211,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
     };
 
-    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+    static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
@@ -224,7 +225,7 @@ public class TagDataActivity extends AppCompatActivity {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             Debug.Error(e);
-            showToast(getString(R.string.amiibo_info_parse_error));
+            new Toasty(this).Short(getString(R.string.amiibo_info_parse_error));
         }
 
         if (Thread.currentThread().isInterrupted())
@@ -343,11 +344,6 @@ public class TagDataActivity extends AppCompatActivity {
         } else {
             return new RequestOptions().onlyRetrieveFromCache(false);
         }
-    }
-
-    @UiThread
-    public void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
     void loadData() {
@@ -471,7 +467,7 @@ public class TagDataActivity extends AppCompatActivity {
 
         byte[] tagData;
         try {
-            tagData = TagUtils.encrypt(keyManager, newAmiiboData.array());
+            tagData = keyManager.encrypt(newAmiiboData.array());
         } catch (Exception e) {
             Debug.Error(e);
             showErrorDialog(getString(R.string.fail_encrypt));
@@ -570,9 +566,20 @@ public class TagDataActivity extends AppCompatActivity {
         txtInitDate.setText(text);
     }
 
+    private static byte[] generateRandomUID() {
+        byte[] uid = new byte[9];
+        Random Random = new Random();
+        Random.nextBytes(uid);
+
+        uid[3] = (byte) (0x88 ^ uid[0] ^ uid[1] ^ uid[2]);
+        uid[8] = (byte) (uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
+
+        return uid;
+    }
+
     @Click(R.id.generate_serial)
     void onGenerateSerialClick() {
-        txtSerialNumber.setText(TagUtils.bytesToHex(TagUtils.generateRandomUID()));
+        txtSerialNumber.setText(TagUtils.bytesToHex(generateRandomUID()));
     }
 
     @Click(R.id.txtInitDate)
@@ -823,6 +830,19 @@ public class TagDataActivity extends AppCompatActivity {
         txtWriteCounter.setText(String.valueOf(writeCounter));
     }
 
+    @SuppressWarnings("unused")
+    private String randomizeSerial(String serial) {
+        Random random = new Random();
+        String week = new DecimalFormat("00").format(
+                random.nextInt(52 - 1 + 1) + 1);
+        String year = String.valueOf(random.nextInt(9 + 1));
+        String identifier = serial.substring(3, 7);
+        String facility = TagMo.getContext().getResources().getStringArray(
+                R.array.production_factory)[random.nextInt(3 + 1)];
+
+        return week + year + "000" + identifier + facility;
+    }
+
     void loadSerialNumber() {
         txtSerialNumber.setTag(txtSerialNumber.getKeyListener());
         txtSerialNumber.setKeyListener(null);
@@ -841,26 +861,9 @@ public class TagDataActivity extends AppCompatActivity {
         }
     }
 
-    public static String getDateString(Locale locale, Date date) {
-        SimpleDateFormat dateFormat;
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-//            dateFormat = new SimpleDateFormat(getDateFormat(locale), locale);
-//        } else {
-            dateFormat = new SimpleDateFormat("dd/MM/yyyy", locale);
-//        }
-
-        return dateFormat.format(date);
+    static String getDateString(Date date) {
+        return new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date);
     }
-
-    public static String getDateString(Date date) {
-        return getDateString(Locale.US, date);
-    }
-
-//    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-//    public static String getDateFormat(Locale locale) {
-//        return DateFormat.getBestDateTimePattern(locale, "dd/MM/yyyy");
-//    }
 
     static class CountryCodesAdapter extends BaseAdapter implements Filterable {
         public ArrayList<HashMap.Entry<Integer, String>> data;

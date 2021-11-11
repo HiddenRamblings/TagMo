@@ -17,10 +17,10 @@ import org.androidannotations.annotations.EActivity;
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_settings)
 public class SettingsActivity extends AppCompatActivity {
-    public static final String STORAGE = "STORAGE";
-    public static final String WUMIIBO = "WUMIIBO";
-    public static final String REFRESH = "REFRESH";
-    public static final String POWERTAG = "POWERTAG";
+    static final String STORAGE = "STORAGE";
+    static final String WUMIIBO = "WUMIIBO";
+    static final String REFRESH = "REFRESH";
+    static final String POWERTAG = "POWERTAG";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

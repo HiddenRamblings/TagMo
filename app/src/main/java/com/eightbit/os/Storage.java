@@ -69,6 +69,7 @@ import java.util.HashSet;
 
 @SuppressWarnings({"ConstantConditions", "unused"})
 public class Storage extends Environment {
+    static final String PROVIDER = BuildConfig.APPLICATION_ID + ".provider";
     private static final String STORAGE_ROOT = "/storage";
 
     private static File storageFile;
@@ -77,7 +78,7 @@ public class Storage extends Environment {
         return directory.getParentFile().getParentFile().getParentFile().getParentFile();
     }
 
-    public static HashSet<String> getExternalMounts() {
+    private static HashSet<String> getExternalMounts() {
         final HashSet<String> out = new HashSet<>();
         String reg = "(?i).*vold.*(vfat|ntfs|exfat|fat32|ext3|ext4|fuse|sdfat).*rw.*";
         StringBuilder s = new StringBuilder();
@@ -115,10 +116,8 @@ public class Storage extends Environment {
             for (String sd : extStorage) {
                 // Workaround for WRITE_MEDIA_STORAGE
                 String sdCardPath = sd.replace("mnt/media_rw", "storage");
-                if (!sdCardPath.equals(Environment.getExternalStorageDirectory()
-                        .getAbsolutePath()) && new File(sdCardPath).canRead()) {
-                    return new File(sdCardPath);
-                }
+                if (!sdCardPath.equals(getExternalStorageDirectory().getAbsolutePath())
+                        && new File(sdCardPath).canRead()) return new File(sdCardPath);
             }
         }
         return getExternalStorageDirectory();
@@ -190,7 +189,7 @@ public class Storage extends Environment {
             return storageFile = physical != null ? physical : emulated;
     }
 
-    public static File setFile() {
+    private static File setFile() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
             return setFileRedVelvet();
         else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -216,8 +215,7 @@ public class Storage extends Environment {
 
     public static Uri getFileUri(File file) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                ? FileProvider.getUriForFile(TagMo.getContext(),
-                BuildConfig.APPLICATION_ID + ".provider", file)
+                ? FileProvider.getUriForFile(TagMo.getContext(), PROVIDER, file)
                 : Uri.fromFile(file);
     }
 }

@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -91,27 +90,48 @@ public class AmiiboActivity extends AppCompatActivity {
     void afterViews() {
         toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.setOnMenuItemClickListener(item -> {
+            Bundle args = new Bundle();
+            Intent scan = new Intent(this, NfcActivity_.class);
             switch (item.getItemId()) {
                 case R.id.mnu_scan:
-                    scanAmiiboData();
+                    scan.setAction(TagMo.ACTION_SCAN_TAG);
+                    onUpdateTagResult.launch(scan);
                     return true;
                 case R.id.mnu_write:
-                    writeTag();
+                    args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
+                    scan.setAction(TagMo.ACTION_WRITE_TAG_FULL);
+                    onUpdateTagResult.launch(scan.putExtras(args));
                     return true;
                 case R.id.mnu_restore:
-                    restoreTag();
+                    args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
+                    scan.setAction(TagMo.ACTION_WRITE_TAG_DATA);
+                    scan.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
+                    onUpdateTagResult.launch(scan.putExtras(args));
                     return true;
                 case R.id.mnu_save:
                     displayBackupDialog();
                     return true;
                 case R.id.mnu_edit:
-                    openTagEditor();
+                    args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
+                    Intent tagEdit = new Intent(this, TagDataActivity_.class);
+                    onUpdateTagResult.launch(tagEdit.putExtras(args));
                     return true;
                 case R.id.mnu_view_hex:
-                    viewHex();
+                    Intent hexView = new Intent(this, HexViewerActivity_.class);
+                    hexView.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
+                    startActivity(hexView);
+                    return true;
+                case R.id.mnu_validate:
+                    try {
+                        TagUtils.validateData(tagData);
+                        showAlertDialog(getString(R.string.validation_success));
+                    } catch (Exception e) {
+                        showAlertDialog(e.getMessage());
+                    }
                     return true;
                 case R.id.mnu_delete:
-                    deleteFile();
+                    setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_DELETE_AMIIBO));
+                    finish();
                     return true;
                 case R.id.mnu_ignore_tag_id:
                     ignoreTagTd = !item.isChecked();
@@ -152,47 +172,12 @@ public class AmiiboActivity extends AppCompatActivity {
         }
     });
 
-    private void scanAmiiboData() {
-        Intent scan = new Intent(this, NfcActivity_.class);
-        scan.setAction(TagMo.ACTION_SCAN_TAG);
-        onUpdateTagResult.launch(scan);
-    }
-
     @Click(R.id.container)
     void onContainerClick() {
         Bundle args = new Bundle();
         args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
         Intent intent = new Intent(TagMo.ACTION_NFC_SCANNED);
         setResult(Activity.RESULT_OK, intent.putExtras(args));
-        finish();
-    }
-
-    void openTagEditor() {
-        Bundle args = new Bundle();
-        args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
-        Intent intent = new Intent(this, TagDataActivity_.class);
-        onUpdateTagResult.launch(intent.putExtras(args));
-    }
-
-    void writeTag() {
-        Bundle args = new Bundle();
-        args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
-        Intent intent = new Intent(this, NfcActivity_.class);
-        intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
-        onUpdateTagResult.launch(intent.putExtras(args));
-    }
-
-    void restoreTag() {
-        Bundle args = new Bundle();
-        args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
-        Intent intent = new Intent(this, NfcActivity_.class);
-        intent.setAction(TagMo.ACTION_WRITE_TAG_DATA);
-        intent.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
-        onUpdateTagResult.launch(intent.putExtras(args));
-    }
-
-    void deleteFile() {
-        setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_DELETE_AMIIBO));
         finish();
     }
 
@@ -208,19 +193,13 @@ public class AmiiboActivity extends AppCompatActivity {
                         Environment.DIRECTORY_DOWNLOADS);
                 String fileName = TagReader.writeBytesToFile(directory,
                         input.getText().toString(), this.tagData);
-                showToast(getString(R.string.wrote_file, fileName));
+                new Toasty(this).Long(getString(R.string.wrote_file, fileName));
             } catch (IOException e) {
-                showToast(e.getMessage());
+                new Toasty(this).Short(e.getMessage());
             }
             backupDialog.dismiss();
         });
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
-    }
-
-    void viewHex() {
-        Intent intent = new Intent(this, HexViewerActivity_.class);
-        intent.putExtra(TagMo.EXTRA_TAG_DATA, this.tagData);
-        startActivity(intent);
     }
 
     @Click(R.id.imageAmiibo)
@@ -245,7 +224,7 @@ public class AmiiboActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+    static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
@@ -259,7 +238,7 @@ public class AmiiboActivity extends AppCompatActivity {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             Debug.Error(e);
-            showToast(getString(R.string.amiibo_info_parse_error));
+            new Toasty(this).Short(getString(R.string.amiibo_info_parse_error));
         }
 
         if (Thread.currentThread().isInterrupted())
@@ -405,8 +384,9 @@ public class AmiiboActivity extends AppCompatActivity {
     }
 
     @UiThread
-    public void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    void showAlertDialog(String msg) {
+        new AlertDialog.Builder(this).setMessage(msg)
+                .setPositiveButton(R.string.close, null).show();
     }
 
     @Override

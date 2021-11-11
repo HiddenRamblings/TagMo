@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -38,7 +37,9 @@ import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.SettingsActivity;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.Toasty;
 import com.hiddenramblings.tagmo.WebViewActivity_;
+import com.hiddenramblings.tagmo.Website;
 import com.hiddenramblings.tagmo.adapter.SettingsAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
@@ -111,10 +112,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     ListPreference imageNetworkSetting;
     @PreferenceByKey(R.string.settings_disable_debug)
     CheckBoxPreference disableDebug;
-    @PreferenceByKey(R.string.settings_ignore_sdcard)
-    CheckBoxPreference ignoreSdcard;
     @PreferenceByKey(R.string.settings_stable_channel)
     CheckBoxPreference stableChannel;
+    @PreferenceByKey(R.string.settings_ignore_sdcard)
+    CheckBoxPreference ignoreSdcard;
 
     private KeyManager keyManager;
     private AmiiboManager amiiboManager = null;
@@ -131,8 +132,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
-            new JSONExecutor(requireContext().getString(R.string.amiibo_api_utc))
-                    .setResultListener(result -> {
+            new JSONExecutor(Website.API_LASTUPDATED).setResultListener(result -> {
                 if (result != null) parseUpdateJSON(result);
             });
         }
@@ -221,7 +221,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_export_info)
     void onExportInfoClicked() {
         if (this.amiiboManager == null) {
-            showToast(R.string.amiibo_info_not_loaded, Toast.LENGTH_SHORT);
+            new Toasty(requireActivity()).Short(R.string.amiibo_info_not_loaded);
             return;
         }
 
@@ -232,7 +232,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             AmiiboManager.saveDatabase(this.amiiboManager, fileOutputStream);
         } catch (JSONException | IOException e) {
             Debug.Error(e);
-            showToast(R.string.amiibo_info_export_fail, Storage.getRelativePath(file), Toast.LENGTH_SHORT);
+            new Toasty(requireActivity()).Short(
+                    getString(R.string.amiibo_info_export_fail, Storage.getRelativePath(file)));
             return;
         } finally {
             if (fileOutputStream != null) {
@@ -359,27 +360,25 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         prefs.disableDebug().put(disableDebug.isChecked());
     }
 
+    @PreferenceClick(R.string.settings_stable_channel)
+    void onStableChannelClicked() {
+        prefs.stableChannel().put(stableChannel.isChecked());
+    }
+
     @PreferenceClick(R.string.settings_ignore_sdcard)
     void onIgnoreSdcardClicked() {
         ((SettingsActivity) requireActivity()).setStorageResult();
         prefs.ignoreSdcard().put(ignoreSdcard.isChecked());
     }
 
-    @PreferenceClick(R.string.settings_stable_channel)
-    void onStableChannelClicked() {
-        prefs.stableChannel().put(stableChannel.isChecked());
-    }
-
     @PreferenceClick(R.string.settings_view_wiki)
     void onViewWikiClicked() {
-        startActivity(new Intent(Intent.ACTION_VIEW,
-                Uri.parse(getString(R.string.wiki_url))));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.TAGMO_WIKI)));
     }
 
     @PreferenceClick(R.string.settings_view_reddit)
     void onViewRedditClicked() {
-        startActivity(new Intent(Intent.ACTION_VIEW,
-                Uri.parse(getString(R.string.reddit_url))));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.TAGMO_REDDIT)));
     }
 
     ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
@@ -466,7 +465,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             Debug.Error(e);
-            showToast(R.string.amiibo_failure_load, Toast.LENGTH_SHORT);
+            new Toasty(requireActivity()).Short(R.string.amiibo_failure_load);
             return;
         }
         if (Thread.currentThread().isInterrupted())
@@ -487,11 +486,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             amiiboManager = AmiiboManager.parse(requireContext(), data);
         } catch (JSONException | ParseException e) {
             Debug.Error(e);
-            showToast(R.string.amiibo_failure_parse, Toast.LENGTH_SHORT);
+            new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse);
             return;
         } catch (IOException e) {
             Debug.Error(e);
-            showToast(R.string.amiibo_failure_read, Toast.LENGTH_SHORT);
+            new Toasty(requireActivity()).Short(R.string.amiibo_failure_read);
             return;
         }
         if (Thread.currentThread().isInterrupted())
@@ -501,7 +500,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             AmiiboManager.saveDatabase(amiiboManager);
         } catch (JSONException | IOException e) {
             Debug.Error(e);
-            showToast(R.string.amiibo_failure_update, Toast.LENGTH_SHORT);
+            new Toasty(requireActivity()).Short(R.string.amiibo_failure_update);
             return;
         }
         if (Thread.currentThread().isInterrupted())
@@ -525,7 +524,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             amiiboManager = AmiiboManager.getDefaultAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
             Debug.Error(e);
-            showToast(R.string.amiibo_failure_parse_default, Snackbar.LENGTH_SHORT);
+            new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse_default);
         }
         if (Thread.currentThread().isInterrupted())
             return;
@@ -596,7 +595,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void downloadAmiiboAPIDataTask() {
         showSnackbar(getString(R.string.sync_amiibo_process), Snackbar.LENGTH_INDEFINITE);
         try {
-            URL url = new URL(getString(R.string.amiibo_api_url));
+            URL url = new URL(Website.AMIIBOAPI);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.setUseCaches(false);
@@ -708,8 +707,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @UiThread
     public void showDownloadsSnackbar() {
-        Snackbar snackbar = new IconifiedSnackbar(requireActivity())
-                .buildSnackbar(getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG);
+        Snackbar snackbar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
+                getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.enable, v ->
                 ((SettingsActivity) requireActivity()).setWumiiboResult());
         snackbar.show();
@@ -725,15 +724,5 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         } catch (Exception e) {
             Debug.Error(e);
         }
-    }
-
-    @UiThread
-    public void showToast(int msgRes, int length) {
-        Toast.makeText(this.getContext(), getString(msgRes), length).show();
-    }
-
-    @UiThread
-    public void showToast(int msgRes, String params, int length) {
-        Toast.makeText(this.getContext(), getString(msgRes, params), length).show();
     }
 }

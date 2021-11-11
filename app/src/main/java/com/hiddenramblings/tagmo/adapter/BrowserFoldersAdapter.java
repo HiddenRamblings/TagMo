@@ -18,8 +18,8 @@ import java.util.ArrayList;
 
 public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.FolderViewHolder>
         implements BrowserSettings.BrowserSettingsListener {
-    public static final int PARENT_FOLDER_VIEW_TYPE = 0;
-    public static final int CHILD_FOLDER_VIEW_TYPE = 1;
+    static final int PARENT_FOLDER_VIEW_TYPE = 0;
+    static final int CHILD_FOLDER_VIEW_TYPE = 1;
 
     BrowserSettings settings;
     ArrayList<File> data;
@@ -136,7 +136,7 @@ public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAd
         }
     }
 
-    static class ChildFolderViewHolder extends FolderViewHolder {
+    private static class ChildFolderViewHolder extends FolderViewHolder {
         BrowserSettings settings;
         File folder;
         TextView txtFolderName;

@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 
 public class AmiiboSeries implements Comparable<AmiiboSeries> {
 
-    public static final long MASK = 0x000000000000FF00L;
-    public static final int BITSHIFT = 4 * 2;
+    static final long MASK = 0x000000000000FF00L;
+    static final int BITSHIFT = 4 * 2;
 
     public final AmiiboManager manager;
     public final long id;
@@ -21,7 +21,7 @@ public class AmiiboSeries implements Comparable<AmiiboSeries> {
         this(manager, hexToId(id), name);
     }
 
-    public static long hexToId(String value) {
+    static long hexToId(String value) {
         return (Long.decode(value) << BITSHIFT) & MASK;
     }
 

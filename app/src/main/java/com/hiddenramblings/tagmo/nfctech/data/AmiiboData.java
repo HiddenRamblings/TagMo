@@ -3,13 +3,15 @@ package com.hiddenramblings.tagmo.nfctech.data;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.nfctech.NfcByte;
-import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.BitSet;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class AmiiboData {
@@ -79,11 +81,11 @@ public class AmiiboData {
     }
 
     public BitSet getSettingFlags() {
-        return TagUtils.getBitSet(tagData, SETTING_FLAGS_OFFSET, SETTING_FLAGS_LENGTH);
+        return getBitSet(tagData, SETTING_FLAGS_OFFSET, SETTING_FLAGS_LENGTH);
     }
 
     public void setSettingFlags(BitSet value) {
-        TagUtils.putBitSet(tagData, SETTING_FLAGS_OFFSET, SETTING_FLAGS_LENGTH, value);
+        putBitSet(tagData, SETTING_FLAGS_OFFSET, SETTING_FLAGS_LENGTH, value);
     }
 
     public boolean isUserDataInitialized() {
@@ -123,35 +125,35 @@ public class AmiiboData {
     }
 
     public Date getInitializedDate() throws NumberFormatException {
-        return TagUtils.getDate(tagData, INIT_DATA_OFFSET);
+        return getDate(tagData, INIT_DATA_OFFSET);
     }
 
     public void setInitializedDate(Date value) throws NumberFormatException {
-        TagUtils.putDate(tagData, INIT_DATA_OFFSET, value);
+        putDate(tagData, INIT_DATA_OFFSET, value);
     }
 
     public Date getModifiedDate() throws NumberFormatException {
-        return TagUtils.getDate(tagData, MODIFIED_DATA_OFFSET);
+        return getDate(tagData, MODIFIED_DATA_OFFSET);
     }
 
     public void setModifiedDate(Date value) throws NumberFormatException {
-        TagUtils.putDate(tagData, MODIFIED_DATA_OFFSET, value);
+        putDate(tagData, MODIFIED_DATA_OFFSET, value);
     }
 
     public String getNickname() throws UnsupportedEncodingException {
-        return TagUtils.getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE);
+        return getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE);
     }
 
     public void setNickname(String value) {
-            TagUtils.putString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE, value);
+            putString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE, value);
     }
 
     public String getMiiName() throws UnsupportedEncodingException {
-        return TagUtils.getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16LE);
+        return getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16LE);
     }
 
     public void setMiiName(String value) {
-        TagUtils.putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16LE, value);
+        putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16LE, value);
     }
 
     @SuppressWarnings("unused")
@@ -187,14 +189,14 @@ public class AmiiboData {
     }
 
     public byte[] getAppData() {
-        return TagUtils.getBytes(tagData, APP_DATA_OFFSET, APP_DATA_LENGTH);
+        return getBytes(tagData, APP_DATA_OFFSET, APP_DATA_LENGTH);
     }
 
     public void setAppData(byte[] value) throws Exception {
         if (value.length != APP_DATA_LENGTH)
             throw new IOException(TagMo.getStringRes(R.string.invalid_app_data));
 
-        TagUtils.putBytes(tagData, APP_DATA_OFFSET, value);
+        putBytes(tagData, APP_DATA_OFFSET, value);
     }
 
     static {
@@ -333,5 +335,82 @@ public class AmiiboData {
         countryCodes.put(175, "Syria");
         countryCodes.put(176, "Bahrain");
         countryCodes.put(177, "Jordan");
+    }
+
+    private static byte[] getBytes(ByteBuffer bb, int offset, int length) {
+        byte[] bytes = new byte[length];
+        bb.position(offset);
+        bb.get(bytes);
+        return bytes;
+    }
+
+    private static void putBytes(ByteBuffer bb, int offset, byte[] bytes) {
+        bb.position(offset);
+        bb.put(bytes);
+    }
+
+    private static BitSet getBitSet(ByteBuffer bb, int offset, int length) {
+        BitSet bitSet = new BitSet(length * 8);
+        byte[] bytes = getBytes(bb, offset, length);
+        for (int i = 0; i < bytes.length; i++) {
+            for (int j = 0; j < 8; j++) {
+                bitSet.set((i * 8) + j, ((bytes[i] >> j) & 1) == 1);
+            }
+        }
+        return bitSet;
+    }
+
+    private static void putBitSet(ByteBuffer bb, int offset, int length, BitSet bitSet) {
+        byte[] bytes = new byte[length];
+        for (int i = 0; i < bytes.length; i++) {
+            for (int j = 0; j < 8; j++) {
+                boolean set = bitSet.get((i * 8) + j);
+                bytes[i] = (byte) (set ? bytes[i] | (1 << j) : bytes[i] & ~(1 << j));
+            }
+        }
+        putBytes(bb, offset, bytes);
+    }
+
+    private static Date getDate(ByteBuffer bbuf, int offset) {
+        ByteBuffer bb = ByteBuffer.wrap(getBytes(bbuf, offset, 0x2));
+        int date = bb.getShort();
+
+        int year = ((date & 0xFE00) >> 9) + 2000;
+        int month = ((date & 0x01E0) >> 5) - 1;
+        int day = date & 0x1F;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setLenient(false);
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        return calendar.getTime();
+    }
+
+    private static void putDate(ByteBuffer bbuf, int offset, Date date) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+
+        int year = calendar.get(Calendar.YEAR) - 2000;
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        ByteBuffer bb = ByteBuffer.allocate(2);
+        bb.putShort((short) ((year << 9) | (month << 5) | day));
+
+        putBytes(bbuf, offset, bb.array());
+    }
+
+    private static String getString(ByteBuffer bb, int offset, int length, Charset charset)
+            throws UnsupportedEncodingException {
+        return charset.decode(ByteBuffer.wrap(getBytes(bb, offset, length))).toString();
+    }
+
+    private static void putString(ByteBuffer bb, int offset, int length, Charset charset, String text) {
+        byte[] bytes = new byte[length];
+        byte[] bytes2 = charset.encode(text).array();
+        System.arraycopy(bytes2, 0, bytes, 0, bytes2.length);
+
+        putBytes(bb, offset, bytes);
     }
 }

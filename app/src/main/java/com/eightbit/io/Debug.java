@@ -65,6 +65,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+@SuppressWarnings("unused")
 public class Debug {
 /* TODO: Intercept all uncaught exceptions and print logcat file
  *     Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
@@ -82,7 +83,7 @@ public class Debug {
  *     });
  */
 
-    public static String TAG(Class<?> src) {
+    private static String TAG(Class<?> src) {
         return src.getSimpleName();
     }
 

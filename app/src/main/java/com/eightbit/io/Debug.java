@@ -152,7 +152,6 @@ public class Debug {
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d",
                 BuildConfig.APPLICATION_ID,
-                "com.smartrac.nfc",
                 "-t", "2048"
         });
         BufferedReader reader = new BufferedReader(new InputStreamReader(

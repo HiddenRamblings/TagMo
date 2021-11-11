@@ -2,6 +2,8 @@ package com.hiddenramblings.tagmo.nfctech;
 
 import android.net.Uri;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -97,6 +99,23 @@ public class TagReader {
         return data;
     }
 
+    public static byte[] getValidatedDocument(
+            KeyManager keyManager, DocumentFile file) throws Exception {
+        byte[] data = TagReader.readTagDocument(file.getUri());
+        if (data == null) return null;
+        try {
+            TagReader.validateTag(data);
+        } catch (Exception e) {
+            try {
+                data = TagUtils.encrypt(keyManager, data);
+                TagReader.validateTag(data);
+            } catch (RuntimeException ex) {
+                Debug.Log(ex);
+            }
+        }
+        return data;
+    }
+
     private static byte[] getTagData(String path, InputStream inputStream) throws Exception {
         byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
         int len = inputStream.read(data);
@@ -113,8 +132,7 @@ public class TagReader {
         }
     }
 
-    @SuppressWarnings("unused")
-    public static byte[] readTagStream(Uri file) throws Exception {
+    public static byte[] readTagDocument(Uri file) throws Exception {
         try (InputStream inputStream = TagMo.getContext()
                 .getContentResolver().openInputStream(file)) {
             return getTagData(file.getPath(), inputStream);

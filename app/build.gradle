@@ -29,6 +29,7 @@ android {
         }
         debug {
             initWith release
+            debuggable true
             try {
                 def keystoreProps = new Properties()
                 keystoreProps.load(new FileInputStream(rootProject.file("keystore.properties")))

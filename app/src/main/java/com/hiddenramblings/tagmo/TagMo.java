@@ -9,7 +9,6 @@ import android.os.Build;
 
 import com.eightbit.content.ScaledContext;
 import com.eightbit.io.Debug;
-import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 
 import org.androidannotations.annotations.EApplication;

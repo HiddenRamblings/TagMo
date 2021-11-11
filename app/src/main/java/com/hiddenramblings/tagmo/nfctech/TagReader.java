@@ -81,7 +81,7 @@ public class TagReader {
         Debug.Error(TagWriter.class, R.string.validation_success);
     }
 
-    public static byte[] getVerifiedData(KeyManager keyManager, File file) throws Exception {
+    public static byte[] getValidatedData(KeyManager keyManager, File file) throws Exception {
         byte[] data = TagReader.readTagFile(file);
         if (data == null) return null;
         try {

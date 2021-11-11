@@ -3,6 +3,8 @@ package com.hiddenramblings.tagmo.amiibo;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -256,7 +258,8 @@ public class AmiiboManager {
         return amiiboManager;
     }
 
-    public static void saveDatabase(AmiiboManager amiiboManager, OutputStream outputStream) throws JSONException, IOException {
+    public static void saveDatabase(AmiiboManager amiiboManager, OutputStream outputStream)
+            throws JSONException, IOException {
         OutputStreamWriter streamWriter = null;
         try {
             streamWriter = new OutputStreamWriter(outputStream);
@@ -303,6 +306,30 @@ public class AmiiboManager {
                 if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
                         byte[] data = TagReader.getValidatedData(keyManager, file);
+                        if (data != null) {
+                            amiiboFiles.add(new AmiiboFile(file,
+                                    TagUtils.amiiboIdFromTag(data), data));
+                        }
+                    } catch (Exception e) {
+                        Debug.Log(e);
+                    }
+                }
+            }
+        }
+        return amiiboFiles;
+    }
+
+    public static ArrayList<AmiiboFile> listAmiiboDocuments(
+            KeyManager keyManager, DocumentFile rootFolder, boolean recursiveFiles) {
+        ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
+        DocumentFile[] files = rootFolder.listFiles();
+        for (DocumentFile file : files) {
+            if (file.isDirectory() && recursiveFiles) {
+                amiiboFiles.addAll(listAmiiboDocuments(keyManager, file, true));
+            } else if (file.getName() != null){
+                if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
+                    try {
+                        byte[] data = TagReader.getValidatedDocument(keyManager, file);
                         if (data != null) {
                             amiiboFiles.add(new AmiiboFile(file,
                                     TagUtils.amiiboIdFromTag(data), data));

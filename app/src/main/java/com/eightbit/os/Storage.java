@@ -51,7 +51,6 @@
 
 package com.eightbit.os;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -63,10 +62,10 @@ import androidx.core.content.FileProvider;
 
 import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.TagMo_;
 
 import java.io.File;
-import java.lang.ref.SoftReference;
+import java.io.InputStream;
+import java.util.HashSet;
 
 @SuppressWarnings({"ConstantConditions", "unused"})
 public class Storage extends Environment {
@@ -78,6 +77,53 @@ public class Storage extends Environment {
         return directory.getParentFile().getParentFile().getParentFile().getParentFile();
     }
 
+    public static HashSet<String> getExternalMounts() {
+        final HashSet<String> out = new HashSet<>();
+        String reg = "(?i).*vold.*(vfat|ntfs|exfat|fat32|ext3|ext4|fuse|sdfat).*rw.*";
+        StringBuilder s = new StringBuilder();
+        try {
+            final Process process = new ProcessBuilder().command("mount")
+                    .redirectErrorStream(true).start();
+            process.waitFor();
+            InputStream is = process.getInputStream();
+            byte[] buffer = new byte[1024];
+            while (is.read(buffer) != -1) {
+                s.append(new String(buffer));
+            }
+            is.close();
+
+            String[] lines = s.toString().split("\n");
+            for (String line : lines) {
+                if (line.contains("secure")) continue;
+                if (line.contains("asec")) continue;
+                if (line.matches(reg)) {
+                    for (String part : line.split(" ")) {
+                        if (part.startsWith("/") && !part.contains("vold"))
+                            out.add(part);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+    private static File setFileMounts() {
+        HashSet<String> extStorage = getExternalMounts();
+        if (extStorage != null && !extStorage.isEmpty()) {
+            for (String sd : extStorage) {
+                // Workaround for WRITE_MEDIA_STORAGE
+                String sdCardPath = sd.replace("mnt/media_rw", "storage");
+                if (!sdCardPath.equals(Environment.getExternalStorageDirectory()
+                        .getAbsolutePath()) && new File(sdCardPath).canRead()) {
+                    return new File(sdCardPath);
+                }
+            }
+        }
+        return getExternalStorageDirectory();
+    }
+
     private static File setFileGeneric() {
         File emulated = null;
         File physical = null;
@@ -85,6 +131,8 @@ public class Storage extends Environment {
             for (File directory : new File(STORAGE_ROOT).listFiles()) {
                 if (directory.getAbsolutePath().endsWith("emulated"))
                     emulated = new File(directory, "0");
+                else if (directory.getName().equals("ext_sd"))
+                    physical = setFileMounts();
                 else if (!directory.getAbsolutePath().endsWith("self"))
                     physical = directory;
             }
@@ -92,7 +140,7 @@ public class Storage extends Environment {
             Log.d("EMULATED", emulated.getAbsolutePath());
             Log.d("PHYSICAL", physical.getAbsolutePath());
         } catch (NullPointerException e) {
-            return storageFile = getExternalStorageDirectory();
+            return storageFile = setFileMounts();
         }
         if (TagMo.getPrefs().ignoreSdcard().get())
             return storageFile = emulated != null ? emulated : physical;
@@ -125,6 +173,8 @@ public class Storage extends Environment {
             for (File directory : getStorageDirectory().listFiles()) {
                 if (directory.getAbsolutePath().endsWith("emulated"))
                     emulated = new File(directory, "0");
+                else if (directory.getName().equals("ext_sd"))
+                    physical = setFileMounts();
                 else if (!directory.getAbsolutePath().endsWith("self"))
                     physical = directory;
             }

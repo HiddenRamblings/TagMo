@@ -27,6 +27,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.eightbit.content.ActionIntent;
 import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -657,11 +658,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     });
 
     private void showFileChooser(String title, int resultCode) {
-        Intent intent = new Intent(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
-                ? Intent.ACTION_OPEN_DOCUMENT : Intent.ACTION_GET_CONTENT);
+        Intent intent = ActionIntent.getIntent(new Intent(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+                        ? Intent.ACTION_OPEN_DOCUMENT
+                        : Intent.ACTION_GET_CONTENT));
+        intent.setType("*/*");
         intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
         intent.putExtra("android.content.extra.FANCY", true);
-        intent.setType("*/*");
 
         switch(resultCode) {
             case RESULT_KEYS:

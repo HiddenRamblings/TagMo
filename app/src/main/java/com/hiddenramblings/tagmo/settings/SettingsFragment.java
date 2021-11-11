@@ -37,6 +37,7 @@ import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.SettingsActivity;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.WebViewActivity_;
 import com.hiddenramblings.tagmo.adapter.SettingsAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
@@ -380,6 +381,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 Uri.parse(getString(R.string.reddit_url))));
     }
 
+    ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK) return;
+
+        if (!prefs.showDownloads().get()) showDownloadsSnackbar();
+        ((SettingsActivity) requireActivity()).setRefreshResult();
+    });
+
+    @PreferenceClick(R.string.settings_build_wumiibo)
+    void onWumiiboClicked() {
+        onDownloadZip.launch(new Intent(requireActivity(),
+                WebViewActivity_.class).setAction(TagMo.ACTION_BUILD_WUMIIBO));
+    }
+
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";
 
     void updateKeys(Uri data) {
@@ -685,6 +700,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 getString(
                 R.string.update_amiibo_api), Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated));
+        snackbar.show();
+    }
+
+    @UiThread
+    public void showDownloadsSnackbar() {
+        Snackbar snackbar = new IconifiedSnackbar(requireActivity())
+                .buildSnackbar(getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.display, v ->
+                ((SettingsActivity) requireActivity()).setWumiiboResult());
         snackbar.show();
     }
 

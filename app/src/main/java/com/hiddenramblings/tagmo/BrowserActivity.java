@@ -180,8 +180,6 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuShowMissing;
     @OptionsMenuItem(R.id.enable_scale)
     MenuItem menuEnableScale;
-    @OptionsMenuItem(R.id.build_wumiibo)
-    MenuItem menuWumiibo;
     @OptionsMenuItem(R.id.amiibo_backup)
     MenuItem menuBackup;
     @OptionsMenuItem(R.id.verify_amiibo)
@@ -450,33 +448,6 @@ public class BrowserActivity extends AppCompatActivity implements
     void onEnableScaleClicked() {
         TagMo.getPrefs().enableScaling().put(!menuEnableScale.isChecked());
         this.recreate();
-    }
-
-    @UiThread
-    public void showDownloadsSnackbar() {
-        Snackbar snackbar = new IconifiedSnackbar(this)
-                .buildSnackbar(getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.display, v -> {
-            this.settings.setShowDownloads(true);
-            settings.notifyChanges();
-            this.onRefresh();
-        });
-        snackbar.show();
-    }
-
-    ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK) return;
-
-        if (!this.settings.isShowingDownloads())
-            showDownloadsSnackbar();
-        else this.onRefresh();
-    });
-
-    @OptionsItem(R.id.build_wumiibo)
-    void onWumiiboClicked() {
-        onDownloadZip.launch(new Intent(this,
-                WebViewActivity_.class).setAction(TagMo.ACTION_BUILD_WUMIIBO));
     }
 
     ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
@@ -762,6 +733,10 @@ public class BrowserActivity extends AppCompatActivity implements
                     TagMo.getPrefs().browserRootFolder().get()));
             this.settings.notifyChanges();
         }
+        if (result.getData().hasExtra(SettingsActivity.WUMIIBO)) {
+            this.settings.setShowDownloads(true);
+            this.settings.notifyChanges();
+        }
         if (result.getData().hasExtra(SettingsActivity.POWERTAG)) {
             this.loadPTagKeyManager();
         }
@@ -1027,10 +1002,12 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
+    public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,
+                                         BrowserSettings oldBrowserSettings) {
         if (newBrowserSettings == null || oldBrowserSettings == null) return;
         boolean folderChanged = false;
-        if (!BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
+        if (!BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(),
+                oldBrowserSettings.getBrowserRootFolder())) {
             folderChanged = true;
         }
         if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
@@ -1052,7 +1029,8 @@ public class BrowserActivity extends AppCompatActivity implements
         if (newBrowserSettings.getSort() != oldBrowserSettings.getSort()) {
             onSortChanged();
         }
-        if (!BrowserSettings.equals(newBrowserSettings.getGameSeriesFilter(), oldBrowserSettings.getGameSeriesFilter())) {
+        if (!BrowserSettings.equals(newBrowserSettings.getGameSeriesFilter(),
+                oldBrowserSettings.getGameSeriesFilter())) {
             onFilterGameSeriesChanged();
         }
         if (!BrowserSettings.equals(newBrowserSettings.getCharacterFilter(), oldBrowserSettings.getCharacterFilter())) {
@@ -1175,7 +1153,8 @@ public class BrowserActivity extends AppCompatActivity implements
     };
 
     void onFilterCharacterChanged() {
-        addFilterItemView(settings.getCharacterFilter(), "filter_character", onFilterCharacterChipCloseClick);
+        addFilterItemView(settings.getCharacterFilter(), "filter_character",
+                onFilterCharacterChipCloseClick);
     }
 
     OnCloseClickListener onFilterCharacterChipCloseClick = new OnCloseClickListener() {
@@ -1187,7 +1166,8 @@ public class BrowserActivity extends AppCompatActivity implements
     };
 
     void onFilterAmiiboSeriesChanged() {
-        addFilterItemView(settings.getAmiiboSeriesFilter(), "filter_amiibo_series", onFilterAmiiboSeriesChipCloseClick);
+        addFilterItemView(settings.getAmiiboSeriesFilter(), "filter_amiibo_series",
+                onFilterAmiiboSeriesChipCloseClick);
     }
 
     OnCloseClickListener onFilterAmiiboSeriesChipCloseClick = new OnCloseClickListener() {

@@ -358,7 +358,7 @@ public class NfcActivity extends AppCompatActivity {
                         for (int x = 0; x < amiiboList.size(); x++) {
                             TagWriter.writeEliteAuto(mifare, amiiboList.get(x).getData() != null
                                     ? amiiboList.get(x).getData()
-                                    : TagReader.getVerifiedData(keyManager,
+                                    : TagReader.getValidatedData(keyManager,
                                     amiiboList.get(x).getFilePath()), this.keyManager, x);
                         }
                         Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);

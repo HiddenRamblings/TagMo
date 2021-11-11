@@ -182,8 +182,8 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuEnableScale;
     @OptionsMenuItem(R.id.amiibo_backup)
     MenuItem menuBackup;
-    @OptionsMenuItem(R.id.verify_amiibo)
-    MenuItem menuVerify;
+    @OptionsMenuItem(R.id.validate_tag)
+    MenuItem menuValidate;
     @OptionsMenuItem(R.id.unlock_elite)
     MenuItem menuUnlockElite;
     @OptionsMenuItem(R.id.capture_logcat)
@@ -208,7 +208,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void afterViews() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (Environment.isExternalStorageManager()) {
-                this.onRefresh();
+                this.onStorageEnabled();
             } else {
                 requestScopedStorage();
             }
@@ -218,7 +218,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 ActivityCompat.requestPermissions(this,
                         PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
             } else {
-                this.onRefresh();
+                this.onStorageEnabled();
             }
         }
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -292,9 +292,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.loadPTagKeyManager();
 
-        File[] files = getFilesDir().listFiles((file, name) -> !file.isDirectory()
-                && name.toLowerCase(Locale.ROOT).endsWith(".apk"));
-        if (files != null) {
+        File[] files = getFilesDir().listFiles((dir, name) ->
+                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
+        if (files != null && files.length > 0) {
             for (File file : files) {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
@@ -486,7 +486,7 @@ public class BrowserActivity extends AppCompatActivity implements
         onBackupActivity.launch(backup);
     }
 
-    ActivityResultLauncher<Intent> onVerifyActivity = registerForActivityResult(
+    ActivityResultLauncher<Intent> onValidateActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
@@ -500,9 +500,9 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     });
 
-    @OptionsItem(R.id.verify_amiibo)
-    void onAmiiboVerifyClicked() {
-        onVerifyActivity.launch(new Intent(this,
+    @OptionsItem(R.id.validate_tag)
+    void onValidateTagClicked() {
+        onValidateActivity.launch(new Intent(this,
                 NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
     }
 
@@ -756,6 +756,15 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onRootFolderChanged(true);
     }
 
+    private void onStorageEnabled() {
+        if (keyManager.isKeyMissing()) {
+            emptyText.setText(R.string.locating_keys);
+            locateKeyFiles();
+        } else {
+            this.onRefresh();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
@@ -833,7 +842,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Bundle args = new Bundle();
         try {
             byte[] data = amiiboFile.getData() != null ? amiiboFile.getData()
-                        : TagReader.getVerifiedData(keyManager, amiiboFile.getFilePath());
+                        : TagReader.getValidatedData(keyManager, amiiboFile.getFilePath());
             args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
         } catch (Exception e) {
             Debug.Error(e);
@@ -979,12 +988,9 @@ public class BrowserActivity extends AppCompatActivity implements
         if (this.settings.isShowingDownloads()) {
             File download = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS);
-            File[] files = rootFolder.listFiles((file, name) -> file.isDirectory()
-                    && name.equals(download.getName()));
-            if (files == null || files.length == 0)
-                amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
-                        Environment.getExternalStoragePublicDirectory(
-                                Environment.DIRECTORY_DOWNLOADS), recursiveFiles));
+            File[] files = rootFolder.listFiles((dir, name) -> name.equals(download.getName()));
+            if (files != null && files.length > 0)
+                amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, download, recursiveFiles));
         }
 
         if (Thread.currentThread().isInterrupted())
@@ -1125,10 +1131,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void onRootFolderChanged(boolean indicator) {
         if (this.settings != null) {
             File rootFolder = this.settings.getBrowserRootFolder();
-            if (keyManager.isKeyMissing()) {
-                emptyText.setText(R.string.keys_not_loaded);
-                showSetupSnackbar();
-            } else {
+            if (!keyManager.isKeyMissing()) {
                 emptyText.setText(R.string.refreshing_list);
                 this.setAmiiboFilesLoadingBarVisibility(indicator);
                 this.loadAmiiboFiles(rootFolder, this.settings.isRecursiveEnabled());
@@ -1299,12 +1302,71 @@ public class BrowserActivity extends AppCompatActivity implements
     public void showSetupSnackbar() {
         Snackbar snackbar = new IconifiedSnackbar(this).buildSnackbar(
                 getString(
-                R.string.config_required), Snackbar.LENGTH_INDEFINITE);
+                        R.string.config_required), Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.setup, v -> {
             openSettings();
             snackbar.dismiss();
         });
         snackbar.show();
+    }
+
+    private static final String BACKGROUND_LOAD_KEYS = "load_keys";
+
+    private boolean keyNameMatcher(String name) {
+        boolean isValid = name.toLowerCase(Locale.ROOT).endsWith(".bin");
+        return name.toLowerCase(Locale.ROOT).endsWith("retail.bin") ||
+                (isValid && (name.toLowerCase(Locale.ROOT).startsWith("locked")
+                        || name.toLowerCase(Locale.ROOT).startsWith("unfixed")));
+    }
+
+    void locateKeyFiles() {
+        BackgroundExecutor.cancelAll(BACKGROUND_LOAD_KEYS, true);
+        locateKeyFilesTask();
+    }
+
+    void locateKeyFilesRecursive(File[] files) {
+        if (files == null || files.length == 0)
+            return;
+        for (File file : files) {
+            if (file.isDirectory()) {
+                locateKeyFilesRecursive(file.listFiles());
+            } else {
+                if (keyNameMatcher(file.getName())) {
+                    try {
+                        this.keyManager.loadKey(file);
+                    } catch (Exception e) {
+                        Debug.Log(e);
+                    }
+                }
+            }
+        }
+    }
+
+    @Background(id = BACKGROUND_LOAD_KEYS)
+    void locateKeyFilesTask() {
+        File[] files = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS).listFiles((dir, name) -> keyNameMatcher(name));
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                try {
+                    this.keyManager.loadKey(file);
+                } catch (Exception e) {
+                    Debug.Log(e);
+                }
+            }
+        } else {
+            locateKeyFilesRecursive(settings.getBrowserRootFolder().listFiles());
+        }
+
+        if (Thread.currentThread().isInterrupted())
+            return;
+
+        if (keyManager.isKeyMissing()) {
+            emptyText.setText(R.string.keys_not_loaded);
+            showSetupSnackbar();
+        } else {
+            this.onRefresh();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -1455,7 +1517,7 @@ public class BrowserActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (Environment.isExternalStorageManager()) {
-            this.onRefresh();
+            this.onStorageEnabled();
         } else {
             Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
                     R.string.permission_required, Snackbar.LENGTH_LONG);
@@ -1475,7 +1537,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     BrowserActivity.this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE));
             storageBar.show();
         } else {
-            this.onRefresh();
+            this.onStorageEnabled();
         }
     }
 

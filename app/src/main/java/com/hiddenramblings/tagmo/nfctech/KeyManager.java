@@ -6,6 +6,7 @@ import android.net.Uri;
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -94,6 +95,12 @@ public class KeyManager {
     public void loadKey(Uri file) throws IOException {
         try (InputStream strm = context.getContentResolver().openInputStream(file)) {
             readKey(strm);
+        }
+    }
+
+    public void loadKey(File file) throws IOException {
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            readKey(inputStream);
         }
     }
 }

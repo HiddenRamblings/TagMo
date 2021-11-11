@@ -37,6 +37,6 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_validate"
-        android:title="@string/validate_tag"
+        android:title="@string/validate_data"
         app:showAsAction="ifRoom"/>
 </menu>

@@ -8,6 +8,7 @@
     android:id="@+id/coordinator" >
 
     <RelativeLayout
+        android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -59,15 +60,6 @@
             android:contentDescription="@string/nfcIconDescription"
             tools:ignore="RelativeOverlap" />
     </RelativeLayout>
-
-    <TextView
-        android:id="@+id/empty_text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:paddingBottom="40dp"
-        android:text="@string/amiibo_not_found"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
 
     <LinearLayout
         android:id="@+id/bottom_sheet"

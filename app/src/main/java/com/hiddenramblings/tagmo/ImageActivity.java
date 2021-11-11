@@ -3,11 +3,11 @@ package com.hiddenramblings.tagmo;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -113,7 +113,7 @@ public class ImageActivity extends AppCompatActivity {
         }
     }
 
-    public static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+    static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
 
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
@@ -218,45 +218,34 @@ public class ImageActivity extends AppCompatActivity {
             editText.setText(TagUtils.amiiboIdToHex(amiiboId));
         }
 
-        (new AlertDialog.Builder(this))
-                .setTitle(R.string.save_image)
-                .setPositiveButton(R.string.save, (dialogInterface, i) -> {
-                    final File file = new File(TagMo.getExternalFiles().getAbsolutePath(),
-                            editText.getText().toString() + ".png");
+        (new AlertDialog.Builder(this)).setTitle(R.string.save_image)
+                .setPositiveButton(R.string.save, (dialogInterface, i) ->
+                        Glide.with(ImageActivity.this)
+                                .asBitmap().load(getImageUrl())
+                                .into(new CustomTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(
+                    @NonNull Bitmap resource, Transition transition) {
+                saveImageToFile(resource, editText.getText().toString());
+            }
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
 
-                    Glide.with(ImageActivity.this)
-                            .asBitmap()
-                            .load(getImageUrl())
-                            .into(new CustomTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
-                                    FileOutputStream fos = null;
-                                    try {
-                                        fos = new FileOutputStream(file);
-                                        resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            }
+        })).setNegativeButton(R.string.cancel, null).setView(view).show();
+    }
 
-                                        String text = "Saved file as " + Storage.getRelativePath(file);
-                                        Toast.makeText(ImageActivity.this, text, Toast.LENGTH_SHORT).show();
-                                    } catch (FileNotFoundException e) {
-                                        Debug.Error(e);
-                                    } finally {
-                                        if (fos != null) {
-                                            try {
-                                                fos.close();
-                                            } catch (IOException ioe) {
-                                                Debug.Error(ioe);
-                                            }
-                                        }
-                                    }
-                                }
-                                @Override
-                                public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                                }
-                            });
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .setView(view)
-                .show();
+    private void saveImageToFile(@NonNull Bitmap resource, String filename) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS), filename + ".png");
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            new Toasty(ImageActivity.this).Short(getString(
+                    R.string.wrote_file, Storage.getRelativePath(file)));
+        } catch (FileNotFoundException e) {
+            Debug.Error(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">TagMo</string>
+
     <string name="topCenterTextMessage">Place the tag under the phone</string>
 
     <string name="fixed_key_found">Locked Key found.</string>
@@ -45,11 +46,6 @@
     <string name="amiibo_character_caps">CHARACTER</string>
     <string name="amiibo_path_caps">PATH</string>
 
-    <string name="locating_keys">Locating Decryption Keys&#8230;</string>
-    <string name="keys_not_loaded">Keys Not Loaded!</string>
-    <string name="refreshing_list">Searching for amiibo™&#8230;</string>
-    <string name="amiibo_not_found">No amiibo™ Found</string>
-
     <string name="recursive_folders">Recursive Folders</string>
     <string name="show_downloads">Show \'Downloads\'</string>
     <string name="show_missing">Show Missing Bins</string>
@@ -93,7 +89,7 @@
     <string name="view_hex">View Hex Code</string>
     <string name="edit_props">Edit Properties</string>
     <string name="delete_amiibo">Delete Bin File</string>
-    <string name="ignore_restrictions">Ignore Restrictions</string>
+    <string name="ignore_tag_id">Ignore Tag ID #</string>
     <string name="generate_serial">Generate Random Serial</string>
 
     <string name="properties">Properties</string>
@@ -135,14 +131,14 @@
     <string name="write_auto">Write to Tag (Auto)</string>
     <string name="unlock_elite">Unlock N2 Elite</string>
     <string name="restore_tag">Restore Tag</string>
-    <string name="scan_tag">Scan Tag</string>
+    <string name="scan_tag">Scan NFC Tag</string>
     <string name="scan_bank_no">Scan Bank %1$d</string>
     <string name="scan_bank">Scan Bank %1$s</string>
     <string name="scan_elite">Scan N2 Elite</string>
     <string name="format_bank">Format Bank</string>
     <string name="activate_bank">Activate Bank</string>
     <string name="amiibo_backup">Backup amiibo™</string>
-    <string name="validate_tag">Tag Validation</string>
+    <string name="validate_data">Data Validation</string>
     <string name="set_bank_count">Set Bank Count</string>
     <string name="lock_amiibo">Lock N2 Elite</string>
     <string name="write_collection">Write Collection</string>
@@ -150,24 +146,6 @@
     <string name="permission_required">Storage permission required!</string>
     <string name="allow">Allow</string>
     <string name="emulated_storage">Emulated storage may contain amiibo™.</string>
-
-    <string name="warn_delete_file">Deleting %1$s. Are you sure?</string>
-    <string name="delete_active">Cannot delete the active bank!</string>
-
-    <string name="amiibo_api_title">AmiiboAPI.com</string>
-    <string name="pref_advanced">Advanced</string>
-    <string name="pref_disable_debug">Disable Debug Logger</string>
-    <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
-    <string name="pref_stable_channel">Stable Update Checks</string>
-    <string name="pref_resources">Resources</string>
-    <string name="pref_wiki_link">View Instructions Wiki</string>
-    <string name="pref_reddit_link">Visit the TagMo reddit</string>
-    <string name="pref_build_wumiibo">Generate Wumiibo Bins</string>
-
-    <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
-    <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard / external storage device</string>
-    <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
-    <string name="build_wumiibo_details">Generate decrypted bin files based on public amiibo™ bytecode information</string>
 
     <string name="encryption_keys">Encryption Keys</string>
     <string name="pref_import_keys">Import Keys</string>
@@ -185,38 +163,59 @@
     <string name="lock_elite_hardware_details">The active bank will emulate a retail amiibo™.\nOther features will be disabled until unlocked.</string>
     <string name="lock_elite_warning">Lock N2 Elite Hardware?</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
-    <string name="write_open_banks">Write %1$d Banks to N2 Elite</string>
-    <string name="write_bank_count">Write Bank Count to N2 Elite</string>
-    <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
-
     <string name="amiibo_info">amiibo™ Database</string>
-    <string name="bank_number">Bank %1$d</string>
-
-    <string name="amiibo_info_updated">Updated amiibo™ info</string>
-
-    <string name="backup_filename">amiibo™ Bin Filename</string>
-
-    <string name="prepare_unlock">Once scanned, do not remove the unit from the NFC field until complete.</string>
-    <string name="progress_unlock">Press and hold the N2 button and continue to wait for unlock to complete.</string>
-    <string name="possible_lock">Is this N2 Elite locked?</string>
-
     <string name="sync_amiibo_info">Sync cache with AmiiboAPI</string>
-    <string name="reset_amiibo_info">Reset cached amiibo™ info</string>
     <string name="export_json_details">Export amiibo™ info (JSON)</string>
     <string name="import_json_details">Import amiibo™ info (JSON)</string>
-
-    <string name="sync_amiibo_process">Syncing with AmiiboAPI&#8230;</string>
-    <string name="sync_amiibo_complete">AmiiboAPI sync success!</string>
-    <string name="sync_amiibo_failed">AmiiboAPI sync failure!</string>
-    <string name="removing_amiibo_info">Clearing amiibo™ info&#8230;</string>
-
+    <string name="reset_amiibo_info">Reset cached amiibo™ info</string>
+    <string name="amiibo_api_title">AmiiboAPI.com</string>
     <string name="number_amiibo">%1$d amiibo™</string>
     <string name="number_game">%1$d Game Series</string>
     <string name="number_character">%1$d Character(s)</string>
     <string name="number_series">%1$d amiibo™ Series</string>
     <string name="number_type">%1$d amiibo™ Type(s)</string>
+    <string name="pref_advanced">Advanced</string>
+    <string name="pref_disable_debug">Disable Debug Logger</string>
+    <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
+    <string name="pref_stable_channel">Stable Update Checks</string>
+    <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
+    <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
+    <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard / external storage device</string>
+    <string name="pref_resources">Resources</string>
+    <string name="pref_wiki_link">View Instructions Wiki</string>
+    <string name="pref_reddit_link">Visit the TagMo reddit</string>
+    <string name="pref_build_wumiibo">Generate Wumiibo Bins</string>
+    <string name="build_wumiibo_details">Generate decrypted bin files based on public amiibo™ bytecode information</string>
+
+    <string name="amiibo_info_updated">Updated amiibo™ database!</string>
+    <string name="sync_amiibo_process">Syncing with AmiiboAPI&#8230;</string>
+    <string name="sync_amiibo_complete">AmiiboAPI sync success!</string>
+    <string name="sync_amiibo_failed">AmiiboAPI sync failure!</string>
+    <string name="removing_amiibo_info">Clearing amiibo™ cache&#8230;</string>
+    <string name="update_amiibo_api">AmiiboAPI database updated!</string>
+
+    <string name="locating_keys">Locating Crypto Keys&#8230;</string>
+    <string name="keys_not_found">Crypto keys could not be found!</string>
+    <string name="refreshing_list">Searching for amiibo™&#8230;</string>
+    <string name="amiibo_not_found">No amiibo™ Found</string>
+
     <string name="files_displayed">%1$d Files: ? / ? amiibo™</string>
     <string name="amiibo_collected">%1$d Files: %2$d / %3$d amiibo™</string>
+
+    <string name="write_open_banks">Write %1$d Banks to N2 Elite</string>
+    <string name="write_bank_count">Write Bank Count to N2 Elite</string>
+    <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
+    <string name="bank_number">Bank %1$d</string>
+
+    <string name="bank_select_details">Set Bank Number</string>
+    <string name="write_confirm">Write selections to N2 Elite?</string>
+    <string name="warn_delete_file">Deleting %1$s. Are you sure?</string>
+    <string name="delete_active">Cannot delete the active bank!</string>
+    <string name="backup_filename">Set amiibo™ Bin Name</string>
+
+    <string name="prepare_unlock">Once scanned, do not remove the unit from the NFC field until complete.</string>
+    <string name="progress_unlock">Press and hold the N2 button and continue to wait for unlock to complete.</string>
+    <string name="possible_lock">Is this N2 Elite locked?</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>
@@ -229,11 +228,8 @@
     <string name="auth_response">Auth response %1$s</string>
     <string name="password">Password: %1$s</string>
 
-    <string name="old_uid">Old UID %1$s</string>
-    <string name="page_ten">page 10 %1$s</string>
-    <string name="ptag_key">ptag key %1$s</string>
-
-    <string name="validation_success">Tag validation successful!</string>
+    <string name="validation_success">Tag / Bin validation successful!</string>
+    <string name="no_source_data">Cannot validate: No data to compare.</string>
 
     <string name="error_no_data">No data to write</string>
     <string name="error_tag_protocol">NTAG215 required, found %1$s!</string>
@@ -287,8 +283,8 @@
     <string name="key_read_error">Error reading key from storage</string>
 
     <string name="invalid_tag_data">Invalid tag data.</string>
-    <string name="invalid_tag_file">Invalid tag file. %1$s</string>
-    <string name="invalid_tag_prefix">Tag must start with a 0x04.</string>
+    <string name="invalid_tag_file">Invalid tag data: %1$s</string>
+    <string name="invalid_tag_prefix">Data must start with a 0x04.</string>
     <string name="invalid_tag_lock">Lock signature mismatch.</string>
     <string name="invalid_tag_cc">CC signature mismatch.</string>
     <string name="invalid_tag_dynamic">Dynamic lock signature mismatch.</string>
@@ -298,39 +294,33 @@
     <string name="invalid_file_size">%1$s size invalid (%2$d expected)!</string>
     <string name="invalid_app_data">Invalid app data</string>
 
+    <string name="old_uid">Old UID %1$s</string>
+    <string name="page_ten">page 10 %1$s</string>
+    <string name="ptag_key">ptag key %1$s</string>
+
     <string name="uid_key_missing">No available key for UID</string>
     <string name="p10_key_missing">No available key for P10_ID</string>
     <string name="power_tag_verify">Power Tag Confirmed: %1$s</string>
 
-    <string name="amiibo_info_parse_error">Unable to parse amiibo™ info</string>
-    <string name="amiibo_info_not_loaded">amiibo™ info not loaded</string>
-    <string name="amiibo_info_export_fail">Failed to export amiibo™ info to %1$s</string>
-    <string name="amiibo_info_exported">Exported amiibo™ info to %1$s</string>
-    <string name="amiibo_failure_load">Failed to load amiibo™ info</string>
-    <string name="amiibo_failure_parse">Failed to parse amiibo™ info</string>
-    <string name="amiibo_failure_read">Failed to read amiibo™ info</string>
-    <string name="amiibo_failure_update">Failed to update amiibo™ info</string>
-    <string name="amiibo_failure_parse_default">Failed to parse default amiibo™ info</string>
-
-    <string name="no_source_data">Cannot validate: no source data loaded to compare.</string>
-
-    <string name="bank_select_details">Set Bank Number</string>
-    <string name="write_confirm">Write selections to N2 Elite?</string>
-
-    <string name="downloads_hidden">Downloads are currently hidden!</string>
+    <string name="amiibo_info_parse_error">Unable to parse amiibo™ database</string>
+    <string name="amiibo_info_not_loaded">amiibo™ database not loaded</string>
+    <string name="amiibo_info_export_fail">Failed to export amiibo™ database to %1$s</string>
+    <string name="amiibo_info_exported">Exported amiibo™ database to %1$s</string>
+    <string name="amiibo_failure_load">Failed to load amiibo™ database</string>
+    <string name="amiibo_failure_parse">Failed to parse amiibo™ database</string>
+    <string name="amiibo_failure_read">Failed to read amiibo™ database</string>
+    <string name="amiibo_failure_update">Failed to update amiibo™ database</string>
+    <string name="amiibo_failure_parse_default">Failed to parse default amiibo™ database</string>
 
     <string name="update_tagmo_apk">New TagMo version released!</string>
-    <string name="update_amiibo_api">AmiiboAPI database updated!</string>
-    <string name="config_required">Encryption keys not loaded!</string>
-
     <string name="download_corrupt">New build publishing. Install cancelled!</string>
 
     <string name="firmware_update">N2 Elite Firmware Updated!</string>
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 
     <string name="speed_scan">Lift tag slightly to improve scan</string>
-    <string name="decrypted_files">Wumiibo (Decrypted)</string>
     <string name="wait_unzip">Unzipping Wumiibo Collection&#8230;</string>
     <string name="unzip_item">Unzipping %1$s&#8230;</string>
-    <string name="mkdir_failed">Folder "%1$s" failed!</string>
+    <string name="mkdir_failed">Creating "%1$s" failed!</string>
+    <string name="downloads_hidden">Downloads are currently hidden!</string>
 </resources>

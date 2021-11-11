@@ -100,9 +100,9 @@ public class WebViewActivity extends AppCompatActivity {
                 public void onReceivedHttpError (
                         @NonNull WebView view, @NonNull WebResourceRequest request,
                         @NonNull WebResourceResponse errorResponse) {
-                    if (errorResponse.getStatusCode() == 404 && !request.getUrl()
-                            .toString().equals(getString(R.string.wumiibo_url)))
-                        view.loadUrl(getString(R.string.wumiibo_url));
+                    if (errorResponse.getStatusCode() == 404
+                            && !request.getUrl().toString().equals(Website.WUMIIBO_WEB))
+                        view.loadUrl(Website.WUMIIBO_WEB);
                 }
             });
             if (WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USAGE)) {
@@ -139,8 +139,7 @@ public class WebViewActivity extends AppCompatActivity {
             });
             // mWebView.loadUrl(getString(R.string.wumiibo_url));
             mWebView.loadUrl(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                    ? getString(R.string.wumiibo_app)
-                    : getString(R.string.wumiibo_uri));
+                    ? Website.WUMIIBO_APP : Website.WUMIIBO_URI);
         } else {
             webViewSettings.setBuiltInZoomControls(true);
             webViewSettings.setSupportZoom(true);
@@ -228,10 +227,10 @@ public class WebViewActivity extends AppCompatActivity {
         dialog = ProgressDialog.show(this,
                 getString(R.string.wait_unzip), "", true);
         File deprecated = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), "Amiibo (Decrypted)");
+                Environment.DIRECTORY_DOWNLOADS), "Wumiibo (Decrypted)");
         if (deprecated.exists()) deleteDir(deprecated);
         File destination = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), getString(R.string.decrypted_files));
+                Environment.DIRECTORY_DOWNLOADS), "Wumiibo(Decrypted)");
         if (destination.exists()) deleteDir(destination);
         destination.mkdirs();
         new Thread(new UnZip(zipFile, destination)).start();

@@ -57,7 +57,7 @@ public class AmiiboManager {
         }
     }
 
-    public static AmiiboManager parse(InputStream inputStream) throws IOException, JSONException, ParseException {
+    static AmiiboManager parse(InputStream inputStream) throws IOException, JSONException, ParseException {
         byte[] data = new byte[inputStream.available()];
         //noinspection ResultOfMethodCallIgnored
         inputStream.read(data);
@@ -66,11 +66,11 @@ public class AmiiboManager {
         return parse(new String(data));
     }
 
-    public static AmiiboManager parse(String json) throws JSONException, ParseException {
+    static AmiiboManager parse(String json) throws JSONException, ParseException {
         return parse(new JSONObject(json));
     }
 
-    public static AmiiboManager parse(JSONObject json) throws JSONException, ParseException {
+    static AmiiboManager parse(JSONObject json) throws JSONException, ParseException {
         final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
         AmiiboManager manager = new AmiiboManager();

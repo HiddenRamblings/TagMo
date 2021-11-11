@@ -89,7 +89,7 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/content"
-        android:icon="@drawable/ic_view_array_white_24dp"
+        android:icon="@drawable/ic_folder_open_white_24dp"
         android:title="@string/content"
         app:showAsAction="ifRoom">
         <menu>
@@ -138,19 +138,13 @@
         </menu>
     </item>
     <item
-        android:id="@+id/amiibo_backup"
-        android:title="@string/amiibo_backup"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/validate_tag"
-        android:title="@string/validate_tag"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/unlock_elite"
+        android:icon="@drawable/ic_nfc_white_24dp"
         android:title="@string/unlock_elite"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/capture_logcat"
+        android:icon="@drawable/ic_save_white_24dp"
         android:title="@string/capture_logcat"
         app:showAsAction="ifRoom"/>
 </menu>

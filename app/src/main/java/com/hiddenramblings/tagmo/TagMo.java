@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.media.MediaScannerConnection;
 import android.os.Build;
 
 import com.eightbit.content.ScaledContext;
@@ -105,11 +104,16 @@ public class TagMo extends Application {
             return ScaledContext.restore(mContext.get());
     }
 
-    public static void setScaledTheme(Context context, int theme) {
+    static void setScaledTheme(Context context, int theme) {
         if (mPrefs != null && mPrefs.get().enableScaling().get())
             ScaledContext.wrap(context).setTheme(theme);
         else
             ScaledContext.restore(context).setTheme(theme);
+    }
+
+    public static boolean isDarkTheme() {
+        return (getContext().getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
     public static String getStringRes(int resource) {
@@ -137,19 +141,5 @@ public class TagMo extends Application {
 
     public static File getExternalFiles() {
         return mContext.get().getExternalFilesDir(null);
-    }
-
-    public static void scanFile(File file) {
-        try {
-            MediaScannerConnection.scanFile(mContext.get(),
-                    new String[]{file.getAbsolutePath()}, null, null);
-        } catch (Exception e) {
-            Debug.Log(R.string.fail_media_scan, e);
-        }
-    }
-
-    public static boolean isDarkTheme() {
-        return (getContext().getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 }

@@ -18,27 +18,27 @@ public class NTAG215 implements TagTechnology {
     private final NfcA m_nfcA;
     private final int maxTransceiveLength;
 
-    public NTAG215(MifareUltralight mifare) {
-        m_nfcA = null;
-        m_mifare = mifare;
-        maxTransceiveLength = (m_mifare.getMaxTransceiveLength() / 4) + 1;
-    }
-
     public NTAG215(NfcA nfcA) {
         m_nfcA = nfcA;
         m_mifare = null;
         maxTransceiveLength = (m_nfcA.getMaxTransceiveLength() / 4) + 1;
     }
 
+    public NTAG215(MifareUltralight mifare) {
+        m_nfcA = null;
+        m_mifare = mifare;
+        maxTransceiveLength = (m_mifare.getMaxTransceiveLength() / 4) + 1;
+    }
+
     public static NTAG215 get(Tag tag) {
-        MifareUltralight mifare = MifareUltralight.get(tag);
-        if (mifare != null)
-            return new NTAG215(mifare);
         NfcA nfcA = NfcA.get(tag);
         if (nfcA != null) {
             if (nfcA.getSak() == 0x00 && tag.getId()[0] == NXP_MANUFACTURER_ID)
                 return new NTAG215(nfcA);
         }
+        MifareUltralight mifare = MifareUltralight.get(tag);
+        if (mifare != null)
+            return new NTAG215(mifare);
 
         return null;
     }
@@ -204,21 +204,21 @@ public class NTAG215 implements TagTechnology {
         }
     }
 
-    public void setBankCount(int i) {
+    public void setBankCount(int count) {
         try {
             this.transceive(new byte[]{
-                    NfcByte.N2_SET_BANKCOUNT,
-                    (byte) (i & 0xFF)
+                    (byte) NfcByte.N2_SET_BANKCOUNT,
+                    (byte) (count & 0xFF)
             });
         } catch (Exception ignored) {
         }
     }
 
-    public void activateBank(int i) {
+    public void activateBank(int bank) {
         try {
             this.transceive(new byte[]{
-                    NfcByte.N2_ACTIVATE_BANK,
-                    (byte) (i & 0xFF)
+                    (byte) NfcByte.N2_ACTIVATE_BANK,
+                    (byte) (bank & 0xFF)
             });
         } catch (Exception ignored) {
         }
@@ -329,7 +329,7 @@ public class NTAG215 implements TagTechnology {
         if (data != null && data.length % 4 == 0) {
             return internalWrite((startAddr, bank1, data1) -> {
                 byte[] req = new byte[7];
-                req[0] = NfcByte.N2_WRITE;
+                req[0] = (byte) NfcByte.N2_WRITE;
                 req[1] = (byte) (startAddr & 0xFF);
                 req[2] = (byte) (bank1 & 0xFF);
                 try {
@@ -373,7 +373,7 @@ public class NTAG215 implements TagTechnology {
         }
         return internalFastWrite((startAddr, bank1, data1) -> {
             byte[] req = new byte[(data1.length + 4)];
-            req[0] = NfcByte.N2_FAST_WRITE;
+            req[0] = (byte) NfcByte.N2_FAST_WRITE;
             req[1] = (byte) (startAddr & 0xFF);
             req[2] = (byte) (bank1 & 0xFF);
             req[3] = (byte) (data1.length & 0xFF);

@@ -279,8 +279,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:minHeight="?attr/actionBarSize"
-                        app:contentInsetRight="4dp"
-                        app:contentInsetEnd="4dp"
+                        app:contentInsetLeft="2dp"
+                        app:contentInsetStart="2dp"
                         android:layout_gravity="center"
                         android:theme="@style/PopupThemeOverlay"
                         app:popupTheme="@style/PopupTheme" />

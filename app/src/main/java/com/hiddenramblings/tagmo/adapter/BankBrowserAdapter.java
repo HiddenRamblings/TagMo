@@ -112,7 +112,7 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
         holder.bind(getItem(position));
     }
 
-    static abstract class AmiiboVewHolder extends RecyclerView.ViewHolder {
+    protected static abstract class AmiiboVewHolder extends RecyclerView.ViewHolder {
 
         private final BrowserSettings settings;
         private final OnAmiiboClickListener listener;

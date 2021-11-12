@@ -542,7 +542,7 @@ public class BankListActivity extends AppCompatActivity implements
             amiibosView.getAdapter().notifyItemChanged(clickedPosition);
     });
 
-    private void scanAmiiboData(int current_bank) {
+    private void scanAmiiboBank(int current_bank) {
         Intent scan = new Intent(this, NfcActivity_.class);
         scan.setAction(TagMo.ACTION_SCAN_TAG);
         scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
@@ -588,7 +588,7 @@ public class BankListActivity extends AppCompatActivity implements
                         onUpdateTagResult.launch(scan);
                     } else {
                         status = CLICKED.WRITER;
-                        scanAmiiboData(current_bank);
+                        scanAmiiboBank(current_bank);
                     }
                     return true;
                 case R.id.mnu_replace:
@@ -610,7 +610,7 @@ public class BankListActivity extends AppCompatActivity implements
                         onUpdateTagResult.launch(editor);
                     } else {
                         status = CLICKED.EDITOR;
-                        scanAmiiboData(current_bank);
+                        scanAmiiboBank(current_bank);
                     }
                     return true;
                 case R.id.mnu_view_hex:
@@ -620,7 +620,7 @@ public class BankListActivity extends AppCompatActivity implements
                         startActivity(viewhex);
                     } else {
                         status = CLICKED.HEXCODE;
-                        scanAmiiboData(current_bank);
+                        scanAmiiboBank(current_bank);
                     }
                     return true;
                 case R.id.mnu_backup:
@@ -628,7 +628,7 @@ public class BankListActivity extends AppCompatActivity implements
                         displayBackupDialog(tagData);
                     } else {
                         status = CLICKED.BACKUP;
-                        scanAmiiboData(current_bank);
+                        scanAmiiboBank(current_bank);
                     }
                     return true;
                 case R.id.mnu_validate:
@@ -638,16 +638,12 @@ public class BankListActivity extends AppCompatActivity implements
                     } catch (Exception e) {
                         if (e instanceof IOException) {
                             status = CLICKED.VERIFY;
-                            scanAmiiboData(current_bank);
+                            scanAmiiboBank(current_bank);
                         } else {
                             showAlertDialog(e.getMessage());
                         }
                     }
                     return true;
-                case R.id.mnu_scan:
-                    scanAmiiboData(current_bank);
-                    return true;
-
             }
             return false;
         });
@@ -789,6 +785,13 @@ public class BankListActivity extends AppCompatActivity implements
         }
     }
 
+    private void scanAmiiboTag(int position) {
+        Intent amiiboIntent = new Intent(this, NfcActivity_.class);
+        amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
+        amiiboIntent.setAction(TagMo.ACTION_SCAN_TAG);
+        onUpdateTagResult.launch(amiiboIntent);
+    }
+
     @Override
     public void onAmiiboClicked(Amiibo amiibo, int position) {
         if (amiibo == null) {
@@ -804,10 +807,7 @@ public class BankListActivity extends AppCompatActivity implements
         } else if (amiibo.id != 0) {
             updateAmiiboView(amiibo.id, position);
         } else {
-            Intent amiiboIntent = new Intent(this, NfcActivity_.class);
-            amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
-            amiiboIntent.setAction(TagMo.ACTION_SCAN_TAG);
-            onUpdateTagResult.launch(amiiboIntent);
+            scanAmiiboTag(position);
         }
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
@@ -823,6 +823,15 @@ public class BankListActivity extends AppCompatActivity implements
 
             startActivity(intent);
         }
+    }
+
+    @Override
+    public boolean onAmiiboLongClicked(Amiibo amiibo, int position) {
+        if (amiibo != null)
+            scanAmiiboTag(position);
+        else
+            displayWriteDialog(position);
+        return true;
     }
 
     static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";

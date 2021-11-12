@@ -76,6 +76,7 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.InstanceState;
+import org.androidannotations.annotations.LongClick;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.OptionsMenuItem;
@@ -379,10 +380,16 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     });
 
-    @Click(R.id.fab)
+    @LongClick(R.id.nfc_fab)
+    public void onFabLongClicked() {
+        onNFCActivity.launch(new Intent(this,
+                NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
+    }
+
+    @Click(R.id.nfc_fab)
     public void onFabClicked() {
         PopupMenu popup;
-        View fab = findViewById(R.id.fab);
+        View fab = findViewById(R.id.nfc_fab);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
             popup = new PopupMenu(this, fab,
                     Gravity.END, 0, R.style.PopupMenu);

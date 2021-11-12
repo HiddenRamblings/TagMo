@@ -109,6 +109,11 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
                     holder.listener.onAmiiboImageClicked(holder.amiiboItem, position);
             });
         }
+        holder.itemView.setOnLongClickListener(view -> {
+            if (holder.listener != null)
+                return holder.listener.onAmiiboLongClicked(holder.amiiboItem, position);
+            return false;
+        });
         holder.bind(getItem(position));
     }
 
@@ -323,5 +328,7 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
         void onAmiiboClicked(Amiibo amiibo, int position);
 
         void onAmiiboImageClicked(Amiibo amiibo, int position);
+
+        boolean onAmiiboLongClicked(Amiibo amiibo, int position);
     }
 }

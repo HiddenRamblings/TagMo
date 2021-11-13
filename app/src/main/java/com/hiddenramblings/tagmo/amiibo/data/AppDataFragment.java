@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctech.data;
+package com.hiddenramblings.tagmo.amiibo.data;
 
 import androidx.fragment.app.Fragment;
 

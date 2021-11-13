@@ -11,12 +11,10 @@ import android.nfc.tech.NdefFormatable;
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.nfctech.data.AmiiboData;
+import com.hiddenramblings.tagmo.amiibo.data.AmiiboData;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Random;
 
 public class TagUtils {
 

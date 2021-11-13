@@ -130,8 +130,6 @@ public class Storage extends Environment {
             for (File directory : new File(STORAGE_ROOT).listFiles()) {
                 if (directory.getAbsolutePath().endsWith("emulated"))
                     emulated = new File(directory, "0");
-                else if (directory.getName().equals("ext_sd"))
-                    physical = setFileMounts();
                 else if (!directory.getAbsolutePath().endsWith("self"))
                     physical = directory;
             }
@@ -139,6 +137,8 @@ public class Storage extends Environment {
             Log.d("EMULATED", emulated.getAbsolutePath());
             Log.d("PHYSICAL", physical.getAbsolutePath());
         } catch (NullPointerException e) {
+            if (TagMo.getPrefs().ignoreSdcard().get())
+                return getExternalStorageDirectory();
             return storageFile = setFileMounts();
         }
         if (TagMo.getPrefs().ignoreSdcard().get())
@@ -172,8 +172,6 @@ public class Storage extends Environment {
             for (File directory : getStorageDirectory().listFiles()) {
                 if (directory.getAbsolutePath().endsWith("emulated"))
                     emulated = new File(directory, "0");
-                else if (directory.getName().equals("ext_sd"))
-                    physical = setFileMounts();
                 else if (!directory.getAbsolutePath().endsWith("self"))
                     physical = directory;
             }

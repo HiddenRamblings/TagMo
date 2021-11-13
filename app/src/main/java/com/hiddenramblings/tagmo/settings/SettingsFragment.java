@@ -555,39 +555,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private static final String BACKGROUND_SYNC_AMIIBO_MANAGER = "sync_amiibo_manager";
 
-    void downloadAmiiboAPIDataCompat() {
-        ProviderInstaller.installIfNeededAsync(requireContext(), new ProviderInstaller.ProviderInstallListener() {
-            @Override
-            public void onProviderInstalled() {
-                BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
-                downloadAmiiboAPIDataTask();
-            }
-
-            @Override
-            public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
-                if (availability.isUserResolvableError(errorCode)) {
-                    // Recoverable error. Show a dialog prompting the user to
-                    // install/update/enable Google Play services.
-                    availability.showErrorDialogFragment(requireActivity(), errorCode, 1, dialog -> {
-                        // The user chose not to take the recovery action
-                        requireActivity().finish();
-                    });
-                } else {
-                    // Google Play services is not available.
-                    requireActivity().finish();
-                }
-            }
-        });
-    }
-
     void downloadAmiiboAPIData(String lastUpdated) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
-            downloadAmiiboAPIDataTask();
-        } else {
-            downloadAmiiboAPIDataCompat();
-        }
+        BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
+        downloadAmiiboAPIDataTask();
         prefs.lastUpdated().put(lastUpdated);
     }
 

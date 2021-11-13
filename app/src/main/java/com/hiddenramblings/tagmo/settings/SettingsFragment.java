@@ -231,7 +231,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             fileOutputStream = new FileOutputStream(file);
             AmiiboManager.saveDatabase(this.amiiboManager, fileOutputStream);
         } catch (JSONException | IOException e) {
-            Debug.Error(e);
+            Debug.Log(e);
             new Toasty(requireActivity()).Short(
                     getString(R.string.amiibo_info_export_fail, Storage.getRelativePath(file)));
             return;
@@ -240,7 +240,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 try {
                     fileOutputStream.close();
                 } catch (IOException e) {
-                    Debug.Error(e);
+                    Debug.Log(e);
                 }
             }
         }
@@ -407,7 +407,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             this.keyManager.loadKey(data);
         } catch (Exception e) {
-            Debug.Error(e);
+            Debug.Log(e);
             showSnackbar(e.getMessage(), Snackbar.LENGTH_SHORT);
         }
         if (Thread.currentThread().isInterrupted())
@@ -464,7 +464,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Error(e);
+            Debug.Log(e);
             new Toasty(requireActivity()).Short(R.string.amiibo_failure_load);
             return;
         }
@@ -485,11 +485,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             amiiboManager = AmiiboManager.parse(requireContext(), data);
         } catch (JSONException | ParseException e) {
-            Debug.Error(e);
+            Debug.Log(e);
             new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse);
             return;
         } catch (IOException e) {
-            Debug.Error(e);
+            Debug.Log(e);
             new Toasty(requireActivity()).Short(R.string.amiibo_failure_read);
             return;
         }
@@ -499,7 +499,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             AmiiboManager.saveDatabase(amiiboManager);
         } catch (JSONException | IOException e) {
-            Debug.Error(e);
+            Debug.Log(e);
             new Toasty(requireActivity()).Short(R.string.amiibo_failure_update);
             return;
         }
@@ -523,7 +523,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             amiiboManager = AmiiboManager.getDefaultAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Error(e);
+            Debug.Log(e);
             new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse_default);
         }
         if (Thread.currentThread().isInterrupted())
@@ -588,7 +588,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         try {
                             reader.close();
                         } catch (IOException e) {
-                            Debug.Error(e);
+                            Debug.Log(e);
                         }
                     }
                 }
@@ -605,7 +605,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 throw new Exception(String.valueOf(statusCode));
             }
         } catch (Exception e) {
-            Debug.Error(e);
+            Debug.Log(e);
             if (Thread.currentThread().isInterrupted())
                 return;
             showSnackbar(getString(R.string.sync_amiibo_failed), Snackbar.LENGTH_SHORT);
@@ -644,7 +644,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     }
                     onLoadKeys.launch(Intent.createChooser(intent, title));
                 } catch (ActivityNotFoundException ex) {
-                    Debug.Error(ex);
+                    Debug.Log(ex);
                 }
                 break;
             case RESULT_IMPORT_AMIIBO_DATABASE:
@@ -655,7 +655,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     }
                     onImportAmiiboDatabase.launch(Intent.createChooser(intent, title));
                 } catch (ActivityNotFoundException ex) {
-                    Debug.Error(ex);
+                    Debug.Log(ex);
                 }
                 break;
         }
@@ -692,7 +692,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 showInstallSnackbar(lastUpdated);
             }
         } catch (Exception e) {
-            Debug.Error(e);
+            Debug.Log(e);
         }
     }
 }

@@ -276,7 +276,7 @@ public class AmiiboActivity extends AppCompatActivity {
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Error(e);
+            Debug.Log(e);
             new Toasty(this).Short(getString(R.string.amiibo_info_parse_error));
         }
 

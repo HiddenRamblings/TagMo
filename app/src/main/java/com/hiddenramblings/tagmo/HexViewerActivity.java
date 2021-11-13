@@ -34,7 +34,7 @@ public class HexViewerActivity extends AppCompatActivity {
         try {
             setAdapterTagData(keyManager.decrypt(tagData));
         } catch (Exception e) {
-            Debug.Error(R.string.fail_decrypt, e);
+            Debug.Log(R.string.fail_decrypt, e);
             showErrorDialog(R.string.fail_decrypt);
         }
     }

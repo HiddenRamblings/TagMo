@@ -822,61 +822,6 @@ public class BrowserActivity extends AppCompatActivity implements
         onSettingsActivity.launch(new Intent(this, SettingsActivity_.class));
     }
 
-    ActivityResultLauncher<Intent> onQRCodeScan = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
-
-        String content = result.getData().getStringExtra("SCAN_RESULT");
-        byte[] data;
-        try {
-            data = Base64.decode(content, Base64.DEFAULT);
-            TagUtils.validateData(data);
-        } catch (Exception e) {
-            Debug.Log(e);
-            data = null;
-        }
-        if (data == null) {
-            try {
-                data = content.getBytes(TagMo.ISO_8859_1);
-                TagUtils.validateData(data);
-            } catch (Exception e) {
-                Debug.Log(e);
-                data = null;
-            }
-        }
-
-        if (data == null) {
-            return;
-        }
-
-        // TODO: Convert data into bin file or something
-    });
-
-    void scanQRCode() {
-        String packageName = "com.google.zxing.client.android";
-        Intent intent = new Intent(packageName + ".SCAN");
-        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-        intent.putExtra("CHARACTER_SET", "ISO-8859-1");
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            onQRCodeScan.launch(intent);
-        } else {
-            new AlertDialog.Builder(this)
-                    .setMessage(R.string.scanner_missing)
-                    .setMessage(R.string.scanner_missing_text)
-                    .setPositiveButton(R.string.yes, (dialog, which) -> {
-                        try {
-                            startActivity(new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("market://details?id=" + packageName)));
-                        } catch (android.content.ActivityNotFoundException anfe) {
-                            startActivity(new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse(Website.GOOGLE_PLAY + packageName)));
-                        }
-                    })
-                    .setNegativeButton(R.string.no, null)
-                    .show();
-        }
-    }
-
     @Override
     public void onRefresh() {
         this.swipeRefreshLayout.setRefreshing(false);

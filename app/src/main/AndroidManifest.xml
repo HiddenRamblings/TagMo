@@ -20,7 +20,7 @@
 <!--    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"-->
 <!--        tools:ignore="QueryAllPackagesPermission" />-->
 
-    <uses-feature android:name="android.hardware.nfc" android:required="false"/>
+    <uses-feature android:name="android.hardware.nfc" android:required="true"/>
 
     <application
         android:name=".TagMo_"
@@ -73,6 +73,7 @@
         </activity>
         <activity
             android:name=".NfcActivity_"
+            android:permission="android.permission.BIND_NFC_SERVICE"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop">
         </activity>

@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctech.data;
+package com.hiddenramblings.tagmo.amiibo.data;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

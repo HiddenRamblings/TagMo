@@ -43,11 +43,11 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
-import com.hiddenramblings.tagmo.nfctech.data.AmiiboData;
-import com.hiddenramblings.tagmo.nfctech.data.AppData;
-import com.hiddenramblings.tagmo.nfctech.data.AppDataFragment;
-import com.hiddenramblings.tagmo.nfctech.data.AppDataSSBFragment;
-import com.hiddenramblings.tagmo.nfctech.data.AppDataTPFragment;
+import com.hiddenramblings.tagmo.amiibo.data.AmiiboData;
+import com.hiddenramblings.tagmo.amiibo.data.AppData;
+import com.hiddenramblings.tagmo.amiibo.data.AppDataFragment;
+import com.hiddenramblings.tagmo.amiibo.data.AppDataSSBFragment;
+import com.hiddenramblings.tagmo.amiibo.data.AppDataTPFragment;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 

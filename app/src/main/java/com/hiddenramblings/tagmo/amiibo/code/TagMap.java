@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.nfctech.code;
+package com.hiddenramblings.tagmo.amiibo.code;
 
 import android.graphics.Color;
 

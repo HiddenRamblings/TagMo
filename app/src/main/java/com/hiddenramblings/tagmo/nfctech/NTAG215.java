@@ -237,7 +237,7 @@ public class NTAG215 implements TagTechnology {
                     (byte) NfcByte.CMD_READ, (byte) 0xFFD9
             });
         } catch (IOException e) {
-            Debug.Error(e);
+            Debug.Log(e);
         }
     }
 
@@ -393,7 +393,7 @@ public class NTAG215 implements TagTechnology {
                     NfcByte.N2_LOCK
             });
         } catch (IOException e) {
-            Debug.Error(e);
+            Debug.Log(e);
         }
     }
 
@@ -413,7 +413,7 @@ public class NTAG215 implements TagTechnology {
                     NfcByte.N2_UNLOCK_2
             });
         } catch (IOException e) {
-            Debug.Error(e);
+            Debug.Log(e);
         }
     }
 }

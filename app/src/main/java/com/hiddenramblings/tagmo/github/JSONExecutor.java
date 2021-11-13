@@ -40,7 +40,7 @@ public class JSONExecutor {
 
                 listener.onResults(responseStrBuilder.toString());
             } catch (IOException e) {
-                Debug.Error(e);
+                Debug.Log(e);
             }
         });
     }

@@ -75,7 +75,7 @@ public class AppDataSSBFragment extends AppDataFragment {
             try {
                 appData = new AppDataSSB(getArguments().getByteArray("app_data"));
             } catch (IOException e) {
-                Debug.Error(e);
+                Debug.Log(e);
                 return;
             }
             if (savedInstanceState == null) {

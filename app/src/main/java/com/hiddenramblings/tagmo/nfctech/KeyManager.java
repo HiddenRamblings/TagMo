@@ -47,7 +47,7 @@ public class KeyManager {
                 throw new IOException(context.getString(R.string.key_size_invalid));
             return key;
         } catch (Exception e) {
-            Debug.Error(R.string.key_read_error, e);
+            Debug.Log(R.string.key_read_error, e);
         }
         return null;
     }
@@ -85,11 +85,11 @@ public class KeyManager {
 
         String md5 = null;
         try {
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            MessageDigest digest = MessageDigest.getInstance("MD5");
             byte[] result = digest.digest(data);
             md5 = TagUtils.bytesToHex(result);
         } catch (NoSuchAlgorithmException e) {
-            Debug.Error(e);
+            Debug.Log(e);
         }
         if (FIXED_KEY_MD5.equals(md5)) {
             saveKeyFile(FIXED_KEY_MD5, data);

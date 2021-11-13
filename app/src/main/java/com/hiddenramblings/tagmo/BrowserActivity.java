@@ -961,7 +961,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         : TagReader.getValidatedData(keyManager, amiiboFile.getFilePath());
             args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
         } catch (Exception e) {
-            Debug.Error(e);
+            Debug.Log(e);
             return;
         }
 
@@ -1018,7 +1018,7 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             PowerTagManager.getPowerTagManager();
         } catch (Exception e) {
-            Debug.Error(e);
+            Debug.Log(e);
             new Toasty(this).Short(R.string.fail_powertag_keys);
         }
     }
@@ -1036,7 +1036,7 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Error(e);
+            Debug.Log(e);
             amiiboManager = null;
             new Toasty(this).Short(R.string.amiibo_info_parse_error);
         }
@@ -1587,11 +1587,11 @@ public class BrowserActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         } catch (MalformedURLException mue) {
-            Debug.Error(mue);
+            Debug.Log(mue);
         } catch (IOException ioe) {
-            Debug.Error(ioe);
+            Debug.Log(ioe);
         } catch (SecurityException se) {
-            Debug.Error(se);
+            Debug.Log(se);
         }
     }
 
@@ -1637,7 +1637,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (!isMaster && !BuildConfig.COMMIT.equals(lastCommit))
                 showInstallSnackbar(downloadUrl);
         } catch (JSONException e) {
-            Debug.Error(e);
+            Debug.Log(e);
         }
 
         if (isMaster && lastCommit != null && downloadUrl != null) {
@@ -1652,7 +1652,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             && !BuildConfig.COMMIT.equals(finalLastCommit))
                         showInstallSnackbar(finalDownloadUrl);
                 } catch (JSONException e) {
-                    Debug.Error(e);
+                    Debug.Log(e);
                 }
             });
         }

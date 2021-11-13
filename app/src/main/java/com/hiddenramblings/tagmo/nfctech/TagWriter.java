@@ -234,7 +234,7 @@ public class TagWriter {
         if (response == null)
             throw new Exception(TagMo.getStringRes(R.string.error_auth_null));
         String respStr = TagUtils.bytesToHex(response);
-        Debug.Error(TagWriter.class, R.string.auth_response, respStr);
+        Debug.Log(TagWriter.class, R.string.auth_response, respStr);
         if (!"8080".equals(respStr)) {
             throw new Exception(TagMo.getStringRes(R.string.fail_auth));
         }

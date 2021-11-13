@@ -247,7 +247,7 @@ public class WebViewActivity extends AppCompatActivity {
                     SettingsActivity.REFRESH, true));
             finish();
         } catch (IOException e) {
-            Debug.Error(e);
+            Debug.Log(e);
         }
     }
 

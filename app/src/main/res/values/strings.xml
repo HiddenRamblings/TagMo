@@ -323,4 +323,7 @@
     <string name="unzip_item">Unzipping %1$s&#8230;</string>
     <string name="mkdir_failed">Creating "%1$s" failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>
+
+    <string name="scanner_missing">Barcode Scanner required!</string>
+    <string name="scanner_missing_text">Would you like to install Barcode Scanner?</string>
 </resources>

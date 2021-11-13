@@ -181,7 +181,7 @@ public class TagUtils {
             throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cfg_one));
     }
 
-    static void validateTag(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
+    static void validateNtag(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
         if (tagData == null)
             throw new IOException(TagMo.getStringRes(R.string.no_source_data));
 

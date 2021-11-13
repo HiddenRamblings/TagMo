@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -521,29 +523,33 @@ public class NfcActivity extends AppCompatActivity {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
+    ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> startNfcMonitor()
+    );
+
     void startNfcMonitor() {
         if (nfcAdapter == null) {
             showError(getString(R.string.nfc_unsupported));
             return;
-        }
-
-        if (!nfcAdapter.isEnabled()) {
+        } else if (!nfcAdapter.isEnabled()) {
             showError(getString(R.string.nfc_disabled));
             new AlertDialog.Builder(this)
                     .setMessage(R.string.nfc_query)
                     .setPositiveButton(R.string.yes, (dialog, which) ->
-                            startActivity(new Intent(Settings.ACTION_NFC_SETTINGS)
-                    ))
-                    .setNegativeButton(R.string.no, null)
+                            onNFCActivity.launch(new Intent(Settings.ACTION_NFC_SETTINGS))
+                    )
+                    .setNegativeButton(R.string.no, (dialog, which) ->
+                            finish()
+                    )
                     .show();
+        } else {
+            // monitor nfc status
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
+                this.registerReceiver(mReceiver, filter);
+            }
+            listenForTags();
         }
-
-        // monitor nfc status
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
-            this.registerReceiver(mReceiver, filter);
-        }
-        listenForTags();
     }
 
     void stopNfcMonitor() {

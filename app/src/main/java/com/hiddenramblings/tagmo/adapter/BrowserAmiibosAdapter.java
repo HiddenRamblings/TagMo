@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.AmiiboVewHolder>
+public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.AmiiboViewHolder>
         implements Filterable, BrowserSettings.BrowserSettingsListener {
     private static final String decryptRegex = "(Decrypted).bin";
 
@@ -128,7 +128,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
 
     @NonNull
     @Override
-    public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AmiiboViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case BrowserActivity.VIEW_TYPE_COMPACT:
                 return new CompactViewHolder(parent, settings, listener);
@@ -143,7 +143,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
     }
 
     @Override
-    public void onBindViewHolder(final AmiiboVewHolder holder, int position) {
+    public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
             if (holder.listener != null) {
                 holder.listener.onAmiiboClicked(holder.amiiboFile);
@@ -280,7 +280,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         }
     }
 
-    protected static abstract class AmiiboVewHolder extends RecyclerView.ViewHolder {
+    protected static abstract class AmiiboViewHolder extends RecyclerView.ViewHolder {
         private final BrowserSettings settings;
         private final OnAmiiboClickListener listener;
 
@@ -319,7 +319,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             }
         };
 
-        private void setIsHighlighted(AmiiboVewHolder holder, boolean isHighlighted) {
+        private void setIsHighlighted(AmiiboViewHolder holder, boolean isHighlighted) {
             View highlight = holder.itemView.findViewById(R.id.highlight);
             if (isHighlighted) {
                 highlight.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
@@ -348,7 +348,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
             }
         }
 
-        public AmiiboVewHolder(View itemView, BrowserSettings settings, OnAmiiboClickListener listener) {
+        public AmiiboViewHolder(View itemView, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(itemView);
 
             this.settings = settings;
@@ -504,7 +504,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         }
     }
 
-    static class SimpleViewHolder extends AmiiboVewHolder {
+    static class SimpleViewHolder extends AmiiboViewHolder {
         public SimpleViewHolder(ViewGroup parent, BrowserSettings settings,
                                 OnAmiiboClickListener listener) {
             super(
@@ -515,7 +515,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         }
     }
 
-    static class CompactViewHolder extends AmiiboVewHolder {
+    static class CompactViewHolder extends AmiiboViewHolder {
         public CompactViewHolder(ViewGroup parent, BrowserSettings settings,
                                  OnAmiiboClickListener listener) {
             super(
@@ -526,7 +526,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         }
     }
 
-    static class LargeViewHolder extends AmiiboVewHolder {
+    static class LargeViewHolder extends AmiiboViewHolder {
         public LargeViewHolder(ViewGroup parent, BrowserSettings settings,
                                OnAmiiboClickListener listener) {
             super(
@@ -537,7 +537,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         }
     }
 
-    static class ImageViewHolder extends AmiiboVewHolder {
+    static class ImageViewHolder extends AmiiboViewHolder {
         public ImageViewHolder(ViewGroup parent, BrowserSettings settings,
                                OnAmiiboClickListener listener) {
             super(

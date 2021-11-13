@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
@@ -212,21 +211,13 @@ public class BrowserActivity extends AppCompatActivity implements
     @AfterViews
     void afterViews() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            boolean isMaster = TagMo.getPrefs().stableChannel().get();
-            new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
-                    ? "master" : "experimental")).setResultListener(result -> {
-                if (result != null) parseUpdateJSON(result, isMaster);
-            });
+            checkForUpdates();
         } else {
             ProviderInstaller.installIfNeededAsync(this,
                     new ProviderInstaller.ProviderInstallListener() {
                 @Override
                 public void onProviderInstalled() {
-                    boolean isMaster = TagMo.getPrefs().stableChannel().get();
-                    new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
-                            ? "master" : "experimental")).setResultListener(result -> {
-                        if (result != null) parseUpdateJSON(result, isMaster);
-                    });
+                    checkForUpdates();
                 }
 
                 @Override
@@ -237,8 +228,8 @@ public class BrowserActivity extends AppCompatActivity implements
                         // install/update/enable Google Play services.
                         availability.showErrorDialogFragment(
                                 BrowserActivity.this, errorCode, 1, dialog -> {
-                                    // The user chose not to take the recovery action
-                                });
+                            // The user chose not to take the recovery action
+                        });
                     }
                     // Google Play services is not available.
                 }
@@ -292,8 +283,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
 
         this.swipeRefreshLayout.setOnRefreshListener(this);
-        this.swipeRefreshLayout.setProgressViewOffset(false, 0,
-                (int) getResources().getDimension(R.dimen.swipe_progress_end));
+        this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
 
         if (this.settings.getAmiiboView() == VIEW_TYPE_IMAGE)
             this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
@@ -1004,6 +994,22 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
+    static final String BACKGROUND_UPDATES = "updates";
+
+    void checkForUpdates() {
+        BackgroundExecutor.cancelAll(BACKGROUND_UPDATES, true);
+        checkForUpdatesTask();
+    }
+
+    @Background(id = BACKGROUND_UPDATES)
+    void checkForUpdatesTask() {
+        boolean isMaster = TagMo.getPrefs().stableChannel().get();
+        new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
+                ? "master" : "experimental")).setResultListener(result -> {
+            if (result != null) parseUpdateJSON(result, isMaster);
+        });
+    }
+
     static final String BACKGROUND_POWERTAG = "powertag";
 
     void loadPTagKeyManager() {
@@ -1111,9 +1117,6 @@ public class BrowserActivity extends AppCompatActivity implements
             settings.setAmiiboFiles(amiiboFiles);
             settings.notifyChanges();
         });
-
-        if (amiiboFiles.isEmpty() && !TagMo.getPrefs().ignoreSdcard().get() && recursiveFiles)
-            showStorageSnackbar();
     }
 
     ActivityResultLauncher<Intent> onDocumentTree = registerForActivityResult(
@@ -1284,8 +1287,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (this.settings != null) {
             File rootFolder = this.settings.getBrowserRootFolder();
             if (!keyManager.isKeyMissing()) {
-                if (indicator)
-                    showOngoingSnackbar(getString(R.string.refreshing_list));
+                if (indicator) showOngoingSnackbar(getString(R.string.refreshing_list));
                 this.loadAmiiboFiles(rootFolder, this.settings.isRecursiveEnabled());
             }
             this.loadFolders(rootFolder);
@@ -1432,22 +1434,6 @@ public class BrowserActivity extends AppCompatActivity implements
     void showAlertDialog(String msg) {
         new AlertDialog.Builder(this).setMessage(msg)
                 .setPositiveButton(R.string.close, null).show();
-    }
-
-    @UiThread
-    public void showStorageSnackbar() {
-        if (ongoingSnackbar != null && ongoingSnackbar.isShown())
-            ongoingSnackbar.dismiss();
-        ongoingSnackbar = new IconifiedSnackbar(this, findViewById(R.id.main_layout))
-                .buildTickerBar(getString(R.string.emulated_storage), Snackbar.LENGTH_INDEFINITE);
-        ongoingSnackbar.setAction(R.string.enable, v -> {
-            TagMo.getPrefs().ignoreSdcard().put(true);
-            this.settings.setBrowserRootFolder(new File(Storage.getFile(),
-                    TagMo.getPrefs().browserRootFolder().get()));
-            this.settings.notifyChanges();
-            this.onRootFolderChanged(true);
-        });
-        ongoingSnackbar.show();
     }
 
     @UiThread

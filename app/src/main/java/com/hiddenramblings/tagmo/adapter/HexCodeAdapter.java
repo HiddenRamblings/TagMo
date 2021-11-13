@@ -12,9 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.nfctech.code.HexHeader;
-import com.hiddenramblings.tagmo.nfctech.code.HexItem;
-import com.hiddenramblings.tagmo.nfctech.code.TagMap;
+import com.hiddenramblings.tagmo.amiibo.code.HexHeader;
+import com.hiddenramblings.tagmo.amiibo.code.HexItem;
+import com.hiddenramblings.tagmo.amiibo.code.TagMap;
 
 public class HexCodeAdapter extends RecyclerView.Adapter<HexCodeAdapter.ViewHolder> {
 

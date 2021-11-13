@@ -51,6 +51,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.eightbit.content.ActionIntent;
 import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
@@ -209,26 +211,40 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @AfterViews
     void afterViews() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
-                this.onStorageEnabled();
-            } else {
-                requestScopedStorage();
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            boolean isMaster = TagMo.getPrefs().stableChannel().get();
+            new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
+                    ? "master" : "experimental")).setResultListener(result -> {
+                if (result != null) parseUpdateJSON(result, isMaster);
+            });
         } else {
-            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
-            } else {
-                this.onStorageEnabled();
-            }
+            ProviderInstaller.installIfNeededAsync(this,
+                    new ProviderInstaller.ProviderInstallListener() {
+                @Override
+                public void onProviderInstalled() {
+                    boolean isMaster = TagMo.getPrefs().stableChannel().get();
+                    new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
+                            ? "master" : "experimental")).setResultListener(result -> {
+                        if (result != null) parseUpdateJSON(result, isMaster);
+                    });
+                }
+
+                @Override
+                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
+                    GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
+                    if (availability.isUserResolvableError(errorCode)) {
+                        // Recoverable error. Show a dialog prompting the user to
+                        // install/update/enable Google Play services.
+                        availability.showErrorDialogFragment(
+                                BrowserActivity.this, errorCode, 1, dialog -> {
+                                    // The user chose not to take the recovery action
+                                });
+                    }
+                    // Google Play services is not available.
+                }
+            });
         }
-        boolean isMaster = TagMo.getPrefs().stableChannel().get();
-        new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
-                ? "master" : "experimental")).setResultListener(result -> {
-            if (result != null) parseUpdateJSON(result, isMaster);
-        });
+        
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(
@@ -258,6 +274,22 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onAmiiboFilesChanged();
         }
         this.settings.addChangeListener(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()) {
+                this.onStorageEnabled();
+            } else {
+                requestScopedStorage();
+            }
+        } else {
+            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            } else {
+                this.onStorageEnabled();
+            }
+        }
 
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.swipeRefreshLayout.setProgressViewOffset(false, 0,

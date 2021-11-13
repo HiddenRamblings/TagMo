@@ -200,7 +200,7 @@ public class BankListActivity extends AppCompatActivity implements
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Error(e);
+            Debug.Log(e);
             amiiboManager = null;
         }
         if (amiiboManager == null) return;
@@ -405,7 +405,7 @@ public class BankListActivity extends AppCompatActivity implements
                     : TagReader.getValidatedData(keyManager, amiiboFile.getFilePath());
             args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
         } catch (Exception e) {
-            Debug.Error(e);
+            Debug.Log(e);
         }
 
         Intent intent = new Intent(this, NfcActivity_.class);

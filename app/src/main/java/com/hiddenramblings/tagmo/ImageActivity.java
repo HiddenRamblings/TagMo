@@ -126,7 +126,7 @@ public class ImageActivity extends AppCompatActivity {
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Error(e);
+            Debug.Log(e);
         }
         if (Thread.currentThread().isInterrupted())
             return;
@@ -243,7 +243,7 @@ public class ImageActivity extends AppCompatActivity {
             new Toasty(ImageActivity.this).Short(getString(
                     R.string.wrote_file, Storage.getRelativePath(file)));
         } catch (FileNotFoundException e) {
-            Debug.Error(e);
+            Debug.Log(e);
         } catch (IOException e) {
             e.printStackTrace();
         }

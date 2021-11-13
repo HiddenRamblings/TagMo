@@ -51,7 +51,7 @@ public class AmiiboManager {
                 try {
                     inputSteam.close();
                 } catch (IOException e) {
-                    Debug.Error(e);
+                    Debug.Log(e);
                 }
             }
         }
@@ -246,7 +246,7 @@ public class AmiiboManager {
                         TagMo.getContext().openFileInput(AMIIBO_DATABASE_FILE));
             } catch (IOException | JSONException | ParseException e) {
                 amiiboManager = null;
-                Debug.Error(R.string.error_amiibo_parse, e);
+                Debug.Log(R.string.error_amiibo_parse, e);
             }
         } else {
             amiiboManager = null;
@@ -270,7 +270,7 @@ public class AmiiboManager {
                 try {
                     streamWriter.close();
                 } catch (IOException e) {
-                    Debug.Error(e);
+                    Debug.Log(e);
                 }
             }
         }
@@ -287,7 +287,7 @@ public class AmiiboManager {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
-                    Debug.Error(e);
+                    Debug.Log(e);
                 }
             }
         }

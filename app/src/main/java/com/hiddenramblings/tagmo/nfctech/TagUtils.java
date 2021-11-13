@@ -64,7 +64,7 @@ public class TagUtils {
                         0, NfcByte.POWERTAG_SIGNATURE.length))
                     return true;
             } catch (IOException e) {
-                Debug.Error(e);
+                Debug.Log(e);
             }
         }
         return false;
@@ -191,7 +191,7 @@ public class TagUtils {
                 if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
                     throw new FormatException(TagMo.getStringRes(R.string.error_tag_format));
             } catch (Exception e) {
-                Debug.Error(R.string.error_version, e);
+                Debug.Log(R.string.error_version, e);
                 throw e;
             }
         }
@@ -203,6 +203,6 @@ public class TagUtils {
         if (!TagUtils.compareRange(pages, tagData, 0, 9))
             throw new Exception(TagMo.getStringRes(R.string.fail_mismatch_uid));
 
-        Debug.Error(TagWriter.class, R.string.validation_success);
+        Debug.Log(TagWriter.class, R.string.validation_success);
     }
 }

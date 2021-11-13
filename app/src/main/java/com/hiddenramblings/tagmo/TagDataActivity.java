@@ -164,7 +164,7 @@ public class TagDataActivity extends AppCompatActivity {
         try {
             this.amiiboData = new AmiiboData(keyManager.decrypt(tagData));
         } catch (Exception e) {
-            Debug.Error(e);
+            Debug.Log(e);
             showErrorDialog(getString(R.string.fail_decrypt));
             return;
         }
@@ -224,7 +224,7 @@ public class TagDataActivity extends AppCompatActivity {
         try {
             amiiboManager = AmiiboManager.getAmiiboManager();
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Error(e);
+            Debug.Log(e);
             new Toasty(this).Short(getString(R.string.amiibo_info_parse_error));
         }
 
@@ -386,7 +386,7 @@ public class TagDataActivity extends AppCompatActivity {
             newAmiiboData.setUserDataInitialized(isUserDataInitialized);
             newAmiiboData.setAppDataInitialized(isUserDataInitialized && isAppDataInitialized);
         } catch (Exception e) {
-            Debug.Error(e);
+            Debug.Log(e);
             showErrorDialog(getString(R.string.fail_save_data));
             return;
         }
@@ -469,7 +469,7 @@ public class TagDataActivity extends AppCompatActivity {
         try {
             tagData = keyManager.encrypt(newAmiiboData.array());
         } catch (Exception e) {
-            Debug.Error(e);
+            Debug.Log(e);
             showErrorDialog(getString(R.string.fail_encrypt));
             return;
         }

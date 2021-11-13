@@ -83,13 +83,12 @@ public class Debug {
  *     });
  */
 
-    private static String TAG(Class<?> src) {
+    public static String TAG(Class<?> src) {
         return src.getSimpleName();
     }
 
     public static void Log(Class<?> src, String params) {
-        if (!TagMo.getPrefs().disableDebug().get())
-            Log.d(TAG(src), params);
+        if (!TagMo.getPrefs().disableDebug().get()) Log.w(TAG(src), params);
     }
 
     public static void Log(Class<?> src, int resource) {
@@ -101,6 +100,7 @@ public class Debug {
     }
 
     public static void Log(Exception ex) {
+        if (TagMo.getPrefs().disableDebug().get()) return;
         if (ex.getStackTrace().length > 0) {
             StringWriter exception = new StringWriter();
             ex.printStackTrace(new PrintWriter(exception));
@@ -109,31 +109,8 @@ public class Debug {
     }
 
     public static void Log(int resource, Exception ex) {
-        Log.d(TAG(ex.getClass()), TagMo.getStringRes(resource), ex);
-    }
-
-    public static void Error(Class<?> src, String params) {
-        Log.e(TAG(src), params);
-    }
-
-    public static void Error(Class<?> src, int resource) {
-        Error(src, TagMo.getStringRes(resource));
-    }
-
-    public static void Error(Class<?> src, int resource, String params) {
-        Error(src, TagMo.getStringRes(resource, params));
-    }
-
-    public static void Error(Exception ex) {
-        if (ex.getStackTrace().length > 0) {
-            StringWriter exception = new StringWriter();
-            ex.printStackTrace(new PrintWriter(exception));
-            Error(ex.getClass(), exception.toString());
-        }
-    }
-
-    public static void Error(int resource, Exception ex) {
-        Log.e(TAG(ex.getClass()), TagMo.getStringRes(resource), ex);
+        if (!TagMo.getPrefs().disableDebug().get())
+            Log.w(TAG(ex.getClass()), TagMo.getStringRes(resource), ex);
     }
 
     public static File processLogcat(File file) throws IOException {

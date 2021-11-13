@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
+import android.util.Log;
 
 import com.eightbit.content.ScaledContext;
 import com.eightbit.io.Debug;
@@ -83,7 +84,7 @@ public class TagMo extends Application {
         Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
-            Debug.Error(error.getClass(), exception.toString());
+            Log.e(Debug.TAG(error.getClass()), exception.toString());
             error.printStackTrace();
             try {
                 Debug.processLogcat(new File(TagMo.getExternalFiles(), "crash_logcat.txt"));

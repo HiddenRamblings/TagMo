@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
@@ -211,13 +210,13 @@ public class BrowserActivity extends AppCompatActivity implements
     @AfterViews
     void afterViews() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkForUpdates();
+            checkForUpdate();
         } else {
             ProviderInstaller.installIfNeededAsync(this,
                     new ProviderInstaller.ProviderInstallListener() {
                 @Override
                 public void onProviderInstalled() {
-                    checkForUpdates();
+                    checkForUpdate();
                 }
 
                 @Override
@@ -939,15 +938,139 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    static final String BACKGROUND_UPDATES = "updates";
+    static final String BACKGROUND_UPDATE = "github";
 
-    void checkForUpdates() {
-        BackgroundExecutor.cancelAll(BACKGROUND_UPDATES, true);
-        checkForUpdatesTask();
+    void checkForUpdate() {
+        BackgroundExecutor.cancelAll(BACKGROUND_UPDATE, true);
+        checkForUpdateTask();
     }
 
-    @Background(id = BACKGROUND_UPDATES)
-    void checkForUpdatesTask() {
+    @Background
+    void installUpdateTask(String apkUrl) {
+        File apk = new File(getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
+        try {
+            URL u = new URL(apkUrl);
+            DataInputStream dis = new DataInputStream(u.openStream());
+
+            byte[] buffer = new byte[1024];
+            int length;
+
+            FileOutputStream fos = new FileOutputStream(apk);
+            while ((length = dis.read(buffer)) > 0) {
+                fos.write(buffer, 0, length);
+            }
+            fos.close();
+
+            if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk")) {
+                //noinspection ResultOfMethodCallIgnored
+                apk.delete();
+                new Toasty(this).Short(R.string.download_corrupt);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                Uri apkUri = Storage.getFileUri(apk);
+                PackageInstaller installer = getPackageManager().getPackageInstaller();
+                ContentResolver resolver = getContentResolver();
+                InputStream apkStream = resolver.openInputStream(apkUri);
+                PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
+                        PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+                int sessionId = installer.createSession(params);
+                PackageInstaller.Session session = installer.openSession(sessionId);
+                DocumentFile document = DocumentFile.fromSingleUri(this, apkUri);
+                if (document == null)
+                    throw new IOException(getString(R.string.fail_invalid_size));
+                OutputStream sessionStream = session.openWrite(
+                        "NAME", 0, document.length());
+                byte[] buf = new byte[8192];
+                int size;
+                while ((size = apkStream.read(buf)) > 0) {
+                    sessionStream.write(buf, 0, size);
+                }
+                session.fsync(sessionStream);
+                apkStream.close();
+                sessionStream.close();
+                PendingIntent pi = PendingIntent.getBroadcast(this, 8675309,
+                        new Intent(this, InstallReceiver.class),
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                                ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+                                : PendingIntent.FLAG_UPDATE_CURRENT);
+                session.commit(pi.getIntentSender());
+            } else {
+                Intent intent = ActionIntent.getIntent(new Intent(Intent.ACTION_INSTALL_PACKAGE));
+                intent.setDataAndType(Storage.getFileUri(apk),
+                        getString(R.string.mimetype_apk));
+                intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+                intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,
+                        getApplicationInfo().packageName);
+                startActivity(intent);
+            }
+        } catch (MalformedURLException mue) {
+            Debug.Log(mue);
+        } catch (IOException ioe) {
+            Debug.Log(ioe);
+        } catch (SecurityException se) {
+            Debug.Log(se);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (getPackageManager().canRequestPackageInstalls())
+            installUpdateTask(TagMo.getPrefs().downloadUrl().get());
+        TagMo.getPrefs().downloadUrl().remove();
+    });
+
+    public void installUpdateCompat(String apkUrl) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (getPackageManager().canRequestPackageInstalls()) {
+                installUpdateTask(apkUrl);
+            } else {
+                TagMo.getPrefs().downloadUrl().put(apkUrl);
+                Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+                intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
+                onRequestInstall.launch(intent);
+            }
+        } else {
+            installUpdateTask(apkUrl);
+        }
+    }
+
+    private void parseUpdateJSON(String result, boolean isMaster) {
+        String lastCommit = null, downloadUrl = null;
+        try {
+            JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
+            lastCommit = ((String) jsonObject.get("name")).substring(6);
+            JSONArray assets = (JSONArray) jsonObject.get("assets");
+            JSONObject asset = (JSONObject) assets.get(0);
+            downloadUrl = (String) asset.get("browser_download_url");
+            if (!isMaster && !BuildConfig.COMMIT.equals(lastCommit))
+                installUpdateCompat(downloadUrl);
+        } catch (JSONException e) {
+            Debug.Log(e);
+        }
+
+        if (isMaster && lastCommit != null && downloadUrl != null) {
+            String finalLastCommit = lastCommit;
+            String finalDownloadUrl = downloadUrl;
+            new JSONExecutor(Website.TAGMO_GIT_API + "experimental")
+                    .setResultListener(experimental -> {
+                try {
+                    JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();
+                    String extraCommit = ((String) jsonObject.get("name")).substring(6);
+                    if (!BuildConfig.COMMIT.equals(extraCommit)
+                            && !BuildConfig.COMMIT.equals(finalLastCommit))
+                        installUpdateCompat(finalDownloadUrl);
+                } catch (JSONException e) {
+                    Debug.Log(e);
+                }
+            });
+        }
+    }
+
+    @Background(id = BACKGROUND_UPDATE)
+    void checkForUpdateTask() {
         boolean isMaster = TagMo.getPrefs().stableChannel().get();
         new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
                 ? "master" : "experimental")).setResultListener(result -> {
@@ -1449,143 +1572,6 @@ public class BrowserActivity extends AppCompatActivity implements
             showSetupSnackbar();
         } else {
             this.onRefresh();
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    void installUpdate(Uri apkUri) throws IOException {
-        PackageInstaller installer = getPackageManager().getPackageInstaller();
-        ContentResolver resolver = getContentResolver();
-        InputStream apkStream = resolver.openInputStream(apkUri);
-        PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
-                PackageInstaller.SessionParams.MODE_FULL_INSTALL);
-        int sessionId = installer.createSession(params);
-        PackageInstaller.Session session = installer.openSession(sessionId);
-        DocumentFile document = DocumentFile.fromSingleUri(this, apkUri);
-        if (document == null)
-            throw new IOException(getString(R.string.fail_invalid_size));
-        OutputStream sessionStream = session.openWrite("NAME", 0, document.length());
-        byte[] buf = new byte[8192];
-        int size;
-        while ((size = apkStream.read(buf)) > 0) {
-            sessionStream.write(buf, 0, size);
-        }
-        session.fsync(sessionStream);
-        apkStream.close();
-        sessionStream.close();
-        PendingIntent pi = PendingIntent.getBroadcast(this, 8675309,
-                new Intent(this, InstallReceiver.class),
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                        ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
-                        : PendingIntent.FLAG_UPDATE_CURRENT);
-        session.commit(pi.getIntentSender());
-    }
-
-    @Background
-    void downloadUpdate(String apkUrl) {
-        File apk = new File(getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
-        try {
-            URL u = new URL(apkUrl);
-            InputStream is = u.openStream();
-
-            DataInputStream dis = new DataInputStream(is);
-
-            byte[] buffer = new byte[1024];
-            int length;
-
-            FileOutputStream fos = new FileOutputStream(apk);
-            while ((length = dis.read(buffer)) > 0) {
-                fos.write(buffer, 0, length);
-            }
-            fos.close();
-
-            if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk")) {
-                //noinspection ResultOfMethodCallIgnored
-                apk.delete();
-                new Toasty(this).Short(R.string.download_corrupt);
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                installUpdate(Storage.getFileUri(apk));
-            } else {
-                Intent intent = ActionIntent.getIntent(new Intent(Intent.ACTION_INSTALL_PACKAGE));
-                intent.setDataAndType(Storage.getFileUri(apk),
-                        getString(R.string.mimetype_apk));
-                intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
-                intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,
-                        getApplicationInfo().packageName);
-                startActivity(intent);
-            }
-        } catch (MalformedURLException mue) {
-            Debug.Log(mue);
-        } catch (IOException ioe) {
-            Debug.Log(ioe);
-        } catch (SecurityException se) {
-            Debug.Log(se);
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (getPackageManager().canRequestPackageInstalls())
-            downloadUpdate(TagMo.getPrefs().downloadUrl().get());
-        TagMo.getPrefs().downloadUrl().remove();
-    });
-
-    @UiThread
-    public void showInstallSnackbar(String apkUrl) {
-        Snackbar snackbar = new IconifiedSnackbar(this, findViewById(R.id.main_layout))
-                .buildTickerBar(getString(R.string.update_tagmo_apk), Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction(R.string.install, v -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                if (getPackageManager().canRequestPackageInstalls()) {
-                    downloadUpdate(apkUrl);
-                } else {
-                    TagMo.getPrefs().downloadUrl().put(apkUrl);
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
-                    intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
-                    onRequestInstall.launch(intent);
-                }
-            } else {
-                downloadUpdate(apkUrl);
-            }
-            snackbar.dismiss();
-            this.onRefresh();
-        });
-        snackbar.show();
-    }
-
-    private void parseUpdateJSON(String result, boolean isMaster) {
-        String lastCommit = null, downloadUrl = null;
-        try {
-            JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-            lastCommit = ((String) jsonObject.get("name")).substring(6);
-            JSONArray assets = (JSONArray) jsonObject.get("assets");
-            JSONObject asset = (JSONObject) assets.get(0);
-            downloadUrl = (String) asset.get("browser_download_url");
-            if (!isMaster && !BuildConfig.COMMIT.equals(lastCommit))
-                showInstallSnackbar(downloadUrl);
-        } catch (JSONException e) {
-            Debug.Log(e);
-        }
-
-        if (isMaster && lastCommit != null && downloadUrl != null) {
-            String finalLastCommit = lastCommit;
-            String finalDownloadUrl = downloadUrl;
-            new JSONExecutor(Website.TAGMO_GIT_API + "experimental")
-                    .setResultListener(experimental -> {
-                try {
-                    JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();
-                    String extraCommit = ((String) jsonObject.get("name")).substring(6);
-                    if (!BuildConfig.COMMIT.equals(extraCommit)
-                            && !BuildConfig.COMMIT.equals(finalLastCommit))
-                        showInstallSnackbar(finalDownloadUrl);
-                } catch (JSONException e) {
-                    Debug.Log(e);
-                }
-            });
         }
     }
 

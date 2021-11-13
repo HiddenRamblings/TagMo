@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
@@ -223,7 +225,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }
         boolean isMaster = TagMo.getPrefs().stableChannel().get();
-        new JSONExecutor(String.format(Website.TAGMO_GIT_API, isMaster
+        new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
                 ? "master" : "experimental")).setResultListener(result -> {
             if (result != null) parseUpdateJSON(result, isMaster);
         });
@@ -796,6 +798,61 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsItem(R.id.settings)
     void openSettings() {
         onSettingsActivity.launch(new Intent(this, SettingsActivity_.class));
+    }
+
+    ActivityResultLauncher<Intent> onQRCodeScan = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+
+        String content = result.getData().getStringExtra("SCAN_RESULT");
+        byte[] data;
+        try {
+            data = Base64.decode(content, Base64.DEFAULT);
+            TagUtils.validateData(data);
+        } catch (Exception e) {
+            Debug.Log(e);
+            data = null;
+        }
+        if (data == null) {
+            try {
+                data = content.getBytes(TagMo.ISO_8859_1);
+                TagUtils.validateData(data);
+            } catch (Exception e) {
+                Debug.Log(e);
+                data = null;
+            }
+        }
+
+        if (data == null) {
+            return;
+        }
+
+        // TODO: Convert data into bin file or something
+    });
+
+    void scanQRCode() {
+        String packageName = "com.google.zxing.client.android";
+        Intent intent = new Intent(packageName + ".SCAN");
+        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+        intent.putExtra("CHARACTER_SET", "ISO-8859-1");
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            onQRCodeScan.launch(intent);
+        } else {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.scanner_missing)
+                    .setMessage(R.string.scanner_missing_text)
+                    .setPositiveButton(R.string.yes, (dialog, which) -> {
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=" + packageName)));
+                        } catch (android.content.ActivityNotFoundException anfe) {
+                            startActivity(new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse(Website.GOOGLE_PLAY + packageName)));
+                        }
+                    })
+                    .setNegativeButton(R.string.no, null)
+                    .show();
+        }
     }
 
     @Override
@@ -1554,7 +1611,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (isMaster && lastCommit != null && downloadUrl != null) {
             String finalLastCommit = lastCommit;
             String finalDownloadUrl = downloadUrl;
-            new JSONExecutor(String.format(Website.TAGMO_GIT_API, "experimental"))
+            new JSONExecutor(Website.TAGMO_GIT_API + "experimental")
                     .setResultListener(experimental -> {
                 try {
                     JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();

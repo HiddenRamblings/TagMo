@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class TagWriter {
 
     public static void writeToTagRaw(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
-        TagUtils.validateTag(mifare, tagData, validateNtag);
+        TagUtils.validateNtag(mifare, tagData, validateNtag);
         TagReader.validateBlankTag(mifare);
 
         try {
@@ -74,7 +74,7 @@ public class TagWriter {
         Debug.Log(TagWriter.class, TagUtils.bytesToHex(tagData));
 
         if (!isPowerTag) {
-            TagUtils.validateTag(mifare, tagData, validateNtag);
+            TagUtils.validateNtag(mifare, tagData, validateNtag);
             try {
                 TagReader.validateBlankTag(mifare);
             } catch (Exception e) {
@@ -157,7 +157,7 @@ public class TagWriter {
 
     public static void restoreTag(NTAG215 mifare, byte[] tagData, boolean ignoreUid, KeyManager keyManager, boolean validateNtag) throws Exception {
         if (!ignoreUid)
-            TagUtils.validateTag(mifare, tagData, validateNtag);
+            TagUtils.validateNtag(mifare, tagData, validateNtag);
         else {
             byte[] liveData = TagReader.readFromTag(mifare);
             if (!TagUtils.compareRange(liveData, tagData, 0, 9)) {

@@ -9,8 +9,10 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Base64;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -222,6 +224,36 @@ public class AmiiboActivity extends AppCompatActivity {
         intent.putExtras(bundle);
 
         startActivity(intent);
+    }
+
+    void showQRCode() {
+        if (this.tagData == null) {
+            return;
+        }
+        String content = Base64.encodeToString(this.tagData, Base64.DEFAULT);
+        String packageName = "com.google.zxing.client.android";
+        Intent intent = new Intent(packageName + ".ENCODE");
+        intent.putExtra("ENCODE_TYPE", "TEXT_TYPE");
+        intent.putExtra("ENCODE_SHOW_CONTENTS", false);
+        intent.putExtra("ENCODE_DATA", content);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.scanner_missing)
+                    .setMessage(R.string.scanner_missing_text)
+                    .setPositiveButton(R.string.yes, (dialog, which) -> {
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=" + packageName)));
+                        } catch (android.content.ActivityNotFoundException anfe) {
+                            startActivity(new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse(Website.GOOGLE_PLAY + packageName)));
+                        }
+                    })
+                    .setNegativeButton(R.string.no, null)
+                    .show();
+        }
     }
 
     static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";

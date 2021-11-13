@@ -54,6 +54,7 @@ public class TagMo extends Application {
     Preferences_ prefs;
 
     public static Charset UTF_8;
+    public static Charset ISO_8859_1;
     public static Charset UTF_16BE;
     public static Charset UTF_16LE;
 
@@ -66,10 +67,12 @@ public class TagMo extends Application {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             UTF_8 = StandardCharsets.UTF_8;
+            ISO_8859_1 = StandardCharsets.ISO_8859_1;
             UTF_16BE = StandardCharsets.UTF_16BE;
             UTF_16LE = StandardCharsets.UTF_16LE;
         } else {
             UTF_8 = Charset.forName("UTF-8");
+            ISO_8859_1 = Charset.forName("ISO-8859-1");
             UTF_16BE = Charset.forName("UTF-16BE");
             UTF_16LE = Charset.forName("UTF-16LE");
         }

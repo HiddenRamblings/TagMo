@@ -126,7 +126,7 @@ public class TagReader {
                 tags.add(TagUtils.bytesToHex(tagData));
                 i++;
             } catch (Exception e) {
-                Debug.Log(TagReader.class, TagMo.getStringRes(R.string.fail_elite_bank_parse));
+                Debug.Log(TagReader.class, TagMo.getStringRes(R.string.fail_parse_banks));
             }
         }
         return tags;

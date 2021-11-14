@@ -270,8 +270,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         @SuppressLint("NotifyDataSetChanged")
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            //noinspection unchecked
-            if (filteredData != (ArrayList<AmiiboFile>) filterResults.values) {
+            if (filteredData.isEmpty() || filteredData != filterResults.values) {
                 //noinspection unchecked
                 filteredData = (ArrayList<AmiiboFile>) filterResults.values;
                 Collections.sort(filteredData, new AmiiboComparator(settings));

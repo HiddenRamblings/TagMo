@@ -234,13 +234,16 @@ public class AmiiboManager {
         return outputJSON;
     }
 
-    public static AmiiboManager getDefaultAmiiboManager() throws IOException, JSONException, ParseException {
+    public static AmiiboManager getDefaultAmiiboManager()
+            throws IOException, JSONException, ParseException {
         return AmiiboManager.parse(TagMo.getContext().getResources().openRawResource(R.raw.amiibo));
     }
 
-    public static AmiiboManager getAmiiboManager() throws IOException, JSONException, ParseException {
+    public static AmiiboManager getAmiiboManager()
+            throws IOException, JSONException, ParseException {
         AmiiboManager amiiboManager;
-        if (new File(TagMo.getExternalFiles(), AMIIBO_DATABASE_FILE).exists()) {
+        if (new File(TagMo.getContext().getExternalFilesDir(null),
+                AMIIBO_DATABASE_FILE).exists()) {
             try {
                 amiiboManager = AmiiboManager.parse(
                         TagMo.getContext().openFileInput(AMIIBO_DATABASE_FILE));

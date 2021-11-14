@@ -71,7 +71,7 @@ public class Debug {
  *     Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
  *         StringWriter exception = new StringWriter();
  *         error.printStackTrace(new PrintWriter(exception));
- *         Error(error.getClass(), exception.toString());
+ *         Log.e(Debug.TAG(error.getClass()), exception.toString());
  *         error.printStackTrace();
  *         try {
  *             Debug.processLogcat(file);
@@ -83,20 +83,20 @@ public class Debug {
  *     });
  */
 
-    public static String TAG(Class<?> src) {
-        return src.getSimpleName();
+    public static String TAG(Class<?> source) {
+        return source.getSimpleName();
     }
 
-    public static void Log(Class<?> src, String params) {
-        if (!TagMo.getPrefs().disableDebug().get()) Log.w(TAG(src), params);
+    public static void Log(Class<?> source, String params) {
+        if (!TagMo.getPrefs().disableDebug().get()) Log.w(TAG(source), params);
     }
 
-    public static void Log(Class<?> src, int resource) {
-        Log(src, TagMo.getStringRes(resource));
+    public static void Log(Class<?> source, int resource) {
+        Log(source, TagMo.getStringRes(resource));
     }
 
-    public static void Log(Class<?> src, int resource, String params) {
-        Log(src, TagMo.getStringRes(resource, params));
+    public static void Log(Class<?> source, int resource, String params) {
+        Log(source, TagMo.getStringRes(resource, params));
     }
 
     public static void Log(Exception ex) {

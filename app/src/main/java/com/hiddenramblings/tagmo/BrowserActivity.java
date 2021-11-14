@@ -46,7 +46,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.eightbit.content.ActionIntent;
 import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -578,7 +577,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background
     void onCaptureLogcatClicked() {
         try {
-            File file = Debug.processLogcat(new File(TagMo.getExternalFiles(),
+            File file = Debug.processLogcat(new File(getExternalFilesDir(null),
                     "tagmo_logcat.txt"));
             try {
                 MediaScannerConnection.scanFile(this,
@@ -588,8 +587,8 @@ public class BrowserActivity extends AppCompatActivity implements
             }
             new Toasty(this).Long(getString(R.string.wrote_file,
                     Storage.getRelativePath(file)));
-            startActivity(new ActionIntent(this, WebViewActivity_.class)
-                    .setData(Storage.getFileUri(file)));
+            startActivity(TagMo.getIntent(new Intent(this,
+                    WebViewActivity_.class)).setData(Storage.getFileUri(file)));
         } catch (IOException e) {
             new Toasty(this).Short(e.getMessage());
         }
@@ -996,7 +995,7 @@ public class BrowserActivity extends AppCompatActivity implements
                                 : PendingIntent.FLAG_UPDATE_CURRENT);
                 session.commit(pi.getIntentSender());
             } else {
-                Intent intent = ActionIntent.getIntent(new Intent(Intent.ACTION_INSTALL_PACKAGE));
+                Intent intent = TagMo.getIntent(new Intent(Intent.ACTION_INSTALL_PACKAGE));
                 intent.setDataAndType(Storage.getFileUri(apk),
                         getString(R.string.mimetype_apk));
                 intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
@@ -1590,7 +1589,7 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onStorageEnabled();
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Intent intent = ActionIntent.getIntent(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
+                Intent intent = TagMo.getIntent(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
                 intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
                 intent.putExtra("android.content.extra.FANCY", true);
                 onDocumentTree.launch(intent);

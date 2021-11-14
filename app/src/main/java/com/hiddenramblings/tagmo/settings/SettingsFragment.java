@@ -26,11 +26,8 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.eightbit.content.ActionIntent;
 import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.NfcActivity_;
@@ -225,7 +222,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return;
         }
 
-        File file = new File(TagMo.getExternalFiles(), AmiiboManager.AMIIBO_DATABASE_FILE);
+        File file = new File(requireContext().getExternalFilesDir(null),
+                AmiiboManager.AMIIBO_DATABASE_FILE);
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(file);
@@ -373,7 +371,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_view_wiki)
     void onViewWikiClicked() {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.TAGMO_WIKI)));
+        startActivity(new Intent(requireActivity(), WebViewActivity_.class)
+                .putExtra("WEBSTIE", Website.TAGMO_WIKI));
     }
 
     @PreferenceClick(R.string.settings_view_reddit)
@@ -627,7 +626,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     });
 
     private void showFileChooser(String title, int resultCode) {
-        Intent intent = ActionIntent.getIntent(new Intent(
+        Intent intent = TagMo.getIntent(new Intent(
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
                         ? Intent.ACTION_OPEN_DOCUMENT
                         : Intent.ACTION_GET_CONTENT));
@@ -663,14 +662,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @UiThread
     public void showSnackbar(String msg, int length) {
-        new IconifiedSnackbar(requireActivity()).buildSnackbar(msg, length).show();
+        new IconifiedSnackbar(requireActivity()).buildSnackbar(msg, length, null).show();
     }
 
     @UiThread
     public void showInstallSnackbar(String lastUpdated) {
         Snackbar snackbar =  new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 getString(
-                R.string.update_amiibo_api), Snackbar.LENGTH_LONG);
+                R.string.update_amiibo_api), Snackbar.LENGTH_LONG, null);
         snackbar.setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated));
         snackbar.show();
     }
@@ -678,7 +677,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @UiThread
     public void showDownloadsSnackbar() {
         Snackbar snackbar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
-                getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG);
+                getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG, null);
         snackbar.setAction(R.string.enable, v ->
                 ((SettingsActivity) requireActivity()).setWumiiboResult());
         snackbar.show();
@@ -686,7 +685,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void parseUpdateJSON(String result) {
         try {
-            JSONObject jsonObject = (JSONObject) new JSONObject(result);
+            JSONObject jsonObject = new JSONObject(result);
             lastUpdated = (String) jsonObject.get("lastUpdated");
             if (!prefs.lastUpdated().get().equals(lastUpdated)) {
                 showInstallSnackbar(lastUpdated);

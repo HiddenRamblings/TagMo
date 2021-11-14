@@ -51,10 +51,6 @@ public class IconifiedSnackbar {
         return snackbar;
     }
 
-    public Snackbar buildSnackbar(String msg, int length) {
-        return buildSnackbar(msg, length, (View) null);
-    }
-
     public Snackbar buildTickerBar(String msg, int length) {
         Snackbar snackbar = buildSnackbar(msg, length, (View) null)
                 .addCallback(new Snackbar.Callback() {

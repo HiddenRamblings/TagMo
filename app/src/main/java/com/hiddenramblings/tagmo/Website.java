@@ -10,5 +10,4 @@ public class Website {
     public static final String WUMIIBO_APP = "https://appassets.androidplatform.net/assets/wumiibo/index.html";
     public static final String WUMIIBO_URI = "file:///android_asset/wumiibo/index.html";
     public static final String WUMIIBO_WEB = "https://8bitdream.github.io/amiibo-generator/";
-    public static final String GOOGLE_PLAY = "https://play.google.com/store/apps/details?id=";
 }

@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.amiibo.code;
+package com.hiddenramblings.tagmo.hexcode;
 
 import android.graphics.Typeface;
 

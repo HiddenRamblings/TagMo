@@ -80,6 +80,7 @@ public class WebViewActivity extends AppCompatActivity {
         webViewSettings.setUseWideViewPort(true);
         webViewSettings.setAllowFileAccess(true);
         webViewSettings.setAllowContentAccess(false);
+        webViewSettings.setJavaScriptEnabled(true);
         webViewSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             webViewSettings.setPluginState(WebSettings.PluginState.ON);
@@ -126,7 +127,6 @@ public class WebViewActivity extends AppCompatActivity {
 
         if (getIntent().getAction() != null
                 && getIntent().getAction().equals(TagMo.ACTION_BUILD_WUMIIBO)) {
-            webViewSettings.setJavaScriptEnabled(true);
             webViewSettings.setDomStorageEnabled(true);
             JavaScriptInterface download = new JavaScriptInterface();
             mWebView.addJavascriptInterface(download, "Android");
@@ -137,12 +137,17 @@ public class WebViewActivity extends AppCompatActivity {
                     mWebView.loadUrl(download.getBase64StringFromBlob(url, mimeType));
                 }
             });
-            // mWebView.loadUrl(getString(R.string.wumiibo_url));
             mWebView.loadUrl(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                     ? Website.WUMIIBO_APP : Website.WUMIIBO_URI);
         } else {
             webViewSettings.setBuiltInZoomControls(true);
             webViewSettings.setSupportZoom(true);
+
+            if (getIntent().hasExtra("WEBSITE")) {
+                mWebView.loadUrl(getIntent().getStringExtra("WEBSITE"));
+                return;
+            }
+
             try (InputStream in = getContentResolver().openInputStream(getIntent().getData());
                  BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
                 StringBuilder total = new StringBuilder();

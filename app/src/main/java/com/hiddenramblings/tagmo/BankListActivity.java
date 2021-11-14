@@ -389,7 +389,8 @@ public class BankListActivity extends AppCompatActivity implements
                     TagMo.EXTRA_AMIIBO_DATA));
         }
         
-        if (tagData != null && tagData.length > 0) updateAmiiboView(tagData, clickedPosition);
+        if (tagData != null && tagData.length > 0)
+            updateAmiiboView(tagData, -1, clickedPosition);
 
         if (status == CLICKED.FORMAT) {
             status = CLICKED.NOTHING;
@@ -537,7 +538,7 @@ public class BankListActivity extends AppCompatActivity implements
 
         }
         status = CLICKED.NOTHING;
-        updateAmiiboView(tagData, clickedPosition);
+        updateAmiiboView(tagData, -1, clickedPosition);
         if (amiibosView.getAdapter() != null)
             amiibosView.getAdapter().notifyItemChanged(clickedPosition);
     });
@@ -648,11 +649,6 @@ public class BankListActivity extends AppCompatActivity implements
             return false;
         });
 
-        int selected_item = eliteBankCount.getValueForPosition(current_bank);
-        toolbar.getMenu().findItem(R.id.mnu_scan).setTitle(getString(R.string.scan_bank,
-                new DecimalFormat("000").format(selected_item)));
-        String amiiboBank = getString(R.string.bank_number, selected_item);
-
         String tagInfo = null;
         String amiiboHexId = "";
         String amiiboName = "";
@@ -679,7 +675,8 @@ public class BankListActivity extends AppCompatActivity implements
                 if (settings.getAmiiboManager() != null) {
                     amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
                     if (amiibo == null)
-                        amiibo = new Amiibo(settings.getAmiiboManager(), amiiboId, null, null);
+                        amiibo = new Amiibo(settings.getAmiiboManager(),
+                                amiiboId, null, null);
                 }
             }
         }
@@ -711,7 +708,8 @@ public class BankListActivity extends AppCompatActivity implements
             txtError.setVisibility(View.GONE);
             amiiboInfo.setVisibility(View.VISIBLE);
         }
-        setAmiiboInfoText(txtBank, amiiboBank, hasTagInfo);
+        setAmiiboInfoText(txtBank, getString(R.string.bank_number,
+                eliteBankCount.getValueForPosition(current_bank)), hasTagInfo);
         setAmiiboInfoText(txtName, amiiboName, hasTagInfo);
         setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo);
         setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo);
@@ -748,10 +746,6 @@ public class BankListActivity extends AppCompatActivity implements
 
     public void updateAmiiboView(long amiiboId, int current_bank) {
         updateAmiiboView(null, amiiboId, current_bank);
-    }
-
-    public void updateAmiiboView(byte[] tagData, int current_bank) {
-        updateAmiiboView(tagData, -1, current_bank);
     }
 
     void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
@@ -803,7 +797,7 @@ public class BankListActivity extends AppCompatActivity implements
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         amiiboCard.setVisibility(View.VISIBLE);
         if (amiibo.data != null && amiibo.bank == position) {
-            updateAmiiboView(amiibo.data, position);
+            updateAmiiboView(amiibo.data, -1, position);
         } else if (amiibo.id != 0) {
             updateAmiiboView(amiibo.id, position);
         } else {

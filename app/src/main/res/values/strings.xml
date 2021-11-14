@@ -260,7 +260,7 @@
     <string name="fail_powertag_keys">Failed to load Power Tag keys</string>
     <string name="fail_bank_oob">Selected bank exceeds count!</string>
     <string name="fail_active_oob">Active bank beyond new count!</string>
-    <string name="fail_elite_bank_parse">Failed to parse banks!</string>
+    <string name="fail_parse_banks">Failed to parse banks!</string>
     <string name="fail_read_amiibo">Reading amiibo™ data failed!</string>
     <string name="fail_early_remove">amiibo™ removed too early!</string>
     <string name="fail_amiibo_null">Please scan the amiibo™ again</string>

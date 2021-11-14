@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -87,7 +88,8 @@ public class TagMo extends Application {
             Log.e(Debug.TAG(error.getClass()), exception.toString());
             error.printStackTrace();
             try {
-                Debug.processLogcat(new File(TagMo.getExternalFiles(), "crash_logcat.txt"));
+                Debug.processLogcat(new File(getExternalFilesDir(null),
+                        "crash_logcat.txt"));
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
@@ -106,6 +108,14 @@ public class TagMo extends Application {
             return ScaledContext.wrap(mContext.get());
         else
             return ScaledContext.restore(mContext.get());
+    }
+
+    public static Intent getIntent(Intent intent) {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                ? intent.addCategory(Intent.CATEGORY_OPENABLE)
+                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                :intent.addCategory(Intent.CATEGORY_OPENABLE);
     }
 
     static void setScaledTheme(Context context, int theme) {
@@ -141,9 +151,5 @@ public class TagMo extends Application {
         } catch (Resources.NotFoundException ignore) {
             return mContext.get().getString(resource, params);
         }
-    }
-
-    public static File getExternalFiles() {
-        return mContext.get().getExternalFilesDir(null);
     }
 }

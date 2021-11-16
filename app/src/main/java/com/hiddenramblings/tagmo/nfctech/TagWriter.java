@@ -62,7 +62,11 @@ public class TagWriter {
 
         Debug.Log(TagWriter.class, R.string.power_tag_verify, String.valueOf(isPowerTag));
 
-        tagData = keyManager.decrypt(tagData);
+        try {
+            tagData = keyManager.decrypt(tagData);
+        } catch (Exception e) {
+            // Decryption is not a necessary step
+        }
         if (isPowerTag) {
             // use a pre-determined static id for Power Tag
             tagData = patchUid(NfcByte.POWERTAG_IDPAGES, tagData);
@@ -137,16 +141,28 @@ public class TagWriter {
         }
     }
 
-    public static byte[] writeEliteAuto(NTAG215 tag, byte[] tagData,
-                                        int active_bank) throws Exception {
-        if (doEliteAuth(tag, tag.fastRead(0, 0))) {
-            // tagData = TagUtils.decrypt(keyManager, tagData);
-            // tagData = TagUtils.patchUid(tag.readPages(0), tagData);
-            // TagUtils.encrypt(keyManager, tagData);
-            if (tag.amiiboFastWrite(0, active_bank, tagData)) {
-                byte[] result = new byte[8];
-                System.arraycopy(tagData, 84, result, 0, result.length);
-                return result;
+    public static void writeEliteAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager,
+                                      int active_bank) throws Exception {
+        if (doEliteAuth(mifare, mifare.fastRead(0, 0))) {
+            try {
+                tagData = keyManager.decrypt(tagData);
+            } catch (Exception e) {
+                // Decryption is not a necessary step
+            }
+            tagData = keyManager.encrypt(tagData);
+            if (mifare.amiiboFastWrite(0, active_bank, tagData)) {
+                try {
+                    writePassword(mifare);
+                    Debug.Log(TagWriter.class, R.string.password_write);
+                } catch (Exception e) {
+                    throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
+                }
+                try {
+                    writeLockInfo(mifare);
+                    Debug.Log(TagWriter.class, R.string.lock_write);
+                } catch (Exception e) {
+                    throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
+                }
             } else {
                 throw new Exception(TagMo.getStringRes(R.string.error_elite_write));
             }

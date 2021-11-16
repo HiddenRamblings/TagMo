@@ -492,12 +492,12 @@ public class NfcActivity extends AppCompatActivity {
             error = e.getCause() != null ? error + "\n" + e.getCause().toString() : error;
             if (error != null && TagMo.getPrefs().enableEliteSupport().get()) {
                 if (e instanceof android.nfc.TagLostException) {
+                    txtMessage.setText(R.string.speed_scan);
                     try {
                         mifare.close();
                     } catch (IOException ex) {
                         Debug.Log(ex);
                     }
-                    showToast(getString(R.string.speed_scan));
                     return;
                 }
                 if (TagMo.getStringRes(R.string.nfc_null_array).equals(error)) {
@@ -516,11 +516,6 @@ public class NfcActivity extends AppCompatActivity {
             }
             showError(error);
         }
-    }
-
-    @UiThread
-    void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(

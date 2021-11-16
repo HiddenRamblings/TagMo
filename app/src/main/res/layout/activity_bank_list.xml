@@ -308,7 +308,7 @@
             android:minHeight="36dp"
             android:text="@string/write_open_banks" />
 
-        <com.hiddenramblings.tagmo.BankNumberPicker
+        <com.hiddenramblings.tagmo.widget.BankPicker
             android:id="@+id/bank_count_picker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

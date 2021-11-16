@@ -41,14 +41,15 @@ import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.adapter.NothingSelectedSpinnerAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfctech.KeyManager;
-import com.hiddenramblings.tagmo.nfctech.TagUtils;
+import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.data.AmiiboData;
 import com.hiddenramblings.tagmo.amiibo.data.AppData;
 import com.hiddenramblings.tagmo.amiibo.data.AppDataFragment;
 import com.hiddenramblings.tagmo.amiibo.data.AppDataSSBFragment;
 import com.hiddenramblings.tagmo.amiibo.data.AppDataTPFragment;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
+import com.hiddenramblings.tagmo.widget.Toasty;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
 import org.androidannotations.annotations.AfterTextChange;

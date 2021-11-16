@@ -26,7 +26,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.eightbit.os.Storage;
-import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -39,13 +38,15 @@ import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.AmiiboVewHolder>
-        implements Filterable, BrowserSettings.BrowserSettingsListener {
+        implements Filterable, BrowserSettingsListener {
     private final BrowserSettings settings;
     private OnAmiiboClickListener listener = null;
     private OnHighlightListener collector = null;
@@ -72,11 +73,14 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
     }
 
     @Override
-    public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
-        if (!BrowserSettings.equals(newBrowserSettings.getQuery(), oldBrowserSettings.getQuery())) {
+    public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,
+                                         BrowserSettings oldBrowserSettings) {
+        if (!BrowserSettings.equals(newBrowserSettings.getQuery(),
+                oldBrowserSettings.getQuery())) {
             this.refresh();
         }
-        if (!BrowserSettings.equals(newBrowserSettings.getAmiiboManager(), oldBrowserSettings.getAmiiboManager())) {
+        if (!BrowserSettings.equals(newBrowserSettings.getAmiiboManager(),
+                oldBrowserSettings.getAmiiboManager())) {
             this.refresh();
         }
     }
@@ -103,18 +107,18 @@ public class WriteBlankAdapter extends RecyclerView.Adapter<WriteBlankAdapter.Am
     @NonNull
     @Override
     public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case BrowserActivity.VIEW_TYPE_COMPACT:
+        switch (VIEW.valueOf(viewType)) {
+            case COMPACT:
                 if (collector != null)
                     return new CompactViewHolder(parent, settings, collector);
                 else
                     return new CompactViewHolder(parent, settings, listener);
-            case BrowserActivity.VIEW_TYPE_LARGE:
+            case LARGE:
                 if (collector != null)
                     return new LargeViewHolder(parent, settings, collector);
                 else
                     return new LargeViewHolder(parent, settings, listener);
-            case BrowserActivity.VIEW_TYPE_SIMPLE:
+            case SIMPLE:
             default:
                 if (collector != null)
                     return new SimpleViewHolder(parent, settings, collector);

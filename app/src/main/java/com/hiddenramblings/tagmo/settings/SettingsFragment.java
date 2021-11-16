@@ -27,24 +27,24 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.eightbit.io.Debug;
+import com.eightbit.material.IconifiedSnackbar;
 import com.eightbit.os.Storage;
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.SettingsActivity;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.Toasty;
-import com.hiddenramblings.tagmo.WebViewActivity_;
-import com.hiddenramblings.tagmo.Website;
+import com.hiddenramblings.tagmo.TagMo.Website;
+import com.hiddenramblings.tagmo.WebActivity_;
 import com.hiddenramblings.tagmo.adapter.SettingsAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
+import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.github.JSONExecutor;
-import com.hiddenramblings.tagmo.nfctech.KeyManager;
+import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.androidannotations.annotations.AfterPreferences;
 import org.androidannotations.annotations.Background;
@@ -371,7 +371,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_view_wiki)
     void onViewWikiClicked() {
-        startActivity(new Intent(requireActivity(), WebViewActivity_.class)
+        startActivity(new Intent(requireActivity(), WebActivity_.class)
                 .putExtra("WEBSTIE", Website.TAGMO_WIKI));
     }
 
@@ -391,7 +391,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @PreferenceClick(R.string.settings_build_wumiibo)
     void onWumiiboClicked() {
         onDownloadZip.launch(new Intent(requireActivity(),
-                WebViewActivity_.class).setAction(TagMo.ACTION_BUILD_WUMIIBO));
+                WebActivity_.class).setAction(TagMo.ACTION_BUILD_WUMIIBO));
     }
 
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";

@@ -48,11 +48,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.eightbit.io.Debug;
+import com.eightbit.material.IconifiedSnackbar;
 import com.eightbit.os.Storage;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.TagMo.Website;
 import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
 import com.hiddenramblings.tagmo.adapter.BrowserFoldersAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -62,14 +64,15 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
+import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.JSONExecutor;
-import com.hiddenramblings.tagmo.nfctech.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.*;
+import com.hiddenramblings.tagmo.widget.Toasty;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
 
@@ -116,18 +119,7 @@ public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,
         BrowserAmiibosAdapter.OnAmiiboClickListener {
 
-    public static final int SORT_ID = 0x0;
-    public static final int SORT_NAME = 0x1;
-    public static final int SORT_AMIIBO_SERIES = 0x2;
-    public static final int SORT_AMIIBO_TYPE = 0x3;
-    public static final int SORT_GAME_SERIES = 0x4;
-    public static final int SORT_CHARACTER = 0x5;
-    public static final int SORT_FILE_PATH = 0x6;
 
-    public static final int VIEW_TYPE_SIMPLE = 0;
-    public static final int VIEW_TYPE_COMPACT = 1;
-    public static final int VIEW_TYPE_LARGE = 2;
-    public static final int VIEW_TYPE_IMAGE = 3;
 
     @ViewById(R.id.chip_list)
     LinearLayoutCompat chipList;
@@ -283,7 +275,7 @@ public class BrowserActivity extends AppCompatActivity implements
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
 
-        if (this.settings.getAmiiboView() == VIEW_TYPE_IMAGE)
+        if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
             this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
         else
             this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
@@ -396,9 +388,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
         try {
             TagUtils.validateData(result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
-            showAlertDialog(getString(R.string.validation_success));
+            new Toasty(this).Dialog(R.string.validation_success);
         } catch (Exception e) {
-            showAlertDialog(e.getMessage());
+            new Toasty(this).Dialog(e.getMessage());
         }
     });
 
@@ -466,74 +458,74 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @OptionsItem(R.id.sort_id)
     void onSortIdClick() {
-        settings.setSort(SORT_ID);
+        settings.setSort(SORT.ID.getValue());
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.sort_name)
     void onSortNameClick() {
-        settings.setSort(SORT_NAME);
+        settings.setSort(SORT.NAME.getValue());
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.sort_game_series)
     void onSortGameSeriesClick() {
-        settings.setSort(SORT_GAME_SERIES);
+        settings.setSort(SORT.GAME_SERIES.getValue());
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.sort_character)
     void onSortCharacterClick() {
-        settings.setSort(SORT_CHARACTER);
+        settings.setSort(SORT.CHARACTER.getValue());
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.sort_amiibo_series)
     void onSortAmiiboSeriesClick() {
-        settings.setSort(SORT_AMIIBO_SERIES);
+        settings.setSort(SORT.AMIIBO_SERIES.getValue());
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.sort_amiibo_type)
     void onSortAmiiboTypeClick() {
-        settings.setSort(SORT_AMIIBO_TYPE);
+        settings.setSort(SORT.AMIIBO_TYPE.getValue());
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.sort_file_path)
     void onSortFilePathClick() {
-        settings.setSort(SORT_FILE_PATH);
+        settings.setSort(SORT.FILE_PATH.getValue());
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.view_simple)
     void onViewSimpleClick() {
-        if (this.settings.getAmiiboView() == VIEW_TYPE_IMAGE)
+        if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
             this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        settings.setAmiiboView(VIEW_TYPE_SIMPLE);
+        settings.setAmiiboView(VIEW.SIMPLE.getValue());
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.view_compact)
     void onViewCompactClick() {
-        if (this.settings.getAmiiboView() == VIEW_TYPE_IMAGE)
+        if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
             this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        settings.setAmiiboView(VIEW_TYPE_COMPACT);
+        settings.setAmiiboView(VIEW.COMPACT.getValue());
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.view_large)
     void onViewLargeClick() {
-        if (this.settings.getAmiiboView() == VIEW_TYPE_IMAGE)
+        if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
             this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        settings.setAmiiboView(VIEW_TYPE_LARGE);
+        settings.setAmiiboView(VIEW.LARGE.getValue());
         settings.notifyChanges();
     }
 
     @OptionsItem(R.id.view_image)
     void onViewImageClick() {
         this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
-        settings.setAmiiboView(VIEW_TYPE_IMAGE);
+        settings.setAmiiboView(VIEW.IMAGE.getValue());
         settings.notifyChanges();
     }
 
@@ -588,7 +580,7 @@ public class BrowserActivity extends AppCompatActivity implements
             new Toasty(this).Long(getString(R.string.wrote_file,
                     Storage.getRelativePath(file)));
             startActivity(TagMo.getIntent(new Intent(this,
-                    WebViewActivity_.class)).setData(Storage.getFileUri(file)));
+                    WebActivity_.class)).setData(Storage.getFileUri(file)));
         } catch (IOException e) {
             new Toasty(this).Short(e.getMessage());
         }
@@ -1305,22 +1297,28 @@ public class BrowserActivity extends AppCompatActivity implements
     void onSortChanged() {
         if (menuSortId == null)
             return;
-
-        int sort = settings.getSort();
-        if (sort == SORT_ID) {
-            menuSortId.setChecked(true);
-        } else if (sort == SORT_NAME) {
-            menuSortName.setChecked(true);
-        } else if (sort == SORT_GAME_SERIES) {
-            menuSortGameSeries.setChecked(true);
-        } else if (sort == SORT_CHARACTER) {
-            menuSortCharacter.setChecked(true);
-        } else if (sort == SORT_AMIIBO_SERIES) {
-            menuSortAmiiboSeries.setChecked(true);
-        } else if (sort == SORT_AMIIBO_TYPE) {
-            menuSortAmiiboType.setChecked(true);
-        } else if (sort == SORT_FILE_PATH) {
-            menuSortFilePath.setChecked(true);
+        switch (SORT.valueOf(settings.getSort())) {
+            case ID:
+                menuSortId.setChecked(true);
+                break;
+            case NAME:
+                menuSortName.setChecked(true);
+                break;
+            case GAME_SERIES:
+                menuSortGameSeries.setChecked(true);
+                break;
+            case CHARACTER:
+                menuSortCharacter.setChecked(true);
+                break;
+            case AMIIBO_SERIES:
+                menuSortAmiiboSeries.setChecked(true);
+                break;
+            case AMIIBO_TYPE:
+                menuSortAmiiboType.setChecked(true);
+                break;
+            case FILE_PATH:
+                menuSortFilePath.setChecked(true);
+                break;
         }
     }
 
@@ -1337,16 +1335,19 @@ public class BrowserActivity extends AppCompatActivity implements
     void onViewChanged() {
         if (menuViewSimple == null)
             return;
-
-        int view = settings.getAmiiboView();
-        if (view == VIEW_TYPE_SIMPLE) {
-            menuViewSimple.setChecked(true);
-        } else if (view == VIEW_TYPE_COMPACT) {
-            menuViewCompact.setChecked(true);
-        } else if (view == VIEW_TYPE_LARGE) {
-            menuViewLarge.setChecked(true);
-        } else if (view == VIEW_TYPE_IMAGE) {
-            menuViewImage.setChecked(true);
+        switch(VIEW.valueOf(settings.getAmiiboView())) {
+            case SIMPLE:
+                menuViewSimple.setChecked(true);
+                break;
+            case COMPACT:
+                menuViewCompact.setChecked(true);
+                break;
+            case LARGE:
+                menuViewLarge.setChecked(true);
+                break;
+            case IMAGE:
+                menuViewImage.setChecked(true);
+                break;
         }
     }
 
@@ -1495,12 +1496,6 @@ public class BrowserActivity extends AppCompatActivity implements
         ongoingSnackbar = new IconifiedSnackbar(this, findViewById(R.id.main_layout))
                 .buildTickerBar(msg, Snackbar.LENGTH_INDEFINITE);
         ongoingSnackbar.show();
-    }
-
-    @UiThread
-    void showAlertDialog(String msg) {
-        new AlertDialog.Builder(this).setMessage(msg)
-                .setPositiveButton(R.string.close, null).show();
     }
 
     @UiThread

@@ -1,7 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo;
 
-import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 
 import java.io.File;
 import java.util.Comparator;
@@ -21,12 +21,12 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
 
         File filePath1 = amiiboFile1.getFilePath();
         File filePath2 = amiiboFile2.getFilePath();
-        if (sort == BrowserActivity.SORT_FILE_PATH && !(filePath1 == null && filePath2 == null))
+        if (sort == SORT.FILE_PATH.getValue() && !(filePath1 == null && filePath2 == null))
             value = compareFilePath(filePath1, filePath2);
 
         long amiiboId1 = amiiboFile1.getId();
         long amiiboId2 = amiiboFile2.getId();
-        if (sort == BrowserActivity.SORT_ID) {
+        if (sort == SORT.ID.getValue()) {
             value = compareAmiiboId(amiiboId1, amiiboId2);
         } else if (value == 0) {
             AmiiboManager amiiboManager = settings.getAmiiboManager();
@@ -39,15 +39,15 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
                     value = 1;
                 else if (amiibo2 == null)
                     value = -1;
-                else if (sort == BrowserActivity.SORT_NAME) {
+                else if (sort == SORT.NAME.getValue()) {
                     value = compareAmiiboName(amiibo1, amiibo2);
-                } else if (sort == BrowserActivity.SORT_AMIIBO_SERIES) {
+                } else if (sort == SORT.AMIIBO_SERIES.getValue()) {
                     value = compareAmiiboSeries(amiibo1, amiibo2);
-                } else if (sort == BrowserActivity.SORT_AMIIBO_TYPE) {
+                } else if (sort == SORT.AMIIBO_TYPE.getValue()) {
                     value = compareAmiiboType(amiibo1, amiibo2);
-                } else if (sort == BrowserActivity.SORT_GAME_SERIES) {
+                } else if (sort == SORT.GAME_SERIES.getValue()) {
                     value = compareGameSeries(amiibo1, amiibo2);
-                } else if (sort == BrowserActivity.SORT_CHARACTER) {
+                } else if (sort == SORT.CHARACTER.getValue()) {
                     value = compareCharacter(amiibo1, amiibo2);
                 }
                 if (value == 0 && amiibo1 != null)

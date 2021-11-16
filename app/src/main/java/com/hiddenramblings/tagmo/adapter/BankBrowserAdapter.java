@@ -24,18 +24,19 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
 
-public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.AmiiboVewHolder>
-        implements BrowserSettings.BrowserSettingsListener {
+public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.AmiiboViewHolder>
+        implements BrowserSettingsListener {
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
@@ -76,20 +77,22 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
 
     @NonNull
     @Override
-    public AmiiboVewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case BrowserActivity.VIEW_TYPE_COMPACT:
+    public AmiiboViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        switch (VIEW.valueOf(viewType)) {
+            case COMPACT:
                 return new CompactViewHolder(parent, settings, listener);
-            case BrowserActivity.VIEW_TYPE_LARGE:
+            case LARGE:
                 return new LargeViewHolder(parent, settings, listener);
-            case BrowserActivity.VIEW_TYPE_SIMPLE:
+            case IMAGE:
+                return new ImageViewHolder(parent, settings, listener);
+            case SIMPLE:
             default:
                 return new SimpleViewHolder(parent, settings, listener);
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final AmiiboVewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final AmiiboViewHolder holder, int position) {
         View highlight = holder.itemView.findViewById(R.id.highlight);
         if (TagMo.getPrefs().eliteActiveBank().get() == position) {
             highlight.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
@@ -117,7 +120,7 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
         holder.bind(getItem(position));
     }
 
-    protected static abstract class AmiiboVewHolder extends RecyclerView.ViewHolder {
+    protected static abstract class AmiiboViewHolder extends RecyclerView.ViewHolder {
 
         private final BrowserSettings settings;
         private final OnAmiiboClickListener listener;
@@ -157,8 +160,8 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
             }
         };
 
-        public AmiiboVewHolder(View itemView, BrowserSettings settings,
-                               OnAmiiboClickListener listener) {
+        public AmiiboViewHolder(View itemView, BrowserSettings settings,
+                                OnAmiiboClickListener listener) {
             super(itemView);
 
             this.settings = settings;
@@ -203,25 +206,27 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
                 //     gameSeries = amiibo.getCharacter().name;
             }
 
-            String query = settings.getQuery().toLowerCase();
-            String value = String.valueOf(getAbsoluteAdapterPosition() + 1);
+            if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
+                String query = settings.getQuery().toLowerCase();
+                String value = String.valueOf(getAbsoluteAdapterPosition() + 1);
 
-            this.txtError.setVisibility(View.GONE);
-            if (isAmiibo) {
-                setAmiiboInfoText(this.txtName, value + ": " + amiiboName);
-                setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query));
-                setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query));
-                setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query));
-                setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query));
-                // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query));
-            } else {
-                this.txtName.setVisibility(View.VISIBLE);
-                this.txtName.setText(TagMo.getStringRes(R.string.blank_bank, value));
-                this.txtTagId.setVisibility(View.GONE);
-                this.txtAmiiboSeries.setVisibility(View.GONE);
-                this.txtAmiiboType.setVisibility(View.GONE);
-                this.txtGameSeries.setVisibility(View.GONE);
-                // this.txtCharacter.setVisibility(View.GONE);
+                this.txtError.setVisibility(View.GONE);
+                if (isAmiibo) {
+                    setAmiiboInfoText(this.txtName, value + ": " + amiiboName);
+                    setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query));
+                    setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query));
+                    setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query));
+                    setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query));
+                    // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query));
+                } else {
+                    this.txtName.setVisibility(View.VISIBLE);
+                    this.txtName.setText(TagMo.getStringRes(R.string.blank_bank, value));
+                    this.txtTagId.setVisibility(View.GONE);
+                    this.txtAmiiboSeries.setVisibility(View.GONE);
+                    this.txtAmiiboType.setVisibility(View.GONE);
+                    this.txtGameSeries.setVisibility(View.GONE);
+                    // this.txtCharacter.setVisibility(View.GONE);
+                }
             }
 
             if (this.imageAmiibo != null) {
@@ -291,7 +296,7 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
         }
     }
 
-    static class SimpleViewHolder extends AmiiboVewHolder {
+    static class SimpleViewHolder extends AmiiboViewHolder {
         public SimpleViewHolder(ViewGroup parent, BrowserSettings settings,
                                 OnAmiiboClickListener listener) {
             super(
@@ -302,7 +307,7 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
         }
     }
 
-    static class CompactViewHolder extends AmiiboVewHolder {
+    static class CompactViewHolder extends AmiiboViewHolder {
         public CompactViewHolder(ViewGroup parent, BrowserSettings settings,
                                  OnAmiiboClickListener listener) {
             super(
@@ -313,12 +318,23 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
         }
     }
 
-    static class LargeViewHolder extends AmiiboVewHolder {
+    static class LargeViewHolder extends AmiiboViewHolder {
         public LargeViewHolder(ViewGroup parent, BrowserSettings settings,
                                OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
+                    settings, listener
+            );
+        }
+    }
+
+    static class ImageViewHolder extends AmiiboViewHolder {
+        public ImageViewHolder(ViewGroup parent, BrowserSettings settings,
+                               OnAmiiboClickListener listener) {
+            super(
+                    LayoutInflater.from(parent.getContext()).inflate(
+                            R.layout.amiibo_image_card, parent, false),
                     settings, listener
             );
         }

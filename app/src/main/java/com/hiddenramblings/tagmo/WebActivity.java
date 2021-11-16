@@ -20,7 +20,6 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,8 +33,10 @@ import androidx.webkit.WebViewClientCompat;
 import androidx.webkit.WebViewFeature;
 
 import com.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.TagMo.Website;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
+import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -56,7 +57,7 @@ import java.util.zip.ZipInputStream;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_webview)
-public class WebViewActivity extends AppCompatActivity {
+public class WebActivity extends AppCompatActivity {
 
     @ViewById(R.id.webview_content)
     WebView mWebView;
@@ -89,7 +90,7 @@ public class WebViewActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             final WebViewAssetLoader assetLoader =
                     new WebViewAssetLoader.Builder().addPathHandler("/assets/",
-                            new AssetsPathHandler(WebViewActivity.this)).build();
+                            new AssetsPathHandler(WebActivity.this)).build();
 
             mWebView.setWebViewClient(new WebViewClientCompat() {
                 @Override
@@ -158,7 +159,7 @@ public class WebViewActivity extends AppCompatActivity {
                         "text/html; charset=UTF-8", null);
             } catch (Exception e) {
                 Debug.Log(e);
-                showToast(R.string.fail_logcat);
+                new Toasty(this).Long(R.string.fail_logcat);
                 finish();
             }
         }
@@ -324,10 +325,5 @@ public class WebViewActivity extends AppCompatActivity {
                 }
             }
         }
-    }
-
-    @UiThread
-    public void showToast(int msgRes) {
-        Toast.makeText(this, msgRes, Toast.LENGTH_LONG).show();
     }
 }

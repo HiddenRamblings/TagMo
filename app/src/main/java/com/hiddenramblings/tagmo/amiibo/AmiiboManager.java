@@ -8,7 +8,6 @@ import androidx.documentfile.provider.DocumentFile;
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.nfctech.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 

@@ -2,7 +2,6 @@ package com.hiddenramblings.tagmo.settings;
 
 import android.annotation.SuppressLint;
 
-import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
 
 import org.androidannotations.annotations.sharedpreferences.DefaultBoolean;
@@ -16,7 +15,7 @@ import org.androidannotations.annotations.sharedpreferences.SharedPref;
 public interface Preferences {
     String query();
 
-    @DefaultInt(BrowserActivity.SORT_NAME)
+    @DefaultInt(1/*SORT.NAME*/)
     int sort();
 
     String filterGameSeries();
@@ -45,7 +44,7 @@ public interface Preferences {
     @DefaultInt(0)
     int eliteActiveBank();
 
-    @DefaultInt(BrowserActivity.VIEW_TYPE_COMPACT)
+    @DefaultInt(1/*VIEW.COMPACT*/)
     int browserAmiiboView();
 
     @DefaultString(keyRes = R.string.image_network_settings,

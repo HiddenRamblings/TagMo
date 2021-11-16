@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -8,24 +8,26 @@ import android.widget.NumberPicker;
 
 import androidx.annotation.RequiresApi;
 
-public class BankNumberPicker extends NumberPicker {
+import com.hiddenramblings.tagmo.R;
 
-    public BankNumberPicker(Context context) {
+public class BankPicker extends NumberPicker {
+
+    public BankPicker(Context context) {
         super(context);
     }
 
-    public BankNumberPicker(Context context, AttributeSet attrs) {
+    public BankPicker(Context context, AttributeSet attrs) {
         super(context, attrs);
         processXmlAttributes(attrs, 0, 0);
     }
 
-    public BankNumberPicker(Context context, AttributeSet attrs, int defStyleAttr) {
+    public BankPicker(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         processXmlAttributes(attrs, defStyleAttr, 0);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP) @SuppressWarnings("unused")
-    public BankNumberPicker(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public BankPicker(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         processXmlAttributes(attrs, defStyleAttr, defStyleRes);
     }

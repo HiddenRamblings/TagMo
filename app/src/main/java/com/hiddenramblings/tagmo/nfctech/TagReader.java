@@ -10,6 +10,7 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.amiibo.KeyManager;
 
 import java.io.File;
 import java.io.FileInputStream;

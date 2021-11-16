@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.settings;
 
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -10,8 +11,71 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Optional;
 
 public class BrowserSettings implements Parcelable {
+
+    public enum SORT {
+        ID(0x0),
+        NAME(0x1),
+        AMIIBO_SERIES(0x2),
+        AMIIBO_TYPE(0x3),
+        GAME_SERIES(0x4),
+        CHARACTER(0x5),
+        FILE_PATH(0x6);
+
+        private final int value;
+        SORT(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static SORT valueOf(int value) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Optional<SORT> optional = Arrays.stream(values()).filter(
+                        SORT -> SORT.value == value).findFirst();
+                if (optional.isPresent()) return optional.get();
+            } else {
+                for (SORT view : SORT.values()) {
+                    if (view.getValue() == value) return view;
+                }
+            }
+            return SORT.NAME;
+        }
+    }
+
+    public enum VIEW {
+        SIMPLE(0),
+        COMPACT(1),
+        LARGE(2),
+        IMAGE(3);
+
+        private final int value;
+        VIEW(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static VIEW valueOf(int value) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Optional<VIEW> optional = Arrays.stream(values()).filter(
+                        VIEW -> VIEW.value == value).findFirst();
+                if (optional.isPresent()) return optional.get();
+            } else {
+                for (VIEW view : VIEW.values()) {
+                    if (view.getValue() == value) return view;
+                }
+            }
+            return VIEW.COMPACT;
+        }
+    }
 
     protected ArrayList<BrowserSettingsListener> listeners = new ArrayList<>();
     protected AmiiboManager amiiboManager;

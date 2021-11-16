@@ -3,7 +3,7 @@ package com.hiddenramblings.tagmo.amiibo;
 
 import androidx.annotation.NonNull;
 
-import com.hiddenramblings.tagmo.Website;
+import com.hiddenramblings.tagmo.TagMo.Website;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 public class Amiibo implements Comparable<Amiibo> {

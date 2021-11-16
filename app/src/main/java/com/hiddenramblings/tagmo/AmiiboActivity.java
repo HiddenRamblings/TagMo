@@ -9,11 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -38,6 +36,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
+import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -133,9 +132,9 @@ public class AmiiboActivity extends AppCompatActivity {
                 case R.id.mnu_validate:
                     try {
                         TagUtils.validateData(tagData);
-                        showAlertDialog(getString(R.string.validation_success));
+                        new Toasty(this).Dialog(R.string.validation_success);
                     } catch (Exception e) {
-                        showAlertDialog(e.getMessage());
+                        new Toasty(this).Dialog(e.getMessage());
                     }
                     return true;
                 case R.id.mnu_delete:
@@ -390,12 +389,6 @@ public class AmiiboActivity extends AppCompatActivity {
         } else {
             return new RequestOptions().onlyRetrieveFromCache(false);
         }
-    }
-
-    @UiThread
-    void showAlertDialog(String msg) {
-        new AlertDialog.Builder(this).setMessage(msg)
-                .setPositiveButton(R.string.close, null).show();
     }
 
     @Override

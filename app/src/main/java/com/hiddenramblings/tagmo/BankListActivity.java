@@ -744,10 +744,6 @@ public class BankListActivity extends AppCompatActivity implements
         }
     }
 
-    public void updateAmiiboView(long amiiboId, int current_bank) {
-        updateAmiiboView(null, amiiboId, current_bank);
-    }
-
     void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
         if (hasTagInfo) {
             textView.setVisibility(View.GONE);
@@ -799,7 +795,7 @@ public class BankListActivity extends AppCompatActivity implements
         if (amiibo.data != null && amiibo.bank == position) {
             updateAmiiboView(amiibo.data, -1, position);
         } else if (amiibo.id != 0) {
-            updateAmiiboView(amiibo.id, position);
+            updateAmiiboView(null, amiibo.id, position);
         } else {
             scanAmiiboTag(position);
         }

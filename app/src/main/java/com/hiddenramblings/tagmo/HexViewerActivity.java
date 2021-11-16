@@ -31,12 +31,16 @@ public class HexViewerActivity extends AppCompatActivity {
 
     void decryptTagData(byte[] tagData) {
         KeyManager keyManager = new KeyManager(this);
-        try {
-            setAdapterTagData(keyManager.decrypt(tagData));
-        } catch (Exception e) {
-            Debug.Log(R.string.fail_decrypt, e);
-            showErrorDialog(R.string.fail_decrypt);
+        if (keyManager.isKeyMissing()) {
+            showErrorDialog(R.string.no_decrypt_key);
+            return;
         }
+        try {
+            tagData = keyManager.decrypt(tagData);
+        } catch (Exception e) {
+            // Decryption is not a necessary step
+        }
+        setAdapterTagData(tagData);
     }
 
     void setAdapterTagData(byte[] tagData) {

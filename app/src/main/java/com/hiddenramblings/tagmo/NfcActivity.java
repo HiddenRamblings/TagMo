@@ -341,7 +341,7 @@ public class NfcActivity extends AppCompatActivity {
 
                     case TagMo.ACTION_WRITE_TAG_FULL:
                         if (isEliteDevice) {
-                            TagWriter.writeEliteAuto(mifare, data, selection);
+                            TagWriter.writeEliteAuto(mifare, data, keyManager, selection);
                             Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
                             write.putExtra(TagMo.EXTRA_SIGNATURE,
                                     TagReader.getEliteSignature(mifare));
@@ -376,7 +376,7 @@ public class NfcActivity extends AppCompatActivity {
                             TagWriter.writeEliteAuto(mifare, amiiboList.get(x).getData() != null
                                     ? amiiboList.get(x).getData()
                                     : TagReader.getValidatedData(keyManager,
-                                    amiiboList.get(x).getFilePath()), x);
+                                    amiiboList.get(x).getFilePath()), keyManager, x);
                         }
                         Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
                         write.putExtra(TagMo.EXTRA_BANK_COUNT, write_count);
@@ -530,7 +530,6 @@ public class NfcActivity extends AppCompatActivity {
     void startNfcMonitor() {
         if (nfcAdapter == null) {
             showError(getString(R.string.nfc_unsupported));
-            return;
         } else if (!nfcAdapter.isEnabled()) {
             showError(getString(R.string.nfc_disabled));
             new AlertDialog.Builder(this)

@@ -516,8 +516,7 @@ public class TagDataActivity extends AppCompatActivity {
     }
 
     void loadUID() {
-        byte[] value = amiiboData.getUID();
-        txtUID.setText(TagUtils.bytesToHex(value));
+        txtUID.setText(TagUtils.bytesToHex(amiiboData.getUID()));
     }
 
     void loadCountryCode() {
@@ -971,7 +970,8 @@ public class TagDataActivity extends AppCompatActivity {
                         .inflate(R.layout.spinner_text2, parent, false);
             }
             ((TextView) view.findViewById(R.id.text1)).setText(this.getItem(position).getValue());
-            ((TextView) view.findViewById(R.id.text2)).setText(String.format("%08X", this.getItem(position).getKey()));
+            ((TextView) view.findViewById(R.id.text2)).setText(
+                    String.format("%08X", this.getItem(position).getKey()));
             return view;
         }
 

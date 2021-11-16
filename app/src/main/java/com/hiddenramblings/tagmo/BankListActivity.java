@@ -10,10 +10,13 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,6 +31,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,26 +46,27 @@ import com.hiddenramblings.tagmo.adapter.WriteBlankAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfctech.KeyManager;
+import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
+import com.hiddenramblings.tagmo.widget.BankPicker;
+import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.InstanceState;
-import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 
@@ -107,7 +112,7 @@ public class BankListActivity extends AppCompatActivity implements
     @ViewById(R.id.elite_bank_stats)
     TextView bankStats;
     @ViewById(R.id.bank_count_picker)
-    BankNumberPicker eliteBankCount;
+    BankPicker eliteBankCount;
     @ViewById(R.id.write_open_banks)
     AppCompatButton writeOpenBanks;
     @ViewById(R.id.write_bank_count)
@@ -137,6 +142,7 @@ public class BankListActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.settings = new BrowserSettings().initialize();
+        settings.setAmiiboView(VIEW.IMAGE.getValue());
         keyManager = new KeyManager(this);
     }
 
@@ -182,7 +188,10 @@ public class BankListActivity extends AppCompatActivity implements
         hardwareInfo.setText(getString(R.string.elite_signature,
                 getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE)));
         eliteBankCount.setValue(bank_count);
-        amiibosView.setLayoutManager(new LinearLayoutManager(this));
+        if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
+            amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+        else
+            amiibosView.setLayoutManager(new LinearLayoutManager(this));
         BankBrowserAdapter adapter = new BankBrowserAdapter(settings, this);
         amiibosView.setAdapter(adapter);
         this.settings.addChangeListener(adapter);
@@ -530,9 +539,9 @@ public class BankListActivity extends AppCompatActivity implements
             case VERIFY:
                 try {
                     TagUtils.validateData(tagData);
-                    showAlertDialog(getString(R.string.validation_success));
+                    new Toasty(this).Dialog(R.string.validation_success);
                 } catch (Exception e) {
-                    showAlertDialog(e.getMessage());
+                    new Toasty(this).Dialog(e.getMessage());
                 }
                 break;
 
@@ -575,6 +584,7 @@ public class BankListActivity extends AppCompatActivity implements
 
     public void updateAmiiboView(byte[] tagData, long amiiboId, int current_bank) {
         toolbar.setOnMenuItemClickListener(item -> {
+            Toasty notice = new Toasty(this);
             Intent scan = new Intent(this, NfcActivity_.class);
             scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
             switch (item.getItemId()) {
@@ -597,7 +607,7 @@ public class BankListActivity extends AppCompatActivity implements
                     return true;
                 case R.id.mnu_format_bank:
                     if (TagMo.getPrefs().eliteActiveBank().get() == current_bank) {
-                        new Toasty(this).Short(R.string.delete_active);
+                        notice.Short(R.string.delete_active);
                     } else {
                         scan.setAction(TagMo.ACTION_FORMAT_BANK);
                         onUpdateTagResult.launch(scan);
@@ -635,13 +645,13 @@ public class BankListActivity extends AppCompatActivity implements
                 case R.id.mnu_validate:
                     try {
                         TagUtils.validateData(tagData);
-                        showAlertDialog(getString(R.string.validation_success));
+                        notice.Dialog(R.string.validation_success);
                     } catch (Exception e) {
                         if (e instanceof IOException) {
                             status = CLICKED.VERIFY;
                             scanAmiiboBank(current_bank);
                         } else {
-                            showAlertDialog(e.getMessage());
+                            notice.Dialog(e.getMessage());
                         }
                     }
                     return true;
@@ -775,6 +785,16 @@ public class BankListActivity extends AppCompatActivity implements
         }
     }
 
+    private int getColumnCount() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+            mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
+        else
+            mWindowManager.getDefaultDisplay().getMetrics(metrics);
+        return (int) ((metrics.widthPixels / metrics.density) / 96 + 0.5);
+    }
+
     private void scanAmiiboTag(int position) {
         Intent amiiboIntent = new Intent(this, NfcActivity_.class);
         amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
@@ -848,14 +868,6 @@ public class BankListActivity extends AppCompatActivity implements
             settings.setAmiiboFiles(amiiboFiles);
             settings.notifyChanges();
         });
-    }
-
-    @UiThread
-    void showAlertDialog(String msg) {
-        new AlertDialog.Builder(this)
-                .setMessage(msg)
-                .setPositiveButton(R.string.close, null)
-                .show();
     }
 
     @Override

@@ -28,7 +28,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.eightbit.os.Storage;
-import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -41,6 +40,8 @@ import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.io.File;
@@ -49,7 +50,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.AmiiboViewHolder>
-        implements Filterable, BrowserSettings.BrowserSettingsListener {
+        implements Filterable, BrowserSettingsListener {
     private static final String decryptRegex = "(Decrypted).bin";
 
     private final BrowserSettings settings;
@@ -72,8 +73,10 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
                                          BrowserSettings oldBrowserSettings) {
         if (newBrowserSettings == null || oldBrowserSettings == null) return;
         boolean refresh = firstRun ||
-                !BrowserSettings.equals(newBrowserSettings.getQuery(), oldBrowserSettings.getQuery()) ||
-                !BrowserSettings.equals(newBrowserSettings.getSort(), oldBrowserSettings.getSort()) ||
+                !BrowserSettings.equals(newBrowserSettings.getQuery(),
+                        oldBrowserSettings.getQuery()) ||
+                !BrowserSettings.equals(newBrowserSettings.getSort(),
+                        oldBrowserSettings.getSort()) ||
                 !BrowserSettings.equals(newBrowserSettings.getGameSeriesFilter(),
                         oldBrowserSettings.getGameSeriesFilter()) ||
                 !BrowserSettings.equals(newBrowserSettings.getCharacterFilter(),
@@ -129,14 +132,14 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
     @NonNull
     @Override
     public AmiiboViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case BrowserActivity.VIEW_TYPE_COMPACT:
+        switch (VIEW.valueOf(viewType)) {
+            case COMPACT:
                 return new CompactViewHolder(parent, settings, listener);
-            case BrowserActivity.VIEW_TYPE_LARGE:
+            case LARGE:
                 return new LargeViewHolder(parent, settings, listener);
-            case BrowserActivity.VIEW_TYPE_IMAGE:
+            case IMAGE:
                 return new ImageViewHolder(parent, settings, listener);
-            case BrowserActivity.VIEW_TYPE_SIMPLE:
+            case SIMPLE:
             default:
                 return new SimpleViewHolder(parent, settings, listener);
         }
@@ -152,7 +155,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         if (holder.imageAmiibo != null) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (holder.listener != null) {
-                    if (settings.getAmiiboView() == BrowserActivity.VIEW_TYPE_IMAGE)
+                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
                         holder.listener.onAmiiboClicked(holder.amiiboFile);
                     else
                         holder.listener.onAmiiboImageClicked(holder.amiiboFile);
@@ -404,7 +407,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
 
             String query = settings.getQuery().toLowerCase();
 
-            if (settings.getAmiiboView() != BrowserActivity.VIEW_TYPE_IMAGE) {
+            if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 boolean hasTagInfo = tagInfo != null;
                 if (hasTagInfo) {
                     setAmiiboInfoText(this.txtError, tagInfo, false);

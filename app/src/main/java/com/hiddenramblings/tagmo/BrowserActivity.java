@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
@@ -84,7 +85,6 @@ import org.androidannotations.annotations.OptionsMenuItem;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.api.BackgroundExecutor;
-import org.apmem.tools.layouts.FlowLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -130,7 +130,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public static final int VIEW_TYPE_IMAGE = 3;
 
     @ViewById(R.id.chip_list)
-    FlowLayout chipList;
+    LinearLayoutCompat chipList;
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
     @ViewById(R.id.swipe_refresh)

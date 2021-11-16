@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:background="@color/backgroundBlack">
 
-        <org.apmem.tools.layouts.FlowLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/chip_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

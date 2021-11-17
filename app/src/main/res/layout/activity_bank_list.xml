@@ -12,20 +12,6 @@
         android:layout_height="match_parent"
         android:background="@color/backgroundBlack">
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/chip_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="4dp"/>
-
-        <View
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@+id/chip_list"
-            android:background="?android:attr/listDivider"/>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/amiibos_list"
             android:layout_width="match_parent"
@@ -33,8 +19,7 @@
             android:clipToPadding="false"
             android:paddingBottom="40dp"
             android:scrollbars="vertical"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@+id/divider" />
+            android:layout_alignParentBottom="true" />
     </RelativeLayout>
 
     <LinearLayout
@@ -51,7 +36,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="6dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="8dp"
@@ -88,12 +73,25 @@
                 android:contentDescription="@string/imageview_toggle" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/elite_bank_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="6dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            android:text="@string/amiibo_not_found"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"/>
+
         <androidx.cardview.widget.CardView
             android:id="@+id/amiiboCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="16dp"
+            android:layout_margin="8dp"
             android:focusable="true"
             android:foreground="@drawable/card_foreground"
             app:cardCornerRadius="@dimen/card_radius"
@@ -102,6 +100,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -288,32 +287,21 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/elite_bank_stats"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="6dp"
-            android:gravity="center"
-            android:singleLine="true"
-            android:ellipsize="middle"
-            android:text="@string/amiibo_not_found"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"/>
-
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/write_open_banks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="36dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="4dp"
             android:text="@string/write_open_banks" />
 
         <com.hiddenramblings.tagmo.widget.BankPicker
             android:id="@+id/bank_count_picker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:theme="@style/DialogTheme.Picker"
             android:background="@drawable/picker_border_elite" />
 
@@ -322,7 +310,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="36dp"
+            android:layout_marginTop="4dp"
             android:text="@string/write_bank_count" />
 
+        <RelativeLayout
+            android:id="@+id/write_banks_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="-8dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/amiibo_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="2dp"
+                android:layout_marginEnd="2dp"
+                android:lineSpacingExtra="0dp"
+                android:lineSpacingMultiplier="0" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/amiibo_files_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="40dp"
+                android:scrollbars="vertical"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@+id/amiibo_search"/>
+        </RelativeLayout>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

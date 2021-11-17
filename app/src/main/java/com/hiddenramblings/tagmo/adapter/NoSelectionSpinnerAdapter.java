@@ -11,7 +11,7 @@ import android.widget.SpinnerAdapter;
  * Decorator Adapter to allow a Spinner to show a 'Nothing Selected...' initially
  * displayed instead of the first choice in the Adapter.
  */
-public class NothingSelectedSpinnerAdapter implements SpinnerAdapter, ListAdapter {
+public class NoSelectionSpinnerAdapter implements SpinnerAdapter, ListAdapter {
     protected static final int EXTRA = 1;
     protected SpinnerAdapter adapter;
     protected int nothingSelectedLayout;
@@ -25,7 +25,7 @@ public class NothingSelectedSpinnerAdapter implements SpinnerAdapter, ListAdapte
      * @param nothingSelectedLayout layout for nothing selected, perhaps
      *                              you want text grayed out like a prompt...
      */
-    public NothingSelectedSpinnerAdapter(
+    public NoSelectionSpinnerAdapter(
             SpinnerAdapter spinnerAdapter,
             int nothingSelectedLayout) {
 
@@ -44,7 +44,7 @@ public class NothingSelectedSpinnerAdapter implements SpinnerAdapter, ListAdapte
      * @param nothingSelectedDropdownLayout layout for your 'Select an Item...' in
      *                                      the dropdown.
      */
-    public NothingSelectedSpinnerAdapter(
+    public NoSelectionSpinnerAdapter(
             SpinnerAdapter spinnerAdapter, int nothingSelectedLayout,
             int nothingSelectedDropdownLayout
     ) {

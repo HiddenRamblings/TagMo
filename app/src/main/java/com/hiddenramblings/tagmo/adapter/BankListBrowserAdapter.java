@@ -35,14 +35,14 @@ import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
 
-public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.AmiiboViewHolder>
+public class BankListBrowserAdapter extends RecyclerView.Adapter<BankListBrowserAdapter.AmiiboViewHolder>
         implements BrowserSettingsListener {
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
     private ArrayList<Amiibo> amiibos = new ArrayList<>();
 
-    public BankBrowserAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
+    public BankListBrowserAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
     }
@@ -108,8 +108,12 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
         });
         if (holder.imageAmiibo != null) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (holder.listener != null)
-                    holder.listener.onAmiiboImageClicked(holder.amiiboItem, position);
+                if (holder.listener != null) {
+                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
+                        holder.listener.onAmiiboClicked(holder.amiiboItem, position);
+                    else
+                        holder.listener.onAmiiboImageClicked(holder.amiiboItem, position);
+                }
             });
         }
         holder.itemView.setOnLongClickListener(view -> {
@@ -206,10 +210,10 @@ public class BankBrowserAdapter extends RecyclerView.Adapter<BankBrowserAdapter.
                 //     gameSeries = amiibo.getCharacter().name;
             }
 
-            if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
-                String query = settings.getQuery().toLowerCase();
-                String value = String.valueOf(getAbsoluteAdapterPosition() + 1);
+            String query = settings.getQuery().toLowerCase();
+            String value = String.valueOf(getAbsoluteAdapterPosition() + 1);
 
+            if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 this.txtError.setVisibility(View.GONE);
                 if (isAmiibo) {
                     setAmiiboInfoText(this.txtName, value + ": " + amiiboName);

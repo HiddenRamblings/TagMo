@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -41,8 +42,8 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.eightbit.io.Debug;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.hiddenramblings.tagmo.adapter.BankBrowserAdapter;
-import com.hiddenramblings.tagmo.adapter.WriteBlankAdapter;
+import com.hiddenramblings.tagmo.adapter.BankListBrowserAdapter;
+import com.hiddenramblings.tagmo.adapter.WriteBanksAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -73,7 +74,7 @@ import java.util.ArrayList;
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_bank_list)
 public class BankListActivity extends AppCompatActivity implements
-        BankBrowserAdapter.OnAmiiboClickListener {
+        BankListBrowserAdapter.OnAmiiboClickListener {
 
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
@@ -83,6 +84,13 @@ public class BankListActivity extends AppCompatActivity implements
     ViewGroup bottomSheet;
     @ViewById(R.id.toggle)
     ImageView toggle;
+
+    @ViewById(R.id.write_banks_layout)
+    RelativeLayout writeBankLayout;
+    @ViewById(R.id.amiibo_files_list)
+    RecyclerView amiiboFilesView;
+    @ViewById(R.id.amiibo_search)
+    SearchView searchView;
 
     @ViewById(R.id.amiiboCard)
     CardView amiiboCard;
@@ -142,14 +150,13 @@ public class BankListActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.settings = new BrowserSettings().initialize();
-        settings.setAmiiboView(VIEW.IMAGE.getValue());
         keyManager = new KeyManager(this);
     }
 
     @AfterViews
     void afterViews() {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
+                ViewGroup.LayoutParams.WRAP_CONTENT);
 
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -159,6 +166,10 @@ public class BankListActivity extends AppCompatActivity implements
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     amiiboCard.setVisibility(View.GONE);
+                    writeBankLayout.setVisibility(View.GONE);
+                    writeOpenBanks.setVisibility(View.VISIBLE);
+                    eliteBankCount.setVisibility(View.VISIBLE);
+                    writeBankCount.setVisibility(View.VISIBLE);
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
@@ -178,8 +189,6 @@ public class BankListActivity extends AppCompatActivity implements
         });
         toolbar.inflateMenu(R.menu.bank_menu);
 
-        this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
-
         int bank_count = getIntent().getIntExtra(TagMo.EXTRA_BANK_COUNT,
                 TagMo.getPrefs().eliteBankCount().get());
         int active_bank = getIntent().getIntExtra(TagMo.EXTRA_ACTIVE_BANK,
@@ -192,7 +201,7 @@ public class BankListActivity extends AppCompatActivity implements
             amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
         else
             amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        BankBrowserAdapter adapter = new BankBrowserAdapter(settings, this);
+        BankListBrowserAdapter adapter = new BankListBrowserAdapter(settings, this);
         amiibosView.setAdapter(adapter);
         this.settings.addChangeListener(adapter);
         updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
@@ -200,8 +209,32 @@ public class BankListActivity extends AppCompatActivity implements
                 eliteBankCount.getValueForPosition(active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
 
-        eliteBankCount.setOnValueChangedListener((numberPicker, valueOld, valueNew)
-                -> writeOpenBanks.setText(getString(R.string.write_open_banks, valueNew)));
+        eliteBankCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) ->
+                writeOpenBanks.setText(getString(R.string.write_open_banks, valueNew)));
+
+        amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setIconifiedByDefault(false);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                settings.setQuery(query);
+                settings.notifyChanges();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                settings.setQuery(query);
+                settings.notifyChanges();
+                return true;
+            }
+        });
+
+        this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
     }
 
     private void updateEliteHardwareAdapter(ArrayList<String> amiiboList) {
@@ -224,7 +257,7 @@ public class BankListActivity extends AppCompatActivity implements
                 amiibos.add(amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
             }
             if (amiibosView.getAdapter() != null) {
-                ((BankBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
+                ((BankListBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
                 //noinspection NotifyDataSetChanged
                 amiibosView.getAdapter().notifyDataSetChanged();
             }
@@ -239,6 +272,15 @@ public class BankListActivity extends AppCompatActivity implements
                 }
             }
         }
+    }
+
+    private void setBottomCardView(boolean isCard) {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        amiiboCard.setVisibility(isCard ? View.VISIBLE : View.GONE);
+        writeBankLayout.setVisibility(isCard ? View.GONE : View.VISIBLE);
+        writeOpenBanks.setVisibility(isCard ? View.VISIBLE : View.GONE);
+        eliteBankCount.setVisibility(isCard ? View.VISIBLE : View.GONE);
+        writeBankCount.setVisibility(isCard ? View.VISIBLE : View.GONE);
     }
 
     @Click(R.id.toggle)
@@ -268,7 +310,7 @@ public class BankListActivity extends AppCompatActivity implements
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
     });
 
-    private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList, Dialog writeDialog) {
+    private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
         if (amiiboList != null && amiiboList.size() == eliteBankCount.getValue()) {
             new AlertDialog.Builder(this)
                     .setMessage(R.string.write_confirm)
@@ -278,11 +320,12 @@ public class BankListActivity extends AppCompatActivity implements
                         collection.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
                         collection.putExtra(TagMo.EXTRA_AMIIBO_FILES, amiiboList);
                         onWriteBanksActivity.launch(collection);
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         dialog.dismiss();
-                        writeDialog.dismiss();
                     })
                     .setNegativeButton(R.string.cancel, (dialog, which) -> {
                         amiiboList.clear();
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         dialog.dismiss();
                     })
                     .show();
@@ -291,57 +334,10 @@ public class BankListActivity extends AppCompatActivity implements
 
     @Click(R.id.write_open_banks)
     void onWriteOpenBanksClick() {
-        View view = getLayoutInflater().inflate( R.layout.dialog_write_banks, null);
-
-        RecyclerView writerListView = view.findViewById(R.id.amiibos_list);
-        writerListView.setLayoutManager(new LinearLayoutManager(this));
-
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        Dialog writeDialog = dialog.setView(view).show();
-
-        WriteBlankAdapter.OnHighlightListener itemClick =
-                new WriteBlankAdapter.OnHighlightListener() {
-            @Override
-            public void onAmiiboClicked(ArrayList<AmiiboFile> amiiboList) {
-                writeAmiiboCollection(amiiboList, writeDialog);
-            }
-
-            @Override
-            public void onAmiiboImageClicked(ArrayList<AmiiboFile> amiiboList) {
-                writeAmiiboCollection(amiiboList, writeDialog);
-            }
-        };
-
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = view.findViewById(R.id.amiibo_search);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setSubmitButtonEnabled(true);
-        searchView.setIconifiedByDefault(false);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                settings.setQuery(query);
-                settings.notifyChanges();
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String query) {
-                settings.setQuery(query);
-                settings.notifyChanges();
-                return true;
-            }
-        });
-
-        writerListView.setAdapter(new WriteBlankAdapter(
-                settings, itemClick, settings.getAmiiboFiles()));
-        this.settings.addChangeListener((BrowserSettingsListener) writerListView.getAdapter());
-        writeDialog.getWindow().setLayout(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-        );
-
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        setBottomCardView(false);
+        amiiboFilesView.setAdapter(new WriteBanksAdapter(settings, this::writeAmiiboCollection));
+        this.settings.addChangeListener((BrowserSettingsListener) amiiboFilesView.getAdapter());
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @Click(R.id.write_bank_count)
@@ -423,24 +419,18 @@ public class BankListActivity extends AppCompatActivity implements
         intent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
         intent.putExtras(args);
         onUpdateTagResult.launch(intent);
+        setBottomCardView(true);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     private void displayWriteDialog(int position) {
-        View view = getLayoutInflater().inflate( R.layout.dialog_write_banks, null);
-
-        RecyclerView writerListView = view.findViewById(R.id.amiibos_list);
-        writerListView.setLayoutManager(new LinearLayoutManager(this));
-
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        Dialog writeDialog = dialog.setView(view).show();
-
-        WriteBlankAdapter.OnAmiiboClickListener itemClick =
-                new WriteBlankAdapter.OnAmiiboClickListener() {
+        setBottomCardView(false);
+        amiiboFilesView.setAdapter(new WriteBanksAdapter(settings,
+                new WriteBanksAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 if (amiiboFile != null) {
                     writeAmiiboFile(amiiboFile, position);
-                    writeDialog.dismiss();
                 }
             }
 
@@ -448,39 +438,11 @@ public class BankListActivity extends AppCompatActivity implements
             public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
                 if (amiiboFile != null) {
                     writeAmiiboFile(amiiboFile, position);
-                    writeDialog.dismiss();
                 }
             }
-        };
-
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = view.findViewById(R.id.amiibo_search);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setSubmitButtonEnabled(true);
-        searchView.setIconifiedByDefault(false);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                settings.setQuery(query);
-                settings.notifyChanges();
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String query) {
-                settings.setQuery(query);
-                settings.notifyChanges();
-                return true;
-            }
-        });
-
-        writerListView.setAdapter(new WriteBlankAdapter(
-                settings, itemClick, settings.getAmiiboFiles()));
-        this.settings.addChangeListener((BrowserSettingsListener) writerListView.getAdapter());
-        writeDialog.getWindow().setLayout(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-        );
+        }));
+        this.settings.addChangeListener((BrowserSettingsListener) amiiboFilesView.getAdapter());
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(
@@ -792,7 +754,7 @@ public class BankListActivity extends AppCompatActivity implements
             mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
         else
             mWindowManager.getDefaultDisplay().getMetrics(metrics);
-        return (int) ((metrics.widthPixels / metrics.density) / 96 + 0.5);
+        return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
     private void scanAmiiboTag(int position) {
@@ -810,8 +772,7 @@ public class BankListActivity extends AppCompatActivity implements
         }
         clickedPosition = position;
         status = CLICKED.NOTHING;
-        this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        amiiboCard.setVisibility(View.VISIBLE);
+        setBottomCardView(true);
         if (amiibo.data != null && amiibo.bank == position) {
             updateAmiiboView(amiibo.data, -1, position);
         } else if (amiibo.id != 0) {
@@ -873,7 +834,7 @@ public class BankListActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            setBottomCardView(true);
         } else {
             super.onBackPressed();
         }

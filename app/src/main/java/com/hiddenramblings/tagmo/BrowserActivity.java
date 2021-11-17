@@ -71,7 +71,9 @@ import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.*;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
@@ -1329,7 +1331,7 @@ public class BrowserActivity extends AppCompatActivity implements
             mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
         else
             mWindowManager.getDefaultDisplay().getMetrics(metrics);
-        return (int) ((metrics.widthPixels / metrics.density) / 96 + 0.5);
+        return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
     void onViewChanged() {

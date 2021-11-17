@@ -130,7 +130,7 @@ public class Debug {
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d",
                 BuildConfig.APPLICATION_ID,
-                "-t", "2048"
+                "-t", "1024"
         });
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 mLogcatProc.getInputStream()));

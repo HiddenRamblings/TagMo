@@ -38,7 +38,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.adapter.NothingSelectedSpinnerAdapter;
+import com.hiddenramblings.tagmo.adapter.NoSelectionSpinnerAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
@@ -134,7 +134,7 @@ public class TagDataActivity extends AppCompatActivity {
     byte[] tagData;
 
     CountryCodesAdapter countryCodeAdapter;
-    NothingSelectedSpinnerAdapter appIdAdapter;
+    NoSelectionSpinnerAdapter appIdAdapter;
     boolean ignoreAppNameSelected;
     KeyManager keyManager;
     AmiiboManager amiiboManager = null;
@@ -184,7 +184,7 @@ public class TagDataActivity extends AppCompatActivity {
         countryCodeAdapter = new CountryCodesAdapter(AmiiboData.countryCodes);
         txtCountryCode.setAdapter(countryCodeAdapter);
 
-        appIdAdapter = new NothingSelectedSpinnerAdapter(
+        appIdAdapter = new NoSelectionSpinnerAdapter(
                 new AppIdAdapter(AppData.appIds), R.layout.nothing_spinner_text);
         txtAppName.setAdapter(appIdAdapter);
 

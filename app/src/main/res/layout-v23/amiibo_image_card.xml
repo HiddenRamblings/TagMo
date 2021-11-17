@@ -10,16 +10,23 @@
     app:cardBackgroundColor="@android:color/transparent"
     app:cardCornerRadius="@dimen/card_radius">
 
-    <ImageView
-        android:id="@+id/imageAmiibo"
-        android:contentDescription="@string/imageview_amiibo"
-        android:src="@mipmap/ic_launcher"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:foreground="@drawable/card_foreground"
-        android:layout_gravity="center" />
+    <LinearLayout
+        android:id="@+id/highlight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageAmiibo"
+            android:contentDescription="@string/imageview_amiibo"
+            android:src="@mipmap/ic_launcher"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:foreground="@drawable/card_foreground"
+            android:layout_gravity="center" />
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

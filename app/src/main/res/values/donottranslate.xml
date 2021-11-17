@@ -32,10 +32,10 @@
     <string name="settings_disable_debug">settings_disable_debug</string>
     <string name="settings_stable_channel">settings_stable_channel</string>
     <string name="settings_ignore_sdcard">settings_ignore_sdcard</string>
-    <string name="settings_view_wiki">settings_view_wiki</string>
     <string name="settings_view_reddit">settings_view_reddit</string>
     <string name="image_network_settings">\@string/image_network_settings</string>
 
+    <string name="mimetype_text">text/plain</string>
     <string name="mimetype_apk">application/vnd.android.package-archive</string>
     <string-array name="mimetype_bin">
         <item>application/octet-stream</item>

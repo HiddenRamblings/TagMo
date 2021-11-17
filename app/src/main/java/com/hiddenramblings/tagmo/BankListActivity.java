@@ -130,6 +130,8 @@ public class BankListActivity extends AppCompatActivity implements
     private KeyManager keyManager;
 
     private final ArrayList<Amiibo> amiibos = new ArrayList<>();
+    private WriteBanksAdapter writeFileAdapter;
+    private WriteBanksAdapter writeListAdapter;
 
     private int clickedPosition;
     private enum CLICKED {
@@ -165,6 +167,7 @@ public class BankListActivity extends AppCompatActivity implements
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    writeListAdapter.resetSelections();
                     amiiboCard.setVisibility(View.GONE);
                     writeBankLayout.setVisibility(View.GONE);
                     writeOpenBanks.setVisibility(View.VISIBLE);
@@ -212,10 +215,33 @@ public class BankListActivity extends AppCompatActivity implements
         eliteBankCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) ->
                 writeOpenBanks.setText(getString(R.string.write_open_banks, valueNew)));
 
+        this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
+
         if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
             amiiboFilesView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
+
+        writeFileAdapter = new WriteBanksAdapter(settings,
+                new WriteBanksAdapter.OnAmiiboClickListener() {
+            @Override
+            public void onAmiiboClicked(AmiiboFile amiiboFile) {
+                if (amiiboFile != null) {
+                    writeAmiiboFile(amiiboFile, clickedPosition);
+                }
+            }
+
+            @Override
+            public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
+                if (amiiboFile != null) {
+                    writeAmiiboFile(amiiboFile, clickedPosition);
+                }
+            }
+        });
+        this.settings.addChangeListener(writeFileAdapter);
+
+        writeListAdapter = new WriteBanksAdapter(settings, this::writeAmiiboCollection);
+        this.settings.addChangeListener(writeListAdapter);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -236,8 +262,6 @@ public class BankListActivity extends AppCompatActivity implements
                 return true;
             }
         });
-
-        this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
     }
 
     private void updateEliteHardwareAdapter(ArrayList<String> amiiboList) {
@@ -338,8 +362,7 @@ public class BankListActivity extends AppCompatActivity implements
     @Click(R.id.write_open_banks)
     void onWriteOpenBanksClick() {
         setBottomCardView(false);
-        amiiboFilesView.setAdapter(new WriteBanksAdapter(settings, this::writeAmiiboCollection));
-        this.settings.addChangeListener((BrowserSettingsListener) amiiboFilesView.getAdapter());
+        amiiboFilesView.setAdapter(writeListAdapter);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
@@ -428,8 +451,7 @@ public class BankListActivity extends AppCompatActivity implements
 
     private void displayWriteDialog(int position) {
         setBottomCardView(false);
-        amiiboFilesView.setAdapter(new WriteBanksAdapter(settings,
-                new WriteBanksAdapter.OnAmiiboClickListener() {
+        writeFileAdapter.setListener(new WriteBanksAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 if (amiiboFile != null) {
@@ -443,8 +465,8 @@ public class BankListActivity extends AppCompatActivity implements
                     writeAmiiboFile(amiiboFile, position);
                 }
             }
-        }));
-        this.settings.addChangeListener((BrowserSettingsListener) amiiboFilesView.getAdapter());
+        });
+        amiiboFilesView.setAdapter(writeFileAdapter);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 

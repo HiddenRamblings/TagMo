@@ -50,7 +50,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
     private final BrowserSettings settings;
     private OnAmiiboClickListener listener = null;
     private OnHighlightListener collector = null;
-    private final ArrayList<AmiiboFile> amiiboFiles;
+    private final ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
     private ArrayList<AmiiboFile> filteredData;
     private AmiiboFilter filter;
     boolean firstRun;
@@ -61,8 +61,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
         this.listener = listener;
 
         firstRun = true;
-        this.filteredData = this.amiiboFiles = settings.getAmiiboFiles();
-        Collections.sort(filteredData, new AmiiboComparator(settings));
+        this.filteredData = this.amiiboFiles;
         this.setHasStableIds(true);
     }
 
@@ -71,9 +70,16 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
         this.collector = collector;
 
         firstRun = true;
-        this.filteredData = this.amiiboFiles = settings.getAmiiboFiles();
-        Collections.sort(filteredData, new AmiiboComparator(settings));
+        this.filteredData = this.amiiboFiles;
         this.setHasStableIds(true);
+    }
+
+    public void setListener(OnAmiiboClickListener listener) {
+        this.listener = listener;
+    }
+
+    public void resetSelections() {
+        this.amiiboList.clear();
     }
 
     @Override
@@ -81,9 +87,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                                          BrowserSettings oldBrowserSettings) {
         boolean refresh = firstRun ||
                 !BrowserSettings.equals(newBrowserSettings.getQuery(),
-                        oldBrowserSettings.getQuery()) ||
-                !BrowserSettings.equals(newBrowserSettings.getSort(),
-                        oldBrowserSettings.getSort());
+                        oldBrowserSettings.getQuery());
 
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
@@ -200,7 +204,6 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
         if (this.filter == null) {
             this.filter = new AmiiboFilter();
         }
-
         return this.filter;
     }
 

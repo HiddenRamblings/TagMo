@@ -369,12 +369,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         prefs.ignoreSdcard().put(ignoreSdcard.isChecked());
     }
 
-    @PreferenceClick(R.string.settings_view_wiki)
-    void onViewWikiClicked() {
-        startActivity(new Intent(requireActivity(), WebActivity_.class)
-                .putExtra("WEBSTIE", Website.TAGMO_WIKI));
-    }
-
     @PreferenceClick(R.string.settings_view_reddit)
     void onViewRedditClicked() {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.TAGMO_REDDIT)));

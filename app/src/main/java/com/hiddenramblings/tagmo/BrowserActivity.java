@@ -201,6 +201,22 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @AfterViews
     void afterViews() {
+        File[] files = getFilesDir().listFiles((dir, name) ->
+                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            }
+        }
+        files = getExternalFilesDir(null).listFiles((dir, name) ->
+                name.toLowerCase(Locale.ROOT).endsWith(".txt"));
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            }
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkForUpdate();
         } else {
@@ -288,15 +304,6 @@ public class BrowserActivity extends AppCompatActivity implements
         this.settings.addChangeListener((BrowserSettingsListener) this.foldersView.getAdapter());
 
         this.loadPTagKeyManager();
-
-        File[] files = getFilesDir().listFiles((dir, name) ->
-                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
-        if (files != null && files.length > 0) {
-            for (File file : files) {
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
-            }
-        }
     }
 
     ActivityResultLauncher<Intent> onAmiiboActivity = registerForActivityResult(
@@ -580,6 +587,12 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    @OptionsItem(R.id.instructions_wiki)
+    void onInstructionsWikiClicked() {
+        startActivity(new Intent(this, WebActivity_.class)
+                .putExtra(WebActivity.WEBSITE, Website.TAGMO_WIKI));
+    }
+
     @OptionsItem(R.id.filter_game_series)
     boolean onFilterGameSeriesClick() {
         SubMenu subMenu = menuFilterGameSeries.getSubMenu();
@@ -836,8 +849,6 @@ public class BrowserActivity extends AppCompatActivity implements
         menuUnlockElite.setVisible(TagMo.getPrefs().enableEliteSupport().get());
 
         // setOnQueryTextListener will clear this, so make a copy
-        String query = settings.getQuery();
-
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menuSearch.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -864,6 +875,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
 
         //focus the SearchView
+        String query = settings.getQuery();
         if (!query.isEmpty()) {
             menuSearch.expandActionView();
             searchView.setQuery(query, true);

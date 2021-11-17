@@ -51,7 +51,14 @@
 
 package com.eightbit.io;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.hiddenramblings.tagmo.BuildConfig;
@@ -62,26 +69,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 @SuppressWarnings("unused")
 public class Debug {
-/* TODO: Intercept all uncaught exceptions and print logcat file
- *     Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
- *         StringWriter exception = new StringWriter();
- *         error.printStackTrace(new PrintWriter(exception));
- *         Log.e(Debug.TAG(error.getClass()), exception.toString());
- *         error.printStackTrace();
- *         try {
- *             Debug.processLogcat(file);
- *         } catch (IOException ioe) {
- *             ioe.printStackTrace();
- *         }
- *         android.os.Process.killProcess(android.os.Process.myPid());
- *         System.exit(0);
- *     });
- */
 
     public static String TAG(Class<?> source) {
         return source.getSimpleName();
@@ -113,12 +106,12 @@ public class Debug {
             Log.w(TAG(ex.getClass()), TagMo.getStringRes(resource), ex);
     }
 
-    public static File processLogcat(File file) throws IOException {
+    public static Uri processLogcat(Context context, String displayName) throws IOException {
         final StringBuilder log = new StringBuilder();
         String separator = System.getProperty("line.separator");
-        log.append(android.os.Build.MANUFACTURER);
+        log.append(Build.MANUFACTURER);
         log.append(" ");
-        log.append(android.os.Build.MODEL);
+        log.append(Build.MODEL);
         log.append(separator);
         log.append("Android SDK ");
         log.append(Build.VERSION.SDK_INT);
@@ -130,7 +123,7 @@ public class Debug {
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d",
                 BuildConfig.APPLICATION_ID,
-                "-t", "1024"
+                "-t", "512"
         });
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 mLogcatProc.getInputStream()));
@@ -142,9 +135,33 @@ public class Debug {
             log.append(separator);
         }
         reader.close();
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            fos.write(log.toString().getBytes());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName);
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain");
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH,
+                    Environment.DIRECTORY_DOWNLOADS);
+            ContentResolver resolver = context.getContentResolver();
+            Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
+            try (OutputStream fos = resolver.openOutputStream(uri)) {
+                fos.write(log.toString().getBytes());
+            }
+            return uri;
+        } else {
+            File file = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), displayName + ".txt");
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(log.toString().getBytes());
+            }
+            try {
+                MediaScannerConnection.scanFile(context, new String[] {
+                        file.getAbsolutePath()
+                }, new String[]{"text/plain"}, null);
+            } catch (Exception e) {
+                // Media scan can fail without adverse consequences
+            }
+            return Uri.fromFile(file);
         }
-        return file;
     }
 }

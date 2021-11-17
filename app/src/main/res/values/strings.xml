@@ -117,6 +117,7 @@
     <string name="capture_logcat">Capture Logcat</string>
 
     <string name="wrote_file">File saved to %1$s</string>
+    <string name="wrote_logcat">Logcat saved to %1$s</string>
     <string name="nfc_tag">NFC tag</string>
     <string name="tag_detected">%1$s detected&#8230;</string>
     <string name="tag_scanning">%1$s scanning&#8230;</string>

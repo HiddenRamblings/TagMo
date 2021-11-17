@@ -147,4 +147,9 @@
         android:icon="@drawable/ic_save_white_24dp"
         android:title="@string/capture_logcat"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/instructions_wiki"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:title="@string/instructions_wiki"
+        app:showAsAction="ifRoom"/>
 </menu>

@@ -62,6 +62,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.hiddenramblings.tagmo.BuildConfig;
+import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.BufferedReader;
@@ -123,7 +124,7 @@ public class Debug {
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d",
                 BuildConfig.APPLICATION_ID,
-                "-t", "512"
+                "-t", "768"
         });
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 mLogcatProc.getInputStream()));
@@ -139,7 +140,8 @@ public class Debug {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName);
-            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain");
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE,
+                    context.getString(R.string.mimetype_text));
             contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH,
                     Environment.DIRECTORY_DOWNLOADS);
             ContentResolver resolver = context.getContentResolver();
@@ -157,7 +159,7 @@ public class Debug {
             try {
                 MediaScannerConnection.scanFile(context, new String[] {
                         file.getAbsolutePath()
-                }, new String[]{"text/plain"}, null);
+                }, new String[]{ context.getString(R.string.mimetype_text) }, null);
             } catch (Exception e) {
                 // Media scan can fail without adverse consequences
             }

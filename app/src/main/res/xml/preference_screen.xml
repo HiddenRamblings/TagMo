@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/encryption_keys"
+        android:title="@string/crypto_keys"
         app:iconSpaceReserved="false">
         <androidx.preference.Preference
             android:key="@string/settings_import_keys"
@@ -13,24 +13,19 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/pref_image_loading"
+        android:title="@string/pref_restrictions"
         app:iconSpaceReserved="false">
-        <androidx.preference.ListPreference
-            android:entries="@array/imageNetworkSettings"
-            android:entryValues="@array/imageNetworkSettingValues"
-            android:key="@string/image_network_settings"
-            android:title="@string/image_loading_details"
-            app:iconSpaceReserved="false" />
-    </androidx.preference.PreferenceCategory>
-
-    <androidx.preference.PreferenceCategory
-        android:title="@string/pref_title_validation"
-        app:iconSpaceReserved="false" >
         <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_enable_tag_type_validation"
             android:summary="@string/tag_validation_details"
             android:title="@string/enable_tag_validation"
+            app:iconSpaceReserved="false" />
+        <androidx.preference.ListPreference
+            android:entries="@array/imageNetworkSettings"
+            android:entryValues="@array/imageNetworkSettingValues"
+            android:key="@string/image_network_settings"
+            android:title="@string/image_loading_details"
             app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 
@@ -133,10 +128,6 @@
     <androidx.preference.PreferenceCategory
         android:title="@string/pref_resources"
         app:iconSpaceReserved="false">
-        <androidx.preference.Preference
-            android:key="@string/settings_view_wiki"
-            android:title="@string/pref_wiki_link"
-            app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/settings_view_reddit"
             android:title="@string/pref_reddit_link"

@@ -174,7 +174,6 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
         if (this.filter == null) {
             this.filter = new AmiiboFilter();
         }
-
         return this.filter;
     }
 

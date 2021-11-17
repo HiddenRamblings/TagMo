@@ -3,9 +3,9 @@
 
     <string name="topCenterTextMessage">Place the tag under the phone</string>
 
-    <string name="fixed_key_found">Locked Key found.</string>
+    <string name="fixed_key_found">Locked Key cached / loaded.</string>
     <string name="fixed_key_missing">No Locked Key!</string>
-    <string name="unfixed_key_found">Unfixed Key found.</string>
+    <string name="unfixed_key_found">Unfixed Key  cached / loaded.</string>
     <string name="unfixed_key_missing">No Unfixed Key!</string>
 
     <string name="nfc_unsupported">NFC Not Supported!</string>
@@ -115,6 +115,7 @@
 
     <string name="settings">Settings</string>
     <string name="capture_logcat">Capture Logcat</string>
+    <string name="instructions_wiki">Browse Guides</string>
 
     <string name="wrote_file">File saved to %1$s</string>
     <string name="wrote_logcat">Logcat saved to %1$s</string>
@@ -148,12 +149,11 @@
     <string name="allow">Allow</string>
     <string name="emulated_storage">Emulated storage may contain amiibo™.</string>
 
-    <string name="encryption_keys">Encryption Keys</string>
-    <string name="pref_import_keys">Import Keys</string>
-    <string name="pref_image_loading">Image Loading</string>
-    <string name="image_loading_details">Load images</string>
-    <string name="pref_title_validation">Tag Validation</string>
-    <string name="enable_tag_validation">Enable NTAG215 validation</string>
+    <string name="crypto_keys">Crypto Keys</string>
+    <string name="pref_import_keys">Import binary keys</string>
+    <string name="pref_restrictions">Restrictions</string>
+    <string name="image_loading_details">Image loading</string>
+    <string name="enable_tag_validation">NTAG215 validation</string>
     <string name="tag_validation_details">Not all NFC chipsets correctly identify valid NFC tags.\nDisabling will write to tags that may be incompatible.</string>
     <string name="enable_power_tag">Enable Power Tag support</string>
     <string name="power_tag_details">Support is currently in development.\nSee Github for limitations and use.</string>
@@ -183,9 +183,8 @@
     <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
     <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard / external storage device</string>
     <string name="pref_resources">Resources</string>
-    <string name="pref_wiki_link">View Instructions Wiki</string>
     <string name="pref_reddit_link">Visit the TagMo reddit</string>
-    <string name="pref_build_wumiibo">Generate Wumiibo Bins</string>
+    <string name="pref_build_wumiibo">Browse Wumiibo Bins</string>
     <string name="build_wumiibo_details">Generate decrypted bin files based on public amiibo™ bytecode information</string>
 
     <string name="amiibo_info_updated">Updated amiibo™ database!</string>

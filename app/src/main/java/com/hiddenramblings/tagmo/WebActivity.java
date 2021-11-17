@@ -59,6 +59,8 @@ import java.util.zip.ZipInputStream;
 @EActivity(R.layout.activity_webview)
 public class WebActivity extends AppCompatActivity {
 
+    public static String WEBSITE = "WEBSITE";
+
     @ViewById(R.id.webview_content)
     WebView mWebView;
 
@@ -144,8 +146,9 @@ public class WebActivity extends AppCompatActivity {
             webViewSettings.setBuiltInZoomControls(true);
             webViewSettings.setSupportZoom(true);
 
-            if (getIntent().hasExtra("WEBSITE")) {
-                mWebView.loadUrl(getIntent().getStringExtra("WEBSITE"));
+            if (getIntent().hasExtra(WEBSITE)) {
+                webViewSettings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+                mWebView.loadUrl(getIntent().getStringExtra(WEBSITE));
                 return;
             }
 
@@ -153,10 +156,10 @@ public class WebActivity extends AppCompatActivity {
                  BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
                 StringBuilder total = new StringBuilder();
                 for (String line; (line = r.readLine()) != null; ) {
-                    total.append(line).append("<br />");
+                    total.append(line).append("\n");
                 }
-                mWebView.loadData(total.toString(),
-                        "text/html; charset=UTF-8", null);
+                mWebView.loadData(total.toString(), getString(R.string.mimetype_text)
+                        + "; charset=" + TagMo.UTF_8.displayName(), null);
             } catch (Exception e) {
                 Debug.Log(e);
                 new Toasty(this).Long(R.string.fail_logcat);

@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -571,18 +570,11 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background
     void onCaptureLogcatClicked() {
         try {
-            File file = Debug.processLogcat(new File(getExternalFilesDir(null),
-                    "tagmo_logcat.txt"));
-            try {
-                MediaScannerConnection.scanFile(this,
-                        new String[] { file.getAbsolutePath() }, null, null);
-            } catch (Exception e) {
-                Debug.Log(R.string.fail_media_scan, e);
-            }
-            new Toasty(this).Long(getString(R.string.wrote_file,
-                    Storage.getRelativePath(file)));
+            Uri uri = Debug.processLogcat(this, "tagmo_logcat");
+            new Toasty(this).Long(getString(R.string.wrote_logcat,
+                    uri.getEncodedPath()));
             startActivity(TagMo.getIntent(new Intent(this,
-                    WebActivity_.class)).setData(Storage.getFileUri(file)));
+                    WebActivity_.class)).setData(uri));
         } catch (IOException e) {
             new Toasty(this).Short(e.getMessage());
         }

@@ -204,16 +204,16 @@ public class Storage extends Environment {
         return (storageFile != null ? storageFile : setFile()).getAbsolutePath();
     }
 
+    public static Uri getFileUri(File file) {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                ? FileProvider.getUriForFile(TagMo.getContext(), PROVIDER, file)
+                : Uri.fromFile(file);
+    }
+
     public static String getRelativePath(File file) {
         String filePath = file.getAbsolutePath();
         String storagePath = getPath();
         return filePath.startsWith(storagePath)
                 ? filePath.substring(storagePath.length()) : filePath;
-    }
-
-    public static Uri getFileUri(File file) {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                ? FileProvider.getUriForFile(TagMo.getContext(), PROVIDER, file)
-                : Uri.fromFile(file);
     }
 }

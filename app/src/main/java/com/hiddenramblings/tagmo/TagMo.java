@@ -15,7 +15,6 @@ import com.hiddenramblings.tagmo.settings.Preferences_;
 import org.androidannotations.annotations.EApplication;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -100,8 +99,7 @@ public class TagMo extends Application {
             Log.e(Debug.TAG(error.getClass()), exception.toString());
             error.printStackTrace();
             try {
-                Debug.processLogcat(new File(getExternalFilesDir(null),
-                        "crash_logcat.txt"));
+                Debug.processLogcat(this, "crash_logcat");
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }

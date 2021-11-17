@@ -212,7 +212,10 @@ public class BankListActivity extends AppCompatActivity implements
         eliteBankCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) ->
                 writeOpenBanks.setText(getString(R.string.write_open_banks, valueNew)));
 
-        amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
+        if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
+            amiiboFilesView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+        else
+            amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));

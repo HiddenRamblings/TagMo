@@ -129,7 +129,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
-            new JSONExecutor(Website.API_LASTUPDATED).setResultListener(result -> {
+            new JSONExecutor(Website.LASTUPDATED).setResultListener(result -> {
                 if (result != null) parseUpdateJSON(result);
             });
         }

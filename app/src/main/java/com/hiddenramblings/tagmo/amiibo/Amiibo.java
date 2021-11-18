@@ -108,13 +108,13 @@ public class Amiibo implements Comparable<Amiibo> {
     }
 
     public String getImageUrl() {
-        return String.format(Website.AMIIBOAPI_IMAGE, getHead(), getTail());
+        return String.format(Website.AMIIBO_IMAGE, getHead(), getTail());
     }
 
     public static String getImageUrl(long amiiboId) {
         int head = (int) ((amiiboId & HEAD_MASK) >> HEAD_BITSHIFT);
         int tail = (int) ((amiiboId & TAIL_MASK) >> TAIL_BITSHIFT);
-        return String.format(Website.AMIIBOAPI_IMAGE, head, tail);
+        return String.format(Website.AMIIBO_IMAGE, head, tail);
     }
 
     @Override

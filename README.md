@@ -16,7 +16,7 @@ It was created as a result of the "[DIY amiibo cards](https://gbatemp.net/thread
 
 If you want to contribute, please make sure to adress your PRs to the 'experimental' branch. Thank you.
 
-## [Installing TagMo](https://github.com/HiddenRamblings/TagMo/wiki/Installing-TagMo)
+## [Instructions](https://tagmo.gitlab.io/)
 
 ## [Features](https://github.com/HiddenRamblings/TagMo/wiki#features)
 
@@ -24,11 +24,7 @@ If you want to contribute, please make sure to adress your PRs to the 'experimen
 
 ## [Requirements](https://github.com/HiddenRamblings/TagMo/wiki#requirements)
 
-## [Instructions](https://github.com/HiddenRamblings/TagMo/wiki/Instructions)
-* [Power Tag (PowerSaves)](<https://github.com/HiddenRamblings/TagMo/wiki/Power-Tag-(PowerSaves)>)
-* [N2 Elite (or Amiiqo)](<https://github.com/HiddenRamblings/TagMo/wiki/N2-Elite-(or-Amiiqo)>)
-
-## [Reporting Issues](https://github.com/HiddenRamblings/TagMo/wiki/Reporting-Issues)
+## [Reporting Issues](https://github.com/HiddenRamblings/TagMo/wiki#reporting-issues)
 
 # Credits
 This app is a result of work by many others. Thanks go out to (In alphabetical order):

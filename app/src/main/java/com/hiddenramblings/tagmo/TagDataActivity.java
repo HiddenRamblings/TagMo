@@ -163,12 +163,7 @@ public class TagDataActivity extends AppCompatActivity {
             return;
         }
         try {
-            tagData = keyManager.decrypt(tagData);
-        } catch (Exception e) {
-            // Decryption is not a necessary step
-        }
-        try {
-            this.amiiboData = new AmiiboData(tagData);
+            this.amiiboData = new AmiiboData(keyManager.decrypt(tagData));
         } catch (Exception e) {
             Debug.Log(e);
             showErrorDialog(R.string.fail_display);

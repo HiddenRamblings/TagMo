@@ -620,10 +620,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     });
 
     private void showFileChooser(String title, int resultCode) {
-        Intent intent = TagMo.getIntent(new Intent(
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+        Intent intent = new Intent(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
                         ? Intent.ACTION_OPEN_DOCUMENT
-                        : Intent.ACTION_GET_CONTENT));
+                        : Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
         intent.putExtra("android.content.extra.FANCY", true);
@@ -635,7 +634,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         intent.putExtra(Intent.EXTRA_MIME_TYPES,
                                 getResources().getStringArray(R.array.mimetype_bin));
                     }
-                    onLoadKeys.launch(Intent.createChooser(intent, title));
+                    onLoadKeys.launch(Intent.createChooser(
+                            TagMo.getIntent(intent), title));
                 } catch (ActivityNotFoundException ex) {
                     Debug.Log(ex);
                 }
@@ -646,7 +646,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         intent.putExtra(Intent.EXTRA_MIME_TYPES,
                                 getResources().getStringArray(R.array.mimetype_json));
                     }
-                    onImportAmiiboDatabase.launch(Intent.createChooser(intent, title));
+                    onImportAmiiboDatabase.launch(Intent.createChooser(
+                            TagMo.getIntent(intent), title));
                 } catch (ActivityNotFoundException ex) {
                     Debug.Log(ex);
                 }

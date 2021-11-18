@@ -993,14 +993,14 @@ public class BrowserActivity extends AppCompatActivity implements
                                 : PendingIntent.FLAG_UPDATE_CURRENT);
                 session.commit(pi.getIntentSender());
             } else {
-                Intent intent = TagMo.getIntent(new Intent(Intent.ACTION_INSTALL_PACKAGE));
+                Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
                 intent.setDataAndType(Storage.getFileUri(apk),
                         getString(R.string.mimetype_apk));
                 intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
                 intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
                 intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,
                         getApplicationInfo().packageName);
-                startActivity(intent);
+                startActivity(TagMo.getIntent(intent));
             }
         } catch (MalformedURLException mue) {
             Debug.Log(mue);
@@ -1590,10 +1590,10 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onStorageEnabled();
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Intent intent = TagMo.getIntent(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
                 intent.putExtra("android.content.extra.FANCY", true);
-                onDocumentTree.launch(intent);
+                onDocumentTree.launch(TagMo.getIntent(intent));
             }
         }
     });

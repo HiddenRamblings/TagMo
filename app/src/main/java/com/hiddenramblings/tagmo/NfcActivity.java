@@ -406,8 +406,8 @@ public class NfcActivity extends AppCompatActivity {
                                 try {
                                     TagUtils.validateData(data);
                                 } catch (Exception e) {
-                                    keyManager.encrypt(data);
                                     try {
+                                        keyManager.encrypt(data);
                                         TagUtils.validateData(data);
                                     } catch (Exception ex) {
                                         mifare.activateBank(selection);

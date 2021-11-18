@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -148,7 +149,10 @@ public class WebActivity extends AppCompatActivity {
 
             if (getIntent().hasExtra(WEBSITE)) {
                 webViewSettings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-                mWebView.loadUrl(getIntent().getStringExtra(WEBSITE));
+                String url = getIntent().getStringExtra(WEBSITE);
+                if (url.equals(Website.TAGMO_WIKI))
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                mWebView.loadUrl(url);
                 return;
             }
 

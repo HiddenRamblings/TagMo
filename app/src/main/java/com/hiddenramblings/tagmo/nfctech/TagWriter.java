@@ -66,7 +66,7 @@ public class TagWriter {
         try {
             tagData = keyManager.decrypt(tagData);
         } catch (Exception e) {
-            // Decryption is not a necessary step
+            Debug.Log(e);
         }
         if (isPowerTag) {
             // use a pre-determined static id for Power Tag
@@ -148,7 +148,7 @@ public class TagWriter {
             try {
                 tagData = keyManager.decrypt(tagData);
             } catch (Exception e) {
-                // Decryption is not a necessary step
+                Debug.Log(e);
             }
             tagData = keyManager.encrypt(tagData);
             if (mifare.amiiboFastWrite(0, active_bank, tagData)) {

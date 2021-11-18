@@ -205,7 +205,7 @@ public class Storage extends Environment {
     }
 
     public static Uri getFileUri(File file) {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
                 ? FileProvider.getUriForFile(TagMo.getContext(), PROVIDER, file)
                 : Uri.fromFile(file);
     }

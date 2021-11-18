@@ -149,7 +149,7 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/instructions_wiki"
-        android:icon="@drawable/ic_search_white_24dp"
+        android:icon="@drawable/ic_github_white_24dp"
         android:title="@string/instructions_wiki"
         app:showAsAction="ifRoom"/>
 </menu>

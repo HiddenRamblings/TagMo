@@ -925,6 +925,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public boolean onQueryTextSubmit(String query) {
         settings.setQuery(query);
         settings.notifyChanges();
+        setAmiiboStatsText();
         return false;
     }
 
@@ -932,6 +933,8 @@ public class BrowserActivity extends AppCompatActivity implements
     public boolean onQueryTextChange(String newText) {
         settings.setQuery(newText);
         settings.notifyChanges();
+        if (newText.length() == 0)
+            setAmiiboStatsText();
         return true;
     }
 
@@ -1468,31 +1471,44 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private void setFolderText(String text) {
-        this.currentFolderView.setGravity(Gravity.NO_GRAVITY);
-        this.currentFolderView.setText(text);
-        handler.removeCallbacksAndMessages(null);
-        handler.postDelayed(() -> {
-            int size = settings.getAmiiboFiles().size();
-            if (size <= 0) return;
-            this.currentFolderView.setGravity(Gravity.CENTER);
-            if (settings.getAmiiboManager() != null) {
-                int count = 0;
-                for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+    private void setAmiiboStatsText() {
+        BrowserAmiibosAdapter adapter = (BrowserAmiibosAdapter) amiibosView.getAdapter();
+        int size = settings.getAmiiboFiles().size();
+        if (size <= 0) return;
+        currentFolderView.setGravity(Gravity.CENTER);
+        if (settings.getAmiiboManager() != null) {
+            int count = 0;
+            if (adapter != null && !settings.getQuery().isEmpty())
+                size = adapter.getItemCount();
+            for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+                if (settings.getQuery().isEmpty()) {
                     for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
                         if (amiibo.id == amiiboFile.getId()) {
                             count += 1;
                             break;
                         }
                     }
+                } else if (adapter != null) {
+                    for (int x = 0; x < size; x++) {
+                        if (amiibo.id == adapter.getItemId(x)) {
+                            count += 1;
+                            break;
+                        }
+                    }
                 }
-                currentFolderView.setText(getString(R.string.amiibo_collected, size, count,
-                        settings.getAmiiboManager().amiibos.values().size()));
-            } else {
-                currentFolderView.setText(getString(R.string.files_displayed, size));
             }
-        }, 5000);
+            currentFolderView.setText(getString(R.string.amiibo_collected, size, count,
+                    settings.getAmiiboManager().amiibos.size()));
+        } else {
+            currentFolderView.setText(getString(R.string.files_displayed, size));
+        }
+    }
 
+    private void setFolderText(String text) {
+        this.currentFolderView.setGravity(Gravity.NO_GRAVITY);
+        this.currentFolderView.setText(text);
+        handler.removeCallbacksAndMessages(null);
+        handler.postDelayed(this::setAmiiboStatsText, 5000);
     }
 
     @UiThread

@@ -73,9 +73,15 @@ public class Storage extends Environment {
     private static final String STORAGE_ROOT = "/storage";
 
     private static File storageFile;
+    private static boolean isInternalPreferred;
+    private static boolean isPhysicalAvailable;
 
     private static File getRootPath(File directory) {
         return directory.getParentFile().getParentFile().getParentFile().getParentFile();
+    }
+
+    public static boolean hasPhysicalStorage() {
+        return isPhysicalAvailable;
     }
 
     private static HashSet<String> getExternalMounts() {
@@ -117,98 +123,107 @@ public class Storage extends Environment {
                 // Workaround for WRITE_MEDIA_STORAGE
                 String sdCardPath = sd.replace("mnt/media_rw", "storage");
                 if (!sdCardPath.equals(getExternalStorageDirectory().getAbsolutePath())
-                        && new File(sdCardPath).canRead()) return new File(sdCardPath);
+                        && new File(sdCardPath).canRead()) {
+                    isPhysicalAvailable = true;
+                    return new File(sdCardPath);
+                }
             }
         }
         return getExternalStorageDirectory();
     }
 
-    private static File setFileGeneric() {
+    private static File setFileGeneric(boolean internal) {
         File emulated = null;
         File physical = null;
         try {
             for (File directory : new File(STORAGE_ROOT).listFiles()) {
                 if (directory.getAbsolutePath().endsWith("emulated"))
                     emulated = new File(directory, "0");
-                else if (directory.getAbsolutePath().equals("ext_sd")) {
-                    physical = directory;
-                    TagMo.getPrefs().ignoreSdcard().put(true);
-                } else if (!directory.getAbsolutePath().endsWith("self"))
+                else if (!directory.getAbsolutePath().endsWith("self"))
                     physical = directory;
             }
             // Force a possible failure to prevent crash later
             Log.d("EMULATED", emulated.getAbsolutePath());
             Log.d("PHYSICAL", physical.getAbsolutePath());
+            if (physical != null && physical != emulated)
+                isPhysicalAvailable = true;
         } catch (NullPointerException e) {
-            if (TagMo.getPrefs().ignoreSdcard().get())
+            if (TagMo.getPrefs().preferEmulated().get())
                 return getExternalStorageDirectory();
             return storageFile = setFileMounts();
         }
-        if (TagMo.getPrefs().ignoreSdcard().get())
+        if (internal)
             return storageFile = emulated != null ? emulated : physical;
         return storageFile = physical != null ? physical : emulated;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private static File setFileLollipop() {
+    private static File setFileLollipop(boolean internal) {
         File[] storage = ContextCompat.getExternalFilesDirs(TagMo.getContext(), null);
-        if (TagMo.getPrefs().ignoreSdcard().get()) {
-            return storageFile = storage[0] != null && storage[0].canRead()
-                    ? getRootPath(storage[0]) : setFileGeneric();
+        File emulated;
+        File physical;
+        try {
+            emulated = storage[0] != null && storage[0].canRead() ? getRootPath(storage[0]) : null;
+        } catch (IllegalArgumentException | NullPointerException e) {
+            emulated = null;
         }
         try {
-            return storageFile = storage.length > 1 && storage[1] != null
-                    && storage[1].canRead() && !isExternalStorageEmulated(storage[1])
-                    ? getRootPath(storage[1]) : storage[0] != null && storage[0].canRead()
-                    ? getRootPath(storage[0]) : setFileGeneric();
-            // [TARGET]/Android/data/[PACKAGE]/files
+            physical = storage.length > 1 && storage[1] != null && storage[1].canRead()
+                    && !isExternalStorageEmulated(storage[1]) ? getRootPath(storage[1]) : null;
         } catch (IllegalArgumentException | NullPointerException e) {
-            return setFileGeneric();
+            physical = null;
         }
+        if (physical != null && physical != emulated)
+            isPhysicalAvailable = true;
+        if (internal)
+            return storageFile = emulated != null ? emulated : setFileGeneric(internal);
+        else
+            return physical != null ? physical : emulated != null
+                    ? emulated : setFileGeneric(internal);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
-    private static File setFileRedVelvet() {
+    private static File setFileRedVelvet(boolean internal) {
         File emulated = null;
         File physical = null;
         try {
             for (File directory : getStorageDirectory().listFiles()) {
                 if (directory.getAbsolutePath().endsWith("emulated"))
                     emulated = new File(directory, "0");
-                else if (directory.getAbsolutePath().equals("ext_sd")) {
-                    physical = directory;
-                    TagMo.getPrefs().ignoreSdcard().put(true);
-                } else if (!directory.getAbsolutePath().endsWith("self"))
+                else if (!directory.getAbsolutePath().endsWith("self"))
                     physical = directory;
             }
             // Force a possible failure to prevent crash later
             Log.d("EMULATED", emulated.getAbsolutePath());
             Log.d("PHYSICAL", physical.getAbsolutePath());
+            if (physical != null && physical != emulated)
+                isPhysicalAvailable = true;
         } catch (IllegalArgumentException | NullPointerException e) {
-            return setFileLollipop();
+            return setFileLollipop(internal);
         }
-        if (TagMo.getPrefs().ignoreSdcard().get())
+        if (internal)
             return storageFile = emulated != null ? emulated : physical;
         else
             return storageFile = physical != null ? physical : emulated;
     }
 
-    private static File setFile() {
-        TagMo.getPrefs().ignoreSdcard().put(false);
+    private static File setFile(boolean internal) {
+        isInternalPreferred = internal;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-            return setFileRedVelvet();
+            return setFileRedVelvet(internal);
         else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            return setFileLollipop();
+            return setFileLollipop(internal);
         else
-            return setFileGeneric();
+            return setFileGeneric(internal);
     }
 
-    public static File getFile() {
-        return storageFile != null ? storageFile : setFile();
+    public static File getFile(boolean internal) {
+        return storageFile != null && internal == isInternalPreferred
+                ? storageFile : setFile(internal);
     }
 
-    public static String getPath() {
-        return (storageFile != null ? storageFile : setFile()).getAbsolutePath();
+    public static String getPath(boolean internal) {
+        return getFile(internal).getAbsolutePath();
     }
 
     public static Uri getFileUri(File file) {
@@ -217,9 +232,9 @@ public class Storage extends Environment {
                 : Uri.fromFile(file);
     }
 
-    public static String getRelativePath(File file) {
+    public static String getRelativePath(File file, boolean internal) {
         String filePath = file.getAbsolutePath();
-        String storagePath = getPath();
+        String storagePath = getPath(internal);
         return filePath.startsWith(storagePath)
                 ? filePath.substring(storagePath.length()) : filePath;
     }

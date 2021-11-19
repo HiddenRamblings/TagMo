@@ -65,8 +65,8 @@ public interface Preferences {
     @DefaultBoolean(keyRes = R.string.settings_disable_debug, value = false)
     boolean disableDebug();
 
-    @DefaultBoolean(keyRes = R.string.settings_ignore_sdcard, value = false)
-    boolean ignoreSdcard();
+    @DefaultBoolean(false)
+    boolean preferEmulated();
 
     @DefaultBoolean(keyRes = R.string.settings_stable_channel, value = true)
     boolean stableChannel();

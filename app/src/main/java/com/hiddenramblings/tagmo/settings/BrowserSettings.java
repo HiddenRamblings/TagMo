@@ -134,7 +134,7 @@ public class BrowserSettings implements Parcelable {
     }
 
     public BrowserSettings initialize() {
-        this.setBrowserRootFolder(new File(Storage.getFile(),
+        this.setBrowserRootFolder(new File(Storage.getFile(TagMo.getPrefs().preferEmulated().get()),
                 TagMo.getPrefs().browserRootFolder().get()));
         this.setQuery(TagMo.getPrefs().query().get());
         this.setSort(TagMo.getPrefs().sort().get());

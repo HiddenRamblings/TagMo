@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
@@ -137,6 +138,8 @@ public class BrowserActivity extends AppCompatActivity implements
     TextView currentFolderView;
     @ViewById(R.id.toggle)
     ImageView toggle;
+    @ViewById(R.id.switch_storage_root)
+    AppCompatButton switchStorageRoot;
 
     @OptionsMenuItem(R.id.search)
     MenuItem menuSearch;
@@ -218,6 +221,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 file.delete();
             }
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkForUpdate();
         } else {
@@ -315,8 +319,8 @@ public class BrowserActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_DELETE_AMIIBO.equals(result.getData().getAction())) return;
 
         new AlertDialog.Builder(this)
-                .setMessage(getString(R.string.warn_delete_file,
-                        Storage.getRelativePath(clickedAmiibo.getFilePath())))
+                .setMessage(getString(R.string.warn_delete_file, Storage.getRelativePath(
+                        clickedAmiibo.getFilePath(), TagMo.getPrefs().preferEmulated().get())))
                 .setPositiveButton(R.string.delete, (dialog, which) -> {
                     //noinspection ResultOfMethodCallIgnored
                     clickedAmiibo.getFilePath().delete();
@@ -463,6 +467,17 @@ public class BrowserActivity extends AppCompatActivity implements
         } else {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
+    }
+
+    @Click(R.id.switch_storage_root)
+    void onSwitchStorageClicked() {
+        boolean internal = !TagMo.getPrefs().preferEmulated().get();
+        TagMo.getPrefs().preferEmulated().put(internal);
+        switchStorageRoot.setText(internal
+                ? R.string.emulated_storage_root
+                : R.string.physical_storage_root);
+        this.settings.setBrowserRootFolder(Storage.getFile(internal));
+        this.settings.notifyChanges();
     }
 
     @OptionsItem(R.id.sort_id)
@@ -798,11 +813,6 @@ public class BrowserActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
-        if (result.getData().hasExtra(SettingsActivity.STORAGE)) {
-            this.settings.setBrowserRootFolder(new File(Storage.getFile(),
-                    TagMo.getPrefs().browserRootFolder().get()));
-            this.settings.notifyChanges();
-        }
         if (result.getData().hasExtra(SettingsActivity.WUMIIBO)) {
             this.settings.setShowDownloads(true);
             this.settings.notifyChanges();
@@ -828,6 +838,14 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onStorageEnabled() {
+        boolean internal = TagMo.getPrefs().preferEmulated().get();
+        if (Storage.getFile(internal).exists() && Storage.hasPhysicalStorage()) {
+            switchStorageRoot.setText(internal
+                    ? R.string.emulated_storage_root
+                    : R.string.physical_storage_root);
+        } else {
+            switchStorageRoot.setVisibility(View.GONE);
+        }
         if (keyManager.isKeyMissing()) {
             showOngoingSnackbar(getString(R.string.locating_keys));
             locateKeyFiles();
@@ -1279,7 +1297,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         TagMo.getPrefs().edit()
                 .browserRootFolder().put(Storage.getRelativePath(
-                        newBrowserSettings.getBrowserRootFolder()))
+                        newBrowserSettings.getBrowserRootFolder(),
+                TagMo.getPrefs().preferEmulated().get()))
                 .query().put(newBrowserSettings.getQuery())
                 .sort().put(newBrowserSettings.getSort())
                 .filterGameSeries().put(newBrowserSettings.getGameSeriesFilter())
@@ -1295,7 +1314,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (oldBrowserSettings.getQuery() != null
                 && !oldBrowserSettings.getQuery().equals(newBrowserSettings.getQuery())) return;
-        String relativeRoot = Storage.getRelativePath(newBrowserSettings.getBrowserRootFolder());
+        String relativeRoot = Storage.getRelativePath(newBrowserSettings.getBrowserRootFolder(),
+                TagMo.getPrefs().preferEmulated().get());
         setFolderText(relativeRoot.length() > 1 ? relativeRoot
                 : newBrowserSettings.getBrowserRootFolder().getAbsolutePath());
     }

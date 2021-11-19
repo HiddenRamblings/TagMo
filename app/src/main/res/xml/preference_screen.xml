@@ -117,12 +117,12 @@
             android:summary="@string/stable_channel_details"
             android:title="@string/pref_stable_channel"
             app:iconSpaceReserved="false" />
-        <androidx.preference.CheckBoxPreference
+        <!--<androidx.preference.CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/settings_ignore_sdcard"
             android:summary="@string/ignore_sdcard_details"
             android:title="@string/pref_ignore_sdcard"
-            app:iconSpaceReserved="false" />
+            app:iconSpaceReserved="false" />-->
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

@@ -130,7 +130,10 @@ public class Storage extends Environment {
             for (File directory : new File(STORAGE_ROOT).listFiles()) {
                 if (directory.getAbsolutePath().endsWith("emulated"))
                     emulated = new File(directory, "0");
-                else if (!directory.getAbsolutePath().endsWith("self"))
+                else if (directory.getAbsolutePath().equals("ext_sd")) {
+                    physical = directory;
+                    TagMo.getPrefs().ignoreSdcard().put(true);
+                } else if (!directory.getAbsolutePath().endsWith("self"))
                     physical = directory;
             }
             // Force a possible failure to prevent crash later
@@ -172,7 +175,10 @@ public class Storage extends Environment {
             for (File directory : getStorageDirectory().listFiles()) {
                 if (directory.getAbsolutePath().endsWith("emulated"))
                     emulated = new File(directory, "0");
-                else if (!directory.getAbsolutePath().endsWith("self"))
+                else if (directory.getAbsolutePath().equals("ext_sd")) {
+                    physical = directory;
+                    TagMo.getPrefs().ignoreSdcard().put(true);
+                } else if (!directory.getAbsolutePath().endsWith("self"))
                     physical = directory;
             }
             // Force a possible failure to prevent crash later
@@ -188,6 +194,7 @@ public class Storage extends Environment {
     }
 
     private static File setFile() {
+        TagMo.getPrefs().ignoreSdcard().put(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
             return setFileRedVelvet();
         else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

@@ -995,5 +995,6 @@ public class TagDataActivity extends AppCompatActivity {
                 .setMessage(msgRes)
                 .setPositiveButton(R.string.close, (dialog, which) -> finish())
                 .show();
+        setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_FIX_BANK_DATA));
     }
 }

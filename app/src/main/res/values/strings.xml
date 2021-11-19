@@ -208,6 +208,7 @@
     <string name="bank_select_details">Set Bank Number</string>
     <string name="write_confirm">Write selections to N2 Elite?</string>
     <string name="warn_delete_file">Deleting %1$s. Are you sure?</string>
+    <string name="repair_confirm">Repair corrupted amiibo™ data?</string>
     <string name="delete_active">Cannot delete the active bank!</string>
     <string name="backup_filename">Set amiibo™ Bin Name</string>
     <string name="emulated_storage_root">Browse Emulated Storage</string>

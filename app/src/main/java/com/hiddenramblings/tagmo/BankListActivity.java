@@ -135,12 +135,12 @@ public class BankListActivity extends AppCompatActivity implements
     private int clickedPosition;
     private enum CLICKED {
         NOTHING,
-        WRITER,
-        EDITOR,
-        HEXCODE,
-        BACKUP,
-        VERIFY,
-        FORMAT
+        WRITE_DATA,
+        EDIT_DATA,
+        HEX_CODE,
+        BANK_BACKUP,
+        VERIFY_TAG,
+        FORMAT_BANK
     }
     private CLICKED status = CLICKED.NOTHING;
 
@@ -392,6 +392,8 @@ public class BankListActivity extends AppCompatActivity implements
                 String fileName = TagReader.writeBytesToFile(directory,
                         input.getText().toString(), tagData);
                 new Toasty(this).Long(getString(R.string.wrote_file, fileName));
+                this.loadAmiiboFiles(settings.getBrowserRootFolder(),
+                        settings.isRecursiveEnabled());
             } catch (IOException e) {
                 new Toasty(this).Short(e.getMessage());
             }
@@ -419,7 +421,7 @@ public class BankListActivity extends AppCompatActivity implements
                     TagMo.EXTRA_AMIIBO_LIST));
         }
 
-        if (status == CLICKED.FORMAT) {
+        if (status == CLICKED.FORMAT_BANK) {
             status = CLICKED.NOTHING;
             this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             amiibos.set(clickedPosition, null);
@@ -504,24 +506,24 @@ public class BankListActivity extends AppCompatActivity implements
         switch (status) {
             case NOTHING:
                 break;
-            case WRITER:
+            case WRITE_DATA:
                 Intent modify = new Intent(this, NfcActivity_.class);
                 modify.setAction(TagMo.ACTION_WRITE_TAG_FULL);
                 modify.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
                 onUpdateTagResult.launch(modify.putExtras(args));
                 break;
-            case EDITOR:
+            case EDIT_DATA:
                 onUpdateTagResult.launch(new Intent(this,
                         TagDataActivity_.class).putExtras(args));
                 break;
-            case HEXCODE:
+            case HEX_CODE:
                 startActivity(new Intent(this,
                         HexViewerActivity_.class).putExtras(args));
                 break;
-            case BACKUP:
+            case BANK_BACKUP:
                 displayBackupDialog(tagData);
                 break;
-            case VERIFY:
+            case VERIFY_TAG:
                 try {
                     TagUtils.validateData(tagData);
                     new Toasty(this).Dialog(R.string.validation_success);
@@ -583,7 +585,7 @@ public class BankListActivity extends AppCompatActivity implements
                         scan.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
                         onUpdateTagResult.launch(scan);
                     } else {
-                        status = CLICKED.WRITER;
+                        status = CLICKED.WRITE_DATA;
                         scanAmiiboBank(current_bank);
                     }
                     return true;
@@ -596,7 +598,7 @@ public class BankListActivity extends AppCompatActivity implements
                     } else {
                         scan.setAction(TagMo.ACTION_FORMAT_BANK);
                         onUpdateTagResult.launch(scan);
-                        status = CLICKED.FORMAT;
+                        status = CLICKED.FORMAT_BANK;
                     }
                     return true;
                 case R.id.mnu_edit:
@@ -605,7 +607,7 @@ public class BankListActivity extends AppCompatActivity implements
                         editor.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
                         onUpdateTagResult.launch(editor);
                     } else {
-                        status = CLICKED.EDITOR;
+                        status = CLICKED.EDIT_DATA;
                         scanAmiiboBank(current_bank);
                     }
                     return true;
@@ -615,15 +617,19 @@ public class BankListActivity extends AppCompatActivity implements
                         viewhex.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
                         startActivity(viewhex);
                     } else {
-                        status = CLICKED.HEXCODE;
+                        status = CLICKED.HEX_CODE;
                         scanAmiiboBank(current_bank);
                     }
+                    return true;
+                case R.id.mnu_repair:
+                    scan.setAction(TagMo.ACTION_FIX_BANK_DATA);
+                    onScanTagResult.launch(scan);
                     return true;
                 case R.id.mnu_backup:
                     if (tagData != null && tagData.length > 0) {
                         displayBackupDialog(tagData);
                     } else {
-                        status = CLICKED.BACKUP;
+                        status = CLICKED.BANK_BACKUP;
                         scanAmiiboBank(current_bank);
                     }
                     return true;
@@ -633,7 +639,7 @@ public class BankListActivity extends AppCompatActivity implements
                         notice.Dialog(R.string.validation_success);
                     } catch (Exception e) {
                         if (e instanceof IOException) {
-                            status = CLICKED.VERIFY;
+                            status = CLICKED.VERIFY_TAG;
                             scanAmiiboBank(current_bank);
                         } else {
                             notice.Dialog(e.getMessage());

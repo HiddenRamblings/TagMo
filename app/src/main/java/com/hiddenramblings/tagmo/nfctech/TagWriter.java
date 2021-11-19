@@ -60,14 +60,9 @@ public class TagWriter {
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
 
         boolean isPowerTag = TagUtils.isPowerTag(mifare);
-
         Debug.Log(TagWriter.class, R.string.power_tag_verify, String.valueOf(isPowerTag));
 
-        try {
-            tagData = keyManager.decrypt(tagData);
-        } catch (Exception e) {
-            Debug.Log(e);
-        }
+        tagData = keyManager.decrypt(tagData);
         if (isPowerTag) {
             // use a pre-determined static id for Power Tag
             tagData = patchUid(NfcByte.POWERTAG_IDPAGES, tagData);
@@ -145,11 +140,7 @@ public class TagWriter {
     public static void writeEliteAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager,
                                       int active_bank) throws Exception {
         if (doEliteAuth(mifare, mifare.fastRead(0, 0))) {
-            try {
-                tagData = keyManager.decrypt(tagData);
-            } catch (Exception e) {
-                Debug.Log(e);
-            }
+            tagData = keyManager.decrypt(tagData);
             tagData = keyManager.encrypt(tagData);
             if (mifare.amiiboFastWrite(0, active_bank, tagData)) {
                 try {
@@ -172,7 +163,8 @@ public class TagWriter {
         }
     }
 
-    public static void restoreTag(NTAG215 mifare, byte[] tagData, boolean ignoreUid, KeyManager keyManager, boolean validateNtag) throws Exception {
+    public static void restoreTag(NTAG215 mifare, byte[] tagData, boolean ignoreUid,
+                                  KeyManager keyManager, boolean validateNtag) throws Exception {
         if (!ignoreUid)
             TagUtils.validateNtag(mifare, tagData, validateNtag);
         else {

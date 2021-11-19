@@ -34,39 +34,24 @@ public class TagReader {
         Debug.Log(TagWriter.class, R.string.validation_success);
     }
 
-
-
-    public static byte[] getValidatedData(KeyManager keyManager, File file) throws Exception {
-        byte[] data = TagReader.readTagFile(file);
+    public static byte[] getValidatedData(KeyManager keyManager, byte[] data) throws Exception {
         if (data == null) return null;
         try {
             TagUtils.validateData(data);
         } catch (Exception e) {
-            try {
-                data = keyManager.encrypt(data);
-                TagUtils.validateData(data);
-            } catch (RuntimeException ex) {
-                Debug.Log(ex);
-            }
+            data = keyManager.encrypt(data);
+            TagUtils.validateData(data);
         }
         return data;
     }
 
+    public static byte[] getValidatedFile(KeyManager keyManager, File file) throws Exception {
+        return getValidatedData(keyManager, TagReader.readTagFile(file));
+    }
+
     public static byte[] getValidatedDocument(
             KeyManager keyManager, DocumentFile file) throws Exception {
-        byte[] data = TagReader.readTagDocument(file.getUri());
-        if (data == null) return null;
-        try {
-            TagUtils.validateData(data);
-        } catch (Exception e) {
-            try {
-                data = keyManager.encrypt(data);
-                TagUtils.validateData(data);
-            } catch (RuntimeException ex) {
-                Debug.Log(ex);
-            }
-        }
-        return data;
+        return getValidatedData(keyManager, TagReader.readTagDocument(file.getUri()));
     }
 
     private static byte[] getTagData(String path, InputStream inputStream) throws Exception {

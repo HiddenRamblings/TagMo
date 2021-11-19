@@ -40,9 +40,10 @@ public class TagMo extends Application {
     public static final String ACTION_DELETE_AMIIBO = BuildConfig.APPLICATION_ID + ".DELETE_AMIIBO";
     public static final String ACTION_NFC_SCANNED = BuildConfig.APPLICATION_ID + ".NFC_SCANNED";
     public static final String ACTION_BUILD_WUMIIBO = BuildConfig.APPLICATION_ID + ".BUILD_WUMIIBO";
+    public static final String ACTION_BROWSE_GITLAB = BuildConfig.APPLICATION_ID + ".BROWSE_GITLAB";
 
     public static final String EXTRA_TAG_DATA = BuildConfig.APPLICATION_ID + ".EXTRA_TAG_DATA";
-    public static final String EXTRA_AMIIBO_DATA = BuildConfig.APPLICATION_ID + ".EXTRA_AMIIBO_DATA";
+    public static final String EXTRA_AMIIBO_LIST = BuildConfig.APPLICATION_ID + ".EXTRA_AMIIBO_LIST";
     public static final String EXTRA_IGNORE_TAG_ID = BuildConfig.APPLICATION_ID + ".EXTRA_IGNORE_TAG_ID";
     public static final String EXTRA_AMIIBO_ID = BuildConfig.APPLICATION_ID + ".AMIIBO_ID";
     public static final String EXTRA_AMIIBO_FILES = BuildConfig.APPLICATION_ID + ".EXTRA_AMIIBO_FILES";
@@ -56,8 +57,10 @@ public class TagMo extends Application {
         public static final String LASTUPDATED = "https://www.amiiboapi.com/api/lastupdated/";
         public static final String AMIIBO_IMAGE = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08x-%08x.png";
         public static final String TAGMO_GIT_API = "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/";
-        public static final String TAGMO_WIKI = "https://tagmo.gitlab.io/";
         public static final String TAGMO_REDDIT = "https://www.reddit.com/r/tagmo/";
+        public static final String GITLAB_APP = "https://appassets.androidplatform.net/assets/gitlab/index.html";
+        public static final String GITLAB_URI = "file:///android_asset/gitlab/index.html";
+        public static final String GITLAB_WEB = "https://tagmo.gitlab.io/";
         public static final String WUMIIBO_APP = "https://appassets.androidplatform.net/assets/wumiibo/index.html";
         public static final String WUMIIBO_URI = "file:///android_asset/wumiibo/index.html";
         public static final String WUMIIBO_WEB = "https://tagmo.gitlab.io/wumiibo/";

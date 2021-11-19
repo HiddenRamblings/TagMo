@@ -406,6 +406,11 @@ public class BankListActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 
+        if (TagMo.ACTION_FIX_BANK_DATA.equals(result.getData().getAction())) {
+            repairBankData(clickedPosition);
+            return;
+        }
+
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())
                 && !TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
 
@@ -517,7 +522,7 @@ public class BankListActivity extends AppCompatActivity implements
                         TagDataActivity_.class).putExtras(args));
                 break;
             case HEX_CODE:
-                startActivity(new Intent(this,
+                onUpdateTagResult.launch(new Intent(this,
                         HexViewerActivity_.class).putExtras(args));
                 break;
             case BANK_BACKUP:
@@ -538,6 +543,20 @@ public class BankListActivity extends AppCompatActivity implements
         if (amiibosView.getAdapter() != null)
             amiibosView.getAdapter().notifyItemChanged(current_bank);
     });
+
+    private void repairBankData(int current_bank) {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.repair_confirm)
+                .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                    Intent scan = new Intent(this, NfcActivity_.class);
+                    scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
+                    scan.setAction(TagMo.ACTION_FIX_BANK_DATA);
+                    onScanTagResult.launch(scan);
+                    dialog.dismiss();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
 
     private void scanAmiiboBank(int current_bank) {
         Intent scan = new Intent(this, NfcActivity_.class);
@@ -620,10 +639,6 @@ public class BankListActivity extends AppCompatActivity implements
                         status = CLICKED.HEX_CODE;
                         scanAmiiboBank(current_bank);
                     }
-                    return true;
-                case R.id.mnu_repair:
-                    scan.setAction(TagMo.ACTION_FIX_BANK_DATA);
-                    onScanTagResult.launch(scan);
                     return true;
                 case R.id.mnu_backup:
                     if (tagData != null && tagData.length > 0) {

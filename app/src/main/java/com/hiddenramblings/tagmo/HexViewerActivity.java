@@ -1,6 +1,8 @@
 package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,5 +51,6 @@ public class HexViewerActivity extends AppCompatActivity {
                 .setMessage(msgRes)
                 .setPositiveButton(R.string.close, (dialog, which) -> finish())
                 .show();
+        setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_FIX_BANK_DATA));
     }
 }

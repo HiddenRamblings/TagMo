@@ -421,6 +421,7 @@ public class NfcActivity extends AppCompatActivity {
                                 try {
                                     data = TagReader.scanBankToBytes(mifare, selection);
                                     data = TagReader.getValidatedData(keyManager, data);
+                                    TagUtils.validateNtag(mifare, data, false);
                                 } catch (Exception e) {
                                     mifare.activateBank(selection);
                                     data = TagReader.readFromTag(mifare);

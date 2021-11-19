@@ -993,7 +993,7 @@ public class TagDataActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.error_caps)
                 .setMessage(msgRes)
-                .setPositiveButton(R.string.close, null)
+                .setPositiveButton(R.string.close, (dialog, which) -> finish())
                 .show();
     }
 }

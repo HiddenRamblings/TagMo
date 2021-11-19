@@ -148,7 +148,6 @@
 
     <string name="permission_required">Storage permission required!</string>
     <string name="allow">Allow</string>
-    <string name="emulated_storage">Emulated storage may contain amiibo™.</string>
 
     <string name="crypto_keys">Crypto Keys</string>
     <string name="pref_import_keys">Import binary keys</string>
@@ -181,8 +180,6 @@
     <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
     <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
-    <string name="pref_ignore_sdcard">Emulated Storage Mode</string>
-    <string name="ignore_sdcard_details">Favor emulated storage over a physical sdcard / external storage device</string>
     <string name="pref_resources">Resources</string>
     <string name="pref_reddit_link">Visit the TagMo reddit</string>
     <string name="pref_build_wumiibo">Browse Wumiibo Bins</string>
@@ -213,6 +210,8 @@
     <string name="warn_delete_file">Deleting %1$s. Are you sure?</string>
     <string name="delete_active">Cannot delete the active bank!</string>
     <string name="backup_filename">Set amiibo™ Bin Name</string>
+    <string name="emulated_storage_root">Browse Emulated Storage</string>
+    <string name="physical_storage_root">Browse Physical Storage</string>
 
     <string name="prepare_unlock">Once scanned, do not remove the unit from the NFC field until complete.</string>
     <string name="progress_unlock">Press and hold the N2 button and continue to wait for unlock to complete.</string>

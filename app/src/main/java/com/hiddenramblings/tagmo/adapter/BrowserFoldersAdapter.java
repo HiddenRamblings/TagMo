@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 
 import java.io.File;
@@ -84,8 +85,9 @@ public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAd
     }
 
     public boolean showParentFolder() {
-        return (rootFolder != null && !Storage.getFile().equals(rootFolder))
-                && rootFolder.getAbsolutePath().startsWith(Storage.getPath());
+        boolean internal = TagMo.getPrefs().preferEmulated().get();
+        return (rootFolder != null && !Storage.getFile(internal).equals(rootFolder))
+                && rootFolder.getAbsolutePath().startsWith(Storage.getPath(internal));
     }
 
     @Override

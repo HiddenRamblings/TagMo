@@ -405,8 +405,9 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                 // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), hasTagInfo);
                 if (item.getFilePath() != null) {
                     this.itemView.setEnabled(true);
-                    String relativeFile = Storage.getRelativePath(item.getFilePath()).replace(
-                            TagMo.getPrefs().browserRootFolder().get(), "");
+                    String relativeFile = Storage.getRelativePath(item.getFilePath(),
+                            TagMo.getPrefs().preferEmulated().get()).replace(
+                                    TagMo.getPrefs().browserRootFolder().get(), "");
                     this.txtPath.setText(boldMatchingText(relativeFile, query));
                 } else {
                     this.itemView.setEnabled(false);

@@ -111,8 +111,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference disableDebug;
     @PreferenceByKey(R.string.settings_stable_channel)
     CheckBoxPreference stableChannel;
-//    @PreferenceByKey(R.string.settings_ignore_sdcard)
-//    CheckBoxPreference ignoreSdcard;
 
     private KeyManager keyManager;
     private AmiiboManager amiiboManager = null;
@@ -141,7 +139,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.enableTagTypeValidation.setChecked(prefs.enableTagTypeValidation().get());
         this.disableDebug.setChecked(prefs.disableDebug().get());
-//        this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
         this.stableChannel.setChecked(prefs.stableChannel().get());
 
         loadAmiiboManager();
@@ -225,13 +222,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         File file = new File(requireContext().getExternalFilesDir(null),
                 AmiiboManager.AMIIBO_DATABASE_FILE);
         FileOutputStream fileOutputStream = null;
+        boolean internal = TagMo.getPrefs().preferEmulated().get();
         try {
             fileOutputStream = new FileOutputStream(file);
             AmiiboManager.saveDatabase(this.amiiboManager, fileOutputStream);
         } catch (JSONException | IOException e) {
             Debug.Log(e);
-            new Toasty(requireActivity()).Short(
-                    getString(R.string.amiibo_info_export_fail, Storage.getRelativePath(file)));
+            new Toasty(requireActivity()).Short(getString(R.string.amiibo_info_export_fail,
+                    Storage.getRelativePath(file, internal)));
             return;
         } finally {
             if (fileOutputStream != null) {
@@ -243,7 +241,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         }
         showSnackbar(getString(R.string.amiibo_info_exported,
-                Storage.getRelativePath(file)), Snackbar.LENGTH_LONG);
+                Storage.getRelativePath(file, internal)), Snackbar.LENGTH_LONG);
     }
 
     @PreferenceClick(R.string.settings_info_amiibo)
@@ -362,12 +360,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void onStableChannelClicked() {
         prefs.stableChannel().put(stableChannel.isChecked());
     }
-
-//    @PreferenceClick(R.string.settings_ignore_sdcard)
-//    void onIgnoreSdcardClicked() {
-//        ((SettingsActivity) requireActivity()).setStorageResult();
-//        prefs.ignoreSdcard().put(ignoreSdcard.isChecked());
-//    }
 
     @PreferenceClick(R.string.settings_view_reddit)
     void onViewRedditClicked() {

@@ -77,6 +77,7 @@ public class WebActivity extends AppCompatActivity {
     void afterViews() {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
+        String action = getIntent().getAction();
         WebSettings webViewSettings = mWebView.getSettings();
 
         mWebView.setScrollbarFadingEnabled(true);
@@ -85,6 +86,7 @@ public class WebActivity extends AppCompatActivity {
         webViewSettings.setAllowFileAccess(true);
         webViewSettings.setAllowContentAccess(false);
         webViewSettings.setJavaScriptEnabled(true);
+        webViewSettings.setDomStorageEnabled(true);
         webViewSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             webViewSettings.setPluginState(WebSettings.PluginState.ON);
@@ -105,9 +107,16 @@ public class WebActivity extends AppCompatActivity {
                 public void onReceivedHttpError (
                         @NonNull WebView view, @NonNull WebResourceRequest request,
                         @NonNull WebResourceResponse errorResponse) {
-                    if (errorResponse.getStatusCode() == 404
-                            && !request.getUrl().toString().equals(Website.WUMIIBO_WEB))
-                        view.loadUrl(Website.WUMIIBO_WEB);
+                    if (errorResponse.getStatusCode() == 404) {
+                        if (action != null) {
+                            if (TagMo.ACTION_BUILD_WUMIIBO.equals(action)
+                                    && !request.getUrl().toString().equals(Website.WUMIIBO_WEB))
+                                view.loadUrl(Website.WUMIIBO_WEB);
+                            else if (TagMo.ACTION_BROWSE_GITLAB.equals(action)
+                                    && !request.getUrl().toString().equals(Website.GITLAB_WEB))
+                                view.loadUrl(Website.GITLAB_WEB);
+                        }
+                    }
                 }
             });
             if (WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USAGE)) {
@@ -129,20 +138,24 @@ public class WebActivity extends AppCompatActivity {
 
         setResult(RESULT_CANCELED);
 
-        if (getIntent().getAction() != null
-                && getIntent().getAction().equals(TagMo.ACTION_BUILD_WUMIIBO)) {
-            webViewSettings.setDomStorageEnabled(true);
-            JavaScriptInterface download = new JavaScriptInterface();
-            mWebView.addJavascriptInterface(download, "Android");
-            mWebView.setDownloadListener((url, userAgent, contentDisposition,
-                                          mimeType, contentLength) -> {
-                if (url.startsWith("blob") || url.startsWith("data")) {
-                    Log.d("DATA", url);
-                    mWebView.loadUrl(download.getBase64StringFromBlob(url, mimeType));
-                }
-            });
-            mWebView.loadUrl(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                    ? Website.WUMIIBO_APP : Website.WUMIIBO_URI);
+        if (action != null) {
+            if (TagMo.ACTION_BUILD_WUMIIBO.equals(action)) {
+                JavaScriptInterface download = new JavaScriptInterface();
+                mWebView.addJavascriptInterface(download, "Android");
+                mWebView.setDownloadListener((url, userAgent, contentDisposition,
+                                              mimeType, contentLength) -> {
+                    if (url.startsWith("blob") || url.startsWith("data")) {
+                        Log.d("DATA", url);
+                        mWebView.loadUrl(download.getBase64StringFromBlob(url, mimeType));
+                    }
+                });
+                mWebView.loadUrl(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                        ? Website.WUMIIBO_APP : Website.WUMIIBO_URI);
+            } else if (TagMo.ACTION_BROWSE_GITLAB.equals(action)) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                mWebView.loadUrl(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                        ? Website.GITLAB_APP : Website.GITLAB_URI);
+            }
         } else {
             webViewSettings.setBuiltInZoomControls(true);
             webViewSettings.setSupportZoom(true);
@@ -150,8 +163,6 @@ public class WebActivity extends AppCompatActivity {
             if (getIntent().hasExtra(WEBSITE)) {
                 webViewSettings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
                 String url = getIntent().getStringExtra(WEBSITE);
-                if (url.equals(Website.TAGMO_WIKI))
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
                 mWebView.loadUrl(url);
                 return;
             }

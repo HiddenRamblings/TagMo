@@ -307,7 +307,7 @@ public class AmiiboManager {
             } else {
                 if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
-                        byte[] data = TagReader.getValidatedData(keyManager, file);
+                        byte[] data = TagReader.getValidatedFile(keyManager, file);
                         if (data != null) {
                             amiiboFiles.add(new AmiiboFile(file,
                                     TagUtils.amiiboIdFromTag(data), data));

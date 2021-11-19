@@ -590,7 +590,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsItem(R.id.instructions_wiki)
     void onInstructionsWikiClicked() {
         startActivity(new Intent(this, WebActivity_.class)
-                .putExtra(WebActivity.WEBSITE, Website.TAGMO_WIKI));
+                .setAction(TagMo.ACTION_BROWSE_GITLAB));
     }
 
     @OptionsItem(R.id.filter_game_series)
@@ -889,7 +889,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Bundle args = new Bundle();
         try {
             byte[] data = amiiboFile.getData() != null ? amiiboFile.getData()
-                        : TagReader.getValidatedData(keyManager, amiiboFile.getFilePath());
+                        : TagReader.getValidatedFile(keyManager, amiiboFile.getFilePath());
             args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
         } catch (Exception e) {
             Debug.Log(e);

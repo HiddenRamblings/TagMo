@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -152,6 +153,8 @@ public class WebActivity extends AppCompatActivity {
                 mWebView.loadUrl(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                         ? Website.WUMIIBO_APP : Website.WUMIIBO_URI);
             } else if (TagMo.ACTION_BROWSE_GITLAB.equals(action)) {
+                webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
+                        "(?i)" + Pattern.quote("android"), "TagMo"));
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
                 mWebView.loadUrl(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                         ? Website.GITLAB_APP : Website.GITLAB_URI);

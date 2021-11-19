@@ -224,6 +224,11 @@ public class BrowserSettings implements Parcelable {
         this.filterAmiiboType = filterAmiiboType;
     }
 
+    public boolean hasFilteredData() {
+        return getGameSeriesFilter().length() > 0 || getCharacterFilter().length() > 0
+                || getAmiiboSeriesFilter().length() > 0 || getAmiiboTypeFilter().length() > 0;
+    }
+
     public int getAmiiboView() {
         return this.browserAmiiboView;
     }

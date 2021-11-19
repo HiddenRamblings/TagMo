@@ -89,6 +89,7 @@ import org.androidannotations.annotations.OptionsMenuItem;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.api.BackgroundExecutor;
+import org.apmem.tools.layouts.FlowLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -123,7 +124,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
 
     @ViewById(R.id.chip_list)
-    LinearLayoutCompat chipList;
+    FlowLayout chipList;
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
     @ViewById(R.id.swipe_refresh)
@@ -925,7 +926,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public boolean onQueryTextSubmit(String query) {
         settings.setQuery(query);
         settings.notifyChanges();
-        setAmiiboStatsText();
+        setSearchText();
         return false;
     }
 
@@ -934,7 +935,7 @@ public class BrowserActivity extends AppCompatActivity implements
         settings.setQuery(newText);
         settings.notifyChanges();
         if (newText.length() == 0)
-            setAmiiboStatsText();
+            setSearchText();
         return true;
     }
 
@@ -1291,6 +1292,12 @@ public class BrowserActivity extends AppCompatActivity implements
                 .showDownloads().put(newBrowserSettings.isShowingDownloads())
                 .showMissingFiles().put(newBrowserSettings.isShowingMissingFiles())
                 .apply();
+
+        if (oldBrowserSettings.getQuery() != null
+                && !oldBrowserSettings.getQuery().equals(newBrowserSettings.getQuery())) return;
+        String relativeRoot = Storage.getRelativePath(newBrowserSettings.getBrowserRootFolder());
+        setFolderText(relativeRoot.length() > 1 ? relativeRoot
+                : newBrowserSettings.getBrowserRootFolder().getAbsolutePath());
     }
 
     private void onAmiiboFilesChanged() {
@@ -1368,8 +1375,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 this.loadAmiiboFiles(rootFolder, this.settings.isRecursiveEnabled());
             }
             this.loadFolders(rootFolder);
-            String relativeRoot = Storage.getRelativePath(rootFolder);
-            setFolderText(relativeRoot.length() > 1 ? relativeRoot : rootFolder.getAbsolutePath());
         }
     }
 
@@ -1417,6 +1422,14 @@ public class BrowserActivity extends AppCompatActivity implements
                 "filter_amiibo_type", onAmiiboTypeChipCloseClick);
     }
 
+    OnCloseClickListener onAmiiboTypeChipCloseClick = new OnCloseClickListener() {
+        @Override
+        public void onCloseClick(@NonNull View v) {
+            settings.setAmiiboTypeFilter("");
+            settings.notifyChanges();
+        }
+    };
+
     void onRecursiveFilesChanged() {
         if (menuRecursiveFiles == null)
             return;
@@ -1445,14 +1458,6 @@ public class BrowserActivity extends AppCompatActivity implements
         menuEnableScale.setChecked(TagMo.getPrefs().enableScaling().get());
     }
 
-    OnCloseClickListener onAmiiboTypeChipCloseClick = new OnCloseClickListener() {
-        @Override
-        public void onCloseClick(@NonNull View v) {
-            settings.setAmiiboTypeFilter("");
-            settings.notifyChanges();
-        }
-    };
-
     @SuppressLint("InflateParams")
     public void addFilterItemView(String text, String tag, OnCloseClickListener listener) {
         FrameLayout chipContainer = chipList.findViewWithTag(tag);
@@ -1478,19 +1483,20 @@ public class BrowserActivity extends AppCompatActivity implements
         currentFolderView.setGravity(Gravity.CENTER);
         if (settings.getAmiiboManager() != null) {
             int count = 0;
-            if (adapter != null && !settings.getQuery().isEmpty())
+            if (adapter != null && (!settings.getQuery().isEmpty() || settings.hasFilteredData())) {
                 size = adapter.getItemCount();
-            for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
-                if (settings.getQuery().isEmpty()) {
-                    for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-                        if (amiibo.id == amiiboFile.getId()) {
+                for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+                    for (int x = 0; x < size; x++) {
+                        if (amiibo.id == adapter.getItemId(x)) {
                             count += 1;
                             break;
                         }
                     }
-                } else if (adapter != null) {
-                    for (int x = 0; x < size; x++) {
-                        if (amiibo.id == adapter.getItemId(x)) {
+                }
+            } else {
+                for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+                    for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
+                        if (amiibo.id == amiiboFile.getId()) {
                             count += 1;
                             break;
                         }
@@ -1508,7 +1514,12 @@ public class BrowserActivity extends AppCompatActivity implements
         this.currentFolderView.setGravity(Gravity.NO_GRAVITY);
         this.currentFolderView.setText(text);
         handler.removeCallbacksAndMessages(null);
-        handler.postDelayed(this::setAmiiboStatsText, 5000);
+        handler.postDelayed(this::setAmiiboStatsText, 2500);
+    }
+
+    private void setSearchText() {
+        handler.removeCallbacksAndMessages(null);
+        setAmiiboStatsText();
     }
 
     @UiThread

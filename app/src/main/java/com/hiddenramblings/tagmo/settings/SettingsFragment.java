@@ -111,8 +111,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference disableDebug;
     @PreferenceByKey(R.string.settings_stable_channel)
     CheckBoxPreference stableChannel;
-    @PreferenceByKey(R.string.settings_ignore_sdcard)
-    CheckBoxPreference ignoreSdcard;
+//    @PreferenceByKey(R.string.settings_ignore_sdcard)
+//    CheckBoxPreference ignoreSdcard;
 
     private KeyManager keyManager;
     private AmiiboManager amiiboManager = null;
@@ -141,7 +141,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.enableTagTypeValidation.setChecked(prefs.enableTagTypeValidation().get());
         this.disableDebug.setChecked(prefs.disableDebug().get());
-        this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
+//        this.ignoreSdcard.setChecked(prefs.ignoreSdcard().get());
         this.stableChannel.setChecked(prefs.stableChannel().get());
 
         loadAmiiboManager();
@@ -363,11 +363,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         prefs.stableChannel().put(stableChannel.isChecked());
     }
 
-    @PreferenceClick(R.string.settings_ignore_sdcard)
-    void onIgnoreSdcardClicked() {
-        ((SettingsActivity) requireActivity()).setStorageResult();
-        prefs.ignoreSdcard().put(ignoreSdcard.isChecked());
-    }
+//    @PreferenceClick(R.string.settings_ignore_sdcard)
+//    void onIgnoreSdcardClicked() {
+//        ((SettingsActivity) requireActivity()).setStorageResult();
+//        prefs.ignoreSdcard().put(ignoreSdcard.isChecked());
+//    }
 
     @PreferenceClick(R.string.settings_view_reddit)
     void onViewRedditClicked() {

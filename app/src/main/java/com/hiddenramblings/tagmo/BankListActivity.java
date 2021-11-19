@@ -51,7 +51,6 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.BankPicker;
@@ -207,7 +206,7 @@ public class BankListActivity extends AppCompatActivity implements
         BankListBrowserAdapter adapter = new BankListBrowserAdapter(settings, this);
         amiibosView.setAdapter(adapter);
         this.settings.addChangeListener(adapter);
-        updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
+        updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_LIST));
         bankStats.setText(getString(R.string.elite_bank_stats,
                 eliteBankCount.getValueForPosition(active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
@@ -331,7 +330,7 @@ public class BankListActivity extends AppCompatActivity implements
         TagMo.getPrefs().eliteBankCount().put(bank_count);
 
         eliteBankCount.setValue(bank_count);
-        updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_DATA));
+        updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_LIST));
         bankStats.setText(getString(R.string.elite_bank_stats, eliteBankCount.getValueForPosition(
                 TagMo.getPrefs().eliteActiveBank().get()), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
@@ -408,20 +407,17 @@ public class BankListActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())
                 && !TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
 
-        byte[] tagData = new byte[0];
         if (result.getData().hasExtra(TagMo.EXTRA_TAG_DATA)) {
-            tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+            byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
             if (amiibos.get(clickedPosition) != null)
                 amiibos.get(clickedPosition).data = tagData;
+            updateAmiiboView(tagData, -1, clickedPosition);
         }
 
-        if (result.getData().hasExtra(TagMo.EXTRA_AMIIBO_DATA)) {
+        if (result.getData().hasExtra(TagMo.EXTRA_AMIIBO_LIST)) {
             updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(
-                    TagMo.EXTRA_AMIIBO_DATA));
+                    TagMo.EXTRA_AMIIBO_LIST));
         }
-        
-        if (tagData != null && tagData.length > 0)
-            updateAmiiboView(tagData, -1, clickedPosition);
 
         if (status == CLICKED.FORMAT) {
             status = CLICKED.NOTHING;
@@ -434,7 +430,7 @@ public class BankListActivity extends AppCompatActivity implements
         Bundle args = new Bundle();
         try {
             byte[] data = amiiboFile.getData() != null ? amiiboFile.getData()
-                    : TagReader.getValidatedData(keyManager, amiiboFile.getFilePath());
+                    : TagReader.getValidatedFile(keyManager, amiiboFile.getFilePath());
             args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
         } catch (Exception e) {
             Debug.Log(e);
@@ -499,17 +495,19 @@ public class BankListActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        int current_bank = result.getData().getIntExtra(TagMo.EXTRA_CURRENT_BANK, clickedPosition);
+
         Bundle args = new Bundle();
         args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
-        if (amiibos.get(clickedPosition) != null)
-            amiibos.get(clickedPosition).data = tagData;
+        if (amiibos.get(current_bank) != null)
+            amiibos.get(current_bank).data = tagData;
         switch (status) {
             case NOTHING:
                 break;
             case WRITER:
                 Intent modify = new Intent(this, NfcActivity_.class);
                 modify.setAction(TagMo.ACTION_WRITE_TAG_FULL);
-                modify.putExtra(TagMo.EXTRA_CURRENT_BANK, clickedPosition);
+                modify.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
                 onUpdateTagResult.launch(modify.putExtras(args));
                 break;
             case EDITOR:
@@ -534,9 +532,9 @@ public class BankListActivity extends AppCompatActivity implements
 
         }
         status = CLICKED.NOTHING;
-        updateAmiiboView(tagData, -1, clickedPosition);
+        updateAmiiboView(tagData, -1, current_bank);
         if (amiibosView.getAdapter() != null)
-            amiibosView.getAdapter().notifyItemChanged(clickedPosition);
+            amiibosView.getAdapter().notifyItemChanged(current_bank);
     });
 
     private void scanAmiiboBank(int current_bank) {

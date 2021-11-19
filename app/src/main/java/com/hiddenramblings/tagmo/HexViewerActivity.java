@@ -26,27 +26,20 @@ public class HexViewerActivity extends AppCompatActivity {
 
     @AfterViews
     void afterViews() {
-        decryptTagData(getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
-    }
-
-    void decryptTagData(byte[] tagData) {
+        byte[] tagData = getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
         KeyManager keyManager = new KeyManager(this);
         if (keyManager.isKeyMissing()) {
             showErrorDialog(R.string.no_decrypt_key);
             return;
         }
         try {
-            setAdapterTagData(keyManager.decrypt(tagData));
+            adapter = new HexCodeAdapter(keyManager.decrypt(tagData));
+            listView.setLayoutManager(new LinearLayoutManager(this));
+            listView.setAdapter(adapter);
         } catch (Exception e) {
             Debug.Log(e);
             showErrorDialog(R.string.fail_display);
         }
-    }
-
-    void setAdapterTagData(byte[] tagData) {
-        adapter = new HexCodeAdapter(tagData);
-        listView.setLayoutManager(new LinearLayoutManager(this));
-        listView.setAdapter(adapter);
     }
 
     @UiThread

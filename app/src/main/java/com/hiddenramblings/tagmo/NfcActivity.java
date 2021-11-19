@@ -347,7 +347,7 @@ public class NfcActivity extends AppCompatActivity {
                                     TagReader.getEliteSignature(mifare));
                             write.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
                             write.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
-                            args.putStringArrayList(TagMo.EXTRA_AMIIBO_DATA,
+                            args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST,
                                     TagReader.readTagTitles(mifare, bank_count));
                             args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
                             setResult(Activity.RESULT_OK, write.putExtras(args));
@@ -375,12 +375,12 @@ public class NfcActivity extends AppCompatActivity {
                         for (int x = 0; x < amiiboList.size(); x++) {
                             TagWriter.writeEliteAuto(mifare, amiiboList.get(x).getData() != null
                                     ? amiiboList.get(x).getData()
-                                    : TagReader.getValidatedData(keyManager,
+                                    : TagReader.getValidatedFile(keyManager,
                                     amiiboList.get(x).getFilePath()), keyManager, x);
                         }
                         Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
                         write.putExtra(TagMo.EXTRA_BANK_COUNT, write_count);
-                        args.putStringArrayList(TagMo.EXTRA_AMIIBO_DATA,
+                        args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST,
                                 TagReader.readTagTitles(mifare, bank_count));
                         setResult(Activity.RESULT_OK,  write.putExtras(args));
                         break;
@@ -402,20 +402,15 @@ public class NfcActivity extends AppCompatActivity {
                         Intent result = new Intent(TagMo.ACTION_NFC_SCANNED);
                         if (isEliteDevice) {
                             if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
-                                data = TagReader.scanBankToBytes(mifare, selection);
                                 try {
-                                    TagUtils.validateData(data);
+                                    data = TagReader.scanBankToBytes(mifare, selection);
+                                    data = TagReader.getValidatedData(keyManager, data);
                                 } catch (Exception e) {
-                                    try {
-                                        keyManager.encrypt(data);
-                                        TagUtils.validateData(data);
-                                    } catch (Exception ex) {
-                                        mifare.activateBank(selection);
-                                        args.putByteArray(TagMo.EXTRA_TAG_DATA,
-                                                TagReader.readFromTag(mifare));
-                                        mifare.activateBank(active_bank);
-                                    }
+                                    mifare.activateBank(selection);
+                                    data = TagReader.readFromTag(mifare);
+                                    mifare.activateBank(active_bank);
                                 }
+                                args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
                                 result.putExtra(TagMo.EXTRA_CURRENT_BANK, selection);
                             } else {
                                 ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
@@ -423,7 +418,7 @@ public class NfcActivity extends AppCompatActivity {
                                         TagReader.getEliteSignature(mifare));
                                 result.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
                                 result.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
-                                args.putStringArrayList(TagMo.EXTRA_AMIIBO_DATA, titles);
+                                args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST, titles);
                             }
                         } else {
                             args.putByteArray(TagMo.EXTRA_TAG_DATA,
@@ -438,7 +433,7 @@ public class NfcActivity extends AppCompatActivity {
                         ArrayList<String> list = TagReader.readTagTitles(mifare, write_count);
                         Intent configure = new Intent(TagMo.ACTION_NFC_SCANNED);
                         configure.putExtra(TagMo.EXTRA_BANK_COUNT, write_count);
-                        args.putStringArrayList(TagMo.EXTRA_AMIIBO_DATA, list);
+                        args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST, list);
                         setResult(Activity.RESULT_OK, configure.putExtras(args));
                         break;
 
@@ -453,7 +448,7 @@ public class NfcActivity extends AppCompatActivity {
                     case TagMo.ACTION_FORMAT_BANK:
                         TagWriter.wipeBankData(mifare, selection);
                         Intent format = new Intent(TagMo.ACTION_NFC_SCANNED);
-                        args.putStringArrayList(TagMo.EXTRA_AMIIBO_DATA,
+                        args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST,
                                 TagReader.readTagTitles(mifare, bank_count));
                         setResult(Activity.RESULT_OK, format.putExtras(args));
                         break;

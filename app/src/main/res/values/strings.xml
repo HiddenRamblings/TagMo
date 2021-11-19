@@ -301,7 +301,7 @@
 
     <string name="uid_key_missing">No available key for UID</string>
     <string name="p10_key_missing">No available key for P10_ID</string>
-    <string name="power_tag_verify">Power Tag Confirmed: %1$s</string>
+    <string name="power_tag_verify">Power Tag identified: %1$s</string>
 
     <string name="amiibo_info_parse_error">Unable to parse amiibo™ database</string>
     <string name="amiibo_info_not_loaded">amiibo™ database not loaded</string>

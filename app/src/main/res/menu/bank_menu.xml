@@ -28,6 +28,10 @@
         android:title="@string/view_hex"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/mnu_repair"
+        android:title="@string/amiibo_repair"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/mnu_backup"
         android:title="@string/amiibo_backup"
         app:showAsAction="ifRoom"/>

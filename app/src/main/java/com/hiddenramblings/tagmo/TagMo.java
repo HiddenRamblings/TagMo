@@ -37,6 +37,7 @@ public class TagMo extends Application {
     public static final String ACTION_LOCK_AMIIBO = BuildConfig.APPLICATION_ID + ".LOCK_AMIIBO";
     public static final String ACTION_UNLOCK_UNIT = BuildConfig.APPLICATION_ID + ".UNLOCK_UNIT";
     public static final String ACTION_BACKUP_AMIIBO = BuildConfig.APPLICATION_ID + ".BACKUP_AMIIBO";
+    public static final String ACTION_FIX_BANK_DATA = BuildConfig.APPLICATION_ID + ".FIX_BANK_DATA";
     public static final String ACTION_DELETE_AMIIBO = BuildConfig.APPLICATION_ID + ".DELETE_AMIIBO";
     public static final String ACTION_NFC_SCANNED = BuildConfig.APPLICATION_ID + ".NFC_SCANNED";
     public static final String ACTION_BUILD_WUMIIBO = BuildConfig.APPLICATION_ID + ".BUILD_WUMIIBO";

@@ -112,6 +112,7 @@ public class NfcActivity extends AppCompatActivity {
                 }
             case TagMo.ACTION_WRITE_TAG_RAW:
             case TagMo.ACTION_WRITE_ALL_TAGS:
+            case TagMo.ACTION_FIX_BANK_DATA:
             case TagMo.ACTION_BACKUP_AMIIBO:
             case TagMo.ACTION_SCAN_TAG:
             case TagMo.ACTION_SET_BANK_COUNT:
@@ -164,6 +165,7 @@ public class NfcActivity extends AppCompatActivity {
                 bankTextView.setVisibility(View.GONE);
                 break;
             case TagMo.ACTION_ACTIVATE_BANK:
+            case TagMo.ACTION_FIX_BANK_DATA:
             case TagMo.ACTION_BACKUP_AMIIBO:
             case TagMo.ACTION_FORMAT_BANK:
                 if (!isEliteIntent || !commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
@@ -184,6 +186,9 @@ public class NfcActivity extends AppCompatActivity {
                 break;
             case TagMo.ACTION_WRITE_ALL_TAGS:
                 setTitle(R.string.write_collection);
+                break;
+            case TagMo.ACTION_FIX_BANK_DATA:
+                setTitle(R.string.amiibo_repair);
                 break;
             case TagMo.ACTION_BACKUP_AMIIBO:
                 setTitle(R.string.amiibo_backup);
@@ -396,6 +401,17 @@ public class NfcActivity extends AppCompatActivity {
                                     TagReader.scanTagToBytes(mifare));
                         }
                         setResult(Activity.RESULT_OK, backup.putExtras(args));
+                        break;
+
+                    case TagMo.ACTION_FIX_BANK_DATA:
+                        mifare.activateBank(selection);
+                        data = TagReader.readFromTag(mifare);
+                        mifare.activateBank(active_bank);
+                        TagWriter.writeEliteAuto(mifare, data, keyManager, selection);
+                        Intent repair = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
+                        repair.putExtra(TagMo.EXTRA_CURRENT_BANK, selection);
+                        setResult(Activity.RESULT_OK, repair.putExtras(args));
                         break;
 
                     case TagMo.ACTION_SCAN_TAG:

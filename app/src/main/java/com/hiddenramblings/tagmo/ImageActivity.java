@@ -241,8 +241,8 @@ public class ImageActivity extends AppCompatActivity {
                 Environment.DIRECTORY_DOWNLOADS), filename + ".png");
         try (FileOutputStream fos = new FileOutputStream(file)) {
             resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            new Toasty(ImageActivity.this).Short(getString(
-                    R.string.wrote_file, Storage.getRelativePath(file)));
+            new Toasty(ImageActivity.this).Short(getString(R.string.wrote_file,
+                    Storage.getRelativePath(file, TagMo.getPrefs().preferEmulated().get())));
         } catch (FileNotFoundException e) {
             Debug.Log(e);
         } catch (IOException e) {

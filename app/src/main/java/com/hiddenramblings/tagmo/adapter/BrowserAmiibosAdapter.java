@@ -421,8 +421,9 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
                 // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), hasTagInfo);
                 if (item.getFilePath() != null) {
                     this.itemView.setEnabled(true);
-                    String relativeFile = Storage.getRelativePath(item.getFilePath()).replace(
-                            TagMo.getPrefs().browserRootFolder().get(), "");
+                    String relativeFile = Storage.getRelativePath(item.getFilePath(),
+                            TagMo.getPrefs().preferEmulated().get()).replace(
+                                    TagMo.getPrefs().browserRootFolder().get(), "");
                     this.txtPath.setText(boldMatchingText(relativeFile, query));
                     setIsHighlighted(this, relativeFile.endsWith(decryptRegex));
                 } else {

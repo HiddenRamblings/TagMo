@@ -12,7 +12,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +40,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.eightbit.io.Debug;
+import com.eightbit.os.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.BankListBrowserAdapter;
 import com.hiddenramblings.tagmo.adapter.WriteBanksAdapter;
@@ -383,13 +383,12 @@ public class BankListActivity extends AppCompatActivity implements
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagReader.decipherFilename(settings.getAmiiboManager(), tagData));
+        input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOWNLOADS);
-                String fileName = TagReader.writeBytesToFile(directory,
+                File directory = Storage.getDownloads("TagMo(Backup)");
+                String fileName = TagUtils.writeBytesToFile(directory,
                         input.getText().toString(), tagData);
                 new Toasty(this).Long(getString(R.string.wrote_file, fileName));
                 this.loadAmiiboFiles(settings.getBrowserRootFolder(),
@@ -862,8 +861,7 @@ public class BankListActivity extends AppCompatActivity implements
                 AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (settings.isShowingDownloads()) {
             amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
-                    Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOWNLOADS), recursiveFiles));
+                    Storage.getDownloads(null), recursiveFiles));
         }
 
         if (Thread.currentThread().isInterrupted())

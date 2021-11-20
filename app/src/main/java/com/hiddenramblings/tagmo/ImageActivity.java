@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.Environment;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -237,8 +236,7 @@ public class ImageActivity extends AppCompatActivity {
     }
 
     private void saveImageToFile(@NonNull Bitmap resource, String filename) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), filename + ".png");
+        File file = new File(Storage.getDownloads(null), filename + ".png");
         try (FileOutputStream fos = new FileOutputStream(file)) {
             resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
             new Toasty(ImageActivity.this).Short(getString(R.string.wrote_file,

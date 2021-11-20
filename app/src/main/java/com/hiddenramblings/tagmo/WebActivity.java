@@ -4,11 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
@@ -34,9 +32,10 @@ import androidx.webkit.WebViewClientCompat;
 import androidx.webkit.WebViewFeature;
 
 import com.eightbit.io.Debug;
+import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.TagMo.Website;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfctech.TagReader;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.androidannotations.annotations.AfterViews;
@@ -252,11 +251,7 @@ public class WebActivity extends AppCompatActivity {
     void unzipFile(File zipFile) {
         dialog = ProgressDialog.show(this,
                 getString(R.string.wait_unzip), "", true);
-        File deprecated = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), "Wumiibo (Decrypted)");
-        if (deprecated.exists()) deleteDir(deprecated);
-        File destination = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), "Wumiibo(Decrypted)");
+        File destination = Storage.getDownloads("Wumiibo(Decrypted)");
         if (destination.exists()) deleteDir(destination);
         destination.mkdirs();
         new Thread(new UnZip(zipFile, destination)).start();
@@ -264,8 +259,8 @@ public class WebActivity extends AppCompatActivity {
 
     private void saveBinFile(byte[] tagData, String name) {
         try {
-            File filePath = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), name + "(Decrypted).bin");
+            File filePath = new File(Storage.getDownloads("Wumiibo(Decrypted)"),
+                    name + "(Decrypted).bin");
             FileOutputStream os = new FileOutputStream(filePath, false);
             os.write(tagData);
             os.flush();
@@ -285,7 +280,7 @@ public class WebActivity extends AppCompatActivity {
         final EditText input = view.findViewById(R.id.backup_entry);
         try {
             AmiiboManager amiiboManager = AmiiboManager.getAmiiboManager();
-            input.setText(TagReader.decipherBinName(amiiboManager, tagData, true));
+            input.setText(TagUtils.decipherFilename(amiiboManager, tagData, true));
         } catch (IOException | JSONException | ParseException e) {
             Debug.Log(e);
         }
@@ -327,8 +322,7 @@ public class WebActivity extends AppCompatActivity {
         private void convertBase64StringSave(String base64File) throws IOException {
             String zipType = getString(R.string.mimetype_zip);
             if (base64File.contains("data:" + zipType + ";")) {
-                File filePath = new File(Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOWNLOADS), "amiibo.zip");
+                File filePath = new File(Storage.getDownloads(null), "amiibo.zip");
                 FileOutputStream os = new FileOutputStream(filePath, false);
                 os.write(Base64.decode(base64File.replaceFirst(
                         "^data:" + zipType + ";base64,", ""), 0));

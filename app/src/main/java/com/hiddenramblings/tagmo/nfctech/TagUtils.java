@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.nfctech;
 
+import android.media.MediaScannerConnection;
 import android.nfc.FormatException;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
@@ -11,10 +12,15 @@ import android.nfc.tech.NdefFormatable;
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.data.AmiiboData;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class TagUtils {
 
@@ -204,5 +210,56 @@ public class TagUtils {
             throw new Exception(TagMo.getStringRes(R.string.fail_mismatch_uid));
 
         Debug.Log(TagWriter.class, R.string.validation_success);
+    }
+
+    public static String decipherFilename(AmiiboManager manager, byte[] tagData, boolean decrypted) {
+        String status = "";
+        if (decrypted) {
+            status = "(Decrypted)";
+        } else {
+            try {
+                validateData(tagData);
+            } catch (Exception e) {
+                status = "(Invalid)";
+            }
+        }
+        try {
+            long amiiboId = amiiboIdFromTag(tagData);
+            String name = amiiboIdToHex(amiiboId);
+            if (manager != null) {
+                Amiibo amiibo = manager.amiibos.get(amiiboId);
+                if (amiibo != null && amiibo.name != null) {
+                    name = amiibo.name.replace("/", "-");
+                }
+            }
+
+            byte[] uId = Arrays.copyOfRange(tagData, 0, 9);
+            String uIds = bytesToHex(uId);
+            return String.format(Locale.ROOT, "%1$s[%2$s]%3$s.bin", name, uIds, status);
+        } catch (Exception e) {
+            Debug.Log(TagUtils.class, e.getMessage());
+        }
+        return "";
+    }
+
+    public static String decipherFilename(AmiiboManager manager, byte[] tagData) {
+        return decipherFilename(manager, tagData, false);
+    }
+
+    public static String writeBytesToFile(File backupDir, String name, byte[] tagData)
+            throws IOException {
+        //noinspection ResultOfMethodCallIgnored
+        backupDir.mkdirs();
+        File binFile = new File(backupDir, name);
+        try (FileOutputStream fos = new FileOutputStream(binFile)) {
+            fos.write(tagData);
+        }
+        try {
+            MediaScannerConnection.scanFile(TagMo.getContext(),
+                    new String[] { binFile.getAbsolutePath() }, null, null);
+        } catch (Exception e) {
+            Debug.Log(R.string.fail_media_scan, e);
+        }
+        return binFile.getAbsolutePath();
     }
 }

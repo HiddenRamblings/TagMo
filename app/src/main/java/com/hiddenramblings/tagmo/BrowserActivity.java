@@ -985,7 +985,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 new Toasty(this).Short(R.string.download_corrupt);
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Uri apkUri = Storage.getFileUri(apk);
                 PackageInstaller installer = getPackageManager().getPackageInstaller();
                 ContentResolver resolver = getContentResolver();
@@ -1018,7 +1018,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 intent.setDataAndType(Storage.getFileUri(apk),
                         getString(R.string.mimetype_apk));
                 intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
                 intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,
                         getApplicationInfo().packageName);
                 startActivity(TagMo.getIntent(intent));

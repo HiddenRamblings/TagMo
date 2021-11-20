@@ -649,16 +649,16 @@ public class BankListActivity extends AppCompatActivity implements
                     }
                     return true;
                 case R.id.mnu_validate:
-                    try {
-                        TagUtils.validateData(tagData);
-                        notice.Dialog(R.string.validation_success);
-                    } catch (Exception e) {
-                        if (e instanceof IOException) {
-                            status = CLICKED.VERIFY_TAG;
-                            scanAmiiboBank(current_bank);
-                        } else {
+                    if (tagData != null && tagData.length > 0) {
+                        try {
+                            TagUtils.validateData(tagData);
+                            notice.Dialog(R.string.validation_success);
+                        } catch (Exception e) {
                             notice.Dialog(e.getMessage());
                         }
+                    } else {
+                        status = CLICKED.VERIFY_TAG;
+                        scanAmiiboBank(current_bank);
                     }
                     return true;
             }

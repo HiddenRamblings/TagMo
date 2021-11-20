@@ -182,7 +182,7 @@ public class NfcActivity extends AppCompatActivity {
                 setTitle(R.string.write_auto);
                 break;
             case TagMo.ACTION_WRITE_TAG_DATA:
-                setTitle(R.string.restore_tag);
+                setTitle(R.string.update_tag);
                 break;
             case TagMo.ACTION_WRITE_ALL_TAGS:
                 setTitle(R.string.write_collection);
@@ -273,6 +273,8 @@ public class NfcActivity extends AppCompatActivity {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
         setResult(Activity.RESULT_CANCELED);
+        Bundle args = new Bundle();
+        byte[] update = new byte[0];
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             mifare = NTAG215.get(tag);
@@ -336,9 +338,9 @@ public class NfcActivity extends AppCompatActivity {
                     if (data == null || data.length <= 1)
                         throw new IOException(getString(R.string.error_no_data));
                 }
-                Bundle args = new Bundle();
                 switch (mode) {
                     case TagMo.ACTION_WRITE_TAG_RAW:
+                        update = TagReader.readFromTag(mifare);
                         TagWriter.writeToTagRaw(mifare, data,
                                 TagMo.getPrefs().enableTagTypeValidation().get());
                         setResult(Activity.RESULT_OK);
@@ -357,6 +359,7 @@ public class NfcActivity extends AppCompatActivity {
                             args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
                             setResult(Activity.RESULT_OK, write.putExtras(args));
                         } else {
+                            update = TagReader.readFromTag(mifare);
                             TagWriter.writeToTagAuto(mifare, data, this.keyManager,
                                     TagMo.getPrefs().enableTagTypeValidation().get());
                             setResult(Activity.RESULT_OK);
@@ -512,18 +515,49 @@ public class NfcActivity extends AppCompatActivity {
                     }
                     return;
                 }
-                if (TagMo.getStringRes(R.string.nfc_null_array).equals(error)) {
+                if (TagMo.getStringRes(R.string.error_tag_rewrite).equals(error)) {
+                    args.putByteArray(TagMo.EXTRA_TAG_DATA, update);
+                    setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_UPDATE_TAG).putExtras(args));
+                    runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
+                            .setTitle(R.string.error_tag_rewrite)
+                            .setMessage(R.string.tag_update_only)
+                            .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                                try {
+                                    mifare.close();
+                                } catch (IOException ex) {
+                                    Debug.Log(ex);
+                                }
+                                dialog.dismiss();
+                                finish();
+                            })
+                           .show());
+                    return;
+                } else if (TagMo.getStringRes(R.string.nfc_null_array).equals(error)) {
                     runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                             .setTitle(R.string.possible_lock)
                             .setMessage(R.string.prepare_unlock)
                             .setPositiveButton(R.string.unlock, (dialog, which) -> {
+                                try {
+                                    mifare.close();
+                                } catch (IOException ex) {
+                                    Debug.Log(ex);
+                                }
                                 dialog.dismiss();
                                 finish();
                                 Intent unlock = new Intent(this, NfcActivity_.class);
                                 unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
                                 startActivity(unlock);
                             })
-                            .setNegativeButton(R.string.cancel, null).show());
+                            .setNegativeButton(R.string.cancel,  (dialog, which) -> {
+                                try {
+                                    mifare.close();
+                                } catch (IOException ex) {
+                                    Debug.Log(ex);
+                                }
+                                dialog.dismiss();
+                                finish();
+                            }).show());
+                    return;
                 }
             }
             showError(error);

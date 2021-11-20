@@ -75,7 +75,7 @@
     <string name="setup">Setup</string>
     <string name="enable">Enable</string>
     <string name="replace">Replace</string>
-    <string name="restore">Restore</string>
+    <string name="update">Update</string>
 
     <string name="error_caps">ERROR</string>
 
@@ -132,7 +132,7 @@
     <string name="write_raw">Write to Tag (Raw)</string>
     <string name="write_auto">Write to Tag (Auto)</string>
     <string name="unlock_elite">Unlock N2 Elite</string>
-    <string name="restore_tag">Restore Tag</string>
+    <string name="update_tag">Update Tag</string>
     <string name="scan_tag">Scan NFC Tag</string>
     <string name="scan_bank_no">Scan Bank %1$d</string>
     <string name="scan_bank">Scan Bank %1$s</string>
@@ -217,6 +217,7 @@
     <string name="prepare_unlock">Once scanned, do not remove the unit from the NFC field until complete.</string>
     <string name="progress_unlock">Press and hold the N2 button and continue to wait for unlock to complete.</string>
     <string name="possible_lock">Is this N2 Elite locked?</string>
+    <string name="tag_update_only">Previously written tags require \"Update\"</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>
@@ -241,7 +242,7 @@
     <string name="error_data_write">Error while writing main data (stage 1)</string>
     <string name="error_password_write">Error while setting password (stage 2)</string>
     <string name="error_lock_write">Error while setting lock info (stage 3)</string>
-    <string name="error_tag_rewrite">Tag already an amiibo™. Use \'Restore Tag\' to write data.</string>
+    <string name="error_tag_rewrite">Tag already an amiibo™</string>
     <string name="error_tag_format">Tag is not an NTAG215</string>
     <string name="error_tag_version">Tag version error</string>
     <string name="error_version">Version information error</string>
@@ -320,7 +321,7 @@
     <string name="firmware_update">N2 Elite Firmware Updated!</string>
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 
-    <string name="speed_scan">Lift tag slightly to improve scan</string>
+    <string name="speed_scan">Lift tag slightly to complete scan</string>
     <string name="wait_unzip">Unzipping Wumiibo Collection&#8230;</string>
     <string name="unzip_item">Unzipping %1$s&#8230;</string>
     <string name="mkdir_failed">Creating "%1$s" failed!</string>

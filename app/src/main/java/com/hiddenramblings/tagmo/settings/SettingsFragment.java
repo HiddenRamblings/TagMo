@@ -30,9 +30,9 @@ import com.eightbit.io.Debug;
 import com.eightbit.material.IconifiedSnackbar;
 import com.eightbit.os.Storage;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.SettingsActivity;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.TagMo.Website;
 import com.hiddenramblings.tagmo.WebActivity_;
@@ -169,7 +169,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void onEnablePowerTagSupportClicked() {
         boolean isEnabled = enablePowerTagSupport.isChecked();
         prefs.enablePowerTagSupport().put(isEnabled);
-        if (isEnabled) ((SettingsActivity) requireActivity()).setPowerTagResult();
+        if (isEnabled) ((BrowserActivity) requireActivity()).setPowerTagResult();
     }
 
     @PreferenceClick(R.string.settings_enable_elite_support)
@@ -371,7 +371,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (result.getResultCode() != Activity.RESULT_OK) return;
 
         if (!prefs.showDownloads().get()) showDownloadsSnackbar();
-        ((SettingsActivity) requireActivity()).setRefreshResult();
+        ((BrowserActivity) requireActivity()).setRefreshResult();
     });
 
     @PreferenceClick(R.string.settings_build_wumiibo)
@@ -398,7 +398,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (Thread.currentThread().isInterrupted())
             return;
 
-        ((SettingsActivity) requireActivity()).setRefreshResult();
+        ((BrowserActivity) requireActivity()).setRefreshResult();
         updateKeySummary();
     }
 
@@ -666,7 +666,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Snackbar snackbar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG, null);
         snackbar.setAction(R.string.enable, v ->
-                ((SettingsActivity) requireActivity()).setWumiiboResult());
+                ((BrowserActivity) requireActivity()).setWumiiboResult());
         snackbar.show();
     }
 

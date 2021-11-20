@@ -110,7 +110,7 @@ public class AmiiboActivity extends AppCompatActivity {
                     scan.setAction(TagMo.ACTION_WRITE_TAG_FULL);
                     onUpdateTagResult.launch(scan.putExtras(args));
                     return true;
-                case R.id.mnu_restore:
+                case R.id.mnu_update:
                     args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
                     scan.setAction(TagMo.ACTION_WRITE_TAG_DATA);
                     scan.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
@@ -167,8 +167,16 @@ public class AmiiboActivity extends AppCompatActivity {
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 
+        if (TagMo.ACTION_UPDATE_TAG.equals(result.getData().getAction())) {
+            this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+            this.runOnUiThread(this::updateAmiiboView);
+            toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
+            return;
+        }
+
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())
                 && !TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
+
 
         // If we're supporting, didn't arrive from, but scanned an N2...
         if (TagMo.getPrefs().enableEliteSupport().get()

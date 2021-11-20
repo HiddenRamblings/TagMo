@@ -111,6 +111,13 @@
                 android:contentDescription="@string/imageview_toggle" />
         </LinearLayout>
 
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/preferences"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:attr/colorBackground"
+            android:visibility="gone"/>
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/switch_storage_root"
             android:layout_width="match_parent"

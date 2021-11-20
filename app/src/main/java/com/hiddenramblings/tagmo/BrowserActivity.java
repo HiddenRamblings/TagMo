@@ -38,6 +38,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
@@ -73,6 +74,8 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
+import com.hiddenramblings.tagmo.settings.SettingsFragment;
+import com.hiddenramblings.tagmo.settings.SettingsFragment_;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
@@ -121,7 +124,9 @@ public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,
         BrowserAmiibosAdapter.OnAmiiboClickListener {
 
-
+    static final String WUMIIBO = "WUMIIBO";
+    static final String REFRESH = "REFRESH";
+    static final String POWERTAG = "POWERTAG";
 
     @ViewById(R.id.chip_list)
     FlowLayout chipList;
@@ -137,6 +142,8 @@ public class BrowserActivity extends AppCompatActivity implements
     TextView currentFolderView;
     @ViewById(R.id.toggle)
     ImageView toggle;
+    @ViewById(R.id.preferences)
+    CoordinatorLayout preferences;
     @ViewById(R.id.switch_storage_root)
     AppCompatButton switchStorageRoot;
 
@@ -254,6 +261,7 @@ public class BrowserActivity extends AppCompatActivity implements
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    preferences.setVisibility(View.GONE);
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
@@ -808,25 +816,32 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    @SuppressLint("RestrictedApi")
-    ActivityResultLauncher<Intent> onSettingsActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
-        if (result.getData().hasExtra(SettingsActivity.WUMIIBO)) {
-            this.settings.setShowDownloads(true);
-            this.settings.notifyChanges();
-        }
-        if (result.getData().hasExtra(SettingsActivity.POWERTAG)) {
-            this.loadPTagKeyManager();
-        }
-        if (result.getData().hasExtra(SettingsActivity.REFRESH)) {
-            this.onRefresh();
-        }
-    });
+    public void setWumiiboResult() {
+        this.settings.setShowDownloads(true);
+        this.settings.notifyChanges();
+        this.onRefresh();
+    }
+
+    public void setPowerTagResult() {
+        this.loadPTagKeyManager();
+    }
+
+    public void setRefreshResult() {
+        this.onRefresh();
+    }
 
     @OptionsItem(R.id.settings)
     void openSettings() {
-        onSettingsActivity.launch(new Intent(this, SettingsActivity_.class));
+        if (!preferences.isShown()) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            preferences.setVisibility(View.VISIBLE);
+            SettingsFragment fragment = new SettingsFragment_();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.preferences, fragment)
+                    .commit();
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
     }
 
     @Override

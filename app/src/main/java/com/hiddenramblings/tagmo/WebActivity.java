@@ -227,8 +227,7 @@ public class WebActivity extends AppCompatActivity {
             } finally {
                 dialog.dismiss();
                 this.archive.delete();
-                setResult(Activity.RESULT_OK, new Intent().putExtra(
-                        SettingsActivity.REFRESH, true));
+                setResult(Activity.RESULT_OK);
                 finish();
             }
         }
@@ -270,8 +269,7 @@ public class WebActivity extends AppCompatActivity {
             FileOutputStream os = new FileOutputStream(filePath, false);
             os.write(tagData);
             os.flush();
-            setResult(Activity.RESULT_OK, new Intent().putExtra(
-                    SettingsActivity.REFRESH, true));
+            setResult(Activity.RESULT_OK);
             finish();
         } catch (IOException e) {
             Debug.Log(e);

@@ -238,4 +238,14 @@ public class Storage extends Environment {
         return filePath.startsWith(storagePath)
                 ? filePath.substring(storagePath.length()) : filePath;
     }
+
+    public static File getDownloads(String subfolder) {
+        if (subfolder != null) {
+            return new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), subfolder);
+        } else {
+            return Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS);
+        }
+    }
 }

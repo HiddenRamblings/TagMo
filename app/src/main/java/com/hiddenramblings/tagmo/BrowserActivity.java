@@ -380,13 +380,12 @@ public class BrowserActivity extends AppCompatActivity implements
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, amiibosView, false);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagReader.decipherFilename(settings.getAmiiboManager(), tagData));
+        input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOWNLOADS);
-                String fileName = TagReader.writeBytesToFile(directory,
+                File directory = Storage.getDownloads("TagMo(Backup)");
+                String fileName = TagUtils.writeBytesToFile(directory,
                         input.getText().toString() + ".bin", tagData);
                 new Toasty(this).Long(getString(R.string.wrote_file, fileName));
                 this.onRootFolderChanged(false);
@@ -1181,8 +1180,7 @@ public class BrowserActivity extends AppCompatActivity implements
         final ArrayList<AmiiboFile> amiiboFiles =
                 AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (this.settings.isShowingDownloads()) {
-            File download = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS);
+            File download = Storage.getDownloads(null);
             File[] files = rootFolder.listFiles((dir, name) -> name.equals(download.getName()));
             if (download != rootFolder && (files == null || files.length == 0))
                 amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, download, recursiveFiles));
@@ -1592,8 +1590,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background(id = BACKGROUND_LOAD_KEYS)
     void locateKeyFilesTask() {
-        File[] files = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS).listFiles((dir, name) -> keyNameMatcher(name));
+        File[] files = Storage.getDownloads(null).listFiles((dir, name) -> keyNameMatcher(name));
         if (files != null && files.length > 0) {
             for (File file : files) {
                 try {

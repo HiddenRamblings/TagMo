@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo.nfctech;
 
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 
 import androidx.documentfile.provider.DocumentFile;
@@ -8,18 +7,13 @@ import androidx.documentfile.provider.DocumentFile;
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Locale;
 
 public class TagReader {
 
@@ -127,58 +121,6 @@ public class TagReader {
         if (signature != null)
             return TagUtils.bytesToHex(signature).substring(0, 22);
         return null;
-    }
-
-    public static String writeBytesToFile(File backupDir, String name, byte[] tagData)
-            throws IOException {
-        //noinspection ResultOfMethodCallIgnored
-        backupDir.mkdirs();
-        File binFile = new File(backupDir, name);
-        try (FileOutputStream fos = new FileOutputStream(binFile)) {
-            fos.write(tagData);
-        }
-        try {
-            MediaScannerConnection.scanFile(TagMo.getContext(),
-                    new String[] { binFile.getAbsolutePath() }, null, null);
-        } catch (Exception e) {
-            Debug.Log(R.string.fail_media_scan, e);
-        }
-        return binFile.getAbsolutePath();
-    }
-
-    public static String decipherBinName(
-            AmiiboManager amiiboManager, byte[] tagData, boolean decrypted) {
-        String status = "";
-        if (decrypted) {
-            status = "(Decrypted)";
-        } else {
-            try {
-                TagUtils.validateData(tagData);
-            } catch (Exception e) {
-                status = "(Invalid)";
-            }
-        }
-        try {
-            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-            String name = TagUtils.amiiboIdToHex(amiiboId);
-            if (amiiboManager != null) {
-                Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
-                if (amiibo != null && amiibo.name != null) {
-                    name = amiibo.name.replace("/", "-");
-                }
-            }
-
-            byte[] uId = Arrays.copyOfRange(tagData, 0, 9);
-            String uIds = TagUtils.bytesToHex(uId);
-            return String.format(Locale.ROOT, "%1$s[%2$s]%3$s.bin", name, uIds, status);
-        } catch (Exception e) {
-            Debug.Log(TagReader.class, e.getMessage());
-        }
-        return "";
-    }
-
-    public static String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
-        return decipherBinName(amiiboManager, tagData, false);
     }
 
     public static byte[] scanTagToBytes(NTAG215 tag) throws Exception {

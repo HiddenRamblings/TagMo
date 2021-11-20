@@ -11,7 +11,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -31,9 +30,9 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.eightbit.io.Debug;
+import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -201,13 +200,12 @@ public class AmiiboActivity extends AppCompatActivity {
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagReader.decipherFilename(this.amiiboManager, tagData));
+        input.setText(TagUtils.decipherFilename(this.amiiboManager, tagData));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOWNLOADS);
-                String fileName = TagReader.writeBytesToFile(directory,
+                File directory = Storage.getDownloads("TagMo(Backup)");
+                String fileName = TagUtils.writeBytesToFile(directory,
                         input.getText().toString(), this.tagData);
                 new Toasty(this).Long(getString(R.string.wrote_file, fileName));
             } catch (IOException e) {

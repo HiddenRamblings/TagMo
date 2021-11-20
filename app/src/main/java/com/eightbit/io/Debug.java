@@ -61,6 +61,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -151,8 +152,7 @@ public class Debug {
             }
             return uri;
         } else {
-            File file = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), displayName + ".txt");
+            File file = new File(Storage.getDownloads(null), displayName + ".txt");
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(log.toString().getBytes());
             }

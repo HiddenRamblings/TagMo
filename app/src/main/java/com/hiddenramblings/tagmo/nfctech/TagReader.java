@@ -2,12 +2,9 @@ package com.hiddenramblings.tagmo.nfctech;
 
 import android.net.Uri;
 
-import androidx.documentfile.provider.DocumentFile;
-
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.amiibo.KeyManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,26 +23,6 @@ public class TagReader {
             throw new IOException(TagMo.getStringRes(R.string.error_tag_rewrite));
         }
         Debug.Log(TagWriter.class, R.string.validation_success);
-    }
-
-    public static byte[] getValidatedData(KeyManager keyManager, byte[] data) throws Exception {
-        if (data == null) return null;
-        try {
-            TagUtils.validateData(data);
-        } catch (Exception e) {
-            data = keyManager.encrypt(data);
-            TagUtils.validateData(data);
-        }
-        return data;
-    }
-
-    public static byte[] getValidatedFile(KeyManager keyManager, File file) throws Exception {
-        return getValidatedData(keyManager, TagReader.readTagFile(file));
-    }
-
-    public static byte[] getValidatedDocument(
-            KeyManager keyManager, DocumentFile file) throws Exception {
-        return getValidatedData(keyManager, TagReader.readTagDocument(file.getUri()));
     }
 
     private static byte[] getTagData(String path, InputStream inputStream) throws Exception {

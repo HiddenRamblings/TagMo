@@ -68,7 +68,6 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.JSONExecutor;
 import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
-import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
@@ -899,7 +898,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Bundle args = new Bundle();
         try {
             byte[] data = amiiboFile.getData() != null ? amiiboFile.getData()
-                        : TagReader.getValidatedFile(keyManager, amiiboFile.getFilePath());
+                        : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
             args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
         } catch (Exception e) {
             Debug.Log(e);

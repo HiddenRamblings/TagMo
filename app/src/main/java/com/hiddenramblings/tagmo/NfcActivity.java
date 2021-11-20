@@ -383,7 +383,7 @@ public class NfcActivity extends AppCompatActivity {
                         for (int x = 0; x < amiiboList.size(); x++) {
                             TagWriter.writeEliteAuto(mifare, amiiboList.get(x).getData() != null
                                     ? amiiboList.get(x).getData()
-                                    : TagReader.getValidatedFile(keyManager,
+                                    : TagUtils.getValidatedFile(keyManager,
                                     amiiboList.get(x).getFilePath()), keyManager, x);
                         }
                         Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
@@ -410,7 +410,7 @@ public class NfcActivity extends AppCompatActivity {
                         mifare.activateBank(selection);
                         data = TagReader.readFromTag(mifare);
                         mifare.activateBank(active_bank);
-                        data = TagReader.getValidatedData(keyManager, data);
+                        data = TagUtils.getValidatedData(keyManager, data);
                         TagWriter.writeEliteAuto(mifare, data, keyManager, selection);
                         Intent repair = new Intent(TagMo.ACTION_NFC_SCANNED);
                         args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
@@ -423,7 +423,7 @@ public class NfcActivity extends AppCompatActivity {
                         if (isEliteDevice) {
                             if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
                                 try {
-                                    data = TagReader.getValidatedData(keyManager,
+                                    data = TagUtils.getValidatedData(keyManager,
                                             TagReader.scanBankToBytes(mifare, selection));
                                     TagUtils.validateNtag(mifare, data, false);
                                 } catch (Exception e) {

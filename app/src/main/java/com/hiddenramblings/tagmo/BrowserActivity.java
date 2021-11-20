@@ -187,8 +187,6 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuShowMissing;
     @OptionsMenuItem(R.id.enable_scale)
     MenuItem menuEnableScale;
-    @OptionsMenuItem(R.id.unlock_elite)
-    MenuItem menuUnlockElite;
     @OptionsMenuItem(R.id.capture_logcat)
     MenuItem menuLogcat;
 
@@ -584,18 +582,6 @@ public class BrowserActivity extends AppCompatActivity implements
         this.recreate();
     }
 
-    @OptionsItem(R.id.unlock_elite)
-    void onUnlockEliteClicked() {
-        new AlertDialog.Builder(this)
-                .setMessage(R.string.prepare_unlock)
-                .setPositiveButton(R.string.start, (dialog, which) -> {
-                    Intent unlock = new Intent(this, NfcActivity_.class);
-                    unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
-                    startActivity(unlock);
-                    dialog.dismiss();
-                }).show();
-    }
-
     @OptionsItem(R.id.capture_logcat)
     @Background
     void onCaptureLogcatClicked() {
@@ -608,12 +594,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (IOException e) {
             new Toasty(this).Short(e.getMessage());
         }
-    }
-
-    @OptionsItem(R.id.instructions_wiki)
-    void onInstructionsWikiClicked() {
-        startActivity(new Intent(this, WebActivity_.class)
-                .setAction(TagMo.ACTION_BROWSE_GITLAB));
     }
 
     @OptionsItem(R.id.filter_game_series)
@@ -832,8 +812,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @OptionsItem(R.id.settings)
     void openSettings() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         if (!preferences.isShown()) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             preferences.setVisibility(View.VISIBLE);
             SettingsFragment fragment = new SettingsFragment_();
             getSupportFragmentManager()
@@ -878,8 +858,6 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onShowDownloadsChanged();
         this.onShowMissingChanged();
         this.onEnableScaleChanged();
-
-        menuUnlockElite.setVisible(TagMo.getPrefs().enableEliteSupport().get());
 
         // setOnQueryTextListener will clear this, so make a copy
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);

@@ -28,9 +28,10 @@
     <string name="settings_info_amiibo_series">settings_info_amiibo_series</string>
     <string name="settings_info_amiibo_types">settings_info_amiibo_types</string>
     <string name="settings_import_info_amiiboapi">settings_sync_info_amiiboapi</string>
-    <string name="settings_build_wumiibo">settings_build_wumiibo</string>
     <string name="settings_disable_debug">settings_disable_debug</string>
     <string name="settings_stable_channel">settings_stable_channel</string>
+    <string name="settings_view_guides">settings_view_guides</string>
+    <string name="settings_build_wumiibo">settings_build_wumiibo</string>
     <string name="settings_view_reddit">settings_view_reddit</string>
     <string name="image_network_settings">\@string/image_network_settings</string>
 

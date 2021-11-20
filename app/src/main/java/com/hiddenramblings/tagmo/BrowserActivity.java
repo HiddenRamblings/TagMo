@@ -179,10 +179,10 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuViewLarge;
     @OptionsMenuItem(R.id.view_image)
     MenuItem menuViewImage;
-    @OptionsMenuItem(R.id.recursive)
-    MenuItem menuRecursiveFiles;
     @OptionsMenuItem(R.id.show_downloads)
     MenuItem menuShowDownloads;
+    @OptionsMenuItem(R.id.recursive)
+    MenuItem menuRecursiveFiles;
     @OptionsMenuItem(R.id.show_missing)
     MenuItem menuShowMissing;
     @OptionsMenuItem(R.id.enable_scale)
@@ -558,15 +558,15 @@ public class BrowserActivity extends AppCompatActivity implements
         settings.notifyChanges();
     }
 
-    @OptionsItem(R.id.recursive)
-    void onRecursiveFilesClicked() {
-        this.settings.setRecursiveEnabled(!this.settings.isRecursiveEnabled());
-        this.settings.notifyChanges();
-    }
-
     @OptionsItem(R.id.show_downloads)
     void OnShowDownloadsCicked() {
         this.settings.setShowDownloads(!this.settings.isShowingDownloads());
+        this.settings.notifyChanges();
+    }
+
+    @OptionsItem(R.id.recursive)
+    void onRecursiveFilesClicked() {
+        this.settings.setRecursiveEnabled(!this.settings.isRecursiveEnabled());
         this.settings.notifyChanges();
     }
 
@@ -854,8 +854,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.onSortChanged();
         this.onViewChanged();
-        this.onRecursiveFilesChanged();
         this.onShowDownloadsChanged();
+        this.onRecursiveFilesChanged();
         this.onShowMissingChanged();
         this.onEnableScaleChanged();
 
@@ -1184,7 +1184,7 @@ public class BrowserActivity extends AppCompatActivity implements
             File download = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS);
             File[] files = rootFolder.listFiles((dir, name) -> name.equals(download.getName()));
-            if (files == null || files.length == 0)
+            if (download != rootFolder && (files == null || files.length == 0))
                 amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, download, recursiveFiles));
         }
 
@@ -1243,13 +1243,13 @@ public class BrowserActivity extends AppCompatActivity implements
                 oldBrowserSettings.getBrowserRootFolder())) {
             folderChanged = true;
         }
-        if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
-            folderChanged = true;
-            onRecursiveFilesChanged();
-        }
         if (newBrowserSettings.isShowingDownloads() != oldBrowserSettings.isShowingDownloads()) {
             folderChanged = true;
             onShowDownloadsChanged();
+        }
+        if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
+            folderChanged = true;
+            onRecursiveFilesChanged();
         }
         if (newBrowserSettings.isShowingMissingFiles() != oldBrowserSettings.isShowingMissingFiles()) {
             folderChanged = true;
@@ -1298,8 +1298,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 .filterAmiiboType().put(newBrowserSettings.getAmiiboTypeFilter())
                 .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
                 .imageNetworkSetting().put(newBrowserSettings.getImageNetworkSettings())
-                .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
                 .showDownloads().put(newBrowserSettings.isShowingDownloads())
+                .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
                 .showMissingFiles().put(newBrowserSettings.isShowingMissingFiles())
                 .apply();
 
@@ -1444,18 +1444,18 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    void onRecursiveFilesChanged() {
-        if (menuRecursiveFiles == null)
-            return;
-
-        menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
-    }
-
     void onShowDownloadsChanged() {
         if (menuShowDownloads == null)
             return;
 
         menuShowDownloads.setChecked(settings.isShowingDownloads());
+    }
+
+    void onRecursiveFilesChanged() {
+        if (menuRecursiveFiles == null)
+            return;
+
+        menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
     }
 
     void onShowMissingChanged() {

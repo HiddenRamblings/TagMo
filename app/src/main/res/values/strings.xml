@@ -230,7 +230,7 @@
     <string name="auth_response">Auth response %1$s</string>
     <string name="password">Password: %1$s</string>
 
-    <string name="validation_success">Tag / Bin validation successful!</string>
+    <string name="validation_success">Data validation successful!</string>
     <string name="no_source_data">Cannot validate: No data to compare.</string>
 
     <string name="error_no_data">No data to write</string>

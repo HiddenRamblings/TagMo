@@ -166,9 +166,9 @@
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="amiibo_info">amiibo™ Database</string>
     <string name="sync_amiibo_info">Sync cache with AmiiboAPI</string>
+    <string name="reset_amiibo_info">Reset cached amiibo™ info</string>
     <string name="export_json_details">Export amiibo™ info (JSON)</string>
     <string name="import_json_details">Import amiibo™ info (JSON)</string>
-    <string name="reset_amiibo_info">Reset cached amiibo™ info</string>
     <string name="amiibo_api_title">AmiiboAPI.com</string>
     <string name="number_amiibo">%1$d amiibo™</string>
     <string name="number_game">%1$d Game Series</string>

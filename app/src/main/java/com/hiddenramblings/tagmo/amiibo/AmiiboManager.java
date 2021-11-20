@@ -8,7 +8,6 @@ import androidx.documentfile.provider.DocumentFile;
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import org.json.JSONArray;
@@ -307,7 +306,7 @@ public class AmiiboManager {
             } else {
                 if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
-                        byte[] data = TagReader.getValidatedFile(keyManager, file);
+                        byte[] data = TagUtils.getValidatedFile(keyManager, file);
                         if (data != null) {
                             amiiboFiles.add(new AmiiboFile(file,
                                     TagUtils.amiiboIdFromTag(data), data));
@@ -331,7 +330,7 @@ public class AmiiboManager {
             } else if (file.getName() != null){
                 if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
-                        byte[] data = TagReader.getValidatedDocument(keyManager, file);
+                        byte[] data = TagUtils.getValidatedDocument(keyManager, file);
                         if (data != null) {
                             amiiboFiles.add(new AmiiboFile(file,
                                     TagUtils.amiiboIdFromTag(data), data));

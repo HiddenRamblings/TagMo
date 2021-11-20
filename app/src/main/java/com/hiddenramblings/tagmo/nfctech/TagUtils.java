@@ -9,11 +9,14 @@ import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import com.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.data.AmiiboData;
 
 import java.io.File;
@@ -244,6 +247,28 @@ public class TagUtils {
 
     public static String decipherFilename(AmiiboManager manager, byte[] tagData) {
         return decipherFilename(manager, tagData, false);
+    }
+
+    public static byte[] getValidatedData(KeyManager keyManager, byte[] data) throws Exception {
+        if (data == null) return null;
+        try {
+            TagUtils.validateData(data);
+            data = keyManager.decrypt(data);
+        } catch (Exception e) {
+            data = keyManager.encrypt(data);
+            TagUtils.validateData(data);
+            data = keyManager.decrypt(data);
+        }
+        return keyManager.encrypt(data);
+    }
+
+    public static byte[] getValidatedFile(KeyManager keyManager, File file) throws Exception {
+        return getValidatedData(keyManager, TagReader.readTagFile(file));
+    }
+
+    public static byte[] getValidatedDocument(
+            KeyManager keyManager, DocumentFile file) throws Exception {
+        return getValidatedData(keyManager, TagReader.readTagDocument(file.getUri()));
     }
 
     public static String writeBytesToFile(File backupDir, String name, byte[] tagData)

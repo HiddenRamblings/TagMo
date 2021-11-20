@@ -17,8 +17,7 @@
     <string name="search">Search</string>
     <string name="filter">Filter</string>
     <string name="sorting">Sorting</string>
-    <string name="layout">Layout</string>
-    <string name="content">Content</string>
+    <string name="display_options">Display Options</string>
     <string name="refresh">Refresh</string>
     <string name="close">Close</string>
     <string name="view">View</string>
@@ -46,15 +45,15 @@
     <string name="amiibo_character_caps">CHARACTER</string>
     <string name="amiibo_path_caps">PATH</string>
 
-    <string name="recursive_folders">Recursive Folders</string>
-    <string name="show_downloads">Show \'Downloads\'</string>
-    <string name="show_missing">Show Missing Bins</string>
-    <string name="enable_scale">Scale Mode</string>
+    <string name="show_downloads">Show \'Download\'</string>
+    <string name="recursive_folders">Recursive Search</string>
+    <string name="show_missing">Missing amiibo™</string>
+    <string name="enable_scale">View Scale Mode</string>
 
-    <string name="simple">Simple</string>
-    <string name="compact">Compact</string>
-    <string name="large">Large</string>
-    <string name="image">Image</string>
+    <string name="simple">Text Banners</string>
+    <string name="compact">Snappy Cards</string>
+    <string name="large">Banner Cards</string>
+    <string name="image">Icon Tile Grid</string>
 
     <string name="decryption_keys">Decryption Keys</string>
 

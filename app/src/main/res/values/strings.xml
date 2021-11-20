@@ -115,7 +115,6 @@
 
     <string name="settings">Settings</string>
     <string name="capture_logcat">Capture Logcat</string>
-    <string name="instructions_wiki">Browse Guides</string>
 
     <string name="wrote_file">File saved to %1$s</string>
     <string name="wrote_logcat">Logcat saved to %1$s</string>
@@ -131,9 +130,9 @@
     <string name="unknown_type">Unverified Tag</string>
     <string name="write_raw">Write to Tag (Raw)</string>
     <string name="write_auto">Write to Tag (Auto)</string>
-    <string name="unlock_elite">Unlock N2 Elite</string>
     <string name="update_tag">Update Tag</string>
     <string name="scan_tag">Scan NFC Tag</string>
+    <string name="unlock_elite">Unlock N2 Elite</string>
     <string name="scan_bank_no">Scan Bank %1$d</string>
     <string name="scan_bank">Scan Bank %1$s</string>
     <string name="scan_elite">Scan N2 Elite</string>
@@ -163,6 +162,7 @@
     <string name="lock_elite_hardware">Lock N2 Elite Hardware</string>
     <string name="lock_elite_hardware_details">The active bank will emulate a retail amiibo™.\nOther features will be disabled until unlocked.</string>
     <string name="lock_elite_warning">Lock N2 Elite Hardware?</string>
+    <string name="unlock_elite_hardware">Unlock N2 Elite Hardware</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="amiibo_info">amiibo™ Database</string>
     <string name="sync_amiibo_info">Sync cache with AmiiboAPI</string>
@@ -181,9 +181,10 @@
     <string name="pref_stable_channel">Stable Update Checks</string>
     <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
     <string name="pref_resources">Resources</string>
-    <string name="pref_reddit_link">Visit the TagMo reddit</string>
+    <string name="pref_guides_link">Browse TagMo Guides</string>
     <string name="pref_build_wumiibo">Browse Wumiibo Bins</string>
     <string name="build_wumiibo_details">Generate decrypted bin files based on public amiibo™ bytecode information</string>
+    <string name="pref_reddit_link">Visit the TagMo reddit</string>
 
     <string name="amiibo_info_updated">Updated amiibo™ database!</string>
     <string name="sync_amiibo_process">Syncing with AmiiboAPI&#8230;</string>

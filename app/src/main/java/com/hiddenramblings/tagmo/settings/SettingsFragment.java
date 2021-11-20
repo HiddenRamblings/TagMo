@@ -95,6 +95,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference enableEliteSupport;
     @PreferenceByKey(R.string.lock_elite_hardware)
     Preference lockEliteHardware;
+    @PreferenceByKey(R.string.unlock_elite_hardware)
+    Preference unlockEliteHardware;
     @PreferenceByKey(R.string.settings_info_amiibo)
     Preference amiiboStats;
     @PreferenceByKey(R.string.settings_info_game_series)
@@ -153,6 +155,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     R.string.elite_details_enabled, prefs.eliteSignature().get()));
         }
         lockEliteHardware.setVisible(isElite);
+        unlockEliteHardware.setVisible(isElite);
     }
 
     @PreferenceClick(R.string.settings_import_keys)
@@ -182,6 +185,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         else
             enableEliteSupport.setSummary(getString(R.string.elite_details));
         lockEliteHardware.setVisible(isEnabled);
+        unlockEliteHardware.setVisible(isEnabled);
     }
 
     @PreferenceClick(R.string.lock_elite_hardware)
@@ -195,6 +199,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     dialog.dismiss();
                 })
                 .setNegativeButton(R.string.cancel, null).show();
+    }
+
+    @PreferenceClick(R.string.unlock_elite_hardware)
+    void onUnlockElitHardwareClicked() {
+        new AlertDialog.Builder(requireContext())
+                .setMessage(R.string.prepare_unlock)
+                .setPositiveButton(R.string.start, (dialog, which) -> {
+                    Intent unlock = new Intent(requireContext(), NfcActivity_.class);
+                    unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
+                    startActivity(unlock);
+                    dialog.dismiss();
+                }).show();
     }
 
     @PreferenceClick(R.string.settings_import_info_amiiboapi)
@@ -361,9 +377,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         prefs.stableChannel().put(stableChannel.isChecked());
     }
 
-    @PreferenceClick(R.string.settings_view_reddit)
-    void onViewRedditClicked() {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.TAGMO_REDDIT)));
+    @PreferenceClick(R.string.settings_view_guides)
+    void onViewGuidesClicked() {
+        startActivity(new Intent(requireActivity(), WebActivity_.class)
+                .setAction(TagMo.ACTION_BROWSE_GITLAB));
     }
 
     ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
@@ -378,6 +395,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void onWumiiboClicked() {
         onDownloadZip.launch(new Intent(requireActivity(),
                 WebActivity_.class).setAction(TagMo.ACTION_BUILD_WUMIIBO));
+    }
+
+    @PreferenceClick(R.string.settings_view_reddit)
+    void onViewRedditClicked() {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.TAGMO_REDDIT)));
     }
 
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";

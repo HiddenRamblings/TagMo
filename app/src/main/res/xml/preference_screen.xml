@@ -54,6 +54,10 @@
             android:summary="@string/lock_elite_hardware_details"
             android:title="@string/lock_elite_hardware"
             app:iconSpaceReserved="false" />
+        <androidx.preference.Preference
+            android:key="@string/unlock_elite_hardware"
+            android:title="@string/unlock_elite_hardware"
+            app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
@@ -123,13 +127,17 @@
         android:title="@string/pref_resources"
         app:iconSpaceReserved="false">
         <androidx.preference.Preference
-            android:key="@string/settings_view_reddit"
-            android:title="@string/pref_reddit_link"
+            android:key="@string/settings_view_guides"
+            android:title="@string/pref_guides_link"
             app:iconSpaceReserved="false" />
         <androidx.preference.Preference
             android:key="@string/settings_build_wumiibo"
             android:title="@string/pref_build_wumiibo"
             android:summary="@string/build_wumiibo_details"
+            app:iconSpaceReserved="false" />
+        <androidx.preference.Preference
+            android:key="@string/settings_view_reddit"
+            android:title="@string/pref_reddit_link"
             app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

@@ -138,18 +138,8 @@
         </menu>
     </item>
     <item
-        android:id="@+id/unlock_elite"
-        android:icon="@drawable/ic_nfc_white_24dp"
-        android:title="@string/unlock_elite"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/capture_logcat"
         android:icon="@drawable/ic_save_white_24dp"
         android:title="@string/capture_logcat"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/instructions_wiki"
-        android:icon="@drawable/ic_github_white_24dp"
-        android:title="@string/instructions_wiki"
         app:showAsAction="ifRoom"/>
 </menu>

@@ -47,7 +47,6 @@ import com.hiddenramblings.tagmo.amiibo.data.AppData;
 import com.hiddenramblings.tagmo.amiibo.data.AppDataFragment;
 import com.hiddenramblings.tagmo.amiibo.data.AppDataSSBFragment;
 import com.hiddenramblings.tagmo.amiibo.data.AppDataTPFragment;
-import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -167,7 +166,7 @@ public class TagDataActivity extends AppCompatActivity {
             this.amiiboData = new AmiiboData(keyManager.decrypt(tagData));
         } catch (Exception e) {
             try {
-                tagData = TagReader.getValidatedData(keyManager, tagData);
+                tagData = TagUtils.getValidatedData(keyManager, tagData);
                 this.amiiboData = new AmiiboData(tagData);
             } catch (Exception ex) {
                 Debug.Log(e);

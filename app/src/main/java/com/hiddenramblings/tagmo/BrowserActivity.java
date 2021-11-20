@@ -36,7 +36,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
@@ -944,7 +943,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public boolean onQueryTextSubmit(String query) {
         settings.setQuery(query);
         settings.notifyChanges();
-        setSearchText();
+        setAmiiboStats();
         return false;
     }
 
@@ -953,7 +952,7 @@ public class BrowserActivity extends AppCompatActivity implements
         settings.setQuery(newText);
         settings.notifyChanges();
         if (newText.length() == 0)
-            setSearchText();
+            setAmiiboStats();
         return true;
     }
 
@@ -1312,12 +1311,11 @@ public class BrowserActivity extends AppCompatActivity implements
                 .showMissingFiles().put(newBrowserSettings.isShowingMissingFiles())
                 .apply();
 
-        if (oldBrowserSettings.getQuery() != null
-                && !oldBrowserSettings.getQuery().equals(newBrowserSettings.getQuery())) return;
-        String relativeRoot = Storage.getRelativePath(newBrowserSettings.getBrowserRootFolder(),
+        File rootFolder = newBrowserSettings.getBrowserRootFolder();
+        String relativeRoot = Storage.getRelativePath(rootFolder,
                 TagMo.getPrefs().preferEmulated().get());
-        setFolderText(relativeRoot.length() > 1 ? relativeRoot
-                : newBrowserSettings.getBrowserRootFolder().getAbsolutePath());
+        setFolderText(relativeRoot.length() > 1 ? relativeRoot : rootFolder.getAbsolutePath(),
+                folderChanged ? 3000 : 1500);
     }
 
     private void onAmiiboFilesChanged() {
@@ -1408,6 +1406,7 @@ public class BrowserActivity extends AppCompatActivity implements
         public void onCloseClick(@NonNull View v) {
             settings.setGameSeriesFilter("");
             settings.notifyChanges();
+            setAmiiboStats();
         }
     };
 
@@ -1421,6 +1420,7 @@ public class BrowserActivity extends AppCompatActivity implements
         public void onCloseClick(@NonNull View v) {
             settings.setCharacterFilter("");
             settings.notifyChanges();
+            setAmiiboStats();
         }
     };
 
@@ -1434,6 +1434,7 @@ public class BrowserActivity extends AppCompatActivity implements
         public void onCloseClick(@NonNull View v) {
             settings.setAmiiboSeriesFilter("");
             settings.notifyChanges();
+            setAmiiboStats();
         }
     };
 
@@ -1447,6 +1448,7 @@ public class BrowserActivity extends AppCompatActivity implements
         public void onCloseClick(@NonNull View v) {
             settings.setAmiiboTypeFilter("");
             settings.notifyChanges();
+            setAmiiboStats();
         }
     };
 
@@ -1530,14 +1532,14 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private void setFolderText(String text) {
+    private void setFolderText(String text, int delay) {
         this.currentFolderView.setGravity(Gravity.NO_GRAVITY);
         this.currentFolderView.setText(text);
         handler.removeCallbacksAndMessages(null);
-        handler.postDelayed(this::setAmiiboStatsText, 2500);
+        handler.postDelayed(this::setAmiiboStatsText, delay);
     }
 
-    private void setSearchText() {
+    private void setAmiiboStats() {
         handler.removeCallbacksAndMessages(null);
         setAmiiboStatsText();
     }

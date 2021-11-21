@@ -140,8 +140,9 @@ public class TagWriter {
     public static void writeEliteAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager,
                                       int active_bank) throws Exception {
         if (doEliteAuth(mifare, mifare.fastRead(0, 0))) {
-            // tagData = keyManager.decrypt(tagData);
-            // tagData = keyManager.encrypt(tagData);
+            tagData = keyManager.decrypt(tagData);
+            // tagData = patchUid(mifare.readPages(0), tagData);
+            tagData = keyManager.encrypt(tagData);
             if (mifare.amiiboFastWrite(0, active_bank, tagData)) {
                 try {
                     writePassword(mifare);

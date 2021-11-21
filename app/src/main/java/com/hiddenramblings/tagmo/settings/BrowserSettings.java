@@ -6,8 +6,14 @@ import android.os.Parcelable;
 
 import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
+import com.hiddenramblings.tagmo.amiibo.AmiiboType;
+import com.hiddenramblings.tagmo.amiibo.Character;
+import com.hiddenramblings.tagmo.amiibo.GameSeries;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -385,5 +391,38 @@ public class BrowserSettings implements Parcelable {
         } else {
             return o1.equals(o2);
         }
+    }
+
+    public boolean amiiboContainsQuery(Amiibo amiibo, String query) {
+        GameSeries gameSeries = amiibo.getGameSeries();
+        if (!Amiibo.matchesGameSeriesFilter(gameSeries, getGameSeriesFilter()))
+            return false;
+
+        Character character = amiibo.getCharacter();
+        if (!Amiibo.matchesCharacterFilter(character, getCharacterFilter()))
+            return false;
+
+        AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
+        if (!Amiibo.matchesAmiiboSeriesFilter(amiiboSeries, getAmiiboSeriesFilter()))
+            return false;
+
+        AmiiboType amiiboType = amiibo.getAmiiboType();
+        if (!Amiibo.matchesAmiiboTypeFilter(amiiboType, getAmiiboTypeFilter()))
+            return false;
+
+        if (!query.isEmpty()) {
+            if (TagUtils.amiiboIdToHex(amiibo.id).toLowerCase().startsWith(query))
+                return true;
+            else if (amiibo.name != null && amiibo.name.toLowerCase().contains(query))
+                return true;
+            else if (gameSeries != null && gameSeries.name.toLowerCase().contains(query))
+                return true;
+            else if (character != null && character.name.toLowerCase().contains(query))
+                return true;
+            else if (amiiboSeries != null && amiiboSeries.name.toLowerCase().contains(query))
+                return true;
+            else return amiiboType != null && amiiboType.name.toLowerCase().contains(query);
+        }
+        return true;
     }
 }

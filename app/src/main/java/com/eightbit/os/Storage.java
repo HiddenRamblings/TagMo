@@ -148,8 +148,7 @@ public class Storage extends Environment {
             if (physical != null && physical != emulated)
                 isPhysicalAvailable = true;
         } catch (NullPointerException e) {
-            if (TagMo.getPrefs().preferEmulated().get())
-                return getExternalStorageDirectory();
+            if (internal) return getExternalStorageDirectory();
             return storageFile = setFileMounts();
         }
         if (internal)
@@ -177,9 +176,7 @@ public class Storage extends Environment {
             isPhysicalAvailable = true;
         if (internal)
             return storageFile = emulated != null ? emulated : setFileGeneric(internal);
-        else
-            return physical != null ? physical : emulated != null
-                    ? emulated : setFileGeneric(internal);
+        return physical != null ? physical : emulated != null ? emulated : setFileGeneric(internal);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
@@ -203,8 +200,7 @@ public class Storage extends Environment {
         }
         if (internal)
             return storageFile = emulated != null ? emulated : physical;
-        else
-            return storageFile = physical != null ? physical : emulated;
+        return storageFile = physical != null ? physical : emulated;
     }
 
     private static File setFile(boolean internal) {
@@ -240,12 +236,9 @@ public class Storage extends Environment {
     }
 
     public static File getDownloads(String subfolder) {
-        if (subfolder != null) {
+        if (subfolder != null)
             return new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS), subfolder);
-        } else {
-            return Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS);
-        }
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
     }
 }

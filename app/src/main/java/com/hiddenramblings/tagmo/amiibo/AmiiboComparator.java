@@ -34,6 +34,7 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
                 Amiibo amiibo1 = amiiboManager.amiibos.get(amiiboId1);
                 Amiibo amiibo2 = amiiboManager.amiibos.get(amiiboId2);
                 if (amiibo1 == null && amiibo2 == null)
+                    //noinspection all
                     value = 0;
                 else if (amiibo1 == null)
                     value = 1;

@@ -596,6 +596,18 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    private int getQueryCount(String queryText) {
+        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        if (amiiboManager == null)
+            return 0;
+        Set<Long> items = new HashSet<>();
+        for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+            if (settings.amiiboContainsQuery(amiibo, queryText))
+                items.add(amiibo.id);
+        }
+        return items.size();
+    }
+
     enum FILTER {
         GAME_SERIES,
         CHARACTER,
@@ -1588,7 +1600,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                 }
                 currentFolderView.setText(getString(R.string.amiibo_collected,
-                        size, count, settings.getAmiiboManager().amiibos.size()));
+                        size, count, getQueryCount(settings.getQuery())));
             } else if (adapter != null && settings.hasFilteredData()) {
                 size = adapter.getItemCount();
                 for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {

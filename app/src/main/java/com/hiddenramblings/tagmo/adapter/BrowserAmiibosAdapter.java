@@ -212,7 +212,7 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
                     if (amiibo == null)
                         amiibo = new Amiibo(amiiboManager, amiiboFile.getId(),
                                 null, null);
-                    add = amiiboContainsQuery(amiibo, queryText);
+                    add = settings.amiiboContainsQuery(amiibo, queryText);
                 } else {
                     add = queryText.isEmpty();
                 }
@@ -234,39 +234,6 @@ public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAd
                     settings.getAmiiboSeriesFilter().isEmpty() &&
                     settings.getAmiiboTypeFilter().isEmpty() &&
                     path.toLowerCase().contains(query);
-        }
-
-        public boolean amiiboContainsQuery(Amiibo amiibo, String query) {
-            GameSeries gameSeries = amiibo.getGameSeries();
-            if (!Amiibo.matchesGameSeriesFilter(gameSeries, settings.getGameSeriesFilter()))
-                return false;
-
-            Character character = amiibo.getCharacter();
-            if (!Amiibo.matchesCharacterFilter(character, settings.getCharacterFilter()))
-                return false;
-
-            AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
-            if (!Amiibo.matchesAmiiboSeriesFilter(amiiboSeries, settings.getAmiiboSeriesFilter()))
-                return false;
-
-            AmiiboType amiiboType = amiibo.getAmiiboType();
-            if (!Amiibo.matchesAmiiboTypeFilter(amiiboType, settings.getAmiiboTypeFilter()))
-                return false;
-
-            if (!query.isEmpty()) {
-                if (TagUtils.amiiboIdToHex(amiibo.id).toLowerCase().startsWith(query))
-                    return true;
-                else if (amiibo.name != null && amiibo.name.toLowerCase().contains(query))
-                    return true;
-                else if (gameSeries != null && gameSeries.name.toLowerCase().contains(query))
-                    return true;
-                else if (character != null && character.name.toLowerCase().contains(query))
-                    return true;
-                else if (amiiboSeries != null && amiiboSeries.name.toLowerCase().contains(query))
-                    return true;
-                else return amiiboType != null && amiiboType.name.toLowerCase().contains(query);
-            }
-            return true;
         }
 
         @SuppressLint("NotifyDataSetChanged")

@@ -41,6 +41,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -848,6 +849,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        MenuCompat.setGroupDividerEnabled(menu, true);
         boolean result = super.onCreateOptionsMenu(menu);
 
         this.onSortChanged();

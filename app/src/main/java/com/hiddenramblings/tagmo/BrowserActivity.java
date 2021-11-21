@@ -194,6 +194,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private KeyManager keyManager;
     private AmiiboFile clickedAmiibo = null;
     private final Handler handler = new Handler();
+    private int filteredCount;
 
     private Snackbar ongoingSnackbar;
 
@@ -595,6 +596,82 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    enum FILTER {
+        GAME_SERIES,
+        CHARACTER,
+        AMIIBO_SERIES,
+        AMIIBO_TYPE
+    }
+
+    private int getFilteredCount(String filter, FILTER filterType) {
+        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        if (amiiboManager == null)
+            return 0;
+
+        Set<Long> items = new HashSet<>();
+        for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+            switch (filterType) {
+                case GAME_SERIES:
+                    GameSeries gameSeries = amiibo.getGameSeries();
+                    if (gameSeries != null &&
+                            Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
+                                    settings.getCharacterFilter()) &&
+                            Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
+                                    settings.getAmiiboSeriesFilter()) &&
+                            Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
+                                    settings.getAmiiboTypeFilter())
+                    ) {
+                        if (gameSeries.name.equals(filter))
+                            items.add(amiibo.id);
+                    }
+                    break;
+                case CHARACTER:
+                    Character character = amiibo.getCharacter();
+                    if (character != null &&
+                            Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
+                                    settings.getGameSeriesFilter()) &&
+                            Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
+                                    settings.getAmiiboSeriesFilter()) &&
+                            Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
+                                    settings.getAmiiboTypeFilter())
+                    ) {
+                        if (character.name.equals(filter))
+                            items.add(amiibo.id);
+                    }
+                    break;
+                case AMIIBO_SERIES:
+                    AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
+                    if (amiiboSeries != null &&
+                            Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
+                                    settings.getGameSeriesFilter()) &&
+                            Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
+                                    settings.getCharacterFilter()) &&
+                            Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
+                                    settings.getAmiiboTypeFilter())
+                    ) {
+                        if (amiiboSeries.name.equals(filter))
+                            items.add(amiibo.id);
+                    }
+                    break;
+                case AMIIBO_TYPE:
+                    AmiiboType amiiboType = amiibo.getAmiiboType();
+                    if (amiiboType != null &&
+                            Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
+                                    settings.getGameSeriesFilter()) &&
+                            Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
+                                    settings.getCharacterFilter()) &&
+                            Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
+                                    settings.getAmiiboSeriesFilter())
+                    ) {
+                        if (amiiboType.name.equals(filter))
+                            items.add(amiibo.id);
+                    }
+                    break;
+            }
+        }
+        return items.size();
+    }
+
     @OptionsItem(R.id.filter_game_series)
     boolean onFilterGameSeriesClick() {
         SubMenu subMenu = menuFilterGameSeries.getSubMenu();
@@ -641,6 +718,7 @@ public class BrowserActivity extends AppCompatActivity implements
         public boolean onMenuItemClick(MenuItem menuItem) {
             settings.setGameSeriesFilter(menuItem.getTitle().toString());
             settings.notifyChanges();
+            filteredCount = getFilteredCount(menuItem.getTitle().toString(), FILTER.GAME_SERIES);
             return false;
         }
     };
@@ -691,6 +769,7 @@ public class BrowserActivity extends AppCompatActivity implements
         public boolean onMenuItemClick(MenuItem menuItem) {
             settings.setCharacterFilter(menuItem.getTitle().toString());
             settings.notifyChanges();
+            filteredCount = getFilteredCount(menuItem.getTitle().toString(), FILTER.CHARACTER);
             return false;
         }
     };
@@ -741,6 +820,7 @@ public class BrowserActivity extends AppCompatActivity implements
         public boolean onMenuItemClick(MenuItem menuItem) {
             settings.setAmiiboSeriesFilter(menuItem.getTitle().toString());
             settings.notifyChanges();
+            filteredCount = getFilteredCount(menuItem.getTitle().toString(), FILTER.AMIIBO_SERIES);
             return false;
         }
     };
@@ -791,6 +871,7 @@ public class BrowserActivity extends AppCompatActivity implements
         public boolean onMenuItemClick(MenuItem menuItem) {
             settings.setAmiiboTypeFilter(menuItem.getTitle().toString());
             settings.notifyChanges();
+            filteredCount = getFilteredCount(menuItem.getTitle().toString(), FILTER.AMIIBO_TYPE);
             return false;
         }
     };
@@ -1496,7 +1577,7 @@ public class BrowserActivity extends AppCompatActivity implements
         currentFolderView.setGravity(Gravity.CENTER);
         if (settings.getAmiiboManager() != null) {
             int count = 0;
-            if (adapter != null && (!settings.getQuery().isEmpty() || settings.hasFilteredData())) {
+            if (adapter != null && !settings.getQuery().isEmpty()) {
                 size = adapter.getItemCount();
                 for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
                     for (int x = 0; x < size; x++) {
@@ -1506,6 +1587,20 @@ public class BrowserActivity extends AppCompatActivity implements
                         }
                     }
                 }
+                currentFolderView.setText(getString(R.string.amiibo_collected,
+                        size, count, settings.getAmiiboManager().amiibos.size()));
+            } else if (adapter != null && settings.hasFilteredData()) {
+                size = adapter.getItemCount();
+                for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+                    for (int x = 0; x < size; x++) {
+                        if (amiibo.id == adapter.getItemId(x)) {
+                            count += 1;
+                            break;
+                        }
+                    }
+                }
+                currentFolderView.setText(getString(R.string.amiibo_collected,
+                        size, count, filteredCount));
             } else {
                 for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
                     for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
@@ -1515,9 +1610,9 @@ public class BrowserActivity extends AppCompatActivity implements
                         }
                     }
                 }
+                currentFolderView.setText(getString(R.string.amiibo_collected,
+                        size, count, settings.getAmiiboManager().amiibos.size()));
             }
-            currentFolderView.setText(getString(R.string.amiibo_collected, size, count,
-                    settings.getAmiiboManager().amiibos.size()));
         } else {
             currentFolderView.setText(getString(R.string.files_displayed, size));
         }

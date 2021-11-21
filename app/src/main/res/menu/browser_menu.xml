@@ -93,7 +93,9 @@
         android:title="@string/display_options"
         app:showAsAction="ifRoom">
         <menu>
-            <group android:checkableBehavior="single">
+            <group
+                android:id="@+id/layout"
+                android:checkableBehavior="single">
                 <item
                     android:id="@+id/view_simple"
                     android:title="@string/simple"/>
@@ -106,6 +108,9 @@
                 <item
                     android:id="@+id/view_image"
                     android:title="@string/image"/>
+            </group>
+            <group
+                android:id="@+id/content">
                 <item
                     android:id="@+id/show_downloads"
                     android:checkable="true"

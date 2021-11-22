@@ -109,10 +109,7 @@ public class WebActivity extends AppCompatActivity {
                         @NonNull WebResourceResponse errorResponse) {
                     if (errorResponse.getStatusCode() == 404) {
                         if (action != null) {
-                            if (TagMo.ACTION_BUILD_WUMIIBO.equals(action)
-                                    && !request.getUrl().toString().equals(Website.WUMIIBO_WEB))
-                                view.loadUrl(Website.WUMIIBO_WEB);
-                            else if (TagMo.ACTION_BROWSE_GITLAB.equals(action)
+                            if (TagMo.ACTION_BROWSE_GITLAB.equals(action)
                                     && !request.getUrl().toString().equals(Website.GITLAB_WEB))
                                 view.loadUrl(Website.GITLAB_WEB);
                         }
@@ -138,20 +135,17 @@ public class WebActivity extends AppCompatActivity {
 
         setResult(RESULT_CANCELED);
 
+        JavaScriptInterface download = new JavaScriptInterface();
+        mWebView.addJavascriptInterface(download, "Android");
+        mWebView.setDownloadListener((url, userAgent, contentDisposition, mimeType, contentLength) -> {
+            if (url.startsWith("blob") || url.startsWith("data")) {
+                Log.d("DATA", url);
+                mWebView.loadUrl(download.getBase64StringFromBlob(url, mimeType));
+            }
+        });
+
         if (action != null) {
-            if (TagMo.ACTION_BUILD_WUMIIBO.equals(action)) {
-                JavaScriptInterface download = new JavaScriptInterface();
-                mWebView.addJavascriptInterface(download, "Android");
-                mWebView.setDownloadListener((url, userAgent, contentDisposition,
-                                              mimeType, contentLength) -> {
-                    if (url.startsWith("blob") || url.startsWith("data")) {
-                        Log.d("DATA", url);
-                        mWebView.loadUrl(download.getBase64StringFromBlob(url, mimeType));
-                    }
-                });
-                mWebView.loadUrl(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                        ? Website.WUMIIBO_APP : Website.WUMIIBO_URI);
-            } else if (TagMo.ACTION_BROWSE_GITLAB.equals(action)) {
+            if (TagMo.ACTION_BROWSE_GITLAB.equals(action)) {
                 webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
                         "(?i)" + Pattern.quote("android"), "TagMo"));
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
@@ -251,7 +245,9 @@ public class WebActivity extends AppCompatActivity {
     void unzipFile(File zipFile) {
         dialog = ProgressDialog.show(this,
                 getString(R.string.wait_unzip), "", true);
-        File destination = Storage.getDownloads("Wumiibo(Decrypted)");
+        File deprecated = Storage.getDownloadDir("Wumiibo(Decrypted)");
+        if (deprecated.exists()) deleteDir(deprecated);
+        File destination = Storage.getDownloadDir("TagMo", "Downloads");
         if (destination.exists()) deleteDir(destination);
         destination.mkdirs();
         new Thread(new UnZip(zipFile, destination)).start();
@@ -259,8 +255,8 @@ public class WebActivity extends AppCompatActivity {
 
     private void saveBinFile(byte[] tagData, String name) {
         try {
-            File filePath = new File(Storage.getDownloads("Wumiibo(Decrypted)"),
-                    name + "(Decrypted).bin");
+            File filePath = new File(Storage.getDownloadDir("TagMo", "Downloads"),
+                    name + ".bin");
             FileOutputStream os = new FileOutputStream(filePath, false);
             os.write(tagData);
             os.flush();
@@ -322,7 +318,7 @@ public class WebActivity extends AppCompatActivity {
         private void convertBase64StringSave(String base64File) throws IOException {
             String zipType = getString(R.string.mimetype_zip);
             if (base64File.contains("data:" + zipType + ";")) {
-                File filePath = new File(Storage.getDownloads(null), "amiibo.zip");
+                File filePath = new File(Storage.getDownloadDir("TagMo"), "download.zip");
                 FileOutputStream os = new FileOutputStream(filePath, false);
                 os.write(Base64.decode(base64File.replaceFirst(
                         "^data:" + zipType + ";base64,", ""), 0));

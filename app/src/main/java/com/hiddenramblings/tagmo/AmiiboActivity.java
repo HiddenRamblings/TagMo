@@ -31,6 +31,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.eightbit.io.Debug;
 import com.eightbit.os.Storage;
+import com.eightbit.tagmo.Foomiibo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -83,7 +84,7 @@ public class AmiiboActivity extends AppCompatActivity {
     @Extra(TagMo.EXTRA_AMIIBO_ID)
     long amiiboId = -1;
 
-    AmiiboManager amiiboManager = null;
+    private AmiiboManager amiiboManager = null;
 
     @InstanceState
     boolean ignoreTagTd;
@@ -96,6 +97,13 @@ public class AmiiboActivity extends AppCompatActivity {
         }
 
         toolbar.inflateMenu(R.menu.amiibo_menu);
+        if (tagData == null) {
+            toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
+            toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(false);
+            toolbar.getMenu().findItem(R.id.mnu_view_hex).setEnabled(false);
+            toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(false);
+            toolbar.getMenu().findItem(R.id.mnu_delete).setEnabled(false);
+        }
         toolbar.setOnMenuItemClickListener(item -> {
             Bundle args = new Bundle();
             Intent scan = new Intent(this, NfcActivity_.class);
@@ -116,7 +124,11 @@ public class AmiiboActivity extends AppCompatActivity {
                     onUpdateTagResult.launch(scan.putExtras(args));
                     return true;
                 case R.id.mnu_save:
-                    displayBackupDialog();
+                    if (tagData != null)
+                        displayBackupDialog(this.tagData, false);
+                    else
+                        displayBackupDialog(Foomiibo.generateData(
+                                txtTagId.getText().toString()), true);
                     return true;
                 case R.id.mnu_edit:
                     args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
@@ -196,17 +208,18 @@ public class AmiiboActivity extends AppCompatActivity {
         finish();
     }
 
-    private void displayBackupDialog() {
+    private void displayBackupDialog(byte[] tagData, boolean decrypted) {
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagUtils.decipherFilename(this.amiiboManager, tagData));
+        input.setText(TagUtils.decipherFilename(this.amiiboManager, tagData, decrypted));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = Storage.getDownloads("TagMo(Backup)");
+                File directory = Storage.getDownloadDir("TagMo",
+                        decrypted ? "Foomiibo" : "Backups");
                 String fileName = TagUtils.writeBytesToFile(directory,
-                        input.getText().toString(), this.tagData);
+                        input.getText().toString(), tagData);
                 new Toasty(this).Long(getString(R.string.wrote_file, fileName));
             } catch (IOException e) {
                 new Toasty(this).Short(e.getMessage());

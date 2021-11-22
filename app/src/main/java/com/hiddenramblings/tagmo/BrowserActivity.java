@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -52,6 +54,7 @@ import com.eightbit.io.Debug;
 import com.eightbit.material.IconifiedSnackbar;
 import com.eightbit.os.Storage;
 import com.eightbit.provider.DocumentsUri;
+import com.eightbit.tagmo.Foomiibo;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -101,6 +104,8 @@ import org.json.JSONTokener;
 
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -207,22 +212,18 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @AfterViews
     void afterViews() {
-        File[] files = getFilesDir().listFiles((dir, name) ->
-                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
-        if (files != null && files.length > 0) {
-            for (File file : files) {
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
-            }
+        File logcat = Storage.getDownloadDir("TagMo(Logcat)");
+        if (logcat.exists()) {
+            moveDir(logcat, "Logcat");
         }
-        files = getExternalFilesDir(null).listFiles((dir, name) ->
-                name.toLowerCase(Locale.ROOT).endsWith(".txt"));
-        if (files != null && files.length > 0) {
-            for (File file : files) {
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
-            }
+        //noinspection ResultOfMethodCallIgnored
+        logcat.delete();
+        File backup = Storage.getDownloadDir("TagMo(Backup)");
+        if (backup.exists()) {
+            moveDir(backup, "Backups");
         }
+        //noinspection ResultOfMethodCallIgnored
+        backup.delete();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkForUpdate();
@@ -298,7 +299,8 @@ public class BrowserActivity extends AppCompatActivity implements
         }
 
         this.swipeRefreshLayout.setOnRefreshListener(this);
-        this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
+        this.swipeRefreshLayout.setProgressViewOffset(false, 0,
+                (int) getResources().getDimension(R.dimen.swipe_progress_end));
 
         if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
             this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
@@ -382,7 +384,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = Storage.getDownloads("TagMo(Backup)");
+                File directory = Storage.getDownloadDir("TagMo", "Backups");
                 String fileName = TagUtils.writeBytesToFile(directory,
                         input.getText().toString() + ".bin", tagData);
                 new Toasty(this).Long(getString(R.string.wrote_file, fileName));
@@ -592,6 +594,31 @@ public class BrowserActivity extends AppCompatActivity implements
                     WebActivity_.class)).setData(uri));
         } catch (IOException e) {
             new Toasty(this).Short(e.getMessage());
+        }
+    }
+
+    @UiThread
+    public void showDownloadsSnackbar() {
+        Snackbar snackbar = new IconifiedSnackbar(this).buildSnackbar(
+                getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG, null);
+        snackbar.setAction(R.string.enable, v -> setDownloadResult());
+        snackbar.show();
+    }
+
+    @OptionsItem(R.id.build_foomiibo)
+    @Background
+    void onBuildFoomiiboClicked() {
+        File deprecated = Storage.getDownloadDir("Wumiibo(Decrypted)");
+        if (deprecated.exists()) deleteDir(deprecated);
+        try {
+            Foomiibo.generateDirectory(settings.getAmiiboManager());
+        } catch (Exception e) {
+            Debug.Log(e);
+        } finally {
+            if (TagMo.getPrefs().showDownloads().get())
+                setRefreshResult();
+            else
+                showDownloadsSnackbar();
         }
     }
 
@@ -887,7 +914,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    public void setWumiiboResult() {
+    public void setDownloadResult() {
         this.settings.setShowDownloads(true);
         this.settings.notifyChanges();
         this.onRefresh();
@@ -1050,25 +1077,18 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background
     void installUpdateTask(String apkUrl) {
-        File apk = new File(getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
+        File apk = new File(getFilesDir(), apkUrl.substring(
+                apkUrl.lastIndexOf(File.separator) + 1));
         try {
-            URL u = new URL(apkUrl);
-            DataInputStream dis = new DataInputStream(u.openStream());
+            DataInputStream dis = new DataInputStream(new URL(apkUrl).openStream());
 
             byte[] buffer = new byte[1024];
             int length;
-
             FileOutputStream fos = new FileOutputStream(apk);
             while ((length = dis.read(buffer)) > 0) {
                 fos.write(buffer, 0, length);
             }
             fos.close();
-
-            if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk")) {
-                //noinspection ResultOfMethodCallIgnored
-                apk.delete();
-                new Toasty(this).Short(R.string.download_corrupt);
-            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Uri apkUri = Storage.getFileUri(apk);
@@ -1173,6 +1193,14 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background(id = BACKGROUND_UPDATE)
     void checkForUpdateTask() {
+        File[] files = getFilesDir().listFiles((dir, name) ->
+                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            }
+        }
         boolean isMaster = TagMo.getPrefs().stableChannel().get();
         new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
                 ? "master" : "experimental")).setResultListener(result -> {
@@ -1273,7 +1301,7 @@ public class BrowserActivity extends AppCompatActivity implements
         final ArrayList<AmiiboFile> amiiboFiles =
                 AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (this.settings.isShowingDownloads()) {
-            File download = Storage.getDownloads(null);
+            File download = Storage.getDownloadDir("TagMo");
             File[] files = rootFolder.listFiles((dir, name) -> name.equals(download.getName()));
             if (download != rootFolder && (files == null || files.length == 0))
                 amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, download, recursiveFiles));
@@ -1696,7 +1724,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background(id = BACKGROUND_LOAD_KEYS)
     void locateKeyFilesTask() {
-        File[] files = Storage.getDownloads(null).listFiles((dir, name) -> keyNameMatcher(name));
+        File[] files = Storage.getDownloadDir(null).listFiles((dir, name) -> keyNameMatcher(name));
         if (files != null && files.length > 0) {
             for (File file : files) {
                 try {
@@ -1790,5 +1818,60 @@ public class BrowserActivity extends AppCompatActivity implements
         } else {
             super.onBackPressed();
         }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void moveFile(File inputFile, String fileName, String outputPath) {
+        InputStream in;
+        OutputStream out;
+        try {
+            new File (outputPath).mkdirs();
+            in = new FileInputStream(inputFile);
+            out = new FileOutputStream(new File(outputPath, fileName));
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            in.close();
+            out.flush();
+            out.close();
+            inputFile.delete();
+        }
+        catch (FileNotFoundException fnfe) {
+            Debug.Log(fnfe);
+        }
+        catch (Exception e) {
+            Debug.Log(e);
+        }
+    }
+
+    private void moveDir(File directory, String destination) {
+        File output = Storage.getDownloadDir("TagMo", destination);
+        File[] files = directory.listFiles();
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    new File(output, file.getName());
+                    moveDir(file, destination + File.separator + file.getName());
+                } else {
+                    moveFile(file, file.getName(), output.getPath());
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    void deleteDir(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                if (file.isDirectory())
+                    deleteDir(file);
+                else
+                    file.delete();
+            }
+        }
+        dir.delete();
     }
 }

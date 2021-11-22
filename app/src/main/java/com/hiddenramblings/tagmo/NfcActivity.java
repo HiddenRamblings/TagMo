@@ -381,16 +381,31 @@ public class NfcActivity extends AppCompatActivity {
                         ArrayList<AmiiboFile> amiiboList = commandIntent
                                 .getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES);
                         for (int x = 0; x < amiiboList.size(); x++) {
-                            TagWriter.writeEliteAuto(mifare, amiiboList.get(x).getData() != null
-                                    ? amiiboList.get(x).getData()
-                                    : TagUtils.getValidatedFile(keyManager,
-                                    amiiboList.get(x).getFilePath()), keyManager, x);
+                            byte[] tagData = amiiboList.get(x).getData();
+                            if (tagData == null)
+                                tagData = TagUtils.getValidatedFile(keyManager,
+                                        amiiboList.get(x).getFilePath());
+                            TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
                         }
                         Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
                         write.putExtra(TagMo.EXTRA_BANK_COUNT, write_count);
                         args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST,
                                 TagReader.readTagTitles(mifare, bank_count));
                         setResult(Activity.RESULT_OK,  write.putExtras(args));
+                        break;
+
+                    case TagMo.ACTION_CLEAR_ALL_TAGS:
+                        mifare.setBankCount(write_count);
+                        if (active_bank <= write_count)
+                            mifare.activateBank(active_bank);
+                        for (int x = 0; x < write_count; x++) {
+                            TagWriter.wipeBankData(mifare, x);
+                        }
+                        Intent clear = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        clear.putExtra(TagMo.EXTRA_BANK_COUNT, write_count);
+                        args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST,
+                                TagReader.readTagTitles(mifare, bank_count));
+                        setResult(Activity.RESULT_OK,  clear.putExtras(args));
                         break;
 
                     case TagMo.ACTION_BACKUP_AMIIBO:

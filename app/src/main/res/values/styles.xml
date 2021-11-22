@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="buttonStyle">@style/SlimButton</item>
 
         <!-- Theme for the Preferences -->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
@@ -14,10 +15,11 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="buttonStyle">@style/SlimButton</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:windowBackground">@drawable/rounded_edges</item>
+        <item name="android:windowBackground">@drawable/rounded_window</item>
     </style>
 
     <style name="DialogTheme.NoActionBar">
@@ -33,6 +35,7 @@
     </style>
 
     <style name="FloatingTheme" parent="DialogTheme">
+        <item name="buttonStyle">@style/SlimButton</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
@@ -138,4 +141,9 @@
         <item name="android:paddingRight">0dp</item>
         <item name="android:paddingStart">0dp</item>
     </style>
+
+    <style name="SlimButton" parent="Widget.AppCompat.Button">
+        <item name="android:minHeight">36dp</item>
+    </style>
+
 </resources>

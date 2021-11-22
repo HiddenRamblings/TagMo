@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_margin="10dp">
 
     <RelativeLayout
@@ -293,10 +293,15 @@
             android:id="@+id/write_open_banks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="36dp"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="4dp"
             android:text="@string/write_open_banks" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/clear_open_banks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="@string/clear_open_banks" />
 
         <com.hiddenramblings.tagmo.widget.BankPicker
             android:id="@+id/bank_count_picker"
@@ -311,8 +316,8 @@
             android:id="@+id/write_bank_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="36dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="4dp"
             android:text="@string/write_bank_count" />
 
         <RelativeLayout

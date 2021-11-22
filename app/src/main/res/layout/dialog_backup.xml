@@ -37,14 +37,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:minHeight="36dp"
             android:text="@string/save" />
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/cancel_backup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:minHeight="36dp"
             android:text="@string/cancel" />
     </LinearLayout>
 

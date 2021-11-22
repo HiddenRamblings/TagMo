@@ -34,15 +34,15 @@ public class BankPicker extends NumberPicker {
 
     private void processXmlAttributes(AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         TypedArray attributes = getContext().getTheme().obtainStyledAttributes(
-                attrs, R.styleable.BankNumberPicker, defStyleAttr, defStyleRes);
+                attrs, R.styleable.BankPicker, defStyleAttr, defStyleRes);
 
         try {
             this.setMinValue(attributes.getInt(
-                    R.styleable.BankNumberPicker_minValue, 1));
+                    R.styleable.BankPicker_minValue, 1));
             this.setMaxValue(attributes.getInt(
-                    R.styleable.BankNumberPicker_maxValue, 200));
+                    R.styleable.BankPicker_maxValue, 200));
             this.setValue(attributes.getInt(
-                    R.styleable.BankNumberPicker_startValue, 1));
+                    R.styleable.BankPicker_startValue, 1));
         } finally {
             attributes.recycle();
         }

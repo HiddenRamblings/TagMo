@@ -326,7 +326,6 @@
                 android:layout_height="0dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:minHeight="36dp"
                 android:text="@string/generate_serial" />
         </LinearLayout>
 

@@ -121,6 +121,8 @@ public class BankListActivity extends AppCompatActivity implements
     BankPicker eliteBankCount;
     @ViewById(R.id.write_open_banks)
     AppCompatButton writeOpenBanks;
+    @ViewById(R.id.clear_open_banks)
+    AppCompatButton clearOpenBanks;
     @ViewById(R.id.write_bank_count)
     AppCompatButton writeBankCount;
 
@@ -169,6 +171,7 @@ public class BankListActivity extends AppCompatActivity implements
                     amiiboCard.setVisibility(View.GONE);
                     writeBankLayout.setVisibility(View.GONE);
                     writeOpenBanks.setVisibility(View.VISIBLE);
+                    clearOpenBanks.setVisibility(View.VISIBLE);
                     eliteBankCount.setVisibility(View.VISIBLE);
                     writeBankCount.setVisibility(View.VISIBLE);
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
@@ -209,9 +212,12 @@ public class BankListActivity extends AppCompatActivity implements
         bankStats.setText(getString(R.string.elite_bank_stats,
                 eliteBankCount.getValueForPosition(active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
+        clearOpenBanks.setText(getString(R.string.clear_open_banks, bank_count));
 
-        eliteBankCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) ->
-                writeOpenBanks.setText(getString(R.string.write_open_banks, valueNew)));
+        eliteBankCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) -> {
+            writeOpenBanks.setText(getString(R.string.write_open_banks, valueNew));
+            clearOpenBanks.setText(getString(R.string.clear_open_banks, valueNew));
+        });
 
         this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
 
@@ -304,6 +310,7 @@ public class BankListActivity extends AppCompatActivity implements
         amiiboCard.setVisibility(isCard ? View.VISIBLE : View.GONE);
         writeBankLayout.setVisibility(isCard ? View.GONE : View.VISIBLE);
         writeOpenBanks.setVisibility(isCard ? View.VISIBLE : View.GONE);
+        clearOpenBanks.setVisibility(isCard ? View.VISIBLE : View.GONE);
         eliteBankCount.setVisibility(isCard ? View.VISIBLE : View.GONE);
         writeBankCount.setVisibility(isCard ? View.VISIBLE : View.GONE);
     }
@@ -317,7 +324,7 @@ public class BankListActivity extends AppCompatActivity implements
         }
     }
 
-    ActivityResultLauncher<Intent> onWriteBanksActivity = registerForActivityResult(
+    ActivityResultLauncher<Intent> onOpenBanksActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 
@@ -333,6 +340,7 @@ public class BankListActivity extends AppCompatActivity implements
         bankStats.setText(getString(R.string.elite_bank_stats, eliteBankCount.getValueForPosition(
                 TagMo.getPrefs().eliteActiveBank().get()), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
+        clearOpenBanks.setText(getString(R.string.clear_open_banks, bank_count));
     });
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
@@ -344,7 +352,7 @@ public class BankListActivity extends AppCompatActivity implements
                         collection.setAction(TagMo.ACTION_WRITE_ALL_TAGS);
                         collection.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
                         collection.putExtra(TagMo.EXTRA_AMIIBO_FILES, amiiboList);
-                        onWriteBanksActivity.launch(collection);
+                        onOpenBanksActivity.launch(collection);
                         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         dialog.dismiss();
                     })
@@ -364,6 +372,14 @@ public class BankListActivity extends AppCompatActivity implements
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
+    @Click(R.id.clear_open_banks)
+    void onClearOpenBanksClick() {
+        Intent collection = new Intent(this, NfcActivity_.class);
+        collection.setAction(TagMo.ACTION_WRITE_ALL_TAGS);
+        collection.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
+        onOpenBanksActivity.launch(collection);
+    }
+
     @Click(R.id.write_bank_count)
     void onWriteBankCountClick() {
         if (TagMo.getPrefs().eliteActiveBank().get() >= eliteBankCount.getValue()) {
@@ -373,7 +389,7 @@ public class BankListActivity extends AppCompatActivity implements
         Intent configure = new Intent(this, NfcActivity_.class);
         configure.setAction(TagMo.ACTION_SET_BANK_COUNT);
         configure.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
-        onWriteBanksActivity.launch(configure);
+        onOpenBanksActivity.launch(configure);
 
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
@@ -491,6 +507,7 @@ public class BankListActivity extends AppCompatActivity implements
         bankStats.setText(getString(R.string.elite_bank_stats,
                 eliteBankCount.getValueForPosition(active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
+        clearOpenBanks.setText(getString(R.string.clear_open_banks, bank_count));
     });
 
     ActivityResultLauncher<Intent> onScanTagResult = registerForActivityResult(

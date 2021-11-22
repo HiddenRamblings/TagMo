@@ -152,7 +152,7 @@ public class Debug {
             }
             return uri;
         } else {
-            File file = new File(Storage.getDownloads(null), displayName + ".txt");
+            File file = new File(Storage.getDownloads("TagMo(Logcat)"), displayName + ".txt");
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(log.toString().getBytes());
             }

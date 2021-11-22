@@ -51,6 +51,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.eightbit.io.Debug;
 import com.eightbit.material.IconifiedSnackbar;
 import com.eightbit.os.Storage;
+import com.eightbit.provider.DocumentsUri;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -583,8 +584,10 @@ public class BrowserActivity extends AppCompatActivity implements
     void onCaptureLogcatClicked() {
         try {
             Uri uri = Debug.processLogcat(this, "tagmo_logcat");
-            new Toasty(this).Long(getString(R.string.wrote_logcat,
-                    uri.getEncodedPath()));
+            String path = DocumentsUri.getPath(this, uri);
+            String output = path != null ? Storage.getRelativePath(new File(path),
+                    TagMo.getPrefs().preferEmulated().get()) : uri.getPath();
+            new Toasty(this).Long(getString(R.string.wrote_logcat, output));
             startActivity(TagMo.getIntent(new Intent(this,
                     WebActivity_.class)).setData(uri));
         } catch (IOException e) {

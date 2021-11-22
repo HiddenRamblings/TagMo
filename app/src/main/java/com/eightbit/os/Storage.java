@@ -235,10 +235,18 @@ public class Storage extends Environment {
                 ? filePath.substring(storagePath.length()) : filePath;
     }
 
-    public static File getDownloads(String subfolder) {
-        if (subfolder != null)
-            return new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), subfolder);
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    public static File getDownloadDir(String directory, String subfolder) {
+        File downloads = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS);
+        if (directory != null && subfolder != null)
+            return new File(downloads, directory + File.separator + subfolder);
+        else if (directory != null)
+            return new File(downloads, directory);
+        else
+            return downloads;
+    }
+
+    public static File getDownloadDir(String directory) {
+        return getDownloadDir(directory, null);
     }
 }

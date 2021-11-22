@@ -383,20 +383,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 .setAction(TagMo.ACTION_BROWSE_GITLAB));
     }
 
-    ActivityResultLauncher<Intent> onDownloadZip = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK) return;
-
-        if (!prefs.showDownloads().get()) showDownloadsSnackbar();
-        ((BrowserActivity) requireActivity()).setRefreshResult();
-    });
-
-    @PreferenceClick(R.string.settings_build_wumiibo)
-    void onWumiiboClicked() {
-        onDownloadZip.launch(new Intent(requireActivity(),
-                WebActivity_.class).setAction(TagMo.ACTION_BUILD_WUMIIBO));
-    }
-
     @PreferenceClick(R.string.settings_view_reddit)
     void onViewRedditClicked() {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.TAGMO_REDDIT)));
@@ -680,15 +666,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 getString(
                 R.string.update_amiibo_api), Snackbar.LENGTH_LONG, null);
         snackbar.setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated));
-        snackbar.show();
-    }
-
-    @UiThread
-    public void showDownloadsSnackbar() {
-        Snackbar snackbar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
-                getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG, null);
-        snackbar.setAction(R.string.enable, v ->
-                ((BrowserActivity) requireActivity()).setWumiiboResult());
         snackbar.show();
     }
 

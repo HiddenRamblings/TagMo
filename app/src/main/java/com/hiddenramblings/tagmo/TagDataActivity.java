@@ -38,6 +38,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.eightbit.io.Debug;
+import com.eightbit.tagmo.Foomiibo;
 import com.hiddenramblings.tagmo.adapter.NoSelectionSpinnerAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -69,7 +70,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,7 +79,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_tag_data)
@@ -571,20 +570,9 @@ public class TagDataActivity extends AppCompatActivity {
         txtInitDate.setText(text);
     }
 
-    private static byte[] generateRandomUID() {
-        byte[] uid = new byte[9];
-        Random Random = new Random();
-        Random.nextBytes(uid);
-
-        uid[3] = (byte) (0x88 ^ uid[0] ^ uid[1] ^ uid[2]);
-        uid[8] = (byte) (uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
-
-        return uid;
-    }
-
     @Click(R.id.generate_serial)
     void onGenerateSerialClick() {
-        txtSerialNumber.setText(TagUtils.bytesToHex(generateRandomUID()));
+        txtSerialNumber.setText(TagUtils.bytesToHex(Foomiibo.generateRandomUID()));
     }
 
     @Click(R.id.txtInitDate)
@@ -833,19 +821,6 @@ public class TagDataActivity extends AppCompatActivity {
             writeCounter = 0;
         }
         txtWriteCounter.setText(String.valueOf(writeCounter));
-    }
-
-    @SuppressWarnings("unused")
-    private String randomizeSerial(String serial) {
-        Random random = new Random();
-        String week = new DecimalFormat("00").format(
-                random.nextInt(52 - 1 + 1) + 1);
-        String year = String.valueOf(random.nextInt(9 + 1));
-        String identifier = serial.substring(3, 7);
-        String facility = TagMo.getContext().getResources().getStringArray(
-                R.array.production_factory)[random.nextInt(3 + 1)];
-
-        return week + year + "000" + identifier + facility;
     }
 
     void loadSerialNumber() {

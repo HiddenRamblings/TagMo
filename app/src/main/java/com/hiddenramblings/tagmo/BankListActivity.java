@@ -402,7 +402,7 @@ public class BankListActivity extends AppCompatActivity implements
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = Storage.getDownloads("TagMo(Backup)");
+                File directory = Storage.getDownloadDir("TagMo", "Backups");
                 String fileName = TagUtils.writeBytesToFile(directory,
                         input.getText().toString(), tagData);
                 new Toasty(this).Long(getString(R.string.wrote_file, fileName));
@@ -877,7 +877,7 @@ public class BankListActivity extends AppCompatActivity implements
                 AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (settings.isShowingDownloads()) {
             amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
-                    Storage.getDownloads(null), recursiveFiles));
+                    Storage.getDownloadDir(null), recursiveFiles));
         }
 
         if (Thread.currentThread().isInterrupted())

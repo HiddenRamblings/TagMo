@@ -143,8 +143,8 @@ public class Debug {
             contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName);
             contentValues.put(MediaStore.MediaColumns.MIME_TYPE,
                     context.getString(R.string.mimetype_text));
-            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH,
-                    Environment.DIRECTORY_DOWNLOADS);
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS
+                    + File.separator + "TagMo" + File.separator +  "Logcat");
             ContentResolver resolver = context.getContentResolver();
             Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
             try (OutputStream fos = resolver.openOutputStream(uri)) {
@@ -152,7 +152,8 @@ public class Debug {
             }
             return uri;
         } else {
-            File file = new File(Storage.getDownloads("TagMo(Logcat)"), displayName + ".txt");
+            File file = new File(Storage.getDownloadDir("TagMo",
+                    "Logcat"), displayName + ".txt");
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(log.toString().getBytes());
             }

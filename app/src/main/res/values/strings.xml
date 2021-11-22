@@ -87,7 +87,7 @@
     <string name="mod_serial">Serial Number</string>
     <string name="view_hex">View Hex Code</string>
     <string name="edit_props">Edit Properties</string>
-    <string name="delete_amiibo">Delete Bin File</string>
+    <string name="delete_amiibo">Delete amiibo™</string>
     <string name="ignore_tag_id">Ignore Tag ID #</string>
     <string name="generate_serial">Generate Random Serial</string>
 
@@ -114,6 +114,7 @@
 
     <string name="settings">Settings</string>
     <string name="capture_logcat">Capture Logcat</string>
+    <string name="build_foomiibo">Build Foomiibo</string>
 
     <string name="wrote_file">File saved to %1$s</string>
     <string name="wrote_logcat">Logcat saved to %1$s</string>
@@ -181,8 +182,6 @@
     <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
     <string name="pref_resources">Resources</string>
     <string name="pref_guides_link">Browse TagMo Guides</string>
-    <string name="pref_build_wumiibo">Browse Wumiibo Bins</string>
-    <string name="build_wumiibo_details">Generate decrypted bin files based on public amiibo™ bytecode information</string>
     <string name="pref_reddit_link">Visit the TagMo reddit</string>
 
     <string name="amiibo_info_updated">Updated amiibo™ database!</string>
@@ -323,8 +322,8 @@
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 
     <string name="speed_scan">Lift tag slightly to complete scan</string>
-    <string name="wait_unzip">Unzipping Wumiibo Collection&#8230;</string>
+    <string name="wait_unzip">Decompressing Download&#8230;</string>
     <string name="unzip_item">Unzipping %1$s&#8230;</string>
-    <string name="mkdir_failed">Creating "%1$s" failed!</string>
+    <string name="mkdir_failed">Mkdir "%1$s" failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>
 </resources>

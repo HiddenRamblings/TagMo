@@ -42,7 +42,6 @@ public class TagMo extends Application {
     public static final String ACTION_FIX_BANK_DATA = BuildConfig.APPLICATION_ID + ".FIX_BANK_DATA";
     public static final String ACTION_DELETE_AMIIBO = BuildConfig.APPLICATION_ID + ".DELETE_AMIIBO";
     public static final String ACTION_NFC_SCANNED = BuildConfig.APPLICATION_ID + ".NFC_SCANNED";
-    public static final String ACTION_BUILD_WUMIIBO = BuildConfig.APPLICATION_ID + ".BUILD_WUMIIBO";
     public static final String ACTION_BROWSE_GITLAB = BuildConfig.APPLICATION_ID + ".BROWSE_GITLAB";
 
     public static final String EXTRA_TAG_DATA = BuildConfig.APPLICATION_ID + ".EXTRA_TAG_DATA";
@@ -64,9 +63,6 @@ public class TagMo extends Application {
         public static final String GITLAB_APP = "https://appassets.androidplatform.net/assets/gitlab/index.html";
         public static final String GITLAB_URI = "file:///android_asset/gitlab/index.html";
         public static final String GITLAB_WEB = "https://tagmo.gitlab.io/";
-        public static final String WUMIIBO_APP = "https://appassets.androidplatform.net/assets/wumiibo/index.html";
-        public static final String WUMIIBO_URI = "file:///android_asset/wumiibo/index.html";
-        public static final String WUMIIBO_WEB = "https://tagmo.gitlab.io/wumiibo/";
     }
 
     @Pref

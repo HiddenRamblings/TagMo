@@ -1,0 +1,157 @@
+/* ====================================================================
+ * Copyright (c) 2012-2021 AbandonedCart.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. All advertising materials mentioning features or use of this
+ *    software and redistributions of any form whatsoever
+ *    must display the following acknowledgment:
+ *    "This product includes software developed by AbandonedCart" unless
+ *    otherwise displayed by tagged, public repository entries.
+ *
+ * 4. The names "8-Bit Dream", "TwistedUmbrella" and "AbandonedCart"
+ *    must not be used in any form to endorse or promote products
+ *    derived from this software without prior written permission. For
+ *    written permission, please contact enderinexiledc@gmail.com
+ *
+ * 5. Products derived from this software may not be called "8-Bit Dream",
+ *    "TwistedUmbrella" or "AbandonedCart" nor may these labels appear
+ *    in their names without prior written permission of AbandonedCart.
+ *
+ * THIS SOFTWARE IS PROVIDED BY AbandonedCart ``AS IS'' AND ANY
+ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * ====================================================================
+ *
+ * The license and distribution terms for any publicly available version or
+ * derivative of this code cannot be changed.  i.e. this code cannot simply be
+ * copied and put under another distribution license
+ * [including the GNU Public License.] Content not subject to these terms is
+ * subject to to the terms and conditions of the Apache License, Version 2.0.
+ */
+
+package com.eightbit.tagmo;
+
+import static java.lang.Integer.parseInt;
+
+import android.app.ProgressDialog;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+
+import com.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.Random;
+
+public class Foomiibo {
+
+    private static byte[] getRandomBytes(int size) {
+        Random random = new Random();
+        byte[] randBytes = new byte[size];
+        random.nextBytes(randBytes);
+        return randBytes;
+    }
+
+    public static byte[] generateData(String id) {
+        byte[] arr = new byte[540];
+        // Set UID
+        byte[] uid = new byte[]{ 0x04, (byte) 0xC0, 0x0A, 0x46, 0x61, 0x6B, 0x65, 0x0A };
+        System.arraycopy(uid, 0, arr, 0x1D4, uid.length);
+
+        // Set BCC, Internal, Static Lock, and CC
+        byte[] BCC = new byte[]{ 0x65, 0x48, 0x0F, (byte) 0xE0, (byte) 0xF1, 0x10, (byte) 0xFF, (byte) 0xEE };
+        System.arraycopy(BCC, 0, arr, 0x0, BCC.length);
+
+        // Set 0xA5, Write Counter, and Unknown
+        byte[] OxA5 = new byte[]{ (byte) 0xA5, 0x00, 0x00, 0x00 };
+        System.arraycopy(OxA5, 0, arr, 0x28, OxA5.length);
+
+        // Set Dynamic Lock, and RFUI
+        byte[] RFUI = new byte[]{ 0x01, 0x00, 0x0F, (byte) 0xBD };
+        System.arraycopy(RFUI, 0, arr, 0x208, RFUI.length);
+
+        // Set CFG0
+        byte[] CFG0 = new byte[]{ 0x00, 0x00, 0x00, 0x04 };
+        System.arraycopy(CFG0, 0, arr, 0x20C, CFG0.length);
+
+        // Set CFG1
+        byte[] CFG1 = new byte[]{ 0x5F, 0x00, 0x00, 0x00 };
+        System.arraycopy(CFG1, 0, arr, 0x210, CFG1.length);
+
+        // Set Keygen Salt
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            byte[] salt = getRandomBytes(32);
+            System.arraycopy(salt, 0, arr, 0x1E8, salt.length);
+        }
+
+        int off1 = 84, off2 = 0x1DC;
+        // write identification block
+        for (int i = 0; i < 16; i += 2, off1 += 1, off2 += 1) {
+            byte currByte = (byte) parseInt(id.substring(i, i + 2), 16);
+            arr[off1] = currByte;
+            arr[off2] = currByte;
+        }
+
+        return arr;
+    }
+
+    public static byte[] generateRandomUID() {
+        byte[] uid = getRandomBytes(0);
+
+        uid[3] = (byte) (uid[0] ^ uid[1] ^ uid[2]);
+        uid[8] = (byte) (uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
+        return uid;
+    }
+
+    @SuppressWarnings("unused")
+    private String randomizeSerial(String serial) {
+        Random random = new Random();
+        String week = new DecimalFormat("00").format(
+                random.nextInt(52 - 1 + 1) + 1);
+        String year = String.valueOf(random.nextInt(9 + 1));
+        String identifier = serial.substring(3, 7);
+        String facility = TagMo.getContext().getResources().getStringArray(
+                R.array.production_factory)[random.nextInt(3 + 1)];
+
+        return week + year + "000" + identifier + facility;
+    }
+
+    public static void generateDirectory(AmiiboManager amiiboManager)
+            throws IOException {
+        for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+            byte[] tagData = generateData(TagUtils.amiiboIdToHex(amiibo.id));
+            File directory = new File(Storage.getDownloadDir("TagMo", "Foomiibo"),
+                    amiibo.getAmiiboSeries().name);
+            TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
+                    amiiboManager, tagData, true), tagData);
+        }
+    }
+
+}

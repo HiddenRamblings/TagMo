@@ -153,7 +153,7 @@
     <string name="pref_restrictions">Restrictions</string>
     <string name="image_loading_details">Image loading</string>
     <string name="enable_tag_validation">NTAG215 validation</string>
-    <string name="tag_validation_details">Not all NFC chipsets correctly identify valid NFC tags.\nDisabling will write to tags that may be incompatible.</string>
+    <string name="tag_validation_details">Not all NFC chipsets correctly validate NFC tags.\nDisable to write to tags that may be incompatible.</string>
     <string name="enable_power_tag">Enable Power Tag support</string>
     <string name="power_tag_details">Support is currently in development.\nSee Github for limitations and use.</string>
     <string name="enable_elite">Enable N2 Elite support</string>
@@ -209,6 +209,7 @@
     <string name="write_confirm">Write selections to N2 Elite?</string>
     <string name="warn_delete_file">Deleting %1$s. Are you sure?</string>
     <string name="repair_confirm">Repair corrupted amiibo™ data?</string>
+    <string name="delete_misisng">Cannot delete a scanned tag!</string>
     <string name="delete_active">Cannot delete the active bank!</string>
     <string name="backup_filename">Set amiibo™ Bin Name</string>
     <string name="emulated_storage_root">Browse Emulated Storage</string>

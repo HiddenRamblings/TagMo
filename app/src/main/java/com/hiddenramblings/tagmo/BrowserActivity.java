@@ -309,19 +309,24 @@ public class BrowserActivity extends AppCompatActivity implements
         if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
         if (!TagMo.ACTION_DELETE_AMIIBO.equals(result.getData().getAction())) return;
 
-        new AlertDialog.Builder(this)
-                .setMessage(getString(R.string.warn_delete_file, Storage.getRelativePath(
-                        clickedAmiibo.getFilePath(), TagMo.getPrefs().preferEmulated().get())))
-                .setPositiveButton(R.string.delete, (dialog, which) -> {
-                    //noinspection ResultOfMethodCallIgnored
-                    clickedAmiibo.getFilePath().delete();
-                    this.onRootFolderChanged(false);
-                    dialog.dismiss();
-                })
-                .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                    openAmiiboViewer(clickedAmiibo);
-                    dialog.dismiss();
-                }).show();
+        if (clickedAmiibo.getFilePath() != null) {
+            new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.warn_delete_file, Storage.getRelativePath(
+                            clickedAmiibo.getFilePath(), TagMo.getPrefs().preferEmulated().get())))
+                    .setPositiveButton(R.string.delete, (dialog, which) -> {
+                        //noinspection ResultOfMethodCallIgnored
+                        clickedAmiibo.getFilePath().delete();
+                        this.onRootFolderChanged(false);
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                        openAmiiboViewer(clickedAmiibo);
+                        dialog.dismiss();
+                    }).show();
+        } else {
+            openAmiiboViewer(clickedAmiibo);
+            new Toasty(this).Long(getString(R.string.delete_misisng));
+        }
     });
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(

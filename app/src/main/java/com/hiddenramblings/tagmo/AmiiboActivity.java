@@ -97,13 +97,6 @@ public class AmiiboActivity extends AppCompatActivity {
         }
 
         toolbar.inflateMenu(R.menu.amiibo_menu);
-        if (tagData == null) {
-            toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
-            toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(false);
-            toolbar.getMenu().findItem(R.id.mnu_view_hex).setEnabled(false);
-            toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(false);
-            toolbar.getMenu().findItem(R.id.mnu_delete).setEnabled(false);
-        }
         toolbar.setOnMenuItemClickListener(item -> {
             Bundle args = new Bundle();
             Intent scan = new Intent(this, NfcActivity_.class);
@@ -312,13 +305,21 @@ public class AmiiboActivity extends AppCompatActivity {
         // String character = "";
         String amiiboImageUrl;
 
-        if (this.tagData != null && this.tagData.length > 0) {
+        boolean available = this.tagData != null && this.tagData.length > 0;
+        if (available) {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(this.tagData);
             } catch (Exception e) {
+                available = false;
                 Debug.Log(e);
             }
         }
+        toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(available);
+        toolbar.getMenu().findItem(R.id.mnu_update).setEnabled(available);
+        toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(available);
+        toolbar.getMenu().findItem(R.id.mnu_view_hex).setEnabled(available);
+        toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(available);
+
         if (amiiboId == -1) {
             tagInfo = getString(R.string.read_error);
             amiiboImageUrl = null;

@@ -5,7 +5,7 @@ import android.net.Uri;
 
 import androidx.documentfile.provider.DocumentFile;
 
-import com.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -298,7 +298,7 @@ public class AmiiboManager {
             KeyManager keyManager, File rootFolder, boolean recursiveFiles) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
         File[] files = rootFolder.listFiles();
-        if (files == null)
+        if (files == null || files.length == 0)
             return amiiboFiles;
         for (File file : files) {
             if (file.isDirectory() && recursiveFiles) {
@@ -324,10 +324,11 @@ public class AmiiboManager {
             KeyManager keyManager, DocumentFile rootFolder, boolean recursiveFiles) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
         DocumentFile[] files = rootFolder.listFiles();
+        if (files.length == 0) return amiiboFiles;
         for (DocumentFile file : files) {
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiiboDocuments(keyManager, file, true));
-            } else if (file.getName() != null){
+            } else if (file.getName() != null) {
                 if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
                         byte[] data = TagUtils.getValidatedDocument(keyManager, file);

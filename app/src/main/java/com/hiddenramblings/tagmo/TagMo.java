@@ -8,19 +8,22 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.util.Log;
 
-import com.eightbit.content.ScaledContext;
-import com.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.content.ScaledContext;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 
 import org.androidannotations.annotations.EApplication;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.ref.SoftReference;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 @EApplication
 public class TagMo extends Application {
@@ -96,6 +99,15 @@ public class TagMo extends Application {
         mContext = new SoftReference<>(this);
 
         Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
+            File[] logs = Storage.getDownloadDir("TagMo",
+                    "Logcat").listFiles((dir, name) ->
+                    name.toLowerCase(Locale.ROOT).startsWith("crash_logcat"));
+            if (logs != null && logs.length > 0) {
+                for (File file : logs) {
+                    //noinspection ResultOfMethodCallIgnored
+                    file.delete();
+                }
+            }
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
             Log.e(Debug.TAG(error.getClass()), exception.toString());
@@ -105,7 +117,6 @@ public class TagMo extends Application {
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
-            prefs.edit().clear().apply();
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(0);
         });

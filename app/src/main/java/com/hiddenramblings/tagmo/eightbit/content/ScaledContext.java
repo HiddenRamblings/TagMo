@@ -48,7 +48,7 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.eightbit.content;
+package com.hiddenramblings.tagmo.eightbit.content;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -91,10 +91,10 @@ public class ScaledContext extends ContextWrapper {
 
         if (fullscreen == -1) {
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                fullscreen = displayParams[1] / displayParams[0] > 2.05 ? 1 : 0;
+                fullscreen = (float) displayParams[1] / displayParams[0] > 2.05 ? 1 : 0;
             }
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                fullscreen = displayParams[0] / displayParams[1] > 2.05 ? 1 : 0;
+                fullscreen = (float) displayParams[0] / displayParams[1] > 2.05 ? 1 : 0;
             }
         }
 

@@ -11,6 +11,9 @@ import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.NfcA;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -48,11 +51,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.eightbit.io.Debug;
-import com.eightbit.material.IconifiedSnackbar;
-import com.eightbit.os.Storage;
-import com.eightbit.provider.DocumentsUri;
-import com.eightbit.tagmo.Foomiibo;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.provider.DocumentsUri;
+import com.hiddenramblings.tagmo.eightbit.tagmo.Foomiibo;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -70,8 +73,11 @@ import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.JSONExecutor;
+import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
+import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
+import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
@@ -207,6 +213,16 @@ public class BrowserActivity extends AppCompatActivity implements
         TagMo.setScaledTheme(this, R.style.AppTheme);
         keyManager = new KeyManager(this);
         callHousekeeping();
+
+        Intent intent = getIntent();
+        if (intent != null && intent.getAction() != null) {
+            String action = getIntent().getAction();
+            if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)
+                    || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                    || NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+                onTagDiscovered(intent);
+            }
+        }
     }
 
     @AfterViews
@@ -325,7 +341,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     }).show();
         } else {
             openAmiiboViewer(clickedAmiibo);
-            new Toasty(this).Long(getString(R.string.delete_misisng));
+            new Toasty(this).Short(R.string.delete_misisng);
         }
     });
 
@@ -337,13 +353,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
             String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
+            TagMo.getPrefs().eliteSignature().put(signature);
             int active_bank = result.getData().getIntExtra(
                     TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
+            TagMo.getPrefs().eliteActiveBank().put(active_bank);
             int bank_count = result.getData().getIntExtra(
                     TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
-
-            TagMo.getPrefs().eliteSignature().put(signature);
-            TagMo.getPrefs().eliteActiveBank().put(active_bank);
             TagMo.getPrefs().eliteBankCount().put(bank_count);
 
             Intent eliteIntent = new Intent(this, BankListActivity_.class);
@@ -575,6 +590,15 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsItem(R.id.capture_logcat)
     @Background
     void onCaptureLogcatClicked() {
+        File[] logs = Storage.getDownloadDir("TagMo",
+                "Logcat").listFiles((dir, name) ->
+                name.toLowerCase(Locale.ROOT).startsWith("tagmo_logcat"));
+        if (logs != null && logs.length > 0) {
+            for (File file : logs) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            }
+        }
         try {
             Uri uri = Debug.processLogcat(this, "tagmo_logcat");
             String path = DocumentsUri.getPath(this, uri);
@@ -606,7 +630,7 @@ public class BrowserActivity extends AppCompatActivity implements
             Debug.Log(e);
         } finally {
             if (TagMo.getPrefs().showDownloads().get())
-                setRefreshResult();
+                this.onRefresh();
             else
                 showDownloadsSnackbar();
         }
@@ -912,10 +936,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
     public void setPowerTagResult() {
         this.loadPTagKeyManager();
-    }
-
-    public void setRefreshResult() {
-        this.onRefresh();
     }
 
     @OptionsItem(R.id.settings)
@@ -1250,7 +1270,7 @@ public class BrowserActivity extends AppCompatActivity implements
     ArrayList<File> listFolders(File rootFolder) {
         ArrayList<File> folders = new ArrayList<>();
         File[] files = rootFolder.listFiles();
-        if (files == null)
+        if (files == null || files.length == 0)
             return folders;
         for (File file : files) {
             if (file.isDirectory()) {
@@ -1783,20 +1803,6 @@ public class BrowserActivity extends AppCompatActivity implements
         onRequestScopedStorage.launch(intent);
     }
 
-//    @Override
-//    protected void onNewIntent(Intent intent) {
-//        super.onNewIntent(intent);
-//
-//        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
-//                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
-//                || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-//            Intent reader = new Intent(this, NfcActivity_.class);
-//            reader.setAction(intent.getAction());
-//            reader.putExtras(intent.getExtras());
-//            startActivity(reader);
-//        }
-//    }
-
     @Override
     public void onBackPressed() {
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
@@ -1848,15 +1854,6 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void callHousekeeping() {
-        File[] logs = Storage.getDownloadDir("TagMo",
-                "Logcat").listFiles((dir, name) ->
-                name.toLowerCase(Locale.ROOT).endsWith(".txt"));
-        if (logs != null && logs.length > 0) {
-            for (File file : logs) {
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
-            }
-        }
         File[] files = getFilesDir().listFiles((dir, name) ->
                 name.toLowerCase(Locale.ROOT).endsWith(".apk"));
         if (files != null && files.length > 0) {
@@ -1877,5 +1874,114 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         //noinspection ResultOfMethodCallIgnored
         backup.delete();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
+                || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+            onTagDiscovered(intent);
+        }
+    }
+
+    boolean hasTestedElite;
+    boolean isEliteDevice;
+
+    ActivityResultLauncher<Intent> onTagLaunchActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> this.onRefresh());
+
+    @Background
+    void onTagDiscovered(Intent intent) {
+        if (keyManager.isKeyMissing())
+            return;
+        NTAG215 mifare = null;
+        try {
+            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            mifare = NTAG215.get(tag);
+            String tagTech = TagUtils.getTagTechnology(tag);
+            if (mifare == null) {
+                if (TagMo.getPrefs().enableEliteSupport().get()) {
+                    mifare = new NTAG215(NfcA.get(tag));
+                    try {
+                        mifare.connect();
+                    } catch (Exception ex) {
+                        Debug.Log(ex);
+                    }
+                    if (TagReader.needsFirmware(mifare)) {
+                        if (TagWriter.updateFirmware(mifare))
+                            new Toasty(this).Short(R.string.firmware_update);
+                        mifare.close();
+                        finish();
+                    }
+                }
+                throw new Exception(getString(R.string.error_tag_protocol, tagTech));
+            }
+            mifare.connect();
+            if (!hasTestedElite) {
+                hasTestedElite = true;
+                if (!TagUtils.isPowerTag(mifare)) {
+                    isEliteDevice = TagUtils.isElite(mifare);
+                }
+            }
+            byte[] bank_details;
+            int bank_count;
+            int active_bank;
+            if (!isEliteDevice) {
+                bank_count = -1;
+                active_bank = -1;
+            } else {
+                bank_details = TagReader.getEliteDetails(mifare);
+                bank_count = bank_details[1] & 0xFF;
+                active_bank = bank_details[0] & 0xFF;
+            }
+            try {
+                if (isEliteDevice) {
+                    String signature = TagReader.getEliteSignature(mifare);
+                    TagMo.getPrefs().eliteSignature().put(signature);
+                    TagMo.getPrefs().eliteActiveBank().put(active_bank);
+                    TagMo.getPrefs().eliteBankCount().put(bank_count);
+
+                    Intent eliteIntent = new Intent(this, BankListActivity_.class);
+                    Bundle args = new Bundle();
+                    ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
+                    eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
+                    eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
+                    eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
+                    args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST, titles);
+                    eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
+                    onTagLaunchActivity.launch(eliteIntent.putExtras(args));
+                } else {
+                    Bundle args = new Bundle();
+                    args.putByteArray(TagMo.EXTRA_TAG_DATA, TagReader.readFromTag(mifare));
+
+                    onAmiiboActivity.launch(new Intent(this,
+                            AmiiboActivity_.class).putExtras(args));
+                }
+                hasTestedElite = false;
+                isEliteDevice = false;
+            } finally {
+                mifare.close();
+            }
+        } catch (Exception e) {
+            Debug.Log(e);
+            String error = e.getMessage();
+            error = e.getCause() != null ? error + "\n" + e.getCause().toString() : error;
+            if (error != null && TagMo.getPrefs().enableEliteSupport().get()) {
+                if (e instanceof android.nfc.TagLostException) {
+                    new Toasty(this).Short(R.string.speed_scan);
+                    try {
+                        if (mifare != null)
+                            mifare.close();
+                    } catch (IOException ex) {
+                        Debug.Log(ex);
+                    }
+                }
+            } else {
+                new Toasty(this).Short(error);
+            }
+        }
     }
 }

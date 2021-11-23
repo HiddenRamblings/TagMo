@@ -26,9 +26,9 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.eightbit.io.Debug;
-import com.eightbit.material.IconifiedSnackbar;
-import com.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.NfcActivity_;
@@ -406,7 +406,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (Thread.currentThread().isInterrupted())
             return;
 
-        ((BrowserActivity) requireActivity()).setRefreshResult();
+        ((BrowserActivity) requireActivity()).onRefresh();
         updateKeySummary();
     }
 

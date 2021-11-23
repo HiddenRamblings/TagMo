@@ -39,8 +39,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.eightbit.io.Debug;
-import com.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.BankListBrowserAdapter;
 import com.hiddenramblings.tagmo.adapter.WriteBanksAdapter;
@@ -151,7 +151,6 @@ public class BankListActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.settings = new BrowserSettings().initialize();
         keyManager = new KeyManager(this);
     }
 
@@ -159,6 +158,8 @@ public class BankListActivity extends AppCompatActivity implements
     void afterViews() {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
+
+        this.settings = new BrowserSettings().initialize();
 
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);

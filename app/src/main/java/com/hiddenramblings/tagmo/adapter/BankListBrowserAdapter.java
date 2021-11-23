@@ -35,7 +35,8 @@ import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
 
-public class BankListBrowserAdapter extends RecyclerView.Adapter<BankListBrowserAdapter.AmiiboViewHolder>
+public class BankListBrowserAdapter
+        extends RecyclerView.Adapter<BankListBrowserAdapter.AmiiboViewHolder>
         implements BrowserSettingsListener {
 
     private final BrowserSettings settings;

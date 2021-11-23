@@ -27,7 +27,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -45,7 +45,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class BrowserAmiibosAdapter extends RecyclerView.Adapter<BrowserAmiibosAdapter.AmiiboViewHolder>
+public class BrowserAmiibosAdapter
+        extends RecyclerView.Adapter<BrowserAmiibosAdapter.AmiiboViewHolder>
         implements Filterable, BrowserSettingsListener {
     private static final String decryptRegex = "(Decrypted).bin";
 

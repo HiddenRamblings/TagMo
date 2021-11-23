@@ -48,7 +48,7 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.eightbit.material;
+package com.hiddenramblings.tagmo.eightbit.material;
 
 import android.app.Activity;
 import android.content.res.Resources;

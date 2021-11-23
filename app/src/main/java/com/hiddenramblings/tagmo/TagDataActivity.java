@@ -37,8 +37,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.eightbit.io.Debug;
-import com.eightbit.tagmo.Foomiibo;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.tagmo.Foomiibo;
 import com.hiddenramblings.tagmo.adapter.NoSelectionSpinnerAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -853,6 +853,7 @@ public class TagDataActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Collections.sort(this.data, Map.Entry.comparingByKey());
             } else {
+                //noinspection all
                 Collections.sort(this.data, (entry1, entry2)
                         -> entry1.getKey().compareTo(entry2.getKey()));
             }
@@ -923,6 +924,7 @@ public class TagDataActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Collections.sort(this.data, Map.Entry.comparingByKey());
             } else {
+                //noinspection all
                 Collections.sort(this.data, (entry1, entry2)
                         -> entry1.getKey().compareTo(entry2.getKey()));
             }

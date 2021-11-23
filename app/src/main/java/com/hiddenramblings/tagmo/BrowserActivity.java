@@ -1067,8 +1067,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background
     void installUpdateTask(String apkUrl) {
-        File apk = new File(getFilesDir(), apkUrl.substring(
-                apkUrl.lastIndexOf(File.separator) + 1));
+        File apk = new File(getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
         try {
             DataInputStream dis = new DataInputStream(new URL(apkUrl).openStream());
 
@@ -1079,6 +1078,10 @@ public class BrowserActivity extends AppCompatActivity implements
                 fos.write(buffer, 0, length);
             }
             fos.close();
+
+            if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk"))
+                //noinspection ResultOfMethodCallIgnored
+                apk.delete();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Uri apkUri = Storage.getFileUri(apk);

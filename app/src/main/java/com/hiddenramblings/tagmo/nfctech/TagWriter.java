@@ -53,6 +53,21 @@ public class TagWriter {
         return patched;
     }
 
+    private static void writePasswordLockInfo(NTAG215 mifare) throws Exception {
+        try {
+            writePassword(mifare);
+            Debug.Log(TagWriter.class, R.string.password_write);
+        } catch (Exception e) {
+            throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
+        }
+        try {
+            writeLockInfo(mifare);
+            Debug.Log(TagWriter.class, R.string.lock_write);
+        } catch (Exception e) {
+            throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
+        }
+    }
+
     public static void writeToTagAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager,
                                       boolean validateNtag) throws Exception {
         byte[] idPages = mifare.readPages(0);
@@ -122,18 +137,7 @@ public class TagWriter {
             } catch (Exception e) {
                 throw new Exception(TagMo.getStringRes(R.string.error_data_write), e);
             }
-            try {
-                writePassword(mifare);
-                Debug.Log(TagWriter.class, R.string.password_write);
-            } catch (Exception e) {
-                throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
-            }
-            try {
-                writeLockInfo(mifare);
-                Debug.Log(TagWriter.class, R.string.lock_write);
-            } catch (Exception e) {
-                throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
-            }
+            writePasswordLockInfo(mifare);
         }
     }
 
@@ -143,22 +147,10 @@ public class TagWriter {
             tagData = keyManager.decrypt(tagData);
             // tagData = patchUid(mifare.readPages(0), tagData);
             tagData = keyManager.encrypt(tagData);
-            if (mifare.amiiboFastWrite(0, active_bank, tagData)) {
-                try {
-                    writePassword(mifare);
-                    Debug.Log(TagWriter.class, R.string.password_write);
-                } catch (Exception e) {
-                    throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
-                }
-                try {
-                    writeLockInfo(mifare);
-                    Debug.Log(TagWriter.class, R.string.lock_write);
-                } catch (Exception e) {
-                    throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
-                }
-            } else {
-                throw new Exception(TagMo.getStringRes(R.string.error_elite_write));
-            }
+            boolean write = mifare.amiiboFastWrite(0, active_bank, tagData);
+            if (!write) write = mifare.amiiboWrite(0, active_bank, tagData);
+            if (!write) throw new Exception(TagMo.getStringRes(R.string.error_elite_write));
+            // writePasswordLockInfo(mifare);
         } else {
             throw new Exception(TagMo.getStringRes(R.string.error_elite_auth));
         }

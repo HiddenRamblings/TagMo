@@ -216,24 +216,24 @@ public class TagUtils {
         Debug.Log(TagWriter.class, R.string.validation_success);
     }
 
-    public static String decipherFilename(AmiiboManager manager, byte[] tagData, boolean decrypted) {
-        String status = "";
-        if (decrypted) {
-            status = "(Decrypted)";
-        } else {
+    public static String decipherFilename(AmiiboManager amiiboManager, byte[] tagData, boolean foo) {
+        String status = "(Foomiibo)";
+        if (!foo) {
             try {
                 validateData(tagData);
+                status = "(Validated)";
             } catch (Exception e) {
-                status = "(Invalid)";
+                Debug.Log(e);
+                status = "";
             }
         }
         try {
             long amiiboId = amiiboIdFromTag(tagData);
             String name = amiiboIdToHex(amiiboId);
-            if (manager != null) {
-                Amiibo amiibo = manager.amiibos.get(amiiboId);
+            if (amiiboManager != null) {
+                Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
                 if (amiibo != null && amiibo.name != null) {
-                    name = amiibo.name.replace("/", "-");
+                    name = amiibo.name.replace(File.separatorChar, '-');
                 }
             }
 

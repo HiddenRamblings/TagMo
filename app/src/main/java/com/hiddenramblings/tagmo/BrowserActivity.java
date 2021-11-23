@@ -212,21 +212,28 @@ public class BrowserActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         TagMo.setScaledTheme(this, R.style.AppTheme);
         keyManager = new KeyManager(this);
-        callHousekeeping();
 
-        Intent intent = getIntent();
-        if (intent != null && intent.getAction() != null) {
-            String action = getIntent().getAction();
-            if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)
-                    || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
-                    || NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-                onTagDiscovered(intent);
+        File[] files = getFilesDir().listFiles((dir, name) ->
+                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
             }
         }
-    }
+        File logcat = Storage.getDownloadDir("TagMo(Logcat)");
+        if (logcat.exists()) {
+            moveDir(logcat, "Logcat");
+        }
+        //noinspection ResultOfMethodCallIgnored
+        logcat.delete();
+        File backup = Storage.getDownloadDir("TagMo(Backup)");
+        if (backup.exists()) {
+            moveDir(backup, "Backups");
+        }
+        //noinspection ResultOfMethodCallIgnored
+        backup.delete();
 
-    @AfterViews
-    void afterViews() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkForUpdate();
         } else {
@@ -241,18 +248,26 @@ public class BrowserActivity extends AppCompatActivity implements
                 public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
                     GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
                     if (availability.isUserResolvableError(errorCode)) {
-                        // Recoverable error. Show a dialog prompting the user to
-                        // install/update/enable Google Play services.
                         availability.showErrorDialogFragment(
-                                BrowserActivity.this, errorCode, 1, dialog -> {
-                            // The user chose not to take the recovery action
-                        });
+                                BrowserActivity.this, errorCode, 1, dialog -> { });
                     }
-                    // Google Play services is not available.
                 }
             });
         }
-        
+
+        Intent intent = getIntent();
+        if (intent != null && intent.getAction() != null) {
+            String action = getIntent().getAction();
+            if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)
+                    || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                    || NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+                onTagDiscovered(intent);
+            }
+        }
+    }
+
+    @AfterViews
+    void afterViews() {
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(
@@ -1851,29 +1866,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         }
-    }
-
-    private void callHousekeeping() {
-        File[] files = getFilesDir().listFiles((dir, name) ->
-                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
-        if (files != null && files.length > 0) {
-            for (File file : files) {
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
-            }
-        }
-        File logcat = Storage.getDownloadDir("TagMo(Logcat)");
-        if (logcat.exists()) {
-            moveDir(logcat, "Logcat");
-        }
-        //noinspection ResultOfMethodCallIgnored
-        logcat.delete();
-        File backup = Storage.getDownloadDir("TagMo(Backup)");
-        if (backup.exists()) {
-            moveDir(backup, "Backups");
-        }
-        //noinspection ResultOfMethodCallIgnored
-        backup.delete();
     }
 
     @Override

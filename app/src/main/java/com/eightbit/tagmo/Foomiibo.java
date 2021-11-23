@@ -13,11 +13,10 @@
  *    the documentation and/or other materials provided with the
  *    distribution.
  *
- * 3. All advertising materials mentioning features or use of this
- *    software and redistributions of any form whatsoever
- *    must display the following acknowledgment:
- *    "This product includes software developed by AbandonedCart" unless
- *    otherwise displayed by tagged, public repository entries.
+ * 3. All materials mentioning features or use of this software and
+ *    redistributions of any form whatsoever must display the following
+ *    acknowledgment unless made available by tagged, public "commits":
+ *    "This product includes software developed by AbandonedCart"
  *
  * 4. The names "8-Bit Dream", "TwistedUmbrella" and "AbandonedCart"
  *    must not be used in any form to endorse or promote products
@@ -53,10 +52,7 @@ package com.eightbit.tagmo;
 
 import static java.lang.Integer.parseInt;
 
-import android.app.ProgressDialog;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
@@ -143,12 +139,11 @@ public class Foomiibo {
         return week + year + "000" + identifier + facility;
     }
 
-    public static void generateDirectory(AmiiboManager amiiboManager)
+    public static void generateDirectory(AmiiboManager amiiboManager, File destination)
             throws IOException {
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
             byte[] tagData = generateData(TagUtils.amiiboIdToHex(amiibo.id));
-            File directory = new File(Storage.getDownloadDir("TagMo", "Foomiibo"),
-                    amiibo.getAmiiboSeries().name);
+            File directory = new File(destination, amiibo.getAmiiboSeries().name);
             TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
                     amiiboManager, tagData, true), tagData);
         }

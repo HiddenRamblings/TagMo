@@ -31,7 +31,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
-import com.hiddenramblings.tagmo.eightbit.tagmo.Foomiibo;
+import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -198,19 +198,20 @@ public class AmiiboActivity extends AppCompatActivity {
         args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
         Intent intent = new Intent(TagMo.ACTION_NFC_SCANNED);
         setResult(Activity.RESULT_OK, intent.putExtras(args));
+        TagMo.setIntentFilterEnabled(true);
         finish();
     }
 
-    private void displayBackupDialog(byte[] tagData, boolean decrypted) {
+    private void displayBackupDialog(byte[] tagData, boolean foo) {
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagUtils.decipherFilename(this.amiiboManager, tagData, decrypted));
+        input.setText(TagUtils.decipherFilename(this.amiiboManager, tagData, foo));
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
                 File directory = Storage.getDownloadDir("TagMo",
-                        decrypted ? "Foomiibo" : "Backups");
+                        foo ? "Foomiibo" : "Backups");
                 String fileName = TagUtils.writeBytesToFile(directory,
                         input.getText().toString(), tagData);
                 new Toasty(this).Long(getString(R.string.wrote_file, fileName));

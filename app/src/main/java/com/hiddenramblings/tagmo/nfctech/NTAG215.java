@@ -324,7 +324,6 @@ public class NTAG215 implements TagTechnology {
         return true;
     }
 
-    @SuppressWarnings("unused")
     public boolean amiiboWrite(int addr, int bank, byte[] data) {
         if (data != null && data.length % 4 == 0) {
             return internalWrite((startAddr, bank1, data1) -> {

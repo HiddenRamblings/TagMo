@@ -57,7 +57,7 @@ public class AmiiboData {
         byte[] bytes = new byte[UID_LENGTH];
         tagData.position(UID_OFFSET);
         tagData.get(bytes, 0x0, UID_LENGTH - 1);
-        bytes[8] = tagData.get(0x0);
+        bytes[UID_LENGTH - 1] = tagData.get(0x0);
         return bytes;
     }
 
@@ -68,7 +68,7 @@ public class AmiiboData {
 
         tagData.position(UID_OFFSET);
         tagData.put(value, 0x0, UID_LENGTH - 1);
-        tagData.put(0x0, value[8]);
+        tagData.put(0x0, (byte) 0x04); // Force validation
     }
 
     public long getAmiiboID() {

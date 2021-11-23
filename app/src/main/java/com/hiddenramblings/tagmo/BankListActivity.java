@@ -873,8 +873,8 @@ public class BankListActivity extends AppCompatActivity implements
 
     @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
-        final ArrayList<AmiiboFile> amiiboFiles =
-                AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
+        final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
+                .listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (settings.isShowingDownloads()) {
             amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
                     Storage.getDownloadDir(null), recursiveFiles));

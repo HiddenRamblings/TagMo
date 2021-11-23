@@ -227,7 +227,7 @@ public class WebActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    void deleteDir(File dir) {
+    private void deleteDir(File dir) {
         File[] files = dir.listFiles();
         if (files != null && files.length > 0) {
             for (File file : files) {
@@ -245,8 +245,6 @@ public class WebActivity extends AppCompatActivity {
     void unzipFile(File zipFile) {
         dialog = ProgressDialog.show(this,
                 getString(R.string.wait_unzip), "", true);
-        File deprecated = Storage.getDownloadDir("Wumiibo(Decrypted)");
-        if (deprecated.exists()) deleteDir(deprecated);
         File destination = Storage.getDownloadDir("TagMo", "Downloads");
         if (destination.exists()) deleteDir(destination);
         destination.mkdirs();

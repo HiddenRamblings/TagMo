@@ -611,7 +611,8 @@ public class BrowserActivity extends AppCompatActivity implements
         File deprecated = Storage.getDownloadDir("Wumiibo(Decrypted)");
         if (deprecated.exists()) deleteDir(deprecated);
         try {
-            Foomiibo.generateDirectory(settings.getAmiiboManager());
+            Foomiibo.generateDirectory(settings.getAmiiboManager(),
+                    Storage.getDownloadDir("TagMo", "Foomiibo"));
         } catch (Exception e) {
             Debug.Log(e);
         } finally {

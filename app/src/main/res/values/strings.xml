@@ -316,9 +316,6 @@
     <string name="amiibo_failure_update">Failed to update amiibo™ database</string>
     <string name="amiibo_failure_parse_default">Failed to parse default amiibo™ database</string>
 
-    <string name="update_tagmo_apk">New TagMo version released!</string>
-    <string name="download_corrupt">New build publishing. Install cancelled!</string>
-
     <string name="firmware_update">N2 Elite Firmware Updated!</string>
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -16,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -208,23 +206,11 @@ public class BrowserActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         TagMo.setScaledTheme(this, R.style.AppTheme);
         keyManager = new KeyManager(this);
+        callHousekeeping();
     }
 
     @AfterViews
     void afterViews() {
-        File logcat = Storage.getDownloadDir("TagMo(Logcat)");
-        if (logcat.exists()) {
-            moveDir(logcat, "Logcat");
-        }
-        //noinspection ResultOfMethodCallIgnored
-        logcat.delete();
-        File backup = Storage.getDownloadDir("TagMo(Backup)");
-        if (backup.exists()) {
-            moveDir(backup, "Backups");
-        }
-        //noinspection ResultOfMethodCallIgnored
-        backup.delete();
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkForUpdate();
         } else {
@@ -608,8 +594,6 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsItem(R.id.build_foomiibo)
     @Background
     void onBuildFoomiiboClicked() {
-        File deprecated = Storage.getDownloadDir("Wumiibo(Decrypted)");
-        if (deprecated.exists()) deleteDir(deprecated);
         try {
             Foomiibo.generateDirectory(settings.getAmiiboManager(),
                     Storage.getDownloadDir("TagMo", "Foomiibo"));
@@ -1194,14 +1178,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background(id = BACKGROUND_UPDATE)
     void checkForUpdateTask() {
-        File[] files = getFilesDir().listFiles((dir, name) ->
-                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
-        if (files != null && files.length > 0) {
-            for (File file : files) {
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
-            }
-        }
         boolean isMaster = TagMo.getPrefs().stableChannel().get();
         new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
                 ? "master" : "experimental")).setResultListener(result -> {
@@ -1299,8 +1275,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
-        final ArrayList<AmiiboFile> amiiboFiles =
-                AmiiboManager.listAmiibos(keyManager, rootFolder, recursiveFiles);
+        final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
+                .listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (this.settings.isShowingDownloads()) {
             File download = Storage.getDownloadDir("TagMo");
             File[] files = rootFolder.listFiles((dir, name) -> name.equals(download.getName()));
@@ -1330,8 +1306,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         // List all existing files inside picked directory
         if (pickedDir != null) {
-            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager.listAmiiboDocuments(
-                    keyManager, pickedDir, this.settings.isRecursiveEnabled());
+            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
+                    .listAmiiboDocuments(keyManager, pickedDir, this.settings.isRecursiveEnabled());
             this.runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
@@ -1725,7 +1701,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background(id = BACKGROUND_LOAD_KEYS)
     void locateKeyFilesTask() {
-        File[] files = Storage.getDownloadDir(null).listFiles((dir, name) -> keyNameMatcher(name));
+        File[] files = Storage.getDownloadDir(null)
+                .listFiles((dir, name) -> keyNameMatcher(name));
         if (files != null && files.length > 0) {
             for (File file : files) {
                 try {
@@ -1862,17 +1839,35 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    void deleteDir(File dir) {
-        File[] files = dir.listFiles();
-        if (files != null && files.length > 0) {
-            for (File file : files) {
-                if (file.isDirectory())
-                    deleteDir(file);
-                else
-                    file.delete();
+    private void callHousekeeping() {
+        File[] logs = Storage.getDownloadDir("TagMo",
+                "Logcat").listFiles((dir, name) ->
+                name.toLowerCase(Locale.ROOT).endsWith(".txt"));
+        if (logs != null && logs.length > 0) {
+            for (File file : logs) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
             }
         }
-        dir.delete();
+        File[] files = getFilesDir().listFiles((dir, name) ->
+                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            }
+        }
+        File logcat = Storage.getDownloadDir("TagMo(Logcat)");
+        if (logcat.exists()) {
+            moveDir(logcat, "Logcat");
+        }
+        //noinspection ResultOfMethodCallIgnored
+        logcat.delete();
+        File backup = Storage.getDownloadDir("TagMo(Backup)");
+        if (backup.exists()) {
+            moveDir(backup, "Backups");
+        }
+        //noinspection ResultOfMethodCallIgnored
+        backup.delete();
     }
 }

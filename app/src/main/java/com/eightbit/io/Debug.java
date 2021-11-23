@@ -13,11 +13,10 @@
  *    the documentation and/or other materials provided with the
  *    distribution.
  *
- * 3. All advertising materials mentioning features or use of this
- *    software and redistributions of any form whatsoever
- *    must display the following acknowledgment:
- *    "This product includes software developed by AbandonedCart" unless
- *    otherwise displayed by tagged, public repository entries.
+ * 3. All materials mentioning features or use of this software and
+ *    redistributions of any form whatsoever must display the following
+ *    acknowledgment unless made available by tagged, public "commits":
+ *    "This product includes software developed by AbandonedCart"
  *
  * 4. The names "8-Bit Dream", "TwistedUmbrella" and "AbandonedCart"
  *    must not be used in any form to endorse or promote products

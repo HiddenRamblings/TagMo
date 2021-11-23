@@ -48,7 +48,7 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.hiddenramblings.tagmo.eightbit.tagmo;
+package com.hiddenramblings.tagmo.eightbit;
 
 import static java.lang.Integer.parseInt;
 
@@ -106,7 +106,7 @@ public class Foomiibo {
             System.arraycopy(salt, 0, arr, 0x1E8, salt.length);
         }
 
-        int off1 = 84, off2 = 0x1DC;
+        int off1 = 0x54, off2 = 0x1DC;
         // write identification block
         for (int i = 0; i < 16; i += 2, off1 += 1, off2 += 1) {
             byte currByte = (byte) parseInt(id.substring(i, i + 2), 16);
@@ -119,9 +119,8 @@ public class Foomiibo {
 
     public static byte[] generateRandomUID() {
         byte[] uid = getRandomBytes(9);
-
-        uid[3] = (byte) (uid[0] ^ uid[1] ^ uid[2]);
-        uid[8] = (byte) (uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
+        uid[0x3] = (byte) (0x88 ^ uid[0] ^ uid[1] ^ uid[2]);
+        uid[0x8] = (byte) (uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
         return uid;
     }
 

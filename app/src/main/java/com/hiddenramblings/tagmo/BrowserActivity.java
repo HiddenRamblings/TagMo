@@ -55,7 +55,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.provider.DocumentsUri;
-import com.hiddenramblings.tagmo.eightbit.tagmo.Foomiibo;
+import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -1868,17 +1868,6 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
-                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
-                || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            onTagDiscovered(intent);
-        }
-    }
-
     boolean hasTestedElite;
     boolean isEliteDevice;
 
@@ -1945,12 +1934,14 @@ public class BrowserActivity extends AppCompatActivity implements
                     args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST, titles);
                     eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
                     onTagLaunchActivity.launch(eliteIntent.putExtras(args));
+                    TagMo.setIntentFilterEnabled(false);
                 } else {
                     Bundle args = new Bundle();
                     args.putByteArray(TagMo.EXTRA_TAG_DATA, TagReader.readFromTag(mifare));
 
                     onAmiiboActivity.launch(new Intent(this,
                             AmiiboActivity_.class).putExtras(args));
+                    TagMo.setIntentFilterEnabled(false);
                 }
                 hasTestedElite = false;
                 isEliteDevice = false;
@@ -1974,6 +1965,16 @@ public class BrowserActivity extends AppCompatActivity implements
             } else {
                 new Toasty(this).Short(error);
             }
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
+                || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+            onTagDiscovered(intent);
         }
     }
 }

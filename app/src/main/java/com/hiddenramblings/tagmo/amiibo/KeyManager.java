@@ -3,7 +3,7 @@ package com.hiddenramblings.tagmo.amiibo;
 import android.content.Context;
 import android.net.Uri;
 
-import com.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;

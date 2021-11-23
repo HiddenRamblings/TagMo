@@ -1,6 +1,6 @@
 package com.hiddenramblings.tagmo.github;
 
-import com.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.BufferedReader;

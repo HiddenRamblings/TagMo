@@ -17,8 +17,6 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER"/>
-<!--    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"-->
-<!--        tools:ignore="QueryAllPackagesPermission" />-->
 
     <uses-feature android:name="android.hardware.nfc" android:required="true"/>
 
@@ -34,6 +32,7 @@
         <activity
             android:name=".BrowserActivity_"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
+            android:launchMode="singleTask"
             android:exported="true">
             <meta-data
                 android:name="android.app.searchable"
@@ -42,7 +41,6 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <!--
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -57,7 +55,6 @@
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            -->
         </activity>
         <activity
             android:name=".BankListActivity_"

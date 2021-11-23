@@ -11,7 +11,7 @@ import android.nfc.tech.NdefFormatable;
 
 import androidx.documentfile.provider.DocumentFile;
 
-import com.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -69,8 +69,8 @@ public class TagUtils {
     public static boolean isPowerTag(NTAG215 mifare) {
         if (TagMo.getPrefs().enablePowerTagSupport().get()) {
             try {
-                if (TagUtils.compareRange(mifare.transceive(NfcByte.POWERTAG_SIG), NfcByte.POWERTAG_SIGNATURE,
-                        0, NfcByte.POWERTAG_SIGNATURE.length))
+                if (TagUtils.compareRange(mifare.transceive(NfcByte.POWERTAG_SIG),
+                        NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.length))
                     return true;
             } catch (IOException e) {
                 Debug.Log(e);
@@ -87,8 +87,9 @@ public class TagUtils {
         return false;
     }
 
-    static boolean compareRange(byte[] data, byte[] data2, int data2offset, int len) {
-        for (int i = data2offset, j = 0; j < len; i++, j++) {
+    static boolean compareRange(byte[] data, byte[] data2, int len) {
+        // for (int i = data2offset, j = 0; j < len; i++, j++) {
+        for (int i = 0, j = 0; j < len; i++, j++) {
             if (data[j] != data2[i])
                 return false;
         }
@@ -209,7 +210,7 @@ public class TagUtils {
         if (pages == null || pages.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
 
-        if (!TagUtils.compareRange(pages, tagData, 0, 9))
+        if (!TagUtils.compareRange(pages, tagData, 9))
             throw new Exception(TagMo.getStringRes(R.string.fail_mismatch_uid));
 
         Debug.Log(TagWriter.class, R.string.validation_success);

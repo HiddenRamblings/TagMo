@@ -8,7 +8,7 @@ import android.widget.Spinner;
 
 import androidx.annotation.Nullable;
 
-import com.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagDataActivity_;
 

@@ -1,6 +1,6 @@
 package com.hiddenramblings.tagmo.nfctech;
 
-import com.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
@@ -170,7 +170,7 @@ public class TagWriter {
             TagUtils.validateNtag(mifare, tagData, validateNtag);
         else {
             byte[] liveData = TagReader.readFromTag(mifare);
-            if (!TagUtils.compareRange(liveData, tagData, 0, 9)) {
+            if (!TagUtils.compareRange(liveData, tagData, 9)) {
                 // restoring to different tag: transplant mii and appdata to livedata and re-encrypt
                 liveData = keyManager.decrypt(liveData);
                 tagData = keyManager.decrypt(tagData);
@@ -302,14 +302,14 @@ public class TagWriter {
         tag.writePage(132, new byte[]{(byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00}); // config
     }
 
-    public static byte[] wipeBankData(NTAG215 tag, int active_bank)  throws Exception {
+    public static void wipeBankData(NTAG215 tag, int active_bank)  throws Exception {
         if (doEliteAuth(tag, tag.fastRead(0, 0))) {
             byte[] tagData = TagUtils.hexToByteArray(new String(
                     new char[1080]).replace("\u0000", "F"));
             if (tag.amiiboFastWrite(0, active_bank, tagData)) {
                 byte[] result = new byte[8];
                 System.arraycopy(tagData, 84, result, 0, result.length);
-                return result;
+                Debug.Log(TagWriter.class, TagUtils.bytesToHex(result));
             } else {
                 throw new Exception(TagMo.getStringRes(R.string.error_elite_write));
             }
@@ -372,9 +372,7 @@ public class TagWriter {
                             throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 3));
                         }
                     }
-                } else if (!parts[0].equals("RESET") && parts[0].equals("LOGIN")) {
-
-                }
+                } /* else if (!parts[0].equals("RESET") && parts[0].equals("LOGIN")) { } */
             }
             br.close();
             return true;

@@ -48,13 +48,12 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.eightbit.tagmo;
+package com.hiddenramblings.tagmo.eightbit.tagmo;
 
 import static java.lang.Integer.parseInt;
 
 import android.os.Build;
 
-import com.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -119,7 +118,7 @@ public class Foomiibo {
     }
 
     public static byte[] generateRandomUID() {
-        byte[] uid = getRandomBytes(0);
+        byte[] uid = getRandomBytes(9);
 
         uid[3] = (byte) (uid[0] ^ uid[1] ^ uid[2]);
         uid[8] = (byte) (uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);

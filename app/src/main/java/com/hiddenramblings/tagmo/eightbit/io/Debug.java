@@ -48,7 +48,7 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.eightbit.io;
+package com.hiddenramblings.tagmo.eightbit.io;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -60,7 +60,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import com.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;

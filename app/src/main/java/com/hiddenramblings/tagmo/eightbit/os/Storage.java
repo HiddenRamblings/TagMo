@@ -48,7 +48,7 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.eightbit.os;
+package com.hiddenramblings.tagmo.eightbit.os;
 
 import android.net.Uri;
 import android.os.Build;

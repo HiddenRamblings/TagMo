@@ -2,7 +2,7 @@ package com.hiddenramblings.tagmo.nfctech;
 
 import android.net.Uri;
 
-import com.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 
@@ -119,7 +119,8 @@ public class TagReader {
         }
     }
 
-    public static byte[] scanBankToBytes(NTAG215 tag, int bank) throws Exception {
+    public static byte[] scanBankToBytes(NTAG215 tag, int bank)
+            throws IllegalStateException, NullPointerException {
         byte[] output = new byte[572];
         try {
             byte[] data = tag.amiiboFastRead(0x00, 0x86, bank);

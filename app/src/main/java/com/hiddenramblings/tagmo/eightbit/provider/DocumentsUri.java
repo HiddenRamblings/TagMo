@@ -48,7 +48,7 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.eightbit.provider;
+package com.hiddenramblings.tagmo.eightbit.provider;
 
 import android.annotation.SuppressLint;
 import android.content.ContentUris;
@@ -93,7 +93,7 @@ public class DocumentsUri {
 
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                        Uri.parse("content://downloads/public_downloads"), Long.parseLong(id));
 
                 return getDataColumn(context, contentUri, null, null);
             }

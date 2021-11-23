@@ -26,7 +26,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
@@ -496,16 +496,20 @@ public class NfcActivity extends AppCompatActivity {
 
                     case TagMo.ACTION_UNLOCK_UNIT:
                         if (isUnlocking) {
-                            mifare.amiiboPrepareUnlock();
-                            runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
-                                    .setMessage(R.string.progress_unlock)
-                                    .setPositiveButton(R.string.proceed, (dialog, which) -> {
-                                        mifare.amiiboUnlock();
-                                        isUnlocking = false;
-                                        dialog.dismiss();
-                                    }).show());
-                            while (isUnlocking) {
-                                setResult(Activity.RESULT_OK);
+                            if (mifare.amiiboPrepareUnlock() != null) {
+                                runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
+                                        .setMessage(R.string.progress_unlock)
+                                        .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                                            mifare.amiiboUnlock();
+                                            isUnlocking = false;
+                                            dialog.dismiss();
+                                        }).show());
+                                while (isUnlocking) {
+                                    setResult(Activity.RESULT_OK);
+                                }
+                            } else {
+                                isUnlocking = false;
+                                throw new Exception(getString(R.string.fail_unlock));
                             }
                         }
                        break;

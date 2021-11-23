@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -17,7 +17,8 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import java.io.File;
 import java.util.ArrayList;
 
-public class BrowserFoldersAdapter extends RecyclerView.Adapter<BrowserFoldersAdapter.FolderViewHolder>
+public class BrowserFoldersAdapter
+        extends RecyclerView.Adapter<BrowserFoldersAdapter.FolderViewHolder>
         implements BrowserSettings.BrowserSettingsListener {
     static final int PARENT_FOLDER_VIEW_TYPE = 0;
     static final int CHILD_FOLDER_VIEW_TYPE = 1;

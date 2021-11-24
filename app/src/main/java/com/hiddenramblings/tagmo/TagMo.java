@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -70,6 +69,9 @@ public class TagMo extends Application {
         public static final String GITLAB_WEB = "https://tagmo.gitlab.io/";
     }
 
+    public static ComponentName NFCIntentFilter = new ComponentName(BuildConfig.APPLICATION_ID,
+            BuildConfig.APPLICATION_ID + "." + "NFCIntentFilter");
+
     @Pref
     Preferences_ prefs;
 
@@ -122,8 +124,6 @@ public class TagMo extends Application {
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(0);
         });
-
-        setIntentFilterEnabled(true);
     }
 
     public static Preferences_ getPrefs() {
@@ -178,13 +178,5 @@ public class TagMo extends Application {
         } catch (Resources.NotFoundException ignore) {
             return mContext.get().getString(resource, params);
         }
-    }
-
-    public static void setIntentFilterEnabled(boolean enabled) {
-        int componentState = enabled ? PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
-                : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-        mContext.get().getPackageManager().setComponentEnabledSetting(new ComponentName(
-                BuildConfig.APPLICATION_ID, BuildConfig.APPLICATION_ID + "." + "NFCIntentFilter"),
-                componentState, PackageManager.DONT_KILL_APP);
     }
 }

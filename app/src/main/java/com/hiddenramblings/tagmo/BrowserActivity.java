@@ -51,11 +51,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
-import com.hiddenramblings.tagmo.eightbit.provider.DocumentsUri;
-import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -71,6 +66,11 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.eightbit.Foomiibo;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.provider.DocumentsUri;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.JSONExecutor;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
@@ -93,7 +93,6 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.InstanceState;
-import org.androidannotations.annotations.LongClick;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.OptionsMenuItem;
@@ -213,6 +212,17 @@ public class BrowserActivity extends AppCompatActivity implements
         TagMo.setScaledTheme(this, R.style.AppTheme);
         keyManager = new KeyManager(this);
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            if (getComponentName().equals(TagMo.NFCIntentFilter)) {
+                Intent browser = new Intent(this, BrowserActivity_.class);
+                browser.setAction(intent.getAction());
+                browser.putExtras(intent.getExtras());
+                browser.setData(intent.getData());
+                startActivity(browser);
+            }
+        }
+
         File[] files = getFilesDir().listFiles((dir, name) ->
                 name.toLowerCase(Locale.ROOT).endsWith(".apk"));
         if (files != null && files.length > 0) {
@@ -253,16 +263,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                 }
             });
-        }
-
-        Intent intent = getIntent();
-        if (intent != null && intent.getAction() != null) {
-            String action = getIntent().getAction();
-            if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)
-                    || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
-                    || NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-                onTagDiscovered(intent);
-            }
         }
     }
 
@@ -431,12 +431,6 @@ public class BrowserActivity extends AppCompatActivity implements
             new Toasty(this).Dialog(e.getMessage());
         }
     });
-
-    @LongClick(R.id.nfc_fab)
-    public void onFabLongClicked() {
-        onNFCActivity.launch(new Intent(this,
-                NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
-    }
 
     @Click(R.id.nfc_fab)
     public void onFabClicked() {
@@ -631,7 +625,11 @@ public class BrowserActivity extends AppCompatActivity implements
     public void showDownloadsSnackbar() {
         Snackbar snackbar = new IconifiedSnackbar(this).buildSnackbar(
                 getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG, null);
-        snackbar.setAction(R.string.enable, v -> setDownloadResult());
+        snackbar.setAction(R.string.enable, v -> {
+            this.settings.setShowDownloads(true);
+            this.settings.notifyChanges();
+            this.onRefresh();
+        });
         snackbar.show();
     }
 
@@ -942,12 +940,6 @@ public class BrowserActivity extends AppCompatActivity implements
             return false;
         }
     };
-
-    public void setDownloadResult() {
-        this.settings.setShowDownloads(true);
-        this.settings.notifyChanges();
-        this.onRefresh();
-    }
 
     public void setPowerTagResult() {
         this.loadPTagKeyManager();
@@ -1872,7 +1864,9 @@ public class BrowserActivity extends AppCompatActivity implements
     boolean isEliteDevice;
 
     ActivityResultLauncher<Intent> onTagLaunchActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> this.onRefresh());
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (settings.getAmiiboFiles().isEmpty()) this.onRefresh();
+    });
 
     @Background
     void onTagDiscovered(Intent intent) {
@@ -1934,14 +1928,12 @@ public class BrowserActivity extends AppCompatActivity implements
                     args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST, titles);
                     eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
                     onTagLaunchActivity.launch(eliteIntent.putExtras(args));
-                    TagMo.setIntentFilterEnabled(false);
                 } else {
                     Bundle args = new Bundle();
                     args.putByteArray(TagMo.EXTRA_TAG_DATA, TagReader.readFromTag(mifare));
 
                     onAmiiboActivity.launch(new Intent(this,
                             AmiiboActivity_.class).putExtras(args));
-                    TagMo.setIntentFilterEnabled(false);
                 }
                 hasTestedElite = false;
                 isEliteDevice = false;

@@ -896,7 +896,6 @@ public class BankListActivity extends AppCompatActivity implements
             setBottomCardView(true);
         } else {
             super.onBackPressed();
-            TagMo.setIntentFilterEnabled(true);
         }
     }
 }

@@ -65,6 +65,19 @@ public class AmiiboData {
     public void setUID(byte[] value) throws NumberFormatException {
         if (value.length != UID_LENGTH)
             throw new NumberFormatException(TagMo.getStringRes(R.string.invalid_uid_length));
+        
+        byte checksum1 = (byte) (0x88     ^ value[0] ^ value[1] ^ value[2]);
+        byte checksum2 = (byte) (value[4] ^ value[5] ^ value[6] ^ value[7]);
+        
+        if (value[0] != 0x04) {
+            throw new NumberFormatException("First byte of UID is not 0x04");
+        }
+        if (checksum1 != value[3] || ) {
+            throw new NumberFormatException("UID 4th byte checksum mismatch");
+        }
+        if (checksum2 != value[8] {
+            thrown new NumberFormatException("UID 9th byte checksum mismatch");
+        }
 
         tagData.position(UID_OFFSET);
         tagData.put(value, 0x0, UID_LENGTH - 1);

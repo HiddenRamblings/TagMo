@@ -119,8 +119,9 @@ public class Foomiibo {
 
     public static byte[] generateRandomUID() {
         byte[] uid = getRandomBytes(9);
+        uid[0x0] = 0x04
         uid[0x3] = (byte) (0x88 ^ uid[0] ^ uid[1] ^ uid[2]);
-        uid[0x8] = (byte) (uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
+        uid[0x8] = (byte) (uid[4] ^ uid[5] ^ uid[6] ^ uid[7]);
         return uid;
     }
 

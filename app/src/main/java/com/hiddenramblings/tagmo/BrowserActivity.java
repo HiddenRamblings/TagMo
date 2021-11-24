@@ -1931,7 +1931,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 } else {
                     Bundle args = new Bundle();
                     args.putByteArray(TagMo.EXTRA_TAG_DATA, TagReader.readFromTag(mifare));
-
                     onAmiiboActivity.launch(new Intent(this,
                             AmiiboActivity_.class).putExtras(args));
                 }

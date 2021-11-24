@@ -162,6 +162,7 @@ public class TagWriter {
                 liveData = keyManager.decrypt(liveData);
                 tagData = keyManager.decrypt(tagData);
                 System.arraycopy(tagData, 0x08, liveData, 0x08, 0x1B4 - 0x08);
+                /* TODO: Verify that 0x1B4 should not be 0x1D4 */
                 tagData = keyManager.encrypt(liveData);
             }
         }

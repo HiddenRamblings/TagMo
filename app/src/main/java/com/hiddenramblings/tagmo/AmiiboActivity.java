@@ -29,11 +29,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
-import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.eightbit.Foomiibo;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -89,9 +89,14 @@ public class AmiiboActivity extends AppCompatActivity {
     @InstanceState
     boolean ignoreTagTd;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
     @AfterViews
     void afterViews() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
         }
@@ -196,10 +201,8 @@ public class AmiiboActivity extends AppCompatActivity {
     void onContainerClick() {
         Bundle args = new Bundle();
         args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
-        Intent intent = new Intent(TagMo.ACTION_NFC_SCANNED);
-        setResult(Activity.RESULT_OK, intent.putExtras(args));
-        TagMo.setIntentFilterEnabled(true);
         finish();
+        setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_NFC_SCANNED).putExtras(args));
     }
 
     private void displayBackupDialog(byte[] tagData, boolean foo) {

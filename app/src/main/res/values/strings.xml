@@ -89,7 +89,7 @@
     <string name="edit_props">Edit Properties</string>
     <string name="delete_amiibo">Delete amiibo™</string>
     <string name="ignore_tag_id">Ignore Tag ID #</string>
-    <string name="generate_serial">Generate Random Serial</string>
+    <string name="random_serial">Random Serial Number</string>
 
     <string name="properties">Properties</string>
     <string name="mii">Mii</string>
@@ -287,16 +287,15 @@
     <string name="invalid_key_error">No valid key in file.</string>
     <string name="key_read_error">Error reading key from storage</string>
 
-    <string name="invalid_tag_data">Invalid tag data.</string>
-    <string name="invalid_tag_file">Invalid tag data: %1$s</string>
-    <string name="invalid_tag_prefix">Data must start with a 0x04.</string>
+    <string name="invalid_tag_prefix">Data must start with 0x04.</string>
     <string name="invalid_tag_lock">Lock signature mismatch.</string>
     <string name="invalid_tag_cc">CC signature mismatch.</string>
     <string name="invalid_tag_dynamic">Dynamic lock signature mismatch.</string>
     <string name="invalid_tag_cfg_zero">CFG0 signature mismatch.</string>
     <string name="invalid_tag_cfg_one">CFG1 signature mismatch.</string>
     <string name="invalid_uid_length">Invalid UID length</string>
-    <string name="invalid_file_size">%1$s size invalid (%2$d expected)!</string>
+    <string name="invalid_file_size">%1$s size: %2$d, Expected: %3$d</string>
+    <string name="invalid_data_size">Tag size: %1$d, Expected: %2$d</string>
     <string name="invalid_app_data">Invalid app data</string>
 
     <string name="old_uid">Old UID %1$s</string>

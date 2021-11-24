@@ -44,7 +44,8 @@ public class AmiiboData {
 
     public AmiiboData(byte[] tagData) throws IOException {
         if (tagData.length < NfcByte.TAG_FILE_SIZE)
-            throw new IOException(TagMo.getStringRes(R.string.invalid_tag_data));
+            throw new IOException(TagMo.getStringRes(R.string.invalid_data_size,
+                    tagData.length, NfcByte.TAG_FILE_SIZE));
 
         this.tagData = ByteBuffer.wrap(tagData);
     }
@@ -66,10 +67,9 @@ public class AmiiboData {
         if (value.length != UID_LENGTH)
             throw new NumberFormatException(TagMo.getStringRes(R.string.invalid_uid_length));
 
+        tagData.put(0x0, value[0x8]);
         tagData.position(UID_OFFSET);
         tagData.put(value, 0x0, UID_LENGTH - 1);
-        tagData.put(0x0, value[0x8]);
-        tagData.put(UID_OFFSET, (byte) 0x04);
     }
 
     public long getAmiiboID() {

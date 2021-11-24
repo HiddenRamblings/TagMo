@@ -31,7 +31,7 @@ public class TagReader {
         if (len == NfcByte.KEY_FILE_SIZE) return null;
         if (len != NfcByte.TAG_FILE_SIZE)
             throw new IOException(TagMo.getStringRes(R.string.invalid_file_size,
-                    path, NfcByte.TAG_FILE_SIZE));
+                    path, new int[]{ len, NfcByte.TAG_FILE_SIZE }));
         return data;
     }
 

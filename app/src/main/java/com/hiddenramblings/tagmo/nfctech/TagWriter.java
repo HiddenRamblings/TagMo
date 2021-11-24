@@ -53,21 +53,6 @@ public class TagWriter {
         return patched;
     }
 
-    private static void writePasswordLockInfo(NTAG215 mifare) throws Exception {
-        try {
-            writePassword(mifare);
-            Debug.Log(TagWriter.class, R.string.password_write);
-        } catch (Exception e) {
-            throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
-        }
-        try {
-            writeLockInfo(mifare);
-            Debug.Log(TagWriter.class, R.string.lock_write);
-        } catch (Exception e) {
-            throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
-        }
-    }
-
     public static void writeToTagAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager,
                                       boolean validateNtag) throws Exception {
         byte[] idPages = mifare.readPages(0);
@@ -137,7 +122,18 @@ public class TagWriter {
             } catch (Exception e) {
                 throw new Exception(TagMo.getStringRes(R.string.error_data_write), e);
             }
-            writePasswordLockInfo(mifare);
+            try {
+                writePassword(mifare);
+                Debug.Log(TagWriter.class, R.string.password_write);
+            } catch (Exception e) {
+                throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
+            }
+            try {
+                writeLockInfo(mifare);
+                Debug.Log(TagWriter.class, R.string.lock_write);
+            } catch (Exception e) {
+                throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
+            }
         }
     }
 
@@ -150,7 +146,6 @@ public class TagWriter {
             boolean write = mifare.amiiboFastWrite(0, active_bank, tagData);
             if (!write) write = mifare.amiiboWrite(0, active_bank, tagData);
             if (!write) throw new Exception(TagMo.getStringRes(R.string.error_elite_write));
-            // writePasswordLockInfo(mifare);
         } else {
             throw new Exception(TagMo.getStringRes(R.string.error_elite_auth));
         }
@@ -294,11 +289,13 @@ public class TagWriter {
         tag.writePage(132, new byte[]{(byte) 0x5F, (byte) 0x00, (byte) 0x00, (byte) 0x00}); // config
     }
 
-    public static void wipeBankData(NTAG215 tag, int active_bank)  throws Exception {
-        if (doEliteAuth(tag, tag.fastRead(0, 0))) {
+    public static void wipeBankData(NTAG215 mifare, int active_bank)  throws Exception {
+        if (doEliteAuth(mifare, mifare.fastRead(0, 0))) {
             byte[] tagData = TagUtils.hexToByteArray(new String(
                     new char[1080]).replace("\u0000", "F"));
-            if (tag.amiiboFastWrite(0, active_bank, tagData)) {
+            boolean write = mifare.amiiboFastWrite(0, active_bank, tagData);
+            if (!write) write = mifare.amiiboWrite(0, active_bank, tagData);
+            if (write) {
                 byte[] result = new byte[8];
                 System.arraycopy(tagData, 84, result, 0, result.length);
                 Debug.Log(TagWriter.class, TagUtils.bytesToHex(result));

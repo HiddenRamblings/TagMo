@@ -321,12 +321,12 @@
                 </LinearLayout>
             </LinearLayout>
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/generate_serial"
+                android:id="@+id/random_serial"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:text="@string/generate_serial" />
+                android:text="@string/random_serial" />
         </LinearLayout>
 
         <TextView

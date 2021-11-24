@@ -126,7 +126,7 @@ public class TagDataActivity extends AppCompatActivity {
     SwitchCompat appDataSwitch;
     @ViewById(R.id.userDataSwitch)
     SwitchCompat userDataSwitch;
-    @ViewById(R.id.generate_serial)
+    @ViewById(R.id.random_serial)
     AppCompatButton generateSerial;
 
     @Extra(TagMo.EXTRA_TAG_DATA)
@@ -570,7 +570,7 @@ public class TagDataActivity extends AppCompatActivity {
         txtInitDate.setText(text);
     }
 
-    @Click(R.id.generate_serial)
+    @Click(R.id.random_serial)
     void onGenerateSerialClick() {
         txtSerialNumber.setText(TagUtils.bytesToHex(Foomiibo.generateRandomUID()));
     }

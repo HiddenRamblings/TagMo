@@ -637,7 +637,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Background
     void onBuildFoomiiboClicked() {
         try {
-            Foomiibo.generateDirectory(settings.getAmiiboManager(),
+            Foomiibo.generateSeries(settings.getAmiiboManager(),
                     Storage.getDownloadDir("TagMo", "Foomiibo"));
         } catch (Exception e) {
             Debug.Log(e);

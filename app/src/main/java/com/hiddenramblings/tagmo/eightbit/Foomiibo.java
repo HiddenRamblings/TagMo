@@ -76,13 +76,17 @@ public class Foomiibo {
 
     public static byte[] generateData(String id) {
         byte[] arr = new byte[540];
-        // Set UID
-        byte[] uid = new byte[]{ 0x04, (byte) 0xC0, 0x0A, 0x46, 0x61, 0x6B, 0x65, 0x0A };
+
+        // Set UID, BCC0
+        byte[] uid = generateRandomUID(); // 0x04, (byte) 0xC0, 0x0A, 0x46, 0x61, 0x6B, 0x65, 0x0A
         System.arraycopy(uid, 0, arr, 0x1D4, uid.length);
 
-        // Set BCC, Internal, Static Lock, and CC
-        byte[] BCC = new byte[]{ 0x65, 0x48, 0x0F, (byte) 0xE0, (byte) 0xF1, 0x10, (byte) 0xFF, (byte) 0xEE };
-        System.arraycopy(BCC, 0, arr, 0x0, BCC.length);
+        // Set BCC1
+        arr[0] = uid[8];
+
+        // Set Internal, Static Lock, and CC
+        byte[] CC = new byte[]{ 0x48, 0x0F, (byte) 0xE0, (byte) 0xF1, 0x10, (byte) 0xFF, (byte) 0xEE };
+        System.arraycopy(CC, 0, arr, 0x1, CC.length);
 
         // Set 0xA5, Write Counter, and Unknown
         byte[] OxA5 = new byte[]{ (byte) 0xA5, 0x00, 0x00, 0x00 };
@@ -119,8 +123,9 @@ public class Foomiibo {
 
     public static byte[] generateRandomUID() {
         byte[] uid = getRandomBytes(9);
+        uid[0x0] = 0x04;
         uid[0x3] = (byte) (0x88 ^ uid[0] ^ uid[1] ^ uid[2]);
-        uid[0x8] = (byte) (uid[3] ^ uid[4] ^ uid[5] ^ uid[6]);
+        uid[0x8] = (byte) (uid[4] ^ uid[5] ^ uid[6] ^ uid[7]);
         return uid;
     }
 
@@ -137,7 +142,7 @@ public class Foomiibo {
         return week + year + "000" + identifier + facility;
     }
 
-    public static void generateDirectory(AmiiboManager amiiboManager, File destination)
+    public static void generateSeries(AmiiboManager amiiboManager, File destination)
             throws IOException {
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
             byte[] tagData = generateData(TagUtils.amiiboIdToHex(amiibo.id));

@@ -165,10 +165,6 @@ public class TagMo extends Application {
         return mContext.get().getString(resource, params);
     }
 
-    public static String getStringRes(int resource, String params, int digits) {
-        return mContext.get().getString(resource, params, digits);
-    }
-
     public static String getStringRes(int resource, int params) {
         try {
             Resources res = mContext.get().getResources();
@@ -178,5 +174,17 @@ public class TagMo extends Application {
         } catch (Resources.NotFoundException ignore) {
             return mContext.get().getString(resource, params);
         }
+    }
+
+    public static String getStringRes(int resource, String params, int digits) {
+        return mContext.get().getString(resource, params, digits);
+    }
+
+    public static String getStringRes(int resource, int params, int digits) {
+        return mContext.get().getString(resource, params, digits);
+    }
+
+    public static String getStringRes(int resource, String params, int[] digits) {
+        return mContext.get().getString(resource, params, digits);
     }
 }

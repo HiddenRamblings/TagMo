@@ -155,7 +155,8 @@ public class TagUtils {
 
     static byte[][] splitPages(byte[] data) throws Exception {
         if (data.length < NfcByte.TAG_FILE_SIZE)
-            throw new IOException(TagMo.getStringRes(R.string.invalid_tag_data));
+            throw new IOException(TagMo.getStringRes(R.string.invalid_data_size,
+                    data.length, NfcByte.TAG_FILE_SIZE));
 
         byte[][] pages = new byte[data.length / NfcByte.PAGE_SIZE][];
         for (int i = 0, j = 0; i < data.length; i += NfcByte.PAGE_SIZE, j++) {
@@ -168,25 +169,25 @@ public class TagUtils {
         byte[][] pages = TagUtils.splitPages(data);
 
         if (pages[0][0] != (byte) 0x04)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_prefix));
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_prefix));
 
         if (pages[2][2] != (byte) 0x0F || pages[2][3] != (byte) 0xE0)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_lock));
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_lock));
 
         if (pages[3][0] != (byte) 0xF1 || pages[3][1] != (byte) 0x10
                 || pages[3][2] != (byte) 0xFF || pages[3][3] != (byte) 0xEE)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cc));
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_cc));
 
         if (pages[0x82][0] != (byte) 0x01 || pages[0x82][1] != (byte) 0x0 || pages[0x82][2] != (byte) 0x0F)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_dynamic));
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_dynamic));
 
         if (pages[0x83][0] != (byte) 0x0 || pages[0x83][1] != (byte) 0x0
                 || pages[0x83][2] != (byte) 0x0 || pages[0x83][3] != (byte) 0x04)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cfg_zero));
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_cfg_zero));
 
         if (pages[0x84][0] != (byte) 0x5F || pages[0x84][1] != (byte) 0x0
                 || pages[0x84][2] != (byte) 0x0 || pages[0x84][3] != (byte) 0x00)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_file, R.string.invalid_tag_cfg_one));
+            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_cfg_one));
     }
 
     public static void validateNtag(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
@@ -217,14 +218,14 @@ public class TagUtils {
     }
 
     public static String decipherFilename(AmiiboManager amiiboManager, byte[] tagData, boolean foo) {
-        String status = "(Foomiibo)";
+        String status = "Foomiibo";
         if (!foo) {
             try {
                 validateData(tagData);
-                status = "(Validated)";
+                status = "Validated";
             } catch (Exception e) {
                 Debug.Log(e);
-                status = "";
+                status = e.getMessage();
             }
         }
         try {
@@ -237,9 +238,9 @@ public class TagUtils {
                 }
             }
 
-            byte[] uId = Arrays.copyOfRange(tagData, 0, 9);
-            String uIds = bytesToHex(uId);
-            return String.format(Locale.ROOT, "%1$s[%2$s]%3$s.bin", name, uIds, status);
+            byte[] uid = Arrays.copyOfRange(tagData, 0, 9);
+            String uidHex = bytesToHex(uid);
+            return String.format(Locale.ROOT, "%1$s[%2$s-%3$s].bin", name, uidHex, status);
         } catch (Exception e) {
             Debug.Log(TagUtils.class, e.getMessage());
         }

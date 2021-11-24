@@ -75,7 +75,7 @@ public class AmiiboData {
         if (checksum1 != value[3]) {
             throw new NumberFormatException(TagMo.getStringRes(R.string.invalid_uid_checksum_1));
         }
-        if (checksum2 != value[8] {
+        if (checksum2 != value[8]) {
             throw new NumberFormatException(TagMo.getStringRes(R.string.invalid_uid_checksum_2));
         }
 

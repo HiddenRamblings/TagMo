@@ -296,6 +296,9 @@
     <string name="invalid_tag_cfg_zero">CFG0 signature mismatch.</string>
     <string name="invalid_tag_cfg_one">CFG1 signature mismatch.</string>
     <string name="invalid_uid_length">Invalid UID length</string>
+    <string name="invalid_uid_checksum_1">Invalid UID checksum 1</string>
+    <string name="invalid_uid_checksum_2">Invalid UID checksum 2</string>
+    <string name="invalid_uid_first_byte">Invalid UID first byte</string>
     <string name="invalid_file_size">%1$s size invalid (%2$d expected)!</string>
     <string name="invalid_app_data">Invalid app data</string>
 

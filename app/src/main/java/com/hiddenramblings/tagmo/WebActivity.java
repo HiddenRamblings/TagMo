@@ -103,18 +103,6 @@ public class WebActivity extends AppCompatActivity {
                         WebView view, WebResourceRequest request) {
                     return assetLoader.shouldInterceptRequest(request.getUrl());
                 }
-                @Override
-                public void onReceivedHttpError (
-                        @NonNull WebView view, @NonNull WebResourceRequest request,
-                        @NonNull WebResourceResponse errorResponse) {
-                    if (errorResponse.getStatusCode() == 404) {
-                        if (action != null) {
-                            if (TagMo.ACTION_BROWSE_GITLAB.equals(action)
-                                    && !request.getUrl().toString().equals(Website.GITLAB_WEB))
-                                view.loadUrl(Website.GITLAB_WEB);
-                        }
-                    }
-                }
             });
             if (WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USAGE)) {
                 ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(
@@ -149,8 +137,7 @@ public class WebActivity extends AppCompatActivity {
                 webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
                         "(?i)" + Pattern.quote("android"), "TagMo"));
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-                mWebView.loadUrl(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                        ? Website.GITLAB_APP : Website.GITLAB_URI);
+                mWebView.loadUrl(Website.TAGMO_GITLAB);
             }
         } else {
             webViewSettings.setBuiltInZoomControls(true);

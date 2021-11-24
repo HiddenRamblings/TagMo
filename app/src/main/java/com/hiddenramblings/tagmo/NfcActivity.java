@@ -112,7 +112,6 @@ public class NfcActivity extends AppCompatActivity {
                 }
             case TagMo.ACTION_WRITE_TAG_RAW:
             case TagMo.ACTION_WRITE_ALL_TAGS:
-            case TagMo.ACTION_FIX_BANK_DATA:
             case TagMo.ACTION_BACKUP_AMIIBO:
             case TagMo.ACTION_SCAN_TAG:
             case TagMo.ACTION_SET_BANK_COUNT:
@@ -165,7 +164,6 @@ public class NfcActivity extends AppCompatActivity {
                 bankTextView.setVisibility(View.GONE);
                 break;
             case TagMo.ACTION_ACTIVATE_BANK:
-            case TagMo.ACTION_FIX_BANK_DATA:
             case TagMo.ACTION_BACKUP_AMIIBO:
             case TagMo.ACTION_FORMAT_BANK:
                 if (!isEliteIntent || !commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
@@ -186,9 +184,6 @@ public class NfcActivity extends AppCompatActivity {
                 break;
             case TagMo.ACTION_WRITE_ALL_TAGS:
                 setTitle(R.string.write_collection);
-                break;
-            case TagMo.ACTION_FIX_BANK_DATA:
-                setTitle(R.string.amiibo_repair);
                 break;
             case TagMo.ACTION_BACKUP_AMIIBO:
                 setTitle(R.string.amiibo_backup);
@@ -411,40 +406,21 @@ public class NfcActivity extends AppCompatActivity {
                         Intent backup = new Intent(TagMo.ACTION_NFC_SCANNED);
                         if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
                             args.putByteArray(TagMo.EXTRA_TAG_DATA,
-                                    TagReader.scanBankToBytes(mifare, selection));
+                                    TagReader.scanTagToBytes(mifare, selection));
                             backup.putExtra(TagMo.EXTRA_CURRENT_BANK, selection);
                         } else {
                             args.putByteArray(TagMo.EXTRA_TAG_DATA,
-                                    TagReader.scanTagToBytes(mifare));
+                                    TagReader.scanTagToBytes(mifare, active_bank));
                         }
                         setResult(Activity.RESULT_OK, backup.putExtras(args));
-                        break;
-
-                    case TagMo.ACTION_FIX_BANK_DATA:
-                        mifare.activateBank(selection);
-                        data = TagReader.readFromTag(mifare);
-                        mifare.activateBank(active_bank);
-                        data = TagUtils.getValidatedData(keyManager, data);
-                        TagWriter.writeEliteAuto(mifare, data, keyManager, selection);
-                        Intent repair = new Intent(TagMo.ACTION_NFC_SCANNED);
-                        args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
-                        repair.putExtra(TagMo.EXTRA_CURRENT_BANK, selection);
-                        setResult(Activity.RESULT_OK, repair.putExtras(args));
                         break;
 
                     case TagMo.ACTION_SCAN_TAG:
                         Intent result = new Intent(TagMo.ACTION_NFC_SCANNED);
                         if (isEliteDevice) {
                             if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
-                                try {
-                                    data = TagUtils.getValidatedData(keyManager,
-                                            TagReader.scanBankToBytes(mifare, selection));
-                                    TagUtils.validateNtag(mifare, data, false);
-                                } catch (Exception e) {
-                                    mifare.activateBank(selection);
-                                    data = TagReader.readFromTag(mifare);
-                                    mifare.activateBank(active_bank);
-                                }
+                                data = TagUtils.getValidatedData(keyManager,
+                                        TagReader.scanBankToBytes(mifare, selection));
                                 args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
                                 result.putExtra(TagMo.EXTRA_CURRENT_BANK, selection);
                             } else {

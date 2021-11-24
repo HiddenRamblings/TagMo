@@ -285,23 +285,39 @@ public class BankListActivity extends AppCompatActivity implements
         });
 
         if (amiibos.isEmpty()) {
+            if (amiibosView.getAdapter() != null)
+                ((BankListBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
             for (int x = 0; x < amiiboList.size(); x++) {
                 amiibos.add(amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
-            }
-            if (amiibosView.getAdapter() != null) {
-                ((BankListBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
-                //noinspection NotifyDataSetChanged
-                amiibosView.getAdapter().notifyDataSetChanged();
+                if (amiibosView.getAdapter() != null)
+                    amiibosView.getAdapter().notifyItemInserted(x);
             }
         } else {
             for (int x = 0; x < amiiboList.size(); x++) {
                 long amiiboId = TagUtils.hexToLong(amiiboList.get(x));
-                if (amiibos.get(x) == null || amiibos.get(x).bank != x
+                if (x >= amiibos.size()) {
+                    amiibos.add(amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
+                    if (amiibosView.getAdapter() != null)
+                        amiibosView.getAdapter().notifyItemInserted(x);
+                } else if (amiibos.get(x) == null || amiibos.get(x).bank != x
                         || amiiboId != amiibos.get(x).id) {
                     amiibos.set(x, amiiboManager.amiibos.get(amiiboId));
                     if (amiibosView.getAdapter() != null)
                         amiibosView.getAdapter().notifyItemChanged(x);
                 }
+            }
+            if (amiibos.size() > amiiboList.size()) {
+                int count = amiibos.size();
+                int size = amiiboList.size();
+                ArrayList<Amiibo> shortList = new ArrayList<>();
+                for (int x = 0; x < size; x++) {
+                    shortList.add(amiibos.get(x));
+                }
+                amiibos.clear();
+                amiibos.addAll(shortList);
+                if (amiibosView.getAdapter() != null)
+                    amiibosView.getAdapter().notifyItemRangeRemoved(
+                            size - 1, count - size);
             }
         }
     }
@@ -420,11 +436,6 @@ public class BankListActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onUpdateTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
-
-        if (TagMo.ACTION_FIX_BANK_DATA.equals(result.getData().getAction())) {
-            repairBankData(clickedPosition);
-            return;
-        }
 
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())
                 && !TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
@@ -559,20 +570,6 @@ public class BankListActivity extends AppCompatActivity implements
         if (amiibosView.getAdapter() != null)
             amiibosView.getAdapter().notifyItemChanged(current_bank);
     });
-
-    private void repairBankData(int current_bank) {
-        new AlertDialog.Builder(this)
-                .setMessage(R.string.repair_confirm)
-                .setPositiveButton(R.string.proceed, (dialog, which) -> {
-                    Intent scan = new Intent(this, NfcActivity_.class);
-                    scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
-                    scan.setAction(TagMo.ACTION_FIX_BANK_DATA);
-                    onScanTagResult.launch(scan);
-                    dialog.dismiss();
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
-    }
 
     private void scanAmiiboBank(int current_bank) {
         Intent scan = new Intent(this, NfcActivity_.class);

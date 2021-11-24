@@ -64,9 +64,7 @@ public class TagMo extends Application {
         public static final String AMIIBO_IMAGE = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08x-%08x.png";
         public static final String TAGMO_GIT_API = "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/";
         public static final String TAGMO_REDDIT = "https://www.reddit.com/r/tagmo/";
-        public static final String GITLAB_APP = "https://appassets.androidplatform.net/assets/gitlab/index.html";
-        public static final String GITLAB_URI = "file:///android_asset/gitlab/index.html";
-        public static final String GITLAB_WEB = "https://tagmo.gitlab.io/";
+        public static final String TAGMO_GITLAB = "https://tagmo.gitlab.io/";
     }
 
     public static ComponentName NFCIntentFilter = new ComponentName(BuildConfig.APPLICATION_ID,
@@ -102,19 +100,20 @@ public class TagMo extends Application {
         mPrefs = new SoftReference<>(this.prefs);
         mContext = new SoftReference<>(this);
 
-        Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
-            File[] logs = Storage.getDownloadDir("TagMo",
-                    "Logcat").listFiles((dir, name) ->
-                    name.toLowerCase(Locale.ROOT).startsWith("crash_logcat"));
-            if (logs != null && logs.length > 0) {
-                for (File file : logs) {
-                    //noinspection ResultOfMethodCallIgnored
-                    file.delete();
-                }
+        File[] logs = Storage.getDownloadDir("TagMo",
+                "Logcat").listFiles((dir, name) ->
+                name.toLowerCase(Locale.ROOT).startsWith("crash_logcat"));
+        if (logs != null && logs.length > 0) {
+            for (File file : logs) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
             }
+        }
+
+        Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
-            Log.e(Debug.TAG(error.getClass()), exception.toString());
+            Log.e("UncaughtException", exception.toString());
             error.printStackTrace();
             try {
                 Debug.processLogcat(this, "crash_logcat");

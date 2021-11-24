@@ -1,6 +1,3 @@
 [submodule "app/src/main/jni"]
 	path = app/src/main/jni
 	url = git@github.com:8BitDream/amiitool.git
-[submodule "app/src/main/assets/gitlab"]
-	path = app/src/main/assets/gitlab
-	url = git@github.com:8BitDream/tagmo.gitlab.io.git

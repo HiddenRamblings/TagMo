@@ -72,7 +72,7 @@ public class AmiiboData {
         if (value[0] != 0x04) {
             throw new NumberFormatException(TagMo.getStringRes(R.string.invalid_uid_first_byte));
         }
-        if (checksum1 != value[3] || ) {
+        if (checksum1 != value[3]) {
             throw new NumberFormatException(TagMo.getStringRes(R.string.invalid_uid_checksum_1));
         }
         if (checksum2 != value[8] {

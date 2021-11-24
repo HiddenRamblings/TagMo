@@ -70,13 +70,13 @@ public class AmiiboData {
         byte checksum2 = (byte) (value[4] ^ value[5] ^ value[6] ^ value[7]);
         
         if (value[0] != 0x04) {
-            throw new NumberFormatException("First byte of UID is not 0x04");
+            throw new NumberFormatException(TagMo.getStringRes(R.string.invalid_uid_first_byte));
         }
         if (checksum1 != value[3] || ) {
-            throw new NumberFormatException("UID 4th byte checksum mismatch");
+            throw new NumberFormatException(TagMo.getStringRes(R.string.invalid_uid_checksum_1));
         }
         if (checksum2 != value[8] {
-            thrown new NumberFormatException("UID 9th byte checksum mismatch");
+            thrown new NumberFormatException(TagMo.getStringRes(R.string.invalid_uid_checksum_2));
         }
 
         tagData.position(UID_OFFSET);

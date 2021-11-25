@@ -490,13 +490,13 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Click(R.id.switch_storage_root)
     void onSwitchStorageClicked() {
-        boolean internal = !TagMo.getPrefs().preferEmulated().get();
-        TagMo.getPrefs().preferEmulated().put(internal);
-        switchStorageRoot.setText(internal
+        boolean external = !TagMo.getPrefs().preferEmulated().get();
+        switchStorageRoot.setText(external
                 ? R.string.emulated_storage_root
                 : R.string.physical_storage_root);
-        this.settings.setBrowserRootFolder(Storage.getFile(internal));
+        this.settings.setBrowserRootFolder(Storage.getFile(external));
         this.settings.notifyChanges();
+        TagMo.getPrefs().preferEmulated().put(external);
     }
 
     @OptionsItem(R.id.sort_id)
@@ -1308,15 +1308,28 @@ public class BrowserActivity extends AppCompatActivity implements
         loadAmiiboFilesTask(rootFolder, recursiveFiles);
     }
 
+    private boolean isDownloadShown(File rootFolder, File download, boolean recursiveFiles) {
+        File[] files = rootFolder.listFiles();
+        if (files == null || files.length == 0)
+            return false;
+        for (File file : files) {
+            if (file.isDirectory()) {
+                if (file == download) return true;
+                if (recursiveFiles) return isDownloadShown(file, download, true);
+            }
+        }
+        return false;
+    }
+
     @Background(id = BACKGROUND_AMIIBO_FILES)
     void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
         final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                 .listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (this.settings.isShowingDownloads()) {
-            File download = Storage.getDownloadDir("TagMo");
-            if (download != rootFolder && Storage.getFile(
-                    TagMo.getPrefs().preferEmulated().get()) != rootFolder)
-                amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, download, recursiveFiles));
+            File download = Storage.getDownloadDir(null);
+            if (!isDownloadShown(rootFolder, download, recursiveFiles))
+                amiiboFiles.addAll(AmiiboManager.listAmiibos(
+                        keyManager, download, true));
         }
 
         if (Thread.currentThread().isInterrupted())
@@ -1716,12 +1729,13 @@ public class BrowserActivity extends AppCompatActivity implements
         locateKeyFilesTask();
     }
 
-    void locateKeyFilesRecursive(File[] files) {
+    void locateKeyFilesRecursive(File rootFolder) {
+        File[] files = rootFolder.listFiles();
         if (files == null || files.length == 0)
             return;
         for (File file : files) {
-            if (file.isDirectory()) {
-                locateKeyFilesRecursive(file.listFiles());
+            if (file.isDirectory() && file != Storage.getDownloadDir(null)) {
+                locateKeyFilesRecursive(file);
             } else {
                 if (keyNameMatcher(file.getName())) {
                     try {
@@ -1747,7 +1761,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         } else {
-            locateKeyFilesRecursive(settings.getBrowserRootFolder().listFiles());
+            locateKeyFilesRecursive(Storage.getFile(TagMo.getPrefs().preferEmulated().get()));
         }
 
         if (Thread.currentThread().isInterrupted())

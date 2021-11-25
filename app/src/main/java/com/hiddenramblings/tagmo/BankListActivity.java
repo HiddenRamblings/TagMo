@@ -315,9 +315,10 @@ public class BankListActivity extends AppCompatActivity implements
                 }
                 amiibos.clear();
                 amiibos.addAll(shortList);
-                if (amiibosView.getAdapter() != null)
-                    amiibosView.getAdapter().notifyItemRangeRemoved(
-                            size - 1, count - size);
+                if (amiibosView.getAdapter() != null) {
+                    amiibosView.getAdapter().notifyItemRangeChanged(0, size);
+                    amiibosView.getAdapter().notifyItemRangeRemoved(size, count - size);
+                }
             }
         }
     }

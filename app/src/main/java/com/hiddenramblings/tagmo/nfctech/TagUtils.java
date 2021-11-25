@@ -81,19 +81,24 @@ public class TagUtils {
 
     public static boolean isElite(NTAG215 mifare) {
         if (TagMo.getPrefs().enableEliteSupport().get()) {
-            byte[] signature = mifare.readEliteSingature();
-            return signature != null && TagUtils.bytesToHex(signature).endsWith("FFFFFFFFFF");
+            byte[] signature = mifare.readSignature(false);
+            byte[] page10 = TagUtils.hexToByteArray("FFFFFFFFFF");
+            return TagUtils.compareRange(signature, page10,
+                    32 - page10.length, signature.length);
         }
         return false;
     }
 
-    static boolean compareRange(byte[] data, byte[] data2, int len) {
-        // for (int i = data2offset, j = 0; j < len; i++, j++) {
-        for (int i = 0, j = 0; j < len; i++, j++) {
+    static boolean compareRange(byte[] data, byte[] data2, int offset, int len) {
+        for (int i = 0, j = offset; j < len; i++, j++) {
             if (data[j] != data2[i])
                 return false;
         }
         return true;
+    }
+
+    static boolean compareRange(byte[] data, byte[] data2, int len) {
+        return compareRange(data, data2, 0, len);
     }
 
     public static String bytesToHex(byte[] bytes) {

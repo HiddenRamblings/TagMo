@@ -314,7 +314,7 @@ public class NfcActivity extends AppCompatActivity {
                 active_bank = -1;
             } else {
                 selection = 0;
-                bank_details = TagReader.getEliteDetails(mifare);
+                bank_details = TagReader.getBankDetails(mifare);
                 bank_count = bank_details[1] & 0xFF;
                 active_bank = bank_details[0] & 0xFF;
                 if (!TagMo.ACTION_SET_BANK_COUNT.equals(mode)
@@ -345,7 +345,7 @@ public class NfcActivity extends AppCompatActivity {
                             TagWriter.writeEliteAuto(mifare, data, keyManager, selection);
                             Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
                             write.putExtra(TagMo.EXTRA_SIGNATURE,
-                                    TagReader.getEliteSignature(mifare));
+                                    TagReader.getTagSignature(mifare));
                             write.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
                             write.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
                             args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST,
@@ -426,7 +426,7 @@ public class NfcActivity extends AppCompatActivity {
                             } else {
                                 ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
                                 result.putExtra(TagMo.EXTRA_SIGNATURE,
-                                        TagReader.getEliteSignature(mifare));
+                                        TagReader.getTagSignature(mifare));
                                 result.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
                                 result.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
                                 args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST, titles);
@@ -452,7 +452,7 @@ public class NfcActivity extends AppCompatActivity {
                         mifare.activateBank(selection);
                         Intent active = new Intent(TagMo.ACTION_NFC_SCANNED);
                         active.putExtra(TagMo.EXTRA_ACTIVE_BANK,
-                                TagReader.getEliteDetails(mifare)[0] & 0xFF);
+                                TagReader.getBankDetails(mifare)[0] & 0xFF);
                         setResult(Activity.RESULT_OK, active);
                         break;
 

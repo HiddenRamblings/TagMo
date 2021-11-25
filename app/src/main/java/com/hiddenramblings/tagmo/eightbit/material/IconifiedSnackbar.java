@@ -98,12 +98,16 @@ public class IconifiedSnackbar {
         textView.setGravity(Gravity.CENTER_VERTICAL);
         textView.setCompoundDrawablePadding(resources.getDimensionPixelOffset(
                 R.dimen.snackbar_icon_padding));
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)
+                snackbarLayout.getLayoutParams();
+        params.width = CoordinatorLayout.LayoutParams.MATCH_PARENT;
+        snackbar.getView().setLayoutParams(params);
         snackbar.setAnchorView(anchor);
         return snackbar;
     }
 
     public Snackbar buildTickerBar(String msg, int length) {
-        Snackbar snackbar = buildSnackbar(msg, length, (View) null)
+        Snackbar snackbar = buildSnackbar(msg, length, null)
                 .addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {

@@ -89,12 +89,12 @@ public class TagReader {
         return tags;
     }
 
-    public static byte[] getEliteDetails(NTAG215 tag) {
-        return tag.amiiboGetVersion();
+    public static byte[] getBankDetails(NTAG215 tag) {
+        return tag.getVersion(false);
     }
 
-    public static String getEliteSignature(NTAG215 tag) {
-        byte[] signature = tag.readEliteSingature();
+    public static String getTagSignature(NTAG215 tag) {
+        byte[] signature = tag.readSignature(false);
         if (signature != null)
             return TagUtils.bytesToHex(signature).substring(0, 22);
         return null;
@@ -102,19 +102,15 @@ public class TagReader {
 
     public static byte[] scanTagToBytes(NTAG215 tag, int bank)
             throws IllegalStateException, NullPointerException {
-        byte[] output = new byte[572];
+        byte[] tagData = new byte[NfcByte.TAG_FILE_SIZE];
         try {
-            byte[] data = bank != -1
-                    ? tag.amiiboFastRead(0x00, 0x86, bank)
-                    : tag.fastRead(0x00, 0x86);
+            byte[] data = bank == -1 ? tag.fastRead(0x00, 0x86)
+                    : tag.amiiboFastRead(0x00, 0x86, bank);
             if (data == null) {
                 throw new NullPointerException(TagMo.getStringRes(R.string.fail_read_amiibo));
             }
-            System.arraycopy(data, 0, output, 0, 540);
-            data = tag.readSignature();
-            System.arraycopy(data, 0, output, 540, data.length);
-            Debug.Log(TagReader.class, TagUtils.bytesToHex(output));
-            return output;
+            System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_FILE_SIZE);
+            return tagData;
         } catch (IllegalStateException e) {
             throw new IllegalStateException(TagMo.getStringRes(R.string.fail_early_remove));
         } catch (NullPointerException npe) {
@@ -141,7 +137,7 @@ public class TagReader {
     }
 
     public static boolean needsFirmware(NTAG215 tag) {
-        byte[] version = getEliteDetails(tag);
+        byte[] version = getBankDetails(tag);
         return !((version.length != 4 || version[3] == (byte) 0x03)
                 && !(version.length == 2 && version[0] == 100 && version[1] == 0));
     }

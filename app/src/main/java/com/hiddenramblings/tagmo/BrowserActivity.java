@@ -1314,8 +1314,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 .listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (this.settings.isShowingDownloads()) {
             File download = Storage.getDownloadDir("TagMo");
-            File[] files = rootFolder.listFiles((dir, name) -> name.equals(download.getName()));
-            if (download != rootFolder && (files == null || files.length == 0))
+            if (download != rootFolder && Storage.getFile(
+                    TagMo.getPrefs().preferEmulated().get()) != rootFolder)
                 amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, download, recursiveFiles));
         }
 
@@ -1908,13 +1908,13 @@ public class BrowserActivity extends AppCompatActivity implements
                 bank_count = -1;
                 active_bank = -1;
             } else {
-                bank_details = TagReader.getEliteDetails(mifare);
+                bank_details = TagReader.getBankDetails(mifare);
                 bank_count = bank_details[1] & 0xFF;
                 active_bank = bank_details[0] & 0xFF;
             }
             try {
                 if (isEliteDevice) {
-                    String signature = TagReader.getEliteSignature(mifare);
+                    String signature = TagReader.getTagSignature(mifare);
                     TagMo.getPrefs().eliteSignature().put(signature);
                     TagMo.getPrefs().eliteActiveBank().put(active_bank);
                     TagMo.getPrefs().eliteBankCount().put(bank_count);

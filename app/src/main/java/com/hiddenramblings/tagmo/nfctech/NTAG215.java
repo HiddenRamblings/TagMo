@@ -139,37 +139,26 @@ public class NTAG215 implements TagTechnology {
         return null;
     }
 
-    public byte[] getVersion() {
+    /*
+     * byte 1: currently active slot
+     * byte 2: number of active banks
+     * byte 3: button pressed?
+     * byte 4: FW version?
+     * see: http://wiki.yobi.be/wiki/N2_Elite#0x55:_N2_GET_INFO
+     */
+    public byte[] getVersion(boolean isGeneric) {
+        byte[] command = isGeneric
+                ? new byte[]{ NfcByte.CMD_GET_VERSION }
+                : new byte[]{ NfcByte.N2_GET_VERSION };
         try {
-            return this.transceive(new byte[]{NfcByte.CMD_GET_VERSION});
+            return this.transceive(command);
         } catch (IOException e) {
             return null;
         }
     }
 
-    @Override
-    public boolean isConnected() {
-        return m_nfcA.isConnected();
-    }
-
-    /* byte 1: currently active slot
-    /* byte 2: number of active banks
-    /* byte 3: button pressed?
-    /* byte 4: FW version?
-    // see: http://wiki.yobi.be/wiki/N2_Elite#0x55:_N2_GET_INFO
-    */
-    public byte[] amiiboGetVersion() {
-        try {
-            return this.transceive(new byte[]{
-                    NfcByte.N2_GET_VERSION
-            });
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     @SuppressWarnings("unused")
-    public byte[] getEliteBankCount() {
+    public byte[] getBankCount() {
         byte[] req = new byte [1];
         byte[] resp;
 
@@ -183,22 +172,12 @@ public class NTAG215 implements TagTechnology {
         return resp;
     }
 
-    public byte[] readSignature() {
+    public byte[] readSignature(boolean isGeneric) {
+        byte[] command = isGeneric
+                ? new byte[] { NfcByte.CMD_READ_SIG, (byte) 0x00 }
+                : new byte[]{ NfcByte.N2_READ_SIG };
         try {
-            return this.transceive(new byte[]{
-                    NfcByte.CMD_READ_SIG,
-                    (byte) 0x00
-            });
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public byte[] readEliteSingature() {
-        try {
-            return this.transceive(new byte[]{
-                    NfcByte.N2_READ_SIG
-            });
+            return this.transceive(command);
         } catch (Exception unused) {
             return null;
         }
@@ -414,5 +393,10 @@ public class NTAG215 implements TagTechnology {
         } catch (IOException e) {
             Debug.Log(e);
         }
+    }
+
+    @Override
+    public boolean isConnected() {
+        return m_nfcA.isConnected();
     }
 }

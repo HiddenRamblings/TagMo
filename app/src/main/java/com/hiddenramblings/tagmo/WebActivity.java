@@ -214,26 +214,11 @@ public class WebActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void deleteDir(File dir) {
-        File[] files = dir.listFiles();
-        if (files != null && files.length > 0) {
-            for (File file : files) {
-                if (file.isDirectory())
-                    deleteDir(file);
-                else
-                    file.delete();
-            }
-        }
-        dir.delete();
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @UiThread
     void unzipFile(File zipFile) {
         dialog = ProgressDialog.show(this,
                 getString(R.string.wait_unzip), "", true);
         File destination = Storage.getDownloadDir("TagMo", "Downloads");
-        if (destination.exists()) deleteDir(destination);
         destination.mkdirs();
         new Thread(new UnZip(zipFile, destination)).start();
     }

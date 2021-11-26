@@ -7,6 +7,35 @@
     android:layout_height="match_parent"
     android:id="@+id/coordinator" >
 
+    <LinearLayout
+        android:id="@+id/fake_snackbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/snackbar_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/ic_stat_notice"
+            android:contentDescription="@string/imageview_icon" />
+
+        <TextView
+            android:id="@+id/snackbar_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textSize="16sp"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
     <RelativeLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"

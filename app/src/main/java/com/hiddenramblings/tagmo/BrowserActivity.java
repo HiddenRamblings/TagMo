@@ -30,6 +30,8 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -50,6 +52,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionManager;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
@@ -133,6 +137,14 @@ public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,
         BrowserAmiibosAdapter.OnAmiiboClickListener {
 
+    @ViewById(R.id.fake_snackbar)
+    LinearLayout fakeSnackbar;
+    @ViewById(R.id.snackbar_icon)
+    ImageView fakeSnackbarIcon;
+    @ViewById(R.id.snackbar_text)
+    TextView fakeSnackbarText;
+    @ViewById(R.id.main_layout)
+    RelativeLayout mainLayout;
     @ViewById(R.id.chip_list)
     FlowLayout chipList;
     @ViewById(R.id.amiibos_list)
@@ -200,8 +212,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private AmiiboFile clickedAmiibo = null;
     private final Handler handler = new Handler();
     private int filteredCount;
-
-    private Snackbar ongoingSnackbar;
 
     @InstanceState
     BrowserSettings settings;
@@ -976,7 +986,7 @@ public class BrowserActivity extends AppCompatActivity implements
             switchStorageRoot.setVisibility(View.GONE);
         }
         if (keyManager.isKeyMissing()) {
-            showOngoingSnackbar(getString(R.string.locating_keys));
+            showFakeSnackbar(getString(R.string.locating_keys));
             locateKeyFiles();
         } else {
             this.onRefresh();
@@ -1456,11 +1466,10 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void onAmiiboFilesChanged() {
         if (settings.getAmiiboFiles() == null || settings.getAmiiboFiles().size() == 0) {
-            showOngoingSnackbar(getString(R.string.amiibo_not_found));
+            showFakeSnackbar(getString(R.string.amiibo_not_found));
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {
-            if (ongoingSnackbar != null && ongoingSnackbar.isShown())
-                ongoingSnackbar.dismiss();
+            hideFakeSnackbar();
         }
     }
 
@@ -1525,7 +1534,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (this.settings != null) {
             File rootFolder = this.settings.getBrowserRootFolder();
             if (!keyManager.isKeyMissing()) {
-                if (indicator) showOngoingSnackbar(getString(R.string.refreshing_list));
+                if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
                 this.loadAmiiboFiles(rootFolder, this.settings.isRecursiveEnabled());
             }
             this.loadFolders(rootFolder);
@@ -1694,25 +1703,37 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @UiThread
-    void showOngoingSnackbar(String msg) {
-        if (ongoingSnackbar != null && ongoingSnackbar.isShown())
-            ongoingSnackbar.dismiss();
-        ongoingSnackbar = new IconifiedSnackbar(this, findViewById(R.id.main_layout))
-                .buildTickerBar(msg, Snackbar.LENGTH_INDEFINITE);
-        ongoingSnackbar.show();
+    void hideFakeSnackbar() {
+        if (fakeSnackbar.getVisibility() == View.VISIBLE) {
+            AutoTransition autoTransition = new AutoTransition();
+            autoTransition.setDuration(250);
+            AutoTransition fakeTransition = new AutoTransition();
+            fakeTransition.setStartDelay(150);
+
+            TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
+            mainLayout.setPadding(0, 0, 0, 0);
+            TransitionManager.beginDelayedTransition(fakeSnackbar, fakeTransition);
+            fakeSnackbar.setVisibility(View.GONE);
+        }
+    }
+
+    @UiThread
+    void showFakeSnackbar(String msg) {
+        mainLayout.setPadding(0, fakeSnackbarIcon.getHeight(), 0, 0);
+        fakeSnackbarText.setText(msg);
+        fakeSnackbar.setVisibility(View.VISIBLE);
     }
 
     @UiThread
     public void showSetupSnackbar() {
-        if (ongoingSnackbar != null && ongoingSnackbar.isShown())
-            ongoingSnackbar.dismiss();
-        ongoingSnackbar = new IconifiedSnackbar(this, findViewById(R.id.main_layout))
+        hideFakeSnackbar();
+        Snackbar setupBar = new IconifiedSnackbar(this, mainLayout)
                 .buildTickerBar(getString(R.string.keys_not_found), Snackbar.LENGTH_INDEFINITE);
-        ongoingSnackbar.setAction(R.string.setup, v -> {
+        setupBar.setAction(R.string.setup, v -> {
             openSettings();
-            ongoingSnackbar.dismiss();
+            setupBar.dismiss();
         });
-        ongoingSnackbar.show();
+        setupBar.show();
     }
 
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";
@@ -1961,8 +1982,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 if (e instanceof android.nfc.TagLostException) {
                     new Toasty(this).Short(R.string.speed_scan);
                     try {
-                        if (mifare != null)
-                            mifare.close();
+                        if (mifare != null) mifare.close();
                     } catch (IOException ex) {
                         Debug.Log(ex);
                     }

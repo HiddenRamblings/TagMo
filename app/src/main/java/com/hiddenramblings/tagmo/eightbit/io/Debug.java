@@ -120,7 +120,7 @@ public class Debug {
         log.append(Build.VERSION.RELEASE);
         log.append(")");
         log.append(separator);
-        log.append("TagMo Version " + BuildConfig.VERSION_NAME);
+        log.append("TagMo " + BuildConfig.COMMIT);
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d",
                 BuildConfig.APPLICATION_ID,

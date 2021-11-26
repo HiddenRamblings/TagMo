@@ -168,13 +168,6 @@ public class BankListActivity extends AppCompatActivity implements
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    writeListAdapter.resetSelections();
-                    amiiboCard.setVisibility(View.GONE);
-                    writeBankLayout.setVisibility(View.GONE);
-                    writeOpenBanks.setVisibility(View.VISIBLE);
-                    clearOpenBanks.setVisibility(View.VISIBLE);
-                    eliteBankCount.setVisibility(View.VISIBLE);
-                    writeBankCount.setVisibility(View.VISIBLE);
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
@@ -323,14 +316,15 @@ public class BankListActivity extends AppCompatActivity implements
         }
     }
 
-    private void setBottomCardView(boolean isCard) {
+    private void onBottomSheetChanged(boolean isMenu, boolean hasAmiibo) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        amiiboCard.setVisibility(isCard ? View.VISIBLE : View.GONE);
-        writeBankLayout.setVisibility(isCard ? View.GONE : View.VISIBLE);
-        writeOpenBanks.setVisibility(isCard ? View.VISIBLE : View.GONE);
-        clearOpenBanks.setVisibility(isCard ? View.VISIBLE : View.GONE);
-        eliteBankCount.setVisibility(isCard ? View.VISIBLE : View.GONE);
-        writeBankCount.setVisibility(isCard ? View.VISIBLE : View.GONE);
+        amiiboCard.setVisibility(isMenu && hasAmiibo ? View.VISIBLE : View.GONE);
+        if (isMenu) writeListAdapter.resetSelections();
+        writeBankLayout.setVisibility(isMenu ? View.GONE : View.VISIBLE);
+        writeOpenBanks.setVisibility(isMenu ? View.VISIBLE : View.GONE);
+        clearOpenBanks.setVisibility(isMenu ? View.VISIBLE : View.GONE);
+        eliteBankCount.setVisibility(isMenu ? View.VISIBLE : View.GONE);
+        writeBankCount.setVisibility(isMenu ? View.VISIBLE : View.GONE);
     }
 
     @Click(R.id.toggle)
@@ -371,12 +365,12 @@ public class BankListActivity extends AppCompatActivity implements
                         collection.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
                         collection.putExtra(TagMo.EXTRA_AMIIBO_FILES, amiiboList);
                         onOpenBanksActivity.launch(collection);
-                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        onBottomSheetChanged(true, false);
                         dialog.dismiss();
                     })
                     .setNegativeButton(R.string.cancel, (dialog, which) -> {
                         amiiboList.clear();
-                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        onBottomSheetChanged(true, false);
                         dialog.dismiss();
                     })
                     .show();
@@ -385,7 +379,7 @@ public class BankListActivity extends AppCompatActivity implements
 
     @Click(R.id.write_open_banks)
     void onWriteOpenBanksClick() {
-        setBottomCardView(false);
+        onBottomSheetChanged(false, false);
         amiiboFilesView.setAdapter(writeListAdapter);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
@@ -402,6 +396,7 @@ public class BankListActivity extends AppCompatActivity implements
     void onWriteBankCountClick() {
         if (TagMo.getPrefs().eliteActiveBank().get() >= eliteBankCount.getValue()) {
             new Toasty(this).Short(R.string.fail_active_oob);
+            onBottomSheetChanged(true, false);
             return;
         }
         Intent configure = new Intent(this, NfcActivity_.class);
@@ -409,7 +404,7 @@ public class BankListActivity extends AppCompatActivity implements
         configure.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
         onOpenBanksActivity.launch(configure);
 
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        onBottomSheetChanged(true, false);
     }
 
     private void displayBackupDialog(byte[] tagData) {
@@ -455,7 +450,7 @@ public class BankListActivity extends AppCompatActivity implements
 
         if (status == CLICKED.FORMAT_BANK) {
             status = CLICKED.NOTHING;
-            this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            onBottomSheetChanged(true, false);
             amiibos.set(clickedPosition, null);
         }
     });
@@ -475,12 +470,12 @@ public class BankListActivity extends AppCompatActivity implements
         intent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
         intent.putExtras(args);
         onUpdateTagResult.launch(intent);
-        setBottomCardView(true);
+        onBottomSheetChanged(true, true);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     private void displayWriteDialog(int position) {
-        setBottomCardView(false);
+        onBottomSheetChanged(false, false);
         writeFileAdapter.setListener(new WriteBanksAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
@@ -830,7 +825,7 @@ public class BankListActivity extends AppCompatActivity implements
         }
         clickedPosition = position;
         status = CLICKED.NOTHING;
-        setBottomCardView(true);
+        onBottomSheetChanged(true, true);
         if (null != amiibo.data  && amiibo.bank == position) {
             updateAmiiboView(amiibo.data, -1, position);
         } else if (amiibo.id != 0) {
@@ -891,7 +886,7 @@ public class BankListActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            setBottomCardView(true);
+            onBottomSheetChanged(true, false);
         } else {
             super.onBackPressed();
         }

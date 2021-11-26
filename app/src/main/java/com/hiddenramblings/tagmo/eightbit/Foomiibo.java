@@ -142,8 +142,25 @@ public class Foomiibo {
         return week + year + "000" + identifier + facility;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private static void deleteDir(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                if (file.isDirectory())
+                    deleteDir(file);
+                else
+                    file.delete();
+            }
+        }
+        dir.delete();
+    }
+
     public static void generateSeries(AmiiboManager amiiboManager, File destination)
             throws IOException {
+        if (destination.exists()) deleteDir(destination);
+        //noinspection ResultOfMethodCallIgnored
+        destination.mkdirs();
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
             byte[] tagData = generateData(TagUtils.amiiboIdToHex(amiibo.id));
             File directory = new File(destination, amiibo.getAmiiboSeries().name);

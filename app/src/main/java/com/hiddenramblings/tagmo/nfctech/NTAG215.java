@@ -94,11 +94,15 @@ public class NTAG215 implements TagTechnology {
         }
     }
 
-    public byte[] transceive(byte[] data) throws IOException {
-        if (m_mifare != null) {
-            return m_mifare.transceive(data);
-        } else if (m_nfcA != null) {
-            return m_nfcA.transceive(data);
+    public byte[] transceive(byte[] data) {
+        try {
+            if (m_mifare != null) {
+                return m_mifare.transceive(data);
+            } else if (m_nfcA != null) {
+                return m_nfcA.transceive(data);
+            }
+        } catch (IOException e) {
+            Debug.Log(e);
         }
         return null;
     }
@@ -150,11 +154,7 @@ public class NTAG215 implements TagTechnology {
         byte[] command = isGeneric
                 ? new byte[]{ NfcByte.CMD_GET_VERSION }
                 : new byte[]{ NfcByte.N2_GET_VERSION };
-        try {
-            return this.transceive(command);
-        } catch (IOException e) {
-            return null;
-        }
+        return this.transceive(command);
     }
 
     @SuppressWarnings("unused")
@@ -164,58 +164,41 @@ public class NTAG215 implements TagTechnology {
 
         req[0] = NfcByte.N2_BANK_COUNT;
 
-        try {
-            resp = this.transceive(req);
-        } catch (IOException ex) {
-            resp = null;
-        }
-        return resp;
+        return this.transceive(req);
     }
 
     public byte[] readSignature(boolean isGeneric) {
         byte[] command = isGeneric
                 ? new byte[] { NfcByte.CMD_READ_SIG, (byte) 0x00 }
                 : new byte[]{ NfcByte.N2_READ_SIG };
-        try {
-            return this.transceive(command);
-        } catch (Exception unused) {
-            return null;
-        }
+        return this.transceive(command);
     }
 
     public void setBankCount(int count) {
-        try {
-            this.transceive(new byte[]{
-                    (byte) NfcByte.N2_SET_BANKCOUNT,
-                    (byte) (count & 0xFF)
-            });
-        } catch (Exception ignored) { }
+        this.transceive(new byte[]{
+                (byte) NfcByte.N2_SET_BANKCOUNT,
+                (byte) (count & 0xFF)
+        });
     }
 
     public void activateBank(int bank) {
-        try {
-            this.transceive(new byte[]{
-                    (byte) NfcByte.N2_ACTIVATE_BANK,
-                    (byte) (bank & 0xFF)
-            });
-        } catch (Exception ignored) { }
+        this.transceive(new byte[]{
+                (byte) NfcByte.N2_ACTIVATE_BANK,
+                (byte) (bank & 0xFF)
+        });
     }
 
     public void initFirmware() {
-        try {
-            this.transceive(new byte[]{
-                    (byte) 0xFFF4, (byte) 0x49,
-                    (byte) 0xFF9B, (byte) 0xFF99,
-                    (byte) 0xFFC3, (byte) 0xFFDA,
-                    (byte) 0x57, (byte) 0x71,
-                    (byte) 0x0A, (byte) 0x64,
-                    (byte) 0x4A, (byte) 0xFF9E,
-                    (byte) 0xFFF8, (byte) NfcByte.CMD_WRITE,
-                    (byte) NfcByte.CMD_READ, (byte) 0xFFD9
-            });
-        } catch (IOException e) {
-            Debug.Log(e);
-        }
+        this.transceive(new byte[]{
+                (byte) 0xFFF4, (byte) 0x49,
+                (byte) 0xFF9B, (byte) 0xFF99,
+                (byte) 0xFFC3, (byte) 0xFFDA,
+                (byte) 0x57, (byte) 0x71,
+                (byte) 0x0A, (byte) 0x64,
+                (byte) 0x4A, (byte) 0xFF9E,
+                (byte) 0xFFF8, (byte) NfcByte.CMD_WRITE,
+                (byte) NfcByte.CMD_READ, (byte) 0xFFD9
+        });
     }
 
     private interface IFastRead {
@@ -364,33 +347,21 @@ public class NTAG215 implements TagTechnology {
     }
 
     public void amiiboLock() {
-        try {
-            this.transceive(new byte[]{
-                    NfcByte.N2_LOCK
-            });
-        } catch (IOException e) {
-            Debug.Log(e);
-        }
+        this.transceive(new byte[]{
+                NfcByte.N2_LOCK
+        });
     }
 
     public byte[] amiiboPrepareUnlock() {
-        try {
-            return this.transceive(new byte[]{
-                    NfcByte.N2_UNLOCK_1
-            });
-        } catch (IOException e) {
-            return null;
-        }
+        return this.transceive(new byte[]{
+                NfcByte.N2_UNLOCK_1
+        });
     }
 
     public void amiiboUnlock() {
-        try {
-            this.transceive(new byte[]{
-                    NfcByte.N2_UNLOCK_2
-            });
-        } catch (IOException e) {
-            Debug.Log(e);
-        }
+        this.transceive(new byte[]{
+                NfcByte.N2_UNLOCK_2
+        });
     }
 
     @Override

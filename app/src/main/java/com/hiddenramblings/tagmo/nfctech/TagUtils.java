@@ -11,13 +11,13 @@ import android.nfc.tech.NdefFormatable;
 
 import androidx.documentfile.provider.DocumentFile;
 
-import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.data.AmiiboData;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -83,7 +83,7 @@ public class TagUtils {
         if (TagMo.getPrefs().enableEliteSupport().get()) {
             byte[] signature = mifare.readSignature(false);
             byte[] page10 = TagUtils.hexToByteArray("FFFFFFFFFF");
-            return TagUtils.compareRange(signature, page10,
+            return signature != null && TagUtils.compareRange(signature, page10,
                     32 - page10.length, signature.length);
         }
         return false;

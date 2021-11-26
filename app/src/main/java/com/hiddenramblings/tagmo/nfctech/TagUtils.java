@@ -69,12 +69,9 @@ public class TagUtils {
     public static boolean isPowerTag(NTAG215 mifare) {
         if (TagMo.getPrefs().enablePowerTagSupport().get()) {
             try {
-                if (TagUtils.compareRange(mifare.transceive(NfcByte.POWERTAG_SIG),
-                        NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.length))
-                    return true;
-            } catch (IOException e) {
-                Debug.Log(e);
-            }
+                return TagUtils.compareRange(mifare.transceive(NfcByte.POWERTAG_SIG),
+                        NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.length);
+            } catch (IOException ignored) { }
         }
         return false;
     }

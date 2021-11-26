@@ -48,9 +48,7 @@ public class AmiiboManager {
             if (inputSteam != null) {
                 try {
                     inputSteam.close();
-                } catch (IOException e) {
-                    Debug.Log(e);
-                }
+                } catch (IOException ignored) { }
             }
         }
     }

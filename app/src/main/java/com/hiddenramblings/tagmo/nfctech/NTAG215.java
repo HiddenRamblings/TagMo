@@ -189,8 +189,7 @@ public class NTAG215 implements TagTechnology {
                     (byte) NfcByte.N2_SET_BANKCOUNT,
                     (byte) (count & 0xFF)
             });
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
     }
 
     public void activateBank(int bank) {
@@ -199,8 +198,7 @@ public class NTAG215 implements TagTechnology {
                     (byte) NfcByte.N2_ACTIVATE_BANK,
                     (byte) (bank & 0xFF)
             });
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
     }
 
     public void initFirmware() {

@@ -278,9 +278,7 @@ public class NfcActivity extends AppCompatActivity {
                     mifare = new NTAG215(NfcA.get(tag));
                     try {
                         mifare.connect();
-                    } catch (Exception ex) {
-                        Debug.Log(ex);
-                    }
+                    } catch (Exception ignored) { }
                     if (TagReader.needsFirmware(mifare)) {
                         if (TagWriter.updateFirmware(mifare))
                             showMessage(getString(R.string.firmware_update));
@@ -505,9 +503,7 @@ public class NfcActivity extends AppCompatActivity {
                     txtMessage.setText(R.string.speed_scan);
                     try {
                         mifare.close();
-                    } catch (IOException ex) {
-                        Debug.Log(ex);
-                    }
+                    } catch (IOException ignored) { }
                     return;
                 }
                 if (TagMo.getStringRes(R.string.error_tag_rewrite).equals(error)) {
@@ -519,9 +515,7 @@ public class NfcActivity extends AppCompatActivity {
                             .setPositiveButton(R.string.proceed, (dialog, which) -> {
                                 try {
                                     mifare.close();
-                                } catch (IOException ex) {
-                                    Debug.Log(ex);
-                                }
+                                } catch (IOException ignored) { }
                                 dialog.dismiss();
                                 finish();
                             })
@@ -534,9 +528,7 @@ public class NfcActivity extends AppCompatActivity {
                             .setPositiveButton(R.string.unlock, (dialog, which) -> {
                                 try {
                                     mifare.close();
-                                } catch (IOException ex) {
-                                    Debug.Log(ex);
-                                }
+                                } catch (IOException ignored) { }
                                 dialog.dismiss();
                                 finish();
                                 Intent unlock = new Intent(this, NfcActivity_.class);
@@ -546,9 +538,7 @@ public class NfcActivity extends AppCompatActivity {
                             .setNegativeButton(R.string.cancel,  (dialog, which) -> {
                                 try {
                                     mifare.close();
-                                } catch (IOException ex) {
-                                    Debug.Log(ex);
-                                }
+                                } catch (IOException ignored) { }
                                 dialog.dismiss();
                                 finish();
                             }).show());
@@ -634,9 +624,7 @@ public class NfcActivity extends AppCompatActivity {
         if (mifare != null) {
             try {
                 mifare.close();
-            } catch (Exception e) {
-                Debug.Log(e);
-            }
+            } catch (Exception ignored) { }
         }
         setResult(Activity.RESULT_CANCELED);
         finish();

@@ -189,6 +189,8 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuFilterAmiiboSeries;
     @OptionsMenuItem(R.id.filter_amiibo_type)
     MenuItem menuFilterAmiiboType;
+    @OptionsMenuItem(R.id.settings)
+    MenuItem menuSettings;
     @OptionsMenuItem(R.id.view_simple)
     MenuItem menuViewSimple;
     @OptionsMenuItem(R.id.view_compact)
@@ -287,7 +289,6 @@ public class BrowserActivity extends AppCompatActivity implements
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    preferences.setVisibility(View.GONE);
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
@@ -957,10 +958,9 @@ public class BrowserActivity extends AppCompatActivity implements
         this.loadPTagKeyManager();
     }
 
-    @OptionsItem(R.id.settings)
-    void openSettings() {
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    private void showSettingsFragment() {
         if (!preferences.isShown()) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             preferences.setVisibility(View.VISIBLE);
             if (null == settingsFragment || settingsFragment.isDetached())
                 settingsFragment = new SettingsFragment_();
@@ -969,6 +969,19 @@ public class BrowserActivity extends AppCompatActivity implements
                     .replace(R.id.preferences, settingsFragment)
                     .commit();
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+    }
+
+    @OptionsItem(R.id.settings)
+    void onBottomSheetChanged() {
+        if (preferences.isShown()) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
+            preferences.setVisibility(View.GONE);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        } else {
+            menuSettings.setIcon(R.drawable.ic_folder_white_24dp);
+            showSettingsFragment();
         }
     }
 
@@ -1733,7 +1746,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Snackbar setupBar = new IconifiedSnackbar(this, mainLayout)
                 .buildTickerBar(getString(R.string.keys_not_found), Snackbar.LENGTH_INDEFINITE);
         setupBar.setAction(R.string.setup, v -> {
-            openSettings();
+            showSettingsFragment();
             settingsFragment.onKeysClicked();
             setupBar.dismiss();
         });

@@ -48,7 +48,6 @@ import java.util.HashSet;
 public class BrowserAmiibosAdapter
         extends RecyclerView.Adapter<BrowserAmiibosAdapter.AmiiboViewHolder>
         implements Filterable, BrowserSettingsListener {
-    private static final String decryptRegex = "(Decrypted).bin";
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
@@ -389,7 +388,7 @@ public class BrowserAmiibosAdapter
                             TagMo.getPrefs().preferEmulated().get()).replace(
                                     TagMo.getPrefs().browserRootFolder().get(), "");
                     this.txtPath.setText(boldMatchingText(relativeFile, query));
-                    setIsHighlighted(this, relativeFile.endsWith(decryptRegex));
+                    setIsHighlighted(this, relativeFile.endsWith("-Foomiibo].bin"));
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");

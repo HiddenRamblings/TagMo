@@ -48,7 +48,7 @@
     <string name="show_downloads">Show \'Download\'</string>
     <string name="recursive_folders">Recursive Search</string>
     <string name="show_missing">Missing amiibo™</string>
-    <string name="enable_scale">View Scale Mode</string>
+    <string name="enable_scale">View Scale Mods</string>
 
     <string name="simple">Text Banners</string>
     <string name="compact">Snappy Cards</string>

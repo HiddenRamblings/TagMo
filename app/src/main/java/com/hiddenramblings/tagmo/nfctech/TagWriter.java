@@ -71,7 +71,7 @@ public class TagWriter {
     public static void writeToTagAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager,
                                       boolean validateNtag) throws Exception {
         byte[] idPages = mifare.readPages(0);
-        if (idPages == null || idPages.length != NfcByte.PAGE_SIZE * 4)
+        if (null == idPages  || idPages.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
 
         boolean isPowerTag = TagUtils.isPowerTag(mifare);
@@ -99,7 +99,7 @@ public class TagWriter {
 
         if (isPowerTag) {
             byte[] oldid = mifare.getTag().getId();
-            if (oldid == null || oldid.length != 7)
+            if (null == oldid  || oldid.length != 7)
                 throw new Exception(TagMo.getStringRes(R.string.fail_read_uid));
 
             Debug.Log(TagWriter.class, R.string.old_uid, TagUtils.bytesToHex(oldid));
@@ -217,7 +217,7 @@ public class TagWriter {
     private static void doAuth(NTAG215 tag) throws Exception {
         byte[] pages0_1 = tag.readPages(0);
 
-        if (pages0_1 == null || pages0_1.length != NfcByte.PAGE_SIZE * 4)
+        if (null == pages0_1  || pages0_1.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read));
 
         byte[] uid = uidFromPages(pages0_1);
@@ -233,7 +233,7 @@ public class TagWriter {
                 password[3]
         };
         byte[] response = tag.transceive(auth);
-        if (response == null)
+        if (null == response )
             throw new Exception(TagMo.getStringRes(R.string.error_auth_null));
         String respStr = TagUtils.bytesToHex(response);
         Debug.Log(TagWriter.class, R.string.auth_response, respStr);
@@ -243,7 +243,7 @@ public class TagWriter {
     }
 
     private static boolean doEliteAuth(NTAG215 tag, byte[] password) {
-        if (password == null || password.length != 4) {
+        if (null == password  || password.length != 4) {
             return false;
         }
         byte[] req = new byte[5];
@@ -254,7 +254,7 @@ public class TagWriter {
         } catch (Exception e) {
             return false;
         }
-        if (password == null || password.length != 2) {
+        if (null == password  || password.length != 2) {
             return false;
         }
         return password[0] == Byte.MIN_VALUE && password[1] == Byte.MIN_VALUE;
@@ -264,7 +264,7 @@ public class TagWriter {
     private static void writePassword(NTAG215 tag) throws IOException {
         byte[] pages0_1 = tag.readPages(0);
 
-        if (pages0_1 == null || pages0_1.length != NfcByte.PAGE_SIZE * 4)
+        if (null == pages0_1  || pages0_1.length != NfcByte.PAGE_SIZE * 4)
             throw new IOException(TagMo.getStringRes(R.string.fail_read));
 
         byte[] uid = uidFromPages(pages0_1);
@@ -282,7 +282,7 @@ public class TagWriter {
     private static void writeLockInfo(NTAG215 tag) throws IOException {
         byte[] pages = tag.readPages(0);
 
-        if (pages == null || pages.length != NfcByte.PAGE_SIZE * 4)
+        if (null == pages  || pages.length != NfcByte.PAGE_SIZE * 4)
             throw new IOException(TagMo.getStringRes(R.string.fail_read));
 
         tag.writePage(2, new byte[]{pages[2 * NfcByte.PAGE_SIZE],
@@ -322,7 +322,7 @@ public class TagWriter {
                     TagMo.getContext().getResources().openRawResource(R.raw.firmware)));
             while (true) {
                 String strLine = br.readLine();
-                if (strLine == null) {
+                if (null == strLine ) {
                     break;
                 }
                 String[] parts = strLine.replaceAll("\\s+", " ").split(" ");
@@ -343,7 +343,7 @@ public class TagWriter {
                         boolean done = false;
                         for (i = 0; i < 10; i++) {
                             response = tag.transceive(iso_cmd);
-                            if (response != null) {
+                            if (null != response) {
                                 done = true;
                                 break;
                             }

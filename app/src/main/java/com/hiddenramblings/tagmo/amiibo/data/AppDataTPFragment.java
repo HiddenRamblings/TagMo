@@ -52,14 +52,14 @@ public class AppDataTPFragment extends AppDataFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
+        if (null != getArguments()) {
             try {
                 appData = new AppDataTP(getArguments().getByteArray("app_data"));
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
             }
-            if (savedInstanceState == null) {
+            if (null == savedInstanceState ) {
                 initialAppDataInitialized = getArguments().getBoolean("app_data_init");
             }
         }
@@ -156,7 +156,7 @@ public class AppDataTPFragment extends AppDataFragment {
 
     @Override
     public void onAppDataChecked(boolean enabled) {
-        if (txtHearts2 == null)
+        if (null == txtHearts2 )
             return;
 
         txtHearts1.setEnabled(enabled);

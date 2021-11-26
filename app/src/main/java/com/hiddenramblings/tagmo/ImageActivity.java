@@ -156,37 +156,38 @@ public class ImageActivity extends AppCompatActivity {
         // String character = "";
 
         amiibo = null;
-        if (this.amiiboManager != null) {
+        if (null != this.amiiboManager) {
             amiibo = amiiboManager.amiibos.get(amiiboId);
-            if (amiibo == null)
+            if (null == amiibo)
                 amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
         }
-        if (amiibo != null) {
+        if (null != amiibo) {
             amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
-            if (amiibo.name != null)
+            if (null != amiibo.name)
                 amiiboName = amiibo.name;
-            if (amiibo.getAmiiboSeries() != null)
+            if (null != amiibo.getAmiiboSeries())
                 amiiboSeries = amiibo.getAmiiboSeries().name;
-            if (amiibo.getAmiiboType() != null)
+            if (null != amiibo.getAmiiboType())
                 amiiboType = amiibo.getAmiiboType().name;
-            if (amiibo.getGameSeries() != null)
+            if (null != amiibo.getGameSeries())
                 gameSeries = amiibo.getGameSeries().name;
-            // if (amiibo.getCharacter() != null)
+            // if (null != amiibo.getCharacter())
             //     character = amiibo.getCharacter().name;
         } else {
             tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
         }
 
-        if (tagInfo == null) {
-            setAmiiboInfoText(txtName, amiiboName, false);
-        } else {
+        boolean hasTagInfo = null != tagInfo;
+        if (hasTagInfo) {
             setAmiiboInfoText(txtName, tagInfo, false);
+        } else {
+            setAmiiboInfoText(txtName, amiiboName, false);
         }
-        setAmiiboInfoText(txtTagId, amiiboHexId, tagInfo != null);
-        setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, tagInfo != null);
-        setAmiiboInfoText(txtAmiiboType, amiiboType, tagInfo != null);
-        setAmiiboInfoText(txtGameSeries, gameSeries, tagInfo != null);
-        // setAmiiboInfoText(txtCharacter, character, tagInfo != null);
+        setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo);
+        setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo);
+        setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo);
+        setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo);
+        // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
     }
 
     void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
@@ -212,7 +213,7 @@ public class ImageActivity extends AppCompatActivity {
     void onSaveClicked() {
         final View view = this.getLayoutInflater().inflate(R.layout.edit_text, null);
         final EditText editText = view.findViewById(R.id.editText);
-        if (amiibo != null) {
+        if (null != amiibo) {
             editText.setText(amiibo.name);
         } else {
             editText.setText(TagUtils.amiiboIdToHex(amiiboId));

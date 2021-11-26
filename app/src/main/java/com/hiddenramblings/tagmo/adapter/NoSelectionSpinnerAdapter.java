@@ -58,7 +58,7 @@ public class NoSelectionSpinnerAdapter implements SpinnerAdapter, ListAdapter {
         // This provides the View for the Selected Item in the Spinner, not
         // the dropdown (unless dropdownView is not set).
         if (position == 0) {
-            if (convertView != null) {
+            if (null != convertView) {
                 return convertView;
             } else {
                 return getNothingSelectedView(parent);

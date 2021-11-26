@@ -57,13 +57,13 @@ public class KeyManager {
     public boolean hasFixedKey() {
         if (hasLocalFile(FIXED_KEY_MD5))
             fixedKey = loadKeyFromStorage(FIXED_KEY_MD5);
-        return fixedKey != null;
+        return null != fixedKey ;
     }
 
     public boolean hasUnFixedKey() {
         if (hasLocalFile(UNFIXED_KEY_MD5))
             unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5);
-        return unfixedKey != null;
+        return null != unfixedKey ;
     }
 
     public boolean isKeyMissing() {

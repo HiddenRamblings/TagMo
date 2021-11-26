@@ -69,7 +69,7 @@ public class TagUtils {
     public static boolean isPowerTag(NTAG215 mifare) {
         if (TagMo.getPrefs().enablePowerTagSupport().get()) {
             byte[] signature = mifare.transceive(NfcByte.POWERTAG_SIG);
-            return signature != null && TagUtils.compareRange(signature,
+            return null != signature && TagUtils.compareRange(signature,
                     NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.length);
         }
         return false;
@@ -79,7 +79,7 @@ public class TagUtils {
         if (TagMo.getPrefs().enableEliteSupport().get()) {
             byte[] signature = mifare.readSignature(false);
             byte[] page10 = TagUtils.hexToByteArray("FFFFFFFFFF");
-            return signature != null && TagUtils.compareRange(signature, page10,
+            return null != signature && TagUtils.compareRange(signature, page10,
                     32 - page10.length, signature.length);
         }
         return false;
@@ -192,13 +192,13 @@ public class TagUtils {
     }
 
     public static void validateNtag(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
-        if (tagData == null)
+        if (null == tagData )
             throw new IOException(TagMo.getStringRes(R.string.no_source_data));
 
         if (validateNtag) {
             try {
                 byte[] versionInfo = mifare.transceive(new byte[]{(byte) 0x60});
-                if (versionInfo == null || versionInfo.length != 8)
+                if (null == versionInfo  || versionInfo.length != 8)
                     throw new Exception(TagMo.getStringRes(R.string.error_tag_version));
                 if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
                     throw new FormatException(TagMo.getStringRes(R.string.error_tag_format));
@@ -209,7 +209,7 @@ public class TagUtils {
         }
 
         byte[] pages = mifare.readPages(0);
-        if (pages == null || pages.length != NfcByte.PAGE_SIZE * 4)
+        if (null == pages  || pages.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
 
         if (!TagUtils.compareRange(pages, tagData, 9))
@@ -232,9 +232,9 @@ public class TagUtils {
         try {
             long amiiboId = amiiboIdFromTag(tagData);
             String name = amiiboIdToHex(amiiboId);
-            if (amiiboManager != null) {
+            if (null != amiiboManager) {
                 Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
-                if (amiibo != null && amiibo.name != null) {
+                if (null != amiibo && null != amiibo.name) {
                     name = amiibo.name.replace(File.separatorChar, '-');
                 }
             }
@@ -253,7 +253,7 @@ public class TagUtils {
     }
 
     public static byte[] getValidatedData(KeyManager keyManager, byte[] data) throws Exception {
-        if (data == null) return null;
+        if (null == data ) return null;
         try {
             TagUtils.validateData(data);
             data = keyManager.decrypt(data);

@@ -92,7 +92,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
             this.amiiboFiles.clear();
-            if (newBrowserSettings.getAmiiboFiles() != null)
+            if (null != newBrowserSettings.getAmiiboFiles() )
                 this.amiiboFiles.addAll(newBrowserSettings.getAmiiboFiles());
             refresh = true;
         }
@@ -159,7 +159,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
     @Override
     public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
-            if (holder.collector != null) {
+            if (null != holder.collector ) {
                 if (amiiboList.contains(holder.amiiboFile)) {
                     amiiboList.remove(filteredData.get(position));
                     setIsHighlighted(holder, false);
@@ -168,13 +168,13 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                     setIsHighlighted(holder, true);
                 }
                 holder.collector.onAmiiboClicked(amiiboList);
-            } else if (holder.listener != null) {
+            } else if (null != holder.listener ) {
                 holder.listener.onAmiiboClicked(holder.amiiboFile);
             }
         });
-        if (holder.imageAmiibo != null) {
+        if (null != holder.imageAmiibo ) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (holder.collector != null) {
+                if (null != holder.collector) {
                     if (amiiboList.contains(holder.amiiboFile)) {
                         amiiboList.remove(filteredData.get(position));
                         setIsHighlighted(holder, false);
@@ -183,7 +183,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                         setIsHighlighted(holder, true);
                     }
                     holder.collector.onAmiiboClicked(amiiboList);
-                } else if (holder.listener != null) {
+                } else if (null != holder.listener ) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
                         holder.listener.onAmiiboClicked(holder.amiiboFile);
                     else
@@ -201,7 +201,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
 
     @Override
     public AmiiboFilter getFilter() {
-        if (this.filter == null) {
+        if (null == this.filter ) {
             this.filter = new AmiiboFilter();
         }
         return this.filter;
@@ -216,16 +216,16 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
             for (AmiiboFile amiiboFile : amiiboFiles) {
                 boolean add;
 
-                if (settings.getAmiiboManager() != null) {
+                if (null != settings.getAmiiboManager() ) {
                     Amiibo amiibo = settings.getAmiiboManager().amiibos.get(amiiboFile.getId());
-                    if (amiibo == null)
+                    if (null == amiibo )
                         amiibo = new Amiibo(settings.getAmiiboManager(),
                                 amiiboFile.getId(), null, null);
                     add = amiiboContainsQuery(amiibo, queryText);
                 } else {
                     add = queryText.isEmpty();
                 }
-                if (!add && amiiboFile.getFilePath() != null)
+                if (!add && null != amiiboFile.getFilePath() )
                     add = pathContainsQuery(amiiboFile.getFilePath().getAbsolutePath(), queryText);
                 if (add)
                     tempList.add(amiiboFile);
@@ -265,15 +265,15 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
             if (!query.isEmpty()) {
                 if (TagUtils.amiiboIdToHex(amiibo.id).toLowerCase().startsWith(query))
                     return true;
-                else if (amiibo.name != null && amiibo.name.toLowerCase().contains(query))
+                else if (null != amiibo.name  && amiibo.name.toLowerCase().contains(query))
                     return true;
-                else if (gameSeries != null && gameSeries.name.toLowerCase().contains(query))
+                else if (null != gameSeries  && gameSeries.name.toLowerCase().contains(query))
                     return true;
-                else if (character != null && character.name.toLowerCase().contains(query))
+                else if (null != character  && character.name.toLowerCase().contains(query))
                     return true;
-                else if (amiiboSeries != null && amiiboSeries.name.toLowerCase().contains(query))
+                else if (null != amiiboSeries  && amiiboSeries.name.toLowerCase().contains(query))
                     return true;
-                else return amiiboType != null && amiiboType.name.toLowerCase().contains(query);
+                else return null != amiiboType  && amiiboType.name.toLowerCase().contains(query);
             }
             return true;
         }
@@ -365,23 +365,23 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
             long amiiboId = item.getId();
             Amiibo amiibo = null;
             AmiiboManager amiiboManager = settings.getAmiiboManager();
-            if (amiiboManager != null) {
+            if (null != amiiboManager ) {
                 amiibo = amiiboManager.amiibos.get(amiiboId);
-                if (amiibo == null)
+                if (null == amiibo )
                     amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
             }
-            if (amiibo != null) {
+            if (null != amiibo ) {
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
-                if (amiibo.name != null)
+                if (null != amiibo.name )
                     amiiboName = amiibo.name;
-                if (amiibo.getAmiiboSeries() != null)
+                if (null != amiibo.getAmiiboSeries() )
                     amiiboSeries = amiibo.getAmiiboSeries().name;
-                if (amiibo.getAmiiboType() != null)
+                if (null != amiibo.getAmiiboType() )
                     amiiboType = amiibo.getAmiiboType().name;
-                if (amiibo.getGameSeries() != null)
+                if (null != amiibo.getGameSeries() )
                     gameSeries = amiibo.getGameSeries().name;
-                // if (amiibo.getCharacter() != null)
+                // if (null != amiibo.getCharacter() )
                 //     gameSeries = amiibo.getCharacter().name;
             } else {
                 tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
@@ -391,7 +391,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
             String query = settings.getQuery().toLowerCase();
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
-                boolean hasTagInfo = tagInfo != null;
+                boolean hasTagInfo = null != tagInfo ;
                 if (hasTagInfo) {
                     setAmiiboInfoText(this.txtError, tagInfo, false);
                 } else {
@@ -403,7 +403,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                 setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query), hasTagInfo);
                 setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query), hasTagInfo);
                 // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), hasTagInfo);
-                if (item.getFilePath() != null) {
+                if (null != item.getFilePath() ) {
                     this.itemView.setEnabled(true);
                     String relativeFile = Storage.getRelativePath(item.getFilePath(),
                             TagMo.getPrefs().preferEmulated().get()).replace(
@@ -417,10 +417,10 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                 }
                 this.txtPath.setVisibility(View.VISIBLE);
             }
-            if (this.imageAmiibo != null) {
+            if (null != this.imageAmiibo ) {
                 this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(itemView).clear(target);
-                if (amiiboImageUrl != null) {
+                if (null != amiiboImageUrl ) {
                     Glide.with(itemView)
                             .setDefaultRequestOptions(onlyRetrieveFromCache())
                             .asBitmap()
@@ -439,7 +439,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                         itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+                return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
                         || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
             } else {
                 return new RequestOptions().onlyRetrieveFromCache(false);

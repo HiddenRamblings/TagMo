@@ -19,7 +19,7 @@ public class InstallReceiver extends BroadcastReceiver {
         switch(intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
             case PackageInstaller.STATUS_PENDING_USER_ACTION:
                 Intent activityIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
-                if (activityIntent != null)
+                if (null != activityIntent)
                     context.startActivity(activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 break;
             case PackageInstaller.STATUS_SUCCESS:

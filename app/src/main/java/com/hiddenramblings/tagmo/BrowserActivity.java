@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -210,7 +211,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private KeyManager keyManager;
     private AmiiboFile clickedAmiibo = null;
-    private final Handler handler = new Handler();
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private int filteredCount;
 
     @InstanceState
@@ -1469,7 +1470,7 @@ public class BrowserActivity extends AppCompatActivity implements
             showFakeSnackbar(getString(R.string.amiibo_not_found));
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {
-            hideFakeSnackbar();
+            new Handler(Looper.getMainLooper()).postDelayed(this::hideFakeSnackbar, 250);
         }
     }
 
@@ -1708,7 +1709,7 @@ public class BrowserActivity extends AppCompatActivity implements
             AutoTransition autoTransition = new AutoTransition();
             autoTransition.setDuration(250);
             AutoTransition fakeTransition = new AutoTransition();
-            fakeTransition.setStartDelay(150);
+            fakeTransition.setStartDelay(200);
 
             TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
             mainLayout.setPadding(0, 0, 0, 0);

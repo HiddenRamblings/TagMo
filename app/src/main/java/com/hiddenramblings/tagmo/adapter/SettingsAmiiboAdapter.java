@@ -56,7 +56,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        if (convertView == null) {
+        if (null == convertView ) {
             convertView = LayoutInflater.from(parent.getContext()).inflate(
                     R.layout.amiibo_compact_card, parent, false);
             holder = new ViewHolder(convertView);
@@ -75,15 +75,15 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         Amiibo amiibo = getItem(position);
         amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
         amiiboImageUrl = amiibo.getImageUrl();
-        if (amiibo.name != null)
+        if (null != amiibo.name)
             amiiboName = amiibo.name;
-        if (amiibo.getAmiiboSeries() != null)
+        if (null != amiibo.getAmiiboSeries())
             amiiboSeries = amiibo.getAmiiboSeries().name;
-        if (amiibo.getAmiiboType() != null)
+        if (null != amiibo.getAmiiboType())
             amiiboType = amiibo.getAmiiboType().name;
-        if (amiibo.getGameSeries() != null)
+        if (null != amiibo.getGameSeries())
             gameSeries = amiibo.getGameSeries().name;
-        // if (amiibo.getCharacter() != null)
+        // if (null != amiibo.getCharacter())
         //     character = amiibo.getCharacter().name;
 
         holder.txtError.setVisibility(android.view.View.GONE);
@@ -95,10 +95,10 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         // setAmiiboInfoText(holder.txtCharacter, character);
         holder.txtPath.setVisibility(android.view.View.GONE);
 
-        if (holder.imageAmiibo != null) {
+        if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setVisibility(android.view.View.GONE);
             Glide.with(convertView).clear(holder.target);
-            if (amiiboImageUrl != null) {
+            if (null != amiiboImageUrl) {
                 Glide.with(convertView)
                         .setDefaultRequestOptions(onlyRetrieveFromCache())
                         .asBitmap()
@@ -129,7 +129,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
                     TagMo.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+            return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
                     || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
         } else {
             return new RequestOptions().onlyRetrieveFromCache(false);

@@ -145,7 +145,7 @@ public class Foomiibo {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void deleteDir(File dir) {
         File[] files = dir.listFiles();
-        if (files != null && files.length > 0) {
+        if (null != files && files.length > 0) {
             for (File file : files) {
                 if (file.isDirectory())
                     deleteDir(file);

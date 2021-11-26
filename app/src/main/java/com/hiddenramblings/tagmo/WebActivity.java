@@ -132,7 +132,7 @@ public class WebActivity extends AppCompatActivity {
             }
         });
 
-        if (action != null) {
+        if (null != action) {
             if (TagMo.ACTION_BROWSE_GITLAB.equals(action)) {
                 webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
                         "(?i)" + Pattern.quote("android"), "TagMo"));
@@ -153,7 +153,8 @@ public class WebActivity extends AppCompatActivity {
             try (InputStream in = getContentResolver().openInputStream(getIntent().getData());
                  BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
                 StringBuilder total = new StringBuilder();
-                for (String line; (line = r.readLine()) != null; ) {
+                String line;
+                while (null != (line = r.readLine())) {
                     total.append(line).append("\n");
                 }
                 mWebView.loadData(total.toString(), getString(R.string.mimetype_text)
@@ -182,7 +183,7 @@ public class WebActivity extends AppCompatActivity {
             try {
                 ZipInputStream zipIn = new ZipInputStream(new FileInputStream(this.archive));
                 ZipEntry entry;
-                while ((entry = zipIn.getNextEntry()) != null) {
+                while (null != (entry = zipIn.getNextEntry())) {
                     ZipEntry finalEntry = entry;
                     handler.post(() -> dialog.setMessage(
                             getString(R.string.unzip_item, finalEntry.getName())));

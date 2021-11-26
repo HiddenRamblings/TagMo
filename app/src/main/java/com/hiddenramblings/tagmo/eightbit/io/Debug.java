@@ -131,7 +131,7 @@ public class Debug {
         log.append(separator);
         log.append(separator);
         String line;
-        while ((line = reader.readLine()) != null) {
+        while (null != (line = reader.readLine())) {
             log.append(line);
             log.append(separator);
         }

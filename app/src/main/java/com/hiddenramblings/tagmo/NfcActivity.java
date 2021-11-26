@@ -79,7 +79,7 @@ public class NfcActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
+        if (null != actionBar) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -128,7 +128,7 @@ public class NfcActivity extends AppCompatActivity {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
 
-        if (getCallingActivity() != null)
+        if (null != getCallingActivity())
             isEliteIntent = BankListActivity_.class.getName().equals(
                     getCallingActivity().getClassName());
         if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
@@ -232,7 +232,7 @@ public class NfcActivity extends AppCompatActivity {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            String tech = tagTech != null ? tagTech : getString(R.string.nfc_tag);
+            String tech = null != tagTech ? tagTech : getString(R.string.nfc_tag);
             showMessage(getString(R.string.tag_detected, tech));
             this.onTagDiscovered(intent);
         }
@@ -273,7 +273,7 @@ public class NfcActivity extends AppCompatActivity {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             mifare = NTAG215.get(tag);
             tagTech = TagUtils.getTagTechnology(tag);
-            if (mifare == null) {
+            if (null == mifare) {
                 if (TagMo.getPrefs().enableEliteSupport().get()) {
                     mifare = new NTAG215(NfcA.get(tag));
                     try {
@@ -327,7 +327,7 @@ public class NfcActivity extends AppCompatActivity {
                 byte[] data = new byte[0];
                 if (commandIntent.hasExtra(TagMo.EXTRA_TAG_DATA)) {
                     data = commandIntent.getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
-                    if (data == null || data.length <= 1)
+                    if (null == data || data.length <= 1)
                         throw new IOException(getString(R.string.error_no_data));
                 }
                 switch (mode) {
@@ -374,7 +374,7 @@ public class NfcActivity extends AppCompatActivity {
                                 .getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES);
                         for (int x = 0; x < amiiboList.size(); x++) {
                             byte[] tagData = amiiboList.get(x).getData();
-                            if (tagData == null)
+                            if (null == tagData)
                                 tagData = TagUtils.getValidatedFile(keyManager,
                                         amiiboList.get(x).getFilePath());
                             TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
@@ -469,7 +469,7 @@ public class NfcActivity extends AppCompatActivity {
 
                     case TagMo.ACTION_UNLOCK_UNIT:
                         if (isUnlocking) {
-                            if (mifare.amiiboPrepareUnlock() != null) {
+                            if (null != mifare.amiiboPrepareUnlock()) {
                                 runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                                         .setMessage(R.string.progress_unlock)
                                         .setPositiveButton(R.string.proceed, (dialog, which) -> {
@@ -497,8 +497,8 @@ public class NfcActivity extends AppCompatActivity {
         } catch (Exception e) {
             Debug.Log(e);
             String error = e.getMessage();
-            error = e.getCause() != null ? error + "\n" + e.getCause().toString() : error;
-            if (error != null && TagMo.getPrefs().enableEliteSupport().get()) {
+            error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
+            if (null != error && TagMo.getPrefs().enableEliteSupport().get()) {
                 if (e instanceof android.nfc.TagLostException) {
                     txtMessage.setText(R.string.speed_scan);
                     try {
@@ -554,7 +554,7 @@ public class NfcActivity extends AppCompatActivity {
     );
 
     void startNfcMonitor() {
-        if (nfcAdapter == null) {
+        if (null == nfcAdapter) {
             showError(getString(R.string.nfc_unsupported));
         } else if (!nfcAdapter.isEnabled()) {
             showError(getString(R.string.nfc_disabled));
@@ -578,7 +578,7 @@ public class NfcActivity extends AppCompatActivity {
     }
 
     void stopNfcMonitor() {
-        if (nfcAdapter == null) {
+        if (null == nfcAdapter) {
             return;
         }
         nfcAdapter.disableForegroundDispatch(this);
@@ -621,7 +621,7 @@ public class NfcActivity extends AppCompatActivity {
 
     @OptionsItem(android.R.id.home)
     void cancelAction() {
-        if (mifare != null) {
+        if (null != mifare) {
             try {
                 mifare.close();
             } catch (Exception ignored) { }

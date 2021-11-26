@@ -122,7 +122,7 @@ public class AmiiboActivity extends AppCompatActivity {
                     onUpdateTagResult.launch(scan.putExtras(args));
                     return true;
                 case R.id.mnu_save:
-                    if (tagData != null)
+                    if (null != tagData )
                         displayBackupDialog(this.tagData, false);
                     else
                         displayBackupDialog(Foomiibo.generateData(
@@ -174,7 +174,7 @@ public class AmiiboActivity extends AppCompatActivity {
 
     ActivityResultLauncher<Intent> onUpdateTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+        if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
 
         if (TagMo.ACTION_UPDATE_TAG.equals(result.getData().getAction())) {
             this.tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
@@ -228,7 +228,7 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @Click(R.id.imageAmiibo)
     void onImageClicked() {
-        if (this.tagData != null && this.tagData.length > 0) {
+        if (null != this.tagData  && this.tagData.length > 0) {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
@@ -309,7 +309,7 @@ public class AmiiboActivity extends AppCompatActivity {
         // String character = "";
         String amiiboImageUrl;
 
-        boolean available = this.tagData != null && this.tagData.length > 0;
+        boolean available = null != this.tagData  && this.tagData.length > 0;
         if (available) {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(this.tagData);
@@ -332,23 +332,23 @@ public class AmiiboActivity extends AppCompatActivity {
             amiiboImageUrl = null;
         } else {
             Amiibo amiibo = null;
-            if (this.amiiboManager != null) {
+            if (null != this.amiiboManager ) {
                 amiibo = amiiboManager.amiibos.get(amiiboId);
-                if (amiibo == null)
+                if (null == amiibo)
                     amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
             }
-            if (amiibo != null) {
+            if (null != amiibo ) {
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
-                if (amiibo.name != null)
+                if (null != amiibo.name )
                     amiiboName = amiibo.name;
-                if (amiibo.getAmiiboSeries() != null)
+                if (null != amiibo.getAmiiboSeries() )
                     amiiboSeries = amiibo.getAmiiboSeries().name;
-                if (amiibo.getAmiiboType() != null)
+                if (null != amiibo.getAmiiboType() )
                     amiiboType = amiibo.getAmiiboType().name;
-                if (amiibo.getGameSeries() != null)
+                if (null != amiibo.getGameSeries() )
                     gameSeries = amiibo.getGameSeries().name;
-                // if (amiibo.getCharacter() != null)
+                // if (null != amiibo.getCharacter() )
                 //     character = amiibo.getCharacter().name;
             } else {
                 tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
@@ -356,7 +356,7 @@ public class AmiiboActivity extends AppCompatActivity {
             }
         }
 
-        boolean hasTagInfo = tagInfo != null;
+        boolean hasTagInfo = null != tagInfo ;
         if (hasTagInfo) {
             setAmiiboInfoText(txtError, tagInfo, false);
             amiiboInfo.setVisibility(View.GONE);
@@ -371,10 +371,10 @@ public class AmiiboActivity extends AppCompatActivity {
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo);
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
-        if (imageAmiibo != null) {
+        if (null != imageAmiibo ) {
             imageAmiibo.setVisibility(View.GONE);
             Glide.with(this).clear(amiiboImageTarget);
-            if (amiiboImageUrl != null) {
+            if (null != amiiboImageUrl ) {
                 Glide.with(this)
                         .setDefaultRequestOptions(onlyRetrieveFromCache())
                         .asBitmap()
@@ -408,7 +408,7 @@ public class AmiiboActivity extends AppCompatActivity {
                     TagMo.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+            return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
                     || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
         } else {
             return new RequestOptions().onlyRetrieveFromCache(false);

@@ -103,7 +103,7 @@ public class TagMo extends Application {
         File[] logs = Storage.getDownloadDir("TagMo",
                 "Logcat").listFiles((dir, name) ->
                 name.toLowerCase(Locale.ROOT).startsWith("crash_logcat"));
-        if (logs != null && logs.length > 0) {
+        if (null != logs && logs.length > 0) {
             for (File file : logs) {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
@@ -130,7 +130,7 @@ public class TagMo extends Application {
     }
 
     public static Context getContext() {
-        if (mPrefs != null && mPrefs.get().enableScaling().get())
+        if (null != mPrefs && mPrefs.get().enableScaling().get())
             return ScaledContext.wrap(mContext.get());
         else
             return ScaledContext.restore(mContext.get());
@@ -145,7 +145,7 @@ public class TagMo extends Application {
     }
 
     static void setScaledTheme(Context context, int theme) {
-        if (mPrefs != null && mPrefs.get().enableScaling().get())
+        if (null != mPrefs && mPrefs.get().enableScaling().get())
             ScaledContext.wrap(context).setTheme(theme);
         else
             ScaledContext.restore(context).setTheme(theme);

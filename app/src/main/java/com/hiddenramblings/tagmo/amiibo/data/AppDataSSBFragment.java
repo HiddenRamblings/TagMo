@@ -71,14 +71,14 @@ public class AppDataSSBFragment extends AppDataFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
+        if (null != getArguments()) {
             try {
                 appData = new AppDataSSB(getArguments().getByteArray("app_data"));
             } catch (IOException e) {
                 Debug.Log(e);
                 return;
             }
-            if (savedInstanceState == null) {
+            if (null == savedInstanceState) {
                 initialAppDataInitialized = getArguments().getBoolean("app_data_init");
             }
         }
@@ -376,7 +376,7 @@ public class AppDataSSBFragment extends AppDataFragment {
 
     @Override
     public void onAppDataChecked(boolean enabled) {
-        if (spnAppearance == null)
+        if (null == spnAppearance)
             return;
 
         spnAppearance.setEnabled(enabled);
@@ -412,7 +412,7 @@ public class AppDataSSBFragment extends AppDataFragment {
             }
 
             //level is a granular value as such we don't want to overwrite it in case its halfway through a level
-            if (oldLevel == null || level != oldLevel) {
+            if (null == oldLevel  || level != oldLevel) {
                 appData.setLevel(level);
             }
         } catch (NumberFormatException e) {

@@ -209,6 +209,7 @@ public class BrowserActivity extends AppCompatActivity implements
     MenuItem menuLogcat;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
+    private SettingsFragment settingsFragment;
     private KeyManager keyManager;
     private AmiiboFile clickedAmiibo = null;
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -224,7 +225,7 @@ public class BrowserActivity extends AppCompatActivity implements
         keyManager = new KeyManager(this);
 
         Intent intent = getIntent();
-        if (intent != null) {
+        if (null != intent ) {
             if (getComponentName().equals(TagMo.NFCIntentFilter)) {
                 Intent browser = new Intent(this, BrowserActivity_.class);
                 browser.setAction(intent.getAction());
@@ -236,7 +237,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         File[] files = getFilesDir().listFiles((dir, name) ->
                 name.toLowerCase(Locale.ROOT).endsWith(".apk"));
-        if (files != null && files.length > 0) {
+        if (null != files  && files.length > 0) {
             for (File file : files) {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
@@ -299,7 +300,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         });
 
-        if (this.settings == null) {
+        if (null == this.settings) {
             this.settings = new BrowserSettings().initialize();
         } else {
             this.onFilterGameSeriesChanged();
@@ -348,10 +349,10 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         this.onRootFolderChanged(false);
 
-        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+        if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
         if (!TagMo.ACTION_DELETE_AMIIBO.equals(result.getData().getAction())) return;
 
-        if (clickedAmiibo.getFilePath() != null) {
+        if (null != clickedAmiibo.getFilePath() ) {
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.warn_delete_file, Storage.getRelativePath(
                             clickedAmiibo.getFilePath(), TagMo.getPrefs().preferEmulated().get())))
@@ -373,7 +374,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+        if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
 
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
@@ -403,7 +404,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+        if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
 
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
@@ -431,7 +432,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<Intent> onValidateActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
+        if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
 
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
@@ -457,7 +458,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 if ("mPopup".equals(field.getName())) {
                     field.setAccessible(true);
                     Object menuPopupHelper = field.get(popup);
-                    if (menuPopupHelper != null) {
+                    if (null != menuPopupHelper) {
                         Method setForceIcons = Class.forName(menuPopupHelper.getClass().getName())
                                 .getMethod("setForceShowIcon", boolean.class);
                         setForceIcons.invoke(menuPopupHelper, true);
@@ -613,7 +614,7 @@ public class BrowserActivity extends AppCompatActivity implements
         File[] logs = Storage.getDownloadDir("TagMo",
                 "Logcat").listFiles((dir, name) ->
                 name.toLowerCase(Locale.ROOT).startsWith("tagmo_logcat"));
-        if (logs != null && logs.length > 0) {
+        if (null != logs && logs.length > 0) {
             for (File file : logs) {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
@@ -622,7 +623,7 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             Uri uri = Debug.processLogcat(this, "tagmo_logcat");
             String path = DocumentsUri.getPath(this, uri);
-            String output = path != null ? Storage.getRelativePath(new File(path),
+            String output = null != path ? Storage.getRelativePath(new File(path),
                     TagMo.getPrefs().preferEmulated().get()) : uri.getPath();
             new Toasty(this).Long(getString(R.string.wrote_logcat, output));
             startActivity(TagMo.getIntent(new Intent(this,
@@ -662,7 +663,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private int getQueryCount(String queryText) {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (amiiboManager == null)
+        if (null == amiiboManager)
             return 0;
         Set<Long> items = new HashSet<>();
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
@@ -689,7 +690,7 @@ public class BrowserActivity extends AppCompatActivity implements
             switch (filterType) {
                 case GAME_SERIES:
                     GameSeries gameSeries = amiibo.getGameSeries();
-                    if (gameSeries != null &&
+                    if (null != gameSeries &&
                             Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
                                     settings.getCharacterFilter()) &&
                             Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
@@ -703,7 +704,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     break;
                 case CHARACTER:
                     Character character = amiibo.getCharacter();
-                    if (character != null &&
+                    if (null != character &&
                             Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
                                     settings.getGameSeriesFilter()) &&
                             Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
@@ -717,7 +718,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     break;
                 case AMIIBO_SERIES:
                     AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
-                    if (amiiboSeries != null &&
+                    if (null != amiiboSeries &&
                             Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
                                     settings.getGameSeriesFilter()) &&
                             Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
@@ -731,7 +732,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     break;
                 case AMIIBO_TYPE:
                     AmiiboType amiiboType = amiibo.getAmiiboType();
-                    if (amiiboType != null &&
+                    if (null != amiiboType &&
                             Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
                                     settings.getGameSeriesFilter()) &&
                             Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
@@ -764,7 +765,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 continue;
 
             GameSeries gameSeries = amiibo.getGameSeries();
-            if (gameSeries != null &&
+            if (null != gameSeries &&
                     Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
                             settings.getCharacterFilter()) &&
                     Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
@@ -815,7 +816,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 continue;
 
             Character character = amiibo.getCharacter();
-            if (character != null &&
+            if (null != character &&
                     Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
                             settings.getGameSeriesFilter()) &&
                     Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
@@ -866,7 +867,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 continue;
 
             AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
-            if (amiiboSeries != null &&
+            if (null != amiiboSeries &&
                     Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
                             settings.getGameSeriesFilter()) &&
                     Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
@@ -917,7 +918,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 continue;
 
             AmiiboType amiiboType = amiibo.getAmiiboType();
-            if (amiiboType != null &&
+            if (null != amiiboType &&
                     Amiibo.matchesGameSeriesFilter(amiibo.getGameSeries(),
                             settings.getGameSeriesFilter()) &&
                     Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
@@ -961,10 +962,11 @@ public class BrowserActivity extends AppCompatActivity implements
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         if (!preferences.isShown()) {
             preferences.setVisibility(View.VISIBLE);
-            SettingsFragment fragment = new SettingsFragment_();
+            if (null == settingsFragment || settingsFragment.isDetached())
+                settingsFragment = new SettingsFragment_();
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.preferences, fragment)
+                    .replace(R.id.preferences, settingsFragment)
                     .commit();
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
@@ -1046,7 +1048,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void openAmiiboViewer(AmiiboFile amiiboFile) {
         Bundle args = new Bundle();
         try {
-            byte[] data = amiiboFile.getData() != null ? amiiboFile.getData()
+            byte[] data = null != amiiboFile.getData() ? amiiboFile.getData()
                         : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
             args.putByteArray(TagMo.EXTRA_TAG_DATA, data);
         } catch (Exception e) {
@@ -1204,7 +1206,7 @@ public class BrowserActivity extends AppCompatActivity implements
             Debug.Log(e);
         }
 
-        if (isMaster && lastCommit != null && downloadUrl != null) {
+        if (isMaster && null != lastCommit && null != downloadUrl) {
             String finalLastCommit = lastCommit;
             String finalDownloadUrl = downloadUrl;
             new JSONExecutor(Website.TAGMO_GIT_API + "experimental")
@@ -1227,7 +1229,7 @@ public class BrowserActivity extends AppCompatActivity implements
         boolean isMaster = TagMo.getPrefs().stableChannel().get();
         new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
                 ? "master" : "experimental")).setResultListener(result -> {
-            if (result != null) parseUpdateJSON(result, isMaster);
+            if (null != result) parseUpdateJSON(result, isMaster);
         });
     }
 
@@ -1364,7 +1366,7 @@ public class BrowserActivity extends AppCompatActivity implements
         DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
 
         // List all existing files inside picked directory
-        if (pickedDir != null) {
+        if (null != pickedDir) {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiiboDocuments(keyManager, pickedDir, this.settings.isRecursiveEnabled());
             this.runOnUiThread(() -> {
@@ -1376,7 +1378,7 @@ public class BrowserActivity extends AppCompatActivity implements
 //            // Create a new file and write into it
 //            DocumentFile newFile = pickedDir.createFile(getResources().getStringArray(
 //                    R.array.mimetype_bin)[0], fileName + ".bin");
-//            if (newFile != null) {
+//            if (null != newFile) {
 //                try (OutputStream outputStream = getContentResolver()
 //                        .openOutputStream(newFile.getUri())) {
 //                    outputStream.write(tagData);
@@ -1532,7 +1534,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     void onRootFolderChanged(boolean indicator) {
-        if (this.settings != null) {
+        if (null != this.settings) {
             File rootFolder = this.settings.getBrowserRootFolder();
             if (!keyManager.isKeyMissing()) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
@@ -1664,7 +1666,7 @@ public class BrowserActivity extends AppCompatActivity implements
         int size = settings.getAmiiboFiles().size();
         if (size <= 0) return;
         currentFolderView.setGravity(Gravity.CENTER);
-        if (settings.getAmiiboManager() != null) {
+        if (null != settings.getAmiiboManager()) {
             int count = 0;
             if (!settings.getQuery().isEmpty()) {
                 int[] stats = getAdapterStats();
@@ -1732,6 +1734,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .buildTickerBar(getString(R.string.keys_not_found), Snackbar.LENGTH_INDEFINITE);
         setupBar.setAction(R.string.setup, v -> {
             openSettings();
+            settingsFragment.onKeysClicked();
             setupBar.dismiss();
         });
         setupBar.show();
@@ -1774,7 +1777,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void locateKeyFilesTask() {
         File[] files = Storage.getDownloadDir(null)
                 .listFiles((dir, name) -> keyNameMatcher(name));
-        if (files != null && files.length > 0) {
+        if (null != files && files.length > 0) {
             for (File file : files) {
                 try {
                     this.keyManager.loadKey(file);
@@ -1884,7 +1887,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void moveDir(File directory, String destination) {
         File output = Storage.getDownloadDir("TagMo", destination);
         File[] files = directory.listFiles();
-        if (files != null && files.length > 0) {
+        if (null != files && files.length > 0) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     new File(output, file.getName());
@@ -1978,12 +1981,12 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (Exception e) {
             Debug.Log(e);
             String error = e.getMessage();
-            error = e.getCause() != null ? error + "\n" + e.getCause().toString() : error;
-            if (error != null && TagMo.getPrefs().enableEliteSupport().get()) {
+            error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
+            if (null != error && TagMo.getPrefs().enableEliteSupport().get()) {
                 if (e instanceof android.nfc.TagLostException) {
                     new Toasty(this).Short(R.string.speed_scan);
                     try {
-                        if (mifare != null) mifare.close();
+                        if (null != mifare) mifare.close();
                     } catch (IOException ex) {
                         Debug.Log(ex);
                     }

@@ -32,12 +32,12 @@ public class NTAG215 implements TagTechnology {
 
     public static NTAG215 get(Tag tag) {
         NfcA nfcA = NfcA.get(tag);
-        if (nfcA != null) {
+        if (null != nfcA) {
             if (nfcA.getSak() == 0x00 && tag.getId()[0] == NXP_MANUFACTURER_ID)
                 return new NTAG215(nfcA);
         }
         MifareUltralight mifare = MifareUltralight.get(tag);
-        if (mifare != null)
+        if (null != mifare)
             return new NTAG215(mifare);
 
         return null;
@@ -45,9 +45,9 @@ public class NTAG215 implements TagTechnology {
 
     @SuppressWarnings("unused")
     public int getTimeout() {
-        if (m_mifare != null)
+        if (null != m_mifare)
             return m_mifare.getTimeout();
-        if (m_nfcA != null) {
+        if (null != m_nfcA) {
             return m_nfcA.getTimeout();
         }
         return 0;
@@ -55,17 +55,17 @@ public class NTAG215 implements TagTechnology {
 
     @SuppressWarnings("unused")
     public void setTimeout(int timeout) {
-        if (m_mifare != null)
+        if (null != m_mifare)
             m_mifare.setTimeout(timeout);
-        if (m_nfcA != null) {
+        if (null != m_nfcA) {
             m_nfcA.setTimeout(timeout);
         }
     }
 
     public byte[] readPages(int pageOffset) throws IOException {
-        if (m_mifare != null)
+        if (null != m_mifare)
             return m_mifare.readPages(pageOffset);
-        else if (m_nfcA != null) {
+        else if (null != m_nfcA) {
             validatePageIndex(pageOffset);
             //checkConnected();
 
@@ -79,9 +79,9 @@ public class NTAG215 implements TagTechnology {
     }
 
     public void writePage(int pageOffset, byte[] data) throws IOException {
-        if (m_mifare != null) {
+        if (null != m_mifare) {
             m_mifare.writePage(pageOffset, data);
-        } else if (m_nfcA != null) {
+        } else if (null != m_nfcA) {
             validatePageIndex(pageOffset);
             //m_nfcA.checkConnected();
 
@@ -96,9 +96,9 @@ public class NTAG215 implements TagTechnology {
 
     public byte[] transceive(byte[] data) {
         try {
-            if (m_mifare != null) {
+            if (null != m_mifare) {
                 return m_mifare.transceive(data);
-            } else if (m_nfcA != null) {
+            } else if (null != m_nfcA) {
                 return m_nfcA.transceive(data);
             }
         } catch (IOException e) {
@@ -119,25 +119,25 @@ public class NTAG215 implements TagTechnology {
     }
 
     public void connect() throws IOException {
-        if (m_mifare != null) {
+        if (null != m_mifare) {
             m_mifare.connect();
-        } else if (m_nfcA != null) {
+        } else if (null != m_nfcA) {
             m_nfcA.connect();
         }
     }
 
     public void close() throws IOException {
-        if (m_mifare != null) {
+        if (null != m_mifare) {
             m_mifare.close();
-        } else if (m_nfcA != null) {
+        } else if (null != m_nfcA) {
             m_nfcA.close();
         }
     }
 
     public Tag getTag() {
-        if (m_mifare != null) {
+        if (null != m_mifare) {
             return m_mifare.getTag();
-        } else if (m_nfcA != null) {
+        } else if (null != m_nfcA) {
             return m_nfcA.getTag();
         }
         return null;
@@ -256,7 +256,7 @@ public class NTAG215 implements TagTechnology {
                 endSnippet = endAddr;
             }
             byte[] respSnippet = method.doFastRead(startSnippet, endSnippet, bank);
-            if (respSnippet == null) {
+            if (null == respSnippet) {
                 return null;
             }
             if (respSnippet.length != ((endSnippet - startSnippet) + 1) * 4) {
@@ -285,7 +285,7 @@ public class NTAG215 implements TagTechnology {
     }
 
     public boolean amiiboWrite(int addr, int bank, byte[] data) {
-        if (data != null && data.length % 4 == 0) {
+        if (null != data && data.length % 4 == 0) {
             return internalWrite((startAddr, bank1, data1) -> {
                 byte[] req = new byte[7];
                 req[0] = (byte) NfcByte.N2_WRITE;
@@ -327,7 +327,7 @@ public class NTAG215 implements TagTechnology {
     }
 
     public boolean amiiboFastWrite(int addr, int bank, byte[] data) {
-        if (data == null) {
+        if (null == data) {
             return false;
         }
         return internalFastWrite((startAddr, bank1, data1) -> {

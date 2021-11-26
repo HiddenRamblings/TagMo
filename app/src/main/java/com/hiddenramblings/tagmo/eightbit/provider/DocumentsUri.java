@@ -147,7 +147,7 @@ public class DocumentsUri {
         String column = "_data";
         Cursor cursor = context.getContentResolver().query(uri, new String[] { column },
                 selection, selectionArgs, null);
-        if (cursor != null) {
+        if (null != cursor) {
             if (cursor.moveToFirst()) {
                 final int column_index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(column_index);

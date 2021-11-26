@@ -21,7 +21,7 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
 
         File filePath1 = amiiboFile1.getFilePath();
         File filePath2 = amiiboFile2.getFilePath();
-        if (sort == SORT.FILE_PATH.getValue() && !(filePath1 == null && filePath2 == null))
+        if (sort == SORT.FILE_PATH.getValue() && !(null == filePath1  && null == filePath2 ))
             value = compareFilePath(filePath1, filePath2);
 
         long amiiboId1 = amiiboFile1.getId();
@@ -30,15 +30,15 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
             value = compareAmiiboId(amiiboId1, amiiboId2);
         } else if (value == 0) {
             AmiiboManager amiiboManager = settings.getAmiiboManager();
-            if (amiiboManager != null) {
+            if (null != amiiboManager ) {
                 Amiibo amiibo1 = amiiboManager.amiibos.get(amiiboId1);
                 Amiibo amiibo2 = amiiboManager.amiibos.get(amiiboId2);
-                if (amiibo1 == null && amiibo2 == null)
+                if (null == amiibo1  && null == amiibo2 )
                     //noinspection all
                     value = 0;
-                else if (amiibo1 == null)
+                else if (null == amiibo1 )
                     value = 1;
-                else if (amiibo2 == null)
+                else if (null == amiibo2 )
                     value = -1;
                 else if (sort == SORT.NAME.getValue()) {
                     value = compareAmiiboName(amiibo1, amiibo2);
@@ -51,7 +51,7 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
                 } else if (sort == SORT.CHARACTER.getValue()) {
                     value = compareCharacter(amiibo1, amiibo2);
                 }
-                if (value == 0 && amiibo1 != null)
+                if (value == 0 && null != amiibo1 )
                     value = amiibo1.compareTo(amiibo2);
             }
             if (value == 0)
@@ -65,9 +65,9 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
     }
 
     int compareFilePath(File filePath1, File filePath2) {
-        if (filePath1 == null) {
+        if (null == filePath1 ) {
             return 1;
-        } else if (filePath2 == null) {
+        } else if (null == filePath2 ) {
             return -1;
         } else {
             return filePath1.compareTo(filePath2);
@@ -81,12 +81,12 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
     int compareAmiiboName(Amiibo amiibo1, Amiibo amiibo2) {
         String name1 = amiibo1.name;
         String name2 = amiibo2.name;
-        if (name1 == null && name2 == null) {
+        if (null == name1  && null == name2 ) {
             return 0;
         }
-        if (name1 == null) {
+        if (null == name1 ) {
             return 1;
-        } else if (name2 == null) {
+        } else if (null == name2 ) {
             return -1;
         }
         return name1.compareTo(name2);
@@ -95,12 +95,12 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
     int compareAmiiboSeries(Amiibo amiibo1, Amiibo amiibo2) {
         AmiiboSeries amiiboSeries1 = amiibo1.getAmiiboSeries();
         AmiiboSeries amiiboSeries2 = amiibo2.getAmiiboSeries();
-        if (amiiboSeries1 == null && amiiboSeries2 == null ) {
+        if (null == amiiboSeries1  && null == amiiboSeries2  ) {
             return 0;
         }
-        if (amiiboSeries1 == null) {
+        if (null == amiiboSeries1 ) {
             return 1;
-        } else if (amiiboSeries2 == null) {
+        } else if (null == amiiboSeries2) {
             return -1;
         }
         return amiiboSeries1.compareTo(amiiboSeries2);
@@ -109,12 +109,12 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
     int compareAmiiboType(Amiibo amiibo1, Amiibo amiibo2) {
         AmiiboType amiiboType1 = amiibo1.getAmiiboType();
         AmiiboType amiiboType2 = amiibo2.getAmiiboType();
-        if (amiiboType1 == null && amiiboType2 == null ) {
+        if (null == amiiboType1 && null == amiiboType2 ) {
             return 0;
         }
-        if (amiiboType1 == null) {
+        if (null == amiiboType1) {
             return 1;
-        } else if (amiiboType2 == null) {
+        } else if (null == amiiboType2) {
             return -1;
         }
         return amiiboType1.compareTo(amiiboType2);
@@ -123,12 +123,12 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
     int compareGameSeries(Amiibo amiibo1, Amiibo amiibo2) {
         GameSeries gameSeries1 = amiibo1.getGameSeries();
         GameSeries gameSeries2 = amiibo2.getGameSeries();
-        if (gameSeries1 == null && gameSeries2 == null) {
+        if (null == gameSeries1 && null == gameSeries2) {
             return 0;
         }
-        if (gameSeries1 == null) {
+        if (null == gameSeries1) {
             return 1;
-        } else if (gameSeries2 == null) {
+        } else if (null == gameSeries2) {
             return -1;
         }
         return gameSeries1.compareTo(gameSeries2);
@@ -137,12 +137,12 @@ public class AmiiboComparator implements Comparator<AmiiboFile> {
     int compareCharacter(Amiibo amiibo1, Amiibo amiibo2) {
         Character character1 = amiibo1.getCharacter();
         Character character2 = amiibo2.getCharacter();
-        if (character1 == null && character2 == null) {
+        if (null == character1 && null == character2) {
             return 0;
         }
-        if (character1 == null) {
+        if (null == character1) {
             return 1;
-        } else if (character2 == null) {
+        } else if (null == character2) {
             return -1;
         }
         return character1.compareTo(character2);

@@ -130,7 +130,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
             new JSONExecutor(Website.LASTUPDATED).setResultListener(result -> {
-                if (result != null) parseUpdateJSON(result);
+                if (null != result) parseUpdateJSON(result);
             });
         }
     }
@@ -159,7 +159,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     @PreferenceClick(R.string.settings_import_keys)
-    void onKeysClicked() {
+    public void onKeysClicked() {
         showFileChooser(getString(R.string.decryption_keys), RESULT_KEYS);
     }
 
@@ -230,7 +230,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_export_info)
     void onExportInfoClicked() {
-        if (this.amiiboManager == null) {
+        if (null == this.amiiboManager) {
             new Toasty(requireActivity()).Short(R.string.amiibo_info_not_loaded);
             return;
         }
@@ -248,7 +248,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     Storage.getRelativePath(file, internal)));
             return;
         } finally {
-            if (fileOutputStream != null) {
+            if (null != fileOutputStream) {
                 try {
                     fileOutputStream.close();
                 } catch (IOException e) {
@@ -323,7 +323,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         text1.setText(character.name);
 
                         GameSeries gameSeries = character.getGameSeries();
-                        text2.setText(gameSeries == null ? "" : gameSeries.name);
+                        text2.setText(null == gameSeries ? "" : gameSeries.name);
 
                         return view;
                     }
@@ -533,7 +533,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     void updateAmiiboStats() {
-        boolean hasAmiibo = amiiboManager != null;
+        boolean hasAmiibo = null != amiiboManager;
         this.amiiboStats.setTitle(getString(R.string.number_amiibo,
                 hasAmiibo ? amiiboManager.amiibos.size() : 0));
         this.gameSeriesStats.setTitle(getString(R.string.number_game,
@@ -573,11 +573,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 try {
                     reader = new BufferedReader(new InputStreamReader(inputStream));
                     String line;
-                    while ((line = reader.readLine()) != null) {
+                    while (null != (line = reader.readLine())) {
                         response.append(line);
                     }
                 } finally {
-                    if (reader != null) {
+                    if (null != reader) {
                         try {
                             reader.close();
                         } catch (IOException e) {
@@ -609,7 +609,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 
-        validateKeys(result.getData().getData());
+                if (null != result.getData().getClipData()) {
+                    for (int i = 0; i < result.getData().getClipData().getItemCount(); i++) {
+                        validateKeys(result.getData().getClipData().getItemAt(i).getUri());
+                    }
+                } else {
+                    validateKeys(result.getData().getData());
+                }
     });
 
     ActivityResultLauncher<Intent> onImportAmiiboDatabase = registerForActivityResult(
@@ -629,6 +635,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         switch(resultCode) {
             case RESULT_KEYS:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         intent.putExtra(Intent.EXTRA_MIME_TYPES,

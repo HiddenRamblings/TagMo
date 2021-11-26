@@ -117,7 +117,7 @@ public class Storage extends Environment {
 
     private static File setFileMounts() {
         HashSet<String> extStorage = getExternalMounts();
-        if (extStorage != null && !extStorage.isEmpty()) {
+        if (null != extStorage && !extStorage.isEmpty()) {
             for (String sd : extStorage) {
                 // Workaround for WRITE_MEDIA_STORAGE
                 String sdCardPath = sd.replace("mnt/media_rw", "storage");
@@ -144,15 +144,15 @@ public class Storage extends Environment {
             // Force a possible failure to prevent crash later
             Log.d("EMULATED", emulated.getAbsolutePath());
             Log.d("PHYSICAL", physical.getAbsolutePath());
-            if (physical != null && physical != emulated)
+            if (null != physical && physical != emulated)
                 isPhysicalAvailable = true;
         } catch (NullPointerException e) {
             if (internal) return getExternalStorageDirectory();
             return storageFile = setFileMounts();
         }
         if (internal)
-            return storageFile = emulated != null ? emulated : physical;
-        return storageFile = physical != null ? physical : emulated;
+            return storageFile = null != emulated ? emulated : physical;
+        return storageFile = null != physical ? physical : emulated;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -161,21 +161,21 @@ public class Storage extends Environment {
         File emulated;
         File physical;
         try {
-            emulated = storage[0] != null && storage[0].canRead() ? getRootPath(storage[0]) : null;
+            emulated = null != storage[0] && storage[0].canRead() ? getRootPath(storage[0]) : null;
         } catch (IllegalArgumentException | NullPointerException e) {
             emulated = null;
         }
         try {
-            physical = storage.length > 1 && storage[1] != null && storage[1].canRead()
+            physical = storage.length > 1 && null != storage[1] && storage[1].canRead()
                     && !isExternalStorageEmulated(storage[1]) ? getRootPath(storage[1]) : null;
         } catch (IllegalArgumentException | NullPointerException e) {
             physical = null;
         }
-        if (physical != null && physical != emulated)
+        if (null != physical && physical != emulated)
             isPhysicalAvailable = true;
         if (internal)
-            return storageFile = emulated != null ? emulated : setFileGeneric(internal);
-        return physical != null ? physical : emulated != null ? emulated : setFileGeneric(internal);
+            return storageFile = null != emulated ? emulated : setFileGeneric(internal);
+        return null != physical ? physical : null != emulated ? emulated : setFileGeneric(internal);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
@@ -192,14 +192,14 @@ public class Storage extends Environment {
             // Force a possible failure to prevent crash later
             Log.d("EMULATED", emulated.getAbsolutePath());
             Log.d("PHYSICAL", physical.getAbsolutePath());
-            if (physical != null && physical != emulated)
+            if (null != physical && physical != emulated)
                 isPhysicalAvailable = true;
         } catch (IllegalArgumentException | NullPointerException e) {
             return setFileLollipop(internal);
         }
         if (internal)
-            return storageFile = emulated != null ? emulated : physical;
-        return storageFile = physical != null ? physical : emulated;
+            return storageFile = null != emulated ? emulated : physical;
+        return storageFile = null != physical ? physical : emulated;
     }
 
     private static File setFile(boolean internal) {
@@ -213,7 +213,7 @@ public class Storage extends Environment {
     }
 
     public static File getFile(boolean internal) {
-        return storageFile != null && internal == isInternalPreferred
+        return null != storageFile && internal == isInternalPreferred
                 ? storageFile : setFile(internal);
     }
 
@@ -237,9 +237,9 @@ public class Storage extends Environment {
     public static File getDownloadDir(String directory, String subfolder) {
         File downloads = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
-        if (directory != null && subfolder != null)
+        if (null != directory && null != subfolder)
             return new File(downloads, directory + File.separator + subfolder);
-        else if (directory != null)
+        else if (null != directory)
             return new File(downloads, directory);
         else
             return downloads;

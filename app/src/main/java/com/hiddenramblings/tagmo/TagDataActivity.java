@@ -254,7 +254,7 @@ public class TagDataActivity extends AppCompatActivity {
         // String character = "";
         final String amiiboImageUrl;
 
-        if (this.tagData == null) {
+        if (null == this.tagData) {
             tagInfo = getString(R.string.no_tag_loaded);
             amiiboImageUrl = null;
         } else {
@@ -270,23 +270,23 @@ public class TagDataActivity extends AppCompatActivity {
                 amiiboImageUrl = null;
             } else {
                 Amiibo amiibo = null;
-                if (this.amiiboManager != null) {
+                if (null != this.amiiboManager) {
                     amiibo = amiiboManager.amiibos.get(amiiboId);
-                    if (amiibo == null)
+                    if (null == amiibo)
                         amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
                 }
-                if (amiibo != null) {
+                if (null != amiibo) {
                     amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                     amiiboImageUrl = amiibo.getImageUrl();
-                    if (amiibo.name != null)
+                    if (null != amiibo.name)
                         amiiboName = amiibo.name;
-                    if (amiibo.getAmiiboSeries() != null)
+                    if (null != amiibo.getAmiiboSeries())
                         amiiboSeries = amiibo.getAmiiboSeries().name;
-                    if (amiibo.getAmiiboType() != null)
+                    if (null != amiibo.getAmiiboType())
                         amiiboType = amiibo.getAmiiboType().name;
-                    if (amiibo.getGameSeries() != null)
+                    if (null != amiibo.getGameSeries())
                         gameSeries = amiibo.getGameSeries().name;
-                    // if (amiibo.getCharacter() != null)
+                    // if (null != amiibo.getCharacter())
                     //     character = amiibo.getCharacter().name;
                 } else {
                     tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
@@ -295,22 +295,23 @@ public class TagDataActivity extends AppCompatActivity {
             }
         }
 
-        if (tagInfo == null) {
+        if (null == tagInfo) {
             txtError.setVisibility(View.GONE);
         } else {
             setAmiiboInfoText(txtError, tagInfo, false);
         }
-        setAmiiboInfoText(txtName, amiiboName, tagInfo != null);
-        setAmiiboInfoText(txtTagId, amiiboHexId, tagInfo != null);
-        setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, tagInfo != null);
-        setAmiiboInfoText(txtAmiiboType, amiiboType, tagInfo != null);
-        setAmiiboInfoText(txtGameSeries, gameSeries, tagInfo != null);
-        // setAmiiboInfoText(txtCharacter, character, tagInfo != null);
+        boolean hasTagInfo = null != tagInfo;
+        setAmiiboInfoText(txtName, amiiboName, hasTagInfo);
+        setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo);
+        setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo);
+        setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo);
+        setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo);
+        // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
-        if (imageAmiibo != null) {
+        if (null != imageAmiibo) {
             imageAmiibo.setVisibility(View.GONE);
             Glide.with(this).clear(amiiboImageTarget);
-            if (amiiboImageUrl != null) {
+            if (null != amiiboImageUrl) {
                 Glide.with(this)
                         .setDefaultRequestOptions(onlyRetrieveFromCache())
                         .asBitmap()
@@ -344,7 +345,7 @@ public class TagDataActivity extends AppCompatActivity {
                     TagMo.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+            return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
                     || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
         } else {
             return new RequestOptions().onlyRetrieveFromCache(false);
@@ -375,7 +376,7 @@ public class TagDataActivity extends AppCompatActivity {
 
     AppDataFragment getAppDataFragment() {
         AppDataFragment fragment = (AppDataFragment) getSupportFragmentManager().findFragmentById(R.id.appData);
-        if (fragment != null && fragment.isDetached()) {
+        if (null != fragment && fragment.isDetached()) {
             fragment = null;
         }
 
@@ -461,7 +462,7 @@ public class TagDataActivity extends AppCompatActivity {
             }
 
             AppDataFragment fragment = getAppDataFragment();
-            if (isAppDataInitialized && fragment != null) {
+            if (isAppDataInitialized && null != fragment) {
                 try {
                     newAmiiboData.setAppData(fragment.onAppDataSaved());
                 } catch (Exception e) {
@@ -515,7 +516,7 @@ public class TagDataActivity extends AppCompatActivity {
 
     void updateAppDataEnabled(boolean isAppDataInitialized) {
         AppDataFragment fragment = getAppDataFragment();
-        if (fragment != null) {
+        if (null != fragment) {
             fragment.onAppDataChecked(isUserDataInitialized && isAppDataInitialized);
         }
     }
@@ -695,7 +696,7 @@ public class TagDataActivity extends AppCompatActivity {
     }
 
     void updateAppIdView() {
-        if (appId != null) {
+        if (null != appId) {
             txtAppId.setText(String.format("%08X", appId));
         } else {
             txtAppId.setText("");
@@ -704,7 +705,7 @@ public class TagDataActivity extends AppCompatActivity {
 
     int parseAppId() throws Exception {
         String text = txtAppId.getUnMaskedText();
-        if (text != null) {
+        if (null != text) {
             text = text.trim();
             if (text.length() != 8) {
                 throw new IOException(getString(R.string.error_length));
@@ -748,7 +749,7 @@ public class TagDataActivity extends AppCompatActivity {
             //noinspection unchecked
             HashMap.Entry<Integer, String> item =
                     (HashMap.Entry<Integer, String>) appIdAdapter.getItem(i);
-            if (item != null && item.getKey().equals(appId)) {
+            if (null != item && item.getKey().equals(appId)) {
                 index = i;
             }
         }
@@ -767,7 +768,7 @@ public class TagDataActivity extends AppCompatActivity {
             }
 
             Object selectedItem = adapterView.getItemAtPosition(i);
-            if (selectedItem != null) {
+            if (null != selectedItem) {
                 //noinspection unchecked
                 appId = ((HashMap.Entry<Integer, String>) selectedItem).getKey();
             }
@@ -785,10 +786,10 @@ public class TagDataActivity extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
 
         AppDataFragment fragment;
-        if (appId != null) {
+        if (null != appId) {
             String tag = "app_data:" + appId;
             fragment = (AppDataFragment) fm.findFragmentByTag(tag);
-            if (fragment == null) {
+            if (null == fragment) {
                 boolean initialAppDataInitialized = this.initialAppDataInitialized && amiiboData.getAppId() == appId;
                 if (appId == AppDataTPFragment.APP_ID) {
                     fragment = AppDataTPFragment.newInstance(amiiboData.getAppData(), initialAppDataInitialized);
@@ -796,7 +797,7 @@ public class TagDataActivity extends AppCompatActivity {
                     fragment = AppDataSSBFragment.newInstance(amiiboData.getAppData(), initialAppDataInitialized);
                 }
             }
-            if (fragment != null) {
+            if (null != fragment) {
                 fm.beginTransaction()
                         .replace(R.id.appData, fragment, tag)
                         .attach(fragment)
@@ -806,7 +807,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
 
         fragment = (AppDataFragment) fm.findFragmentById(R.id.appData);
-        if (fragment != null) {
+        if (null != fragment) {
             fm.beginTransaction()
                     .detach(fragment)
                     .commit();
@@ -876,7 +877,7 @@ public class TagDataActivity extends AppCompatActivity {
 
         @Override
         public View getDropDownView(int position, View view, ViewGroup parent) {
-            if (view == null) {
+            if (null == view) {
                 view = LayoutInflater
                         .from(parent.getContext())
                         .inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
@@ -887,7 +888,7 @@ public class TagDataActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View view, ViewGroup parent) {
-            if (view == null) {
+            if (null == view) {
                 view = LayoutInflater
                         .from(parent.getContext())
                         .inflate(R.layout.spinner_text, parent, false);
@@ -947,7 +948,7 @@ public class TagDataActivity extends AppCompatActivity {
 
         @Override
         public View getDropDownView(int position, View view, ViewGroup parent) {
-            if (view == null) {
+            if (null == view) {
                 view = LayoutInflater
                         .from(parent.getContext())
                         .inflate(R.layout.spinner_text2, parent, false);
@@ -960,7 +961,7 @@ public class TagDataActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View view, ViewGroup parent) {
-            if (view == null) {
+            if (null == view) {
                 view = LayoutInflater
                         .from(parent.getContext())
                         .inflate(R.layout.spinner_text, parent, false);

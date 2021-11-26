@@ -35,7 +35,7 @@ public class JSONExecutor {
                 StringBuilder responseStrBuilder = new StringBuilder();
 
                 String inputStr;
-                while ((inputStr = streamReader.readLine()) != null)
+                while (null != (inputStr = streamReader.readLine()))
                     responseStrBuilder.append(inputStr);
 
                 listener.onResults(responseStrBuilder.toString());

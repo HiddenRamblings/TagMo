@@ -104,12 +104,12 @@ public class BankListBrowserAdapter
                     TagMo.getContext(), android.R.color.transparent));
         }
         holder.itemView.setOnClickListener(view -> {
-            if (holder.listener != null)
+            if (null != holder.listener)
                 holder.listener.onAmiiboClicked(holder.amiiboItem, position);
         });
-        if (holder.imageAmiibo != null) {
+        if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (holder.listener != null) {
+                if (null != holder.listener) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
                         holder.listener.onAmiiboClicked(holder.amiiboItem, position);
                     else
@@ -118,7 +118,7 @@ public class BankListBrowserAdapter
             });
         }
         holder.itemView.setOnLongClickListener(view -> {
-            if (holder.listener != null)
+            if (null != holder.listener)
                 return holder.listener.onAmiiboLongClicked(holder.amiiboItem, position);
             return false;
         });
@@ -193,21 +193,21 @@ public class BankListBrowserAdapter
             String gameSeries = "";
             // String character = "";
             String amiiboImageUrl = null;
-            boolean isAmiibo = amiibo != null;
+            boolean isAmiibo = null != amiibo;
 
             if (isAmiibo) {
                 this.amiiboItem.bank = getAbsoluteAdapterPosition();
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
-                if (amiibo.name != null)
+                if (null != amiibo.name)
                     amiiboName = amiibo.name;
-                if (amiibo.getAmiiboSeries() != null)
+                if (null != amiibo.getAmiiboSeries())
                     amiiboSeries = amiibo.getAmiiboSeries().name;
-                if (amiibo.getAmiiboType() != null)
+                if (null != amiibo.getAmiiboType())
                     amiiboType = amiibo.getAmiiboType().name;
-                if (amiibo.getGameSeries() != null)
+                if (null != amiibo.getGameSeries())
                     gameSeries = amiibo.getGameSeries().name;
-                // if (amiibo.getCharacter() != null)
+                // if (null != amiibo.getCharacter())
                 //     gameSeries = amiibo.getCharacter().name;
             }
 
@@ -234,13 +234,13 @@ public class BankListBrowserAdapter
                 }
             }
 
-            if (this.imageAmiibo != null) {
+            if (null != this.imageAmiibo) {
                 this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(itemView).clear(target);
                 Glide.with(itemView)
                         .setDefaultRequestOptions(onlyRetrieveFromCache())
                         .asBitmap()
-                        .load(amiiboImageUrl != null ? amiiboImageUrl: R.mipmap.ic_launcher)
+                        .load(null != amiiboImageUrl ? amiiboImageUrl: R.mipmap.ic_launcher)
                         .into(target);
             }
         }

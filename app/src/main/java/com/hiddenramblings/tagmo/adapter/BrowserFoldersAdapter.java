@@ -36,7 +36,7 @@ public class BrowserFoldersAdapter
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
-        if (newBrowserSettings == null || oldBrowserSettings == null) return;
+        if (null == newBrowserSettings  || null == oldBrowserSettings ) return;
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
             this.rootFolder = newBrowserSettings.getBrowserRootFolder();
             this.showUpFolder = showParentFolder();
@@ -87,14 +87,14 @@ public class BrowserFoldersAdapter
 
     public boolean showParentFolder() {
         boolean internal = TagMo.getPrefs().preferEmulated().get();
-        return (rootFolder != null && !Storage.getFile(internal).equals(rootFolder))
+        return (null != rootFolder && !Storage.getFile(internal).equals(rootFolder))
                 && rootFolder.getAbsolutePath().startsWith(Storage.getPath(internal));
     }
 
     @Override
     public int getItemCount() {
         int count;
-        if (this.data == null) {
+        if (null == this.data) {
             count = 0;
         } else {
             count = this.data.size();

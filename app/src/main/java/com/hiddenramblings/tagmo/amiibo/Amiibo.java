@@ -39,8 +39,8 @@ public class Amiibo implements Comparable<Amiibo> {
         this.data = data;
         this.id = TagUtils.amiiboIdFromTag(data);
         Amiibo amiibo = manager.amiibos.get(this.id);
-        this.name = amiibo != null ? amiibo.name : null;
-        this.releaseDates = amiibo != null ? amiibo.releaseDates : new AmiiboReleaseDates(
+        this.name = null != amiibo ? amiibo.name : null;
+        this.releaseDates = null != amiibo ? amiibo.releaseDates : new AmiiboReleaseDates(
                 null, null, null, null);
     }
 
@@ -194,28 +194,28 @@ public class Amiibo implements Comparable<Amiibo> {
     }
 
     public static boolean matchesGameSeriesFilter(GameSeries gameSeries, String gameSeriesFilter) {
-        if (gameSeries != null) {
+        if (null != gameSeries) {
             return gameSeriesFilter.isEmpty() || gameSeries.name.equals(gameSeriesFilter);
         }
         return true;
     }
 
     public static boolean matchesCharacterFilter(Character character, String characterFilter) {
-        if (character != null) {
+        if (null != character) {
             return characterFilter.isEmpty() || character.name.equals(characterFilter);
         }
         return true;
     }
 
     public static boolean matchesAmiiboSeriesFilter(AmiiboSeries amiiboSeries, String amiiboSeriesFilter) {
-        if (amiiboSeries != null) {
+        if (null != amiiboSeries) {
             return amiiboSeriesFilter.isEmpty() || amiiboSeries.name.equals(amiiboSeriesFilter);
         }
         return true;
     }
 
     public static boolean matchesAmiiboTypeFilter(AmiiboType amiiboType, String amiiboTypeFilter) {
-        if (amiiboType != null) {
+        if (null != amiiboType) {
             return amiiboTypeFilter.isEmpty() || amiiboType.name.equals(amiiboTypeFilter);
         }
         return true;

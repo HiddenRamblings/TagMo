@@ -387,7 +387,7 @@ public class BrowserSettings implements Parcelable {
     public static boolean equals(Object o1, Object o2) {
         if (o1 == o2) {
             return true;
-        } else if (o1 == null || o2 == null) {
+        } else if (null == o1  || null == o2 ) {
             return false;
         } else {
             return o1.equals(o2);
@@ -414,15 +414,15 @@ public class BrowserSettings implements Parcelable {
         if (!query.isEmpty()) {
             if (TagUtils.amiiboIdToHex(amiibo.id).toLowerCase().startsWith(query))
                 return true;
-            else if (amiibo.name != null && amiibo.name.toLowerCase().contains(query))
+            else if (null != amiibo.name && amiibo.name.toLowerCase().contains(query))
                 return true;
-            else if (gameSeries != null && gameSeries.name.toLowerCase().contains(query))
+            else if (null != gameSeries && gameSeries.name.toLowerCase().contains(query))
                 return true;
-            else if (character != null && character.name.toLowerCase().contains(query))
+            else if (null != character && character.name.toLowerCase().contains(query))
                 return true;
-            else if (amiiboSeries != null && amiiboSeries.name.toLowerCase().contains(query))
+            else if (null != amiiboSeries && amiiboSeries.name.toLowerCase().contains(query))
                 return true;
-            else return amiiboType != null && amiiboType.name.toLowerCase().contains(query);
+            else return null != amiiboType && amiiboType.name.toLowerCase().contains(query);
         }
         return true;
     }

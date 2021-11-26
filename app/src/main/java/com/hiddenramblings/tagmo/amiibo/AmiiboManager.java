@@ -45,7 +45,7 @@ public class AmiiboManager {
             inputSteam = context.getContentResolver().openInputStream(uri);
             return parse(inputSteam);
         } finally {
-            if (inputSteam != null) {
+            if (null != inputSteam ) {
                 try {
                     inputSteam.close();
                 } catch (IOException ignored) { }
@@ -189,10 +189,10 @@ public class AmiiboManager {
             amiiboJSON.put("name", amiibo.name);
 
             JSONObject releaseJSON = new JSONObject();
-            releaseJSON.put("na", amiibo.releaseDates.northAmerica == null ? null : iso8601.format(amiibo.releaseDates.northAmerica));
-            releaseJSON.put("jp", amiibo.releaseDates.japan == null ? null : iso8601.format(amiibo.releaseDates.japan));
-            releaseJSON.put("eu", amiibo.releaseDates.europe == null ? null : iso8601.format(amiibo.releaseDates.europe));
-            releaseJSON.put("au", amiibo.releaseDates.australia == null ? null : iso8601.format(amiibo.releaseDates.australia));
+            releaseJSON.put("na", null == amiibo.releaseDates.northAmerica  ? null : iso8601.format(amiibo.releaseDates.northAmerica));
+            releaseJSON.put("jp", null == amiibo.releaseDates.japan  ? null : iso8601.format(amiibo.releaseDates.japan));
+            releaseJSON.put("eu", null == amiibo.releaseDates.europe  ? null : iso8601.format(amiibo.releaseDates.europe));
+            releaseJSON.put("au", null == amiibo.releaseDates.australia  ? null : iso8601.format(amiibo.releaseDates.australia));
             amiiboJSON.put("release", releaseJSON);
 
             amiibosJSON.put(String.format("0x%016X", amiibo.id), amiiboJSON);
@@ -250,7 +250,7 @@ public class AmiiboManager {
         } else {
             amiiboManager = null;
         }
-        if (amiiboManager == null) {
+        if (null == amiiboManager ) {
             amiiboManager = getDefaultAmiiboManager();
         }
 
@@ -265,7 +265,7 @@ public class AmiiboManager {
             streamWriter.write(amiiboManager.toJSON().toString());
             outputStream.flush();
         } finally {
-            if (streamWriter != null) {
+            if (null != streamWriter ) {
                 try {
                     streamWriter.close();
                 } catch (IOException e) {
@@ -282,7 +282,7 @@ public class AmiiboManager {
                     AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
             saveDatabase(amiiboManager, outputStream);
         } finally {
-            if (outputStream != null) {
+            if (null != outputStream ) {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
@@ -296,7 +296,7 @@ public class AmiiboManager {
             KeyManager keyManager, File rootFolder, boolean recursiveFiles) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
         File[] files = rootFolder.listFiles();
-        if (files == null || files.length == 0)
+        if (null == files  || files.length == 0)
             return amiiboFiles;
         for (File file : files) {
             if (file.isDirectory() && recursiveFiles) {
@@ -305,7 +305,7 @@ public class AmiiboManager {
                 if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
                         byte[] data = TagUtils.getValidatedFile(keyManager, file);
-                        if (data != null) {
+                        if (null != data ) {
                             amiiboFiles.add(new AmiiboFile(file,
                                     TagUtils.amiiboIdFromTag(data), data));
                         }
@@ -326,11 +326,11 @@ public class AmiiboManager {
         for (DocumentFile file : files) {
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiiboDocuments(keyManager, file, true));
-            } else if (file.getName() != null) {
+            } else if (null != file.getName() ) {
                 if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
                         byte[] data = TagUtils.getValidatedDocument(keyManager, file);
-                        if (data != null) {
+                        if (null != data ) {
                             amiiboFiles.add(new AmiiboFile(file,
                                     TagUtils.amiiboIdFromTag(data), data));
                         }

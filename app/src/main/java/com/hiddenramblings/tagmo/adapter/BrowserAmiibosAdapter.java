@@ -67,7 +67,7 @@ public class BrowserAmiibosAdapter
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,
                                          BrowserSettings oldBrowserSettings) {
-        if (newBrowserSettings == null || oldBrowserSettings == null) return;
+        if (null == newBrowserSettings || null == oldBrowserSettings) return;
         boolean refresh = firstRun ||
                 !BrowserSettings.equals(newBrowserSettings.getQuery(),
                         oldBrowserSettings.getQuery()) ||
@@ -87,7 +87,7 @@ public class BrowserAmiibosAdapter
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
             this.data.clear();
-            if (newBrowserSettings.getAmiiboFiles() != null)
+            if (null != newBrowserSettings.getAmiiboFiles())
                 this.data.addAll(newBrowserSettings.getAmiiboFiles());
             refresh = true;
         }
@@ -144,13 +144,13 @@ public class BrowserAmiibosAdapter
     @Override
     public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
-            if (holder.listener != null) {
+            if (null != holder.listener) {
                 holder.listener.onAmiiboClicked(holder.amiiboFile);
             }
         });
-        if (holder.imageAmiibo != null) {
+        if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (holder.listener != null) {
+                if (null != holder.listener) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
                         holder.listener.onAmiiboClicked(holder.amiiboFile);
                     else
@@ -167,7 +167,7 @@ public class BrowserAmiibosAdapter
 
     @Override
     public AmiiboFilter getFilter() {
-        if (this.filter == null) {
+        if (null == this.filter) {
             this.filter = new AmiiboFilter();
         }
         return this.filter;
@@ -176,16 +176,16 @@ public class BrowserAmiibosAdapter
     class AmiiboFilter extends Filter {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            String query = constraint != null ? constraint.toString() : "";
+            String query = null != constraint ? constraint.toString() : "";
             settings.setQuery(query);
 
             data.clear();
-            if (settings.getAmiiboFiles() != null) {
+            if (null != settings.getAmiiboFiles()) {
                 data.addAll(settings.getAmiiboFiles());
             }
 
             AmiiboManager amiiboManager = settings.getAmiiboManager();
-            if (amiiboManager != null && settings.isShowingMissingFiles()) {
+            if (null != amiiboManager && settings.isShowingMissingFiles()) {
                 HashSet<Long> amiiboIds = new HashSet<>();
                 for (AmiiboFile amiiboFile : data) {
                     amiiboIds.add(amiiboFile.getId());
@@ -203,16 +203,16 @@ public class BrowserAmiibosAdapter
             for (AmiiboFile amiiboFile : data) {
                 boolean add;
 
-                if (amiiboManager != null) {
+                if (null != amiiboManager) {
                     Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
-                    if (amiibo == null)
+                    if (null == amiibo)
                         amiibo = new Amiibo(amiiboManager, amiiboFile.getId(),
                                 null, null);
                     add = settings.amiiboContainsQuery(amiibo, queryText);
                 } else {
                     add = queryText.isEmpty();
                 }
-                if (!add && amiiboFile.getFilePath() != null)
+                if (!add && null != amiiboFile.getFilePath())
                     add = pathContainsQuery(amiiboFile.getFilePath().getAbsolutePath(), queryText);
                 if (add)
                     tempList.add(amiiboFile);
@@ -296,7 +296,7 @@ public class BrowserAmiibosAdapter
         }
 
         private void setPathTextHighlight(File filePath) {
-            if (settings.isShowingMissingFiles() || filePath != null) {
+            if (settings.isShowingMissingFiles() || null != filePath) {
                 TypedValue a = new TypedValue();
                 this.txtPath.getContext().getTheme().resolveAttribute(
                         android.R.attr.textColor, a, true);
@@ -344,23 +344,23 @@ public class BrowserAmiibosAdapter
             long amiiboId = item.getId();
             Amiibo amiibo = null;
             AmiiboManager amiiboManager = settings.getAmiiboManager();
-            if (amiiboManager != null) {
+            if (null != amiiboManager) {
                 amiibo = amiiboManager.amiibos.get(amiiboId);
-                if (amiibo == null)
+                if (null == amiibo)
                     amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
             }
-            if (amiibo != null) {
+            if (null != amiibo) {
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
-                if (amiibo.name != null)
+                if (null != amiibo.name)
                     amiiboName = amiibo.name;
-                if (amiibo.getAmiiboSeries() != null)
+                if (null != amiibo.getAmiiboSeries())
                     amiiboSeries = amiibo.getAmiiboSeries().name;
-                if (amiibo.getAmiiboType() != null)
+                if (null != amiibo.getAmiiboType())
                     amiiboType = amiibo.getAmiiboType().name;
-                if (amiibo.getGameSeries() != null)
+                if (null != amiibo.getGameSeries())
                     gameSeries = amiibo.getGameSeries().name;
-                // if (amiibo.getCharacter() != null)
+                // if (null != amiibo.getCharacter())
                 //     gameSeries = amiibo.getCharacter().name;
             } else {
                 tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
@@ -370,7 +370,7 @@ public class BrowserAmiibosAdapter
             String query = settings.getQuery().toLowerCase();
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
-                boolean hasTagInfo = tagInfo != null;
+                boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {
                     setAmiiboInfoText(this.txtError, tagInfo, false);
                 } else {
@@ -382,7 +382,7 @@ public class BrowserAmiibosAdapter
                 setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query), hasTagInfo);
                 setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query), hasTagInfo);
                 // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), hasTagInfo);
-                if (item.getFilePath() != null) {
+                if (null != item.getFilePath()) {
                     this.itemView.setEnabled(true);
                     String relativeFile = Storage.getRelativePath(item.getFilePath(),
                             TagMo.getPrefs().preferEmulated().get()).replace(
@@ -396,10 +396,10 @@ public class BrowserAmiibosAdapter
                 setPathTextHighlight(item.getFilePath());
                 this.txtPath.setVisibility(View.VISIBLE);
             }
-            if (this.imageAmiibo != null) {
+            if (null != this.imageAmiibo) {
                 this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(itemView).clear(target);
-                if (amiiboImageUrl != null) {
+                if (null != amiiboImageUrl) {
                     Glide.with(itemView)
                             .setDefaultRequestOptions(onlyRetrieveFromCache())
                             .asBitmap()
@@ -418,7 +418,7 @@ public class BrowserAmiibosAdapter
                         itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+                return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
                         || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
             } else {
                 return new RequestOptions().onlyRetrieveFromCache(false);

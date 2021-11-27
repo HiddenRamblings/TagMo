@@ -116,7 +116,7 @@ public class NfcActivity extends AppCompatActivity {
             case TagMo.ACTION_SCAN_TAG:
             case TagMo.ACTION_SET_BANK_COUNT:
             case TagMo.ACTION_ACTIVATE_BANK:
-            case TagMo.ACTION_FORMAT_BANK:
+            case TagMo.ACTION_ERASE_BANK:
             case TagMo.ACTION_LOCK_AMIIBO:
             case TagMo.ACTION_UNLOCK_UNIT:
                 startNfcMonitor();
@@ -165,7 +165,7 @@ public class NfcActivity extends AppCompatActivity {
                 break;
             case TagMo.ACTION_ACTIVATE_BANK:
             case TagMo.ACTION_BACKUP_AMIIBO:
-            case TagMo.ACTION_FORMAT_BANK:
+            case TagMo.ACTION_ERASE_BANK:
                 if (!isEliteIntent || !commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
                     bankPicker.setVisibility(View.GONE);
                     bankTextView.setVisibility(View.GONE);
@@ -210,8 +210,8 @@ public class NfcActivity extends AppCompatActivity {
             case TagMo.ACTION_ACTIVATE_BANK:
                 setTitle(R.string.activate_bank);
                 break;
-            case TagMo.ACTION_FORMAT_BANK:
-                setTitle(R.string.format_bank);
+            case TagMo.ACTION_ERASE_BANK:
+                setTitle(R.string.erase_bank);
                 break;
 
             default:
@@ -458,7 +458,7 @@ public class NfcActivity extends AppCompatActivity {
                         setResult(Activity.RESULT_OK, active);
                         break;
 
-                    case TagMo.ACTION_FORMAT_BANK:
+                    case TagMo.ACTION_ERASE_BANK:
                         TagWriter.wipeBankData(mifare, selection);
                         Intent format = new Intent(TagMo.ACTION_NFC_SCANNED);
                         args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST,

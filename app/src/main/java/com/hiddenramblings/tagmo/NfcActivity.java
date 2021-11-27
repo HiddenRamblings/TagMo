@@ -373,6 +373,8 @@ public class NfcActivity extends AppCompatActivity {
                         ArrayList<AmiiboFile> amiiboList = commandIntent
                                 .getParcelableArrayListExtra(TagMo.EXTRA_AMIIBO_FILES);
                         for (int x = 0; x < amiiboList.size(); x++) {
+                            txtMessage.setText(getString(R.string.bank_writing,
+                                    x + 1, amiiboList.size()));
                             byte[] tagData = amiiboList.get(x).getData();
                             if (null == tagData)
                                 tagData = TagUtils.getValidatedFile(keyManager,
@@ -386,18 +388,20 @@ public class NfcActivity extends AppCompatActivity {
                         setResult(Activity.RESULT_OK,  write.putExtras(args));
                         break;
 
-                    case TagMo.ACTION_CLEAR_ALL_TAGS:
+                    case TagMo.ACTION_ERASE_ALL_TAGS:
                         mifare.setBankCount(write_count);
                         if (active_bank <= write_count)
                             mifare.activateBank(active_bank);
                         for (int x = 0; x < write_count; x++) {
+                            txtMessage.setText(getString(R.string.bank_erasing,
+                                    x + 1, write_count));
                             TagWriter.wipeBankData(mifare, x);
                         }
-                        Intent clear = new Intent(TagMo.ACTION_NFC_SCANNED);
-                        clear.putExtra(TagMo.EXTRA_BANK_COUNT, write_count);
+                        Intent erase = new Intent(TagMo.ACTION_NFC_SCANNED);
+                        erase.putExtra(TagMo.EXTRA_BANK_COUNT, write_count);
                         args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST,
                                 TagReader.readTagTitles(mifare, bank_count));
-                        setResult(Activity.RESULT_OK,  clear.putExtras(args));
+                        setResult(Activity.RESULT_OK,  erase.putExtras(args));
                         break;
 
                     case TagMo.ACTION_BACKUP_AMIIBO:

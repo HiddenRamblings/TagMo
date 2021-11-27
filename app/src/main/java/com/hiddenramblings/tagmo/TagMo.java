@@ -39,7 +39,7 @@ public class TagMo extends Application {
     public static final String ACTION_ERASE_ALL_TAGS = BuildConfig.APPLICATION_ID + ".CLEAR_ALL_TAGS";
     public static final String ACTION_ACTIVATE_BANK = BuildConfig.APPLICATION_ID + ".ACTIVATE_BANK";
     public static final String ACTION_SET_BANK_COUNT = BuildConfig.APPLICATION_ID + ".SET_BANK_COUNT";
-    public static final String ACTION_FORMAT_BANK = BuildConfig.APPLICATION_ID + ".FORMAT_BANK";
+    public static final String ACTION_ERASE_BANK = BuildConfig.APPLICATION_ID + ".ERASE_BANK";
     public static final String ACTION_LOCK_AMIIBO = BuildConfig.APPLICATION_ID + ".LOCK_AMIIBO";
     public static final String ACTION_UNLOCK_UNIT = BuildConfig.APPLICATION_ID + ".UNLOCK_UNIT";
     public static final String ACTION_BACKUP_AMIIBO = BuildConfig.APPLICATION_ID + ".BACKUP_AMIIBO";

@@ -1,5 +1,7 @@
 package com.hiddenramblings.tagmo;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -28,6 +30,9 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -308,7 +313,8 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onFilterCharacterChanged();
             this.onFilterAmiiboSeriesChanged();
             this.onFilterAmiiboTypeChanged();
-            this.onAmiiboFilesChanged();
+            this.onAmiiboFilesChanged(amiibosView.getAdapter() != null
+                    && amiibosView.getAdapter().getItemCount() > 0 ? 0 : 200);
         }
         this.settings.addChangeListener(this);
 
@@ -1335,16 +1341,18 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private boolean isDownloadShown(File rootFolder, File download, boolean recursiveFiles) {
+        if (download.getPath().equals(rootFolder.getPath())) return true;
         File[] files = rootFolder.listFiles();
-        if (files == null || files.length == 0)
-            return false;
+        if (files == null || files.length == 0) return false;
         for (File file : files) {
             if (file.isDirectory()) {
-                if (file == download) return true;
-                if (recursiveFiles) return isDownloadShown(file, download, true);
+                if (download.getPath().equals(file.getPath()))
+                    return true;
+                else if (recursiveFiles)
+                    return isDownloadShown(file, download, true);
             }
         }
-        return false;
+        return rootFolder.getPath().startsWith(download.getPath());
     }
 
     @Background(id = BACKGROUND_AMIIBO_FILES)
@@ -1453,7 +1461,8 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (!BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
-            onAmiiboFilesChanged();
+            onAmiiboFilesChanged(amiibosView.getAdapter() != null
+                    && amiibosView.getAdapter().getItemCount() > 0 ? 0 : 200);
         }
 
         TagMo.getPrefs().edit()
@@ -1480,12 +1489,12 @@ public class BrowserActivity extends AppCompatActivity implements
                 folderChanged ? 3000 : 1500);
     }
 
-    private void onAmiiboFilesChanged() {
+    private void onAmiiboFilesChanged(int delay) {
         if (settings.getAmiiboFiles() == null || settings.getAmiiboFiles().size() == 0) {
             showFakeSnackbar(getString(R.string.amiibo_not_found));
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {
-            new Handler(Looper.getMainLooper()).postDelayed(this::hideFakeSnackbar, 250);
+            new Handler(Looper.getMainLooper()).postDelayed(this::hideFakeSnackbar, delay);
         }
     }
 
@@ -1723,13 +1732,28 @@ public class BrowserActivity extends AppCompatActivity implements
         if (fakeSnackbar.getVisibility() == View.VISIBLE) {
             AutoTransition autoTransition = new AutoTransition();
             autoTransition.setDuration(250);
-            AutoTransition fakeTransition = new AutoTransition();
-            fakeTransition.setStartDelay(200);
+
+            TranslateAnimation animate = new TranslateAnimation(
+                    0, 0, 0, - fakeSnackbar.getHeight());
+            animate.setDuration(150);
+            animate.setFillAfter(false);
+            animate.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) { }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    animation.setAnimationListener(null);
+                    fakeSnackbar.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) { }
+            });
+            fakeSnackbar.startAnimation(animate);
 
             TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
             mainLayout.setPadding(0, 0, 0, 0);
-            TransitionManager.beginDelayedTransition(fakeSnackbar, fakeTransition);
-            fakeSnackbar.setVisibility(View.GONE);
         }
     }
 

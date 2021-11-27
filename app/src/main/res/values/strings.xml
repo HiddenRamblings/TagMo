@@ -121,6 +121,8 @@
     <string name="nfc_tag">NFC tag</string>
     <string name="tag_detected">%1$s detected&#8230;</string>
     <string name="tag_scanning">%1$s scanning&#8230;</string>
+    <string name="bank_writing">Writing bank %1$d of %2$d&#8230;</string>
+    <string name="bank_erasing">Erasing bank %1$d of %2$d&#8230;</string>
 
     <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
     <string name="super_smash">Super Smash Bros. for Nintendo 3DS and Wii U</string>
@@ -199,7 +201,7 @@
     <string name="amiibo_collected">%1$d Files: %2$d / %3$d amiibo™</string>
 
     <string name="write_open_banks">Write %1$d Banks to N2 Elite</string>
-    <string name="clear_open_banks">Clear %1$d Banks on N2 Elite</string>
+    <string name="erase_open_banks">Erase %1$d Banks on N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>
     <string name="elite_bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
     <string name="bank_number">Bank %1$d</string>

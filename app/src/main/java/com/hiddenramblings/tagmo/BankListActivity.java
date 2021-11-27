@@ -121,8 +121,8 @@ public class BankListActivity extends AppCompatActivity implements
     BankPicker eliteBankCount;
     @ViewById(R.id.write_open_banks)
     AppCompatButton writeOpenBanks;
-    @ViewById(R.id.clear_open_banks)
-    AppCompatButton clearOpenBanks;
+    @ViewById(R.id.erase_open_banks)
+    AppCompatButton eraseOpenBanks;
     @ViewById(R.id.write_bank_count)
     AppCompatButton writeBankCount;
 
@@ -206,11 +206,11 @@ public class BankListActivity extends AppCompatActivity implements
         bankStats.setText(getString(R.string.elite_bank_stats,
                 eliteBankCount.getValueForPosition(active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
-        clearOpenBanks.setText(getString(R.string.clear_open_banks, bank_count));
+        eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
 
         eliteBankCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) -> {
             writeOpenBanks.setText(getString(R.string.write_open_banks, valueNew));
-            clearOpenBanks.setText(getString(R.string.clear_open_banks, valueNew));
+            eraseOpenBanks.setText(getString(R.string.erase_open_banks, valueNew));
         });
 
         this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
@@ -322,7 +322,7 @@ public class BankListActivity extends AppCompatActivity implements
         if (isMenu) writeListAdapter.resetSelections();
         writeBankLayout.setVisibility(isMenu ? View.GONE : View.VISIBLE);
         writeOpenBanks.setVisibility(isMenu ? View.VISIBLE : View.GONE);
-        clearOpenBanks.setVisibility(isMenu ? View.VISIBLE : View.GONE);
+        eraseOpenBanks.setVisibility(isMenu ? View.VISIBLE : View.GONE);
         eliteBankCount.setVisibility(isMenu ? View.VISIBLE : View.GONE);
         writeBankCount.setVisibility(isMenu ? View.VISIBLE : View.GONE);
     }
@@ -352,7 +352,7 @@ public class BankListActivity extends AppCompatActivity implements
         bankStats.setText(getString(R.string.elite_bank_stats, eliteBankCount.getValueForPosition(
                 TagMo.getPrefs().eliteActiveBank().get()), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
-        clearOpenBanks.setText(getString(R.string.clear_open_banks, bank_count));
+        eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
     });
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
@@ -384,8 +384,8 @@ public class BankListActivity extends AppCompatActivity implements
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
-    @Click(R.id.clear_open_banks)
-    void onClearOpenBanksClick() {
+    @Click(R.id.erase_open_banks)
+    void onEraseOpenBanksClick() {
         Intent collection = new Intent(this, NfcActivity_.class);
         collection.setAction(TagMo.ACTION_WRITE_ALL_TAGS);
         collection.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
@@ -515,7 +515,7 @@ public class BankListActivity extends AppCompatActivity implements
         bankStats.setText(getString(R.string.elite_bank_stats,
                 eliteBankCount.getValueForPosition(active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
-        clearOpenBanks.setText(getString(R.string.clear_open_banks, bank_count));
+        eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
     });
 
     ActivityResultLauncher<Intent> onScanTagResult = registerForActivityResult(

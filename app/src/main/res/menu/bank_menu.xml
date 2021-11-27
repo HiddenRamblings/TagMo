@@ -8,16 +8,16 @@
         android:title="@string/activate"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/mnu_write"
-        android:title="@string/write"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/mnu_replace"
         android:title="@string/replace"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/mnu_format_bank"
-        android:title="@string/delete"
+        android:id="@+id/mnu_write"
+        android:title="@string/write"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_erase_bank"
+        android:title="@string/erase"
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_edit"

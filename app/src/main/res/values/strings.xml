@@ -64,6 +64,7 @@
     <string name="cancel">Cancel</string>
     <string name="start">Start</string>
     <string name="delete">Delete</string>
+    <string name="erase">Erase</string>
     <string name="activate">Activate</string>
     <string name="parent">Parent</string>
     <string name="unknown">Unknown</string>
@@ -138,7 +139,7 @@
     <string name="scan_bank_no">Scan Bank %1$d</string>
     <string name="scan_bank">Scan Bank %1$s</string>
     <string name="scan_elite">Scan N2 Elite</string>
-    <string name="format_bank">Format Bank</string>
+    <string name="erase_bank">Erase Bank</string>
     <string name="activate_bank">Activate Bank</string>
     <string name="amiibo_backup">Backup amiibo™</string>
     <string name="validate_data">Data Validation</string>
@@ -210,7 +211,7 @@
     <string name="write_confirm">Write selections to N2 Elite?</string>
     <string name="warn_delete_file">Deleting %1$s. Are you sure?</string>
     <string name="delete_misisng">Cannot delete a scanned tag!</string>
-    <string name="delete_active">Cannot delete the active bank!</string>
+    <string name="erase_active">Cannot erase the active bank!</string>
     <string name="backup_filename">Set amiibo™ Bin Name</string>
     <string name="emulated_storage_root">Browse Emulated Storage</string>
     <string name="physical_storage_root">Browse Physical Storage</string>

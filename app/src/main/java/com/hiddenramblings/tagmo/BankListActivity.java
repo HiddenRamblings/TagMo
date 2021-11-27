@@ -141,7 +141,7 @@ public class BankListActivity extends AppCompatActivity implements
         HEX_CODE,
         BANK_BACKUP,
         VERIFY_TAG,
-        FORMAT_BANK
+        ERASE_BANK
     }
     private CLICKED status = CLICKED.NOTHING;
 
@@ -448,7 +448,7 @@ public class BankListActivity extends AppCompatActivity implements
                     TagMo.EXTRA_AMIIBO_LIST));
         }
 
-        if (status == CLICKED.FORMAT_BANK) {
+        if (status == CLICKED.ERASE_BANK) {
             status = CLICKED.NOTHING;
             onBottomSheetChanged(true, false);
             amiibos.set(clickedPosition, null);
@@ -607,6 +607,9 @@ public class BankListActivity extends AppCompatActivity implements
                     scan.setAction(TagMo.ACTION_ACTIVATE_BANK);
                     onActivateActivity.launch(scan);
                     return true;
+                case R.id.mnu_replace:
+                    displayWriteDialog(current_bank);
+                    return true;
                 case R.id.mnu_write:
                     if (null != tagData && tagData.length > 0) {
                         scan.setAction(TagMo.ACTION_WRITE_TAG_FULL);
@@ -617,16 +620,13 @@ public class BankListActivity extends AppCompatActivity implements
                         scanAmiiboBank(current_bank);
                     }
                     return true;
-                case R.id.mnu_replace:
-                    displayWriteDialog(current_bank);
-                    return true;
-                case R.id.mnu_format_bank:
+                case R.id.mnu_erase_bank:
                     if (TagMo.getPrefs().eliteActiveBank().get() == current_bank) {
-                        notice.Short(R.string.delete_active);
+                        notice.Short(R.string.erase_active);
                     } else {
-                        scan.setAction(TagMo.ACTION_FORMAT_BANK);
+                        scan.setAction(TagMo.ACTION_ERASE_BANK);
                         onUpdateTagResult.launch(scan);
-                        status = CLICKED.FORMAT_BANK;
+                        status = CLICKED.ERASE_BANK;
                     }
                     return true;
                 case R.id.mnu_edit:

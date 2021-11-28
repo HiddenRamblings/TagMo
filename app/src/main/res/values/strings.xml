@@ -124,6 +124,7 @@
     <string name="tag_scanning">%1$s scanning&#8230;</string>
     <string name="bank_writing">Writing bank %1$d of %2$d&#8230;</string>
     <string name="bank_erasing">Erasing bank %1$d of %2$d&#8230;</string>
+    <string name="bank_select">Selecting a destination bank&#8230;</string>
 
     <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
     <string name="super_smash">Super Smash Bros. for Nintendo 3DS and Wii U</string>

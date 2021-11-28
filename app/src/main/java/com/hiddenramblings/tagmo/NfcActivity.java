@@ -340,6 +340,18 @@ public class NfcActivity extends AppCompatActivity {
 
                     case TagMo.ACTION_WRITE_TAG_FULL:
                         if (isEliteDevice) {
+                            if (bankPicker.getVisibility() == View.GONE) {
+                                this.runOnUiThread(() -> {
+                                    txtMessage.setText(R.string.bank_select);
+                                    bankPicker.setVisibility(View.VISIBLE);
+                                    bankPicker.setEnabled(true);
+                                    bankTextView.setVisibility(View.VISIBLE);
+                                });
+                                setIntent(commandIntent);
+                                hasTestedElite = false;
+                                return;
+                            }
+
                             TagWriter.writeEliteAuto(mifare, data, keyManager, selection);
                             Intent write = new Intent(TagMo.ACTION_NFC_SCANNED);
                             write.putExtra(TagMo.EXTRA_SIGNATURE,

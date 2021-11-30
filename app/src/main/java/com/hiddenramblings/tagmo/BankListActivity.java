@@ -696,13 +696,11 @@ public class BankListActivity extends AppCompatActivity implements
                 tagInfo = getString(R.string.read_error);
             } else if (amiiboId == 0) {
                 tagInfo = getString(R.string.blank_tag);
-            } else {
-                if (null != settings.getAmiiboManager()) {
-                    amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
-                    if (null == amiibo)
-                        amiibo = new Amiibo(settings.getAmiiboManager(),
-                                amiiboId, null, null);
-                }
+            } else if (null != settings.getAmiiboManager()) {
+                amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+                if (null == amiibo)
+                    amiibo = new Amiibo(settings.getAmiiboManager(),
+                            amiiboId, null, null);
             }
         }
 

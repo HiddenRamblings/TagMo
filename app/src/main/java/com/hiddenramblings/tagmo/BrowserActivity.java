@@ -1785,13 +1785,11 @@ public class BrowserActivity extends AppCompatActivity implements
         for (File file : files) {
             if (file.isDirectory() && file != Storage.getDownloadDir(null)) {
                 locateKeyFilesRecursive(file);
-            } else {
-                if (keyNameMatcher(file.getName())) {
-                    try {
-                        this.keyManager.loadKey(file);
-                    } catch (Exception e) {
-                        Debug.Log(e);
-                    }
+            } else if (keyNameMatcher(file.getName())) {
+                try {
+                    this.keyManager.loadKey(file);
+                } catch (Exception e) {
+                    Debug.Log(e);
                 }
             }
         }

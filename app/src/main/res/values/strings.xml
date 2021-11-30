@@ -195,9 +195,9 @@
     <string name="update_amiibo_api">AmiiboAPI database updated!</string>
 
     <string name="locating_keys">Locating Crypto Keys&#8230;</string>
-    <string name="keys_not_found">Crypto keys could not be found!</string>
+    <string name="keys_not_found">Crypto keys not found!</string>
     <string name="refreshing_list">Searching for amiibo™&#8230;</string>
-    <string name="amiibo_not_found">No amiibo™ Found</string>
+    <string name="amiibo_not_found">No amiibo™ bins found!</string>
 
     <string name="files_displayed">%1$d Files: ? / ? amiibo™</string>
     <string name="amiibo_collected">%1$d Files: %2$d / %3$d amiibo™</string>

@@ -301,17 +301,15 @@ public class AmiiboManager {
         for (File file : files) {
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiibos(keyManager, file, true));
-            } else {
-                if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
-                    try {
-                        byte[] data = TagUtils.getValidatedFile(keyManager, file);
-                        if (null != data ) {
-                            amiiboFiles.add(new AmiiboFile(file,
-                                    TagUtils.amiiboIdFromTag(data), data));
-                        }
-                    } catch (Exception e) {
-                        Debug.Log(e);
+            } else if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
+                try {
+                    byte[] data = TagUtils.getValidatedFile(keyManager, file);
+                    if (null != data ) {
+                        amiiboFiles.add(new AmiiboFile(file,
+                                TagUtils.amiiboIdFromTag(data), data));
                     }
+                } catch (Exception e) {
+                    Debug.Log(e);
                 }
             }
         }

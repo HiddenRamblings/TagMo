@@ -640,18 +640,6 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    @UiThread
-    public void showDownloadsSnackbar() {
-        Snackbar snackbar = new IconifiedSnackbar(this).buildSnackbar(
-                getString(R.string.downloads_hidden), Snackbar.LENGTH_LONG, null);
-        snackbar.setAction(R.string.enable, v -> {
-            this.settings.setShowDownloads(true);
-            this.settings.notifyChanges();
-            this.onRefresh();
-        });
-        snackbar.show();
-    }
-
     @OptionsItem(R.id.build_foomiibo)
     @Background
     void onBuildFoomiiboClicked() {
@@ -661,10 +649,7 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (Exception e) {
             Debug.Log(e);
         } finally {
-            if (TagMo.getPrefs().showDownloads().get())
-                this.onRefresh();
-            else
-                showDownloadsSnackbar();
+            this.onRootFolderChanged(true);
         }
     }
 
@@ -965,17 +950,16 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void showSettingsFragment() {
-        if (!preferences.isShown()) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            preferences.setVisibility(View.VISIBLE);
-            if (null == settingsFragment || settingsFragment.isDetached())
-                settingsFragment = new SettingsFragment_();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.preferences, settingsFragment)
-                    .commit();
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        }
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        menuSettings.setIcon(R.drawable.ic_folder_white_24dp);
+        preferences.setVisibility(View.VISIBLE);
+        if (null == settingsFragment || settingsFragment.isDetached())
+            settingsFragment = new SettingsFragment_();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences, settingsFragment)
+                .commit();
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @OptionsItem(R.id.settings)
@@ -986,7 +970,6 @@ public class BrowserActivity extends AppCompatActivity implements
             preferences.setVisibility(View.GONE);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {
-            menuSettings.setIcon(R.drawable.ic_folder_white_24dp);
             showSettingsFragment();
         }
     }
@@ -1362,8 +1345,10 @@ public class BrowserActivity extends AppCompatActivity implements
         if (this.settings.isShowingDownloads()) {
             File download = Storage.getDownloadDir(null);
             if (!isDownloadShown(rootFolder, download, recursiveFiles))
-                amiiboFiles.addAll(AmiiboManager.listAmiibos(
-                        keyManager, download, true));
+                amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, download, true));
+        } else {
+            amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
+                    Storage.getDownloadDir("TagMo", "Foomiibo"), true));
         }
 
         if (Thread.currentThread().isInterrupted())
@@ -1492,6 +1477,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onAmiiboFilesChanged(int delay) {
         if (settings.getAmiiboFiles() == null || settings.getAmiiboFiles().size() == 0) {
             showFakeSnackbar(getString(R.string.amiibo_not_found));
+            menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
+            preferences.setVisibility(View.GONE);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {
             new Handler(Looper.getMainLooper()).postDelayed(this::hideFakeSnackbar, delay);

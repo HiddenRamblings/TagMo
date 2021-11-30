@@ -296,7 +296,7 @@ public class AmiiboManager {
             KeyManager keyManager, File rootFolder, boolean recursiveFiles) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
         File[] files = rootFolder.listFiles();
-        if (null == files  || files.length == 0)
+        if (null == files || files.length == 0)
             return amiiboFiles;
         for (File file : files) {
             if (file.isDirectory() && recursiveFiles) {

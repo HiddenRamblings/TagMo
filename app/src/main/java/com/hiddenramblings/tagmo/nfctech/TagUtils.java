@@ -239,7 +239,7 @@ public class TagUtils {
 
             byte[] uid = Arrays.copyOfRange(tagData, 0, 9);
             String uidHex = bytesToHex(uid);
-            return String.format(Locale.ROOT, "%1$s[%2$s-%3$s].bin", name, uidHex, status);
+            return String.format(Locale.ROOT, "%1$s[%2$s]-%3$s.bin", name, uidHex, status);
         } catch (Exception e) {
             Debug.Log(TagUtils.class, e.getMessage());
         }

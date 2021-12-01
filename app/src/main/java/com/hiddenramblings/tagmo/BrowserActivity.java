@@ -1342,7 +1342,12 @@ public class BrowserActivity extends AppCompatActivity implements
             return;
 
         if (amiiboFiles.isEmpty()) {
-            onAmiiboFilesChanged(200);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                showFakeSnackbar(getString(R.string.amiibo_not_found));
+                menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
+                preferences.setVisibility(View.GONE);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }, 200);
         } else {
             this.runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);

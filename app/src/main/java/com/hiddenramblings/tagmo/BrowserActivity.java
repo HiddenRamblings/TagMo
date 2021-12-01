@@ -283,6 +283,18 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @AfterViews
     void afterViews() {
+        if (null == this.settings) {
+            this.settings = new BrowserSettings().initialize();
+        } else {
+            this.onFilterGameSeriesChanged();
+            this.onFilterCharacterChanged();
+            this.onFilterAmiiboSeriesChanged();
+            this.onFilterAmiiboTypeChanged();
+            this.onAmiiboFilesChanged(amiibosView.getAdapter() != null
+                    && amiibosView.getAdapter().getItemCount() > 0 ? 0 : 200);
+        }
+        this.settings.addChangeListener(this);
+
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(
@@ -301,18 +313,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
             }
         });
-
-        if (null == this.settings) {
-            this.settings = new BrowserSettings().initialize();
-        } else {
-            this.onFilterGameSeriesChanged();
-            this.onFilterCharacterChanged();
-            this.onFilterAmiiboSeriesChanged();
-            this.onFilterAmiiboTypeChanged();
-            this.onAmiiboFilesChanged(amiibosView.getAdapter() != null
-                    && amiibosView.getAdapter().getItemCount() > 0 ? 0 : 200);
-        }
-        this.settings.addChangeListener(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (Environment.isExternalStorageManager()) {
@@ -1093,8 +1093,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    static final String BACKGROUND_UPDATE = "github";
-
+    static final String BACKGROUND_UPDATE = "update";
     void checkForUpdate() {
         BackgroundExecutor.cancelAll(BACKGROUND_UPDATE, true);
         checkForUpdateTask();
@@ -1229,7 +1228,6 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     static final String BACKGROUND_POWERTAG = "powertag";
-
     void loadPTagKeyManager() {
         if (TagMo.getPrefs().enablePowerTagSupport().get()) {
             BackgroundExecutor.cancelAll(BACKGROUND_POWERTAG, true);
@@ -1248,7 +1246,6 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
         loadAmiiboManagerTask();
@@ -1276,7 +1273,6 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     static final String BACKGROUND_FOLDERS = "folders";
-
     void loadFolders(File rootFolder) {
         BackgroundExecutor.cancelAll(BACKGROUND_FOLDERS, true);
         loadFoldersTask(rootFolder);
@@ -1310,7 +1306,6 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
-
     void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
         loadAmiiboFilesTask(rootFolder, recursiveFiles);
@@ -1758,7 +1753,6 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";
-
     private boolean keyNameMatcher(String name) {
         boolean isValid = name.toLowerCase(Locale.ROOT).endsWith(".bin");
         return name.toLowerCase(Locale.ROOT).endsWith("retail.bin") ||

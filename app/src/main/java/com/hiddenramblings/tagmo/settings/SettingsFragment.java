@@ -389,7 +389,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";
-
     void validateKeys(Uri data) {
         BackgroundExecutor.cancelAll(BACKGROUND_LOAD_KEYS, true);
         validateKeysTask(data);
@@ -445,7 +444,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
         loadAmiiboManagerTask();
@@ -547,7 +545,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private static final String BACKGROUND_SYNC_AMIIBO_MANAGER = "sync_amiibo_manager";
-
     void downloadAmiiboAPIData(String lastUpdated) {
         BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
         downloadAmiiboAPIDataTask();

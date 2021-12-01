@@ -61,7 +61,6 @@ public class FoomiiboActivity extends AppCompatActivity implements
                 ViewGroup.LayoutParams.MATCH_PARENT);
 
         this.settings = new BrowserSettings().initialize();
-
         this.loadAmiiboManager();
 
         if (this.settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
@@ -122,7 +121,6 @@ public class FoomiiboActivity extends AppCompatActivity implements
     }
 
     static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
         loadAmiiboManagerTask();

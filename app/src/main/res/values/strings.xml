@@ -116,6 +116,7 @@
     <string name="settings">Settings</string>
     <string name="capture_logcat">Capture Logcat</string>
     <string name="build_foomiibo">Build Foomiibo</string>
+    <string name="build_foomiibo_set">Build Complete Foomiibo Set</string>
 
     <string name="wrote_file">File saved to %1$s</string>
     <string name="wrote_logcat">Logcat saved to %1$s</string>

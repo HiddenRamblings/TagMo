@@ -27,13 +27,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
@@ -238,7 +238,7 @@ public class BrowserAmiibosAdapter
             if (filteredData.isEmpty() || filteredData != filterResults.values) {
                 //noinspection unchecked
                 filteredData = (ArrayList<AmiiboFile>) filterResults.values;
-                Collections.sort(filteredData, new AmiiboComparator(settings));
+                Collections.sort(filteredData, new AmiiboFileComparator(settings));
                 notifyDataSetChanged();
             }
         }
@@ -283,8 +283,8 @@ public class BrowserAmiibosAdapter
             }
         };
 
-        private void setIsHighlighted(AmiiboViewHolder holder, boolean isHighlighted) {
-            View highlight = holder.itemView.findViewById(R.id.highlight);
+        private void setIsHighlighted(boolean isHighlighted) {
+            View highlight = this.itemView.findViewById(R.id.highlight);
             if (isHighlighted) {
                 highlight.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
                         TagMo.isDarkTheme() ? R.color.backgroundWhite
@@ -388,7 +388,7 @@ public class BrowserAmiibosAdapter
                             TagMo.getPrefs().preferEmulated().get()).replace(
                                     TagMo.getPrefs().browserRootFolder().get(), "");
                     this.txtPath.setText(boldMatchingText(relativeFile, query));
-                    setIsHighlighted(this, relativeFile.endsWith("-Foomiibo].bin"));
+                    setIsHighlighted(relativeFile.endsWith("-Foomiibo].bin"));
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");

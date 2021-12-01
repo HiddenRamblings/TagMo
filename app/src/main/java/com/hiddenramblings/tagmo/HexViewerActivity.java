@@ -9,9 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.adapter.HexCodeAdapter;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import org.androidannotations.annotations.AfterViews;

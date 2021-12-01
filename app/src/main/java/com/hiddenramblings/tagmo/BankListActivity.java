@@ -39,15 +39,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.hiddenramblings.tagmo.adapter.BankListBrowserAdapter;
+import com.hiddenramblings.tagmo.adapter.BankBrowserAdapter;
 import com.hiddenramblings.tagmo.adapter.WriteBanksAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
@@ -72,7 +72,7 @@ import java.util.ArrayList;
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_bank_list)
 public class BankListActivity extends AppCompatActivity implements
-        BankListBrowserAdapter.OnAmiiboClickListener {
+        BankBrowserAdapter.OnAmiiboClickListener {
 
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
@@ -199,7 +199,7 @@ public class BankListActivity extends AppCompatActivity implements
             amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
         else
             amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        BankListBrowserAdapter adapter = new BankListBrowserAdapter(settings, this);
+        BankBrowserAdapter adapter = new BankBrowserAdapter(settings, this);
         amiibosView.setAdapter(adapter);
         this.settings.addChangeListener(adapter);
         updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_LIST));
@@ -269,17 +269,20 @@ public class BankListActivity extends AppCompatActivity implements
         } catch (IOException | JSONException | ParseException e) {
             Debug.Log(e);
             amiiboManager = null;
+            new Toasty(this).Short(R.string.amiibo_info_parse_error);
         }
-        if (null == amiiboManager) return;
+
         final AmiiboManager uiAmiiboManager = amiiboManager;
         this.runOnUiThread(() -> {
             settings.setAmiiboManager(uiAmiiboManager);
             settings.notifyChanges();
         });
 
+        if (null == amiiboManager) return;
+
         if (amiibos.isEmpty()) {
             if (null != amiibosView.getAdapter())
-                ((BankListBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
+                ((BankBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
             for (int x = 0; x < amiiboList.size(); x++) {
                 amiibos.add(amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
                 if (null != amiibosView.getAdapter())

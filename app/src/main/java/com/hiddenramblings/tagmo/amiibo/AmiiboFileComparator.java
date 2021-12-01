@@ -3,26 +3,32 @@ package com.hiddenramblings.tagmo.amiibo;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 
+import java.io.File;
 import java.util.Comparator;
 
-public class AmiiboComparator implements Comparator<Amiibo> {
+public class AmiiboFileComparator implements Comparator<AmiiboFile> {
 
     BrowserSettings settings;
 
-    public AmiiboComparator(BrowserSettings settings) {
+    public AmiiboFileComparator(BrowserSettings settings) {
         this.settings = settings;
     }
 
     @Override
-    public int compare(Amiibo amiiboFile1, Amiibo amiiboFile2) {
+    public int compare(AmiiboFile amiiboFile1, AmiiboFile amiiboFile2) {
         int value = 0;
         int sort = settings.getSort();
 
-        long amiiboId1 = amiiboFile1.id;
-        long amiiboId2 = amiiboFile2.id;
-        if (sort == SORT.FILE_PATH.getValue() || sort == SORT.ID.getValue()) {
+        File filePath1 = amiiboFile1.getFilePath();
+        File filePath2 = amiiboFile2.getFilePath();
+        if (sort == SORT.FILE_PATH.getValue() && !(null == filePath1  && null == filePath2 ))
+            value = compareFilePath(filePath1, filePath2);
+
+        long amiiboId1 = amiiboFile1.getId();
+        long amiiboId2 = amiiboFile2.getId();
+        if (sort == SORT.ID.getValue()) {
             value = compareAmiiboId(amiiboId1, amiiboId2);
-        } else {
+        } else if (value == 0) {
             AmiiboManager amiiboManager = settings.getAmiiboManager();
             if (null != amiiboManager ) {
                 Amiibo amiibo1 = amiiboManager.amiibos.get(amiiboId1);
@@ -52,7 +58,20 @@ public class AmiiboComparator implements Comparator<Amiibo> {
                 value = compareAmiiboId(amiiboId1, amiiboId2);
         }
 
+        if (value == 0)
+            value = compareFilePath(filePath1, filePath2);
+
         return value;
+    }
+
+    int compareFilePath(File filePath1, File filePath2) {
+        if (null == filePath1 ) {
+            return 1;
+        } else if (null == filePath2 ) {
+            return -1;
+        } else {
+            return filePath1.compareTo(filePath2);
+        }
     }
 
     int compareAmiiboId(long amiiboId1, long amiiboId2) {

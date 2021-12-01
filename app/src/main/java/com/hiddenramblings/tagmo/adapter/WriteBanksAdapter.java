@@ -25,17 +25,17 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
@@ -284,7 +284,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
             if (filteredData.isEmpty() || filteredData != filterResults.values) {
                 //noinspection unchecked
                 filteredData = (ArrayList<AmiiboFile>) filterResults.values;
-                Collections.sort(filteredData, new AmiiboComparator(settings));
+                Collections.sort(filteredData, new AmiiboFileComparator(settings));
                 notifyDataSetChanged();
             }
         }

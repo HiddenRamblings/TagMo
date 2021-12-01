@@ -36,7 +36,7 @@ public class BrowserFoldersAdapter
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
-        if (null == newBrowserSettings  || null == oldBrowserSettings ) return;
+        if (null == newBrowserSettings  || null == oldBrowserSettings) return;
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(), oldBrowserSettings.getBrowserRootFolder())) {
             this.rootFolder = newBrowserSettings.getBrowserRootFolder();
             this.showUpFolder = showParentFolder();

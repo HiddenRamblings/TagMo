@@ -45,7 +45,7 @@ public class AmiiboManager {
             inputSteam = context.getContentResolver().openInputStream(uri);
             return parse(inputSteam);
         } finally {
-            if (null != inputSteam ) {
+            if (null != inputSteam) {
                 try {
                     inputSteam.close();
                 } catch (IOException ignored) { }
@@ -71,7 +71,7 @@ public class AmiiboManager {
 
         AmiiboManager manager = new AmiiboManager();
         JSONObject amiibosJSON = json.getJSONObject("amiibos");
-        for (Iterator<String> iterator = amiibosJSON.keys(); iterator.hasNext(); ) {
+        for (Iterator<String> iterator = amiibosJSON.keys(); iterator.hasNext();) {
             String key = iterator.next();
             JSONObject amiiboJSON = amiibosJSON.getJSONObject(key);
 
@@ -89,7 +89,7 @@ public class AmiiboManager {
         }
 
         JSONObject gameSeriesJSON = json.getJSONObject("game_series");
-        for (Iterator<String> iterator = gameSeriesJSON.keys(); iterator.hasNext(); ) {
+        for (Iterator<String> iterator = gameSeriesJSON.keys(); iterator.hasNext();) {
             String key = iterator.next();
             String name = gameSeriesJSON.getString(key);
 
@@ -98,7 +98,7 @@ public class AmiiboManager {
         }
 
         JSONObject characterJSON = json.getJSONObject("characters");
-        for (Iterator<String> iterator = characterJSON.keys(); iterator.hasNext(); ) {
+        for (Iterator<String> iterator = characterJSON.keys(); iterator.hasNext();) {
             String key = iterator.next();
             String name = characterJSON.getString(key);
 
@@ -107,7 +107,7 @@ public class AmiiboManager {
         }
 
         JSONObject amiiboTypeJSON = json.getJSONObject("types");
-        for (Iterator<String> iterator = amiiboTypeJSON.keys(); iterator.hasNext(); ) {
+        for (Iterator<String> iterator = amiiboTypeJSON.keys(); iterator.hasNext();) {
             String key = iterator.next();
             String name = amiiboTypeJSON.getString(key);
 
@@ -116,7 +116,7 @@ public class AmiiboManager {
         }
 
         JSONObject amiiboSeriesJSON = json.getJSONObject("amiibo_series");
-        for (Iterator<String> iterator = amiiboSeriesJSON.keys(); iterator.hasNext(); ) {
+        for (Iterator<String> iterator = amiiboSeriesJSON.keys(); iterator.hasNext();) {
             String key = iterator.next();
             String name = amiiboSeriesJSON.getString(key);
 
@@ -189,10 +189,10 @@ public class AmiiboManager {
             amiiboJSON.put("name", amiibo.name);
 
             JSONObject releaseJSON = new JSONObject();
-            releaseJSON.put("na", null == amiibo.releaseDates.northAmerica  ? null : iso8601.format(amiibo.releaseDates.northAmerica));
-            releaseJSON.put("jp", null == amiibo.releaseDates.japan  ? null : iso8601.format(amiibo.releaseDates.japan));
-            releaseJSON.put("eu", null == amiibo.releaseDates.europe  ? null : iso8601.format(amiibo.releaseDates.europe));
-            releaseJSON.put("au", null == amiibo.releaseDates.australia  ? null : iso8601.format(amiibo.releaseDates.australia));
+            releaseJSON.put("na", null == amiibo.releaseDates.northAmerica ? null : iso8601.format(amiibo.releaseDates.northAmerica));
+            releaseJSON.put("jp", null == amiibo.releaseDates.japan ? null : iso8601.format(amiibo.releaseDates.japan));
+            releaseJSON.put("eu", null == amiibo.releaseDates.europe ? null : iso8601.format(amiibo.releaseDates.europe));
+            releaseJSON.put("au", null == amiibo.releaseDates.australia ? null : iso8601.format(amiibo.releaseDates.australia));
             amiiboJSON.put("release", releaseJSON);
 
             amiibosJSON.put(String.format("0x%016X", amiibo.id), amiiboJSON);
@@ -250,7 +250,7 @@ public class AmiiboManager {
         } else {
             amiiboManager = null;
         }
-        if (null == amiiboManager ) {
+        if (null == amiiboManager) {
             amiiboManager = getDefaultAmiiboManager();
         }
 
@@ -265,7 +265,7 @@ public class AmiiboManager {
             streamWriter.write(amiiboManager.toJSON().toString());
             outputStream.flush();
         } finally {
-            if (null != streamWriter ) {
+            if (null != streamWriter) {
                 try {
                     streamWriter.close();
                 } catch (IOException e) {
@@ -282,7 +282,7 @@ public class AmiiboManager {
                     AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
             saveDatabase(amiiboManager, outputStream);
         } finally {
-            if (null != outputStream ) {
+            if (null != outputStream) {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
@@ -304,7 +304,7 @@ public class AmiiboManager {
             } else if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                 try {
                     byte[] data = TagUtils.getValidatedFile(keyManager, file);
-                    if (null != data ) {
+                    if (null != data) {
                         amiiboFiles.add(new AmiiboFile(file,
                                 TagUtils.amiiboIdFromTag(data), data));
                     }
@@ -324,11 +324,11 @@ public class AmiiboManager {
         for (DocumentFile file : files) {
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiiboDocuments(keyManager, file, true));
-            } else if (null != file.getName() ) {
+            } else if (null != file.getName()) {
                 if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
                     try {
                         byte[] data = TagUtils.getValidatedDocument(keyManager, file);
-                        if (null != data ) {
+                        if (null != data) {
                             amiiboFiles.add(new AmiiboFile(file,
                                     TagUtils.amiiboIdFromTag(data), data));
                         }

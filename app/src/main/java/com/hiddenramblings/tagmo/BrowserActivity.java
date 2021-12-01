@@ -228,7 +228,7 @@ public class BrowserActivity extends AppCompatActivity implements
         keyManager = new KeyManager(this);
 
         Intent intent = getIntent();
-        if (null != intent ) {
+        if (null != intent) {
             if (getComponentName().equals(TagMo.NFCIntentFilter)) {
                 Intent browser = new Intent(this, BrowserActivity_.class);
                 browser.setAction(intent.getAction());
@@ -290,8 +290,7 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onFilterCharacterChanged();
             this.onFilterAmiiboSeriesChanged();
             this.onFilterAmiiboTypeChanged();
-            this.onAmiiboFilesChanged(amiibosView.getAdapter() != null
-                    && amiibosView.getAdapter().getItemCount() > 0 ? 0 : 200);
+            this.onAmiiboFilesChanged(200);
         }
         this.settings.addChangeListener(this);
 
@@ -355,7 +354,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
         if (!TagMo.ACTION_DELETE_AMIIBO.equals(result.getData().getAction())) return;
 
-        if (null != clickedAmiibo.getFilePath() ) {
+        if (null != clickedAmiibo.getFilePath()) {
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.warn_delete_file, Storage.getRelativePath(
                             clickedAmiibo.getFilePath(), TagMo.getPrefs().preferEmulated().get())))
@@ -420,8 +419,8 @@ public class BrowserActivity extends AppCompatActivity implements
         Dialog backupDialog = dialog.setView(view).show();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                File directory = Storage.getDownloadDir("TagMo", "Backups");
-                String fileName = TagUtils.writeBytesToFile(directory,
+                String fileName = TagUtils.writeBytesToFile(
+                        Storage.getDownloadDir("TagMo", "Backups"),
                         input.getText().toString() + ".bin", tagData);
                 new Toasty(this).Long(getString(R.string.wrote_file, fileName));
                 this.onRootFolderChanged(false);
@@ -1342,10 +1341,14 @@ public class BrowserActivity extends AppCompatActivity implements
         if (Thread.currentThread().isInterrupted())
             return;
 
-        this.runOnUiThread(() -> {
-            settings.setAmiiboFiles(amiiboFiles);
-            settings.notifyChanges();
-        });
+        if (amiiboFiles.isEmpty()) {
+            onAmiiboFilesChanged(200);
+        } else {
+            this.runOnUiThread(() -> {
+                settings.setAmiiboFiles(amiiboFiles);
+                settings.notifyChanges();
+            });
+        }
     }
 
     ActivityResultLauncher<Intent> onDocumentTree = registerForActivityResult(
@@ -1434,7 +1437,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (!BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
-            onAmiiboFilesChanged(amiibosView.getAdapter() != null
+            onAmiiboFilesChanged(null != amiibosView.getAdapter()
                     && amiibosView.getAdapter().getItemCount() > 0 ? 0 : 200);
         }
 
@@ -1463,14 +1466,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onAmiiboFilesChanged(int delay) {
-        if (settings.getAmiiboFiles() == null || settings.getAmiiboFiles().size() == 0) {
-            showFakeSnackbar(getString(R.string.amiibo_not_found));
-            menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
-            preferences.setVisibility(View.GONE);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        } else {
-            new Handler(Looper.getMainLooper()).postDelayed(this::hideFakeSnackbar, delay);
-        }
+        new Handler(Looper.getMainLooper()).postDelayed(this::hideFakeSnackbar, delay);
     }
 
     void onSortChanged() {

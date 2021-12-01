@@ -24,7 +24,7 @@ public class AmiiboComparator implements Comparator<Amiibo> {
             value = compareAmiiboId(amiiboId1, amiiboId2);
         } else {
             AmiiboManager amiiboManager = settings.getAmiiboManager();
-            if (null != amiiboManager ) {
+            if (null != amiiboManager) {
                 Amiibo amiibo1 = amiiboManager.amiibos.get(amiiboId1);
                 Amiibo amiibo2 = amiiboManager.amiibos.get(amiiboId2);
                 if (null == amiibo1  && null == amiibo2 )
@@ -62,12 +62,12 @@ public class AmiiboComparator implements Comparator<Amiibo> {
     int compareAmiiboName(Amiibo amiibo1, Amiibo amiibo2) {
         String name1 = amiibo1.name;
         String name2 = amiibo2.name;
-        if (null == name1  && null == name2 ) {
+        if (null == name1  && null == name2) {
             return 0;
         }
-        if (null == name1 ) {
+        if (null == name1) {
             return 1;
-        } else if (null == name2 ) {
+        } else if (null == name2) {
             return -1;
         }
         return name1.compareTo(name2);
@@ -76,10 +76,10 @@ public class AmiiboComparator implements Comparator<Amiibo> {
     int compareAmiiboSeries(Amiibo amiibo1, Amiibo amiibo2) {
         AmiiboSeries amiiboSeries1 = amiibo1.getAmiiboSeries();
         AmiiboSeries amiiboSeries2 = amiibo2.getAmiiboSeries();
-        if (null == amiiboSeries1  && null == amiiboSeries2  ) {
+        if (null == amiiboSeries1  && null == amiiboSeries2) {
             return 0;
         }
-        if (null == amiiboSeries1 ) {
+        if (null == amiiboSeries1) {
             return 1;
         } else if (null == amiiboSeries2) {
             return -1;
@@ -90,7 +90,7 @@ public class AmiiboComparator implements Comparator<Amiibo> {
     int compareAmiiboType(Amiibo amiibo1, Amiibo amiibo2) {
         AmiiboType amiiboType1 = amiibo1.getAmiiboType();
         AmiiboType amiiboType2 = amiibo2.getAmiiboType();
-        if (null == amiiboType1 && null == amiiboType2 ) {
+        if (null == amiiboType1 && null == amiiboType2) {
             return 0;
         }
         if (null == amiiboType1) {

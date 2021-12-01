@@ -111,7 +111,7 @@ public class IconifiedSnackbar {
                 .addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
-                if (null == layout ) {
+                if (null == layout) {
                     super.onDismissed(snackbar, event);
                     return;
                 }
@@ -122,7 +122,7 @@ public class IconifiedSnackbar {
 
             @Override
             public void onShown(Snackbar snackbar) {
-                if (null == layout ) {
+                if (null == layout) {
                     super.onShown(snackbar);
                     return;
                 }

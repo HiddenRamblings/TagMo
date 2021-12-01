@@ -252,7 +252,6 @@ public class AmiiboActivity extends AppCompatActivity {
     }
 
     static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-
     void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
         loadAmiiboManagerTask();

@@ -263,22 +263,22 @@ public class BankListActivity extends AppCompatActivity implements
     }
 
     private void updateEliteHardwareAdapter(ArrayList<String> amiiboList) {
-        AmiiboManager amiiboManager;
-        try {
-            amiiboManager = AmiiboManager.getAmiiboManager();
-        } catch (IOException | JSONException | ParseException e) {
-            Debug.Log(e);
-            amiiboManager = null;
-            new Toasty(this).Short(R.string.amiibo_info_parse_error);
+        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        if (null == amiiboManager) {
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager();
+            } catch (IOException | JSONException | ParseException e) {
+                Debug.Log(e);
+                amiiboManager = null;
+                new Toasty(this).Short(R.string.amiibo_info_parse_error);
+            }
+
+            final AmiiboManager uiAmiiboManager = amiiboManager;
+            this.runOnUiThread(() -> {
+                settings.setAmiiboManager(uiAmiiboManager);
+                settings.notifyChanges();
+            });
         }
-
-        final AmiiboManager uiAmiiboManager = amiiboManager;
-        this.runOnUiThread(() -> {
-            settings.setAmiiboManager(uiAmiiboManager);
-            settings.notifyChanges();
-        });
-
-        if (null == amiiboManager) return;
 
         if (amiibos.isEmpty()) {
             if (null != amiibosView.getAdapter())
@@ -860,7 +860,6 @@ public class BankListActivity extends AppCompatActivity implements
     }
 
     static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
-
     void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
         loadAmiiboFilesTask(rootFolder, recursiveFiles);

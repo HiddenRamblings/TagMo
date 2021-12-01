@@ -59,7 +59,7 @@ public class AppDataTPFragment extends AppDataFragment {
                 e.printStackTrace();
                 return;
             }
-            if (null == savedInstanceState ) {
+            if (null == savedInstanceState) {
                 initialAppDataInitialized = getArguments().getBoolean("app_data_init");
             }
         }

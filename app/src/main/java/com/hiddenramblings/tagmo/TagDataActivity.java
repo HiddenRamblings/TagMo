@@ -572,7 +572,7 @@ public class TagDataActivity extends AppCompatActivity {
 
     @Click(R.id.random_serial)
     void onGenerateSerialClick() {
-        txtSerialNumber.setText(TagUtils.bytesToHex(Foomiibo.generateRandomUID()));
+        txtSerialNumber.setText(TagUtils.bytesToHex(new Foomiibo().generateRandomUID()));
     }
 
     @Click(R.id.txtInitDate)

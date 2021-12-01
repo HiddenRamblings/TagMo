@@ -36,6 +36,8 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Locale;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_foomiibo)
@@ -45,7 +47,8 @@ public class FoomiiboActivity extends AppCompatActivity implements
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
 
-    File destination = Storage.getDownloadDir("TagMo", "Foomiibo");
+    Foomiibo foomiibo = new Foomiibo();
+    File directory = Storage.getDownloadDir("TagMo", "Foomiibo");
 
     @InstanceState
     BrowserSettings settings;
@@ -73,6 +76,36 @@ public class FoomiiboActivity extends AppCompatActivity implements
         setResult(RESULT_CANCELED);
     }
 
+    public static String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
+        try {
+            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+            String name = TagUtils.amiiboIdToHex(amiiboId);
+            if (null != amiiboManager) {
+                Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
+                if (null != amiibo && null != amiibo.name) {
+                    name = amiibo.name.replace(File.separatorChar, '-');
+                }
+            }
+
+            byte[] uid = Arrays.copyOfRange(tagData, 0, 9);
+            String uidHex = TagUtils.bytesToHex(uid);
+            return String.format(Locale.ROOT, "%1$s[%2$s-Foomiibo].bin", name, uidHex);
+        } catch (Exception e) {
+            Debug.Log(TagUtils.class, e.getMessage());
+        }
+        return "";
+    }
+
+    private int getColumnCount() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+            mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
+        else
+            mWindowManager.getDefaultDisplay().getMetrics(metrics);
+        return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
+    }
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void deleteDir(File dir) {
         File[] files = dir.listFiles();
@@ -85,39 +118,6 @@ public class FoomiiboActivity extends AppCompatActivity implements
             }
         }
         dir.delete();
-    }
-
-    @Click(R.id.build_foomiibo_series)
-    @Background
-    void onBuildFoomiiboClicked() {
-        AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (null == amiiboManager) return;
-
-        if (destination.exists()) deleteDir(destination);
-        //noinspection ResultOfMethodCallIgnored
-        destination.mkdirs();
-        for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-            try {
-                byte[] tagData = Foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
-                File directory = new File(destination, amiibo.getAmiiboSeries().name);
-                TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
-                        amiiboManager, tagData, true), tagData);
-            } catch (Exception e) {
-                Debug.Log(e);
-            }
-        }
-        setResult(RESULT_OK);
-        finish();
-    }
-
-    private int getColumnCount() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-            mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
-        else
-            mWindowManager.getDefaultDisplay().getMetrics(metrics);
-        return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
     static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
@@ -147,18 +147,36 @@ public class FoomiiboActivity extends AppCompatActivity implements
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    @Click(R.id.build_foomiibo_series)
+    @Background
+    void onBuildFoomiiboClicked() {
+        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        if (null == amiiboManager) return;
+
+        if (directory.exists()) deleteDir(directory);
+        //noinspection ResultOfMethodCallIgnored
+        directory.mkdirs();
+        for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+            try {
+                byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
+                File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+                TagUtils.writeBytesToFile(directory, decipherFilename(
+                        amiiboManager, tagData), tagData);
+            } catch (Exception e) {
+                Debug.Log(e);
+            }
+        }
+        setResult(RESULT_OK);
+        finish();
     }
 
     @Override
     public void onAmiiboClicked(Amiibo amiibo) {
         try {
-            byte[] tagData = Foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
-            File directory = new File(destination, amiibo.getAmiiboSeries().name);
-            TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
-                    settings.getAmiiboManager(), tagData, true), tagData);
+            byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
+            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            TagUtils.writeBytesToFile(directory, decipherFilename(
+                    settings.getAmiiboManager(), tagData), tagData);
             setResult(RESULT_OK);
         } catch (Exception e) {
             Debug.Log(e);
@@ -168,13 +186,18 @@ public class FoomiiboActivity extends AppCompatActivity implements
     @Override
     public void onAmiiboImageClicked(Amiibo amiibo) {
         try {
-            byte[] tagData = Foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
-            File directory = new File(destination, amiibo.getAmiiboSeries().name);
-            TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
-                    settings.getAmiiboManager(), tagData, true), tagData);
+            byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
+            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            TagUtils.writeBytesToFile(directory, decipherFilename(
+                    settings.getAmiiboManager(), tagData), tagData);
             setResult(RESULT_OK);
         } catch (Exception e) {
             Debug.Log(e);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

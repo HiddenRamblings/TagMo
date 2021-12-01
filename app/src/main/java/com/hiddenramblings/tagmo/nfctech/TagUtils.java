@@ -218,16 +218,14 @@ public class TagUtils {
         Debug.Log(TagWriter.class, R.string.validation_success);
     }
 
-    public static String decipherFilename(AmiiboManager amiiboManager, byte[] tagData, boolean foo) {
-        String status = "Foomiibo";
-        if (!foo) {
-            try {
-                validateData(tagData);
-                status = "Validated";
-            } catch (Exception e) {
-                Debug.Log(e);
-                status = e.getMessage();
-            }
+    public static String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
+        String status;
+        try {
+            validateData(tagData);
+            status = "Validated";
+        } catch (Exception e) {
+            Debug.Log(e);
+            status = e.getMessage();
         }
         try {
             long amiiboId = amiiboIdFromTag(tagData);
@@ -246,10 +244,6 @@ public class TagUtils {
             Debug.Log(TagUtils.class, e.getMessage());
         }
         return "";
-    }
-
-    public static String decipherFilename(AmiiboManager manager, byte[] tagData) {
-        return decipherFilename(manager, tagData, false);
     }
 
     public static byte[] getValidatedData(KeyManager keyManager, byte[] data) throws Exception {

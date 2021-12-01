@@ -56,7 +56,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        if (null == convertView ) {
+        if (null == convertView) {
             convertView = LayoutInflater.from(parent.getContext()).inflate(
                     R.layout.amiibo_compact_card, parent, false);
             holder = new ViewHolder(convertView);

@@ -54,7 +54,7 @@ public class TagReader {
 
         for (int i = 0; i < pageCount; i += BULK_READ_PAGE_COUNT) {
             byte[] pages = tag.readPages(i);
-            if (null == pages  || pages.length != NfcByte.PAGE_SIZE * BULK_READ_PAGE_COUNT)
+            if (null == pages || pages.length != NfcByte.PAGE_SIZE * BULK_READ_PAGE_COUNT)
                 throw new IOException(TagMo.getStringRes(R.string.fail_invalid_size));
 
             int dstIndex = i * NfcByte.PAGE_SIZE;
@@ -77,7 +77,7 @@ public class TagReader {
         while (i < (numBanks & 0xFF)) {
             try {
                 byte[] tagData = readBankTitle(tag, i);
-                if (null == tagData  || tagData.length != 8) {
+                if (null == tagData || tagData.length != 8) {
                     throw new NullPointerException();
                 }
                 tags.add(TagUtils.bytesToHex(tagData));
@@ -106,7 +106,7 @@ public class TagReader {
         try {
             byte[] data = bank == -1 ? tag.fastRead(0x00, 0x86)
                     : tag.amiiboFastRead(0x00, 0x86, bank);
-            if (null == data ) {
+            if (null == data) {
                 throw new NullPointerException(TagMo.getStringRes(R.string.fail_read_amiibo));
             }
             System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_FILE_SIZE);
@@ -123,7 +123,7 @@ public class TagReader {
         byte[] tagData = new byte[NfcByte.TAG_FILE_SIZE];
         try {
             byte[] data = tag.amiiboFastRead(0x00, 0x86, bank);
-            if (null == data ) {
+            if (null == data) {
                 throw new NullPointerException(TagMo.getStringRes(R.string.fail_read_amiibo));
             }
             System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_FILE_SIZE);

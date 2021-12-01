@@ -322,7 +322,7 @@ public class TagWriter {
                     TagMo.getContext().getResources().openRawResource(R.raw.firmware)));
             while (true) {
                 String strLine = br.readLine();
-                if (null == strLine ) {
+                if (null == strLine) {
                     break;
                 }
                 String[] parts = strLine.replaceAll("\\s+", " ").split(" ");

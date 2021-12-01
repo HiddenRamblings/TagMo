@@ -62,14 +62,16 @@ import java.util.Random;
 
 public class Foomiibo {
 
-    private static byte[] getRandomBytes(int size) {
+    public Foomiibo() { }
+
+    private byte[] getRandomBytes(int size) {
         Random random = new Random();
         byte[] randBytes = new byte[size];
         random.nextBytes(randBytes);
         return randBytes;
     }
 
-    public static byte[] generateRandomUID() {
+    public byte[] generateRandomUID() {
         byte[] uid = getRandomBytes(9);
         uid[0x0] = 0x04;
         uid[0x3] = (byte) (0x88 ^ uid[0] ^ uid[1] ^ uid[2]);
@@ -90,7 +92,7 @@ public class Foomiibo {
         return week + year + "000" + identifier + facility;
     }
 
-    public static byte[] generateData(String id) {
+    public byte[] generateData(String id) {
         byte[] arr = new byte[540];
 
         // Set UID, BCC0

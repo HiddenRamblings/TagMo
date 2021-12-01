@@ -5,9 +5,9 @@ import android.net.Uri;
 
 import androidx.documentfile.provider.DocumentFile;
 
-import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import org.json.JSONArray;

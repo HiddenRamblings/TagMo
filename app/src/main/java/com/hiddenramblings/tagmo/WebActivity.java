@@ -31,10 +31,10 @@ import androidx.webkit.WebViewAssetLoader.AssetsPathHandler;
 import androidx.webkit.WebViewClientCompat;
 import androidx.webkit.WebViewFeature;
 
-import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.TagMo.Website;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.widget.Toasty;
 

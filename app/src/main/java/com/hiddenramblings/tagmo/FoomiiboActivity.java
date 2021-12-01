@@ -89,7 +89,7 @@ public class FoomiiboActivity extends AppCompatActivity implements
 
             byte[] uid = Arrays.copyOfRange(tagData, 0, 9);
             String uidHex = TagUtils.bytesToHex(uid);
-            return String.format(Locale.ROOT, "%1$s[%2$s-Foomiibo].bin", name, uidHex);
+            return String.format(Locale.ROOT, "%1$s[%2$s]-Foomiibo.bin", name, uidHex);
         } catch (Exception e) {
             Debug.Log(TagUtils.class, e.getMessage());
         }

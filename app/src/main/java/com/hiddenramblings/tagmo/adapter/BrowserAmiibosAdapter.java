@@ -388,7 +388,7 @@ public class BrowserAmiibosAdapter
                             TagMo.getPrefs().preferEmulated().get()).replace(
                                     TagMo.getPrefs().browserRootFolder().get(), "");
                     this.txtPath.setText(boldMatchingText(relativeFile, query));
-                    setIsHighlighted(relativeFile.endsWith("-Foomiibo].bin"));
+                    setIsHighlighted(relativeFile.contains("Foomiibo"));
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");

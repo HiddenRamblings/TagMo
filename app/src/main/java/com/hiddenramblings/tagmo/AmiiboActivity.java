@@ -96,10 +96,9 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @AfterViews
     void afterViews() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
-        }
 
         toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.setOnMenuItemClickListener(item -> {
@@ -197,12 +196,16 @@ public class AmiiboActivity extends AppCompatActivity {
         }
     });
 
-    @Click(R.id.container)
-    void onContainerClick() {
+    private void setResultData() {
         Bundle args = new Bundle();
         args.putByteArray(TagMo.EXTRA_TAG_DATA, this.tagData);
-        finish();
         setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_NFC_SCANNED).putExtras(args));
+    }
+
+    @Click(R.id.container)
+    void onContainerClick() {
+        setResultData();
+        finish();
     }
 
     private void displayBackupDialog(byte[] tagData, boolean foo) {
@@ -417,6 +420,7 @@ public class AmiiboActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        onContainerClick();
+        setResultData();
+        super.onBackPressed();
     }
 }

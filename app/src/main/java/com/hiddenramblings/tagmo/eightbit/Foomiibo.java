@@ -56,12 +56,7 @@ import android.os.Build;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Random;
 
@@ -72,6 +67,27 @@ public class Foomiibo {
         byte[] randBytes = new byte[size];
         random.nextBytes(randBytes);
         return randBytes;
+    }
+
+    public static byte[] generateRandomUID() {
+        byte[] uid = getRandomBytes(9);
+        uid[0x0] = 0x04;
+        uid[0x3] = (byte) (0x88 ^ uid[0] ^ uid[1] ^ uid[2]);
+        uid[0x8] = (byte) (uid[4] ^ uid[5] ^ uid[6] ^ uid[7]);
+        return uid;
+    }
+
+    @SuppressWarnings("unused")
+    private String randomizeSerial(String serial) {
+        Random random = new Random();
+        String week = new DecimalFormat("00").format(
+                random.nextInt(52 - 1 + 1) + 1);
+        String year = String.valueOf(random.nextInt(9 + 1));
+        String identifier = serial.substring(3, 7);
+        String facility = TagMo.getContext().getResources().getStringArray(
+                R.array.production_factory)[random.nextInt(3 + 1)];
+
+        return week + year + "000" + identifier + facility;
     }
 
     public static byte[] generateData(String id) {
@@ -120,53 +136,4 @@ public class Foomiibo {
 
         return arr;
     }
-
-    public static byte[] generateRandomUID() {
-        byte[] uid = getRandomBytes(9);
-        uid[0x0] = 0x04;
-        uid[0x3] = (byte) (0x88 ^ uid[0] ^ uid[1] ^ uid[2]);
-        uid[0x8] = (byte) (uid[4] ^ uid[5] ^ uid[6] ^ uid[7]);
-        return uid;
-    }
-
-    @SuppressWarnings("unused")
-    private String randomizeSerial(String serial) {
-        Random random = new Random();
-        String week = new DecimalFormat("00").format(
-                random.nextInt(52 - 1 + 1) + 1);
-        String year = String.valueOf(random.nextInt(9 + 1));
-        String identifier = serial.substring(3, 7);
-        String facility = TagMo.getContext().getResources().getStringArray(
-                R.array.production_factory)[random.nextInt(3 + 1)];
-
-        return week + year + "000" + identifier + facility;
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void deleteDir(File dir) {
-        File[] files = dir.listFiles();
-        if (null != files && files.length > 0) {
-            for (File file : files) {
-                if (file.isDirectory())
-                    deleteDir(file);
-                else
-                    file.delete();
-            }
-        }
-        dir.delete();
-    }
-
-    public static void generateSeries(AmiiboManager amiiboManager, File destination)
-            throws IOException {
-        if (destination.exists()) deleteDir(destination);
-        //noinspection ResultOfMethodCallIgnored
-        destination.mkdirs();
-        for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-            byte[] tagData = generateData(TagUtils.amiiboIdToHex(amiibo.id));
-            File directory = new File(destination, amiibo.getAmiiboSeries().name);
-            TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
-                    amiiboManager, tagData, true), tagData);
-        }
-    }
-
 }

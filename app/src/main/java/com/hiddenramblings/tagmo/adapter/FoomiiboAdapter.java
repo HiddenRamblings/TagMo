@@ -8,10 +8,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +28,8 @@ import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
@@ -34,41 +37,72 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-public class BankListBrowserAdapter
-        extends RecyclerView.Adapter<BankListBrowserAdapter.AmiiboViewHolder>
-        implements BrowserSettingsListener {
+public class FoomiiboAdapter
+        extends RecyclerView.Adapter<FoomiiboAdapter.AmiiboViewHolder>
+        implements Filterable, BrowserSettingsListener {
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
-    private ArrayList<Amiibo> amiibos = new ArrayList<>();
+    private final ArrayList<Amiibo> data = new ArrayList<>();
+    private ArrayList<Amiibo> filteredData;
+    private AmiiboFilter filter;
+    boolean firstRun = true;
 
-    public BankListBrowserAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
+    public FoomiiboAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
-    }
 
-    public void setAmiibos(ArrayList<Amiibo> amiibos) {
-        this.amiibos = amiibos;
+        this.filteredData = this.data;
+        this.setHasStableIds(true);
     }
 
     @Override
-    public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
+    public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,
+                                         BrowserSettings oldBrowserSettings) {
+        if (null == newBrowserSettings || null == oldBrowserSettings) return;
+        boolean refresh = firstRun ||
+                !BrowserSettings.equals(newBrowserSettings.getQuery(),
+                        oldBrowserSettings.getQuery()) ||
+                !BrowserSettings.equals(newBrowserSettings.getSort(),
+                        oldBrowserSettings.getSort()) ||
+                !BrowserSettings.equals(newBrowserSettings.getGameSeriesFilter(),
+                        oldBrowserSettings.getGameSeriesFilter()) ||
+                !BrowserSettings.equals(newBrowserSettings.getCharacterFilter(),
+                        oldBrowserSettings.getCharacterFilter()) ||
+                !BrowserSettings.equals(newBrowserSettings.getAmiiboSeriesFilter(),
+                        oldBrowserSettings.getAmiiboSeriesFilter()) ||
+                !BrowserSettings.equals(newBrowserSettings.getAmiiboTypeFilter(),
+                        oldBrowserSettings.getAmiiboTypeFilter());
 
+        if (!BrowserSettings.equals(newBrowserSettings.getAmiiboManager(),
+                oldBrowserSettings.getAmiiboManager())) {
+            refresh = true;
+        }
+        if (!BrowserSettings.equals(newBrowserSettings.getAmiiboView(),
+                oldBrowserSettings.getAmiiboView())) {
+            refresh = true;
+        }
+        if (refresh) {
+            this.refresh();
+        }
+
+        firstRun = false;
     }
 
     @Override
     public int getItemCount() {
-        return amiibos.size();
+        return filteredData.size();
     }
 
     @Override
     public long getItemId(int i) {
-        return amiibos.get(i).id;
+        return filteredData.get(i).id;
     }
 
     public Amiibo getItem(int i) {
-        return amiibos.get(i);
+        return filteredData.get(i);
     }
 
     @Override
@@ -92,41 +126,96 @@ public class BankListBrowserAdapter
         }
     }
 
+    private void setIsHighlighted(AmiiboViewHolder holder) {
+        holder.itemView.findViewById(R.id.highlight).setBackgroundColor(
+                ContextCompat.getColor(TagMo.getContext(), TagMo.isDarkTheme()
+                        ? R.color.backgroundWhite : R.color.backgroundBlack));
+    }
+
     @Override
-    public void onBindViewHolder(@NonNull final AmiiboViewHolder holder, int position) {
-        View highlight = holder.itemView.findViewById(R.id.highlight);
-        if (TagMo.getPrefs().eliteActiveBank().get() == position) {
-            highlight.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                    TagMo.isDarkTheme() ? android.R.color.holo_green_dark
-                            : android.R.color.holo_green_light));
-        } else {
-            highlight.setBackgroundColor(ContextCompat.getColor(
-                    TagMo.getContext(), android.R.color.transparent));
-        }
+    public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
-            if (null != holder.listener)
-                holder.listener.onAmiiboClicked(holder.amiiboItem, position);
+            if (null != holder.listener) {
+                holder.listener.onAmiiboClicked(holder.amiibo);
+                setIsHighlighted(holder);
+            }
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.listener) {
-                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                        holder.listener.onAmiiboClicked(holder.amiiboItem, position);
-                    else
-                        holder.listener.onAmiiboImageClicked(holder.amiiboItem, position);
+                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
+                        holder.listener.onAmiiboClicked(holder.amiibo);
+                    } else {
+                        holder.listener.onAmiiboImageClicked(holder.amiibo);
+                    }
+                    setIsHighlighted(holder);
                 }
             });
         }
-        holder.itemView.setOnLongClickListener(view -> {
-            if (null != holder.listener)
-                return holder.listener.onAmiiboLongClicked(holder.amiiboItem, position);
-            return false;
-        });
         holder.bind(getItem(position));
     }
 
-    protected static abstract class AmiiboViewHolder extends RecyclerView.ViewHolder {
+    public void refresh() {
+        this.getFilter().filter(settings.getQuery());
+    }
 
+    @Override
+    public AmiiboFilter getFilter() {
+        if (null == this.filter) {
+            this.filter = new AmiiboFilter();
+        }
+        return this.filter;
+    }
+
+    class AmiiboFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            String query = null != constraint ? constraint.toString() : "";
+            settings.setQuery(query);
+
+            data.clear();
+            settings.getAmiiboManager().amiibos.values();
+            data.addAll(settings.getAmiiboManager().amiibos.values());
+
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
+
+            FilterResults filterResults = new FilterResults();
+            ArrayList<Amiibo> tempList = new ArrayList<>();
+            String queryText = query.trim().toLowerCase();
+            for (Amiibo amiiboFile : data) {
+                boolean add;
+
+                if (null != amiiboManager) {
+                    Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.id);
+                    if (null == amiibo)
+                        amiibo = new Amiibo(amiiboManager, amiiboFile.id,
+                                null, null);
+                    add = settings.amiiboContainsQuery(amiibo, queryText);
+                } else {
+                    add = queryText.isEmpty();
+                }
+                if (add)
+                    tempList.add(amiiboFile);
+            }
+            filterResults.count = tempList.size();
+            filterResults.values = tempList;
+
+            return filterResults;
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            if (filteredData.isEmpty() || filteredData != filterResults.values) {
+                //noinspection unchecked
+                filteredData = (ArrayList<Amiibo>) filterResults.values;
+                Collections.sort(filteredData, new AmiiboComparator(settings));
+                notifyDataSetChanged();
+            }
+        }
+    }
+
+    protected static abstract class AmiiboViewHolder extends RecyclerView.ViewHolder {
         private final BrowserSettings settings;
         private final OnAmiiboClickListener listener;
 
@@ -140,7 +229,7 @@ public class BankListBrowserAdapter
         public final TextView txtPath;
         public final ImageView imageAmiibo;
 
-        Amiibo amiiboItem = null;
+        Amiibo amiibo = null;
 
         CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
@@ -165,12 +254,12 @@ public class BankListBrowserAdapter
             }
         };
 
-        public AmiiboViewHolder(View itemView, BrowserSettings settings,
-                                OnAmiiboClickListener listener) {
+        public AmiiboViewHolder(View itemView, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(itemView);
 
             this.settings = settings;
             this.listener = listener;
+
             this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
             this.txtTagId = itemView.findViewById(R.id.txtTagId);
@@ -182,21 +271,27 @@ public class BankListBrowserAdapter
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
         }
 
-        @SuppressLint("SetTextI18n")
-        void bind(final Amiibo amiibo) {
-            this.amiiboItem = amiibo;
+        void bind(final Amiibo item) {
+            this.amiibo = item;
 
+            String tagInfo = null;
             String amiiboHexId = "";
             String amiiboName = "";
             String amiiboSeries = "";
             String amiiboType = "";
             String gameSeries = "";
             // String character = "";
-            String amiiboImageUrl = null;
-            boolean isAmiibo = null != amiibo;
+            String amiiboImageUrl;
 
-            if (isAmiibo) {
-                this.amiiboItem.bank = getAbsoluteAdapterPosition();
+            long amiiboId = item.id;
+            Amiibo amiibo = null;
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
+            if (null != amiiboManager) {
+                amiibo = amiiboManager.amiibos.get(amiiboId);
+                if (null == amiibo)
+                    amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
+            }
+            if (null != amiibo) {
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
                 if (null != amiibo.name)
@@ -209,39 +304,38 @@ public class BankListBrowserAdapter
                     gameSeries = amiibo.getGameSeries().name;
                 // if (null != amiibo.getCharacter())
                 //     gameSeries = amiibo.getCharacter().name;
+            } else {
+                tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
+                amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
             }
 
             String query = settings.getQuery().toLowerCase();
-            String value = String.valueOf(getAbsoluteAdapterPosition() + 1);
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
-                this.txtError.setVisibility(View.GONE);
-                if (isAmiibo) {
-                    setAmiiboInfoText(this.txtName, value + ": " + amiiboName);
-                    setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query));
-                    setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query));
-                    setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query));
-                    setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query));
-                    // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query));
+                boolean hasTagInfo = null != tagInfo;
+                if (hasTagInfo) {
+                    setAmiiboInfoText(this.txtError, tagInfo, false);
                 } else {
-                    this.txtName.setVisibility(View.VISIBLE);
-                    this.txtName.setText(TagMo.getStringRes(R.string.blank_bank, value));
-                    this.txtTagId.setVisibility(View.GONE);
-                    this.txtAmiiboSeries.setVisibility(View.GONE);
-                    this.txtAmiiboType.setVisibility(View.GONE);
-                    this.txtGameSeries.setVisibility(View.GONE);
-                    // this.txtCharacter.setVisibility(View.GONE);
+                    this.txtError.setVisibility(View.GONE);
                 }
+                setAmiiboInfoText(this.txtName, amiiboName, false);
+                setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query), hasTagInfo);
+                setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), hasTagInfo);
+                setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query), hasTagInfo);
+                setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query), hasTagInfo);
+                // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), hasTagInfo);
+                this.txtPath.setVisibility(View.GONE);
             }
-
             if (null != this.imageAmiibo) {
                 this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(itemView).clear(target);
-                Glide.with(itemView)
-                        .setDefaultRequestOptions(onlyRetrieveFromCache())
-                        .asBitmap()
-                        .load(null != amiiboImageUrl ? amiiboImageUrl: R.mipmap.ic_launcher)
-                        .into(target);
+                if (null != amiiboImageUrl) {
+                    Glide.with(itemView)
+                            .setDefaultRequestOptions(onlyRetrieveFromCache())
+                            .asBitmap()
+                            .load(amiiboImageUrl)
+                            .into(target);
+                }
             }
         }
 
@@ -254,7 +348,7 @@ public class BankListBrowserAdapter
                         itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+                return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
                         || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
             } else {
                 return new RequestOptions().onlyRetrieveFromCache(false);
@@ -274,7 +368,7 @@ public class BankListBrowserAdapter
                     break;
 
                 j = i + query.length();
-                str.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+                str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
                         i, j, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             return str;
@@ -283,20 +377,24 @@ public class BankListBrowserAdapter
         private SpannableStringBuilder boldStartText(String text, String query) {
             SpannableStringBuilder str = new SpannableStringBuilder(text);
             if (!query.isEmpty() && text.toLowerCase().startsWith(query)) {
-                str.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+                str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
                         0, query.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             return str;
         }
 
-        private void setAmiiboInfoText(TextView textView, CharSequence text) {
-            textView.setVisibility(View.VISIBLE);
-            if (text.length() == 0) {
-                textView.setText(R.string.unknown);
-                textView.setEnabled(false);
+        void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+            if (hasTagInfo) {
+                textView.setVisibility(View.GONE);
             } else {
-                textView.setText(text);
-                textView.setEnabled(true);
+                textView.setVisibility(View.VISIBLE);
+                if (text.length() == 0) {
+                    textView.setText(R.string.unknown);
+                    textView.setEnabled(false);
+                } else {
+                    textView.setText(text);
+                    textView.setEnabled(true);
+                }
             }
         }
     }
@@ -346,10 +444,8 @@ public class BankListBrowserAdapter
     }
 
     public interface OnAmiiboClickListener {
-        void onAmiiboClicked(Amiibo amiibo, int position);
+        void onAmiiboClicked(Amiibo amiibo);
 
-        void onAmiiboImageClicked(Amiibo amiibo, int position);
-
-        boolean onAmiiboLongClicked(Amiibo amiibo, int position);
+        void onAmiiboImageClicked(Amiibo amiibo);
     }
 }

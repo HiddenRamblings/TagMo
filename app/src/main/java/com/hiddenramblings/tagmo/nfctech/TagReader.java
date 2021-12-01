@@ -2,9 +2,9 @@ package com.hiddenramblings.tagmo.nfctech;
 
 import android.net.Uri;
 
-import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import java.io.File;
 import java.io.FileInputStream;

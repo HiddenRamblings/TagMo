@@ -26,9 +26,6 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.NfcActivity_;
@@ -43,6 +40,9 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.github.JSONExecutor;
 import com.hiddenramblings.tagmo.widget.Toasty;
 

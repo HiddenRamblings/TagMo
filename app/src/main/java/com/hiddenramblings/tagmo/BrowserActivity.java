@@ -1,7 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -31,7 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -76,7 +73,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
-import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
@@ -640,17 +636,14 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    ActivityResultLauncher<Intent> onBuildFoomiibo = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result ->
+                    this.onRootFolderChanged(true));
+
     @OptionsItem(R.id.build_foomiibo)
     @Background
     void onBuildFoomiiboClicked() {
-        try {
-            Foomiibo.generateSeries(settings.getAmiiboManager(),
-                    Storage.getDownloadDir("TagMo", "Foomiibo"));
-        } catch (Exception e) {
-            Debug.Log(e);
-        } finally {
-            this.onRootFolderChanged(true);
-        }
+        onBuildFoomiibo.launch(new Intent(this, FoomiiboActivity_.class));
     }
 
     private int getQueryCount(String queryText) {

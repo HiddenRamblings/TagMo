@@ -1,14 +1,8 @@
 package com.hiddenramblings.tagmo.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +16,6 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.R;
@@ -32,7 +25,7 @@ import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
-import com.hiddenramblings.tagmo.settings.SettingsFragment;
+import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
 
@@ -143,6 +136,8 @@ public class BankBrowserAdapter
 
         Amiibo amiiboItem = null;
 
+        private final BoldSpannable boldSpannable = new BoldSpannable();
+
         CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
             public void onLoadStarted(@Nullable Drawable placeholder) {
@@ -219,11 +214,15 @@ public class BankBrowserAdapter
                 this.txtError.setVisibility(View.GONE);
                 if (isAmiibo) {
                     setAmiiboInfoText(this.txtName, value + ": " + amiiboName);
-                    setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query));
-                    setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query));
-                    setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query));
-                    setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query));
-                    // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query));
+                    setAmiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query));
+                    setAmiiboInfoText(this.txtAmiiboSeries,
+                            boldSpannable.IndexOf(amiiboSeries, query));
+                    setAmiiboInfoText(this.txtAmiiboType,
+                            boldSpannable.IndexOf(amiiboType, query));
+                    setAmiiboInfoText(this.txtGameSeries,
+                            boldSpannable.IndexOf(gameSeries, query));
+                    // setAmiiboInfoText(this.txtCharacter,
+                    // boldText.Matching(character, query));
                 } else {
                     this.txtName.setVisibility(View.VISIBLE);
                     this.txtName.setText(TagMo.getStringRes(R.string.blank_bank, value));
@@ -239,57 +238,13 @@ public class BankBrowserAdapter
                 this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(itemView).clear(target);
                 Glide.with(itemView)
-                        .setDefaultRequestOptions(onlyRetrieveFromCache())
+                        .setDefaultRequestOptions(settings.onlyRetrieveFromCache(itemView))
                         .asBitmap()
                         .thumbnail(ResourcesCompat.getFloat(
                                 itemView.getResources(), R.dimen.thumbnail))
                         .load(null != amiiboImageUrl ? amiiboImageUrl: R.mipmap.ic_launcher)
                         .into(target);
             }
-        }
-
-        private RequestOptions onlyRetrieveFromCache() {
-            String imageNetworkSetting = settings.getImageNetworkSettings();
-            if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
-                return new RequestOptions().onlyRetrieveFromCache(true);
-            } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
-                ConnectivityManager cm = (ConnectivityManager)
-                        itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
-                        || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
-            } else {
-                return new RequestOptions().onlyRetrieveFromCache(false);
-            }
-        }
-
-        private SpannableStringBuilder boldMatchingText(String text, String query) {
-            SpannableStringBuilder str = new SpannableStringBuilder(text);
-            if (query.isEmpty())
-                return str;
-
-            text = text.toLowerCase();
-            int j = 0;
-            while (j < text.length()) {
-                int i = text.indexOf(query, j);
-                if (i == -1)
-                    break;
-
-                j = i + query.length();
-                str.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
-                        i, j, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            return str;
-        }
-
-        private SpannableStringBuilder boldStartText(String text, String query) {
-            SpannableStringBuilder str = new SpannableStringBuilder(text);
-            if (!query.isEmpty() && text.toLowerCase().startsWith(query)) {
-                str.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
-                        0, query.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            return str;
         }
 
         private void setAmiiboInfoText(TextView textView, CharSequence text) {

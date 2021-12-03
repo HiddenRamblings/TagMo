@@ -1,9 +1,14 @@
 package com.hiddenramblings.tagmo.settings;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.view.View;
 
+import com.bumptech.glide.request.RequestOptions;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
@@ -425,5 +430,21 @@ public class BrowserSettings implements Parcelable {
             else return null != amiiboType && amiiboType.name.toLowerCase().contains(query);
         }
         return true;
+    }
+
+    public RequestOptions onlyRetrieveFromCache(View itemView) {
+        String imageNetworkSetting = getImageNetworkSettings();
+        if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
+            return new RequestOptions().onlyRetrieveFromCache(true);
+        } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
+            ConnectivityManager cm = (ConnectivityManager)
+                    itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+                    || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
+        } else {
+            return new RequestOptions().onlyRetrieveFromCache(false);
+        }
     }
 }

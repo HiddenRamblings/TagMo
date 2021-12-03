@@ -308,9 +308,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
 
             @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
         });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

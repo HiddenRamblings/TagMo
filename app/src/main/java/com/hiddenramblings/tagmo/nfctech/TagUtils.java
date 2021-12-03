@@ -268,11 +268,9 @@ public class TagUtils {
         return getValidatedData(keyManager, TagReader.readTagDocument(file.getUri()));
     }
 
-    public static String writeBytesToFile(File backupDir, String name, byte[] tagData)
+    public static String writeBytesToFile(File destination, String name, byte[] tagData)
             throws IOException {
-        //noinspection ResultOfMethodCallIgnored
-        backupDir.mkdirs();
-        File binFile = new File(backupDir, name);
+        File binFile = new File(destination, name);
         try (FileOutputStream fos = new FileOutputStream(binFile)) {
             fos.write(tagData);
         }

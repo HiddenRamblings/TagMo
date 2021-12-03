@@ -214,14 +214,12 @@ public class WebActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @UiThread
     void unzipFile(File zipFile) {
         dialog = ProgressDialog.show(this,
                 getString(R.string.wait_unzip), "", true);
-        File destination = Storage.getDownloadDir("TagMo", "Downloads");
-        destination.mkdirs();
-        new Thread(new UnZip(zipFile, destination)).start();
+        new Thread(new UnZip(zipFile, Storage.getDownloadDir(
+                "TagMo", "Downloads"))).start();
     }
 
     private void saveBinFile(byte[] tagData, String name) {

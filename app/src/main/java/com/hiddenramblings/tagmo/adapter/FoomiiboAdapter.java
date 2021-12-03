@@ -19,6 +19,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -333,6 +334,8 @@ public class FoomiiboAdapter
                     Glide.with(itemView)
                             .setDefaultRequestOptions(onlyRetrieveFromCache())
                             .asBitmap()
+                            .thumbnail(ResourcesCompat.getFloat(
+                                    itemView.getResources(), R.dimen.thumbnail))
                             .load(amiiboImageUrl)
                             .into(target);
                 }

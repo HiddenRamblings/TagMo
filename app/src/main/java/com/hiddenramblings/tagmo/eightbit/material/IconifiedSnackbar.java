@@ -69,12 +69,10 @@ import java.lang.ref.WeakReference;
 public class IconifiedSnackbar {
 
     private final WeakReference<Activity> mActivity;
-    private final Resources resources;
     private final ViewGroup layout;
 
     public IconifiedSnackbar(Activity activity, ViewGroup layout) {
         mActivity = new WeakReference<>(activity);
-        resources = activity.getResources();
         this.layout = layout;
     }
 
@@ -96,8 +94,8 @@ public class IconifiedSnackbar {
                     R.drawable.ic_stat_notice, 0, 0, 0);
         }
         textView.setGravity(Gravity.CENTER_VERTICAL);
-        textView.setCompoundDrawablePadding(resources.getDimensionPixelOffset(
-                R.dimen.snackbar_icon_padding));
+        textView.setCompoundDrawablePadding(textView.getResources()
+                .getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)
                 snackbarLayout.getLayoutParams();
         params.width = CoordinatorLayout.LayoutParams.MATCH_PARENT;

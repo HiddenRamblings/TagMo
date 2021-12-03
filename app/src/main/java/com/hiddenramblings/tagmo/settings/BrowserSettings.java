@@ -437,11 +437,10 @@ public class BrowserSettings implements Parcelable {
         if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
             return new RequestOptions().onlyRetrieveFromCache(true);
         } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
-            ConnectivityManager cm = (ConnectivityManager)
-                    itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
+            ConnectivityManager cm = (ConnectivityManager) itemView.getContext()
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return new RequestOptions().onlyRetrieveFromCache(activeNetwork == null
+            return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
                     || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
         } else {
             return new RequestOptions().onlyRetrieveFromCache(false);

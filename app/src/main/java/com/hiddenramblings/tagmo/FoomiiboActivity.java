@@ -153,13 +153,17 @@ public class FoomiiboActivity extends AppCompatActivity implements
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         if (null == amiiboManager) return;
 
-        if (directory.exists()) deleteDir(directory);
+        if (directory.exists())
+            deleteDir(directory);
         //noinspection ResultOfMethodCallIgnored
         directory.mkdirs();
+
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
             try {
                 byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
                 File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+                //noinspection ResultOfMethodCallIgnored
+                directory.mkdirs();
                 TagUtils.writeBytesToFile(directory, decipherFilename(
                         amiiboManager, tagData), tagData);
             } catch (Exception e) {
@@ -175,6 +179,8 @@ public class FoomiiboActivity extends AppCompatActivity implements
         try {
             byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            //noinspection ResultOfMethodCallIgnored
+            directory.mkdirs();
             TagUtils.writeBytesToFile(directory, decipherFilename(
                     settings.getAmiiboManager(), tagData), tagData);
             setResult(RESULT_OK);
@@ -188,6 +194,8 @@ public class FoomiiboActivity extends AppCompatActivity implements
         try {
             byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            //noinspection ResultOfMethodCallIgnored
+            directory.mkdirs();
             TagUtils.writeBytesToFile(directory, decipherFilename(
                     settings.getAmiiboManager(), tagData), tagData);
             setResult(RESULT_OK);

@@ -246,9 +246,7 @@ public class AmiiboActivity extends AppCompatActivity {
 
     CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
         @Override
-        public void onLoadStarted(@Nullable Drawable placeholder) {
-            imageAmiibo.setVisibility(View.GONE);
-        }
+        public void onLoadStarted(@Nullable Drawable placeholder) { }
 
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
@@ -256,9 +254,7 @@ public class AmiiboActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onLoadCleared(@Nullable Drawable placeholder) {
-
-        }
+        public void onLoadCleared(@Nullable Drawable placeholder) { }
 
         @Override
         public void onResourceReady(@NonNull Bitmap resource, Transition transition) {

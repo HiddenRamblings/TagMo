@@ -20,6 +20,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.R;
@@ -259,9 +260,7 @@ public class BrowserAmiibosAdapter
 
         CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
-            public void onLoadStarted(@Nullable Drawable placeholder) {
-                imageAmiibo.setVisibility(View.GONE);
-            }
+            public void onLoadStarted(@Nullable Drawable placeholder) { }
 
             @Override
             public void onLoadFailed(@Nullable Drawable errorDrawable) {
@@ -269,9 +268,7 @@ public class BrowserAmiibosAdapter
             }
 
             @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) {
-
-            }
+            public void onLoadCleared(@Nullable Drawable placeholder) { }
 
             @Override
             public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
@@ -404,9 +401,9 @@ public class BrowserAmiibosAdapter
                     Glide.with(itemView)
                             .setDefaultRequestOptions(settings.onlyRetrieveFromCache(itemView))
                             .asBitmap()
-                            .thumbnail(ResourcesCompat.getFloat(
-                                    itemView.getResources(), R.dimen.thumbnail))
                             .load(amiiboImageUrl)
+                            .thumbnail(0.25f)
+                            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                             .into(target);
                 }
             }

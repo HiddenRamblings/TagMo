@@ -149,24 +149,20 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
 
         CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
-            public void onLoadStarted(@Nullable Drawable placeholder) {
-                imageAmiibo.setVisibility(android.view.View.GONE);
-            }
+            public void onLoadStarted(@Nullable Drawable placeholder) { }
 
             @Override
             public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                imageAmiibo.setVisibility(android.view.View.GONE);
+                imageAmiibo.setVisibility(View.GONE);
             }
 
             @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) {
-
-            }
+            public void onLoadCleared(@Nullable Drawable placeholder) { }
 
             @Override
             public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
                 imageAmiibo.setImageBitmap(resource);
-                imageAmiibo.setVisibility(android.view.View.VISIBLE);
+                imageAmiibo.setVisibility(View.VISIBLE);
             }
         };
 

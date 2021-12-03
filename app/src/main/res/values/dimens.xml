@@ -5,4 +5,6 @@
     <dimen name="card_radius">4dp</dimen>
     <dimen name="snackbar_icon_padding">4dp</dimen>
     <dimen name="swipe_progress_end">48dp</dimen>
+
+    <item name="thumbnail" format="float" type="dimen">0.25</item>
 </resources>

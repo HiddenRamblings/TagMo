@@ -90,18 +90,18 @@ public class ImageActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            }
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
         });
 
         group0.addOnLayoutChangeListener((view, i, i1, i2, i3, i4, i5, i6, i7) -> {
             int height = view.getHeight() + bottomSheet.getPaddingTop();
             bottomSheetBehavior.setPeekHeight(height);
-            imageView.setPadding(imageView.getPaddingLeft(), imageView.getPaddingTop(), imageView.getPaddingRight(), imageView.getPaddingTop() + height);
+            imageView.setPadding(imageView.getPaddingLeft(), imageView.getPaddingTop(),
+                    imageView.getPaddingRight(), imageView.getPaddingTop() + height);
         });
 
-        updateImage();
         loadAmiiboManager();
+        Glide.with(this).load(getImageUrl()).into(imageView);
     }
 
     @Click(R.id.toggle)
@@ -137,12 +137,6 @@ public class ImageActivity extends AppCompatActivity {
     void setAmiiboManager(AmiiboManager amiiboManager) {
         this.amiiboManager = amiiboManager;
         this.updateView();
-    }
-
-    void updateImage() {
-        Glide.with(this)
-                .load(getImageUrl())
-                .into(imageView);
     }
 
     void updateView() {

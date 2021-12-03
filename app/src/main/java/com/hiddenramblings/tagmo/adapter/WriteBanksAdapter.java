@@ -1,13 +1,8 @@
 package com.hiddenramblings.tagmo.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +18,6 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.R;
@@ -41,7 +35,7 @@ import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
-import com.hiddenramblings.tagmo.settings.SettingsFragment;
+import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -308,6 +302,8 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
 
         AmiiboFile amiiboFile = null;
 
+        private final BoldSpannable boldSpannable = new BoldSpannable();
+
         CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
             public void onLoadStarted(@Nullable Drawable placeholder) {
@@ -392,24 +388,28 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
             String query = settings.getQuery().toLowerCase();
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
-                boolean hasTagInfo = null != tagInfo ;
+                boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {
                     setAmiiboInfoText(this.txtError, tagInfo, false);
                 } else {
                     this.txtError.setVisibility(View.GONE);
                 }
                 setAmiiboInfoText(this.txtName, amiiboName, false);
-                setAmiiboInfoText(this.txtTagId, boldStartText(amiiboHexId, query), hasTagInfo);
-                setAmiiboInfoText(this.txtAmiiboSeries, boldMatchingText(amiiboSeries, query), hasTagInfo);
-                setAmiiboInfoText(this.txtAmiiboType, boldMatchingText(amiiboType, query), hasTagInfo);
-                setAmiiboInfoText(this.txtGameSeries, boldMatchingText(gameSeries, query), hasTagInfo);
-                // setAmiiboInfoText(this.txtCharacter, boldMatchingText(character, query), hasTagInfo);
+                setAmiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query), hasTagInfo);
+                setAmiiboInfoText(this.txtAmiiboSeries,
+                        boldSpannable.IndexOf(amiiboSeries, query), hasTagInfo);
+                setAmiiboInfoText(this.txtAmiiboType,
+                        boldSpannable.IndexOf(amiiboType, query), hasTagInfo);
+                setAmiiboInfoText(this.txtGameSeries,
+                        boldSpannable.IndexOf(gameSeries, query), hasTagInfo);
+                // setAmiiboInfoText(this.txtCharacter,
+                // boldText.Matching(character, query), hasTagInfo);
                 if (null != item.getFilePath()) {
                     this.itemView.setEnabled(true);
                     String relativeFile = Storage.getRelativePath(item.getFilePath(),
                             TagMo.getPrefs().preferEmulated().get()).replace(
                                     TagMo.getPrefs().browserRootFolder().get(), "");
-                    this.txtPath.setText(boldMatchingText(relativeFile, query));
+                    this.txtPath.setText(boldSpannable.IndexOf(relativeFile, query));
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");
@@ -423,7 +423,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                 Glide.with(itemView).clear(target);
                 if (null != amiiboImageUrl) {
                     Glide.with(itemView)
-                            .setDefaultRequestOptions(onlyRetrieveFromCache())
+                            .setDefaultRequestOptions(settings.onlyRetrieveFromCache(itemView))
                             .asBitmap()
                             .thumbnail(ResourcesCompat.getFloat(
                                     itemView.getResources(), R.dimen.thumbnail))
@@ -431,50 +431,6 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                             .into(target);
                 }
             }
-        }
-
-        private RequestOptions onlyRetrieveFromCache() {
-            String imageNetworkSetting = settings.getImageNetworkSettings();
-            if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
-                return new RequestOptions().onlyRetrieveFromCache(true);
-            } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
-                ConnectivityManager cm = (ConnectivityManager)
-                        itemView.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
-                        || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
-            } else {
-                return new RequestOptions().onlyRetrieveFromCache(false);
-            }
-        }
-
-        private SpannableStringBuilder boldMatchingText(String text, String query) {
-            SpannableStringBuilder str = new SpannableStringBuilder(text);
-            if (query.isEmpty())
-                return str;
-
-            text = text.toLowerCase();
-            int j = 0;
-            while (j < text.length()) {
-                int i = text.indexOf(query, j);
-                if (i == -1)
-                    break;
-
-                j = i + query.length();
-                str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
-                        i, j, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            return str;
-        }
-
-        private SpannableStringBuilder boldStartText(String text, String query) {
-            SpannableStringBuilder str = new SpannableStringBuilder(text);
-            if (!query.isEmpty() && text.toLowerCase().startsWith(query)) {
-                str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
-                        0, query.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            return str;
         }
 
         void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {

@@ -237,12 +237,19 @@ public class Storage extends Environment {
     public static File getDownloadDir(String directory, String subfolder) {
         File downloads = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
-        if (null != directory && null != subfolder)
-            return new File(downloads, directory + File.separator + subfolder);
-        else if (null != directory)
-            return new File(downloads, directory);
-        else
+        if (null != directory && null != subfolder) {
+            File destination = new File(downloads, directory + File.separator + subfolder);
+            //noinspection ResultOfMethodCallIgnored
+            destination.mkdirs();
+            return destination;
+        } else if (null != directory) {
+            File destination = new File(downloads, directory);
+            //noinspection ResultOfMethodCallIgnored
+            destination.mkdirs();
+            return destination;
+        } else {
             return downloads;
+        }
     }
 
     public static File getDownloadDir(String directory) {

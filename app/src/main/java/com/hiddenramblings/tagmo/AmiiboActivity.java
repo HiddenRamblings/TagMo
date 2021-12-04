@@ -26,12 +26,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -49,7 +49,6 @@ import org.androidannotations.annotations.ViewById;
 import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -246,7 +245,10 @@ public class AmiiboActivity extends AppCompatActivity {
 
     CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
         @Override
-        public void onLoadStarted(@Nullable Drawable placeholder) { }
+        public void onLoadStarted(@Nullable Drawable placeholder) {
+            imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
+            imageAmiibo.setVisibility(View.VISIBLE);
+        }
 
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
@@ -344,6 +346,7 @@ public class AmiiboActivity extends AppCompatActivity {
                         .setDefaultRequestOptions(onlyRetrieveFromCache())
                         .asBitmap()
                         .load(amiiboImageUrl)
+                        .diskCacheStrategy(DiskCacheStrategy.DATA)
                         .into(amiiboImageTarget);
             }
         }

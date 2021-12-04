@@ -1,5 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo.data;
 
+import android.content.Context;
+
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.nfctech.NfcByte;
@@ -38,13 +40,15 @@ public class AmiiboData {
     private static final int APP_DATA_OFFSET = 0xED;
     private static final int APP_DATA_LENGTH = 0xD8;
 
+    private final Context context = TagMo.getContext();
+
     public static final HashMap<Integer, String> countryCodes = new HashMap<>();
 
     private final ByteBuffer tagData;
 
     public AmiiboData(byte[] tagData) throws IOException {
         if (tagData.length < NfcByte.TAG_FILE_SIZE)
-            throw new IOException(TagMo.getStringRes(R.string.invalid_data_size,
+            throw new IOException(context.getString(R.string.invalid_data_size,
                     tagData.length, NfcByte.TAG_FILE_SIZE));
 
         this.tagData = ByteBuffer.wrap(tagData);
@@ -65,7 +69,7 @@ public class AmiiboData {
 
     public void setUID(byte[] value) throws NumberFormatException {
         if (value.length != UID_LENGTH)
-            throw new NumberFormatException(TagMo.getStringRes(R.string.invalid_uid_length));
+            throw new NumberFormatException(context.getString(R.string.invalid_uid_length));
 
         tagData.put(0x0, value[0x8]);
         tagData.position(UID_OFFSET);
@@ -195,7 +199,7 @@ public class AmiiboData {
 
     public void setAppData(byte[] value) throws Exception {
         if (value.length != APP_DATA_LENGTH)
-            throw new IOException(TagMo.getStringRes(R.string.invalid_app_data));
+            throw new IOException(context.getString(R.string.invalid_app_data));
 
         putBytes(tagData, APP_DATA_OFFSET, value);
     }

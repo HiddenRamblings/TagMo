@@ -5,7 +5,6 @@ import android.net.Uri;
 
 import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.NfcByte;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -119,32 +118,32 @@ public class KeyManager {
 
     public byte[] decrypt(byte[] tagData) throws Exception {
         if (!hasFixedKey() || !hasUnFixedKey())
-            throw new Exception(TagMo.getStringRes(R.string.key_not_present));
+            throw new Exception(context.getString(R.string.key_not_present));
 
         AmiiTool tool = new AmiiTool();
         if (tool.setKeysFixed(fixedKey, fixedKey.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.error_amiitool_init));
+            throw new Exception(context.getString(R.string.error_amiitool_init));
         if (tool.setKeysUnfixed(unfixedKey, unfixedKey.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.error_amiitool_init));
+            throw new Exception(context.getString(R.string.error_amiitool_init));
         byte[] decrypted = new byte[NfcByte.TAG_FILE_SIZE];
         if (tool.unpack(tagData, tagData.length, decrypted, decrypted.length) == 0)
-            throw new Exception(TagMo.getStringRes(R.string.fail_decrypt));
+            throw new Exception(context.getString(R.string.fail_decrypt));
 
         return decrypted;
     }
 
     public byte[] encrypt(byte[] tagData) throws RuntimeException {
         if (!hasFixedKey() || !hasUnFixedKey())
-            throw new RuntimeException(TagMo.getStringRes(R.string.key_not_present));
+            throw new RuntimeException(context.getString(R.string.key_not_present));
 
         AmiiTool tool = new AmiiTool();
         if (tool.setKeysFixed(fixedKey, fixedKey.length) == 0)
-            throw new RuntimeException(TagMo.getStringRes(R.string.error_amiitool_init));
+            throw new RuntimeException(context.getString(R.string.error_amiitool_init));
         if (tool.setKeysUnfixed(unfixedKey, unfixedKey.length) == 0)
-            throw new RuntimeException(TagMo.getStringRes(R.string.error_amiitool_init));
+            throw new RuntimeException(context.getString(R.string.error_amiitool_init));
         byte[] encrypted = new byte[NfcByte.TAG_FILE_SIZE];
         if (tool.pack(tagData, tagData.length, encrypted, encrypted.length) == 0)
-            throw new RuntimeException(TagMo.getStringRes(R.string.fail_encrypt));
+            throw new RuntimeException(context.getString(R.string.fail_encrypt));
 
         return encrypted;
     }

@@ -19,7 +19,6 @@
         <ImageView
             android:id="@+id/imageAmiibo"
             android:contentDescription="@string/imageview_amiibo"
-            android:src="@mipmap/ic_launcher"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginBottom="16dp"

@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -339,7 +340,7 @@ public class BankListActivity extends AppCompatActivity implements
 
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
-            imageAmiibo.setVisibility(View.GONE);
+            imageAmiibo.setVisibility(View.INVISIBLE);
         }
 
         @Override
@@ -675,13 +676,13 @@ public class BankListActivity extends AppCompatActivity implements
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
         if (null != imageAmiibo) {
-            imageAmiibo.setVisibility(View.GONE);
             Glide.with(this).clear(amiiboImageTarget);
             if (null != amiiboImageUrl) {
                 Glide.with(this)
-                        .setDefaultRequestOptions(onlyRetrieveFromCache())
+                        .setDefaultRequestOptions(settings.onlyRetrieveFromCache(amiiboInfo))
                         .asBitmap()
                         .load(amiiboImageUrl)
+                        .diskCacheStrategy(DiskCacheStrategy.DATA)
                         .into(amiiboImageTarget);
             }
             final long amiiboTagId = amiiboId;

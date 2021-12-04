@@ -28,6 +28,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.BrowserActivity;
+import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -523,6 +524,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void setAmiiboManager(AmiiboManager amiiboManager) {
         this.amiiboManager = amiiboManager;
         this.updateAmiiboStats();
+        new Thread(() -> GlideApp.get(TagMo.getContext()).clearDiskCache());
+        GlideApp.get(requireContext()).clearMemory();
     }
 
     void updateAmiiboStats() {
@@ -597,20 +600,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 
-                if (null != result.getData().getClipData()) {
-                    for (int i = 0; i < result.getData().getClipData().getItemCount(); i++) {
-                        validateKeys(result.getData().getClipData().getItemAt(i).getUri());
-                    }
-                } else {
-                    validateKeys(result.getData().getData());
-                }
+        if (null != result.getData().getClipData()) {
+            for (int i = 0; i < result.getData().getClipData().getItemCount(); i++) {
+                validateKeys(result.getData().getClipData().getItemAt(i).getUri());
+            }
+        } else {
+            validateKeys(result.getData().getData());
+        }
     });
 
-    ActivityResultLauncher<Intent> onImportAmiiboDatabase = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onImportAmiiboDatabase = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 

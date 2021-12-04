@@ -127,7 +127,7 @@ public class NfcActivity extends AppCompatActivity {
         }
     }
 
-    void configureInterface() {
+    private void configureInterface() {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
 
@@ -597,7 +597,7 @@ public class NfcActivity extends AppCompatActivity {
         }
     }
 
-    void stopNfcMonitor() {
+    private void stopNfcMonitor() {
         if (null == nfcAdapter) {
             return;
         }
@@ -605,7 +605,7 @@ public class NfcActivity extends AppCompatActivity {
         this.unregisterReceiver(mReceiver);
     }
 
-    void listenForTags() {
+    private void listenForTags() {
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(TagMo.getContext(), 0,
                 new Intent(TagMo.getContext(), this.getClass()),
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.S

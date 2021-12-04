@@ -47,8 +47,8 @@ public class FoomiiboActivity extends AppCompatActivity implements
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
 
-    Foomiibo foomiibo = new Foomiibo();
-    File directory = Storage.getDownloadDir("TagMo", "Foomiibo");
+    private final Foomiibo foomiibo = new Foomiibo();
+    private final File directory = Storage.getDownloadDir("TagMo", "Foomiibo");
 
     @InstanceState
     BrowserSettings settings;
@@ -76,7 +76,7 @@ public class FoomiiboActivity extends AppCompatActivity implements
         setResult(RESULT_CANCELED);
     }
 
-    public static String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
+    private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
         try {
             long amiiboId = TagUtils.amiiboIdFromTag(tagData);
             String name = TagUtils.amiiboIdToHex(amiiboId);
@@ -120,8 +120,8 @@ public class FoomiiboActivity extends AppCompatActivity implements
         dir.delete();
     }
 
-    static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-    void loadAmiiboManager() {
+    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+    private void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
         loadAmiiboManagerTask();
     }

@@ -119,7 +119,6 @@ public class TagMo extends Application {
                 ioe.printStackTrace();
             }
             android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(0);
         });
     }
 

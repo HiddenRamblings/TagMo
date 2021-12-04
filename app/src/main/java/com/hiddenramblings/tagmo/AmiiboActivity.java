@@ -245,14 +245,11 @@ public class AmiiboActivity extends AppCompatActivity {
 
     CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
         @Override
-        public void onLoadStarted(@Nullable Drawable placeholder) {
-            imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
-            imageAmiibo.setVisibility(View.VISIBLE);
-        }
+        public void onLoadStarted(@Nullable Drawable placeholder) { }
 
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
-            imageAmiibo.setVisibility(View.GONE);
+            imageAmiibo.setVisibility(View.INVISIBLE);
         }
 
         @Override
@@ -339,7 +336,6 @@ public class AmiiboActivity extends AppCompatActivity {
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
         if (null != imageAmiibo) {
-            imageAmiibo.setVisibility(View.GONE);
             Glide.with(this).clear(amiiboImageTarget);
             if (null != amiiboImageUrl) {
                 Glide.with(this)

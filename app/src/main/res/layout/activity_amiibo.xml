@@ -55,7 +55,7 @@
                         android:layout_height="150dp"
                         android:layout_marginBottom="4dp"
                         android:foreground="@drawable/card_foreground"
-                        android:visibility="gone"
+                        android:visibility="invisible"
                         tools:ignore="UnusedAttribute" />
 
                     <View

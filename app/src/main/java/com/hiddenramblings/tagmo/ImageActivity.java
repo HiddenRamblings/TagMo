@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -68,9 +68,9 @@ public class ImageActivity extends AppCompatActivity {
     @ViewById(R.id.txtAmiiboSeries)
     TextView txtAmiiboSeries;
 
-    BottomSheetBehavior<View> bottomSheetBehavior;
-    Amiibo amiibo;
-    AmiiboManager amiiboManager;
+    private BottomSheetBehavior<View> bottomSheetBehavior;
+    private Amiibo amiibo;
+    private AmiiboManager amiiboManager;
 
     @Extra(TagMo.EXTRA_AMIIBO_ID)
     long amiiboId;
@@ -101,7 +101,7 @@ public class ImageActivity extends AppCompatActivity {
         });
 
         loadAmiiboManager();
-        Glide.with(this).load(getImageUrl()).into(imageView);
+        GlideApp.with(this).load(getImageUrl()).into(imageView);
     }
 
     @Click(R.id.toggle)
@@ -113,8 +113,8 @@ public class ImageActivity extends AppCompatActivity {
         }
     }
 
-    static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-    void loadAmiiboManager() {
+    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+    private void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
         loadAmiiboManagerTask();
     }
@@ -139,7 +139,7 @@ public class ImageActivity extends AppCompatActivity {
         this.updateView();
     }
 
-    void updateView() {
+    private void updateView() {
         String tagInfo = null;
         String amiiboHexId = "";
         String amiiboName = "";
@@ -183,7 +183,7 @@ public class ImageActivity extends AppCompatActivity {
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
     }
 
-    void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+    private void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
         if (hasTagInfo) {
             textView.setVisibility(View.GONE);
         } else {
@@ -198,7 +198,7 @@ public class ImageActivity extends AppCompatActivity {
         }
     }
 
-    String getImageUrl() {
+    private String getImageUrl() {
         return Amiibo.getImageUrl(amiiboId);
     }
 
@@ -214,12 +214,13 @@ public class ImageActivity extends AppCompatActivity {
 
         (new AlertDialog.Builder(this)).setTitle(R.string.save_image)
                 .setPositiveButton(R.string.save, (dialogInterface, i) ->
-                        Glide.with(ImageActivity.this)
-                                .asBitmap().load(getImageUrl())
+                        GlideApp.with(ImageActivity.this).asBitmap()
+                                .load(getImageUrl())
+                                .skipMemoryCache(true)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .into(new CustomTarget<Bitmap>() {
             @Override
-            public void onResourceReady(
-                    @NonNull Bitmap resource, Transition transition) {
+            public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
                 saveImageToFile(resource, editText.getText().toString());
             }
             @Override

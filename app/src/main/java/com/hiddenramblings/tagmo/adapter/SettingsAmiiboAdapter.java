@@ -1,11 +1,8 @@
 package com.hiddenramblings.tagmo.adapter;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,15 +13,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
-import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,14 +90,9 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         holder.txtPath.setVisibility(android.view.View.GONE);
 
         if (null != holder.imageAmiibo) {
-            holder.imageAmiibo.setVisibility(android.view.View.GONE);
-            Glide.with(convertView).clear(holder.target);
+            GlideApp.with(convertView).clear(holder.target);
             if (null != amiiboImageUrl) {
-                Glide.with(convertView)
-                        .setDefaultRequestOptions(onlyRetrieveFromCache())
-                        .asBitmap()
-                        .load(amiiboImageUrl)
-                        .into(holder.target);
+                GlideApp.with(convertView).asBitmap().load(amiiboImageUrl).into(holder.target);
             }
         }
 
@@ -120,22 +109,6 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         }
     }
 
-    private RequestOptions onlyRetrieveFromCache() {
-        String imageNetworkSetting = TagMo.getPrefs().imageNetworkSetting().get();
-        if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
-            return new RequestOptions().onlyRetrieveFromCache(true);
-        } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
-            ConnectivityManager cm = (ConnectivityManager)
-                    TagMo.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
-                    || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
-        } else {
-            return new RequestOptions().onlyRetrieveFromCache(false);
-        }
-    }
-
     protected static class ViewHolder {
         TextView txtError;
         TextView txtName;
@@ -147,17 +120,21 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         TextView txtPath;
         ImageView imageAmiibo;
 
-        CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
+        private final CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
-            public void onLoadStarted(@Nullable Drawable placeholder) { }
-
-            @Override
-            public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                imageAmiibo.setVisibility(View.GONE);
+            public void onLoadStarted(@Nullable Drawable placeholder) {
+                imageAmiibo.setImageResource(0);
             }
 
             @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) { }
+            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                imageAmiibo.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+                imageAmiibo.setVisibility(View.VISIBLE);
+            }
 
             @Override
             public void onResourceReady(@NonNull Bitmap resource, Transition transition) {

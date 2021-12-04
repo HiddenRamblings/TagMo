@@ -33,7 +33,6 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.FragmentManager;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -132,12 +131,12 @@ public class TagDataActivity extends AppCompatActivity {
     @Extra(TagMo.EXTRA_TAG_DATA)
     byte[] tagData;
 
-    CountryCodesAdapter countryCodeAdapter;
-    NoSelectionSpinnerAdapter appIdAdapter;
-    boolean ignoreAppNameSelected;
-    KeyManager keyManager;
-    AmiiboManager amiiboManager = null;
-    AmiiboData amiiboData;
+    private CountryCodesAdapter countryCodeAdapter;
+    private NoSelectionSpinnerAdapter appIdAdapter;
+    private boolean ignoreAppNameSelected;
+    private KeyManager keyManager;
+    private AmiiboManager amiiboManager = null;
+    private AmiiboData amiiboData;
 
     @InstanceState
     boolean initialUserDataInitialized;
@@ -193,13 +192,13 @@ public class TagDataActivity extends AppCompatActivity {
         loadData();
     }
 
-    CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
+    private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
         @Override
         public void onLoadStarted(@Nullable Drawable placeholder) { }
 
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
-            imageAmiibo.setVisibility(View.GONE);
+            imageAmiibo.setVisibility(View.INVISIBLE);
         }
 
         @Override
@@ -212,8 +211,8 @@ public class TagDataActivity extends AppCompatActivity {
         }
     };
 
-    static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-    void loadAmiiboManager() {
+    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+    private void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
         loadAmiiboManagerTask();
     }
@@ -239,7 +238,7 @@ public class TagDataActivity extends AppCompatActivity {
         this.updateAmiiboView();
     }
 
-    public void updateAmiiboView() {
+    private void updateAmiiboView() {
         String tagInfo = null;
         String amiiboHexId = "";
         String amiiboName = "";
@@ -305,18 +304,14 @@ public class TagDataActivity extends AppCompatActivity {
 
         if (null != imageAmiibo) {
             imageAmiibo.setVisibility(View.GONE);
-            Glide.with(this).clear(amiiboImageTarget);
+            GlideApp.with(this).clear(amiiboImageTarget);
             if (null != amiiboImageUrl) {
-                Glide.with(this)
-                        .setDefaultRequestOptions(onlyRetrieveFromCache())
-                        .asBitmap()
-                        .load(amiiboImageUrl)
-                        .into(amiiboImageTarget);
+                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
             }
         }
     }
 
-    void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+    private void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
         if (hasTagInfo) {
             textView.setVisibility(View.GONE);
         } else {
@@ -347,7 +342,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
     }
 
-    void loadData() {
+    private void loadData() {
         boolean isUserDataInitialized = amiiboData.isUserDataInitialized();
         this.initialUserDataInitialized = isUserDataInitialized;
         userDataSwitch.setChecked(isUserDataInitialized);
@@ -369,7 +364,7 @@ public class TagDataActivity extends AppCompatActivity {
         loadAppId();
     }
 
-    AppDataFragment getAppDataFragment() {
+    private AppDataFragment getAppDataFragment() {
         AppDataFragment fragment = (AppDataFragment) getSupportFragmentManager().findFragmentById(R.id.appData);
         if (null != fragment && fragment.isDetached()) {
             fragment = null;
@@ -487,7 +482,7 @@ public class TagDataActivity extends AppCompatActivity {
         updateUserDataEnabled(isUserDataInitialized);
     }
 
-    void updateUserDataEnabled(boolean isUserDataInitialized) {
+    private void updateUserDataEnabled(boolean isUserDataInitialized) {
         txtCountryCode.setEnabled(isUserDataInitialized);
         txtInitDate.setEnabled(isUserDataInitialized);
         txtModifiedDate.setEnabled(isUserDataInitialized);
@@ -509,18 +504,18 @@ public class TagDataActivity extends AppCompatActivity {
         updateAppDataEnabled(isAppDataInitialized);
     }
 
-    void updateAppDataEnabled(boolean isAppDataInitialized) {
+    private void updateAppDataEnabled(boolean isAppDataInitialized) {
         AppDataFragment fragment = getAppDataFragment();
         if (null != fragment) {
             fragment.onAppDataChecked(isUserDataInitialized && isAppDataInitialized);
         }
     }
 
-    void loadUID() {
+    private void loadUID() {
         txtUID.setText(TagUtils.bytesToHex(amiiboData.getUID()));
     }
 
-    void loadCountryCode() {
+    private void loadCountryCode() {
         int countryCode;
         if (initialUserDataInitialized) {
             try {
@@ -543,7 +538,7 @@ public class TagDataActivity extends AppCompatActivity {
         txtCountryCode.setSelection(index);
     }
 
-    void loadInitializedDate() {
+    private void loadInitializedDate() {
         if (initialUserDataInitialized) {
             try {
                 this.initializedDate = amiiboData.getInitializedDate();
@@ -556,7 +551,7 @@ public class TagDataActivity extends AppCompatActivity {
         updateInitializedDateView(this.initializedDate);
     }
 
-    void updateInitializedDateView(Date date) {
+    private void updateInitializedDateView(Date date) {
         String text;
         try {
             text = getDateString(date);
@@ -586,7 +581,8 @@ public class TagDataActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    DatePickerDialog.OnDateSetListener onInitDateSet = new DatePickerDialog.OnDateSetListener() {
+    private final DatePickerDialog.OnDateSetListener onInitDateSet =
+            new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int year, int month, int day) {
             final Calendar c = Calendar.getInstance();
@@ -599,7 +595,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
     };
 
-    void loadModifiedDate() {
+    private void loadModifiedDate() {
         if (initialUserDataInitialized) {
             try {
                 this.modifiedDate = amiiboData.getModifiedDate();
@@ -612,7 +608,7 @@ public class TagDataActivity extends AppCompatActivity {
         updateModifiedDateView(this.modifiedDate);
     }
 
-    void updateModifiedDateView(Date date) {
+    private void updateModifiedDateView(Date date) {
         String text;
         try {
             text = getDateString(date);
@@ -637,7 +633,8 @@ public class TagDataActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    DatePickerDialog.OnDateSetListener onModifiedDateSet = new DatePickerDialog.OnDateSetListener() {
+    private final DatePickerDialog.OnDateSetListener onModifiedDateSet =
+            new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int year, int month, int day) {
             final Calendar c = Calendar.getInstance();
@@ -650,7 +647,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
     };
 
-    void loadNickname() {
+    private void loadNickname() {
         String nickname;
         if (initialUserDataInitialized) {
             try {
@@ -664,7 +661,7 @@ public class TagDataActivity extends AppCompatActivity {
         txtNickname.setText(nickname);
     }
 
-    void loadMiiName() {
+    private void loadMiiName() {
         String miiName;
         if (initialUserDataInitialized) {
             try {
@@ -678,7 +675,7 @@ public class TagDataActivity extends AppCompatActivity {
         txtMiiName.setText(miiName);
     }
 
-    void loadAppId() {
+    private void loadAppId() {
         if (initialUserDataInitialized) {
             appId = amiiboData.getAppId();
         } else {
@@ -690,7 +687,7 @@ public class TagDataActivity extends AppCompatActivity {
         updateAppDataView();
     }
 
-    void updateAppIdView() {
+    private void updateAppIdView() {
         if (null != appId) {
             txtAppId.setText(String.format("%08X", appId));
         } else {
@@ -698,7 +695,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
     }
 
-    int parseAppId() throws Exception {
+    private int parseAppId() throws Exception {
         String text = txtAppId.getUnMaskedText();
         if (null != text) {
             text = text.trim();
@@ -715,7 +712,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
     }
 
-    TextWatcher onAppIdChange = new TextWatcher() {
+    private final TextWatcher onAppIdChange = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
         }
@@ -738,7 +735,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
     };
 
-    void updateAppNameView() {
+    private void updateAppNameView() {
         int index = 0;
         for (int i = 0; i < appIdAdapter.getCount(); i++) {
             //noinspection unchecked
@@ -754,7 +751,8 @@ public class TagDataActivity extends AppCompatActivity {
         }
     }
 
-    AdapterView.OnItemSelectedListener onAppNameSelected = new AdapterView.OnItemSelectedListener() {
+    private final AdapterView.OnItemSelectedListener onAppNameSelected =
+            new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
             if (ignoreAppNameSelected) {
@@ -777,7 +775,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
     };
 
-    void updateAppDataView() {
+    private void updateAppDataView() {
         FragmentManager fm = getSupportFragmentManager();
 
         AppDataFragment fragment;
@@ -809,7 +807,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
     }
 
-    void loadWriteCounter() {
+    private void loadWriteCounter() {
         int writeCounter;
         if (initialUserDataInitialized) {
             writeCounter = amiiboData.getWriteCount();
@@ -819,7 +817,7 @@ public class TagDataActivity extends AppCompatActivity {
         txtWriteCounter.setText(String.valueOf(writeCounter));
     }
 
-    void loadSerialNumber() {
+    private void loadSerialNumber() {
         txtSerialNumber.setTag(txtSerialNumber.getKeyListener());
         txtSerialNumber.setKeyListener(null);
         byte[] value = amiiboData.getUID();
@@ -837,11 +835,11 @@ public class TagDataActivity extends AppCompatActivity {
         }
     }
 
-    static String getDateString(Date date) {
+    private static String getDateString(Date date) {
         return new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date);
     }
 
-    static class CountryCodesAdapter extends BaseAdapter implements Filterable {
+    private static class CountryCodesAdapter extends BaseAdapter implements Filterable {
         public ArrayList<HashMap.Entry<Integer, String>> data;
 
         public CountryCodesAdapter(HashMap<Integer, String> data) {
@@ -912,7 +910,7 @@ public class TagDataActivity extends AppCompatActivity {
         };
     }
 
-    static class AppIdAdapter extends BaseAdapter {
+    private static class AppIdAdapter extends BaseAdapter {
         public ArrayList<HashMap.Entry<Integer, String>> data;
 
         public AppIdAdapter(HashMap<Integer, String> data) {

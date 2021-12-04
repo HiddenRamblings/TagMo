@@ -16,9 +16,9 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -299,11 +299,11 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
         public final TextView txtPath;
         public final ImageView imageAmiibo;
 
-        AmiiboFile amiiboFile = null;
+        private AmiiboFile amiiboFile = null;
 
         private final BoldSpannable boldSpannable = new BoldSpannable();
 
-        CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
+        private final CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
             public void onLoadStarted(@Nullable Drawable placeholder) {
                 imageAmiibo.setImageResource(0);
@@ -418,13 +418,9 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                 this.txtPath.setVisibility(View.VISIBLE);
             }
             if (null != this.imageAmiibo) {
-                Glide.with(itemView).clear(target);
+                GlideApp.with(itemView).clear(target);
                 if (null != amiiboImageUrl) {
-                    Glide.with(itemView)
-                            .setDefaultRequestOptions(settings.onlyRetrieveFromCache(itemView))
-                            .asBitmap()
-                            .load(amiiboImageUrl)
-                            .into(target);
+                    GlideApp.with(itemView).asBitmap().load(amiiboImageUrl).into(target);
                 }
             }
         }

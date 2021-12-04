@@ -3,12 +3,9 @@ package com.hiddenramblings.tagmo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -25,9 +22,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -35,7 +29,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
-import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.androidannotations.annotations.AfterViews;
@@ -173,7 +166,7 @@ public class AmiiboActivity extends AppCompatActivity {
         updateAmiiboView();
     }
 
-    ActivityResultLauncher<Intent> onUpdateTagResult = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onUpdateTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
 
@@ -243,7 +236,7 @@ public class AmiiboActivity extends AppCompatActivity {
         this.updateAmiiboView();
     }
 
-    CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
+    private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
         @Override
         public void onLoadStarted(@Nullable Drawable placeholder) { }
 
@@ -262,7 +255,7 @@ public class AmiiboActivity extends AppCompatActivity {
         }
     };
 
-    public void updateAmiiboView() {
+    private void updateAmiiboView() {
         String tagInfo = null;
         String amiiboHexId = "";
         String amiiboName = "";
@@ -336,19 +329,14 @@ public class AmiiboActivity extends AppCompatActivity {
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
         if (null != imageAmiibo) {
-            Glide.with(this).clear(amiiboImageTarget);
+            GlideApp.with(this).clear(amiiboImageTarget);
             if (null != amiiboImageUrl) {
-                Glide.with(this)
-                        .setDefaultRequestOptions(onlyRetrieveFromCache())
-                        .asBitmap()
-                        .load(amiiboImageUrl)
-                        .diskCacheStrategy(DiskCacheStrategy.DATA)
-                        .into(amiiboImageTarget);
+                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
             }
         }
     }
 
-    void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+    private void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
         if (hasTagInfo) {
             textView.setVisibility(View.GONE);
         } else {
@@ -360,22 +348,6 @@ public class AmiiboActivity extends AppCompatActivity {
                 textView.setText(text);
                 textView.setEnabled(true);
             }
-        }
-    }
-
-    private RequestOptions onlyRetrieveFromCache() {
-        String imageNetworkSetting = TagMo.getPrefs().imageNetworkSetting().get();
-        if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
-            return new RequestOptions().onlyRetrieveFromCache(true);
-        } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
-            ConnectivityManager cm = (ConnectivityManager)
-                    TagMo.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
-                    || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
-        } else {
-            return new RequestOptions().onlyRetrieveFromCache(false);
         }
     }
 

@@ -115,8 +115,6 @@ import org.json.JSONTokener;
 
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -300,7 +298,7 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onFilterCharacterChanged();
             this.onFilterAmiiboSeriesChanged();
             this.onFilterAmiiboTypeChanged();
-            this.onAmiiboFilesChanged(200);
+            this.onAmiiboFilesChanged();
         }
         this.settings.addChangeListener(this);
 
@@ -339,7 +337,7 @@ public class BrowserActivity extends AppCompatActivity implements
         this.loadPTagKeyManager();
     }
 
-    ActivityResultLauncher<Intent> onAmiiboActivity = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onAmiiboActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         this.onRootFolderChanged(false);
 
@@ -366,7 +364,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     });
 
-    ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
 
@@ -396,7 +394,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     });
 
-    ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onBackupActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
 
@@ -424,7 +422,7 @@ public class BrowserActivity extends AppCompatActivity implements
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
     });
 
-    ActivityResultLauncher<Intent> onValidateActivity = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onValidateActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
 
@@ -627,7 +625,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    ActivityResultLauncher<Intent> onBuildFoomiibo = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onBuildFoomiibo = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result ->
                     this.onRootFolderChanged(true));
 
@@ -649,7 +647,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return items.size();
     }
 
-    enum FILTER {
+    private enum FILTER {
         GAME_SERIES,
         CHARACTER,
         AMIIBO_SERIES,
@@ -765,7 +763,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    MenuItem.OnMenuItemClickListener onFilterGameSeriesItemClick =
+    private final MenuItem.OnMenuItemClickListener onFilterGameSeriesItemClick =
             new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
@@ -816,7 +814,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    MenuItem.OnMenuItemClickListener onFilterCharacterItemClick =
+    private final MenuItem.OnMenuItemClickListener onFilterCharacterItemClick =
             new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
@@ -867,7 +865,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    MenuItem.OnMenuItemClickListener onFilterAmiiboSeriesItemClick
+    private final MenuItem.OnMenuItemClickListener onFilterAmiiboSeriesItemClick
             = new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
@@ -918,7 +916,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    MenuItem.OnMenuItemClickListener onFilterAmiiboTypeItemClick
+    private final MenuItem.OnMenuItemClickListener onFilterAmiiboTypeItemClick
             = new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
@@ -1085,8 +1083,8 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    static final String BACKGROUND_UPDATE = "update";
-    void checkForUpdate() {
+    private static final String BACKGROUND_UPDATE = "update";
+    private void checkForUpdate() {
         BackgroundExecutor.cancelAll(BACKGROUND_UPDATE, true);
         checkForUpdateTask();
     }
@@ -1156,14 +1154,14 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (getPackageManager().canRequestPackageInstalls())
             installUpdateTask(prefs.downloadUrl().get());
         prefs.downloadUrl().remove();
     });
 
-    public void installUpdateCompat(String apkUrl) {
+    private void installUpdateCompat(String apkUrl) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (getPackageManager().canRequestPackageInstalls()) {
                 installUpdateTask(apkUrl);
@@ -1219,8 +1217,8 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    static final String BACKGROUND_POWERTAG = "powertag";
-    void loadPTagKeyManager() {
+    private static final String BACKGROUND_POWERTAG = "powertag";
+    private void loadPTagKeyManager() {
         if (prefs.enablePowerTagSupport().get()) {
             BackgroundExecutor.cancelAll(BACKGROUND_POWERTAG, true);
             loadPTagKeyManagerTask();
@@ -1237,8 +1235,8 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-    void loadAmiiboManager() {
+    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+    private void loadAmiiboManager() {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
         loadAmiiboManagerTask();
     }
@@ -1270,7 +1268,7 @@ public class BrowserActivity extends AppCompatActivity implements
         loadFoldersTask(rootFolder);
     }
 
-    ArrayList<File> listFolders(File rootFolder) {
+    private ArrayList<File> listFolders(File rootFolder) {
         ArrayList<File> folders = new ArrayList<>();
         File[] files = rootFolder.listFiles();
         if (files == null || files.length == 0)
@@ -1435,8 +1433,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (!BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
-            onAmiiboFilesChanged(null != amiibosView.getAdapter()
-                    && amiibosView.getAdapter().getItemCount() > 0 ? 0 : 200);
+            onAmiiboFilesChanged();
         }
 
         prefs.edit()
@@ -1463,11 +1460,37 @@ public class BrowserActivity extends AppCompatActivity implements
                 folderChanged ? 3000 : 1500);
     }
 
-    private void onAmiiboFilesChanged(int delay) {
-        new Handler(Looper.getMainLooper()).postDelayed(this::hideFakeSnackbar, delay);
+    @UiThread
+    void onAmiiboFilesChanged() {
+        if (fakeSnackbar.getVisibility() == View.VISIBLE) {
+            AutoTransition autoTransition = new AutoTransition();
+            autoTransition.setDuration(250);
+
+            TranslateAnimation animate = new TranslateAnimation(
+                    0, 0, 0, - fakeSnackbar.getHeight());
+            animate.setDuration(150);
+            animate.setFillAfter(false);
+            animate.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) { }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    animation.setAnimationListener(null);
+                    fakeSnackbar.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) { }
+            });
+            fakeSnackbar.startAnimation(animate);
+
+            TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
+            mainLayout.setPadding(0, 0, 0, 0);
+        }
     }
 
-    void onSortChanged() {
+    private void onSortChanged() {
         if (null == menuSortId)
             return;
         switch (SORT.valueOf(settings.getSort())) {
@@ -1495,7 +1518,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    void onViewChanged() {
+    private void onViewChanged() {
         if (null == menuViewSimple)
             return;
         switch(VIEW.valueOf(settings.getAmiiboView())) {
@@ -1514,7 +1537,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    void onRootFolderChanged(boolean indicator) {
+    private void onRootFolderChanged(boolean indicator) {
         if (null != this.settings) {
             File rootFolder = this.settings.getBrowserRootFolder();
             if (!keyManager.isKeyMissing()) {
@@ -1525,12 +1548,13 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    void onFilterGameSeriesChanged() {
+    private void onFilterGameSeriesChanged() {
         addFilterItemView(settings.getGameSeriesFilter(),
                 "filter_game_series", onFilterGameSeriesChipCloseClick);
     }
 
-    OnCloseClickListener onFilterGameSeriesChipCloseClick = new OnCloseClickListener() {
+    private final OnCloseClickListener onFilterGameSeriesChipCloseClick =
+            new OnCloseClickListener() {
         @Override
         public void onCloseClick(@NonNull View v) {
             settings.setGameSeriesFilter("");
@@ -1539,12 +1563,13 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    void onFilterCharacterChanged() {
+    private void onFilterCharacterChanged() {
         addFilterItemView(settings.getCharacterFilter(), "filter_character",
                 onFilterCharacterChipCloseClick);
     }
 
-    OnCloseClickListener onFilterCharacterChipCloseClick = new OnCloseClickListener() {
+    private final OnCloseClickListener onFilterCharacterChipCloseClick =
+            new OnCloseClickListener() {
         @Override
         public void onCloseClick(@NonNull View v) {
             settings.setCharacterFilter("");
@@ -1553,12 +1578,13 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    void onFilterAmiiboSeriesChanged() {
+    private void onFilterAmiiboSeriesChanged() {
         addFilterItemView(settings.getAmiiboSeriesFilter(), "filter_amiibo_series",
                 onFilterAmiiboSeriesChipCloseClick);
     }
 
-    OnCloseClickListener onFilterAmiiboSeriesChipCloseClick = new OnCloseClickListener() {
+    private final OnCloseClickListener onFilterAmiiboSeriesChipCloseClick =
+            new OnCloseClickListener() {
         @Override
         public void onCloseClick(@NonNull View v) {
             settings.setAmiiboSeriesFilter("");
@@ -1567,12 +1593,13 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    void onFilterAmiiboTypeChanged() {
+    private void onFilterAmiiboTypeChanged() {
         addFilterItemView(settings.getAmiiboTypeFilter(),
                 "filter_amiibo_type", onAmiiboTypeChipCloseClick);
     }
 
-    OnCloseClickListener onAmiiboTypeChipCloseClick = new OnCloseClickListener() {
+    private final OnCloseClickListener onAmiiboTypeChipCloseClick =
+            new OnCloseClickListener() {
         @Override
         public void onCloseClick(@NonNull View v) {
             settings.setAmiiboTypeFilter("");
@@ -1581,28 +1608,28 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    void onShowDownloadsChanged() {
+    private void onShowDownloadsChanged() {
         if (null == menuShowDownloads)
             return;
 
         menuShowDownloads.setChecked(settings.isShowingDownloads());
     }
 
-    void onRecursiveFilesChanged() {
+    private void onRecursiveFilesChanged() {
         if (null == menuRecursiveFiles)
             return;
 
         menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
     }
 
-    void onShowMissingChanged() {
+    private void onShowMissingChanged() {
         if (null == menuShowMissing)
             return;
 
         menuShowMissing.setChecked(settings.isShowingMissingFiles());
     }
 
-    void onEnableScaleChanged() {
+    private void onEnableScaleChanged() {
         if (null == menuEnableScale)
             return;
 
@@ -1697,36 +1724,6 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @UiThread
-    void hideFakeSnackbar() {
-        if (fakeSnackbar.getVisibility() == View.VISIBLE) {
-            AutoTransition autoTransition = new AutoTransition();
-            autoTransition.setDuration(250);
-
-            TranslateAnimation animate = new TranslateAnimation(
-                    0, 0, 0, - fakeSnackbar.getHeight());
-            animate.setDuration(150);
-            animate.setFillAfter(false);
-            animate.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) { }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    animation.setAnimationListener(null);
-                    fakeSnackbar.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) { }
-            });
-            fakeSnackbar.startAnimation(animate);
-
-            TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
-            mainLayout.setPadding(0, 0, 0, 0);
-        }
-    }
-
-    @UiThread
     void showFakeSnackbar(String msg) {
         mainLayout.setPadding(0, fakeSnackbarIcon.getHeight(), 0, 0);
         fakeSnackbarText.setText(msg);
@@ -1734,8 +1731,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @UiThread
-    public void showSetupSnackbar() {
-        hideFakeSnackbar();
+    void showSetupSnackbar() {
+        onAmiiboFilesChanged();
         Snackbar setupBar = new IconifiedSnackbar(this, mainLayout)
                 .buildTickerBar(getString(R.string.keys_not_found), Snackbar.LENGTH_INDEFINITE);
         setupBar.setAction(R.string.setup, v -> {
@@ -1754,12 +1751,12 @@ public class BrowserActivity extends AppCompatActivity implements
                         || name.toLowerCase(Locale.ROOT).startsWith("unfixed")));
     }
 
-    void locateKeyFiles() {
+    private void locateKeyFiles() {
         BackgroundExecutor.cancelAll(BACKGROUND_LOAD_KEYS, true);
         locateKeyFilesTask();
     }
 
-    void locateKeyFilesRecursive(File rootFolder) {
+    private void locateKeyFilesRecursive(File rootFolder) {
         File[] files = rootFolder.listFiles();
         if (files == null || files.length == 0)
             return;
@@ -1861,10 +1858,10 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    boolean hasTestedElite;
-    boolean isEliteDevice;
+    private boolean hasTestedElite;
+    private boolean isEliteDevice;
 
-    ActivityResultLauncher<Intent> onTagLaunchActivity = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onTagLaunchActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (settings.getAmiiboFiles().isEmpty()) this.onRefresh();
     });

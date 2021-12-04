@@ -39,17 +39,10 @@ public class AmiiboManager {
     public final HashMap<Long, AmiiboType> amiiboTypes = new HashMap<>();
     public final HashMap<Long, AmiiboSeries> amiiboSeries = new HashMap<>();
 
-    public static AmiiboManager parse(Context context, Uri uri) throws IOException, JSONException, ParseException {
-        InputStream inputSteam = null;
-        try {
-            inputSteam = context.getContentResolver().openInputStream(uri);
+    public static AmiiboManager parse(Context context, Uri uri)
+            throws IOException, JSONException, ParseException {
+        try (InputStream inputSteam = context.getContentResolver().openInputStream(uri)) {
             return parse(inputSteam);
-        } finally {
-            if (null != inputSteam) {
-                try {
-                    inputSteam.close();
-                } catch (IOException ignored) { }
-            }
         }
     }
 

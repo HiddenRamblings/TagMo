@@ -25,7 +25,6 @@ public class HexViewerActivity extends AppCompatActivity {
 
     @ViewById(R.id.gridView)
     RecyclerView listView;
-    HexCodeAdapter adapter;
 
     @AfterViews
     void afterViews() {
@@ -35,6 +34,7 @@ public class HexViewerActivity extends AppCompatActivity {
             showErrorDialog(R.string.no_decrypt_key);
             return;
         }
+        HexCodeAdapter adapter;
         try {
             adapter = new HexCodeAdapter(keyManager.decrypt(tagData));
             listView.setLayoutManager(new LinearLayoutManager(this));
@@ -42,6 +42,8 @@ public class HexViewerActivity extends AppCompatActivity {
         } catch (Exception e) {
             try {
                 adapter = new HexCodeAdapter(TagUtils.getValidatedData(keyManager, tagData));
+                listView.setLayoutManager(new LinearLayoutManager(this));
+                listView.setAdapter(adapter);
             } catch (Exception ex) {
                 Debug.Log(e);
                 showErrorDialog(R.string.fail_display);

@@ -14,9 +14,9 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -237,12 +237,8 @@ public class BankBrowserAdapter
                 this.imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
                 this.imageAmiibo.setVisibility(View.VISIBLE);
             } else if (null != this.imageAmiibo) {
-                Glide.with(itemView).clear(target);
-                Glide.with(itemView)
-                        .setDefaultRequestOptions(settings.onlyRetrieveFromCache(itemView))
-                        .asBitmap()
-                        .load(amiiboImageUrl)
-                        .into(target);
+                GlideApp.with(itemView).clear(target);
+                GlideApp.with(itemView).asBitmap().load(amiiboImageUrl).into(target);
             }
         }
 

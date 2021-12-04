@@ -15,8 +15,8 @@
     <string name="no_decrypt_key">Decryption keys not imported</string>
 
     <string name="search">Search</string>
-    <string name="filter">Filter</string>
-    <string name="sorting">Sorting</string>
+    <string name="filter">amiibo™ Filters</string>
+    <string name="sorting">Sorting Options</string>
     <string name="display_options">Display Options</string>
     <string name="refresh">Refresh</string>
     <string name="close">Close</string>

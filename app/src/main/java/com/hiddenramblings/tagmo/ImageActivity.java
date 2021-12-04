@@ -44,7 +44,7 @@ import java.text.ParseException;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_image)
-@OptionsMenu({R.menu.image_menu})
+@OptionsMenu(R.menu.image_menu)
 public class ImageActivity extends AppCompatActivity {
 
     @ViewById(R.id.imageAmiibo)

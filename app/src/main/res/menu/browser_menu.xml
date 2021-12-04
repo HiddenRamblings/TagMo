@@ -55,7 +55,7 @@
         android:id="@+id/sort"
         android:icon="@drawable/ic_sort_white_24dp"
         android:title="@string/sorting"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom">
         <menu>
             <group android:checkableBehavior="single">
                 <item

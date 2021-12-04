@@ -8,6 +8,7 @@ import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -133,7 +134,7 @@ import java.util.Set;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_browser)
-@OptionsMenu({R.menu.browser_menu})
+@OptionsMenu(R.menu.browser_menu)
 public class BrowserActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
         SwipeRefreshLayout.OnRefreshListener,
@@ -249,22 +250,12 @@ public class BrowserActivity extends AppCompatActivity implements
                 file.delete();
             }
         }
-        File logcat = Storage.getDownloadDir("TagMo(Logcat)");
-        if (logcat.exists()) {
-            moveDir(logcat, "Logcat");
-        }
-        //noinspection ResultOfMethodCallIgnored
-        logcat.delete();
-        File backup = Storage.getDownloadDir("TagMo(Backup)");
-        if (backup.exists()) {
-            moveDir(backup, "Backups");
-        }
-        //noinspection ResultOfMethodCallIgnored
-        backup.delete();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkForUpdate();
         } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             ProviderInstaller.installIfNeededAsync(this,
                     new ProviderInstaller.ProviderInstallListener() {
                 @Override
@@ -1867,47 +1858,6 @@ public class BrowserActivity extends AppCompatActivity implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             super.onBackPressed();
-        }
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void moveFile(File inputFile, String fileName, String outputPath) {
-        InputStream in;
-        OutputStream out;
-        try {
-            new File (outputPath).mkdirs();
-            in = new FileInputStream(inputFile);
-            out = new FileOutputStream(new File(outputPath, fileName));
-            byte[] buffer = new byte[1024];
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, read);
-            }
-            in.close();
-            out.flush();
-            out.close();
-            inputFile.delete();
-        }
-        catch (FileNotFoundException fnfe) {
-            Debug.Log(fnfe);
-        }
-        catch (Exception e) {
-            Debug.Log(e);
-        }
-    }
-
-    private void moveDir(File directory, String destination) {
-        File output = Storage.getDownloadDir("TagMo", destination);
-        File[] files = directory.listFiles();
-        if (null != files && files.length > 0) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    new File(output, file.getName());
-                    moveDir(file, destination + File.separator + file.getName());
-                } else {
-                    moveFile(file, file.getName(), output.getPath());
-                }
-            }
         }
     }
 

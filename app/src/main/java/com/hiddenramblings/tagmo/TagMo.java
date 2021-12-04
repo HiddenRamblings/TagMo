@@ -182,7 +182,7 @@ public class TagMo extends Application {
         return mContext.get().getString(resource, params, digits);
     }
 
-    public static String getStringRes(int resource, String params, int[] digits) {
-        return mContext.get().getString(resource, params, digits);
+    public static String getStringRes(int resource, String params, int length, int size) {
+        return mContext.get().getString(resource, params, length, size);
     }
 }

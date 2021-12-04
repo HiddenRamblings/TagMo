@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -35,9 +33,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -53,7 +48,6 @@ import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.settings.Preferences_;
-import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.BankPicker;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
@@ -334,7 +328,7 @@ public class BankListActivity extends AppCompatActivity implements
         writeBankCount.setVisibility(isMenu ? View.VISIBLE : View.GONE);
     }
 
-    CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
+    private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
         @Override
         public void onLoadStarted(@Nullable Drawable placeholder) { }
 
@@ -353,7 +347,7 @@ public class BankListActivity extends AppCompatActivity implements
         }
     };
 
-    ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
 
@@ -376,7 +370,7 @@ public class BankListActivity extends AppCompatActivity implements
         eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
     });
 
-    ActivityResultLauncher<Intent> onUpdateTagResult = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onUpdateTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
 
@@ -407,7 +401,7 @@ public class BankListActivity extends AppCompatActivity implements
         }
     });
 
-    ActivityResultLauncher<Intent> onScanTagResult = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onScanTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
 
@@ -532,7 +526,7 @@ public class BankListActivity extends AppCompatActivity implements
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
     }
 
-    public void updateAmiiboView(byte[] tagData, long amiiboId, int current_bank) {
+    private void updateAmiiboView(byte[] tagData, long amiiboId, int current_bank) {
         toolbar.setOnMenuItemClickListener(item -> {
             Toasty notice = new Toasty(this);
             Intent scan = new Intent(this, NfcActivity_.class);
@@ -676,14 +670,9 @@ public class BankListActivity extends AppCompatActivity implements
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
         if (null != imageAmiibo) {
-            Glide.with(this).clear(amiiboImageTarget);
+            GlideApp.with(this).clear(amiiboImageTarget);
             if (null != amiiboImageUrl) {
-                Glide.with(this)
-                        .setDefaultRequestOptions(settings.onlyRetrieveFromCache(amiiboInfo))
-                        .asBitmap()
-                        .load(amiiboImageUrl)
-                        .diskCacheStrategy(DiskCacheStrategy.DATA)
-                        .into(amiiboImageTarget);
+                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
             }
             final long amiiboTagId = amiiboId;
             imageAmiibo.setOnClickListener(view -> {
@@ -702,7 +691,7 @@ public class BankListActivity extends AppCompatActivity implements
         }
     }
 
-    ActivityResultLauncher<Intent> onOpenBanksActivity = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onOpenBanksActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
 
@@ -743,7 +732,7 @@ public class BankListActivity extends AppCompatActivity implements
         }
     }
 
-    void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+    private void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
         if (hasTagInfo) {
             textView.setVisibility(View.GONE);
         } else {
@@ -766,22 +755,6 @@ public class BankListActivity extends AppCompatActivity implements
         else
             mWindowManager.getDefaultDisplay().getMetrics(metrics);
         return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
-    }
-
-    private RequestOptions onlyRetrieveFromCache() {
-        String imageNetworkSetting = settings.getImageNetworkSettings();
-        if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
-            return new RequestOptions().onlyRetrieveFromCache(true);
-        } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
-            ConnectivityManager cm = (ConnectivityManager)
-                    TagMo.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
-                    || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
-        } else {
-            return new RequestOptions().onlyRetrieveFromCache(false);
-        }
     }
 
     @Click(R.id.toggle)
@@ -864,8 +837,8 @@ public class BankListActivity extends AppCompatActivity implements
         return true;
     }
 
-    static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
-    void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
+    private static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
+    private void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
         BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
         loadAmiiboFilesTask(rootFolder, recursiveFiles);
     }

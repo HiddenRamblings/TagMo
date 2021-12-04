@@ -259,17 +259,18 @@ public class BrowserAmiibosAdapter
         CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
             public void onLoadStarted(@Nullable Drawable placeholder) {
-                imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
-                imageAmiibo.setVisibility(View.VISIBLE);
+                imageAmiibo.setImageResource(0);
             }
 
             @Override
             public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                imageAmiibo.setVisibility(View.GONE);
+                imageAmiibo.setVisibility(View.INVISIBLE);
             }
 
             @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) { }
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+                imageAmiibo.setVisibility(View.VISIBLE);
+            }
 
             @Override
             public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
@@ -396,7 +397,6 @@ public class BrowserAmiibosAdapter
                 this.txtPath.setVisibility(View.VISIBLE);
             }
             if (null != this.imageAmiibo) {
-                this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(itemView).clear(target);
                 if (null != amiiboImageUrl) {
                     Glide.with(itemView)

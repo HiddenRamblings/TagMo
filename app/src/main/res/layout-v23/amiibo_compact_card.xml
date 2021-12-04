@@ -30,7 +30,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="8dp"
             android:foreground="@drawable/card_foreground"
-            android:visibility="gone" />
+            android:visibility="invisible" />
 
         <TextView
             android:id="@+id/txtError"

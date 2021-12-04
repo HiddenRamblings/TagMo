@@ -51,7 +51,8 @@ public class PowerTagManager {
 
     static byte[] getPowerTagKey(byte[] uid, String page10bytes) throws NullPointerException {
         if (null == keys )
-            throw new NullPointerException(TagMo.getStringRes(R.string.error_powertag_key));
+            throw new NullPointerException(TagMo.getContext()
+                    .getString(R.string.error_powertag_key));
 
         byte[] uidc = new byte[7];
 
@@ -65,11 +66,11 @@ public class PowerTagManager {
 
         HashMap<String, byte[]> keymap = keys.get(TagUtils.bytesToHex(uidc));
         if (null == keymap )
-            throw new NullPointerException(TagMo.getStringRes(R.string.uid_key_missing));
+            throw new NullPointerException(TagMo.getContext().getString(R.string.uid_key_missing));
 
         byte[] key = keymap.get(page10bytes);
         if (null == key )
-            throw new NullPointerException(TagMo.getStringRes(R.string.p10_key_missing));
+            throw new NullPointerException(TagMo.getContext().getString(R.string.p10_key_missing));
 
         return key;
     }

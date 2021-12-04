@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Build;
 import android.util.Log;
 
@@ -153,36 +152,5 @@ public class TagMo extends Application {
     public static boolean isDarkTheme() {
         return (getContext().getResources().getConfiguration().uiMode
                 & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
-    }
-
-    public static String getStringRes(int resource) {
-        return mContext.get().getString(resource);
-    }
-
-    public static String getStringRes(int resource, String params) {
-        return mContext.get().getString(resource, params);
-    }
-
-    public static String getStringRes(int resource, int params) {
-        try {
-            Resources res = mContext.get().getResources();
-            res.getIdentifier(res.getResourceName(params),
-                    "string", BuildConfig.APPLICATION_ID);
-            return mContext.get().getString(resource, mContext.get().getString(params));
-        } catch (Resources.NotFoundException ignore) {
-            return mContext.get().getString(resource, params);
-        }
-    }
-
-    public static String getStringRes(int resource, String params, int digits) {
-        return mContext.get().getString(resource, params, digits);
-    }
-
-    public static String getStringRes(int resource, int params, int digits) {
-        return mContext.get().getString(resource, params, digits);
-    }
-
-    public static String getStringRes(int resource, String params, int length, int size) {
-        return mContext.get().getString(resource, params, length, size);
     }
 }

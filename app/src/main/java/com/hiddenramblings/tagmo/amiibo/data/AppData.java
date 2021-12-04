@@ -15,7 +15,7 @@ public class AppData {
 
     public AppData(byte[] appData) throws IOException {
         if (appData.length < APP_FILE_SIZE)
-            throw new IOException(TagMo.getStringRes(R.string.invalid_app_data));
+            throw new IOException(TagMo.getContext().getString(R.string.invalid_app_data));
 
         this.appData = ByteBuffer.wrap(appData);
     }
@@ -28,9 +28,9 @@ public class AppData {
 
     static {
         appIds.put(AppDataTPFragment.APP_ID,
-                TagMo.getStringRes(R.string.zelda_twilight));
+                TagMo.getContext().getString(R.string.zelda_twilight));
         appIds.put(AppDataSSBFragment.APP_ID,
-                TagMo.getStringRes(R.string.super_smash));
-        appIds.put(-1, TagMo.getStringRes(R.string.unspecified));
+                TagMo.getContext().getString(R.string.super_smash));
+        appIds.put(-1, TagMo.getContext().getString(R.string.unspecified));
     }
 }

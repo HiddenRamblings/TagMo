@@ -88,6 +88,7 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
+import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.settings.SettingsFragment_;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -138,6 +139,8 @@ public class BrowserActivity extends AppCompatActivity implements
         SwipeRefreshLayout.OnRefreshListener,
         BrowserSettingsListener,
         BrowserAmiibosAdapter.OnAmiiboClickListener {
+
+    private final Preferences_ prefs = TagMo.getPrefs();
 
     @ViewById(R.id.fake_snackbar)
     LinearLayout fakeSnackbar;
@@ -355,7 +358,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (null != clickedAmiibo.getFilePath()) {
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.warn_delete_file, Storage.getRelativePath(
-                            clickedAmiibo.getFilePath(), TagMo.getPrefs().preferEmulated().get())))
+                            clickedAmiibo.getFilePath(), prefs.preferEmulated().get())))
                     .setPositiveButton(R.string.delete, (dialog, which) -> {
                         //noinspection ResultOfMethodCallIgnored
                         clickedAmiibo.getFilePath().delete();
@@ -380,13 +383,13 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
             String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
-            TagMo.getPrefs().eliteSignature().put(signature);
+            prefs.eliteSignature().put(signature);
             int active_bank = result.getData().getIntExtra(
-                    TagMo.EXTRA_ACTIVE_BANK, TagMo.getPrefs().eliteActiveBank().get());
-            TagMo.getPrefs().eliteActiveBank().put(active_bank);
+                    TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+            prefs.eliteActiveBank().put(active_bank);
             int bank_count = result.getData().getIntExtra(
-                    TagMo.EXTRA_BANK_COUNT, TagMo.getPrefs().eliteBankCount().get());
-            TagMo.getPrefs().eliteBankCount().put(bank_count);
+                    TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
+            prefs.eliteBankCount().put(bank_count);
 
             Intent eliteIntent = new Intent(this, BankListActivity_.class);
             eliteIntent.putExtras(result.getData());
@@ -502,13 +505,13 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Click(R.id.switch_storage_root)
     void onSwitchStorageClicked() {
-        boolean external = !TagMo.getPrefs().preferEmulated().get();
+        boolean external = !prefs.preferEmulated().get();
         switchStorageRoot.setText(external
                 ? R.string.emulated_storage_root
                 : R.string.physical_storage_root);
         this.settings.setBrowserRootFolder(Storage.getFile(external));
         this.settings.notifyChanges();
-        TagMo.getPrefs().preferEmulated().put(external);
+        prefs.preferEmulated().put(external);
     }
 
     @OptionsItem(R.id.sort_id)
@@ -604,7 +607,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @OptionsItem(R.id.enable_scale)
     void onEnableScaleClicked() {
-        TagMo.getPrefs().enableScaling().put(!menuEnableScale.isChecked());
+        prefs.enableScaling().put(!menuEnableScale.isChecked());
         this.recreate();
     }
 
@@ -624,7 +627,7 @@ public class BrowserActivity extends AppCompatActivity implements
             Uri uri = Debug.processLogcat(this, "tagmo_logcat");
             String path = DocumentsUri.getPath(this, uri);
             String output = null != path ? Storage.getRelativePath(new File(path),
-                    TagMo.getPrefs().preferEmulated().get()) : uri.getPath();
+                    prefs.preferEmulated().get()) : uri.getPath();
             new Toasty(this).Long(getString(R.string.wrote_logcat, output));
             startActivity(TagMo.getIntent(new Intent(this,
                     WebActivity_.class)).setData(uri));
@@ -972,7 +975,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onStorageEnabled() {
-        boolean internal = TagMo.getPrefs().preferEmulated().get();
+        boolean internal = prefs.preferEmulated().get();
         if (Storage.getFile(internal).exists() && Storage.hasPhysicalStorage()) {
             switchStorageRoot.setText(internal
                     ? R.string.emulated_storage_root
@@ -1164,8 +1167,8 @@ public class BrowserActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (getPackageManager().canRequestPackageInstalls())
-            installUpdateTask(TagMo.getPrefs().downloadUrl().get());
-        TagMo.getPrefs().downloadUrl().remove();
+            installUpdateTask(prefs.downloadUrl().get());
+        prefs.downloadUrl().remove();
     });
 
     public void installUpdateCompat(String apkUrl) {
@@ -1173,7 +1176,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (getPackageManager().canRequestPackageInstalls()) {
                 installUpdateTask(apkUrl);
             } else {
-                TagMo.getPrefs().downloadUrl().put(apkUrl);
+                prefs.downloadUrl().put(apkUrl);
                 Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
                 intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
                 onRequestInstall.launch(intent);
@@ -1217,7 +1220,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Background(id = BACKGROUND_UPDATE)
     void checkForUpdateTask() {
-        boolean isMaster = TagMo.getPrefs().stableChannel().get();
+        boolean isMaster = prefs.stableChannel().get();
         new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
                 ? "master" : "experimental")).setResultListener(result -> {
             if (null != result) parseUpdateJSON(result, isMaster);
@@ -1226,7 +1229,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     static final String BACKGROUND_POWERTAG = "powertag";
     void loadPTagKeyManager() {
-        if (TagMo.getPrefs().enablePowerTagSupport().get()) {
+        if (prefs.enablePowerTagSupport().get()) {
             BackgroundExecutor.cancelAll(BACKGROUND_POWERTAG, true);
             loadPTagKeyManagerTask();
         }
@@ -1444,10 +1447,10 @@ public class BrowserActivity extends AppCompatActivity implements
                     && amiibosView.getAdapter().getItemCount() > 0 ? 0 : 200);
         }
 
-        TagMo.getPrefs().edit()
+        prefs.edit()
                 .browserRootFolder().put(Storage.getRelativePath(
                         newBrowserSettings.getBrowserRootFolder(),
-                TagMo.getPrefs().preferEmulated().get()))
+                prefs.preferEmulated().get()))
                 .query().put(newBrowserSettings.getQuery())
                 .sort().put(newBrowserSettings.getSort())
                 .filterGameSeries().put(newBrowserSettings.getGameSeriesFilter())
@@ -1463,7 +1466,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         File rootFolder = newBrowserSettings.getBrowserRootFolder();
         String relativeRoot = Storage.getRelativePath(rootFolder,
-                TagMo.getPrefs().preferEmulated().get());
+                prefs.preferEmulated().get());
         setFolderText(relativeRoot.length() > 1 ? relativeRoot : rootFolder.getAbsolutePath(),
                 folderChanged ? 3000 : 1500);
     }
@@ -1621,7 +1624,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (menuEnableScale == null)
             return;
 
-        menuEnableScale.setChecked(TagMo.getPrefs().enableScaling().get());
+        menuEnableScale.setChecked(prefs.enableScaling().get());
     }
 
     @SuppressLint("InflateParams")
@@ -1794,7 +1797,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         } else {
-            locateKeyFilesRecursive(Storage.getFile(TagMo.getPrefs().preferEmulated().get()));
+            locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated().get()));
         }
 
         if (Thread.currentThread().isInterrupted())
@@ -1925,7 +1928,7 @@ public class BrowserActivity extends AppCompatActivity implements
             mifare = NTAG215.get(tag);
             String tagTech = TagUtils.getTagTechnology(tag);
             if (mifare == null) {
-                if (TagMo.getPrefs().enableEliteSupport().get()) {
+                if (prefs.enableEliteSupport().get()) {
                     mifare = new NTAG215(NfcA.get(tag));
                     try {
                         mifare.connect();
@@ -1962,9 +1965,9 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 if (isEliteDevice) {
                     String signature = TagReader.getTagSignature(mifare);
-                    TagMo.getPrefs().eliteSignature().put(signature);
-                    TagMo.getPrefs().eliteActiveBank().put(active_bank);
-                    TagMo.getPrefs().eliteBankCount().put(bank_count);
+                    prefs.eliteSignature().put(signature);
+                    prefs.eliteActiveBank().put(active_bank);
+                    prefs.eliteBankCount().put(bank_count);
 
                     Intent eliteIntent = new Intent(this, BankListActivity_.class);
                     Bundle args = new Bundle();
@@ -1990,7 +1993,7 @@ public class BrowserActivity extends AppCompatActivity implements
             Debug.Log(e);
             String error = e.getMessage();
             error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
-            if (null != error && TagMo.getPrefs().enableEliteSupport().get()) {
+            if (null != error && prefs.enableEliteSupport().get()) {
                 if (e instanceof android.nfc.TagLostException) {
                     new Toasty(this).Short(R.string.speed_scan);
                     try {

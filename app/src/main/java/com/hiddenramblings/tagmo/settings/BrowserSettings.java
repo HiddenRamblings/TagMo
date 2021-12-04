@@ -145,19 +145,20 @@ public class BrowserSettings implements Parcelable {
     }
 
     public BrowserSettings initialize() {
-        this.setBrowserRootFolder(new File(Storage.getFile(TagMo.getPrefs().preferEmulated().get()),
-                TagMo.getPrefs().browserRootFolder().get()));
-        this.setQuery(TagMo.getPrefs().query().get());
-        this.setSort(TagMo.getPrefs().sort().get());
-        this.setAmiiboSeriesFilter(TagMo.getPrefs().filterAmiiboSeries().get());
-        this.setAmiiboTypeFilter(TagMo.getPrefs().filterAmiiboType().get());
-        this.setCharacterFilter(TagMo.getPrefs().filterCharacter().get());
-        this.setGameSeriesFilter(TagMo.getPrefs().filterGameSeries().get());
-        this.setAmiiboView(TagMo.getPrefs().browserAmiiboView().get());
-        this.setImageNetworkSettings(TagMo.getPrefs().imageNetworkSetting().get());
-        this.setShowDownloads(TagMo.getPrefs().showDownloads().get());
-        this.setRecursiveEnabled(TagMo.getPrefs().recursiveFolders().get());
-        this.setShowMissingFiles(TagMo.getPrefs().showMissingFiles().get());
+        final Preferences_ prefs = TagMo.getPrefs();
+        this.setBrowserRootFolder(new File(Storage.getFile(prefs.preferEmulated().get()),
+                prefs.browserRootFolder().get()));
+        this.setQuery(prefs.query().get());
+        this.setSort(prefs.sort().get());
+        this.setAmiiboSeriesFilter(prefs.filterAmiiboSeries().get());
+        this.setAmiiboTypeFilter(prefs.filterAmiiboType().get());
+        this.setCharacterFilter(prefs.filterCharacter().get());
+        this.setGameSeriesFilter(prefs.filterGameSeries().get());
+        this.setAmiiboView(prefs.browserAmiiboView().get());
+        this.setImageNetworkSettings(prefs.imageNetworkSetting().get());
+        this.setShowDownloads(prefs.showDownloads().get());
+        this.setRecursiveEnabled(prefs.recursiveFolders().get());
+        this.setShowMissingFiles(prefs.showMissingFiles().get());
         return this;
     }
 

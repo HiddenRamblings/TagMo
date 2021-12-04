@@ -12,11 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.R;
@@ -141,7 +139,10 @@ public class BankBrowserAdapter
 
         CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
             @Override
-            public void onLoadStarted(@Nullable Drawable placeholder) { }
+            public void onLoadStarted(@Nullable Drawable placeholder) {
+                imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
+                imageAmiibo.setVisibility(View.VISIBLE);
+            }
 
             @Override
             public void onLoadFailed(@Nullable Drawable errorDrawable) {
@@ -222,7 +223,7 @@ public class BankBrowserAdapter
                     // boldText.Matching(character, query));
                 } else {
                     this.txtName.setVisibility(View.VISIBLE);
-                    this.txtName.setText(TagMo.getStringRes(R.string.blank_bank, value));
+                    this.txtName.setText(TagMo.getContext().getString(R.string.blank_bank, value));
                     this.txtTagId.setVisibility(View.GONE);
                     this.txtAmiiboSeries.setVisibility(View.GONE);
                     this.txtAmiiboType.setVisibility(View.GONE);
@@ -231,15 +232,16 @@ public class BankBrowserAdapter
                 }
             }
 
-            if (null != this.imageAmiibo) {
+            if (null == amiiboImageUrl) {
+                this.imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
+                this.imageAmiibo.setVisibility(View.VISIBLE);
+            } else if (null != this.imageAmiibo) {
                 this.imageAmiibo.setVisibility(View.GONE);
                 Glide.with(itemView).clear(target);
                 Glide.with(itemView)
                         .setDefaultRequestOptions(settings.onlyRetrieveFromCache(itemView))
                         .asBitmap()
-                        .load(null != amiiboImageUrl ? amiiboImageUrl: R.mipmap.ic_launcher)
-                        .thumbnail(0.25f)
-                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                        .load(amiiboImageUrl)
                         .into(target);
             }
         }

@@ -86,11 +86,11 @@ public class Debug {
     }
 
     public static void Log(Class<?> source, int resource) {
-        Log(source, TagMo.getStringRes(resource));
+        Log(source, TagMo.getContext().getString(resource));
     }
 
     public static void Log(Class<?> source, int resource, String params) {
-        Log(source, TagMo.getStringRes(resource, params));
+        Log(source, TagMo.getContext().getString(resource, params));
     }
 
     public static void Log(Exception ex) {
@@ -104,7 +104,7 @@ public class Debug {
 
     public static void Log(int resource, Exception ex) {
         if (!TagMo.getPrefs().disableDebug().get())
-            Log.w(TAG(ex.getClass()), TagMo.getStringRes(resource), ex);
+            Log.w(TAG(ex.getClass()), TagMo.getContext().getString(resource), ex);
     }
 
     public static Uri processLogcat(Context context, String displayName) throws IOException {

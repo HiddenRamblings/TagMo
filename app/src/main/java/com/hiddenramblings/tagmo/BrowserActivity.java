@@ -286,6 +286,22 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @AfterViews
     void afterViews() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()) {
+                this.onStorageEnabled();
+            } else {
+                requestScopedStorage();
+            }
+        } else {
+            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            } else {
+                this.onStorageEnabled();
+            }
+        }
+
         if (null == this.settings) {
             this.settings = new BrowserSettings().initialize();
         } else {
@@ -313,22 +329,6 @@ public class BrowserActivity extends AppCompatActivity implements
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
         });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
-                this.onStorageEnabled();
-            } else {
-                requestScopedStorage();
-            }
-        } else {
-            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
-            } else {
-                this.onStorageEnabled();
-            }
-        }
 
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.swipeRefreshLayout.setProgressViewOffset(false, 0,
@@ -994,7 +994,8 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuCompat.setGroupDividerEnabled(menu, true);
-        boolean result = super.onCreateOptionsMenu(menu);
+
+        if (null == this.settings) return false;
 
         this.onSortChanged();
         this.onViewChanged();
@@ -1037,7 +1038,7 @@ public class BrowserActivity extends AppCompatActivity implements
             searchView.clearFocus();
         }
 
-        return result;
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void openAmiiboViewer(AmiiboFile amiiboFile) {
@@ -1476,7 +1477,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     void onSortChanged() {
-        if (menuSortId == null)
+        if (null == menuSortId)
             return;
         switch (SORT.valueOf(settings.getSort())) {
             case ID:
@@ -1503,18 +1504,8 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private int getColumnCount() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-            mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
-        else
-            mWindowManager.getDefaultDisplay().getMetrics(metrics);
-        return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
-    }
-
     void onViewChanged() {
-        if (menuViewSimple == null)
+        if (null == menuViewSimple)
             return;
         switch(VIEW.valueOf(settings.getAmiiboView())) {
             case SIMPLE:
@@ -1600,28 +1591,28 @@ public class BrowserActivity extends AppCompatActivity implements
     };
 
     void onShowDownloadsChanged() {
-        if (menuShowDownloads == null)
+        if (null == menuShowDownloads)
             return;
 
         menuShowDownloads.setChecked(settings.isShowingDownloads());
     }
 
     void onRecursiveFilesChanged() {
-        if (menuRecursiveFiles == null)
+        if (null == menuRecursiveFiles)
             return;
 
         menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
     }
 
     void onShowMissingChanged() {
-        if (menuShowMissing == null)
+        if (null == menuShowMissing)
             return;
 
         menuShowMissing.setChecked(settings.isShowingMissingFiles());
     }
 
     void onEnableScaleChanged() {
-        if (menuEnableScale == null)
+        if (null == menuEnableScale)
             return;
 
         menuEnableScale.setChecked(prefs.enableScaling().get());
@@ -1643,6 +1634,16 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (chipList.getChildCount() == 0) {
             chipList.setVisibility(View.GONE);
         }
+    }
+
+    private int getColumnCount() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+            mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
+        else
+            mWindowManager.getDefaultDisplay().getMetrics(metrics);
+        return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
     private int[] getAdapterStats() {

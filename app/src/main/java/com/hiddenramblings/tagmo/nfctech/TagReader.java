@@ -27,11 +27,11 @@ public class TagReader {
 
     private static byte[] getTagData(String path, InputStream inputStream) throws Exception {
         byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
-        int len = inputStream.read(data);
-        if (len == NfcByte.KEY_FILE_SIZE) return null;
-        if (len != NfcByte.TAG_FILE_SIZE)
+        int length = inputStream.read(data);
+        if (length == NfcByte.KEY_FILE_SIZE) return null;
+        if (length != NfcByte.TAG_FILE_SIZE)
             throw new IOException(TagMo.getStringRes(R.string.invalid_file_size,
-                    path, new int[]{ len, NfcByte.TAG_FILE_SIZE }));
+                    path, length, NfcByte.TAG_FILE_SIZE));
         return data;
     }
 

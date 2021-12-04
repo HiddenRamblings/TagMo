@@ -130,9 +130,5 @@
             android:key="@string/settings_view_guides"
             android:title="@string/pref_guides_link"
             app:iconSpaceReserved="false" />
-        <androidx.preference.Preference
-            android:key="@string/settings_view_reddit"
-            android:title="@string/pref_reddit_link"
-            app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

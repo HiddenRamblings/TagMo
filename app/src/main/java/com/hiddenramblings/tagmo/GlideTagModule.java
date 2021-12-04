@@ -17,6 +17,7 @@ import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 @GlideModule
 public class GlideTagModule extends AppGlideModule {
+
     @Override
     public void applyOptions(@NonNull Context context, GlideBuilder builder) {
         int diskCacheSizeBytes = 1024 * 1024 * 128; // 128 MB

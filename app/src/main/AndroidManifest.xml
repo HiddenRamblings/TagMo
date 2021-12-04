@@ -42,7 +42,6 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
         </activity>
         <activity-alias
             android:name=".NFCIntentFilter"
@@ -96,6 +95,13 @@
             android:theme="@style/FloatingTheme.NoActionBar"/>
         <activity
             android:name=".TagDataActivity_"/>
+        <receiver
+            android:name=".GithubReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
         <receiver android:name=".github.InstallReceiver"/>
 
         <provider

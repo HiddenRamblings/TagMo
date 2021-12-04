@@ -383,11 +383,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 .setAction(TagMo.ACTION_BROWSE_GITLAB));
     }
 
-    @PreferenceClick(R.string.settings_view_reddit)
-    void onViewRedditClicked() {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.TAGMO_REDDIT)));
-    }
-
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";
     void validateKeys(Uri data) {
         BackgroundExecutor.cancelAll(BACKGROUND_LOAD_KEYS, true);

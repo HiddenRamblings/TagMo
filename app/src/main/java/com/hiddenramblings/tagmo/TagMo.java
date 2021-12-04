@@ -63,7 +63,6 @@ public class TagMo extends Application {
         public static final String LASTUPDATED = "https://www.amiiboapi.com/api/lastupdated/";
         public static final String AMIIBO_IMAGE = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08x-%08x.png";
         public static final String TAGMO_GIT_API = "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/";
-        public static final String TAGMO_REDDIT = "https://www.reddit.com/r/tagmo/";
         public static final String TAGMO_GITLAB = "https://tagmo.gitlab.io/";
     }
 

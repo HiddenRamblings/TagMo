@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.nfctech;
 
+import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.nfc.FormatException;
 import android.nfc.Tag;
@@ -28,19 +29,20 @@ import java.util.Locale;
 public class TagUtils {
 
     public static String getTagTechnology(Tag tag) {
-        String type = TagMo.getStringRes(R.string.unknown_type);
+        final Context context = TagMo.getContext();
+        String type = context.getString(R.string.unknown_type);
         for (String tech : tag.getTechList()) {
             if (MifareClassic.class.getName().equals(tech)) {
                 switch (MifareClassic.get(tag).getType()) {
                     default:
                     case MifareClassic.TYPE_CLASSIC:
-                        type = TagMo.getStringRes(R.string.mifare_classic);
+                        type = context.getString(R.string.mifare_classic);
                         break;
                     case MifareClassic.TYPE_PLUS:
-                        type = TagMo.getStringRes(R.string.mifare_plus);
+                        type = context.getString(R.string.mifare_plus);
                         break;
                     case MifareClassic.TYPE_PRO:
-                        type = TagMo.getStringRes(R.string.mifare_pro);
+                        type = context.getString(R.string.mifare_pro);
                         break;
                 }
                 return type;
@@ -48,19 +50,19 @@ public class TagUtils {
                 switch (MifareUltralight.get(tag).getType()) {
                     default:
                     case MifareUltralight.TYPE_ULTRALIGHT:
-                        type = TagMo.getStringRes(R.string.mifare_ultralight);
+                        type = context.getString(R.string.mifare_ultralight);
                         break;
                     case MifareUltralight.TYPE_ULTRALIGHT_C:
-                        type = TagMo.getStringRes(R.string.mifare_ultralight_c);
+                        type = context.getString(R.string.mifare_ultralight_c);
                         break;
                 }
                 return type;
             } else if (IsoDep.class.getName().equals(tech)) {
-                return TagMo.getStringRes(R.string.isodep);
+                return context.getString(R.string.isodep);
             } else if (Ndef.class.getName().equals(tech)) {
-                return TagMo.getStringRes(R.string.ndef);
+                return context.getString(R.string.ndef);
             } else if (NdefFormatable.class.getName().equals(tech)) {
-                return TagMo.getStringRes(R.string.ndef_formatable);
+                return context.getString(R.string.ndef_formatable);
             }
         }
         return type;
@@ -156,8 +158,8 @@ public class TagUtils {
 
     static byte[][] splitPages(byte[] data) throws Exception {
         if (data.length < NfcByte.TAG_FILE_SIZE)
-            throw new IOException(TagMo.getStringRes(R.string.invalid_data_size,
-                    data.length, NfcByte.TAG_FILE_SIZE));
+            throw new IOException(TagMo.getContext().getString(
+                    R.string.invalid_data_size, data.length, NfcByte.TAG_FILE_SIZE));
 
         byte[][] pages = new byte[data.length / NfcByte.PAGE_SIZE][];
         for (int i = 0, j = 0; i < data.length; i += NfcByte.PAGE_SIZE, j++) {
@@ -167,41 +169,43 @@ public class TagUtils {
     }
 
     public static void validateData(byte[] data) throws Exception {
+        final Context context = TagMo.getContext();
         byte[][] pages = TagUtils.splitPages(data);
 
         if (pages[0][0] != (byte) 0x04)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_prefix));
+            throw new Exception(context.getString(R.string.invalid_tag_prefix));
 
         if (pages[2][2] != (byte) 0x0F || pages[2][3] != (byte) 0xE0)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_lock));
+            throw new Exception(context.getString(R.string.invalid_tag_lock));
 
         if (pages[3][0] != (byte) 0xF1 || pages[3][1] != (byte) 0x10
                 || pages[3][2] != (byte) 0xFF || pages[3][3] != (byte) 0xEE)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_cc));
+            throw new Exception(context.getString(R.string.invalid_tag_cc));
 
         if (pages[0x82][0] != (byte) 0x01 || pages[0x82][1] != (byte) 0x0 || pages[0x82][2] != (byte) 0x0F)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_dynamic));
+            throw new Exception(context.getString(R.string.invalid_tag_dynamic));
 
         if (pages[0x83][0] != (byte) 0x0 || pages[0x83][1] != (byte) 0x0
                 || pages[0x83][2] != (byte) 0x0 || pages[0x83][3] != (byte) 0x04)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_cfg_zero));
+            throw new Exception(context.getString(R.string.invalid_tag_cfg_zero));
 
         if (pages[0x84][0] != (byte) 0x5F || pages[0x84][1] != (byte) 0x0
                 || pages[0x84][2] != (byte) 0x0 || pages[0x84][3] != (byte) 0x00)
-            throw new Exception(TagMo.getStringRes(R.string.invalid_tag_cfg_one));
+            throw new Exception(context.getString(R.string.invalid_tag_cfg_one));
     }
 
     public static void validateNtag(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
+        final Context context = TagMo.getContext();
         if (null == tagData )
-            throw new IOException(TagMo.getStringRes(R.string.no_source_data));
+            throw new IOException(context.getString(R.string.no_source_data));
 
         if (validateNtag) {
             try {
                 byte[] versionInfo = mifare.transceive(new byte[]{(byte) 0x60});
                 if (null == versionInfo  || versionInfo.length != 8)
-                    throw new Exception(TagMo.getStringRes(R.string.error_tag_version));
+                    throw new Exception(context.getString(R.string.error_tag_version));
                 if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
-                    throw new FormatException(TagMo.getStringRes(R.string.error_tag_format));
+                    throw new FormatException(context.getString(R.string.error_tag_format));
             } catch (Exception e) {
                 Debug.Log(R.string.error_version, e);
                 throw e;
@@ -210,10 +214,10 @@ public class TagUtils {
 
         byte[] pages = mifare.readPages(0);
         if (null == pages  || pages.length != NfcByte.PAGE_SIZE * 4)
-            throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
+            throw new Exception(context.getString(R.string.fail_read_size));
 
         if (!TagUtils.compareRange(pages, tagData, 9))
-            throw new Exception(TagMo.getStringRes(R.string.fail_mismatch_uid));
+            throw new Exception(context.getString(R.string.fail_mismatch_uid));
 
         Debug.Log(TagWriter.class, R.string.validation_success);
     }

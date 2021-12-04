@@ -51,6 +51,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
+import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.BankPicker;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -73,6 +74,8 @@ import java.util.ArrayList;
 @EActivity(R.layout.activity_bank_list)
 public class BankListActivity extends AppCompatActivity implements
         BankBrowserAdapter.OnAmiiboClickListener {
+
+    private final Preferences_ prefs = TagMo.getPrefs();
 
     @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
@@ -188,9 +191,9 @@ public class BankListActivity extends AppCompatActivity implements
         toolbar.inflateMenu(R.menu.bank_menu);
 
         int bank_count = getIntent().getIntExtra(TagMo.EXTRA_BANK_COUNT,
-                TagMo.getPrefs().eliteBankCount().get());
+                prefs.eliteBankCount().get());
         int active_bank = getIntent().getIntExtra(TagMo.EXTRA_ACTIVE_BANK,
-                TagMo.getPrefs().eliteActiveBank().get());
+                prefs.eliteActiveBank().get());
 
         hardwareInfo.setText(getString(R.string.elite_signature,
                 getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE)));
@@ -356,16 +359,16 @@ public class BankListActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         int active_bank = result.getData().getIntExtra(TagMo.EXTRA_ACTIVE_BANK,
-                TagMo.getPrefs().eliteActiveBank().get());
+                prefs.eliteActiveBank().get());
 
         if (null != amiibosView.getAdapter()) {
-            amiibosView.getAdapter().notifyItemChanged(TagMo.getPrefs().eliteActiveBank().get());
+            amiibosView.getAdapter().notifyItemChanged(prefs.eliteActiveBank().get());
             amiibosView.getAdapter().notifyItemChanged(active_bank);
         }
 
-        TagMo.getPrefs().eliteActiveBank().put(active_bank);
+        prefs.eliteActiveBank().put(active_bank);
 
-        int bank_count = TagMo.getPrefs().eliteBankCount().get();
+        int bank_count = prefs.eliteBankCount().get();
         bankStats.setText(getString(R.string.elite_bank_stats,
                 eliteBankCount.getValueForPosition(active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
@@ -378,6 +381,11 @@ public class BankListActivity extends AppCompatActivity implements
 
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())
                 && !TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
+
+        if (result.getData().hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
+            clickedPosition = result.getData().getIntExtra(
+                    TagMo.EXTRA_CURRENT_BANK, clickedPosition);
+        }
 
         if (result.getData().hasExtra(TagMo.EXTRA_TAG_DATA)) {
             byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
@@ -547,7 +555,7 @@ public class BankListActivity extends AppCompatActivity implements
                     }
                     return true;
                 case R.id.mnu_erase_bank:
-                    if (TagMo.getPrefs().eliteActiveBank().get() == current_bank) {
+                    if (prefs.eliteActiveBank().get() == current_bank) {
                         notice.Short(R.string.erase_active);
                     } else {
                         scan.setAction(TagMo.ACTION_ERASE_BANK);
@@ -700,14 +708,14 @@ public class BankListActivity extends AppCompatActivity implements
         if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         int bank_count = result.getData().getIntExtra(TagMo.EXTRA_BANK_COUNT,
-                TagMo.getPrefs().eliteBankCount().get());
+                prefs.eliteBankCount().get());
 
-        TagMo.getPrefs().eliteBankCount().put(bank_count);
+        prefs.eliteBankCount().put(bank_count);
 
         eliteBankCount.setValue(bank_count);
         updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_LIST));
         bankStats.setText(getString(R.string.elite_bank_stats, eliteBankCount.getValueForPosition(
-                TagMo.getPrefs().eliteActiveBank().get()), bank_count));
+                prefs.eliteActiveBank().get()), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
         eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
     });
@@ -801,7 +809,7 @@ public class BankListActivity extends AppCompatActivity implements
 
     @Click(R.id.write_bank_count)
     void onWriteBankCountClick() {
-        if (TagMo.getPrefs().eliteActiveBank().get() >= eliteBankCount.getValue()) {
+        if (prefs.eliteActiveBank().get() >= eliteBankCount.getValue()) {
             new Toasty(this).Short(R.string.fail_active_oob);
             onBottomSheetChanged(true, false);
             return;

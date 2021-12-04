@@ -51,7 +51,6 @@
 package com.hiddenramblings.tagmo.eightbit.material;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.View;

@@ -1,5 +1,7 @@
 package com.hiddenramblings.tagmo.nfctech;
 
+import android.content.Context;
+
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 public class TagWriter {
 
     public static void writeToTagRaw(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
+        final Context context = TagMo.getContext();
         TagUtils.validateNtag(mifare, tagData, validateNtag);
         TagReader.validateBlankTag(mifare);
 
@@ -21,19 +24,19 @@ public class TagWriter {
             writePages(mifare, 3, 129, pages);
             Debug.Log(TagWriter.class, R.string.data_write);
         } catch (Exception e) {
-            throw new Exception(TagMo.getStringRes(R.string.error_data_write), e);
+            throw new Exception(context.getString(R.string.error_data_write), e);
         }
         try {
             writePassword(mifare);
             Debug.Log(TagWriter.class, R.string.password_write);
         } catch (Exception e) {
-            throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
+            throw new Exception(context.getString(R.string.error_password_write), e);
         }
         try {
             writeLockInfo(mifare);
             Debug.Log(TagWriter.class, R.string.lock_write);
         } catch (Exception e) {
-            throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
+            throw new Exception(context.getString(R.string.error_lock_write), e);
         }
     }
 
@@ -45,7 +48,8 @@ public class TagWriter {
     }
 
     private static byte[] patchUid(byte[] uid, byte[] tagData) throws Exception {
-        if (uid.length < 9) throw new IOException(TagMo.getStringRes(R.string.invalid_uid_length));
+        if (uid.length < 9) throw new IOException(TagMo.getContext()
+                .getString(R.string.invalid_uid_length));
 
         byte[] patched = Arrays.copyOf(tagData, tagData.length);
         System.arraycopy(uid, 0, patched, 0x1d4, 8);
@@ -58,13 +62,15 @@ public class TagWriter {
             writePassword(mifare);
             Debug.Log(TagWriter.class, R.string.password_write);
         } catch (Exception e) {
-            throw new Exception(TagMo.getStringRes(R.string.error_password_write), e);
+            throw new Exception(TagMo.getContext()
+                    .getString(R.string.error_password_write), e);
         }
         try {
             writeLockInfo(mifare);
             Debug.Log(TagWriter.class, R.string.lock_write);
         } catch (Exception e) {
-            throw new Exception(TagMo.getStringRes(R.string.error_lock_write), e);
+            throw new Exception(TagMo.getContext()
+                    .getString(R.string.error_lock_write), e);
         }
     }
 
@@ -72,7 +78,8 @@ public class TagWriter {
                                       boolean validateNtag) throws Exception {
         byte[] idPages = mifare.readPages(0);
         if (null == idPages  || idPages.length != NfcByte.PAGE_SIZE * 4)
-            throw new Exception(TagMo.getStringRes(R.string.fail_read_size));
+            throw new Exception(TagMo.getContext()
+                    .getString(R.string.fail_read_size));
 
         boolean isPowerTag = TagUtils.isPowerTag(mifare);
         Debug.Log(TagWriter.class, R.string.power_tag_verify, String.valueOf(isPowerTag));
@@ -100,7 +107,8 @@ public class TagWriter {
         if (isPowerTag) {
             byte[] oldid = mifare.getTag().getId();
             if (null == oldid  || oldid.length != 7)
-                throw new Exception(TagMo.getStringRes(R.string.fail_read_uid));
+                throw new Exception(TagMo.getContext()
+                        .getString(R.string.fail_read_uid));
 
             Debug.Log(TagWriter.class, R.string.old_uid, TagUtils.bytesToHex(oldid));
 
@@ -135,7 +143,8 @@ public class TagWriter {
                 writePages(mifare, 3, 129, pages);
                 Debug.Log(TagWriter.class, R.string.data_write);
             } catch (Exception e) {
-                throw new Exception(TagMo.getStringRes(R.string.error_data_write), e);
+                throw new Exception(TagMo.getContext()
+                        .getString(R.string.error_data_write), e);
             }
             writePasswordLockInfo(mifare);
         }
@@ -149,9 +158,11 @@ public class TagWriter {
             tagData = keyManager.encrypt(tagData);
             boolean write = mifare.amiiboFastWrite(0, active_bank, tagData);
             if (!write) write = mifare.amiiboWrite(0, active_bank, tagData);
-            if (!write) throw new Exception(TagMo.getStringRes(R.string.error_elite_write));
+            if (!write) throw new Exception(TagMo.getContext()
+                    .getString(R.string.error_elite_write));
         } else {
-            throw new Exception(TagMo.getStringRes(R.string.error_elite_auth));
+            throw new Exception(TagMo.getContext()
+                    .getString(R.string.error_elite_auth));
         }
     }
 
@@ -218,7 +229,7 @@ public class TagWriter {
         byte[] pages0_1 = tag.readPages(0);
 
         if (null == pages0_1  || pages0_1.length != NfcByte.PAGE_SIZE * 4)
-            throw new Exception(TagMo.getStringRes(R.string.fail_read));
+            throw new Exception(TagMo.getContext().getString(R.string.fail_read));
 
         byte[] uid = uidFromPages(pages0_1);
         byte[] password = keygen(uid);
@@ -234,11 +245,11 @@ public class TagWriter {
         };
         byte[] response = tag.transceive(auth);
         if (null == response )
-            throw new Exception(TagMo.getStringRes(R.string.error_auth_null));
+            throw new Exception(TagMo.getContext().getString(R.string.error_auth_null));
         String respStr = TagUtils.bytesToHex(response);
         Debug.Log(TagWriter.class, R.string.auth_response, respStr);
         if (!"8080".equals(respStr)) {
-            throw new Exception(TagMo.getStringRes(R.string.fail_auth));
+            throw new Exception(TagMo.getContext().getString(R.string.fail_auth));
         }
     }
 
@@ -265,7 +276,7 @@ public class TagWriter {
         byte[] pages0_1 = tag.readPages(0);
 
         if (null == pages0_1  || pages0_1.length != NfcByte.PAGE_SIZE * 4)
-            throw new IOException(TagMo.getStringRes(R.string.fail_read));
+            throw new IOException(TagMo.getContext().getString(R.string.fail_read));
 
         byte[] uid = uidFromPages(pages0_1);
         byte[] password = keygen(uid);
@@ -283,7 +294,7 @@ public class TagWriter {
         byte[] pages = tag.readPages(0);
 
         if (null == pages  || pages.length != NfcByte.PAGE_SIZE * 4)
-            throw new IOException(TagMo.getStringRes(R.string.fail_read));
+            throw new IOException(TagMo.getContext().getString(R.string.fail_read));
 
         tag.writePage(2, new byte[]{pages[2 * NfcByte.PAGE_SIZE],
                 pages[(2 * NfcByte.PAGE_SIZE) + 1], (byte) 0x0F, (byte) 0xE0}); // lock bits
@@ -305,21 +316,24 @@ public class TagWriter {
                 System.arraycopy(tagData, 84, result, 0, result.length);
                 Debug.Log(TagWriter.class, TagUtils.bytesToHex(result));
             } else {
-                throw new Exception(TagMo.getStringRes(R.string.error_elite_write));
+                throw new Exception(TagMo.getContext()
+                        .getString(R.string.error_elite_write));
             }
         } else {
-            throw new Exception(TagMo.getStringRes(R.string.error_elite_write));
+            throw new Exception(TagMo.getContext()
+                    .getString(R.string.error_elite_write));
         }
     }
 
     public static boolean updateFirmware(NTAG215 tag) throws Exception {
+        final Context context = TagMo.getContext();
         byte[] response = new byte[1];
         response[0] = (byte) 0xFFFF;
         tag.initFirmware();
         tag.getVersion(true);
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(
-                    TagMo.getContext().getResources().openRawResource(R.raw.firmware)));
+                    context.getResources().openRawResource(R.raw.firmware)));
             while (true) {
                 String strLine = br.readLine();
                 if (null == strLine) {
@@ -349,21 +363,21 @@ public class TagWriter {
                             }
                         }
                         if (!done) {
-                            throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 1));
+                            throw new Exception(context.getString(R.string.firmware_failed, 1));
                         }
                     }
                     return false;
                 } else if (parts[0].equals("C-RPDU")) {
                     byte[] rpdu_buf = new byte[(parts.length - 1)];
                     if (response.length != parts.length - 3) {
-                        throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 2));
+                        throw new Exception(context.getString(R.string.firmware_failed, 2));
                     }
                     for (i = 1; i < parts.length; i++) {
                         rpdu_buf[i - 1] = TagUtils.hexToByte(parts[i]);
                     }
                     for (i = 0; i < rpdu_buf.length - 2; i++) {
                         if (rpdu_buf[i] != response[i]) {
-                            throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 3));
+                            throw new Exception(context.getString(R.string.firmware_failed, 3));
                         }
                     }
                 } /* else if (!parts[0].equals("RESET") && parts[0].equals("LOGIN")) { } */
@@ -371,7 +385,7 @@ public class TagWriter {
             br.close();
             return true;
         } catch (IOException e) {
-            throw new Exception(TagMo.getStringRes(R.string.firmware_failed, 4));
+            throw new Exception(context.getString(R.string.firmware_failed, 4));
         }
     }
 }

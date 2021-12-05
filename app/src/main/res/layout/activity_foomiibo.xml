@@ -27,19 +27,24 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="2dp"
         android:background="?attr/colorPrimaryDark"
         android:layout_gravity="bottom"
-        android:clickable="true"
-        android:focusable="true"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/build_foomiibo_series"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:layout_gravity="bottom"
-        android:text="@string/build_foomiibo_set" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/clear_foomiibo_set"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/clear_foomiibo_set" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/build_foomiibo_set"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/build_foomiibo_set" />
 
     </LinearLayout>
 

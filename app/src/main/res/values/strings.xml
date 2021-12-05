@@ -116,7 +116,9 @@
     <string name="settings">Settings</string>
     <string name="capture_logcat">Capture Logcat</string>
     <string name="build_foomiibo">Build Foomiibo</string>
-    <string name="build_foomiibo_set">Build Complete Foomiibo Set</string>
+    <string name="clear_foomiibo_set">Clear Foomiibo Set</string>
+    <string name="build_foomiibo_set">Build Foomiibo Set</string>
+    <string name="foomiibo_progress">Building %1$s&#8230;</string>
 
     <string name="wrote_file">File saved to %1$s</string>
     <string name="wrote_logcat">Logcat saved to %1$s</string>
@@ -322,7 +324,6 @@
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 
     <string name="speed_scan">Lift tag slightly to complete scan</string>
-    <string name="wait_unzip">Decompressing Download&#8230;</string>
     <string name="unzip_item">Unzipping %1$s&#8230;</string>
     <string name="mkdir_failed">Mkdir "%1$s" failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>

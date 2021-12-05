@@ -121,8 +121,6 @@ public class WebActivity extends AppCompatActivity {
         webViewSettings.setAllowUniversalAccessFromFileURLs(
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP);
 
-        setResult(RESULT_CANCELED);
-
         JavaScriptInterface download = new JavaScriptInterface();
         mWebView.addJavascriptInterface(download, "Android");
         mWebView.setDownloadListener((url, userAgent, contentDisposition, mimeType, contentLength) -> {
@@ -208,16 +206,13 @@ public class WebActivity extends AppCompatActivity {
             } finally {
                 dialog.dismiss();
                 this.archive.delete();
-                setResult(Activity.RESULT_OK);
-                finish();
             }
         }
     }
 
     @UiThread
     void unzipFile(File zipFile) {
-        dialog = ProgressDialog.show(this,
-                getString(R.string.wait_unzip), "", true);
+        dialog = ProgressDialog.show(this, "", "", true);
         new Thread(new UnZip(zipFile, Storage.getDownloadDir(
                 "TagMo", "Downloads"))).start();
     }
@@ -229,8 +224,6 @@ public class WebActivity extends AppCompatActivity {
             FileOutputStream os = new FileOutputStream(filePath, false);
             os.write(tagData);
             os.flush();
-            setResult(Activity.RESULT_OK);
-            finish();
         } catch (IOException e) {
             Debug.Log(e);
         }

@@ -1,9 +1,12 @@
 package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -49,6 +52,8 @@ public class FoomiiboActivity extends AppCompatActivity implements
 
     private final Foomiibo foomiibo = new Foomiibo();
     private final File directory = Storage.getDownloadDir("TagMo", "Foomiibo");
+    private ProgressDialog dialog;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     @InstanceState
     BrowserSettings settings;
@@ -107,7 +112,8 @@ public class FoomiiboActivity extends AppCompatActivity implements
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void deleteDir(File dir) {
+    private void deleteDir(File dir) {
+        if (!directory.exists()) return;
         File[] files = dir.listFiles();
         if (null != files && files.length > 0) {
             for (File file : files) {
@@ -118,6 +124,19 @@ public class FoomiiboActivity extends AppCompatActivity implements
             }
         }
         dir.delete();
+    }
+
+    private void buildFoomiiboFile(Amiibo amiibo) {
+        try {
+            byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
+            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            //noinspection ResultOfMethodCallIgnored
+            directory.mkdirs();
+            TagUtils.writeBytesToFile(directory, decipherFilename(
+                    settings.getAmiiboManager(), tagData), tagData);
+        } catch (Exception e) {
+            Debug.Log(e);
+        }
     }
 
     private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
@@ -147,61 +166,46 @@ public class FoomiiboActivity extends AppCompatActivity implements
         });
     }
 
-    @Click(R.id.build_foomiibo_series)
+    @Click(R.id.clear_foomiibo_set)
+    void onClearFoomiiboClicked() {
+        deleteDir(directory);
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    @Click(R.id.build_foomiibo_set)
     @Background
     void onBuildFoomiiboClicked() {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         if (null == amiiboManager) return;
 
-        if (directory.exists())
-            deleteDir(directory);
+        deleteDir(directory);
         //noinspection ResultOfMethodCallIgnored
         directory.mkdirs();
 
+        handler.post(() -> dialog = ProgressDialog.show(this,
+                "", "", true));
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-            try {
-                byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
-                File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
-                //noinspection ResultOfMethodCallIgnored
-                directory.mkdirs();
-                TagUtils.writeBytesToFile(directory, decipherFilename(
-                        amiiboManager, tagData), tagData);
-            } catch (Exception e) {
-                Debug.Log(e);
-            }
+            buildFoomiiboFile(amiibo);
+            handler.post(() -> dialog.setMessage(getString(
+                    R.string.foomiibo_progress, amiibo.getCharacter().name)));
         }
+        handler.post(() -> dialog.dismiss());
+
         setResult(RESULT_OK);
         finish();
     }
 
     @Override
     public void onAmiiboClicked(Amiibo amiibo) {
-        try {
-            byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
-            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
-            //noinspection ResultOfMethodCallIgnored
-            directory.mkdirs();
-            TagUtils.writeBytesToFile(directory, decipherFilename(
-                    settings.getAmiiboManager(), tagData), tagData);
-            setResult(RESULT_OK);
-        } catch (Exception e) {
-            Debug.Log(e);
-        }
+        buildFoomiiboFile(amiibo);
+        setResult(RESULT_OK);
     }
 
     @Override
     public void onAmiiboImageClicked(Amiibo amiibo) {
-        try {
-            byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
-            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
-            //noinspection ResultOfMethodCallIgnored
-            directory.mkdirs();
-            TagUtils.writeBytesToFile(directory, decipherFilename(
-                    settings.getAmiiboManager(), tagData), tagData);
-            setResult(RESULT_OK);
-        } catch (Exception e) {
-            Debug.Log(e);
-        }
+        buildFoomiiboFile(amiibo);
+        setResult(RESULT_OK);
     }
 
     @Override

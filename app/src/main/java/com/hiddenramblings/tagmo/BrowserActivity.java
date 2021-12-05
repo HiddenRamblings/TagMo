@@ -603,9 +603,8 @@ public class BrowserActivity extends AppCompatActivity implements
     @OptionsItem(R.id.capture_logcat)
     @Background
     void onCaptureLogcatClicked() {
-        File[] logs = Storage.getDownloadDir("TagMo",
-                "Logcat").listFiles((dir, name) ->
-                name.toLowerCase(Locale.ROOT).startsWith("tagmo_logcat"));
+        File[] logs = Storage.getDownloadDir("TagMo", "Logcat").listFiles(
+                (dir, name) -> name.toLowerCase(Locale.ROOT).startsWith("tagmo_logcat"));
         if (null != logs && logs.length > 0) {
             for (File file : logs) {
                 //noinspection ResultOfMethodCallIgnored
@@ -627,10 +626,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private final ActivityResultLauncher<Intent> onBuildFoomiibo = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result ->
-                    this.onRootFolderChanged(true));
+            this.onRootFolderChanged(true));
 
     @OptionsItem(R.id.build_foomiibo)
-    @Background
     void onBuildFoomiiboClicked() {
         onBuildFoomiibo.launch(new Intent(this, FoomiiboActivity_.class));
     }
@@ -1301,19 +1299,10 @@ public class BrowserActivity extends AppCompatActivity implements
         loadAmiiboFilesTask(rootFolder, recursiveFiles);
     }
 
-    private boolean isDownloadShown(File rootFolder, File download, boolean recursiveFiles) {
-        if (download.getPath().equals(rootFolder.getPath())) return true;
-        File[] files = rootFolder.listFiles();
-        if (files == null || files.length == 0) return false;
-        for (File file : files) {
-            if (file.isDirectory()) {
-                if (download.getPath().equals(file.getPath()))
-                    return true;
-                else if (recursiveFiles)
-                    return isDownloadShown(file, download, true);
-            }
-        }
-        return rootFolder.getPath().startsWith(download.getPath());
+    private boolean isDirectoryShown(File rootFolder, File directory, boolean recursive) {
+        return rootFolder.getPath().equals(directory.getPath()) || recursive
+                && (rootFolder.getPath().startsWith(directory.getPath())
+                || directory.getPath().startsWith(rootFolder.getPath()));
     }
 
     @Background(id = BACKGROUND_AMIIBO_FILES)
@@ -1322,11 +1311,12 @@ public class BrowserActivity extends AppCompatActivity implements
                 .listAmiibos(keyManager, rootFolder, recursiveFiles);
         if (this.settings.isShowingDownloads()) {
             File download = Storage.getDownloadDir(null);
-            if (!isDownloadShown(rootFolder, download, recursiveFiles))
+            if (!isDirectoryShown(rootFolder, download, recursiveFiles))
                 amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, download, true));
         } else {
-            amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
-                    Storage.getDownloadDir("TagMo", "Foomiibo"), true));
+            File foomiibo = Storage.getDownloadDir("TagMo", "Foomiibo");
+            if (!isDirectoryShown(rootFolder, foomiibo, recursiveFiles))
+                amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, foomiibo, true));
         }
 
         if (Thread.currentThread().isInterrupted())

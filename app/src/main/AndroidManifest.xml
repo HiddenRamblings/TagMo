@@ -91,9 +91,6 @@
         <activity
             android:name=".ImageActivity_"/>
         <activity
-            android:name=".AmiiboActivity_"
-            android:theme="@style/FloatingTheme.NoActionBar"/>
-        <activity
             android:name=".TagDataActivity_"/>
         <receiver
             android:name=".GithubReceiver"

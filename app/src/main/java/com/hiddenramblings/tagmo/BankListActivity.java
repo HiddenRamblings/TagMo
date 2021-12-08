@@ -328,7 +328,7 @@ public class BankListActivity extends AppCompatActivity implements
         writeBankCount.setVisibility(isMenu ? View.VISIBLE : View.GONE);
     }
 
-    private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
+    private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<>() {
         @Override
         public void onLoadStarted(@Nullable Drawable placeholder) { }
 
@@ -524,6 +524,22 @@ public class BankListActivity extends AppCompatActivity implements
             backupDialog.dismiss();
         });
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+    }
+
+    private void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+        if (hasTagInfo) {
+            textView.setVisibility(View.GONE);
+        } else {
+            textView.setVisibility(View.VISIBLE);
+            if (text.length() == 0) {
+                textView.setText(getString(R.string.unknown));
+                textView.setEnabled(false);
+            } else {
+                textView.setText(text);
+                textView.setText(text);
+                textView.setEnabled(true);
+            }
+        }
     }
 
     private void updateAmiiboView(byte[] tagData, long amiiboId, int current_bank) {
@@ -732,21 +748,6 @@ public class BankListActivity extends AppCompatActivity implements
         }
     }
 
-    private void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
-        if (hasTagInfo) {
-            textView.setVisibility(View.GONE);
-        } else {
-            textView.setVisibility(View.VISIBLE);
-            if (text.length() == 0) {
-                textView.setText(getString(R.string.unknown));
-                textView.setEnabled(false);
-            } else {
-                textView.setText(text);
-                textView.setEnabled(true);
-            }
-        }
-    }
-
     private int getColumnCount() {
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -863,10 +864,9 @@ public class BankListActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+        if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState())
             onBottomSheetChanged(true, false);
-        } else {
+        else
             super.onBackPressed();
-        }
     }
 }

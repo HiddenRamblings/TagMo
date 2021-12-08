@@ -16,6 +16,9 @@ android {
             }
         }
 
+        renderscriptTargetApi 31
+        renderscriptSupportModeEnabled true
+
         def commit = 'git rev-parse --short HEAD'.execute().text.trim()
         buildConfigField "String", "COMMIT", "\""+commit+"\""
         project.archivesBaseName = "TagMo-" + commit
@@ -60,8 +63,8 @@ android {
     ndkVersion "21.4.7075529"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     lintOptions {
         abortOnError false
@@ -88,6 +91,7 @@ dependencies {
     implementation 'com.robertlevonyan.view:MaterialChipView:2.2.7'
     implementation 'org.apmem.tools:layouts:1.10@aar'
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
+    implementation 'com.github.Dimezis:BlurView:version-1.6.6'
     // Required for Lollipop Amiibo API download compatibility
     api 'com.google.android.gms:play-services-safetynet:17.0.1'
 }

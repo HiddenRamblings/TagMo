@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -1189,7 +1190,15 @@ public class BrowserActivity extends AppCompatActivity implements
                 intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
                 intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,
                         getApplicationInfo().packageName);
-                startActivity(TagMo.getIntent(intent));
+                try {
+                    startActivity(TagMo.getIntent(intent));
+                } catch (ActivityNotFoundException anf) {
+                    try {
+                        startActivity(intent.setAction(Intent.ACTION_VIEW));
+                    } catch (ActivityNotFoundException ignored) {
+
+                    }
+                }
             }
         } catch (MalformedURLException mue) {
             Debug.Log(mue);

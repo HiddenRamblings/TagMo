@@ -303,7 +303,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
 
         private final BoldSpannable boldSpannable = new BoldSpannable();
 
-        private final CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
+        private final CustomTarget<Bitmap> target = new CustomTarget<>() {
             @Override
             public void onLoadStarted(@Nullable Drawable placeholder) {
                 imageAmiibo.setImageResource(0);

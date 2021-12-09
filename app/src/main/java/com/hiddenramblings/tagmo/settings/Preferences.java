@@ -26,7 +26,7 @@ public interface Preferences {
 
     String filterAmiiboType();
 
-    @DefaultBoolean(keyRes = R.string.settings_enable_tag_type_validation, value = true)
+    @DefaultBoolean(keyRes = R.string.settings_tag_type_validation, value = true)
     boolean enableTagTypeValidation();
 
     @DefaultBoolean(keyRes = R.string.settings_enable_power_tag_support, value = false)

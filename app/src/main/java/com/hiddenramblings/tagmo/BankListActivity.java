@@ -113,7 +113,7 @@ public class BankListActivity extends AppCompatActivity implements
     @ViewById(R.id.imageAmiibo)
     ImageView imageAmiibo;
 
-    @ViewById(R.id.elite_bank_stats)
+    @ViewById(R.id.bank_stats)
     TextView bankStats;
     @ViewById(R.id.bank_count_picker)
     BankPicker eliteBankCount;
@@ -150,6 +150,36 @@ public class BankListActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         keyManager = new KeyManager(this);
+
+//        setContentView(R.layout.activity_bank_list);
+//
+//        amiibosView = findViewById(R.id.amiibos_list);
+//        hardwareInfo = findViewById(R.id.hardware_info);
+//        bottomSheet = findViewById(R.id.bottom_sheet);
+//        toggle = findViewById(R.id.toggle);
+//
+//        writeBankLayout = findViewById(R.id.write_banks_layout);
+//        amiiboFilesView = findViewById(R.id.amiibo_files_list);
+//        searchView = findViewById(R.id.amiibo_search);
+//
+//        amiiboCard = findViewById(R.id.amiiboCard);
+//        toolbar = findViewById(R.id.toolbar);
+//        amiiboInfo = findViewById(R.id.amiiboInfo);
+//        txtError = findViewById(R.id.txtError);
+//        txtTagId = findViewById(R.id.txtTagId);
+//        txtName = findViewById(R.id.txtName);
+//        txtBank = findViewById(R.id.txtBank);
+//        txtGameSeries = findViewById(R.id.txtGameSeries);
+//        txtCharacter = findViewById(R.id.txtCharacter);
+//        txtAmiiboType = findViewById(R.id.txtAmiiboType);
+//        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
+//        imageAmiibo = findViewById(R.id.imageAmiibo);
+//
+//        bankStats = findViewById(R.id.bank_stats);
+//        eliteBankCount = findViewById(R.id.bank_count_picker);
+//        writeOpenBanks = findViewById(R.id.write_open_banks);
+//        eraseOpenBanks = findViewById(R.id.erase_open_banks);
+//        writeBankCount = findViewById(R.id.write_bank_count);
     }
 
     @AfterViews
@@ -201,8 +231,8 @@ public class BankListActivity extends AppCompatActivity implements
         amiibosView.setAdapter(adapter);
         this.settings.addChangeListener(adapter);
         updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_LIST));
-        bankStats.setText(getString(R.string.elite_bank_stats,
-                eliteBankCount.getValueForPosition(active_bank), bank_count));
+        bankStats.setText(getString(R.string.bank_stats, eliteBankCount
+                .getValueForPosition(active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
         eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
 
@@ -364,8 +394,8 @@ public class BankListActivity extends AppCompatActivity implements
         prefs.eliteActiveBank().put(active_bank);
 
         int bank_count = prefs.eliteBankCount().get();
-        bankStats.setText(getString(R.string.elite_bank_stats,
-                eliteBankCount.getValueForPosition(active_bank), bank_count));
+        bankStats.setText(getString(R.string.bank_stats, eliteBankCount
+                .getValueForPosition(active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
         eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
     });
@@ -676,8 +706,8 @@ public class BankListActivity extends AppCompatActivity implements
             txtError.setVisibility(View.GONE);
             amiiboInfo.setVisibility(View.VISIBLE);
         }
-        setAmiiboInfoText(txtBank, getString(R.string.bank_number,
-                eliteBankCount.getValueForPosition(current_bank)), hasTagInfo);
+        setAmiiboInfoText(txtBank, getString(R.string.bank_number, eliteBankCount
+                .getValueForPosition(current_bank)), hasTagInfo);
         setAmiiboInfoText(txtName, amiiboName, hasTagInfo);
         setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo);
         setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo);
@@ -720,8 +750,8 @@ public class BankListActivity extends AppCompatActivity implements
 
         eliteBankCount.setValue(bank_count);
         updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(TagMo.EXTRA_AMIIBO_LIST));
-        bankStats.setText(getString(R.string.elite_bank_stats, eliteBankCount.getValueForPosition(
-                prefs.eliteActiveBank().get()), bank_count));
+        bankStats.setText(getString(R.string.bank_stats, eliteBankCount
+                .getValueForPosition(prefs.eliteActiveBank().get()), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
         eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
     });

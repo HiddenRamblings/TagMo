@@ -43,7 +43,6 @@ import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.github.JSONExecutor;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
@@ -61,8 +60,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -80,15 +77,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public static final String IMAGE_NETWORK_WIFI = "WIFI_ONLY";
     public static final String IMAGE_NETWORK_ALWAYS = "ALWAYS";
 
-    private static final int RESULT_KEYS = 0;
-    private static final int RESULT_IMPORT_AMIIBO_DATABASE = 1;
+    private static final int RESULT_KEYS = 8000;
+    private static final int RESULT_IMPORT_AMIIBO_DATABASE = 8001;
 
     @Pref
     Preferences_ prefs;
 
     @PreferenceByKey(R.string.settings_import_keys)
     Preference key;
-    @PreferenceByKey(R.string.settings_enable_tag_type_validation)
+    @PreferenceByKey(R.string.settings_tag_type_validation)
     CheckBoxPreference enableTagTypeValidation;
     @PreferenceByKey(R.string.settings_enable_power_tag_support)
     CheckBoxPreference enablePowerTagSupport;
@@ -122,6 +119,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.preference_screen);
+
+//        key = findPreference(getString(R.string.settings_import_keys));
+//        enableTagTypeValidation = findPreference(getString(R.string.settings_tag_type_validation));
+//        enablePowerTagSupport = findPreference(getString(R.string.settings_enable_power_tag_support));
+//        enableEliteSupport = findPreference(getString(R.string.settings_enable_elite_support));
+//        lockEliteHardware = findPreference(getString(R.string.lock_elite_hardware));
+//        unlockEliteHardware = findPreference(getString(R.string.unlock_elite_hardware));
+//        amiiboStats = findPreference(getString(R.string.settings_info_amiibo));
+//        gameSeriesStats = findPreference(getString(R.string.settings_info_game_series));
+//        characterStats = findPreference(getString(R.string.settings_info_characters));
+//        amiiboSeriesStats = findPreference(getString(R.string.settings_info_amiibo_series));
+//        amiiboTypeStats = findPreference(getString(R.string.settings_info_amiibo_types));
+//        imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
+//        disableDebug = findPreference(getString(R.string.settings_disable_debug));
+//        stableChannel = findPreference(getString(R.string.settings_stable_channel));
     }
 
     @Override
@@ -153,7 +165,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         this.enableEliteSupport.setChecked(isElite);
         if (isElite && prefs.eliteSignature().get().length() > 1) {
             this.enableEliteSupport.setSummary(getString(
-                    R.string.elite_details_enabled, prefs.eliteSignature().get()));
+                    R.string.elite_signature, prefs.eliteSignature().get()));
         }
         lockEliteHardware.setVisible(isElite);
         unlockEliteHardware.setVisible(isElite);
@@ -164,7 +176,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         showFileChooser(getString(R.string.decryption_keys), RESULT_KEYS);
     }
 
-    @PreferenceClick(R.string.settings_enable_tag_type_validation)
+    @PreferenceClick(R.string.settings_tag_type_validation)
     void onEnableTagTypeValidationClicked() {
         prefs.enableTagTypeValidation().put(enableTagTypeValidation.isChecked());
     }
@@ -182,7 +194,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         prefs.enableEliteSupport().put(enableEliteSupport.isChecked());
         if (isEnabled && prefs.eliteSignature().get().length() > 1)
             enableEliteSupport.setSummary(getString(
-                    R.string.elite_details_enabled, prefs.eliteSignature().get()));
+                    R.string.elite_signature, prefs.eliteSignature().get()));
         else
             enableEliteSupport.setSummary(getString(R.string.elite_details));
         lockEliteHardware.setVisible(isEnabled);
@@ -219,46 +231,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         downloadAmiiboAPIData(lastUpdated);
     }
 
-    @PreferenceClick(R.string.settings_reset_info)
-    void onResetInfoClicked() {
-        resetAmiiboManager();
-    }
-
     @PreferenceClick(R.string.settings_import_info)
     void onImportInfoClicked() {
         showFileChooser(getString(R.string.import_json_details), RESULT_IMPORT_AMIIBO_DATABASE);
     }
 
-    @PreferenceClick(R.string.settings_export_info)
-    void onExportInfoClicked() {
-        if (null == this.amiiboManager) {
-            new Toasty(requireActivity()).Short(R.string.amiibo_info_not_loaded);
-            return;
-        }
-
-        File file = new File(requireContext().getExternalFilesDir(null),
-                AmiiboManager.AMIIBO_DATABASE_FILE);
-        FileOutputStream fileOutputStream = null;
-        boolean internal = TagMo.getPrefs().preferEmulated().get();
-        try {
-            fileOutputStream = new FileOutputStream(file);
-            AmiiboManager.saveDatabase(this.amiiboManager, fileOutputStream);
-        } catch (JSONException | IOException e) {
-            Debug.Log(e);
-            new Toasty(requireActivity()).Short(getString(R.string.amiibo_info_export_fail,
-                    Storage.getRelativePath(file, internal)));
-            return;
-        } finally {
-            if (null != fileOutputStream) {
-                try {
-                    fileOutputStream.close();
-                } catch (IOException e) {
-                    Debug.Log(e);
-                }
-            }
-        }
-        showSnackbar(getString(R.string.amiibo_info_exported,
-                Storage.getRelativePath(file, internal)), Snackbar.LENGTH_LONG);
+    @PreferenceClick(R.string.settings_reset_info)
+    void onResetInfoClicked() {
+        resetAmiiboManager();
     }
 
     @PreferenceClick(R.string.settings_info_amiibo)
@@ -311,7 +291,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         new AlertDialog.Builder(this.getContext())
                 .setTitle(R.string.pref_amiibo_characters)
-                .setAdapter(new ArrayAdapter<Character>(this.getContext(),
+                .setAdapter(new ArrayAdapter<>(this.getContext(),
                         android.R.layout.simple_list_item_2, android.R.id.text1, items) {
                     @NonNull
                     @Override
@@ -382,6 +362,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     void onViewGuidesClicked() {
         startActivity(new Intent(requireActivity(), WebActivity_.class)
                 .setAction(TagMo.ACTION_BROWSE_GITLAB));
+    }
+
+    @PreferenceClick(R.string.settings_sponsor_dev)
+    void onSponsorDevClicked() {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.PAYPAL_DONATE)));
     }
 
     private static final String BACKGROUND_LOAD_KEYS = "load_keys";

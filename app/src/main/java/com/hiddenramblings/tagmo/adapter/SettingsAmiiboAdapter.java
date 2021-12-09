@@ -120,7 +120,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         TextView txtPath;
         ImageView imageAmiibo;
 
-        private final CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
+        private final CustomTarget<Bitmap> target = new CustomTarget<>() {
             @Override
             public void onLoadStarted(@Nullable Drawable placeholder) {
                 imageAmiibo.setImageResource(0);

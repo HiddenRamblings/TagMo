@@ -17,7 +17,7 @@
         app:iconSpaceReserved="false">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
-            android:key="@string/settings_enable_tag_type_validation"
+            android:key="@string/settings_tag_type_validation"
             android:summary="@string/tag_validation_details"
             android:title="@string/enable_tag_validation"
             app:iconSpaceReserved="false" />
@@ -68,16 +68,12 @@
             android:title="@string/sync_amiibo_info"
             app:iconSpaceReserved="false" />
         <androidx.preference.Preference
-            android:key="@string/settings_reset_info"
-            android:title="@string/reset_amiibo_info"
-            app:iconSpaceReserved="false" />
-        <androidx.preference.Preference
             android:key="@string/settings_import_info"
             android:title="@string/import_json_details"
             app:iconSpaceReserved="false" />
         <androidx.preference.Preference
-            android:key="@string/settings_export_info"
-            android:title="@string/export_json_details"
+            android:key="@string/settings_reset_info"
+            android:title="@string/reset_amiibo_info"
             app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 
@@ -129,6 +125,10 @@
         <androidx.preference.Preference
             android:key="@string/settings_view_guides"
             android:title="@string/pref_guides_link"
-            app:iconSpaceReserved="false" />
+            app:icon="@drawable/gitlab_icon_rgb" />
+        <androidx.preference.Preference
+            android:key="@string/settings_sponsor_dev"
+            android:title="@string/pref_donate_link"
+            app:icon="@drawable/paypal_donation" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

@@ -76,7 +76,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/elite_bank_stats"
+            android:id="@+id/bank_stats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -316,7 +316,7 @@
             android:id="@+id/write_bank_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
             android:text="@string/write_bank_count" />
 

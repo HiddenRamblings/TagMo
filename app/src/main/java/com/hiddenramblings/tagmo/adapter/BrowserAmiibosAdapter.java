@@ -256,7 +256,7 @@ public class BrowserAmiibosAdapter
 
         private final BoldSpannable boldSpannable = new BoldSpannable();
 
-        CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
+        CustomTarget<Bitmap> target = new CustomTarget<>() {
             @Override
             public void onLoadStarted(@Nullable Drawable placeholder) {
                 imageAmiibo.setImageResource(0);

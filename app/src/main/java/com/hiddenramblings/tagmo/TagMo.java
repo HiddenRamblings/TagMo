@@ -62,6 +62,7 @@ public class TagMo extends Application {
         public static final String AMIIBO_IMAGE = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08x-%08x.png";
         public static final String TAGMO_GIT_API = "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/";
         public static final String TAGMO_GITLAB = "https://tagmo.gitlab.io/";
+        public static final String PAYPAL_DONATE = "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN";
     }
 
     public static ComponentName NFCIntentFilter = new ComponentName(BuildConfig.APPLICATION_ID,
@@ -117,7 +118,7 @@ public class TagMo extends Application {
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
-            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(1);
         });
     }
 

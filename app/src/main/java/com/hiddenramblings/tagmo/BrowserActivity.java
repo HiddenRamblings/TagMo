@@ -269,6 +269,35 @@ public class BrowserActivity extends AppCompatActivity implements
         TagMo.setScaledTheme(this, R.style.AppTheme);
         keyManager = new KeyManager(this);
 
+//        setContentView(R.layout.activity_browser);
+//
+//        fakeSnackbar = findViewById(R.id.fake_snackbar);
+//        fakeSnackbarIcon = findViewById(R.id.snackbar_icon);
+//        fakeSnackbarText = findViewById(R.id.snackbar_text);
+//        mainLayout = findViewById(R.id.main_layout);
+//        chipList = findViewById(R.id.chip_list);
+//        amiibosView = findViewById(R.id.amiibos_list);
+//        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
+//        foldersView = findViewById(R.id.folders_list);
+//        bottomSheet = findViewById(R.id.bottom_sheet);
+//        currentFolderView = findViewById(R.id.current_folder);
+//        toggle = findViewById(R.id.toggle);
+//        preferences = findViewById(R.id.preferences);
+//        switchStorageRoot = findViewById(R.id.switch_storage_root);
+//
+//        amiiboContainer = findViewById(R.id.amiiboContainer);
+//        amiiboCard = findViewById(R.id.amiiboCard);
+//        toolbar = findViewById(R.id.toolbar);
+//        amiiboInfo = findViewById(R.id.amiiboInfo);
+//        txtError = findViewById(R.id.txtError);
+//        txtTagId = findViewById(R.id.txtTagId);
+//        txtName = findViewById(R.id.txtName);
+//        txtGameSeries = findViewById(R.id.txtGameSeries);
+//        txtCharacter = findViewById(R.id.txtCharacter);
+//        txtAmiiboType = findViewById(R.id.txtAmiiboType);
+//        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
+//        imageAmiibo = findViewById(R.id.imageAmiibo);
+
         Intent intent = getIntent();
         if (null != intent) {
             if (getComponentName().equals(TagMo.NFCIntentFilter)) {

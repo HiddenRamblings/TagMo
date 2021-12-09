@@ -36,6 +36,8 @@
             android:id="@+id/clear_foomiibo_set"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginRight="-2dp"
+            android:layout_marginEnd="-2dp"
             android:layout_weight="1"
             android:text="@string/clear_foomiibo_set" />
 
@@ -43,6 +45,8 @@
             android:id="@+id/build_foomiibo_set"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="-2dp"
+            android:layout_marginStart="-2dp"
             android:layout_weight="1"
             android:text="@string/build_foomiibo_set" />
 

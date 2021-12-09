@@ -135,10 +135,10 @@ public class TagMo extends Application {
 
     public static Intent getIntent(Intent intent) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? intent.addCategory(Intent.CATEGORY_OPENABLE)
+                ? intent.addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
                 .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                :intent.addCategory(Intent.CATEGORY_OPENABLE);
+                : intent.addCategory(Intent.CATEGORY_OPENABLE).setType("*/*");
     }
 
     static void setScaledTheme(Context context, int theme) {

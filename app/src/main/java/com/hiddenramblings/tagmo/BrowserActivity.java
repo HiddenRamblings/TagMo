@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInstaller;
@@ -298,17 +299,6 @@ public class BrowserActivity extends AppCompatActivity implements
 //        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
 //        imageAmiibo = findViewById(R.id.imageAmiibo);
 
-        Intent intent = getIntent();
-        if (null != intent) {
-            if (getComponentName().equals(TagMo.NFCIntentFilter)) {
-                Intent browser = new Intent(this, BrowserActivity_.class);
-                browser.setAction(intent.getAction());
-                browser.putExtras(intent.getExtras());
-                browser.setData(intent.getData());
-                startActivity(browser);
-            }
-        }
-
         File[] files = getFilesDir().listFiles((dir, name) ->
                 name.toLowerCase(Locale.ROOT).endsWith(".apk"));
         if (null != files && files.length > 0) {
@@ -335,11 +325,24 @@ public class BrowserActivity extends AppCompatActivity implements
                     GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
                     if (availability.isUserResolvableError(errorCode)) {
                         availability.showErrorDialogFragment(
-                                BrowserActivity.this, errorCode, 1, dialog -> {
-                                });
+                                BrowserActivity.this, errorCode, 7000,
+                                dialog -> onProviderInstallerNotAvailable());
+                    } else {
+                        onProviderInstallerNotAvailable();
                     }
                 }
             });
+        }
+
+        Intent intent = getIntent();
+        if (null != intent) {
+            if (getComponentName().equals(TagMo.NFCIntentFilter)) {
+                Intent browser = new Intent(this, BrowserActivity_.class);
+                browser.setAction(intent.getAction());
+                browser.putExtras(intent.getExtras());
+                browser.setData(intent.getData());
+                startActivity(browser);
+            }
         }
     }
 
@@ -374,8 +377,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        this.bottomSheetBehavior.addBottomSheetCallback(
-                new BottomSheetBehavior.BottomSheetCallback() {
+        this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -418,6 +420,11 @@ public class BrowserActivity extends AppCompatActivity implements
         this.settings.addChangeListener((BrowserSettingsListener) this.foldersView.getAdapter());
 
         this.loadPTagKeyManager();
+    }
+
+    private void onProviderInstallerNotAvailable() {
+        new Toasty(BrowserActivity.this).Long(R.string.fail_ssl_update);
+        finish();
     }
 
     private final ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(

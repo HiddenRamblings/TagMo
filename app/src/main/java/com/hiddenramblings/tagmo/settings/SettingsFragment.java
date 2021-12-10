@@ -368,7 +368,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.PAYPAL_DONATE)));
     }
 
-    void validateKeys(Uri data) {
+    private void validateKeys(Uri data) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 this.keyManager.loadKey(data);
@@ -418,7 +418,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         key.setSummary(keySummary);
     }
 
-    void loadAmiiboManager() {
+    private void loadAmiiboManager() {
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {
@@ -435,7 +435,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    void updateAmiiboManager(Uri data) {
+    private void updateAmiiboManager(Uri data) {
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {
@@ -466,7 +466,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    void resetAmiiboManager() {
+    private void resetAmiiboManager() {
         Executors.newSingleThreadExecutor().execute(() -> {
             requireContext().deleteFile(AmiiboManager.AMIIBO_DATABASE_FILE);
 
@@ -507,7 +507,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 hasAmiibo ? amiiboManager.amiiboTypes.size() : 0));
     }
 
-    void downloadAmiiboAPIData(String lastUpdated) {
+    private void downloadAmiiboAPIData(String lastUpdated) {
         Executors.newSingleThreadExecutor().execute(() -> {
             showSnackbar(getString(R.string.sync_amiibo_process), Snackbar.LENGTH_INDEFINITE);
             try {

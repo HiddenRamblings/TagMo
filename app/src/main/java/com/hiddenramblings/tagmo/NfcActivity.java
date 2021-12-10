@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -14,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -36,33 +36,23 @@ import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.widget.BankPicker;
 
-import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-@SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.activity_nfc)
+@EActivity()
 public class NfcActivity extends AppCompatActivity {
 
     private final Preferences_ prefs = TagMo.getPrefs();
 
-    @ViewById(R.id.txtMessage)
     TextView txtMessage;
-    @ViewById(R.id.txtError)
     TextView txtError;
-    @ViewById(R.id.imgNfcBar)
     ImageView imgNfcBar;
-    @ViewById(R.id.imgNfcCircle)
     ImageView imgNfcCircle;
-    @ViewById(R.id.bank_number_picker)
     BankPicker bankPicker;
-    @ViewById(R.id.bank_number_details)
     TextView bankTextView;
 
     private NfcAdapter nfcAdapter;
@@ -81,7 +71,7 @@ public class NfcActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        setContentView(R.layout.activity_nfc);
+        setContentView(R.layout.activity_nfc);
 
         ActionBar actionBar = getSupportActionBar();
         if (null != actionBar) {
@@ -89,16 +79,13 @@ public class NfcActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-//        txtMessage = findViewById(R.id.txtMessage);
-//        txtError = findViewById(R.id.txtError);
-//        imgNfcBar = findViewById(R.id.imgNfcBar);
-//        imgNfcCircle = findViewById(R.id.imgNfcCircle);
-//        bankPicker = findViewById(R.id.bank_number_picker);
-//        bankTextView = findViewById(R.id.bank_number_details);
-    }
+        txtMessage = findViewById(R.id.txtMessage);
+        txtError = findViewById(R.id.txtError);
+        imgNfcBar = findViewById(R.id.imgNfcBar);
+        imgNfcCircle = findViewById(R.id.imgNfcCircle);
+        bankPicker = findViewById(R.id.bank_number_picker);
+        bankTextView = findViewById(R.id.bank_number_details);
 
-    @AfterViews
-    void afterViews() {
         this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         this.keyManager = new KeyManager(this);
         configureInterface();
@@ -141,7 +128,7 @@ public class NfcActivity extends AppCompatActivity {
         String mode = commandIntent.getAction();
 
         if (null != getCallingActivity())
-            isEliteIntent = BankListActivity_.class.getName().equals(
+            isEliteIntent = BankListActivity.class.getName().equals(
                     getCallingActivity().getClassName());
         if (commandIntent.hasExtra(TagMo.EXTRA_CURRENT_BANK)) {
             bankPicker.setPosition(commandIntent.getIntExtra(
@@ -648,7 +635,6 @@ public class NfcActivity extends AppCompatActivity {
         }
     };
 
-    @OptionsItem(android.R.id.home)
     void cancelAction() {
         if (null != mifare) {
             try {
@@ -660,12 +646,22 @@ public class NfcActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        cancelAction();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            cancelAction();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        cancelAction();
     }
 }

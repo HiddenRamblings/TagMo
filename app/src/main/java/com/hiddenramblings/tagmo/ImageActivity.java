@@ -1,9 +1,10 @@
 package com.hiddenramblings.tagmo;
 
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,13 +26,6 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.Extra;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.ViewById;
 import org.json.JSONException;
 
 import java.io.File;
@@ -41,59 +35,42 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.concurrent.Executors;
 
-@SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.activity_image)
-@OptionsMenu(R.menu.image_menu)
 public class ImageActivity extends AppCompatActivity {
 
-    @ViewById(R.id.imageAmiibo)
-    ImageView imageView;
-    @ViewById(R.id.bottom_sheet)
-    View bottomSheet;
-    @ViewById(R.id.toggle)
-    ImageView toggle;
-    @ViewById(R.id.group0)
-    View group0;
-    @ViewById(R.id.txtTagId)
-    TextView txtTagId;
-    @ViewById(R.id.txtName)
-    TextView txtName;
-    @ViewById(R.id.txtGameSeries)
-    TextView txtGameSeries;
-    // @ViewById(R.id.txtCharacter)
-    // TextView txtCharacter;
-    @ViewById(R.id.txtAmiiboType)
-    TextView txtAmiiboType;
-    @ViewById(R.id.txtAmiiboSeries)
-    TextView txtAmiiboSeries;
+    private ImageView imageView;
+    private View bottomSheet;
+    private ImageView toggle;
+    private TextView txtTagId;
+    private TextView txtName;
+    private TextView txtGameSeries;
+    // private TextView txtCharacter;
+    private TextView txtAmiiboType;
+    private TextView txtAmiiboSeries;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private Amiibo amiibo;
     private AmiiboManager amiiboManager;
 
-    @Extra(TagMo.EXTRA_AMIIBO_ID)
-    long amiiboId;
+    private long amiiboId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        setContentView(R.layout.activity_image);
+        setContentView(R.layout.activity_image);
 
-//        imageView = findViewById(R.id.imageAmiibo);
-//        bottomSheet = findViewById(R.id.bottom_sheet);
-//        toggle = findViewById(R.id.toggle);
-//        group0 = findViewById(R.id.group0);
-//        txtTagId = findViewById(R.id.txtTagId);
-//        txtName = findViewById(R.id.txtName);
-//        txtGameSeries = findViewById(R.id.txtGameSeries);
-//        txtCharacter = findViewById(R.id.txtCharacter);
-//        txtAmiiboType = findViewById(R.id.txtAmiiboType);
-//        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
-    }
+        imageView = findViewById(R.id.imageAmiibo);
+        bottomSheet = findViewById(R.id.bottom_sheet);
+        toggle = findViewById(R.id.toggle);
+        txtTagId = findViewById(R.id.txtTagId);
+        txtName = findViewById(R.id.txtName);
+        txtGameSeries = findViewById(R.id.txtGameSeries);
+        // txtCharacter = findViewById(R.id.txtCharacter);
+        txtAmiiboType = findViewById(R.id.txtAmiiboType);
+        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
 
-    @AfterViews
-    void afterViews() {
+        amiiboId = getIntent().getLongExtra(TagMo.EXTRA_AMIIBO_ID, -1);
+
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -110,7 +87,7 @@ public class ImageActivity extends AppCompatActivity {
             public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
         });
 
-        group0.addOnLayoutChangeListener((view, i, i1, i2, i3, i4, i5, i6, i7) -> {
+        findViewById(R.id.group0).addOnLayoutChangeListener((view, i, i1, i2, i3, i4, i5, i6, i7) -> {
             int height = view.getHeight() + bottomSheet.getPaddingTop();
             bottomSheetBehavior.setPeekHeight(height);
             imageView.setPadding(imageView.getPaddingLeft(), imageView.getPaddingTop(),
@@ -128,18 +105,17 @@ public class ImageActivity extends AppCompatActivity {
                 return;
 
             this.amiiboManager = amiiboManager;
-            this.updateView();
+            runOnUiThread(this::updateView);
         });
         GlideApp.with(this).load(getImageUrl()).into(imageView);
-    }
 
-    @Click(R.id.toggle)
-    void onToggleClick() {
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        } else {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        }
+        findViewById(R.id.toggle).setOnClickListener(view -> {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
     }
 
     private void updateView() {
@@ -205,7 +181,6 @@ public class ImageActivity extends AppCompatActivity {
         return Amiibo.getImageUrl(amiiboId);
     }
 
-    @OptionsItem(R.id.mnu_save)
     void onSaveClicked() {
         final View view = this.getLayoutInflater().inflate(R.layout.edit_text, null);
         final EditText editText = view.findViewById(R.id.editText);
@@ -242,5 +217,21 @@ public class ImageActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.save_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.mnu_save) {
+            onSaveClicked();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 }

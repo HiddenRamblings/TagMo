@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Build;
@@ -27,10 +26,6 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.InstanceState;
-import org.androidannotations.annotations.ViewById;
 import org.json.JSONException;
 
 import java.io.File;
@@ -40,12 +35,9 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
-@SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.activity_foomiibo)
 public class FoomiiboActivity extends AppCompatActivity implements
         FoomiiboAdapter.OnAmiiboClickListener {
 
-    @ViewById(R.id.amiibos_list)
     RecyclerView amiibosView;
 
     private final Foomiibo foomiibo = new Foomiibo();
@@ -53,22 +45,17 @@ public class FoomiiboActivity extends AppCompatActivity implements
     private ProgressDialog dialog;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    @InstanceState
     BrowserSettings settings;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        setContentView(R.layout.activity_foomiibo);
-
-//        amiibosView = findViewById(R.id.amiibos_list);
-    }
-
-    @AfterViews
-    void afterViews() {
+        setContentView(R.layout.activity_foomiibo);
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
+
+        amiibosView = findViewById(R.id.amiibos_list);
 
         setResult(RESULT_CANCELED);
 

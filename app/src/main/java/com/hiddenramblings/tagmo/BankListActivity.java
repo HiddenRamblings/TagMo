@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -51,11 +50,6 @@ import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.widget.BankPicker;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.InstanceState;
-import org.androidannotations.annotations.ViewById;
 import org.json.JSONException;
 
 import java.io.File;
@@ -64,64 +58,36 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
-@SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.activity_bank_list)
+
 public class BankListActivity extends AppCompatActivity implements
         BankBrowserAdapter.OnAmiiboClickListener {
 
     private final Preferences_ prefs = TagMo.getPrefs();
 
-    @ViewById(R.id.amiibos_list)
-    RecyclerView amiibosView;
-    @ViewById(R.id.hardware_info)
-    TextView hardwareInfo;
-    @ViewById(R.id.bottom_sheet)
-    ViewGroup bottomSheet;
-    @ViewById(R.id.toggle)
-    ImageView toggle;
+    private RecyclerView amiibosView;
+    private ImageView toggle;
 
-    @ViewById(R.id.write_banks_layout)
-    RelativeLayout writeBankLayout;
-    @ViewById(R.id.amiibo_files_list)
-    RecyclerView amiiboFilesView;
-    @ViewById(R.id.amiibo_search)
-    SearchView searchView;
+    private RelativeLayout writeBankLayout;
+    private RecyclerView amiiboFilesView;
 
-    @ViewById(R.id.amiiboCard)
-    CardView amiiboCard;
-    @ViewById(R.id.toolbar)
-    Toolbar toolbar;
-    @ViewById(R.id.amiiboInfo)
-    View amiiboInfo;
-    @ViewById(R.id.txtError)
-    TextView txtError;
-    @ViewById(R.id.txtTagId)
-    TextView txtTagId;
-    @ViewById(R.id.txtName)
-    TextView txtName;
-    @ViewById(R.id.txtBank)
-    TextView txtBank;
-    @ViewById(R.id.txtGameSeries)
-    TextView txtGameSeries;
-    @ViewById(R.id.txtCharacter)
-    TextView txtCharacter;
-    @ViewById(R.id.txtAmiiboType)
-    TextView txtAmiiboType;
-    @ViewById(R.id.txtAmiiboSeries)
-    TextView txtAmiiboSeries;
-    @ViewById(R.id.imageAmiibo)
-    ImageView imageAmiibo;
+    private CardView amiiboCard;
+    private Toolbar toolbar;
+    private View amiiboInfo;
+    private TextView txtError;
+    private TextView txtTagId;
+    private TextView txtName;
+    private TextView txtBank;
+    private TextView txtGameSeries;
+    // private TextView txtCharacter;
+    private TextView txtAmiiboType;
+    private TextView txtAmiiboSeries;
+    private ImageView imageAmiibo;
 
-    @ViewById(R.id.bank_stats)
-    TextView bankStats;
-    @ViewById(R.id.bank_count_picker)
-    BankPicker eliteBankCount;
-    @ViewById(R.id.write_open_banks)
-    AppCompatButton writeOpenBanks;
-    @ViewById(R.id.erase_open_banks)
-    AppCompatButton eraseOpenBanks;
-    @ViewById(R.id.write_bank_count)
-    AppCompatButton writeBankCount;
+    private TextView bankStats;
+    private BankPicker eliteBankCount;
+    private AppCompatButton writeOpenBanks;
+    private AppCompatButton eraseOpenBanks;
+    private AppCompatButton writeBankCount;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private KeyManager keyManager;
@@ -142,53 +108,45 @@ public class BankListActivity extends AppCompatActivity implements
     }
     private CLICKED status = CLICKED.NOTHING;
 
-    @InstanceState
-    BrowserSettings settings;
+    private BrowserSettings settings;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         keyManager = new KeyManager(this);
 
-//        setContentView(R.layout.activity_bank_list);
-//
-//        amiibosView = findViewById(R.id.amiibos_list);
-//        hardwareInfo = findViewById(R.id.hardware_info);
-//        bottomSheet = findViewById(R.id.bottom_sheet);
-//        toggle = findViewById(R.id.toggle);
-//
-//        writeBankLayout = findViewById(R.id.write_banks_layout);
-//        amiiboFilesView = findViewById(R.id.amiibo_files_list);
-//        searchView = findViewById(R.id.amiibo_search);
-//
-//        amiiboCard = findViewById(R.id.amiiboCard);
-//        toolbar = findViewById(R.id.toolbar);
-//        amiiboInfo = findViewById(R.id.amiiboInfo);
-//        txtError = findViewById(R.id.txtError);
-//        txtTagId = findViewById(R.id.txtTagId);
-//        txtName = findViewById(R.id.txtName);
-//        txtBank = findViewById(R.id.txtBank);
-//        txtGameSeries = findViewById(R.id.txtGameSeries);
-//        txtCharacter = findViewById(R.id.txtCharacter);
-//        txtAmiiboType = findViewById(R.id.txtAmiiboType);
-//        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
-//        imageAmiibo = findViewById(R.id.imageAmiibo);
-//
-//        bankStats = findViewById(R.id.bank_stats);
-//        eliteBankCount = findViewById(R.id.bank_count_picker);
-//        writeOpenBanks = findViewById(R.id.write_open_banks);
-//        eraseOpenBanks = findViewById(R.id.erase_open_banks);
-//        writeBankCount = findViewById(R.id.write_bank_count);
-    }
-
-    @AfterViews
-    void afterViews() {
+        setContentView(R.layout.activity_bank_list);
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
 
+        amiibosView = findViewById(R.id.amiibos_list);
+        toggle = findViewById(R.id.toggle);
+
+        writeBankLayout = findViewById(R.id.write_banks_layout);
+        amiiboFilesView = findViewById(R.id.amiibo_files_list);
+
+        amiiboCard = findViewById(R.id.amiiboCard);
+        toolbar = findViewById(R.id.toolbar);
+        amiiboInfo = findViewById(R.id.amiiboInfo);
+        txtError = findViewById(R.id.txtError);
+        txtTagId = findViewById(R.id.txtTagId);
+        txtName = findViewById(R.id.txtName);
+        txtBank = findViewById(R.id.txtBank);
+        txtGameSeries = findViewById(R.id.txtGameSeries);
+        // txtCharacter = findViewById(R.id.txtCharacter);
+        txtAmiiboType = findViewById(R.id.txtAmiiboType);
+        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
+        imageAmiibo = findViewById(R.id.imageAmiibo);
+
+        bankStats = findViewById(R.id.bank_stats);
+        eliteBankCount = findViewById(R.id.bank_count_picker);
+        writeOpenBanks = findViewById(R.id.write_open_banks);
+        eraseOpenBanks = findViewById(R.id.erase_open_banks);
+        writeBankCount = findViewById(R.id.write_bank_count);
+
         this.settings = new BrowserSettings().initialize();
 
-        this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(
                 new BottomSheetBehavior.BottomSheetCallback() {
@@ -219,7 +177,7 @@ public class BankListActivity extends AppCompatActivity implements
         int active_bank = getIntent().getIntExtra(TagMo.EXTRA_ACTIVE_BANK,
                 prefs.eliteActiveBank().get());
 
-        hardwareInfo.setText(getString(R.string.elite_signature,
+        ((TextView) findViewById(R.id.hardware_info)).setText(getString(R.string.elite_signature,
                 getIntent().getStringExtra(TagMo.EXTRA_SIGNATURE)));
         eliteBankCount.setValue(bank_count);
         if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
@@ -268,6 +226,7 @@ public class BankListActivity extends AppCompatActivity implements
         writeListAdapter = new WriteBanksAdapter(settings, this::writeAmiiboCollection);
         this.settings.addChangeListener(writeListAdapter);
 
+        SearchView searchView = findViewById(R.id.amiibo_search);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setSubmitButtonEnabled(true);
@@ -286,6 +245,41 @@ public class BankListActivity extends AppCompatActivity implements
                 settings.notifyChanges();
                 return true;
             }
+        });
+
+        findViewById(R.id.toggle).setOnClickListener(view -> {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
+        findViewById(R.id.write_open_banks).setOnClickListener(view -> {
+            onBottomSheetChanged(false, false);
+            amiiboFilesView.setAdapter(writeListAdapter);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        });
+
+        findViewById(R.id.erase_open_banks).setOnClickListener(view -> {
+            Intent collection = new Intent(this, NfcActivity_.class);
+            collection.setAction(TagMo.ACTION_WRITE_ALL_TAGS);
+            collection.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
+            onOpenBanksActivity.launch(collection);
+        });
+
+        findViewById(R.id.write_bank_count).setOnClickListener(view -> {
+            if (prefs.eliteActiveBank().get() >= eliteBankCount.getValue()) {
+                new Toasty(this).Short(R.string.fail_active_oob);
+                onBottomSheetChanged(true, false);
+                return;
+            }
+            Intent configure = new Intent(this, NfcActivity_.class);
+            configure.setAction(TagMo.ACTION_SET_BANK_COUNT);
+            configure.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
+            onOpenBanksActivity.launch(configure);
+
+            onBottomSheetChanged(true, false);
         });
     }
 
@@ -454,11 +448,11 @@ public class BankListActivity extends AppCompatActivity implements
                 break;
             case EDIT_DATA:
                 onUpdateTagResult.launch(new Intent(this,
-                        TagDataActivity_.class).putExtras(args));
+                        TagDataActivity.class).putExtras(args));
                 break;
             case HEX_CODE:
                 onUpdateTagResult.launch(new Intent(this,
-                        HexViewerActivity_.class).putExtras(args));
+                        HexViewerActivity.class).putExtras(args));
                 break;
             case BANK_BACKUP:
                 displayBackupDialog(tagData);
@@ -576,74 +570,73 @@ public class BankListActivity extends AppCompatActivity implements
             Toasty notice = new Toasty(this);
             Intent scan = new Intent(this, NfcActivity_.class);
             scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
-            switch (item.getItemId()) {
-                case R.id.mnu_activate:
-                    scan.setAction(TagMo.ACTION_ACTIVATE_BANK);
-                    onActivateActivity.launch(scan);
-                    return true;
-                case R.id.mnu_replace:
-                    displayWriteDialog(current_bank);
-                    return true;
-                case R.id.mnu_write:
-                    if (null != tagData && tagData.length > 0) {
-                        scan.setAction(TagMo.ACTION_WRITE_TAG_FULL);
-                        scan.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
-                        onUpdateTagResult.launch(scan);
-                    } else {
-                        status = CLICKED.WRITE_DATA;
-                        scanAmiiboBank(current_bank);
+            if (item.getItemId() == R.id.mnu_activate) {
+                scan.setAction(TagMo.ACTION_ACTIVATE_BANK);
+                onActivateActivity.launch(scan);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_replace) {
+                displayWriteDialog(current_bank);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_write) {
+                if (null != tagData && tagData.length > 0) {
+                    scan.setAction(TagMo.ACTION_WRITE_TAG_FULL);
+                    scan.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                    onUpdateTagResult.launch(scan);
+                } else {
+                    status = CLICKED.WRITE_DATA;
+                    scanAmiiboBank(current_bank);
+                }
+                return true;
+            } else if (item.getItemId() == R.id.mnu_erase_bank) {
+                if (prefs.eliteActiveBank().get() == current_bank) {
+                    notice.Short(R.string.erase_active);
+                } else {
+                    scan.setAction(TagMo.ACTION_ERASE_BANK);
+                    onUpdateTagResult.launch(scan);
+                    status = CLICKED.ERASE_BANK;
+                }
+                return true;
+            } else if (item.getItemId() == R.id.mnu_edit) {
+                if (null != tagData && tagData.length > 0) {
+                    Intent editor = new Intent(this, TagDataActivity.class);
+                    editor.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                    onUpdateTagResult.launch(editor);
+                } else {
+                    status = CLICKED.EDIT_DATA;
+                    scanAmiiboBank(current_bank);
+                }
+                return true;
+            } else if (item.getItemId() == R.id.mnu_view_hex) {
+                if (null != tagData && tagData.length > 0) {
+                    Intent viewhex = new Intent(this, HexViewerActivity.class);
+                    viewhex.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                    startActivity(viewhex);
+                } else {
+                    status = CLICKED.HEX_CODE;
+                    scanAmiiboBank(current_bank);
+                }
+                return true;
+            } else if (item.getItemId() == R.id.mnu_backup) {
+                if (null != tagData && tagData.length > 0) {
+                    displayBackupDialog(tagData);
+                } else {
+                    status = CLICKED.BANK_BACKUP;
+                    scanAmiiboBank(current_bank);
+                }
+                return true;
+            } else if (item.getItemId() == R.id.mnu_validate) {
+                if (null != tagData && tagData.length > 0) {
+                    try {
+                        TagUtils.validateData(tagData);
+                        notice.Dialog(R.string.validation_success);
+                    } catch (Exception e) {
+                        notice.Dialog(e.getMessage());
                     }
-                    return true;
-                case R.id.mnu_erase_bank:
-                    if (prefs.eliteActiveBank().get() == current_bank) {
-                        notice.Short(R.string.erase_active);
-                    } else {
-                        scan.setAction(TagMo.ACTION_ERASE_BANK);
-                        onUpdateTagResult.launch(scan);
-                        status = CLICKED.ERASE_BANK;
-                    }
-                    return true;
-                case R.id.mnu_edit:
-                    if (null != tagData && tagData.length > 0) {
-                        Intent editor = new Intent(this, TagDataActivity_.class);
-                        editor.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
-                        onUpdateTagResult.launch(editor);
-                    } else {
-                        status = CLICKED.EDIT_DATA;
-                        scanAmiiboBank(current_bank);
-                    }
-                    return true;
-                case R.id.mnu_view_hex:
-                    if (null != tagData && tagData.length > 0) {
-                        Intent viewhex = new Intent(this, HexViewerActivity_.class);
-                        viewhex.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
-                        startActivity(viewhex);
-                    } else {
-                        status = CLICKED.HEX_CODE;
-                        scanAmiiboBank(current_bank);
-                    }
-                    return true;
-                case R.id.mnu_backup:
-                    if (null != tagData && tagData.length > 0) {
-                        displayBackupDialog(tagData);
-                    } else {
-                        status = CLICKED.BANK_BACKUP;
-                        scanAmiiboBank(current_bank);
-                    }
-                    return true;
-                case R.id.mnu_validate:
-                    if (null != tagData && tagData.length > 0) {
-                        try {
-                            TagUtils.validateData(tagData);
-                            notice.Dialog(R.string.validation_success);
-                        } catch (Exception e) {
-                            notice.Dialog(e.getMessage());
-                        }
-                    } else {
-                        status = CLICKED.VERIFY_TAG;
-                        scanAmiiboBank(current_bank);
-                    }
-                    return true;
+                } else {
+                    status = CLICKED.VERIFY_TAG;
+                    scanAmiiboBank(current_bank);
+                }
+                return true;
             }
             return false;
         });
@@ -729,7 +722,7 @@ public class BankListActivity extends AppCompatActivity implements
                 Bundle bundle = new Bundle();
                 bundle.putLong(TagMo.EXTRA_AMIIBO_ID, amiiboTagId);
 
-                Intent intent = new Intent(this, ImageActivity_.class);
+                Intent intent = new Intent(this, ImageActivity.class);
                 intent.putExtras(bundle);
 
                 startActivity(intent);
@@ -788,45 +781,6 @@ public class BankListActivity extends AppCompatActivity implements
         return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
-    @Click(R.id.toggle)
-    void onConfigExpandClick() {
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        } else {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        }
-    }
-
-    @Click(R.id.write_open_banks)
-    void onWriteOpenBanksClick() {
-        onBottomSheetChanged(false, false);
-        amiiboFilesView.setAdapter(writeListAdapter);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-    }
-
-    @Click(R.id.erase_open_banks)
-    void onEraseOpenBanksClick() {
-        Intent collection = new Intent(this, NfcActivity_.class);
-        collection.setAction(TagMo.ACTION_WRITE_ALL_TAGS);
-        collection.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
-        onOpenBanksActivity.launch(collection);
-    }
-
-    @Click(R.id.write_bank_count)
-    void onWriteBankCountClick() {
-        if (prefs.eliteActiveBank().get() >= eliteBankCount.getValue()) {
-            new Toasty(this).Short(R.string.fail_active_oob);
-            onBottomSheetChanged(true, false);
-            return;
-        }
-        Intent configure = new Intent(this, NfcActivity_.class);
-        configure.setAction(TagMo.ACTION_SET_BANK_COUNT);
-        configure.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
-        onOpenBanksActivity.launch(configure);
-
-        onBottomSheetChanged(true, false);
-    }
-
     @Override
     public void onAmiiboClicked(Amiibo amiibo, int position) {
         if (null == amiibo) {
@@ -852,7 +806,7 @@ public class BankListActivity extends AppCompatActivity implements
             Bundle bundle = new Bundle();
             bundle.putLong(TagMo.EXTRA_AMIIBO_ID, amiibo.id);
 
-            Intent intent = new Intent(this, ImageActivity_.class);
+            Intent intent = new Intent(this, ImageActivity.class);
             intent.putExtras(bundle);
 
             startActivity(intent);
@@ -874,7 +828,7 @@ public class BankListActivity extends AppCompatActivity implements
                 && !directory.getPath().startsWith(rootFolder.getPath())));
     }
 
-    void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
+    private void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiibos(keyManager, rootFolder, recursiveFiles);

@@ -28,12 +28,9 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListene
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
 import java.io.File;
@@ -41,6 +38,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.concurrent.Executors;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_foomiibo)
@@ -61,6 +59,10 @@ public class FoomiiboActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        setContentView(R.layout.activity_foomiibo);
+
+//        amiibosView = findViewById(R.id.amiibos_list);
     }
 
     @AfterViews
@@ -68,8 +70,27 @@ public class FoomiiboActivity extends AppCompatActivity implements
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
 
+        setResult(RESULT_CANCELED);
+
         this.settings = new BrowserSettings().initialize();
-        this.loadAmiiboManager();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            AmiiboManager amiiboManager;
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager();
+            } catch (IOException | JSONException | ParseException e) {
+                Debug.Log(e);
+                amiiboManager = null;
+                new Toasty(this).Short(R.string.amiibo_info_parse_error);
+            }
+
+            if (Thread.currentThread().isInterrupted()) return;
+
+            final AmiiboManager uiAmiiboManager = amiiboManager;
+            this.runOnUiThread(() -> {
+                settings.setAmiiboManager(uiAmiiboManager);
+                settings.notifyChanges();
+            });
+        });
 
         if (this.settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
             this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
@@ -78,7 +99,33 @@ public class FoomiiboActivity extends AppCompatActivity implements
         this.amiibosView.setAdapter(new FoomiiboAdapter(settings, this));
         this.settings.addChangeListener((BrowserSettingsListener) this.amiibosView.getAdapter());
 
-        setResult(RESULT_CANCELED);
+        findViewById(R.id.clear_foomiibo_set).setOnClickListener(view -> {
+            deleteDir(directory);
+            setResult(RESULT_OK);
+            finish();
+        });
+
+        findViewById(R.id.build_foomiibo_set).setOnClickListener(view ->
+                Executors.newSingleThreadExecutor().execute(() -> {
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
+            if (null == amiiboManager) return;
+
+            deleteDir(directory);
+            //noinspection ResultOfMethodCallIgnored
+            directory.mkdirs();
+
+            handler.post(() -> dialog = ProgressDialog.show(FoomiiboActivity.this,
+                    "", "", true));
+            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                buildFoomiiboFile(amiibo);
+                handler.post(() -> dialog.setMessage(getString(
+                        R.string.foomiibo_progress, amiibo.getCharacter().name)));
+            }
+            handler.post(() -> dialog.dismiss());
+
+            setResult(RESULT_OK);
+            finish();
+        }));
     }
 
     private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
@@ -137,63 +184,6 @@ public class FoomiiboActivity extends AppCompatActivity implements
         } catch (Exception e) {
             Debug.Log(e);
         }
-    }
-
-    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-    private void loadAmiiboManager() {
-        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
-        loadAmiiboManagerTask();
-    }
-
-    @Background(id = BACKGROUND_AMIIBO_MANAGER)
-    void loadAmiiboManagerTask() {
-        AmiiboManager amiiboManager;
-        try {
-            amiiboManager = AmiiboManager.getAmiiboManager();
-        } catch (IOException | JSONException | ParseException e) {
-            Debug.Log(e);
-            amiiboManager = null;
-            new Toasty(this).Short(R.string.amiibo_info_parse_error);
-        }
-
-        if (Thread.currentThread().isInterrupted())
-            return;
-
-        final AmiiboManager uiAmiiboManager = amiiboManager;
-        this.runOnUiThread(() -> {
-            settings.setAmiiboManager(uiAmiiboManager);
-            settings.notifyChanges();
-        });
-    }
-
-    @Click(R.id.clear_foomiibo_set)
-    void onClearFoomiiboClicked() {
-        deleteDir(directory);
-        setResult(RESULT_OK);
-        finish();
-    }
-
-    @Click(R.id.build_foomiibo_set)
-    @Background
-    void onBuildFoomiiboClicked() {
-        AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (null == amiiboManager) return;
-
-        deleteDir(directory);
-        //noinspection ResultOfMethodCallIgnored
-        directory.mkdirs();
-
-        handler.post(() -> dialog = ProgressDialog.show(this,
-                "", "", true));
-        for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-            buildFoomiiboFile(amiibo);
-            handler.post(() -> dialog.setMessage(getString(
-                    R.string.foomiibo_progress, amiibo.getCharacter().name)));
-        }
-        handler.post(() -> dialog.dismiss());
-
-        setResult(RESULT_OK);
-        finish();
     }
 
     @Override

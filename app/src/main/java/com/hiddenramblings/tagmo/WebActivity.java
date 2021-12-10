@@ -56,25 +56,22 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-@SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.activity_webview)
 public class WebActivity extends AppCompatActivity {
 
     public static String WEBSITE = "WEBSITE";
 
-    @ViewById(R.id.webview_content)
     WebView mWebView;
 
     private ProgressDialog dialog;
 
+    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
 
-    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
-    @AfterViews
-    void afterViews() {
+        setContentView(R.layout.activity_webview);
+
+        mWebView = findViewById(R.id.webview_content);
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         String action = getIntent().getAction();
@@ -210,7 +207,6 @@ public class WebActivity extends AppCompatActivity {
         }
     }
 
-    @UiThread
     void unzipFile(File zipFile) {
         dialog = ProgressDialog.show(this, "", "", true);
         new Thread(new UnZip(zipFile, Storage.getDownloadDir(
@@ -229,7 +225,6 @@ public class WebActivity extends AppCompatActivity {
         }
     }
 
-    @UiThread
     void setBinName(String base64File, String mimeType) {
         byte[] tagData = Base64.decode(base64File.replaceFirst(
                 "^data:" + mimeType + ";base64,", ""), 0);

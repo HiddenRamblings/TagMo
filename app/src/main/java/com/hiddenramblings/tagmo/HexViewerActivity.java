@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +26,15 @@ public class HexViewerActivity extends AppCompatActivity {
 
     @ViewById(R.id.gridView)
     RecyclerView listView;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+//        setContentView(R.layout.activity_hex_viewer);
+//
+//        listView = findViewById(R.id.gridView);
+    }
 
     @AfterViews
     void afterViews() {

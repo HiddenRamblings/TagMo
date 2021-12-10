@@ -45,7 +45,8 @@
                     android:contentDescription="@string/imageview_amiibo"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
-                    android:layout_marginBottom="4dp" />
+                    android:layout_marginBottom="4dp"
+                    android:foreground="@drawable/card_foreground" />
 
                 <View
                     android:id="@+id/imageDivider"
@@ -304,7 +305,6 @@
                     <TextView
                         style="@style/TagEditor.InputHint"
                         android:gravity="end"
-                        android:layout_marginRight="2dp"
                         android:layout_marginEnd="2dp"
                         android:text="@string/mod_serial"/>
 

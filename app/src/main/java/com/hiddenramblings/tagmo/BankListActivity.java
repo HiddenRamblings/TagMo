@@ -52,18 +52,17 @@ import com.hiddenramblings.tagmo.widget.BankPicker;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_bank_list)
@@ -364,7 +363,7 @@ public class BankListActivity extends AppCompatActivity implements
 
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
-            imageAmiibo.setVisibility(View.INVISIBLE);
+            imageAmiibo.setVisibility(View.GONE);
         }
 
         @Override
@@ -716,6 +715,7 @@ public class BankListActivity extends AppCompatActivity implements
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
         if (null != imageAmiibo) {
+            imageAmiibo.setVisibility(View.GONE);
             GlideApp.with(this).clear(amiiboImageTarget);
             if (null != amiiboImageUrl) {
                 GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
@@ -868,27 +868,34 @@ public class BankListActivity extends AppCompatActivity implements
         return true;
     }
 
-    private static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
-    private void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
-        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
-        loadAmiiboFilesTask(rootFolder, recursiveFiles);
+    private boolean isDirectoryHidden(File rootFolder, File directory, boolean recursive) {
+        return !rootFolder.getPath().equals(directory.getPath()) && (!recursive
+                || (!rootFolder.getPath().startsWith(directory.getPath())
+                && !directory.getPath().startsWith(rootFolder.getPath())));
     }
 
-    @Background(id = BACKGROUND_AMIIBO_FILES)
-    void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
-        final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
-                .listAmiibos(keyManager, rootFolder, recursiveFiles);
-        if (settings.isShowingDownloads()) {
-            amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager,
-                    Storage.getDownloadDir(null), recursiveFiles));
-        }
+    void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
+                    .listAmiibos(keyManager, rootFolder, recursiveFiles);
+            if (this.settings.isShowingDownloads()) {
+                File download = Storage.getDownloadDir(null);
+                if (isDirectoryHidden(rootFolder, download, recursiveFiles))
+                    amiiboFiles.addAll(AmiiboManager
+                            .listAmiibos(keyManager, download, true));
+            } else {
+                File foomiibo = Storage.getDownloadDir("TagMo", "Foomiibo");
+                if (isDirectoryHidden(rootFolder, foomiibo, recursiveFiles))
+                    amiiboFiles.addAll(AmiiboManager
+                            .listAmiibos(keyManager, foomiibo, true));
+            }
 
-        if (Thread.currentThread().isInterrupted())
-            return;
+            if (Thread.currentThread().isInterrupted()) return;
 
-        this.runOnUiThread(() -> {
-            settings.setAmiiboFiles(amiiboFiles);
-            settings.notifyChanges();
+            this.runOnUiThread(() -> {
+                settings.setAmiiboFiles(amiiboFiles);
+                settings.notifyChanges();
+            });
         });
     }
 

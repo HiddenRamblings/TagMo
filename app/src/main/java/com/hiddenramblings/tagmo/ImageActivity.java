@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,15 +26,12 @@ import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
 import java.io.File;
@@ -41,6 +39,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.concurrent.Executors;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_image)
@@ -75,6 +74,24 @@ public class ImageActivity extends AppCompatActivity {
     @Extra(TagMo.EXTRA_AMIIBO_ID)
     long amiiboId;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+//        setContentView(R.layout.activity_image);
+
+//        imageView = findViewById(R.id.imageAmiibo);
+//        bottomSheet = findViewById(R.id.bottom_sheet);
+//        toggle = findViewById(R.id.toggle);
+//        group0 = findViewById(R.id.group0);
+//        txtTagId = findViewById(R.id.txtTagId);
+//        txtName = findViewById(R.id.txtName);
+//        txtGameSeries = findViewById(R.id.txtGameSeries);
+//        txtCharacter = findViewById(R.id.txtCharacter);
+//        txtAmiiboType = findViewById(R.id.txtAmiiboType);
+//        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
+    }
+
     @AfterViews
     void afterViews() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -100,7 +117,19 @@ public class ImageActivity extends AppCompatActivity {
                     imageView.getPaddingRight(), imageView.getPaddingTop() + height);
         });
 
-        loadAmiiboManager();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            AmiiboManager amiiboManager = null;
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager();
+            } catch (IOException | JSONException | ParseException e) {
+                Debug.Log(e);
+            }
+            if (Thread.currentThread().isInterrupted())
+                return;
+
+            this.amiiboManager = amiiboManager;
+            this.updateView();
+        });
         GlideApp.with(this).load(getImageUrl()).into(imageView);
     }
 
@@ -111,32 +140,6 @@ public class ImageActivity extends AppCompatActivity {
         } else {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
-    }
-
-    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-    private void loadAmiiboManager() {
-        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
-        loadAmiiboManagerTask();
-    }
-
-    @Background(id = BACKGROUND_AMIIBO_MANAGER)
-    void loadAmiiboManagerTask() {
-        AmiiboManager amiiboManager = null;
-        try {
-            amiiboManager = AmiiboManager.getAmiiboManager();
-        } catch (IOException | JSONException | ParseException e) {
-            Debug.Log(e);
-        }
-        if (Thread.currentThread().isInterrupted())
-            return;
-
-        setAmiiboManager(amiiboManager);
-    }
-
-    @UiThread
-    void setAmiiboManager(AmiiboManager amiiboManager) {
-        this.amiiboManager = amiiboManager;
-        this.updateView();
     }
 
     private void updateView() {
@@ -224,9 +227,7 @@ public class ImageActivity extends AppCompatActivity {
                 saveImageToFile(resource, editText.getText().toString());
             }
             @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) {
-
-            }
+            public void onLoadCleared(@Nullable Drawable placeholder) { }
         })).setNegativeButton(R.string.cancel, null).setView(view).show();
     }
 

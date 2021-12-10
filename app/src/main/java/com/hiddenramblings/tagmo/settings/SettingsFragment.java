@@ -33,7 +33,7 @@ import com.hiddenramblings.tagmo.NfcActivity_;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.TagMo.Website;
-import com.hiddenramblings.tagmo.WebActivity_;
+import com.hiddenramblings.tagmo.WebActivity;
 import com.hiddenramblings.tagmo.adapter.SettingsAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
@@ -47,14 +47,12 @@ import com.hiddenramblings.tagmo.github.JSONExecutor;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.androidannotations.annotations.AfterPreferences;
-import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.PreferenceByKey;
 import org.androidannotations.annotations.PreferenceChange;
 import org.androidannotations.annotations.PreferenceClick;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.sharedpreferences.Pref;
-import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -68,6 +66,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.Executors;
 
 @SuppressLint("NonConstantResourceId")
 @EFragment
@@ -360,7 +359,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @PreferenceClick(R.string.settings_view_guides)
     void onViewGuidesClicked() {
-        startActivity(new Intent(requireActivity(), WebActivity_.class)
+        startActivity(new Intent(requireActivity(), WebActivity.class)
                 .setAction(TagMo.ACTION_BROWSE_GITLAB));
     }
 
@@ -369,25 +368,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.PAYPAL_DONATE)));
     }
 
-    private static final String BACKGROUND_LOAD_KEYS = "load_keys";
     void validateKeys(Uri data) {
-        BackgroundExecutor.cancelAll(BACKGROUND_LOAD_KEYS, true);
-        validateKeysTask(data);
-    }
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                this.keyManager.loadKey(data);
+            } catch (Exception e) {
+                Debug.Log(e);
+                showSnackbar(e.getMessage(), Snackbar.LENGTH_SHORT);
+            }
+            if (Thread.currentThread().isInterrupted())
+                return;
 
-    @Background(id = BACKGROUND_LOAD_KEYS)
-    void validateKeysTask(Uri data) {
-        try {
-            this.keyManager.loadKey(data);
-        } catch (Exception e) {
-            Debug.Log(e);
-            showSnackbar(e.getMessage(), Snackbar.LENGTH_SHORT);
-        }
-        if (Thread.currentThread().isInterrupted())
-            return;
-
-        ((BrowserActivity) requireActivity()).onRefresh();
-        updateKeySummary();
+            ((BrowserActivity) requireActivity()).onRefresh();
+            updateKeySummary();
+        });
     }
 
     @UiThread
@@ -424,85 +418,71 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         key.setSummary(keySummary);
     }
 
-    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
     void loadAmiiboManager() {
-        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
-        loadAmiiboManagerTask();
-    }
+        Executors.newSingleThreadExecutor().execute(() -> {
+            AmiiboManager amiiboManager;
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager();
+            } catch (IOException | JSONException | ParseException e) {
+                Debug.Log(e);
+                new Toasty(requireActivity()).Short(R.string.amiibo_failure_load);
+                return;
+            }
+            if (Thread.currentThread().isInterrupted())
+                return;
 
-    @Background(id = BACKGROUND_AMIIBO_MANAGER)
-    void loadAmiiboManagerTask() {
-        AmiiboManager amiiboManager;
-        try {
-            amiiboManager = AmiiboManager.getAmiiboManager();
-        } catch (IOException | JSONException | ParseException e) {
-            Debug.Log(e);
-            new Toasty(requireActivity()).Short(R.string.amiibo_failure_load);
-            return;
-        }
-        if (Thread.currentThread().isInterrupted())
-            return;
-
-        setAmiiboManager(amiiboManager);
+            setAmiiboManager(amiiboManager);
+        });
     }
 
     void updateAmiiboManager(Uri data) {
-        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
-        updateAmiiboManagerTask(data);
-    }
+        Executors.newSingleThreadExecutor().execute(() -> {
+            AmiiboManager amiiboManager;
+            try {
+                amiiboManager = AmiiboManager.parse(requireContext(), data);
+            } catch (JSONException | ParseException e) {
+                Debug.Log(e);
+                new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse);
+                return;
+            } catch (IOException e) {
+                Debug.Log(e);
+                new Toasty(requireActivity()).Short(R.string.amiibo_failure_read);
+                return;
+            }
 
-    @Background(id = BACKGROUND_AMIIBO_MANAGER)
-    void updateAmiiboManagerTask(Uri data) {
-        AmiiboManager amiiboManager;
-        try {
-            amiiboManager = AmiiboManager.parse(requireContext(), data);
-        } catch (JSONException | ParseException e) {
-            Debug.Log(e);
-            new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse);
-            return;
-        } catch (IOException e) {
-            Debug.Log(e);
-            new Toasty(requireActivity()).Short(R.string.amiibo_failure_read);
-            return;
-        }
-        if (Thread.currentThread().isInterrupted())
-            return;
+            if (Thread.currentThread().isInterrupted())
+                return;
 
-        try {
-            AmiiboManager.saveDatabase(amiiboManager);
-        } catch (JSONException | IOException e) {
-            Debug.Log(e);
-            new Toasty(requireActivity()).Short(R.string.amiibo_failure_update);
-            return;
-        }
-        if (Thread.currentThread().isInterrupted())
-            return;
+            try {
+                AmiiboManager.saveDatabase(amiiboManager);
+            } catch (JSONException | IOException e) {
+                Debug.Log(e);
+                new Toasty(requireActivity()).Short(R.string.amiibo_failure_update);
+                return;
+            }
 
-        setAmiiboManager(amiiboManager);
-        showSnackbar(getString(R.string.amiibo_info_updated), Snackbar.LENGTH_SHORT);
+            setAmiiboManager(amiiboManager);
+            showSnackbar(getString(R.string.amiibo_info_updated), Snackbar.LENGTH_SHORT);
+        });
     }
 
     void resetAmiiboManager() {
-        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
-        resetAmiiboManagerTask();
-    }
+        Executors.newSingleThreadExecutor().execute(() -> {
+            requireContext().deleteFile(AmiiboManager.AMIIBO_DATABASE_FILE);
 
-    @Background(id = BACKGROUND_AMIIBO_MANAGER)
-    void resetAmiiboManagerTask() {
-        requireContext().deleteFile(AmiiboManager.AMIIBO_DATABASE_FILE);
+            AmiiboManager amiiboManager = null;
+            try {
+                amiiboManager = AmiiboManager.getDefaultAmiiboManager();
+            } catch (IOException | JSONException | ParseException e) {
+                Debug.Log(e);
+                new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse_default);
+            }
+            if (Thread.currentThread().isInterrupted())
+                return;
 
-        AmiiboManager amiiboManager = null;
-        try {
-            amiiboManager = AmiiboManager.getDefaultAmiiboManager();
-        } catch (IOException | JSONException | ParseException e) {
-            Debug.Log(e);
-            new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse_default);
-        }
-        if (Thread.currentThread().isInterrupted())
-            return;
-
-        setAmiiboManager(amiiboManager);
-        showSnackbar(getString(R.string.removing_amiibo_info), Snackbar.LENGTH_SHORT);
+            setAmiiboManager(amiiboManager);
+            showSnackbar(getString(R.string.removing_amiibo_info), Snackbar.LENGTH_SHORT);
+        });
     }
 
     @UiThread
@@ -527,62 +507,57 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 hasAmiibo ? amiiboManager.amiiboTypes.size() : 0));
     }
 
-    private static final String BACKGROUND_SYNC_AMIIBO_MANAGER = "sync_amiibo_manager";
     void downloadAmiiboAPIData(String lastUpdated) {
-        BackgroundExecutor.cancelAll(BACKGROUND_SYNC_AMIIBO_MANAGER, true);
-        downloadAmiiboAPIDataTask();
-        prefs.lastUpdated().put(lastUpdated);
-    }
+        Executors.newSingleThreadExecutor().execute(() -> {
+            showSnackbar(getString(R.string.sync_amiibo_process), Snackbar.LENGTH_INDEFINITE);
+            try {
+                URL url = new URL(Website.AMIIBOAPI);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setUseCaches(false);
+                urlConnection.setDefaultUseCaches(false);
 
-    @Background(id = BACKGROUND_SYNC_AMIIBO_MANAGER)
-    void downloadAmiiboAPIDataTask() {
-        showSnackbar(getString(R.string.sync_amiibo_process), Snackbar.LENGTH_INDEFINITE);
-        try {
-            URL url = new URL(Website.AMIIBOAPI);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setUseCaches(false);
-            urlConnection.setDefaultUseCaches(false);
+                int statusCode = urlConnection.getResponseCode();
+                if (statusCode == 200) {
+                    InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
 
-            int statusCode = urlConnection.getResponseCode();
-            if (statusCode == 200) {
-                InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-
-                BufferedReader reader = null;
-                StringBuilder response = new StringBuilder();
-                try {
-                    reader = new BufferedReader(new InputStreamReader(inputStream));
-                    String line;
-                    while (null != (line = reader.readLine())) {
-                        response.append(line);
-                    }
-                } finally {
-                    if (null != reader) {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            Debug.Log(e);
+                    BufferedReader reader = null;
+                    StringBuilder response = new StringBuilder();
+                    try {
+                        reader = new BufferedReader(new InputStreamReader(inputStream));
+                        String line;
+                        while (null != (line = reader.readLine())) {
+                            response.append(line);
+                        }
+                    } finally {
+                        if (null != reader) {
+                            try {
+                                reader.close();
+                            } catch (IOException e) {
+                                Debug.Log(e);
+                            }
                         }
                     }
-                }
 
-                String json = response.toString();
-                AmiiboManager amiiboManager = AmiiboManager.parseAmiiboAPI(new JSONObject(json));
+                    String json = response.toString();
+                    AmiiboManager amiiboManager = AmiiboManager.parseAmiiboAPI(new JSONObject(json));
+                    if (Thread.currentThread().isInterrupted())
+                        return;
+
+                    AmiiboManager.saveDatabase(amiiboManager);
+                    setAmiiboManager(amiiboManager);
+                    showSnackbar(getString(R.string.sync_amiibo_complete), Snackbar.LENGTH_SHORT);
+                } else {
+                    throw new Exception(String.valueOf(statusCode));
+                }
+                prefs.lastUpdated().put(lastUpdated);
+            } catch (Exception e) {
+                Debug.Log(e);
                 if (Thread.currentThread().isInterrupted())
                     return;
-
-                AmiiboManager.saveDatabase(amiiboManager);
-                setAmiiboManager(amiiboManager);
-                showSnackbar(getString(R.string.sync_amiibo_complete), Snackbar.LENGTH_SHORT);
-            } else {
-                throw new Exception(String.valueOf(statusCode));
+                showSnackbar(getString(R.string.sync_amiibo_failed), Snackbar.LENGTH_SHORT);
             }
-        } catch (Exception e) {
-            Debug.Log(e);
-            if (Thread.currentThread().isInterrupted())
-                return;
-            showSnackbar(getString(R.string.sync_amiibo_failed), Snackbar.LENGTH_SHORT);
-        }
+        });
     }
 
     private final ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(

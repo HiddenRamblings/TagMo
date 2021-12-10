@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -11,6 +10,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -48,17 +49,6 @@ import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
-import org.androidannotations.annotations.AfterTextChange;
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.CheckedChange;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.Extra;
-import org.androidannotations.annotations.InstanceState;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -74,57 +64,32 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-@SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.activity_tag_data)
-@OptionsMenu(R.menu.image_menu)
 public class TagDataActivity extends AppCompatActivity {
 
-    @ViewById(R.id.txtError)
-    TextView txtError;
-    @ViewById(R.id.txtTagId)
-    TextView txtTagId;
-    @ViewById(R.id.txtName)
-    TextView txtName;
-    @ViewById(R.id.txtGameSeries)
-    TextView txtGameSeries;
-    // @ViewById(R.id.txtCharacter)
-    // TextView txtCharacter;
-    @ViewById(R.id.txtAmiiboType)
-    TextView txtAmiiboType;
-    @ViewById(R.id.txtAmiiboSeries)
-    TextView txtAmiiboSeries;
-    @ViewById(R.id.imageAmiibo)
-    ImageView imageAmiibo;
+    private TextView txtError;
+    private TextView txtTagId;
+    private TextView txtName;
+    private TextView txtGameSeries;
+    // private TextView txtCharacter;
+    private TextView txtAmiiboType;
+    private TextView txtAmiiboSeries;
+    private ImageView imageAmiibo;
 
-    @ViewById(R.id.txtUID)
-    MaskedEditText txtUID;
-    @ViewById(R.id.txtCountryCode)
-    Spinner txtCountryCode;
-    @ViewById(R.id.txtInitDate)
-    EditText txtInitDate;
-    @ViewById(R.id.txtModifiedDate)
-    EditText txtModifiedDate;
-    @ViewById(R.id.txtNickname)
-    EditText txtNickname;
-    @ViewById(R.id.txtMiiName)
-    EditText txtMiiName;
-    @ViewById(R.id.txtAppId)
-    MaskedEditText txtAppId;
-    @ViewById(R.id.txtWriteCounter)
-    EditText txtWriteCounter;
-    @ViewById(R.id.txtSerialNumber)
-    EditText txtSerialNumber;
-    @ViewById(R.id.txtAppName)
-    Spinner txtAppName;
-    @ViewById(R.id.appDataSwitch)
-    SwitchCompat appDataSwitch;
-    @ViewById(R.id.userDataSwitch)
-    SwitchCompat userDataSwitch;
-    @ViewById(R.id.random_serial)
-    AppCompatButton generateSerial;
+    private MaskedEditText txtUID;
+    private Spinner txtCountryCode;
+    private EditText txtInitDate;
+    private EditText txtModifiedDate;
+    private EditText txtNickname;
+    private EditText txtMiiName;
+    private MaskedEditText txtAppId;
+    private EditText txtWriteCounter;
+    private EditText txtSerialNumber;
+    private Spinner txtAppName;
+    private SwitchCompat appDataSwitch;
+    private SwitchCompat userDataSwitch;
+    private AppCompatButton generateSerial;
 
-    @Extra(TagMo.EXTRA_TAG_DATA)
-    byte[] tagData;
+    private byte[] tagData;
 
     private CountryCodesAdapter countryCodeAdapter;
     private NoSelectionSpinnerAdapter appIdAdapter;
@@ -133,53 +98,45 @@ public class TagDataActivity extends AppCompatActivity {
     private AmiiboManager amiiboManager = null;
     private AmiiboData amiiboData;
 
-    @InstanceState
-    boolean initialUserDataInitialized;
-    @InstanceState
+    private boolean initialUserDataInitialized;
     public boolean isAppDataInitialized;
-    @InstanceState
-    boolean initialAppDataInitialized;
-    @InstanceState
-    boolean isUserDataInitialized;
-    @InstanceState
-    Date initializedDate;
-    @InstanceState
-    Date modifiedDate;
-    @InstanceState
-    Integer appId;
+    private boolean initialAppDataInitialized;
+    private boolean isUserDataInitialized;
+    private Date initializedDate;
+    private Date modifiedDate;
+    private Integer appId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        setContentView(R.layout.activity_tag_data);
+        setContentView(R.layout.activity_tag_data);
 
-//        txtError = findViewById(R.id.txtError);
-//        txtTagId = findViewById(R.id.txtTagId);
-//        txtName = findViewById(R.id.txtName);
-//        txtGameSeries = findViewById(R.id.txtGameSeries);
-//        txtCharacter = findViewById(R.id.txtCharacter);
-//        txtAmiiboType = findViewById(R.id.txtAmiiboType);
-//        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
-//        imageAmiibo = findViewById(R.id.imageAmiibo);
-//
-//        txtUID = findViewById(R.id.txtUID);
-//        txtCountryCode = findViewById(R.id.txtCountryCode);
-//        txtInitDate = findViewById(R.id.txtInitDate);
-//        txtModifiedDate = findViewById(R.id.txtModifiedDate);
-//        txtNickname = findViewById(R.id.txtNickname);
-//        txtMiiName = findViewById(R.id.txtMiiName);
-//        txtAppId = findViewById(R.id.txtAppId);
-//        txtWriteCounter = findViewById(R.id.txtWriteCounter);
-//        txtSerialNumber = findViewById(R.id.txtSerialNumber);
-//        txtAppName = findViewById(R.id.txtAppName);
-//        appDataSwitch = findViewById(R.id.appDataSwitch);
-//        userDataSwitch = findViewById(R.id.userDataSwitch);
-//        generateSerial = findViewById(R.id.random_serial);
-    }
+        txtError = findViewById(R.id.txtError);
+        txtTagId = findViewById(R.id.txtTagId);
+        txtName = findViewById(R.id.txtName);
+        txtGameSeries = findViewById(R.id.txtGameSeries);
+        // txtCharacter = findViewById(R.id.txtCharacter);
+        txtAmiiboType = findViewById(R.id.txtAmiiboType);
+        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
+        imageAmiibo = findViewById(R.id.imageAmiibo);
 
-    @AfterViews
-    void afterViews() {
+        txtUID = findViewById(R.id.txtUID);
+        txtCountryCode = findViewById(R.id.txtCountryCode);
+        txtInitDate = findViewById(R.id.txtInitDate);
+        txtModifiedDate = findViewById(R.id.txtModifiedDate);
+        txtNickname = findViewById(R.id.txtNickname);
+        txtMiiName = findViewById(R.id.txtMiiName);
+        txtAppId = findViewById(R.id.txtAppId);
+        txtWriteCounter = findViewById(R.id.txtWriteCounter);
+        txtSerialNumber = findViewById(R.id.txtSerialNumber);
+        txtAppName = findViewById(R.id.txtAppName);
+        appDataSwitch = findViewById(R.id.appDataSwitch);
+        userDataSwitch = findViewById(R.id.userDataSwitch);
+        generateSerial = findViewById(R.id.random_serial);
+
+        tagData = getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+
         keyManager = new KeyManager(this);
         if (keyManager.isKeyMissing()) {
             showErrorDialog(R.string.no_decrypt_key);
@@ -198,6 +155,43 @@ public class TagDataActivity extends AppCompatActivity {
             }
         }
 
+        userDataSwitch.setOnCheckedChangeListener((compoundButton, checked) ->
+                onUserDataSwitchClicked(checked));
+
+        appDataSwitch.setOnCheckedChangeListener((compoundButton, checked) ->
+                onAppDataSwitchClicked(checked));
+
+        findViewById(R.id.random_serial).setOnClickListener(view ->
+                txtSerialNumber.setText(TagUtils.bytesToHex(new Foomiibo().generateRandomUID())));
+
+        findViewById(R.id.txtInitDate).setOnClickListener(view -> {
+            final Calendar c = Calendar.getInstance();
+            c.setTime(initializedDate);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    TagDataActivity.this,
+                    onInitDateSet,
+                    c.get(Calendar.YEAR),
+                    c.get(Calendar.MONTH),
+                    c.get(Calendar.DAY_OF_MONTH)
+            );
+            datePickerDialog.show();
+        });
+
+        findViewById(R.id.txtModifiedDate).setOnClickListener(view -> {
+            final Calendar c = Calendar.getInstance();
+            c.setTime(modifiedDate);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    TagDataActivity.this,
+                    onModifiedDateSet,
+                    c.get(Calendar.YEAR),
+                    c.get(Calendar.MONTH),
+                    c.get(Calendar.DAY_OF_MONTH)
+            );
+            datePickerDialog.show();
+        });
+
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager = null;
             try {
@@ -211,7 +205,7 @@ public class TagDataActivity extends AppCompatActivity {
                 return;
 
             this.amiiboManager = amiiboManager;
-            this.updateAmiiboView();
+            runOnUiThread(this::updateAmiiboView);
         });
         updateAmiiboView();
 
@@ -225,8 +219,25 @@ public class TagDataActivity extends AppCompatActivity {
                 new AppIdAdapter(AppData.appIds), R.layout.nothing_spinner_text);
         txtAppName.setAdapter(appIdAdapter);
 
-        userDataSwitch.setOnCheckedChangeListener((compoundButton, b) -> onUserDataSwitchClicked(b));
-        appDataSwitch.setOnCheckedChangeListener((compoundButton, b) -> onAppDataSwitchClicked(b));
+        txtWriteCounter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                try {
+                    int writeCounter = Integer.parseInt(txtWriteCounter.getText().toString());
+                    amiiboData.checkWriteCount(writeCounter);
+                    txtWriteCounter.setError(null);
+                } catch (Exception e) {
+                    txtWriteCounter.setError(getString(R.string.error_min_max,
+                            AmiiboData.WRITE_COUNT_MIN_VALUE, AmiiboData.WRITE_COUNT_MAX_VALUE));
+                }
+            }
+        });
 
         loadData();
     }
@@ -369,8 +380,17 @@ public class TagDataActivity extends AppCompatActivity {
         return fragment;
     }
 
-    @OptionsItem(R.id.mnu_save)
-    void onSaveClicked() {
+    void onUserDataSwitchClicked(boolean isUserDataInitialized) {
+        this.isUserDataInitialized = isUserDataInitialized;
+        updateUserDataEnabled(isUserDataInitialized);
+    }
+
+    void onAppDataSwitchClicked(boolean isAppDataInitialized) {
+        this.isAppDataInitialized = isAppDataInitialized;
+        updateAppDataEnabled(isAppDataInitialized);
+    }
+
+    private void onSaveClicked() {
         AmiiboData newAmiiboData;
         try {
             newAmiiboData = new AmiiboData(this.amiiboData.array());
@@ -472,12 +492,6 @@ public class TagDataActivity extends AppCompatActivity {
         finish();
     }
 
-    @CheckedChange(R.id.userDataSwitch)
-    void onUserDataSwitchClicked(boolean isUserDataInitialized) {
-        this.isUserDataInitialized = isUserDataInitialized;
-        updateUserDataEnabled(isUserDataInitialized);
-    }
-
     private void updateUserDataEnabled(boolean isUserDataInitialized) {
         txtCountryCode.setEnabled(isUserDataInitialized);
         txtInitDate.setEnabled(isUserDataInitialized);
@@ -491,12 +505,6 @@ public class TagDataActivity extends AppCompatActivity {
         txtAppName.setEnabled(isUserDataInitialized);
 
         appDataSwitch.setEnabled(isUserDataInitialized);
-        updateAppDataEnabled(isAppDataInitialized);
-    }
-
-    @CheckedChange(R.id.appDataSwitch)
-    void onAppDataSwitchClicked(boolean isAppDataInitialized) {
-        this.isAppDataInitialized = isAppDataInitialized;
         updateAppDataEnabled(isAppDataInitialized);
     }
 
@@ -557,26 +565,6 @@ public class TagDataActivity extends AppCompatActivity {
         txtInitDate.setText(text);
     }
 
-    @Click(R.id.random_serial)
-    void onGenerateSerialClick() {
-        txtSerialNumber.setText(TagUtils.bytesToHex(new Foomiibo().generateRandomUID()));
-    }
-
-    @Click(R.id.txtInitDate)
-    void onInitDateClick() {
-        final Calendar c = Calendar.getInstance();
-        c.setTime(initializedDate);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                this,
-                onInitDateSet,
-                c.get(Calendar.YEAR),
-                c.get(Calendar.MONTH),
-                c.get(Calendar.DAY_OF_MONTH)
-        );
-        datePickerDialog.show();
-    }
-
     private final DatePickerDialog.OnDateSetListener onInitDateSet =
             new DatePickerDialog.OnDateSetListener() {
         @Override
@@ -612,21 +600,6 @@ public class TagDataActivity extends AppCompatActivity {
             text = getString(R.string.invalid);
         }
         txtModifiedDate.setText(text);
-    }
-
-    @Click(R.id.txtModifiedDate)
-    void onModifiedDateClick() {
-        final Calendar c = Calendar.getInstance();
-        c.setTime(modifiedDate);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                this,
-                onModifiedDateSet,
-                c.get(Calendar.YEAR),
-                c.get(Calendar.MONTH),
-                c.get(Calendar.DAY_OF_MONTH)
-        );
-        datePickerDialog.show();
     }
 
     private final DatePickerDialog.OnDateSetListener onModifiedDateSet =
@@ -820,17 +793,6 @@ public class TagDataActivity extends AppCompatActivity {
         txtSerialNumber.setText(TagUtils.bytesToHex(value));
     }
 
-    @AfterTextChange(R.id.txtWriteCounter)
-    void onWriteCounterTextChange() {
-        try {
-            int writeCounter = Integer.parseInt(txtWriteCounter.getText().toString());
-            amiiboData.checkWriteCount(writeCounter);
-            txtWriteCounter.setError(null);
-        } catch (Exception e) {
-            txtWriteCounter.setError(getString(R.string.error_min_max, AmiiboData.WRITE_COUNT_MIN_VALUE, AmiiboData.WRITE_COUNT_MAX_VALUE));
-        }
-    }
-
     private static String getDateString(Date date) {
         return new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date);
     }
@@ -960,7 +922,6 @@ public class TagDataActivity extends AppCompatActivity {
         }
     }
 
-    @UiThread
     void showErrorDialog(int msgRes) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.error_caps)
@@ -968,5 +929,21 @@ public class TagDataActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.close, (dialog, which) -> finish())
                 .show();
         setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_FIX_BANK_DATA));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.save_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.mnu_save) {
+            onSaveClicked();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 }

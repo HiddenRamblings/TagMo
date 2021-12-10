@@ -372,8 +372,7 @@ public class BrowserSettings implements Parcelable {
         this.showMissingFiles = in.readByte() != 0;
     }
 
-    static final Parcelable.Creator<BrowserSettings> CREATOR =
-            new Parcelable.Creator<BrowserSettings>() {
+    static final Parcelable.Creator<BrowserSettings> CREATOR = new Parcelable.Creator<>() {
         @Override
         public BrowserSettings createFromParcel(Parcel source) {
             return new BrowserSettings(source);

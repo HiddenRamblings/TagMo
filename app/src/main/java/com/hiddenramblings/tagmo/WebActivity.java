@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.pm.ActivityInfo;
@@ -38,10 +37,6 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -60,7 +55,7 @@ public class WebActivity extends AppCompatActivity {
 
     public static String WEBSITE = "WEBSITE";
 
-    WebView mWebView;
+    private WebView mWebView;
 
     private ProgressDialog dialog;
 
@@ -207,7 +202,7 @@ public class WebActivity extends AppCompatActivity {
         }
     }
 
-    void unzipFile(File zipFile) {
+    private void unzipFile(File zipFile) {
         dialog = ProgressDialog.show(this, "", "", true);
         new Thread(new UnZip(zipFile, Storage.getDownloadDir(
                 "TagMo", "Downloads"))).start();
@@ -225,7 +220,7 @@ public class WebActivity extends AppCompatActivity {
         }
     }
 
-    void setBinName(String base64File, String mimeType) {
+    private void setBinName(String base64File, String mimeType) {
         byte[] tagData = Base64.decode(base64File.replaceFirst(
                 "^data:" + mimeType + ";base64,", ""), 0);
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);

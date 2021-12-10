@@ -63,13 +63,13 @@
             </intent-filter>
         </activity-alias>
         <activity
-            android:name=".BankListActivity_"
+            android:name=".BankListActivity"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop"
             android:theme="@style/DialogTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".FoomiiboActivity_"
+            android:name=".FoomiiboActivity"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop"
             android:theme="@style/DialogTheme.NoActionBar">
@@ -87,11 +87,11 @@
             android:launchMode="singleTop">
         </activity>
         <activity
-            android:name=".HexViewerActivity_"/>
+            android:name=".HexViewerActivity"/>
         <activity
-            android:name=".ImageActivity_"/>
+            android:name=".ImageActivity"/>
         <activity
-            android:name=".TagDataActivity_"/>
+            android:name=".TagDataActivity"/>
         <receiver
             android:name=".GithubReceiver"
             android:exported="true">

@@ -9,7 +9,7 @@ import android.widget.Spinner;
 import androidx.annotation.Nullable;
 
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagDataActivity_;
+import com.hiddenramblings.tagmo.TagDataActivity;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import org.androidannotations.annotations.AfterViews;
@@ -95,7 +95,7 @@ public class AppDataSSBFragment extends AppDataFragment {
 
         this.loadData();
 
-        onAppDataChecked(((TagDataActivity_) requireContext()).isAppDataInitialized);
+        onAppDataChecked(((TagDataActivity) requireContext()).isAppDataInitialized);
     }
 
     void loadData() {

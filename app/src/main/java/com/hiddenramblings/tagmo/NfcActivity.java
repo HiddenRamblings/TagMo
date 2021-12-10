@@ -81,11 +81,20 @@ public class NfcActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+//        setContentView(R.layout.activity_nfc);
+
         ActionBar actionBar = getSupportActionBar();
         if (null != actionBar) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+//        txtMessage = findViewById(R.id.txtMessage);
+//        txtError = findViewById(R.id.txtError);
+//        imgNfcBar = findViewById(R.id.imgNfcBar);
+//        imgNfcCircle = findViewById(R.id.imgNfcCircle);
+//        bankPicker = findViewById(R.id.bank_number_picker);
+//        bankTextView = findViewById(R.id.bank_number_details);
     }
 
     @AfterViews

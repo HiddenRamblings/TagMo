@@ -8,7 +8,6 @@ import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInstaller;
@@ -116,7 +115,6 @@ import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.OptionsMenuItem;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.api.BackgroundExecutor;
 import org.apmem.tools.layouts.FlowLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -139,6 +137,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.Executors;
 
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.BlurViewFacade;
@@ -660,32 +659,35 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @OptionsItem(R.id.capture_logcat)
-    @Background
     void onCaptureLogcatClicked() {
-        File[] logs = Storage.getDownloadDir("TagMo", "Logcat").listFiles(
-                (dir, name) -> name.toLowerCase(Locale.ROOT).startsWith("tagmo_logcat"));
-        if (null != logs && logs.length > 0) {
-            for (File file : logs) {
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            File[] logs = Storage.getDownloadDir("TagMo", "Logcat").listFiles(
+                    (dir, name) -> name.toLowerCase(Locale.ROOT).startsWith("tagmo_logcat"));
+            if (null != logs && logs.length > 0) {
+                for (File file : logs) {
+                    //noinspection ResultOfMethodCallIgnored
+                    file.delete();
+                }
             }
-        }
-        try {
-            Uri uri = Debug.processLogcat(this, "tagmo_logcat");
-            String path = DocumentsUri.getPath(this, uri);
-            String output = null != path ? Storage.getRelativePath(new File(path),
-                    prefs.preferEmulated().get()) : uri.getPath();
-            new Toasty(this).Long(getString(R.string.wrote_logcat, output));
-            startActivity(TagMo.getIntent(new Intent(this,
-                    WebActivity_.class)).setData(uri));
-        } catch (IOException e) {
-            new Toasty(this).Short(e.getMessage());
-        }
+            try {
+                Uri uri = Debug.processLogcat(this, "tagmo_logcat");
+                String path = DocumentsUri.getPath(this, uri);
+                String output = null != path ? Storage.getRelativePath(new File(path),
+                        prefs.preferEmulated().get()) : uri.getPath();
+                new Toasty(this).Long(getString(R.string.wrote_logcat, output));
+                startActivity(TagMo.getIntent(new Intent(this,
+                        WebActivity.class)).setData(uri));
+            } catch (IOException e) {
+                new Toasty(this).Short(e.getMessage());
+            }
+        });
     }
 
     private final ActivityResultLauncher<Intent> onBuildFoomiibo = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result ->
-                    this.onRootFolderChanged(true));
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK) return;
+        this.onRootFolderChanged(true);
+    });
 
     @OptionsItem(R.id.build_foomiibo)
     void onBuildFoomiiboClicked() {
@@ -1130,92 +1132,86 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    private static final String BACKGROUND_UPDATE = "update";
-
-    private void checkForUpdate() {
-        BackgroundExecutor.cancelAll(BACKGROUND_UPDATE, true);
-        checkForUpdateTask();
-    }
-
-    @Background
     void installUpdateTask(String apkUrl) {
-        File apk = new File(getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
-        try {
-            DataInputStream dis = new DataInputStream(new URL(apkUrl).openStream());
+        Executors.newSingleThreadExecutor().execute(() -> {
+            File apk = new File(getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
+            try {
+                DataInputStream dis = new DataInputStream(new URL(apkUrl).openStream());
 
-            byte[] buffer = new byte[1024];
-            int length;
-            FileOutputStream fos = new FileOutputStream(apk);
-            while ((length = dis.read(buffer)) > 0) {
-                fos.write(buffer, 0, length);
-            }
-            fos.close();
-
-            if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk"))
-                //noinspection ResultOfMethodCallIgnored
-                apk.delete();
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Uri apkUri = Storage.getFileUri(apk);
-                PackageInstaller installer = getPackageManager().getPackageInstaller();
-                ContentResolver resolver = getContentResolver();
-                InputStream apkStream = resolver.openInputStream(apkUri);
-                PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
-                        PackageInstaller.SessionParams.MODE_FULL_INSTALL);
-                int sessionId = installer.createSession(params);
-                PackageInstaller.Session session = installer.openSession(sessionId);
-                DocumentFile document = DocumentFile.fromSingleUri(this, apkUri);
-                if (document == null)
-                    throw new IOException(getString(R.string.fail_invalid_size));
-                OutputStream sessionStream = session.openWrite(
-                        "NAME", 0, document.length());
-                byte[] buf = new byte[8192];
-                int size;
-                while ((size = apkStream.read(buf)) > 0) {
-                    sessionStream.write(buf, 0, size);
+                byte[] buffer = new byte[1024];
+                int length;
+                FileOutputStream fos = new FileOutputStream(apk);
+                while ((length = dis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, length);
                 }
-                session.fsync(sessionStream);
-                apkStream.close();
-                sessionStream.close();
-                PendingIntent pi = PendingIntent.getBroadcast(this, 8675309,
-                        new Intent(this, InstallReceiver.class),
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                                ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
-                                : PendingIntent.FLAG_UPDATE_CURRENT);
-                session.commit(pi.getIntentSender());
-            } else {
-                Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-                intent.setDataAndType(Storage.getFileUri(apk),
-                        getString(R.string.mimetype_apk));
-                intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-                intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,
-                        getApplicationInfo().packageName);
-                try {
-                    startActivity(TagMo.getIntent(intent));
-                } catch (ActivityNotFoundException anf) {
-                    try {
-                        startActivity(intent.setAction(Intent.ACTION_VIEW));
-                    } catch (ActivityNotFoundException ignored) {
+                fos.close();
 
+                if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk"))
+                    //noinspection ResultOfMethodCallIgnored
+                    apk.delete();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Uri apkUri = Storage.getFileUri(apk);
+                    PackageInstaller installer = getPackageManager().getPackageInstaller();
+                    ContentResolver resolver = getContentResolver();
+                    InputStream apkStream = resolver.openInputStream(apkUri);
+                    PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
+                            PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+                    int sessionId = installer.createSession(params);
+                    PackageInstaller.Session session = installer.openSession(sessionId);
+                    DocumentFile document = DocumentFile.fromSingleUri(this, apkUri);
+                    if (document == null)
+                        throw new IOException(getString(R.string.fail_invalid_size));
+                    OutputStream sessionStream = session.openWrite(
+                            "NAME", 0, document.length());
+                    byte[] buf = new byte[8192];
+                    int size;
+                    while ((size = apkStream.read(buf)) > 0) {
+                        sessionStream.write(buf, 0, size);
+                    }
+                    session.fsync(sessionStream);
+                    apkStream.close();
+                    sessionStream.close();
+                    PendingIntent pi = PendingIntent.getBroadcast(this, 8675309,
+                            new Intent(this, InstallReceiver.class),
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                                    ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+                                    : PendingIntent.FLAG_UPDATE_CURRENT);
+                    session.commit(pi.getIntentSender());
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                    intent.setDataAndType(Storage.getFileUri(apk),
+                            getString(R.string.mimetype_apk));
+                    intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+                    intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,
+                            getApplicationInfo().packageName);
+                    try {
+                        startActivity(TagMo.getIntent(intent));
+                    } catch (ActivityNotFoundException anf) {
+                        try {
+                            startActivity(intent.setAction(Intent.ACTION_VIEW));
+                        } catch (ActivityNotFoundException ignored) {
+
+                        }
                     }
                 }
+            } catch (MalformedURLException mue) {
+                Debug.Log(mue);
+            } catch (IOException ioe) {
+                Debug.Log(ioe);
+            } catch (SecurityException se) {
+                Debug.Log(se);
             }
-        } catch (MalformedURLException mue) {
-            Debug.Log(mue);
-        } catch (IOException ioe) {
-            Debug.Log(ioe);
-        } catch (SecurityException se) {
-            Debug.Log(se);
-        }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private final ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (getPackageManager().canRequestPackageInstalls())
-                    installUpdateTask(prefs.downloadUrl().get());
-                prefs.downloadUrl().remove();
-            });
+        if (getPackageManager().canRequestPackageInstalls())
+            installUpdateTask(prefs.downloadUrl().get());
+        prefs.downloadUrl().remove();
+    });
 
     private void installUpdateCompat(String apkUrl) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -1264,67 +1260,48 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    @Background(id = BACKGROUND_UPDATE)
-    void checkForUpdateTask() {
-        boolean isMaster = prefs.stableChannel().get();
-        new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
-                ? "master" : "experimental")).setResultListener(result -> {
-            if (null != result) parseUpdateJSON(result, isMaster);
+    void checkForUpdate() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            boolean isMaster = prefs.stableChannel().get();
+            new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
+                    ? "master" : "experimental")).setResultListener(result -> {
+                if (null != result) parseUpdateJSON(result, isMaster);
+            });
         });
     }
 
-    private static final String BACKGROUND_POWERTAG = "powertag";
-
-    private void loadPTagKeyManager() {
+    void loadPTagKeyManager() {
         if (prefs.enablePowerTagSupport().get()) {
-            BackgroundExecutor.cancelAll(BACKGROUND_POWERTAG, true);
-            loadPTagKeyManagerTask();
+            Executors.newSingleThreadExecutor().execute(() -> {
+                try {
+                    PowerTagManager.getPowerTagManager();
+                } catch (Exception e) {
+                    Debug.Log(e);
+                    new Toasty(this).Short(R.string.fail_powertag_keys);
+                }
+            });
         }
     }
 
-    @Background(id = BACKGROUND_POWERTAG)
-    void loadPTagKeyManagerTask() {
-        try {
-            PowerTagManager.getPowerTagManager();
-        } catch (Exception e) {
-            Debug.Log(e);
-            new Toasty(this).Short(R.string.fail_powertag_keys);
-        }
-    }
+    void loadAmiiboManager() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            AmiiboManager amiiboManager;
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager();
+            } catch (IOException | JSONException | ParseException e) {
+                Debug.Log(e);
+                amiiboManager = null;
+                new Toasty(this).Short(R.string.amiibo_info_parse_error);
+            }
 
-    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
+            if (Thread.currentThread().isInterrupted()) return;
 
-    private void loadAmiiboManager() {
-        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
-        loadAmiiboManagerTask();
-    }
-
-    @Background(id = BACKGROUND_AMIIBO_MANAGER)
-    void loadAmiiboManagerTask() {
-        AmiiboManager amiiboManager;
-        try {
-            amiiboManager = AmiiboManager.getAmiiboManager();
-        } catch (IOException | JSONException | ParseException e) {
-            Debug.Log(e);
-            amiiboManager = null;
-            new Toasty(this).Short(R.string.amiibo_info_parse_error);
-        }
-
-        if (Thread.currentThread().isInterrupted())
-            return;
-
-        final AmiiboManager uiAmiiboManager = amiiboManager;
-        this.runOnUiThread(() -> {
-            settings.setAmiiboManager(uiAmiiboManager);
-            settings.notifyChanges();
+            final AmiiboManager uiAmiiboManager = amiiboManager;
+            this.runOnUiThread(() -> {
+                settings.setAmiiboManager(uiAmiiboManager);
+                settings.notifyChanges();
+            });
         });
-    }
-
-    static final String BACKGROUND_FOLDERS = "folders";
-
-    void loadFolders(File rootFolder) {
-        BackgroundExecutor.cancelAll(BACKGROUND_FOLDERS, true);
-        loadFoldersTask(rootFolder);
     }
 
     private ArrayList<File> listFolders(File rootFolder) {
@@ -1340,25 +1317,19 @@ public class BrowserActivity extends AppCompatActivity implements
         return folders;
     }
 
-    @Background(id = BACKGROUND_FOLDERS)
-    void loadFoldersTask(File rootFolder) {
-        final ArrayList<File> folders = listFolders(rootFolder);
-        Collections.sort(folders, (file1, file2) -> file1.getPath().compareToIgnoreCase(file2.getPath()));
+    void loadFolders(File rootFolder) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            final ArrayList<File> folders = listFolders(rootFolder);
+            Collections.sort(folders, (file1, file2) ->
+                    file1.getPath().compareToIgnoreCase(file2.getPath()));
 
-        if (Thread.currentThread().isInterrupted())
-            return;
+            if (Thread.currentThread().isInterrupted()) return;
 
-        this.runOnUiThread(() -> {
-            settings.setFolders(folders);
-            settings.notifyChanges();
+            this.runOnUiThread(() -> {
+                settings.setFolders(folders);
+                settings.notifyChanges();
+            });
         });
-    }
-
-    static final String BACKGROUND_AMIIBO_FILES = "amiibo_files";
-
-    void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
-        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_FILES, true);
-        loadAmiiboFilesTask(rootFolder, recursiveFiles);
     }
 
     private boolean isDirectoryHidden(File rootFolder, File directory, boolean recursive) {
@@ -1367,59 +1338,61 @@ public class BrowserActivity extends AppCompatActivity implements
                 && !directory.getPath().startsWith(rootFolder.getPath())));
     }
 
-    @Background(id = BACKGROUND_AMIIBO_FILES)
-    void loadAmiiboFilesTask(File rootFolder, boolean recursiveFiles) {
-        final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
-                .listAmiibos(keyManager, rootFolder, recursiveFiles);
-        if (this.settings.isShowingDownloads()) {
-            File download = Storage.getDownloadDir(null);
-            if (isDirectoryHidden(rootFolder, download, recursiveFiles))
-                amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, download, true));
-        } else {
-            File foomiibo = Storage.getDownloadDir("TagMo", "Foomiibo");
-            if (isDirectoryHidden(rootFolder, foomiibo, recursiveFiles))
-                amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, foomiibo, true));
-        }
+    void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
+                    .listAmiibos(keyManager, rootFolder, recursiveFiles);
+            if (this.settings.isShowingDownloads()) {
+                File download = Storage.getDownloadDir(null);
+                if (isDirectoryHidden(rootFolder, download, recursiveFiles))
+                    amiiboFiles.addAll(AmiiboManager
+                            .listAmiibos(keyManager, download, true));
+            } else {
+                File foomiibo = Storage.getDownloadDir("TagMo", "Foomiibo");
+                if (isDirectoryHidden(rootFolder, foomiibo, recursiveFiles))
+                    amiiboFiles.addAll(AmiiboManager
+                            .listAmiibos(keyManager, foomiibo, true));
+            }
 
-        if (Thread.currentThread().isInterrupted())
+            if (Thread.currentThread().isInterrupted()) return;
+
+            if (amiiboFiles.isEmpty()) {
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    showFakeSnackbar(getString(R.string.amiibo_not_found));
+                    menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
+                    preferences.setVisibility(View.GONE);
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }, 200);
+            } else {
+                this.runOnUiThread(() -> {
+                    settings.setAmiiboFiles(amiiboFiles);
+                    settings.notifyChanges();
+                });
+            }
+        });
+    }
+
+    ActivityResultLauncher<Intent> onDocumentTree = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
             return;
 
-        if (amiiboFiles.isEmpty()) {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                showFakeSnackbar(getString(R.string.amiibo_not_found));
-                menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
-                preferences.setVisibility(View.GONE);
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            }, 200);
-        } else {
+        Uri treeUri = result.getData().getData();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            getContentResolver().takePersistableUriPermission(treeUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
+
+        // List all existing files inside picked directory
+        if (null != pickedDir) {
+            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
+                    .listAmiiboDocuments(keyManager, pickedDir, this.settings.isRecursiveEnabled());
             this.runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
             });
         }
-    }
-
-    ActivityResultLauncher<Intent> onDocumentTree = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
-                    return;
-
-                Uri treeUri = result.getData().getData();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                    getContentResolver().takePersistableUriPermission(treeUri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
-
-                // List all existing files inside picked directory
-                if (null != pickedDir) {
-                    final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
-                            .listAmiiboDocuments(keyManager, pickedDir, this.settings.isRecursiveEnabled());
-                    this.runOnUiThread(() -> {
-                        settings.setAmiiboFiles(amiiboFiles);
-                        settings.notifyChanges();
-                    });
-                }
 
 //            // Create a new file and write into it
 //            DocumentFile newFile = pickedDir.createFile(getResources().getStringArray(
@@ -1435,7 +1408,7 @@ public class BrowserActivity extends AppCompatActivity implements
 //                }
 //            }
 
-            });
+    });
 
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,
@@ -1748,7 +1721,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
-            imageAmiibo.setVisibility(View.INVISIBLE);
+            imageAmiibo.setVisibility(View.GONE);
         }
 
         @Override
@@ -1923,6 +1896,7 @@ public class BrowserActivity extends AppCompatActivity implements
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
         if (null != imageAmiibo) {
+            imageAmiibo.setVisibility(View.GONE);
             GlideApp.with(this).clear(amiiboImageTarget);
             if (null != amiiboImageUrl) {
                 GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
@@ -2041,18 +2015,11 @@ public class BrowserActivity extends AppCompatActivity implements
         setupBar.show();
     }
 
-    private static final String BACKGROUND_LOAD_KEYS = "load_keys";
-
     private boolean keyNameMatcher(String name) {
         boolean isValid = name.toLowerCase(Locale.ROOT).endsWith(".bin");
         return name.toLowerCase(Locale.ROOT).endsWith("retail.bin") ||
                 (isValid && (name.toLowerCase(Locale.ROOT).startsWith("locked")
                         || name.toLowerCase(Locale.ROOT).startsWith("unfixed")));
-    }
-
-    private void locateKeyFiles() {
-        BackgroundExecutor.cancelAll(BACKGROUND_LOAD_KEYS, true);
-        locateKeyFilesTask();
     }
 
     private void locateKeyFilesRecursive(File rootFolder) {
@@ -2072,30 +2039,28 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    @Background(id = BACKGROUND_LOAD_KEYS)
-    void locateKeyFilesTask() {
-        File[] files = Storage.getDownloadDir(null)
-                .listFiles((dir, name) -> keyNameMatcher(name));
-        if (null != files && files.length > 0) {
-            for (File file : files) {
-                try {
-                    this.keyManager.loadKey(file);
-                } catch (Exception e) {
-                    Debug.Log(e);
+    void locateKeyFiles() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            File[] files = Storage.getDownloadDir(null)
+                    .listFiles((dir, name) -> keyNameMatcher(name));
+            if (null != files && files.length > 0) {
+                for (File file : files) {
+                    try {
+                        this.keyManager.loadKey(file);
+                    } catch (Exception e) {
+                        Debug.Log(e);
+                    }
                 }
+            } else {
+                locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated().get()));
             }
-        } else {
-            locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated().get()));
-        }
 
-        if (Thread.currentThread().isInterrupted())
-            return;
-
-        if (keyManager.isKeyMissing()) {
-            showSetupSnackbar();
-        } else {
-            this.onRefresh();
-        }
+            if (keyManager.isKeyMissing()) {
+                showSetupSnackbar();
+            } else {
+                this.onRefresh();
+            }
+        });
     }
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -2165,8 +2130,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private final ActivityResultLauncher<Intent> onTagLaunchActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (settings.getAmiiboFiles().isEmpty()) this.onRefresh();
-            });
+        if (settings.getAmiiboFiles().isEmpty()) this.onRefresh();
+    });
 
     @Background
     void onTagDiscovered(Intent intent) {

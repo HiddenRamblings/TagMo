@@ -3,13 +3,11 @@ package com.hiddenramblings.tagmo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -33,7 +31,6 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.FragmentManager;
 
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.adapter.NoSelectionSpinnerAdapter;
@@ -48,13 +45,11 @@ import com.hiddenramblings.tagmo.amiibo.data.AppDataTPFragment;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
-import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
 import org.androidannotations.annotations.AfterTextChange;
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.CheckedChange;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
@@ -64,7 +59,6 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.api.BackgroundExecutor;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -78,6 +72,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 @SuppressLint("NonConstantResourceId")
 @EActivity(R.layout.activity_tag_data)
@@ -153,6 +148,36 @@ public class TagDataActivity extends AppCompatActivity {
     @InstanceState
     Integer appId;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+//        setContentView(R.layout.activity_tag_data);
+
+//        txtError = findViewById(R.id.txtError);
+//        txtTagId = findViewById(R.id.txtTagId);
+//        txtName = findViewById(R.id.txtName);
+//        txtGameSeries = findViewById(R.id.txtGameSeries);
+//        txtCharacter = findViewById(R.id.txtCharacter);
+//        txtAmiiboType = findViewById(R.id.txtAmiiboType);
+//        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
+//        imageAmiibo = findViewById(R.id.imageAmiibo);
+//
+//        txtUID = findViewById(R.id.txtUID);
+//        txtCountryCode = findViewById(R.id.txtCountryCode);
+//        txtInitDate = findViewById(R.id.txtInitDate);
+//        txtModifiedDate = findViewById(R.id.txtModifiedDate);
+//        txtNickname = findViewById(R.id.txtNickname);
+//        txtMiiName = findViewById(R.id.txtMiiName);
+//        txtAppId = findViewById(R.id.txtAppId);
+//        txtWriteCounter = findViewById(R.id.txtWriteCounter);
+//        txtSerialNumber = findViewById(R.id.txtSerialNumber);
+//        txtAppName = findViewById(R.id.txtAppName);
+//        appDataSwitch = findViewById(R.id.appDataSwitch);
+//        userDataSwitch = findViewById(R.id.userDataSwitch);
+//        generateSerial = findViewById(R.id.random_serial);
+    }
+
     @AfterViews
     void afterViews() {
         keyManager = new KeyManager(this);
@@ -173,7 +198,21 @@ public class TagDataActivity extends AppCompatActivity {
             }
         }
 
-        loadAmiiboManager();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            AmiiboManager amiiboManager = null;
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager();
+            } catch (IOException | JSONException | ParseException e) {
+                Debug.Log(e);
+                new Toasty(this).Short(getString(R.string.amiibo_info_parse_error));
+            }
+
+            if (Thread.currentThread().isInterrupted())
+                return;
+
+            this.amiiboManager = amiiboManager;
+            this.updateAmiiboView();
+        });
         updateAmiiboView();
 
         txtAppName.setOnItemSelectedListener(onAppNameSelected);
@@ -192,13 +231,13 @@ public class TagDataActivity extends AppCompatActivity {
         loadData();
     }
 
-    private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<Bitmap>() {
+    private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<>() {
         @Override
         public void onLoadStarted(@Nullable Drawable placeholder) { }
 
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
-            imageAmiibo.setVisibility(View.INVISIBLE);
+            imageAmiibo.setVisibility(View.GONE);
         }
 
         @Override
@@ -210,33 +249,6 @@ public class TagDataActivity extends AppCompatActivity {
             imageAmiibo.setVisibility(View.VISIBLE);
         }
     };
-
-    private static final String BACKGROUND_AMIIBO_MANAGER = "amiibo_manager";
-    private void loadAmiiboManager() {
-        BackgroundExecutor.cancelAll(BACKGROUND_AMIIBO_MANAGER, true);
-        loadAmiiboManagerTask();
-    }
-
-    @Background(id = BACKGROUND_AMIIBO_MANAGER)
-    void loadAmiiboManagerTask() {
-        AmiiboManager amiiboManager = null;
-        try {
-            amiiboManager = AmiiboManager.getAmiiboManager();
-        } catch (IOException | JSONException | ParseException e) {
-            Debug.Log(e);
-            new Toasty(this).Short(getString(R.string.amiibo_info_parse_error));
-        }
-
-        if (Thread.currentThread().isInterrupted())
-            return;
-        setAmiiboManager(amiiboManager);
-    }
-
-    @UiThread
-    void setAmiiboManager(AmiiboManager amiiboManager) {
-        this.amiiboManager = amiiboManager;
-        this.updateAmiiboView();
-    }
 
     private void updateAmiiboView() {
         String tagInfo = null;
@@ -323,22 +335,6 @@ public class TagDataActivity extends AppCompatActivity {
                 textView.setText(text);
                 textView.setEnabled(true);
             }
-        }
-    }
-
-    private RequestOptions onlyRetrieveFromCache() {
-        String imageNetworkSetting = TagMo.getPrefs().imageNetworkSetting().get();
-        if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
-            return new RequestOptions().onlyRetrieveFromCache(true);
-        } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
-            ConnectivityManager cm = (ConnectivityManager)
-                    TagMo.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return new RequestOptions().onlyRetrieveFromCache(null == activeNetwork
-                    || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI);
-        } else {
-            return new RequestOptions().onlyRetrieveFromCache(false);
         }
     }
 

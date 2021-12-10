@@ -30,7 +30,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
@@ -52,7 +51,6 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -105,16 +103,10 @@ import com.hiddenramblings.tagmo.widget.Toasty;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
 
-import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.InstanceState;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.OptionsMenuItem;
 import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
 import org.apmem.tools.layouts.FlowLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -143,9 +135,7 @@ import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.BlurViewFacade;
 import eightbitlab.com.blurview.RenderScriptBlur;
 
-@SuppressLint("NonConstantResourceId")
-@EActivity(R.layout.activity_browser)
-@OptionsMenu(R.menu.browser_menu)
+@EActivity()
 public class BrowserActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
         SwipeRefreshLayout.OnRefreshListener,
@@ -154,102 +144,50 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private final Preferences_ prefs = TagMo.getPrefs();
 
-    @ViewById(R.id.fake_snackbar)
-    LinearLayout fakeSnackbar;
-    @ViewById(R.id.snackbar_icon)
-    ImageView fakeSnackbarIcon;
-    @ViewById(R.id.snackbar_text)
-    TextView fakeSnackbarText;
-    @ViewById(R.id.main_layout)
-    RelativeLayout mainLayout;
-    @ViewById(R.id.chip_list)
-    FlowLayout chipList;
-    @ViewById(R.id.amiibos_list)
-    RecyclerView amiibosView;
-    @ViewById(R.id.swipe_refresh)
-    SwipeRefreshLayout swipeRefreshLayout;
-    @ViewById(R.id.folders_list)
-    RecyclerView foldersView;
-    @ViewById(R.id.bottom_sheet)
-    ViewGroup bottomSheet;
-    @ViewById(R.id.current_folder)
-    TextView currentFolderView;
-    @ViewById(R.id.toggle)
-    ImageView toggle;
-    @ViewById(R.id.preferences)
-    CoordinatorLayout preferences;
-    @ViewById(R.id.switch_storage_root)
-    AppCompatButton switchStorageRoot;
+    private LinearLayout fakeSnackbar;
+    private ImageView fakeSnackbarIcon;
+    private TextView fakeSnackbarText;
+    private RelativeLayout mainLayout;
+    private FlowLayout chipList;
+    private RecyclerView amiibosView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView currentFolderView;
+    private ImageView toggle;
+    private CoordinatorLayout preferences;
+    private AppCompatButton switchStorageRoot;
 
-    @OptionsMenuItem(R.id.search)
-    MenuItem menuSearch;
-    @OptionsMenuItem(R.id.sort_id)
-    MenuItem menuSortId;
-    @OptionsMenuItem(R.id.sort_name)
-    MenuItem menuSortName;
-    @OptionsMenuItem(R.id.sort_game_series)
-    MenuItem menuSortGameSeries;
-    @OptionsMenuItem(R.id.sort_character)
-    MenuItem menuSortCharacter;
-    @OptionsMenuItem(R.id.sort_amiibo_series)
-    MenuItem menuSortAmiiboSeries;
-    @OptionsMenuItem(R.id.sort_amiibo_type)
-    MenuItem menuSortAmiiboType;
-    @OptionsMenuItem(R.id.sort_file_path)
-    MenuItem menuSortFilePath;
-    @OptionsMenuItem(R.id.filter_game_series)
-    MenuItem menuFilterGameSeries;
-    @OptionsMenuItem(R.id.filter_character)
-    MenuItem menuFilterCharacter;
-    @OptionsMenuItem(R.id.filter_amiibo_series)
-    MenuItem menuFilterAmiiboSeries;
-    @OptionsMenuItem(R.id.filter_amiibo_type)
-    MenuItem menuFilterAmiiboType;
-    @OptionsMenuItem(R.id.settings)
-    MenuItem menuSettings;
-    @OptionsMenuItem(R.id.view_simple)
-    MenuItem menuViewSimple;
-    @OptionsMenuItem(R.id.view_compact)
-    MenuItem menuViewCompact;
-    @OptionsMenuItem(R.id.view_large)
-    MenuItem menuViewLarge;
-    @OptionsMenuItem(R.id.view_image)
-    MenuItem menuViewImage;
-    @OptionsMenuItem(R.id.show_downloads)
-    MenuItem menuShowDownloads;
-    @OptionsMenuItem(R.id.recursive)
-    MenuItem menuRecursiveFiles;
-    @OptionsMenuItem(R.id.show_missing)
-    MenuItem menuShowMissing;
-    @OptionsMenuItem(R.id.enable_scale)
-    MenuItem menuEnableScale;
-    @OptionsMenuItem(R.id.capture_logcat)
-    MenuItem menuLogcat;
+    private MenuItem menuSortId;
+    private MenuItem menuSortName;
+    private MenuItem menuSortGameSeries;
+    private MenuItem menuSortCharacter;
+    private MenuItem menuSortAmiiboSeries;
+    private MenuItem menuSortAmiiboType;
+    private MenuItem menuSortFilePath;
+    private MenuItem menuFilterGameSeries;
+    private MenuItem menuFilterCharacter;
+    private MenuItem menuFilterAmiiboSeries;
+    private MenuItem menuFilterAmiiboType;
+    private MenuItem menuSettings;
+    private MenuItem menuViewSimple;
+    private MenuItem menuViewCompact;
+    private MenuItem menuViewLarge;
+    private MenuItem menuViewImage;
+    private MenuItem menuShowDownloads;
+    private MenuItem menuRecursiveFiles;
+    private MenuItem menuShowMissing;
+    private MenuItem menuEnableScale;
 
-    @ViewById(R.id.amiiboContainer)
-    BlurView amiiboContainer;
-    @ViewById(R.id.amiiboCard)
-    CardView amiiboCard;
-    @ViewById(R.id.toolbar)
-    Toolbar toolbar;
-    @ViewById(R.id.amiiboInfo)
-    View amiiboInfo;
-    @ViewById(R.id.txtError)
-    TextView txtError;
-    @ViewById(R.id.txtTagId)
-    TextView txtTagId;
-    @ViewById(R.id.txtName)
-    TextView txtName;
-    @ViewById(R.id.txtGameSeries)
-    TextView txtGameSeries;
-    // @ViewById(R.id.txtCharacter)
-    // TextView txtCharacter;
-    @ViewById(R.id.txtAmiiboType)
-    TextView txtAmiiboType;
-    @ViewById(R.id.txtAmiiboSeries)
-    TextView txtAmiiboSeries;
-    @ViewById(R.id.imageAmiibo)
-    ImageView imageAmiibo;
+    private BlurView amiiboContainer;
+    private Toolbar toolbar;
+    private View amiiboInfo;
+    private TextView txtError;
+    private TextView txtTagId;
+    private TextView txtName;
+    private TextView txtGameSeries;
+    // private TextView txtCharacter;
+    private TextView txtAmiiboType;
+    private TextView txtAmiiboSeries;
+    private ImageView imageAmiibo;
 
     @InstanceState
     boolean ignoreTagTd;
@@ -270,34 +208,31 @@ public class BrowserActivity extends AppCompatActivity implements
         TagMo.setScaledTheme(this, R.style.AppTheme);
         keyManager = new KeyManager(this);
 
-//        setContentView(R.layout.activity_browser);
-//
-//        fakeSnackbar = findViewById(R.id.fake_snackbar);
-//        fakeSnackbarIcon = findViewById(R.id.snackbar_icon);
-//        fakeSnackbarText = findViewById(R.id.snackbar_text);
-//        mainLayout = findViewById(R.id.main_layout);
-//        chipList = findViewById(R.id.chip_list);
-//        amiibosView = findViewById(R.id.amiibos_list);
-//        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
-//        foldersView = findViewById(R.id.folders_list);
-//        bottomSheet = findViewById(R.id.bottom_sheet);
-//        currentFolderView = findViewById(R.id.current_folder);
-//        toggle = findViewById(R.id.toggle);
-//        preferences = findViewById(R.id.preferences);
-//        switchStorageRoot = findViewById(R.id.switch_storage_root);
-//
-//        amiiboContainer = findViewById(R.id.amiiboContainer);
-//        amiiboCard = findViewById(R.id.amiiboCard);
-//        toolbar = findViewById(R.id.toolbar);
-//        amiiboInfo = findViewById(R.id.amiiboInfo);
-//        txtError = findViewById(R.id.txtError);
-//        txtTagId = findViewById(R.id.txtTagId);
-//        txtName = findViewById(R.id.txtName);
-//        txtGameSeries = findViewById(R.id.txtGameSeries);
-//        txtCharacter = findViewById(R.id.txtCharacter);
-//        txtAmiiboType = findViewById(R.id.txtAmiiboType);
-//        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
-//        imageAmiibo = findViewById(R.id.imageAmiibo);
+        setContentView(R.layout.activity_browser);
+
+        fakeSnackbar = findViewById(R.id.fake_snackbar);
+        fakeSnackbarIcon = findViewById(R.id.snackbar_icon);
+        fakeSnackbarText = findViewById(R.id.snackbar_text);
+        mainLayout = findViewById(R.id.main_layout);
+        chipList = findViewById(R.id.chip_list);
+        amiibosView = findViewById(R.id.amiibos_list);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
+        currentFolderView = findViewById(R.id.current_folder);
+        toggle = findViewById(R.id.toggle);
+        preferences = findViewById(R.id.preferences);
+        switchStorageRoot = findViewById(R.id.switch_storage_root);
+
+        amiiboContainer = findViewById(R.id.amiiboContainer);
+        toolbar = findViewById(R.id.toolbar);
+        amiiboInfo = findViewById(R.id.amiiboInfo);
+        txtError = findViewById(R.id.txtError);
+        txtTagId = findViewById(R.id.txtTagId);
+        txtName = findViewById(R.id.txtName);
+        txtGameSeries = findViewById(R.id.txtGameSeries);
+        // txtCharacter = findViewById(R.id.txtCharacter);
+        txtAmiiboType = findViewById(R.id.txtAmiiboType);
+        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
+        imageAmiibo = findViewById(R.id.imageAmiibo);
 
         File[] files = getFilesDir().listFiles((dir, name) ->
                 name.toLowerCase(Locale.ROOT).endsWith(".apk"));
@@ -344,10 +279,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 startActivity(browser);
             }
         }
-    }
 
-    @AfterViews
-    void afterViews() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (Environment.isExternalStorageManager()) {
                 this.onStorageEnabled();
@@ -375,7 +307,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         this.settings.addChangeListener(this);
 
-        this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -415,11 +347,78 @@ public class BrowserActivity extends AppCompatActivity implements
         this.amiibosView.setAdapter(new BrowserAmiibosAdapter(settings, this));
         this.settings.addChangeListener((BrowserSettingsListener) this.amiibosView.getAdapter());
 
-        this.foldersView.setLayoutManager(new LinearLayoutManager(this));
-        this.foldersView.setAdapter(new BrowserFoldersAdapter(settings));
-        this.settings.addChangeListener((BrowserSettingsListener) this.foldersView.getAdapter());
+        RecyclerView foldersView = findViewById(R.id.folders_list);
+        foldersView.setLayoutManager(new LinearLayoutManager(this));
+        foldersView.setAdapter(new BrowserFoldersAdapter(settings));
+        this.settings.addChangeListener((BrowserSettingsListener) foldersView.getAdapter());
 
         this.loadPTagKeyManager();
+
+        findViewById(R.id.nfc_fab).setOnClickListener(view -> {
+            PopupMenu popup;
+            View fab = findViewById(R.id.nfc_fab);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
+                popup = new PopupMenu(this, fab,
+                        Gravity.END, 0, R.style.PopupMenu);
+            else
+                popup = new PopupMenu(this, fab);
+            try {
+                for (Field field : popup.getClass().getDeclaredFields()) {
+                    if ("mPopup".equals(field.getName())) {
+                        field.setAccessible(true);
+                        Object menuPopupHelper = field.get(popup);
+                        if (null != menuPopupHelper) {
+                            Method setForceIcons = Class.forName(menuPopupHelper.getClass().getName())
+                                    .getMethod("setForceShowIcon", boolean.class);
+                            setForceIcons.invoke(menuPopupHelper, true);
+                        }
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
+            popup.show();
+            popup.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.mnu_scan) {
+                    onNFCActivity.launch(new Intent(this,
+                            NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
+                    return true;
+                } else if (item.getItemId() == R.id.mnu_backup) {
+                    Intent backup = new Intent(this, NfcActivity_.class);
+                    backup.setAction(TagMo.ACTION_BACKUP_AMIIBO);
+                    onBackupActivity.launch(backup);
+                    return true;
+                } else if (item.getItemId() == R.id.mnu_validate) {
+                    onValidateActivity.launch(new Intent(this,
+                            NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
+                    return true;
+                }
+                return false;
+            });
+        });
+
+        findViewById(R.id.toggle).setOnClickListener(view -> {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
+        findViewById(R.id.switch_storage_root).setOnClickListener(view -> {
+            boolean external = !prefs.preferEmulated().get();
+            switchStorageRoot.setText(external
+                    ? R.string.emulated_storage_root
+                    : R.string.physical_storage_root);
+            this.settings.setBrowserRootFolder(Storage.getFile(external));
+            this.settings.notifyChanges();
+            prefs.preferEmulated().put(external);
+        });
+
+        findViewById(R.id.amiiboContainer).setOnClickListener(view ->
+                amiiboContainer.setVisibility(View.GONE));
     }
 
     private void onProviderInstallerNotAvailable() {
@@ -443,7 +442,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
             prefs.eliteBankCount().put(bank_count);
 
-            Intent eliteIntent = new Intent(this, BankListActivity_.class);
+            Intent eliteIntent = new Intent(this, BankListActivity.class);
             eliteIntent.putExtras(result.getData());
             eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
             startActivity(eliteIntent);
@@ -494,172 +493,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     });
 
-    @Click(R.id.nfc_fab)
-    public void onFabClicked() {
-        PopupMenu popup;
-        View fab = findViewById(R.id.nfc_fab);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
-            popup = new PopupMenu(this, fab,
-                    Gravity.END, 0, R.style.PopupMenu);
-        else
-            popup = new PopupMenu(this, fab);
-        try {
-            for (Field field : popup.getClass().getDeclaredFields()) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popup);
-                    if (null != menuPopupHelper) {
-                        Method setForceIcons = Class.forName(menuPopupHelper.getClass().getName())
-                                .getMethod("setForceShowIcon", boolean.class);
-                        setForceIcons.invoke(menuPopupHelper, true);
-                    }
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
-        popup.show();
-        popup.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.mnu_scan:
-                    onNFCActivity.launch(new Intent(this,
-                            NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
-                    return true;
-                case R.id.mnu_backup:
-                    Intent backup = new Intent(this, NfcActivity_.class);
-                    backup.setAction(TagMo.ACTION_BACKUP_AMIIBO);
-                    onBackupActivity.launch(backup);
-                    return true;
-                case R.id.mnu_validate:
-                    onValidateActivity.launch(new Intent(this,
-                            NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
-                    return true;
-            }
-            return false;
-        });
-    }
-
-    @Click(R.id.toggle)
-    void onBrowserFolderExpandClick() {
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        } else {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        }
-    }
-
-    @Click(R.id.switch_storage_root)
-    void onSwitchStorageClicked() {
-        boolean external = !prefs.preferEmulated().get();
-        switchStorageRoot.setText(external
-                ? R.string.emulated_storage_root
-                : R.string.physical_storage_root);
-        this.settings.setBrowserRootFolder(Storage.getFile(external));
-        this.settings.notifyChanges();
-        prefs.preferEmulated().put(external);
-    }
-
-    @OptionsItem(R.id.sort_id)
-    void onSortIdClick() {
-        settings.setSort(SORT.ID.getValue());
-        settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.sort_name)
-    void onSortNameClick() {
-        settings.setSort(SORT.NAME.getValue());
-        settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.sort_game_series)
-    void onSortGameSeriesClick() {
-        settings.setSort(SORT.GAME_SERIES.getValue());
-        settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.sort_character)
-    void onSortCharacterClick() {
-        settings.setSort(SORT.CHARACTER.getValue());
-        settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.sort_amiibo_series)
-    void onSortAmiiboSeriesClick() {
-        settings.setSort(SORT.AMIIBO_SERIES.getValue());
-        settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.sort_amiibo_type)
-    void onSortAmiiboTypeClick() {
-        settings.setSort(SORT.AMIIBO_TYPE.getValue());
-        settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.sort_file_path)
-    void onSortFilePathClick() {
-        settings.setSort(SORT.FILE_PATH.getValue());
-        settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.view_simple)
-    void onViewSimpleClick() {
-        if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
-            this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        settings.setAmiiboView(VIEW.SIMPLE.getValue());
-        settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.view_compact)
-    void onViewCompactClick() {
-        if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
-            this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        settings.setAmiiboView(VIEW.COMPACT.getValue());
-        settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.view_large)
-    void onViewLargeClick() {
-        if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
-            this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        settings.setAmiiboView(VIEW.LARGE.getValue());
-        settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.view_image)
-    void onViewImageClick() {
-        this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
-        settings.setAmiiboView(VIEW.IMAGE.getValue());
-        settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.show_downloads)
-    void OnShowDownloadsCicked() {
-        this.settings.setShowDownloads(!this.settings.isShowingDownloads());
-        this.settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.recursive)
-    void onRecursiveFilesClicked() {
-        this.settings.setRecursiveEnabled(!this.settings.isRecursiveEnabled());
-        this.settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.show_missing)
-    void OnShowMissingCicked() {
-        this.settings.setShowMissingFiles(!this.settings.isShowingMissingFiles());
-        this.settings.notifyChanges();
-    }
-
-    @OptionsItem(R.id.enable_scale)
-    void onEnableScaleClicked() {
-        prefs.enableScaling().put(!menuEnableScale.isChecked());
-        this.recreate();
-    }
-
-    @OptionsItem(R.id.capture_logcat)
-    void onCaptureLogcatClicked() {
+    private void onCaptureLogcatClicked() {
         Executors.newSingleThreadExecutor().execute(() -> {
             File[] logs = Storage.getDownloadDir("TagMo", "Logcat").listFiles(
                     (dir, name) -> name.toLowerCase(Locale.ROOT).startsWith("tagmo_logcat"));
@@ -688,11 +522,6 @@ public class BrowserActivity extends AppCompatActivity implements
         if (result.getResultCode() != RESULT_OK) return;
         this.onRootFolderChanged(true);
     });
-
-    @OptionsItem(R.id.build_foomiibo)
-    void onBuildFoomiiboClicked() {
-        onBuildFoomiibo.launch(new Intent(this, FoomiiboActivity_.class));
-    }
 
     private int getQueryCount(String queryText) {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
@@ -782,8 +611,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return items.size();
     }
 
-    @OptionsItem(R.id.filter_game_series)
-    boolean onFilterGameSeriesClick() {
+    private boolean onFilterGameSeriesClick() {
         SubMenu subMenu = menuFilterGameSeries.getSubMenu();
         subMenu.clear();
 
@@ -833,8 +661,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    @OptionsItem(R.id.filter_character)
-    boolean onFilterCharacterClick() {
+    private boolean onFilterCharacterClick() {
         SubMenu subMenu = menuFilterCharacter.getSubMenu();
         subMenu.clear();
 
@@ -884,8 +711,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             };
 
-    @OptionsItem(R.id.filter_amiibo_series)
-    boolean onFilterAmiiboSeriesClick() {
+    private boolean onFilterAmiiboSeriesClick() {
         SubMenu subMenu = menuFilterAmiiboSeries.getSubMenu();
         subMenu.clear();
 
@@ -935,8 +761,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    @OptionsItem(R.id.filter_amiibo_type)
-    boolean onFilterAmiiboTypeClick() {
+    private boolean onFilterAmiiboTypeClick() {
         SubMenu subMenu = menuFilterAmiiboType.getSubMenu();
         subMenu.clear();
 
@@ -1003,8 +828,7 @@ public class BrowserActivity extends AppCompatActivity implements
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
-    @OptionsItem(R.id.settings)
-    void onBottomSheetChanged() {
+    private void onBottomSheetChanged() {
         if (preferences.isShown()) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
@@ -1041,7 +865,30 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.browser_menu, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
+
+        MenuItem menuSearch = menu.findItem(R.id.search);
+        menuSortId = menu.findItem(R.id.sort_id);
+        menuSortName = menu.findItem(R.id.sort_name);
+        menuSortGameSeries = menu.findItem(R.id.sort_game_series);
+        menuSortCharacter = menu.findItem(R.id.sort_character);
+        menuSortAmiiboSeries = menu.findItem(R.id.sort_amiibo_series);
+        menuSortAmiiboType = menu.findItem(R.id.sort_amiibo_type);
+        menuSortFilePath = menu.findItem(R.id.sort_file_path);
+        menuFilterGameSeries = menu.findItem(R.id.filter_game_series);
+        menuFilterCharacter = menu.findItem(R.id.filter_character);
+        menuFilterAmiiboSeries = menu.findItem(R.id.filter_amiibo_series);
+        menuFilterAmiiboType = menu.findItem(R.id.filter_amiibo_type);
+        menuSettings = menu.findItem(R.id.settings);
+        menuViewSimple = menu.findItem(R.id.view_simple);
+        menuViewCompact = menu.findItem(R.id.view_compact);
+        menuViewLarge = menu.findItem(R.id.view_large);
+        menuViewImage = menu.findItem(R.id.view_image);
+        menuShowDownloads = menu.findItem(R.id.show_downloads);
+        menuRecursiveFiles = menu.findItem(R.id.recursive);
+        menuShowMissing = menu.findItem(R.id.show_missing);
+        menuEnableScale = menu.findItem(R.id.enable_scale);
 
         if (null == this.settings) return false;
 
@@ -1090,6 +937,80 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.sort_id) {
+            settings.setSort(SORT.ID.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_name) {
+            settings.setSort(SORT.NAME.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_game_series) {
+            settings.setSort(SORT.GAME_SERIES.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_character) {
+            settings.setSort(SORT.CHARACTER.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_amiibo_series) {
+            settings.setSort(SORT.AMIIBO_SERIES.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_amiibo_type) {
+            settings.setSort(SORT.AMIIBO_TYPE.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_file_path) {
+            settings.setSort(SORT.FILE_PATH.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.view_simple) {
+            if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
+                this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            settings.setAmiiboView(VIEW.SIMPLE.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.view_compact) {
+            if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
+                this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            settings.setAmiiboView(VIEW.COMPACT.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.view_large) {
+            if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
+                this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            settings.setAmiiboView(VIEW.LARGE.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.view_image) {
+            this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+            settings.setAmiiboView(VIEW.IMAGE.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.show_downloads) {
+            this.settings.setShowDownloads(!this.settings.isShowingDownloads());
+            this.settings.notifyChanges();
+        } else if (item.getItemId() == R.id.recursive) {
+            this.settings.setRecursiveEnabled(!this.settings.isRecursiveEnabled());
+            this.settings.notifyChanges();
+        } else if (item.getItemId() == R.id.show_missing) {
+            this.settings.setShowMissingFiles(!this.settings.isShowingMissingFiles());
+            this.settings.notifyChanges();
+        } else if (item.getItemId() == R.id.enable_scale) {
+            prefs.enableScaling().put(!menuEnableScale.isChecked());
+            this.recreate();
+        } else if (item.getItemId() == R.id.capture_logcat) {
+            onCaptureLogcatClicked();
+        } else if (item.getItemId() == R.id.build_foomiibo) {
+            onBuildFoomiibo.launch(new Intent(this, FoomiiboActivity.class));
+        } else if (item.getItemId() == R.id.filter_game_series) {
+            return onFilterGameSeriesClick();
+        } else if (item.getItemId() == R.id.filter_character) {
+            return onFilterCharacterClick();
+        } else if (item.getItemId() == R.id.filter_amiibo_series) {
+            return onFilterAmiiboSeriesClick();
+        } else if (item.getItemId() == R.id.filter_amiibo_type) {
+            return onFilterAmiiboTypeClick();
+        } else if (item.getItemId() == R.id.settings) {
+            onBottomSheetChanged();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+    @Override
     public void onAmiiboClicked(AmiiboFile amiiboFile) {
         if (amiiboFile.getFilePath() == null)
             return;
@@ -1109,7 +1030,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Bundle bundle = new Bundle();
         bundle.putLong(TagMo.EXTRA_AMIIBO_ID, amiiboFile.getId());
 
-        Intent intent = new Intent(this, ImageActivity_.class);
+        Intent intent = new Intent(this, ImageActivity.class);
         intent.putExtras(bundle);
 
         this.startActivity(intent);
@@ -1132,7 +1053,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    void installUpdateTask(String apkUrl) {
+    private void installUpdateTask(String apkUrl) {
         Executors.newSingleThreadExecutor().execute(() -> {
             File apk = new File(getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
             try {
@@ -1260,7 +1181,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    void checkForUpdate() {
+    private void checkForUpdate() {
         Executors.newSingleThreadExecutor().execute(() -> {
             boolean isMaster = prefs.stableChannel().get();
             new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
@@ -1270,7 +1191,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    void loadPTagKeyManager() {
+    private void loadPTagKeyManager() {
         if (prefs.enablePowerTagSupport().get()) {
             Executors.newSingleThreadExecutor().execute(() -> {
                 try {
@@ -1283,7 +1204,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    void loadAmiiboManager() {
+    private void loadAmiiboManager() {
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {
@@ -1317,7 +1238,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return folders;
     }
 
-    void loadFolders(File rootFolder) {
+    private void loadFolders(File rootFolder) {
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<File> folders = listFolders(rootFolder);
             Collections.sort(folders, (file1, file2) ->
@@ -1338,7 +1259,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 && !directory.getPath().startsWith(rootFolder.getPath())));
     }
 
-    void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
+    private void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiibos(keyManager, rootFolder, recursiveFiles);
@@ -1667,7 +1588,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void launchEliteActivity(Intent resultData) {
         if (TagMo.getPrefs().enableEliteSupport().get()
                 && resultData.hasExtra(TagMo.EXTRA_SIGNATURE)) {
-            Intent eliteIntent = new Intent(this, BankListActivity_.class);
+            Intent eliteIntent = new Intent(this, BankListActivity.class);
             eliteIntent.putExtras(resultData.getExtras());
             startActivity(eliteIntent);
             finish(); // Relaunch activity to bring view to front
@@ -1708,11 +1629,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } else {
             new Toasty(this).Short(R.string.delete_misisng);
         }
-    }
-
-    @Click(R.id.amiiboContainer)
-    void onContainerClick() {
-        amiiboContainer.setVisibility(View.GONE);
     }
 
     private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<>() {
@@ -1756,67 +1672,66 @@ public class BrowserActivity extends AppCompatActivity implements
         toolbar.setOnMenuItemClickListener(item -> {
             Bundle args = new Bundle();
             Intent scan = new Intent(this, NfcActivity_.class);
-            switch (item.getItemId()) {
-                case R.id.mnu_scan:
-                    scan.setAction(TagMo.ACTION_SCAN_TAG);
-                    onUpdateTagResult.launch(scan);
-                    return true;
-                case R.id.mnu_write:
-                    args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
-                    scan.setAction(TagMo.ACTION_WRITE_TAG_FULL);
-                    onUpdateTagResult.launch(scan.putExtras(args));
-                    return true;
-                case R.id.mnu_update:
-                    args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
-                    scan.setAction(TagMo.ACTION_WRITE_TAG_DATA);
-                    scan.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
-                    onUpdateTagResult.launch(scan.putExtras(args));
-                    return true;
-                case R.id.mnu_save:
-                    View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                    final EditText input = view.findViewById(R.id.backup_entry);
-                    input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
-                    Dialog backupDialog = dialog.setView(view).show();
-                    view.findViewById(R.id.save_backup).setOnClickListener(v -> {
-                        try {
-                            String fileName = TagUtils.writeBytesToFile(
-                                    Storage.getDownloadDir("TagMo", "Backups"),
-                                    input.getText().toString(), tagData);
-                            new Toasty(this).Long(getString(R.string.wrote_file, fileName));
-                        } catch (IOException e) {
-                            new Toasty(this).Short(e.getMessage());
-                        }
-                        backupDialog.dismiss();
-                    });
-                    view.findViewById(R.id.cancel_backup).setOnClickListener(v ->
-                            backupDialog.dismiss());
-                    return true;
-                case R.id.mnu_edit:
-                    args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
-                    Intent tagEdit = new Intent(this, TagDataActivity_.class);
-                    onUpdateTagResult.launch(tagEdit.putExtras(args));
-                    return true;
-                case R.id.mnu_view_hex:
-                    Intent hexView = new Intent(this, HexViewerActivity_.class);
-                    hexView.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
-                    startActivity(hexView);
-                    return true;
-                case R.id.mnu_validate:
+            if (item.getItemId() == R.id.mnu_scan) {
+                scan.setAction(TagMo.ACTION_SCAN_TAG);
+                onUpdateTagResult.launch(scan);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_write) {
+                args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
+                scan.setAction(TagMo.ACTION_WRITE_TAG_FULL);
+                onUpdateTagResult.launch(scan.putExtras(args));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_update) {
+                args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
+                scan.setAction(TagMo.ACTION_WRITE_TAG_DATA);
+                scan.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
+                onUpdateTagResult.launch(scan.putExtras(args));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_save) {
+                View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                final EditText input = view.findViewById(R.id.backup_entry);
+                input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
+                Dialog backupDialog = dialog.setView(view).show();
+                view.findViewById(R.id.save_backup).setOnClickListener(v -> {
                     try {
-                        TagUtils.validateData(tagData);
-                        new Toasty(this).Dialog(R.string.validation_success);
-                    } catch (Exception e) {
-                        new Toasty(this).Dialog(e.getMessage());
+                        String fileName = TagUtils.writeBytesToFile(
+                                Storage.getDownloadDir("TagMo", "Backups"),
+                                input.getText().toString(), tagData);
+                        new Toasty(this).Long(getString(R.string.wrote_file, fileName));
+                    } catch (IOException e) {
+                        new Toasty(this).Short(e.getMessage());
                     }
-                    return true;
-                case R.id.mnu_delete:
-                    deleteAmiiboFile(amiiboFile);
-                    return true;
-                case R.id.mnu_ignore_tag_id:
-                    ignoreTagTd = !item.isChecked();
-                    item.setChecked(ignoreTagTd);
-                    return true;
+                    backupDialog.dismiss();
+                });
+                view.findViewById(R.id.cancel_backup).setOnClickListener(v ->
+                        backupDialog.dismiss());
+                return true;
+            } else if (item.getItemId() == R.id.mnu_edit) {
+                args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
+                Intent tagEdit = new Intent(this, TagDataActivity.class);
+                onUpdateTagResult.launch(tagEdit.putExtras(args));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_view_hex) {
+                Intent hexView = new Intent(this, HexViewerActivity.class);
+                hexView.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                startActivity(hexView);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_validate) {
+                try {
+                    TagUtils.validateData(tagData);
+                    new Toasty(this).Dialog(R.string.validation_success);
+                } catch (Exception e) {
+                    new Toasty(this).Dialog(e.getMessage());
+                }
+                return true;
+            } else if (item.getItemId() == R.id.mnu_delete) {
+                deleteAmiiboFile(amiiboFile);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_ignore_tag_id) {
+                ignoreTagTd = !item.isChecked();
+                item.setChecked(ignoreTagTd);
+                return true;
             }
             return false;
         });
@@ -2039,7 +1954,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    void locateKeyFiles() {
+    private void locateKeyFiles() {
         Executors.newSingleThreadExecutor().execute(() -> {
             File[] files = Storage.getDownloadDir(null)
                     .listFiles((dir, name) -> keyNameMatcher(name));
@@ -2184,7 +2099,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     prefs.eliteActiveBank().put(active_bank);
                     prefs.eliteBankCount().put(bank_count);
 
-                    Intent eliteIntent = new Intent(this, BankListActivity_.class);
+                    Intent eliteIntent = new Intent(this, BankListActivity.class);
                     Bundle args = new Bundle();
                     ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
                     eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);

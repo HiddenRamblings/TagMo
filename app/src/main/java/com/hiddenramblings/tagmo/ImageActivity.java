@@ -50,7 +50,6 @@ public class ImageActivity extends AppCompatActivity {
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private Amiibo amiibo;
     private AmiiboManager amiiboManager;
-
     private long amiiboId;
 
     @Override
@@ -105,9 +104,9 @@ public class ImageActivity extends AppCompatActivity {
                 return;
 
             this.amiiboManager = amiiboManager;
-            runOnUiThread(this::updateView);
+            runOnUiThread(() -> updateView(amiiboId));
         });
-        GlideApp.with(this).load(getImageUrl()).into(imageView);
+        GlideApp.with(this).load(getImageUrl(amiiboId)).into(imageView);
 
         findViewById(R.id.toggle).setOnClickListener(view -> {
             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -118,7 +117,7 @@ public class ImageActivity extends AppCompatActivity {
         });
     }
 
-    private void updateView() {
+    private void updateView(long amiiboId) {
         String tagInfo = null;
         String amiiboHexId = "";
         String amiiboName = "";
@@ -177,11 +176,11 @@ public class ImageActivity extends AppCompatActivity {
         }
     }
 
-    private String getImageUrl() {
+    private String getImageUrl(long amiiboId) {
         return Amiibo.getImageUrl(amiiboId);
     }
 
-    void onSaveClicked() {
+    void onSaveClicked(long amiiboId) {
         final View view = this.getLayoutInflater().inflate(R.layout.edit_text, null);
         final EditText editText = view.findViewById(R.id.editText);
         if (null != amiibo) {
@@ -193,7 +192,7 @@ public class ImageActivity extends AppCompatActivity {
         (new AlertDialog.Builder(this)).setTitle(R.string.save_image)
                 .setPositiveButton(R.string.save, (dialogInterface, i) ->
                         GlideApp.with(ImageActivity.this).asBitmap()
-                                .load(getImageUrl())
+                                .load(getImageUrl(amiiboId))
                                 .skipMemoryCache(true)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .into(new CustomTarget<Bitmap>() {
@@ -228,7 +227,7 @@ public class ImageActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.mnu_save) {
-            onSaveClicked();
+            onSaveClicked(amiiboId);
         } else {
             return super.onOptionsItemSelected(item);
         }

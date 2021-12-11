@@ -89,8 +89,6 @@ public class TagDataActivity extends AppCompatActivity {
     private SwitchCompat userDataSwitch;
     private AppCompatButton generateSerial;
 
-    private byte[] tagData;
-
     private CountryCodesAdapter countryCodeAdapter;
     private NoSelectionSpinnerAdapter appIdAdapter;
     private boolean ignoreAppNameSelected;
@@ -135,7 +133,7 @@ public class TagDataActivity extends AppCompatActivity {
         userDataSwitch = findViewById(R.id.userDataSwitch);
         generateSerial = findViewById(R.id.random_serial);
 
-        tagData = getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        byte[] tagData = getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
         keyManager = new KeyManager(this);
         if (keyManager.isKeyMissing()) {
@@ -192,6 +190,7 @@ public class TagDataActivity extends AppCompatActivity {
             datePickerDialog.show();
         });
 
+        final byte[] finalTagData = tagData;
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager = null;
             try {
@@ -205,9 +204,9 @@ public class TagDataActivity extends AppCompatActivity {
                 return;
 
             this.amiiboManager = amiiboManager;
-            runOnUiThread(this::updateAmiiboView);
+            runOnUiThread(() -> updateAmiiboView(finalTagData));
         });
-        updateAmiiboView();
+        updateAmiiboView(tagData);
 
         txtAppName.setOnItemSelectedListener(onAppNameSelected);
         txtAppId.addTextChangedListener(onAppIdChange);
@@ -261,7 +260,7 @@ public class TagDataActivity extends AppCompatActivity {
         }
     };
 
-    private void updateAmiiboView() {
+    private void updateAmiiboView(byte[] tagData) {
         String tagInfo = null;
         String amiiboHexId = "";
         String amiiboName = "";
@@ -271,7 +270,7 @@ public class TagDataActivity extends AppCompatActivity {
         // String character = "";
         final String amiiboImageUrl;
 
-        if (null == this.tagData) {
+        if (null == tagData) {
             tagInfo = getString(R.string.no_tag_loaded);
             amiiboImageUrl = null;
         } else {

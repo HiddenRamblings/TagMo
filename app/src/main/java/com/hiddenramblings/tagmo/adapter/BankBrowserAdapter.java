@@ -46,9 +46,8 @@ public class BankBrowserAdapter
     }
 
     @Override
-    public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings, BrowserSettings oldBrowserSettings) {
-
-    }
+    public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,
+                                         BrowserSettings oldBrowserSettings) { }
 
     @Override
     public int getItemCount() {

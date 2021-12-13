@@ -2,8 +2,10 @@ package com.hiddenramblings.tagmo.amiibo.data;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import androidx.annotation.Nullable;
@@ -20,14 +22,17 @@ import org.androidannotations.annotations.ViewById;
 import java.io.IOException;
 
 @SuppressLint("NonConstantResourceId")
-@EFragment(R.layout.app_data_ssb)
+@EFragment(R.layout.fragment_app_data)
 public class AppDataSSBFragment extends AppDataFragment {
 
     public static final int APP_ID = 0x10110E00;
 
+    @ViewById(R.id.appDataTP)
+    LinearLayout appDataTP;
+
     @ViewById(R.id.spnAppearance)
     Spinner spnAppearance;
-    @ViewById(R.id.txtLevel)
+    @ViewById(R.id.txtLevelSSB)
     EditText txtLevel;
 
     @ViewById(R.id.spnSpecial1)
@@ -86,6 +91,8 @@ public class AppDataSSBFragment extends AppDataFragment {
 
     @AfterViews
     void afterViews() {
+        appDataTP.setVisibility(View.GONE);
+
         setListForSpinners(new Spinner[]{spnAppearance},
                 R.array.ssb_appearance_values);
         setListForSpinners(new Spinner[]{spnSpecialNeutral, spnSpecialSide, spnSpecialUp, spnSpecialDown},
@@ -94,8 +101,6 @@ public class AppDataSSBFragment extends AppDataFragment {
                 R.array.ssb_bonus_effects);
 
         this.loadData();
-
-        onAppDataChecked(((TagDataActivity) requireContext()).isAppDataInitialized);
     }
 
     void loadData() {
@@ -144,7 +149,7 @@ public class AppDataSSBFragment extends AppDataFragment {
         txtLevel.setText(String.valueOf(level));
     }
 
-    @TextChange(R.id.txtLevel)
+    @TextChange(R.id.txtLevelSSB)
     void onLevelUpdate() {
         try {
             int level = Integer.parseInt(txtLevel.getText().toString());

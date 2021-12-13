@@ -15,12 +15,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -30,7 +32,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -40,9 +41,8 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.data.AmiiboData;
 import com.hiddenramblings.tagmo.amiibo.data.AppData;
-import com.hiddenramblings.tagmo.amiibo.data.AppDataFragment;
-import com.hiddenramblings.tagmo.amiibo.data.AppDataSSBFragment;
-import com.hiddenramblings.tagmo.amiibo.data.AppDataTPFragment;
+import com.hiddenramblings.tagmo.amiibo.data.AppDataSSB;
+import com.hiddenramblings.tagmo.amiibo.data.AppDataTP;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -89,6 +89,9 @@ public class TagDataActivity extends AppCompatActivity {
     private SwitchCompat userDataSwitch;
     private AppCompatButton generateSerial;
 
+    private LinearLayout appDataViewSSB;
+    private LinearLayout appDataViewTP;
+
     private CountryCodesAdapter countryCodeAdapter;
     private NoSelectionSpinnerAdapter appIdAdapter;
     private boolean ignoreAppNameSelected;
@@ -103,6 +106,34 @@ public class TagDataActivity extends AppCompatActivity {
     private Date initializedDate;
     private Date modifiedDate;
     private Integer appId;
+
+    public static final int APP_ID_SSB = 0x10110E00;
+
+    private Spinner spnAppearance;
+    private EditText txtLevelSSB;
+
+    private Spinner spnSpecialNeutral;
+    private Spinner spnSpecialSide;
+    private Spinner spnSpecialUp;
+    private Spinner spnSpecialDown;
+
+    private Spinner spnEffect1;
+    private Spinner spnEffect2;
+    private Spinner spnEffect3;
+
+    private EditText txtStatAttack;
+    private EditText txtStatDefense;
+    private EditText txtStatSpeed;
+
+    private AppDataSSB appDataSSB;
+
+    public static final int APP_ID_TP = 0x1019C800;
+
+    private EditText txtHearts1;
+    private Spinner txtHearts2;
+    private EditText txtLevelTP;
+
+    private AppDataTP appDataTP;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -132,6 +163,9 @@ public class TagDataActivity extends AppCompatActivity {
         appDataSwitch = findViewById(R.id.appDataSwitch);
         userDataSwitch = findViewById(R.id.userDataSwitch);
         generateSerial = findViewById(R.id.random_serial);
+
+        appDataViewSSB = findViewById(R.id.appDataSSB);
+        appDataViewTP = findViewById(R.id.appDataTP);
 
         byte[] tagData = getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
 
@@ -370,16 +404,6 @@ public class TagDataActivity extends AppCompatActivity {
         loadAppId();
     }
 
-    private AppDataFragment getAppDataFragment() {
-        AppDataFragment fragment = (AppDataFragment)
-                getSupportFragmentManager().findFragmentById(R.id.appData);
-        if (null != fragment && fragment.isDetached()) {
-            fragment = null;
-        }
-
-        return fragment;
-    }
-
     void onUserDataSwitchClicked(boolean isUserDataInitialized) {
         this.isUserDataInitialized = isUserDataInitialized;
         updateUserDataEnabled(isUserDataInitialized);
@@ -467,10 +491,17 @@ public class TagDataActivity extends AppCompatActivity {
                 return;
             }
 
-            AppDataFragment fragment = getAppDataFragment();
-            if (isAppDataInitialized && null != fragment) {
+            if (appDataSwitch.isChecked() && null != appDataTP) {
                 try {
-                    newAmiiboData.setAppData(fragment.onAppDataSaved());
+                    newAmiiboData.setAppData(onAppDataTPSaved());
+                } catch (Exception e) {
+                    return;
+                }
+            }
+
+            if (appDataSwitch.isChecked() && null != appDataSSB) {
+                try {
+                    newAmiiboData.setAppData(onAppDataSSBSaved());
                 } catch (Exception e) {
                     return;
                 }
@@ -509,10 +540,11 @@ public class TagDataActivity extends AppCompatActivity {
     }
 
     private void updateAppDataEnabled(boolean isAppDataInitialized) {
-        AppDataFragment fragment = getAppDataFragment();
-        if (null != fragment) {
-            fragment.onAppDataChecked(isUserDataInitialized && isAppDataInitialized);
-        }
+        if (null != appDataTP)
+            onAppDataTPChecked(isUserDataInitialized && isAppDataInitialized);
+
+        if (null != appDataSSB)
+            onAppDataSSBChecked(isUserDataInitialized && isAppDataInitialized);
     }
 
     private void loadUID() {
@@ -745,34 +777,19 @@ public class TagDataActivity extends AppCompatActivity {
     };
 
     private void updateAppDataView() {
-        FragmentManager fm = getSupportFragmentManager();
+        appDataViewSSB.setVisibility(View.GONE);
+        appDataSSB = null;
+        appDataViewTP.setVisibility(View.GONE);
+        appDataTP = null;
 
-        AppDataFragment fragment;
         if (null != appId) {
-            String tag = "app_data:" + appId;
-            fragment = (AppDataFragment) fm.findFragmentByTag(tag);
-            if (null == fragment) {
-                boolean initialAppDataInitialized = this.initialAppDataInitialized && amiiboData.getAppId() == appId;
-                if (appId == AppDataTPFragment.APP_ID) {
-                    fragment = AppDataTPFragment.newInstance(amiiboData.getAppData(), initialAppDataInitialized);
-                } else if (appId == AppDataSSBFragment.APP_ID) {
-                    fragment = AppDataSSBFragment.newInstance(amiiboData.getAppData(), initialAppDataInitialized);
-                }
+            if (appId == APP_ID_TP) {
+                appDataViewTP.setVisibility(View.VISIBLE);
+                enableAppDataTP(amiiboData.getAppData());
+            } else if (appId == APP_ID_SSB) {
+                appDataViewSSB.setVisibility(View.VISIBLE);
+                enableAppDataSSB(amiiboData.getAppData());
             }
-            if (null != fragment) {
-                fm.beginTransaction()
-                        .replace(R.id.appData, fragment, tag)
-                        .attach(fragment)
-                        .commit();
-                return;
-            }
-        }
-
-        fragment = (AppDataFragment) fm.findFragmentById(R.id.appData);
-        if (null != fragment) {
-            fm.beginTransaction()
-                    .detach(fragment)
-                    .commit();
         }
     }
 
@@ -922,7 +939,503 @@ public class TagDataActivity extends AppCompatActivity {
         }
     }
 
-    void showErrorDialog(int msgRes) {
+    void setListForSpinners(Spinner[] controls, int list) {
+        for (Spinner control : controls) {
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                    this, list, R.layout.spinner_text);
+            adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+            control.setAdapter(adapter);
+        }
+    }
+
+    private void enableAppDataSSB(byte[] appData) {
+        try {
+            appDataSSB = new AppDataSSB(appData);
+        } catch (Exception e) {
+            appDataViewSSB.setVisibility(View.GONE);
+            return;
+        }
+
+        spnAppearance = findViewById(R.id.spnAppearance);
+        txtLevelSSB = findViewById(R.id.txtLevelSSB);
+
+        spnSpecialNeutral = findViewById(R.id.spnSpecial1);
+        spnSpecialSide = findViewById(R.id.spnSpecial2);
+        spnSpecialUp = findViewById(R.id.spnSpecial3);
+        spnSpecialDown = findViewById(R.id.spnSpecial4);
+
+        spnEffect1 = findViewById(R.id.spnEffect1);
+        spnEffect2 = findViewById(R.id.spnEffect2);
+        spnEffect3 = findViewById(R.id.spnEffect3);
+
+        txtStatAttack = findViewById(R.id.txtStatAttack);
+        txtStatDefense = findViewById(R.id.txtStatDefense);
+        txtStatSpeed = findViewById(R.id.txtStatSpeed);
+
+        setListForSpinners(new Spinner[]{ spnAppearance }, R.array.ssb_appearance_values);
+        setListForSpinners(new Spinner[]{ spnSpecialNeutral, spnSpecialSide,
+                spnSpecialUp, spnSpecialDown }, R.array.ssb_specials_values);
+        setListForSpinners(new Spinner[]{ spnEffect1, spnEffect2, spnEffect3 },
+                R.array.ssb_bonus_effects);
+
+        int appearance, level, statAttack, statDefense, statSpeed,
+                specialNeutral, specialSide, specialUp, specialDown,
+                bonusEffect1, bonusEffect2, bonusEffect3;
+        if (initialAppDataInitialized) {
+            try {
+                appearance = appDataSSB.getAppearence();
+            } catch (Exception e) {
+                appearance = 0;
+            }
+            try {
+                level = appDataSSB.getLevel();
+            } catch (Exception e) {
+                level = 50;
+            }
+            try {
+                statAttack = appDataSSB.getStatAttack();
+            } catch (Exception e) {
+                statAttack = 200;
+            }
+            try {
+                statDefense = appDataSSB.getStatDefense();
+            } catch (Exception e) {
+                statDefense = 200;
+            }
+            try {
+                statSpeed = appDataSSB.getStatSpeed();
+            } catch (Exception e) {
+                statSpeed = 200;
+            }
+            try {
+                specialNeutral = appDataSSB.getSpecialNeutral();
+            } catch (Exception e) {
+                specialNeutral = 0;
+            }
+            try {
+                specialSide = appDataSSB.getSpecialSide();
+            } catch (Exception e) {
+                specialSide = 0;
+            }
+            try {
+                specialUp = appDataSSB.getSpecialUp();
+            } catch (Exception e) {
+                specialUp = 0;
+            }
+            try {
+                specialDown = appDataSSB.getSpecialDown();
+            } catch (Exception e) {
+                specialDown = 0;
+            }
+            try {
+                bonusEffect1 = appDataSSB.getBonusEffect1();
+            } catch (Exception e) {
+                bonusEffect1 = 0xFF;
+            }
+            try {
+                bonusEffect2 = appDataSSB.getBonusEffect2();
+            } catch (Exception e) {
+                bonusEffect2 = 0xFF;
+            }
+            try {
+                bonusEffect3 = appDataSSB.getBonusEffect3();
+            } catch (Exception e) {
+                bonusEffect3 = 0xFF;
+            }
+        } else {
+            appearance = 0;
+            level = 50;
+            statAttack = 200;
+            statDefense = 200;
+            statSpeed = 200;
+            specialNeutral = 0;
+            specialSide = 0;
+            specialUp = 0;
+            specialDown = 0;
+            bonusEffect1 = 0xFF;
+            bonusEffect2 = 0xFF;
+            bonusEffect3 = 0xFF;
+        }
+        spnAppearance.setSelection(appearance);
+        txtLevelSSB.setText(String.valueOf(level));
+        txtStatAttack.setText(String.valueOf(statAttack));
+        txtStatDefense.setText(String.valueOf(statDefense));
+        txtStatSpeed.setText(String.valueOf(statSpeed));
+        spnSpecialNeutral.setSelection(specialNeutral);
+        spnSpecialSide.setSelection(specialSide);
+        spnSpecialUp.setSelection(specialUp);
+        spnSpecialDown.setSelection(specialDown);
+        setEffectValue(spnEffect1, bonusEffect1);
+        setEffectValue(spnEffect2, bonusEffect2);
+        setEffectValue(spnEffect3, bonusEffect3);
+
+        txtLevelSSB.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    int level = Integer.parseInt(txtLevelSSB.getText().toString());
+                    if (level < 1 || level > 50) {
+                        txtLevelSSB.setError(
+                                getString(R.string.error_min_max, 1, 50));
+                    } else {
+                        txtLevelSSB.setError(null);
+                    }
+                } catch (NumberFormatException e) {
+                    txtLevelSSB.setError(
+                            getString(R.string.error_min_max, 1, 50));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
+
+        txtStatAttack.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    int level = Integer.parseInt(txtStatAttack.getText().toString());
+                    try {
+                        appDataSSB.checkStat(level);
+                        txtStatAttack.setError(null);
+                    } catch (Exception e) {
+                        txtStatAttack.setError(
+                                getString(R.string.error_min_max, -200, 200));
+                    }
+                } catch (NumberFormatException e) {
+                    txtStatAttack.setError(
+                            getString(R.string.error_min_max, -200, 200));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
+
+        txtStatDefense.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    int level = Integer.parseInt(txtStatDefense.getText().toString());
+                    try {
+                        appDataSSB.checkStat(level);
+                        txtStatDefense.setError(null);
+                    } catch (Exception e) {
+                        txtStatDefense.setError(
+                                getString(R.string.error_min_max, -200, 200));
+                    }
+                } catch (NumberFormatException e) {
+                    txtStatDefense.setError(
+                            getString(R.string.error_min_max, -200, 200));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
+
+        txtStatSpeed.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    int level = Integer.parseInt(txtStatSpeed.getText().toString());
+                    try {
+                        appDataSSB.checkStat(level);
+                        txtStatSpeed.setError(null);
+                    } catch (Exception e) {
+                        txtStatSpeed.setError(
+                                getString(R.string.error_min_max, -200, 200));
+                    }
+                } catch (NumberFormatException e) {
+                    txtStatSpeed.setError(
+                            getString(R.string.error_min_max, -200, 200));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
+
+        onAppDataSSBChecked(isAppDataInitialized);
+    }
+
+    void setEffectValue(Spinner spinner, int value) {
+        if (value == 0xFF)
+            value = 0;
+        else
+            value++;
+
+        if (value > spinner.getAdapter().getCount())
+            value = 0;
+
+        spinner.setSelection(value);
+    }
+
+    int getEffectValue(Spinner spinner) {
+        int value = spinner.getSelectedItemPosition();
+        if (value == 0)
+            value = 0xFF;
+        else
+            value--;
+
+        return value;
+    }
+
+    public void onAppDataSSBChecked(boolean enabled) {
+        if (null == spnAppearance)
+            return;
+
+        spnAppearance.setEnabled(enabled);
+        txtLevelSSB.setEnabled(enabled);
+        spnSpecialNeutral.setEnabled(enabled);
+        spnSpecialSide.setEnabled(enabled);
+        spnSpecialUp.setEnabled(enabled);
+        spnSpecialDown.setEnabled(enabled);
+        txtStatAttack.setEnabled(enabled);
+        txtStatDefense.setEnabled(enabled);
+        txtStatSpeed.setEnabled(enabled);
+        spnEffect1.setEnabled(enabled);
+        spnEffect2.setEnabled(enabled);
+        spnEffect3.setEnabled(enabled);
+    }
+
+    public byte[] onAppDataSSBSaved() {
+        try {
+            int appearance = spnAppearance.getSelectedItemPosition();
+            appDataSSB.setAppearence(appearance);
+        } catch (NumberFormatException e) {
+            spnAppearance.requestFocus();
+            throw e;
+        }
+        try {
+            int level = Integer.parseInt(txtLevelSSB.getText().toString());
+            Integer oldLevel;
+            try {
+                oldLevel = appDataSSB.getLevel();
+            } catch (Exception e) {
+                oldLevel = null;
+            }
+
+            //level is a granular value as such we don't want to overwrite it in case its halfway through a level
+            if (null == oldLevel  || level != oldLevel) {
+                appDataSSB.setLevel(level);
+            }
+        } catch (NumberFormatException e) {
+            txtLevelSSB.requestFocus();
+            throw e;
+        }
+
+        try {
+            int specialNeutral = spnSpecialNeutral.getSelectedItemPosition();
+            appDataSSB.setSpecialNeutral(specialNeutral);
+        } catch (NumberFormatException e) {
+            spnSpecialNeutral.requestFocus();
+            throw e;
+        }
+        try {
+            int specialSide = spnSpecialSide.getSelectedItemPosition();
+            appDataSSB.setSpecialSide(specialSide);
+        } catch (NumberFormatException e) {
+            spnSpecialSide.requestFocus();
+            throw e;
+        }
+        try {
+            int specialUp = spnSpecialUp.getSelectedItemPosition();
+            appDataSSB.setSpecialUp(specialUp);
+        } catch (NumberFormatException e) {
+            spnSpecialUp.requestFocus();
+            throw e;
+        }
+        try {
+            int specialDown = spnSpecialDown.getSelectedItemPosition();
+            appDataSSB.setSpecialDown(specialDown);
+        } catch (NumberFormatException e) {
+            spnSpecialDown.requestFocus();
+            throw e;
+        }
+
+        try {
+            int statAttack = Integer.parseInt(txtStatAttack.getText().toString());
+            appDataSSB.setStatAttack(statAttack);
+        } catch (NumberFormatException e) {
+            txtStatAttack.requestFocus();
+            throw e;
+        }
+        try {
+            int statDefense = Integer.parseInt(txtStatDefense.getText().toString());
+            appDataSSB.setStatDefense(statDefense);
+        } catch (NumberFormatException e) {
+            txtStatDefense.requestFocus();
+            throw e;
+        }
+        try {
+            int statSpeed = Integer.parseInt(txtStatSpeed.getText().toString());
+            appDataSSB.setStatSpeed(statSpeed);
+        } catch (NumberFormatException e) {
+            txtStatSpeed.requestFocus();
+            throw e;
+        }
+
+        try {
+            int bonusEffect1 = getEffectValue(spnEffect1);
+            appDataSSB.setBonusEffect1(bonusEffect1);
+        } catch (NumberFormatException e) {
+            spnEffect1.requestFocus();
+            throw e;
+        }
+        try {
+            int bonusEffect2 = getEffectValue(spnEffect2);
+            appDataSSB.setBonusEffect2(bonusEffect2);
+        } catch (NumberFormatException e) {
+            spnEffect2.requestFocus();
+            throw e;
+        }
+        try {
+            int bonusEffect3 = getEffectValue(spnEffect3);
+            appDataSSB.setBonusEffect3(bonusEffect3);
+        } catch (NumberFormatException e) {
+            spnEffect3.requestFocus();
+            throw e;
+        }
+
+        return appDataSSB.array();
+    }
+
+    private void enableAppDataTP(byte[] appData) {
+        try {
+            appDataTP = new AppDataTP(appData);
+        } catch (Exception e) {
+            appDataViewTP.setVisibility(View.GONE);
+            return;
+        }
+
+        txtHearts1 = findViewById(R.id.txtHearts1);
+        txtHearts2 = findViewById(R.id.txtHearts2);
+        txtLevelTP = findViewById(R.id.txtLevelTP);
+
+        setListForSpinners(new Spinner[]{ txtHearts2 }, R.array.editor_tp_hearts);
+
+        int level, hearts;
+        if (initialAppDataInitialized) {
+            try {
+                level = appDataTP.getLevel();
+            } catch (Exception e) {
+                level = 40;
+            }
+            try {
+                hearts = appDataTP.getHearts();
+            } catch (Exception e) {
+                hearts = AppDataTP.HEARTS_MAX_VALUE;
+            }
+        } else {
+            level = 40;
+            hearts = AppDataTP.HEARTS_MAX_VALUE;
+        }
+        txtLevelTP.setText(String.valueOf(level));
+        txtHearts1.setText(String.valueOf((hearts / 4)));
+        txtHearts2.setSelection(hearts % 4);
+        txtHearts2.setEnabled((hearts / 4) < 20);
+
+        txtLevelTP.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    int level = Integer.parseInt(txtLevelTP.getText().toString());
+                    try {
+                        appDataTP.checkLevel(level);
+                        txtLevelTP.setError(null);
+                    } catch (Exception e) {
+                        txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
+                    }
+                } catch (NumberFormatException e) {
+                    txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
+
+        txtHearts1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                onHeartsUpdate();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
+
+        onAppDataTPChecked(isAppDataInitialized);
+    }
+
+    void onHeartsUpdate() {
+        try {
+            int hearts = Integer.parseInt(txtHearts1.getText().toString());
+            txtHearts2.setEnabled(hearts < 20);
+            if (!txtHearts2.isEnabled()) {
+                txtHearts2.setSelection(0);
+            }
+            try {
+                appDataTP.checkHearts(hearts * 4);
+                txtHearts1.setError(null);
+            } catch (Exception e) {
+                txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
+            }
+        } catch (NumberFormatException e) {
+            txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
+            txtHearts2.setEnabled(txtHearts1.isEnabled());
+        }
+    }
+
+    public void onAppDataTPChecked(boolean enabled) {
+        if (null == txtHearts2 )
+            return;
+
+        txtHearts1.setEnabled(enabled);
+        onHeartsUpdate();
+        txtLevelTP.setEnabled(enabled);
+    }
+
+    public byte[] onAppDataTPSaved() {
+        try {
+            int level = Integer.parseInt(txtLevelTP.getText().toString());
+            appDataTP.setLevel(level);
+        } catch (NumberFormatException e) {
+            txtLevelTP.requestFocus();
+            throw e;
+        }
+        try {
+            int hearts1 = Integer.parseInt(txtHearts1.getText().toString());
+            int hearts2 = txtHearts2.getSelectedItemPosition();
+            appDataTP.setHearts((hearts1 * 4) + hearts2);
+        } catch (NumberFormatException e) {
+            txtHearts1.requestFocus();
+            throw e;
+        }
+
+        return appDataTP.array();
+    }
+
+    private void showErrorDialog(int msgRes) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.error_caps)
                 .setMessage(msgRes)

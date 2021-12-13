@@ -387,10 +387,11 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
-        <FrameLayout
+        <include
+            layout="@layout/app_data_layout"
             android:id="@+id/appData"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="2dp"/>
+            android:padding="2dp" />
     </LinearLayout>
 </ScrollView>

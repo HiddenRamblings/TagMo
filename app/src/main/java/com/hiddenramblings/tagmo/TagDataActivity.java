@@ -371,7 +371,8 @@ public class TagDataActivity extends AppCompatActivity {
     }
 
     private AppDataFragment getAppDataFragment() {
-        AppDataFragment fragment = (AppDataFragment) getSupportFragmentManager().findFragmentById(R.id.appData);
+        AppDataFragment fragment = (AppDataFragment)
+                getSupportFragmentManager().findFragmentById(R.id.appData);
         if (null != fragment && fragment.isDetached()) {
             fragment = null;
         }

@@ -20,7 +20,7 @@ import org.androidannotations.annotations.ViewById;
 import java.io.IOException;
 
 @SuppressLint("NonConstantResourceId")
-@EFragment(R.layout.fragment_app_data_ssb)
+@EFragment(R.layout.app_data_ssb)
 public class AppDataSSBFragment extends AppDataFragment {
 
     public static final int APP_ID = 0x10110E00;

@@ -1,17 +1,16 @@
 package com.hiddenramblings.tagmo.amiibo.data;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagDataActivity;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -22,15 +21,18 @@ import org.androidannotations.annotations.ViewById;
 import java.io.IOException;
 
 @SuppressLint("NonConstantResourceId")
-@EFragment(R.layout.app_data_tp)
+@EFragment(R.layout.fragment_app_data)
 public class AppDataTPFragment extends AppDataFragment {
     public static final int APP_ID = 0x1019C800;
+
+    @ViewById(R.id.appDataSSB)
+    LinearLayout appDataSSB;
 
     @ViewById(R.id.txtHearts1)
     EditText txtHearts1;
     @ViewById(R.id.txtHearts2)
     Spinner txtHearts2;
-    @ViewById(R.id.txtLevel)
+    @ViewById(R.id.txtLevelTP)
     EditText txtLevel;
 
     AppDataTP appData;
@@ -67,19 +69,12 @@ public class AppDataTPFragment extends AppDataFragment {
 
     @AfterViews
     void afterViews() {
+        appDataSSB.setVisibility(View.GONE);
+
         setListForSpinners(txtHearts2);
 
         loadLevel();
         loadHearts();
-
-        onAppDataChecked(((TagDataActivity) requireContext()).isAppDataInitialized);
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        onAppDataChecked(((TagDataActivity) context).isAppDataInitialized);
     }
 
     void loadLevel() {
@@ -96,7 +91,7 @@ public class AppDataTPFragment extends AppDataFragment {
         txtLevel.setText(String.valueOf(level));
     }
 
-    @TextChange(R.id.txtLevel)
+    @TextChange(R.id.txtLevelTP)
     void onLevelUpdate() {
         try {
             int level = Integer.parseInt(txtLevel.getText().toString());

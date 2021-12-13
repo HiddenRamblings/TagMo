@@ -22,7 +22,7 @@ import org.androidannotations.annotations.ViewById;
 import java.io.IOException;
 
 @SuppressLint("NonConstantResourceId")
-@EFragment(R.layout.fragment_app_data_tp)
+@EFragment(R.layout.app_data_tp)
 public class AppDataTPFragment extends AppDataFragment {
     public static final int APP_ID = 0x1019C800;
 

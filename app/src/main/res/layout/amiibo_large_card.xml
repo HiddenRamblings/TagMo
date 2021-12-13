@@ -59,6 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/imageDivider"
+                android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
                 android:text="@string/amiibo_name_caps"
                 android:textColor="@color/tag_text_light"

@@ -31,7 +31,7 @@
         android:theme="@style/AppTheme"
         android:largeHeap="true" >
         <activity
-            android:name=".BrowserActivity_"
+            android:name=".BrowserActivity"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
             android:exported="true">
@@ -45,7 +45,7 @@
         </activity>
         <activity-alias
             android:name=".NFCIntentFilter"
-            android:targetActivity=".BrowserActivity_"
+            android:targetActivity=".BrowserActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
@@ -81,7 +81,7 @@
             android:theme="@style/DialogTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".NfcActivity_"
+            android:name=".NfcActivity"
             android:permission="android.permission.BIND_NFC_SERVICE"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop">

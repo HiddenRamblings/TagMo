@@ -36,14 +36,9 @@ import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.widget.BankPicker;
 
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.UiThread;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
-@EActivity()
 public class NfcActivity extends AppCompatActivity {
 
     private final Preferences_ prefs = TagMo.getPrefs();
@@ -237,13 +232,11 @@ public class NfcActivity extends AppCompatActivity {
         }
     }
 
-    @UiThread
-    void showMessage(String msg) {
+    private void showMessage(String msg) {
         txtMessage.setText(msg);
     }
 
-    @UiThread
-    void showError(String msg) {
+    private void showError(String msg) {
         txtError.setText(msg);
         txtError.setVisibility(View.VISIBLE);
         txtMessage.setVisibility(View.GONE);
@@ -252,8 +245,7 @@ public class NfcActivity extends AppCompatActivity {
         imgNfcBar.clearAnimation();
     }
 
-    @UiThread
-    void clearError() {
+    private void clearError() {
         txtError.setVisibility(View.GONE);
         txtMessage.setVisibility(View.VISIBLE);
         imgNfcCircle.setVisibility(View.VISIBLE);
@@ -261,8 +253,7 @@ public class NfcActivity extends AppCompatActivity {
         imgNfcBar.setAnimation(nfcAnimation);
     }
 
-    @Background
-    void onTagDiscovered(Intent intent) {
+    private void onTagDiscovered(Intent intent) {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
         setResult(Activity.RESULT_CANCELED);
@@ -547,7 +538,7 @@ public class NfcActivity extends AppCompatActivity {
                                 } catch (IOException ignored) { }
                                 dialog.dismiss();
                                 finish();
-                                Intent unlock = new Intent(this, NfcActivity_.class);
+                                Intent unlock = new Intent(this, NfcActivity.class);
                                 unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
                                 startActivity(unlock);
                             })

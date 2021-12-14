@@ -9,7 +9,7 @@ public class GithubReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction()))
-            context.startActivity(new Intent(context, BrowserActivity_.class)
+            context.startActivity(new Intent(context, BrowserActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 }

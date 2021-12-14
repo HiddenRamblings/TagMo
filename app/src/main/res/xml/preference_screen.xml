@@ -21,6 +21,12 @@
             android:summary="@string/tag_validation_details"
             android:title="@string/enable_tag_validation"
             app:iconSpaceReserved="false" />
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/settings_enable_automatic_scan"
+            android:summary="@string/automatic_scan_details"
+            android:title="@string/enable_automatic_scan"
+            app:iconSpaceReserved="false" />
         <androidx.preference.ListPreference
             android:entries="@array/imageNetworkSettings"
             android:entryValues="@array/imageNetworkSettingValues"
@@ -129,6 +135,9 @@
         <androidx.preference.Preference
             android:key="@string/settings_sponsor_dev"
             android:title="@string/pref_donate_link"
-            app:icon="@drawable/paypal_donation" />
+            app:icon="@drawable/paypal_donation">
+        <intent android:action="android.intent.action.VIEW"
+            android:data="https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"/>
+        </androidx.preference.Preference>
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

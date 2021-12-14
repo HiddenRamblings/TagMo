@@ -262,7 +262,7 @@ public class BankListActivity extends AppCompatActivity implements
         });
 
         findViewById(R.id.erase_open_banks).setOnClickListener(view -> {
-            Intent collection = new Intent(this, NfcActivity_.class);
+            Intent collection = new Intent(this, NfcActivity.class);
             collection.setAction(TagMo.ACTION_WRITE_ALL_TAGS);
             collection.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
             onOpenBanksActivity.launch(collection);
@@ -274,7 +274,7 @@ public class BankListActivity extends AppCompatActivity implements
                 onBottomSheetChanged(true, false);
                 return;
             }
-            Intent configure = new Intent(this, NfcActivity_.class);
+            Intent configure = new Intent(this, NfcActivity.class);
             configure.setAction(TagMo.ACTION_SET_BANK_COUNT);
             configure.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
             onOpenBanksActivity.launch(configure);
@@ -443,7 +443,7 @@ public class BankListActivity extends AppCompatActivity implements
             case NOTHING:
                 break;
             case WRITE_DATA:
-                Intent modify = new Intent(this, NfcActivity_.class);
+                Intent modify = new Intent(this, NfcActivity.class);
                 modify.setAction(TagMo.ACTION_WRITE_TAG_FULL);
                 modify.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
                 onUpdateTagResult.launch(modify.putExtras(args));
@@ -476,14 +476,14 @@ public class BankListActivity extends AppCompatActivity implements
     });
 
     private void scanAmiiboBank(int current_bank) {
-        Intent scan = new Intent(this, NfcActivity_.class);
+        Intent scan = new Intent(this, NfcActivity.class);
         scan.setAction(TagMo.ACTION_SCAN_TAG);
         scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
         onScanTagResult.launch(scan);
     }
 
     private void scanAmiiboTag(int position) {
-        Intent amiiboIntent = new Intent(this, NfcActivity_.class);
+        Intent amiiboIntent = new Intent(this, NfcActivity.class);
         amiiboIntent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
         amiiboIntent.setAction(TagMo.ACTION_SCAN_TAG);
         onUpdateTagResult.launch(amiiboIntent);
@@ -499,7 +499,7 @@ public class BankListActivity extends AppCompatActivity implements
             Debug.Log(e);
         }
 
-        Intent intent = new Intent(this, NfcActivity_.class);
+        Intent intent = new Intent(this, NfcActivity.class);
         intent.setAction(TagMo.ACTION_WRITE_TAG_FULL);
         intent.putExtra(TagMo.EXTRA_CURRENT_BANK, position);
         intent.putExtras(args);
@@ -570,7 +570,7 @@ public class BankListActivity extends AppCompatActivity implements
     private void updateAmiiboView(byte[] tagData, long amiiboId, int current_bank) {
         toolbar.setOnMenuItemClickListener(item -> {
             Toasty notice = new Toasty(this);
-            Intent scan = new Intent(this, NfcActivity_.class);
+            Intent scan = new Intent(this, NfcActivity.class);
             scan.putExtra(TagMo.EXTRA_CURRENT_BANK, current_bank);
             if (item.getItemId() == R.id.mnu_activate) {
                 scan.setAction(TagMo.ACTION_ACTIVATE_BANK);
@@ -756,7 +756,7 @@ public class BankListActivity extends AppCompatActivity implements
             new AlertDialog.Builder(this)
                     .setMessage(R.string.write_confirm)
                     .setPositiveButton(R.string.proceed, (dialog, which) -> {
-                        Intent collection = new Intent(this, NfcActivity_.class);
+                        Intent collection = new Intent(this, NfcActivity.class);
                         collection.setAction(TagMo.ACTION_WRITE_ALL_TAGS);
                         collection.putExtra(TagMo.EXTRA_BANK_COUNT, eliteBankCount.getValue());
                         collection.putExtra(TagMo.EXTRA_AMIIBO_FILES, amiiboList);

@@ -98,15 +98,11 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
-import com.hiddenramblings.tagmo.settings.SettingsFragment_;
+import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
 
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.InstanceState;
-import org.androidannotations.annotations.UiThread;
 import org.apmem.tools.layouts.FlowLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -135,7 +131,6 @@ import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.BlurViewFacade;
 import eightbitlab.com.blurview.RenderScriptBlur;
 
-@EActivity()
 public class BrowserActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
         SwipeRefreshLayout.OnRefreshListener,
@@ -189,9 +184,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private TextView txtAmiiboSeries;
     private ImageView imageAmiibo;
 
-    @InstanceState
-    boolean ignoreTagTd;
-
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private SettingsFragment settingsFragment;
     private KeyManager keyManager;
@@ -199,8 +191,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private int filteredCount;
     private AmiiboFile clickedAmiibo = null;
 
-    @InstanceState
-    BrowserSettings settings;
+    private boolean ignoreTagTd;
+    private BrowserSettings settings;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -272,7 +264,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         if (null != intent) {
             if (getComponentName().equals(TagMo.NFCIntentFilter)) {
-                Intent browser = new Intent(this, BrowserActivity_.class);
+                Intent browser = new Intent(this, BrowserActivity.class);
                 browser.setAction(intent.getAction());
                 browser.putExtras(intent.getExtras());
                 browser.setData(intent.getData());
@@ -383,16 +375,16 @@ public class BrowserActivity extends AppCompatActivity implements
             popup.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_scan) {
                     onNFCActivity.launch(new Intent(this,
-                            NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
+                            NfcActivity.class).setAction(TagMo.ACTION_SCAN_TAG));
                     return true;
                 } else if (item.getItemId() == R.id.mnu_backup) {
-                    Intent backup = new Intent(this, NfcActivity_.class);
+                    Intent backup = new Intent(this, NfcActivity.class);
                     backup.setAction(TagMo.ACTION_BACKUP_AMIIBO);
                     onBackupActivity.launch(backup);
                     return true;
                 } else if (item.getItemId() == R.id.mnu_validate) {
                     onValidateActivity.launch(new Intent(this,
-                            NfcActivity_.class).setAction(TagMo.ACTION_SCAN_TAG));
+                            NfcActivity.class).setAction(TagMo.ACTION_SCAN_TAG));
                     return true;
                 }
                 return false;
@@ -820,7 +812,7 @@ public class BrowserActivity extends AppCompatActivity implements
         menuSettings.setIcon(R.drawable.ic_folder_white_24dp);
         preferences.setVisibility(View.VISIBLE);
         if (null == settingsFragment || settingsFragment.isDetached())
-            settingsFragment = new SettingsFragment_();
+            settingsFragment = new SettingsFragment();
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.preferences, settingsFragment)
@@ -1407,8 +1399,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 folderChanged ? 3000 : 1500);
     }
 
-    @UiThread
-    void onAmiiboFilesChanged() {
+    private void onAmiiboFilesChanged() {
         if (fakeSnackbar.getVisibility() == View.VISIBLE) {
             AutoTransition autoTransition = new AutoTransition();
             autoTransition.setDuration(250);
@@ -1671,7 +1662,7 @@ public class BrowserActivity extends AppCompatActivity implements
             toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.setOnMenuItemClickListener(item -> {
             Bundle args = new Bundle();
-            Intent scan = new Intent(this, NfcActivity_.class);
+            Intent scan = new Intent(this, NfcActivity.class);
             if (item.getItemId() == R.id.mnu_scan) {
                 scan.setAction(TagMo.ACTION_SCAN_TAG);
                 onUpdateTagResult.launch(scan);
@@ -1910,21 +1901,19 @@ public class BrowserActivity extends AppCompatActivity implements
         setAmiiboStatsText();
     }
 
-    @UiThread
-    void showFakeSnackbar(String msg) {
+    private void showFakeSnackbar(String msg) {
         mainLayout.setPadding(0, fakeSnackbarIcon.getHeight(), 0, 0);
         fakeSnackbarText.setText(msg);
         fakeSnackbar.setVisibility(View.VISIBLE);
     }
 
-    @UiThread
-    void showSetupSnackbar() {
+    private void showSetupSnackbar() {
         onAmiiboFilesChanged();
         Snackbar setupBar = new IconifiedSnackbar(this, mainLayout)
                 .buildTickerBar(getString(R.string.keys_not_found), Snackbar.LENGTH_INDEFINITE);
         setupBar.setAction(R.string.setup, v -> {
             showSettingsFragment();
-            settingsFragment.onKeysClicked();
+            settingsFragment.onImportKeysClicked();
             setupBar.dismiss();
         });
         setupBar.show();
@@ -2048,8 +2037,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (settings.getAmiiboFiles().isEmpty()) this.onRefresh();
     });
 
-    @Background
-    void onTagDiscovered(Intent intent) {
+    private void onTagDiscovered(Intent intent) {
         if (keyManager.isKeyMissing())
             return;
         NTAG215 mifare = null;

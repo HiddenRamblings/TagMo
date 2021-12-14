@@ -1,10 +1,11 @@
 package com.hiddenramblings.tagmo.settings;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -29,7 +30,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.GlideApp;
-import com.hiddenramblings.tagmo.NfcActivity_;
+import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.TagMo.Website;
@@ -46,13 +47,6 @@ import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.github.JSONExecutor;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
-import org.androidannotations.annotations.AfterPreferences;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.PreferenceByKey;
-import org.androidannotations.annotations.PreferenceChange;
-import org.androidannotations.annotations.PreferenceClick;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -68,8 +62,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.Executors;
 
-@SuppressLint("NonConstantResourceId")
-@EFragment
 public class SettingsFragment extends PreferenceFragmentCompat {
 
     public static final String IMAGE_NETWORK_NEVER = "NEVER";
@@ -79,36 +71,22 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private static final int RESULT_KEYS = 8000;
     private static final int RESULT_IMPORT_AMIIBO_DATABASE = 8001;
 
-    @Pref
     Preferences_ prefs;
 
-    @PreferenceByKey(R.string.settings_import_keys)
-    Preference key;
-    @PreferenceByKey(R.string.settings_tag_type_validation)
+    Preference importKeys;
     CheckBoxPreference enableTagTypeValidation;
-    @PreferenceByKey(R.string.settings_enable_power_tag_support)
+    CheckBoxPreference enableAutomaticScan;
     CheckBoxPreference enablePowerTagSupport;
-    @PreferenceByKey(R.string.settings_enable_elite_support)
     CheckBoxPreference enableEliteSupport;
-    @PreferenceByKey(R.string.lock_elite_hardware)
     Preference lockEliteHardware;
-    @PreferenceByKey(R.string.unlock_elite_hardware)
     Preference unlockEliteHardware;
-    @PreferenceByKey(R.string.settings_info_amiibo)
     Preference amiiboStats;
-    @PreferenceByKey(R.string.settings_info_game_series)
     Preference gameSeriesStats;
-    @PreferenceByKey(R.string.settings_info_characters)
     Preference characterStats;
-    @PreferenceByKey(R.string.settings_info_amiibo_series)
     Preference amiiboSeriesStats;
-    @PreferenceByKey(R.string.settings_info_amiibo_types)
     Preference amiiboTypeStats;
-    @PreferenceByKey(R.string.image_network_settings)
     ListPreference imageNetworkSetting;
-    @PreferenceByKey(R.string.settings_disable_debug)
     CheckBoxPreference disableDebug;
-    @PreferenceByKey(R.string.settings_stable_channel)
     CheckBoxPreference stableChannel;
 
     private KeyManager keyManager;
@@ -117,27 +95,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        addPreferencesFromResource(R.xml.preference_screen);
-
-//        key = findPreference(getString(R.string.settings_import_keys));
-//        enableTagTypeValidation = findPreference(getString(R.string.settings_tag_type_validation));
-//        enablePowerTagSupport = findPreference(getString(R.string.settings_enable_power_tag_support));
-//        enableEliteSupport = findPreference(getString(R.string.settings_enable_elite_support));
-//        lockEliteHardware = findPreference(getString(R.string.lock_elite_hardware));
-//        unlockEliteHardware = findPreference(getString(R.string.unlock_elite_hardware));
-//        amiiboStats = findPreference(getString(R.string.settings_info_amiibo));
-//        gameSeriesStats = findPreference(getString(R.string.settings_info_game_series));
-//        characterStats = findPreference(getString(R.string.settings_info_characters));
-//        amiiboSeriesStats = findPreference(getString(R.string.settings_info_amiibo_series));
-//        amiiboTypeStats = findPreference(getString(R.string.settings_info_amiibo_types));
-//        imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
-//        disableDebug = findPreference(getString(R.string.settings_disable_debug));
-//        stableChannel = findPreference(getString(R.string.settings_stable_channel));
+        setPreferencesFromResource(R.xml.preference_screen, rootKey);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        prefs = TagMo.getPrefs();
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
@@ -145,11 +112,22 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 if (null != result) parseUpdateJSON(result);
             });
         }
-    }
 
-    @AfterPreferences
-    protected void afterViews() {
-        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        importKeys = findPreference(getString(R.string.settings_import_keys));
+        enableTagTypeValidation = findPreference(getString(R.string.settings_tag_type_validation));
+        enableAutomaticScan = findPreference(getString(R.string.settings_enable_automatic_scan));
+        enablePowerTagSupport = findPreference(getString(R.string.settings_enable_power_tag_support));
+        enableEliteSupport = findPreference(getString(R.string.settings_enable_elite_support));
+        lockEliteHardware = findPreference(getString(R.string.lock_elite_hardware));
+        unlockEliteHardware = findPreference(getString(R.string.unlock_elite_hardware));
+        amiiboStats = findPreference(getString(R.string.settings_info_amiibo));
+        gameSeriesStats = findPreference(getString(R.string.settings_info_game_series));
+        characterStats = findPreference(getString(R.string.settings_info_characters));
+        amiiboSeriesStats = findPreference(getString(R.string.settings_info_amiibo_series));
+        amiiboTypeStats = findPreference(getString(R.string.settings_info_amiibo_types));
+        imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
+        disableDebug = findPreference(getString(R.string.settings_disable_debug));
+        stableChannel = findPreference(getString(R.string.settings_stable_channel));
 
         this.enableTagTypeValidation.setChecked(prefs.enableTagTypeValidation().get());
         this.disableDebug.setChecked(prefs.disableDebug().get());
@@ -168,107 +146,230 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
         lockEliteHardware.setVisible(isElite);
         unlockEliteHardware.setVisible(isElite);
+
+        importKeys.setOnPreferenceClickListener(preference -> {
+            onImportKeysClicked();
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        enableTagTypeValidation.setOnPreferenceClickListener(preference -> {
+            prefs.enableTagTypeValidation().put(enableTagTypeValidation.isChecked());
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        enableAutomaticScan.setOnPreferenceClickListener(preference -> {
+            boolean isChecked = enableAutomaticScan.isChecked();
+            prefs.enableAutomaticScan().put(isChecked);
+            if (isChecked) {
+                requireContext().getPackageManager().setComponentEnabledSetting(
+                        TagMo.NFCIntentFilter,
+                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                        PackageManager.DONT_KILL_APP);
+            } else {
+                requireContext().getPackageManager().setComponentEnabledSetting(
+                        TagMo.NFCIntentFilter,
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                        PackageManager.DONT_KILL_APP);
+            }
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        enablePowerTagSupport.setOnPreferenceClickListener(preference -> {
+            boolean isEnabled = enablePowerTagSupport.isChecked();
+            prefs.enablePowerTagSupport().put(isEnabled);
+            if (isEnabled) ((BrowserActivity) requireActivity()).setPowerTagResult();
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        enableEliteSupport.setOnPreferenceClickListener(preference -> {
+            boolean isEnabled = enableEliteSupport.isChecked();
+            prefs.enableEliteSupport().put(enableEliteSupport.isChecked());
+            if (isEnabled && prefs.eliteSignature().get().length() > 1)
+                enableEliteSupport.setSummary(getString(
+                        R.string.elite_signature, prefs.eliteSignature().get()));
+            else
+                enableEliteSupport.setSummary(getString(R.string.elite_details));
+            lockEliteHardware.setVisible(isEnabled);
+            unlockEliteHardware.setVisible(isEnabled);
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        lockEliteHardware.setOnPreferenceClickListener(preference -> {
+            new AlertDialog.Builder(requireContext())
+                    .setMessage(R.string.lock_elite_warning)
+                    .setPositiveButton(R.string.write, (dialog, which) -> {
+                        Intent lock = new Intent(requireContext(), NfcActivity.class);
+                        lock.setAction(TagMo.ACTION_LOCK_AMIIBO);
+                        startActivity(lock);
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton(R.string.cancel, null).show();
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        unlockEliteHardware.setOnPreferenceClickListener(preference -> {
+            new AlertDialog.Builder(requireContext())
+                    .setMessage(R.string.prepare_unlock)
+                    .setPositiveButton(R.string.start, (dialog, which) -> {
+                        Intent unlock = new Intent(requireContext(), NfcActivity.class);
+                        unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
+                        startActivity(unlock);
+                        dialog.dismiss();
+                    }).show();
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        Preference syncInfo = findPreference(getString(R.string.settings_import_info_amiiboapi));
+        if (null != syncInfo) {
+            syncInfo.setOnPreferenceClickListener(preference -> {
+                downloadAmiiboAPIData(lastUpdated);
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
+        Preference importInfo = findPreference(getString(R.string.settings_import_info));
+        if (null != importInfo) {
+            importInfo.setOnPreferenceClickListener(preference -> {
+                showFileChooser(getString(R.string.import_json_details),
+                        RESULT_IMPORT_AMIIBO_DATABASE);
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
+        Preference resetInfo = findPreference(getString(R.string.settings_reset_info));
+        if (null != resetInfo) {
+            resetInfo.setOnPreferenceClickListener(preference -> {
+                resetAmiiboManager();
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
+        amiiboStats.setOnPreferenceClickListener(preference -> {
+            new AlertDialog.Builder(this.getContext())
+                    .setTitle(R.string.amiibo)
+                    .setAdapter(new SettingsAmiiboAdapter(new ArrayList<>(
+                            amiiboManager.amiibos.values())), null)
+                    .setPositiveButton(R.string.close, null)
+                    .show();
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        imageNetworkSetting.setOnPreferenceChangeListener((preference, newValue) -> {
+            onImageNetworkChange(newValue.toString());
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        gameSeriesStats.setOnPreferenceClickListener(preference -> {
+            final ArrayList<String> items = new ArrayList<>();
+            for (GameSeries gameSeries : amiiboManager.gameSeries.values()) {
+                if (!items.contains(gameSeries.name))
+                    items.add(gameSeries.name);
+            }
+            Collections.sort(items);
+
+            new AlertDialog.Builder(this.getContext())
+                    .setTitle(R.string.amiibo_game)
+                    .setAdapter(new ArrayAdapter<>(this.getContext(),
+                            android.R.layout.simple_list_item_1, items), null)
+                    .setPositiveButton(R.string.close, null)
+                    .show();
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        characterStats.setOnPreferenceClickListener(preference -> {
+            final ArrayList<Character> items = new ArrayList<>();
+            for (Character character : amiiboManager.characters.values()) {
+                if (!items.contains(character))
+                    items.add(character);
+            }
+            Collections.sort(items);
+
+            new AlertDialog.Builder(this.getContext())
+                    .setTitle(R.string.pref_amiibo_characters)
+                    .setAdapter(new ArrayAdapter<>(this.getContext(),
+                            android.R.layout.simple_list_item_2, android.R.id.text1, items) {
+                        @NonNull
+                        @Override
+                        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                            View view = super.getView(position, convertView, parent);
+                            TextView text1 = view.findViewById(android.R.id.text1);
+                            TextView text2 = view.findViewById(android.R.id.text2);
+
+                            Character character = getItem(position);
+                            text1.setText(character.name);
+
+                            GameSeries gameSeries = character.getGameSeries();
+                            text2.setText(null == gameSeries ? "" : gameSeries.name);
+
+                            return view;
+                        }
+                    }, null)
+                    .setPositiveButton(R.string.close, null)
+                    .show();
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        amiiboSeriesStats.setOnPreferenceClickListener(preference -> {
+            final ArrayList<String> items = new ArrayList<>();
+            for (AmiiboSeries amiiboSeries : amiiboManager.amiiboSeries.values()) {
+                if (!items.contains(amiiboSeries.name))
+                    items.add(amiiboSeries.name);
+            }
+            Collections.sort(items);
+
+            new AlertDialog.Builder(this.getContext())
+                    .setTitle(R.string.amiibo_series)
+                    .setAdapter(new ArrayAdapter<>(this.getContext(),
+                            android.R.layout.simple_list_item_1, items), null)
+                    .setPositiveButton(R.string.close, null)
+                    .show();
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        amiiboTypeStats.setOnPreferenceClickListener(preference -> {
+            final ArrayList<AmiiboType> amiiboTypes =
+                    new ArrayList<>(amiiboManager.amiiboTypes.values());
+            Collections.sort(amiiboTypes);
+
+            final ArrayList<String> items = new ArrayList<>();
+            for (AmiiboType amiiboType : amiiboTypes) {
+                if (!items.contains(amiiboType.name))
+                    items.add(amiiboType.name);
+            }
+
+            new AlertDialog.Builder(this.getContext())
+                    .setTitle(R.string.pref_amiibo_types)
+                    .setAdapter(new ArrayAdapter<>(this.getContext(),
+                            android.R.layout.simple_list_item_1, items), null)
+                    .setPositiveButton(R.string.close, null)
+                    .show();
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        disableDebug.setOnPreferenceClickListener(preference -> {
+            prefs.disableDebug().put(disableDebug.isChecked());
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+        stableChannel.setOnPreferenceClickListener(preference -> {
+            prefs.stableChannel().put(stableChannel.isChecked());
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        Preference viewGuides = findPreference(getString(R.string.settings_view_guides));
+        if (null != viewGuides) {
+            viewGuides.setOnPreferenceClickListener(preference -> {
+                startActivity(new Intent(requireActivity(), WebActivity.class)
+                        .setAction(TagMo.ACTION_BROWSE_GITLAB));
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
     }
 
-    @PreferenceClick(R.string.settings_import_keys)
-    public void onKeysClicked() {
+    public void onImportKeysClicked() {
         showFileChooser(getString(R.string.decryption_keys), RESULT_KEYS);
     }
 
-    @PreferenceClick(R.string.settings_tag_type_validation)
-    void onEnableTagTypeValidationClicked() {
-        prefs.enableTagTypeValidation().put(enableTagTypeValidation.isChecked());
-    }
-
-    @PreferenceClick(R.string.settings_enable_power_tag_support)
-    void onEnablePowerTagSupportClicked() {
-        boolean isEnabled = enablePowerTagSupport.isChecked();
-        prefs.enablePowerTagSupport().put(isEnabled);
-        if (isEnabled) ((BrowserActivity) requireActivity()).setPowerTagResult();
-    }
-
-    @PreferenceClick(R.string.settings_enable_elite_support)
-    void onEnableEliteSupportClicked() {
-        boolean isEnabled = enableEliteSupport.isChecked();
-        prefs.enableEliteSupport().put(enableEliteSupport.isChecked());
-        if (isEnabled && prefs.eliteSignature().get().length() > 1)
-            enableEliteSupport.setSummary(getString(
-                    R.string.elite_signature, prefs.eliteSignature().get()));
-        else
-            enableEliteSupport.setSummary(getString(R.string.elite_details));
-        lockEliteHardware.setVisible(isEnabled);
-        unlockEliteHardware.setVisible(isEnabled);
-    }
-
-    @PreferenceClick(R.string.lock_elite_hardware)
-    void onLockEliteHardwareClicked() {
-        new AlertDialog.Builder(requireContext())
-                .setMessage(R.string.lock_elite_warning)
-                .setPositiveButton(R.string.write, (dialog, which) -> {
-                    Intent lock = new Intent(requireContext(), NfcActivity_.class);
-                    lock.setAction(TagMo.ACTION_LOCK_AMIIBO);
-                    startActivity(lock);
-                    dialog.dismiss();
-                })
-                .setNegativeButton(R.string.cancel, null).show();
-    }
-
-    @PreferenceClick(R.string.unlock_elite_hardware)
-    void onUnlockElitHardwareClicked() {
-        new AlertDialog.Builder(requireContext())
-                .setMessage(R.string.prepare_unlock)
-                .setPositiveButton(R.string.start, (dialog, which) -> {
-                    Intent unlock = new Intent(requireContext(), NfcActivity_.class);
-                    unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
-                    startActivity(unlock);
-                    dialog.dismiss();
-                }).show();
-    }
-
-    @PreferenceClick(R.string.settings_import_info_amiiboapi)
-    void onSyncAmiiboAPIClicked() {
-        downloadAmiiboAPIData(lastUpdated);
-    }
-
-    @PreferenceClick(R.string.settings_import_info)
-    void onImportInfoClicked() {
-        showFileChooser(getString(R.string.import_json_details), RESULT_IMPORT_AMIIBO_DATABASE);
-    }
-
-    @PreferenceClick(R.string.settings_reset_info)
-    void onResetInfoClicked() {
-        resetAmiiboManager();
-    }
-
-    @PreferenceClick(R.string.settings_info_amiibo)
-    void onAmiiboStatsClicked() {
-        new AlertDialog.Builder(this.getContext())
-                .setTitle(R.string.amiibo)
-                .setAdapter(new SettingsAmiiboAdapter(new ArrayList<>(
-                        amiiboManager.amiibos.values())), null)
-                .setPositiveButton(R.string.close, null)
-                .show();
-    }
-
-    @PreferenceClick(R.string.settings_info_game_series)
-    void onGameSeriesStatsClicked() {
-        final ArrayList<String> items = new ArrayList<>();
-        for (GameSeries gameSeries : amiiboManager.gameSeries.values()) {
-            if (!items.contains(gameSeries.name))
-                items.add(gameSeries.name);
-        }
-        Collections.sort(items);
-
-        new AlertDialog.Builder(this.getContext())
-                .setTitle(R.string.amiibo_game)
-                .setAdapter(new ArrayAdapter<>(this.getContext(),
-                        android.R.layout.simple_list_item_1, items), null)
-                .setPositiveButton(R.string.close, null)
-                .show();
-    }
-
-    @PreferenceChange(R.string.image_network_settings)
-    void onImageNetworkChange(String newValue) {
+    private void onImageNetworkChange (String newValue){
         int index = imageNetworkSetting.findIndexOfValue(newValue);
         if (index == -1) {
             onImageNetworkChange(IMAGE_NETWORK_ALWAYS);
@@ -277,95 +378,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             imageNetworkSetting.setValue(newValue);
             imageNetworkSetting.setSummary(imageNetworkSetting.getEntries()[index]);
         }
-    }
-
-    @PreferenceClick(R.string.settings_info_characters)
-    void onCharacterStatsClicked() {
-        final ArrayList<Character> items = new ArrayList<>();
-        for (Character character : amiiboManager.characters.values()) {
-            if (!items.contains(character))
-                items.add(character);
-        }
-        Collections.sort(items);
-
-        new AlertDialog.Builder(this.getContext())
-                .setTitle(R.string.pref_amiibo_characters)
-                .setAdapter(new ArrayAdapter<>(this.getContext(),
-                        android.R.layout.simple_list_item_2, android.R.id.text1, items) {
-                    @NonNull
-                    @Override
-                    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-                        View view = super.getView(position, convertView, parent);
-                        TextView text1 = view.findViewById(android.R.id.text1);
-                        TextView text2 = view.findViewById(android.R.id.text2);
-
-                        Character character = getItem(position);
-                        text1.setText(character.name);
-
-                        GameSeries gameSeries = character.getGameSeries();
-                        text2.setText(null == gameSeries ? "" : gameSeries.name);
-
-                        return view;
-                    }
-                }, null)
-                .setPositiveButton(R.string.close, null)
-                .show();
-    }
-
-    @PreferenceClick(R.string.settings_info_amiibo_series)
-    void onAmiiboSeriesStatsClicked() {
-        final ArrayList<String> items = new ArrayList<>();
-        for (AmiiboSeries amiiboSeries : amiiboManager.amiiboSeries.values()) {
-            if (!items.contains(amiiboSeries.name))
-                items.add(amiiboSeries.name);
-        }
-        Collections.sort(items);
-
-        new AlertDialog.Builder(this.getContext())
-                .setTitle(R.string.amiibo_series)
-                .setAdapter(new ArrayAdapter<>(this.getContext(),
-                        android.R.layout.simple_list_item_1, items), null)
-                .setPositiveButton(R.string.close, null)
-                .show();
-    }
-
-    @PreferenceClick(R.string.settings_info_amiibo_types)
-    void onAmiiboTypesStatsClicked() {
-        final ArrayList<AmiiboType> amiiboTypes = new ArrayList<>(amiiboManager.amiiboTypes.values());
-        Collections.sort(amiiboTypes);
-
-        final ArrayList<String> items = new ArrayList<>();
-        for (AmiiboType amiiboType : amiiboTypes) {
-            if (!items.contains(amiiboType.name))
-                items.add(amiiboType.name);
-        }
-
-        new AlertDialog.Builder(this.getContext())
-                .setTitle(R.string.pref_amiibo_types)
-                .setAdapter(new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, items), null)
-                .setPositiveButton(R.string.close, null)
-                .show();
-    }
-
-    @PreferenceClick(R.string.settings_disable_debug)
-    void onDisableDebugClicked() {
-        prefs.disableDebug().put(disableDebug.isChecked());
-    }
-
-    @PreferenceClick(R.string.settings_stable_channel)
-    void onStableChannelClicked() {
-        prefs.stableChannel().put(stableChannel.isChecked());
-    }
-
-    @PreferenceClick(R.string.settings_view_guides)
-    void onViewGuidesClicked() {
-        startActivity(new Intent(requireActivity(), WebActivity.class)
-                .setAction(TagMo.ACTION_BROWSE_GITLAB));
-    }
-
-    @PreferenceClick(R.string.settings_sponsor_dev)
-    void onSponsorDevClicked() {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Website.PAYPAL_DONATE)));
     }
 
     private void validateKeys(Uri data) {
@@ -384,8 +396,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    @UiThread
-    void updateKeySummary() {
+    private void updateKeySummary() {
         String unfixedText;
         ForegroundColorSpan unfixedSpan;
         if (this.keyManager.hasUnFixedKey()) {
@@ -415,7 +426,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         keySummary.append("\n");
         keySummary.append(fixedBuilder);
 
-        key.setSummary(keySummary);
+        importKeys.setSummary(keySummary);
     }
 
     private void loadAmiiboManager() {
@@ -485,12 +496,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    @UiThread
-    void setAmiiboManager(AmiiboManager amiiboManager) {
+    private void setAmiiboManager(AmiiboManager amiiboManager) {
         this.amiiboManager = amiiboManager;
-        this.updateAmiiboStats();
         new Thread(() -> GlideApp.get(TagMo.getContext()).clearDiskCache());
-        GlideApp.get(requireContext()).clearMemory();
+        requireActivity().runOnUiThread(() -> {
+            GlideApp.get(requireContext()).clearMemory();
+            updateAmiiboStats();
+        });
     }
 
     void updateAmiiboStats() {
@@ -618,13 +630,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    @UiThread
-    public void showSnackbar(String msg, int length) {
+    private void showSnackbar(String msg, int length) {
         new IconifiedSnackbar(requireActivity()).buildSnackbar(msg, length, null).show();
     }
 
-    @UiThread
-    public void showInstallSnackbar(String lastUpdated) {
+    private void showInstallSnackbar(String lastUpdated) {
         Snackbar snackbar =  new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 getString(
                 R.string.update_amiibo_api), Snackbar.LENGTH_LONG, null);

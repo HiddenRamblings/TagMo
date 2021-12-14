@@ -29,6 +29,9 @@ public interface Preferences {
     @DefaultBoolean(keyRes = R.string.settings_tag_type_validation, value = true)
     boolean enableTagTypeValidation();
 
+    @DefaultBoolean(keyRes = R.string.settings_enable_automatic_scan, value = true)
+    boolean enableAutomaticScan();
+
     @DefaultBoolean(keyRes = R.string.settings_enable_power_tag_support, value = false)
     boolean enablePowerTagSupport();
 

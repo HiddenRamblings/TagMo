@@ -97,12 +97,13 @@ public class FoomiiboActivity extends AppCompatActivity implements
             AmiiboManager amiiboManager = settings.getAmiiboManager();
             if (null == amiiboManager) return;
 
+            handler.post(() -> dialog = ProgressDialog.show(FoomiiboActivity.this,
+                    "", "", true));
+
             deleteDir(directory);
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
 
-            handler.post(() -> dialog = ProgressDialog.show(FoomiiboActivity.this,
-                    "", "", true));
             for (Amiibo amiibo : amiiboManager.amiibos.values()) {
                 buildFoomiiboFile(amiibo);
                 handler.post(() -> dialog.setMessage(getString(

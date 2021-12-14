@@ -16,6 +16,7 @@
 
     <string name="settings_import_keys">import_keys</string>
     <string name="settings_tag_type_validation">enable_tag_type_validation</string>
+    <string name="settings_enable_automatic_scan">enable_automatic_scan</string>
     <string name="settings_enable_power_tag_support">enable_power_tag_support</string>
     <string name="settings_enable_elite_support">enable_elite_support</string>
     <string name="settings_elite_signature">settings_elite_signature</string>

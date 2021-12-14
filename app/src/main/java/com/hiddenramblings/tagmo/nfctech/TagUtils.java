@@ -69,7 +69,7 @@ public class TagUtils {
     }
 
     public static boolean isPowerTag(NTAG215 mifare) {
-        if (TagMo.getPrefs().enablePowerTagSupport().get()) {
+        if (TagMo.getPrefs().enable_power_tag_support().get()) {
             byte[] signature = mifare.transceive(NfcByte.POWERTAG_SIG);
             return null != signature && TagUtils.compareRange(signature,
                     NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.length);
@@ -78,7 +78,7 @@ public class TagUtils {
     }
 
     public static boolean isElite(NTAG215 mifare) {
-        if (TagMo.getPrefs().enableEliteSupport().get()) {
+        if (TagMo.getPrefs().enable_elite_support().get()) {
             byte[] signature = mifare.readSignature(false);
             byte[] page10 = TagUtils.hexToByteArray("FFFFFFFFFF");
             return null != signature && TagUtils.compareRange(signature, page10,

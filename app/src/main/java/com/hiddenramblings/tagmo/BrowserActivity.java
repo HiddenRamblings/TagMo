@@ -98,7 +98,6 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
-import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
@@ -426,7 +425,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
             String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
-            prefs.eliteSignature().put(signature);
+            prefs.settings_elite_signature().put(signature);
             int active_bank = result.getData().getIntExtra(
                     TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
             prefs.eliteActiveBank().put(active_bank);
@@ -1175,7 +1174,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void checkForUpdate() {
         Executors.newSingleThreadExecutor().execute(() -> {
-            boolean isMaster = prefs.stableChannel().get();
+            boolean isMaster = prefs.settings_stable_channel().get();
             new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
                     ? "master" : "experimental")).setResultListener(result -> {
                 if (null != result) parseUpdateJSON(result, isMaster);
@@ -1184,7 +1183,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void loadPTagKeyManager() {
-        if (prefs.enablePowerTagSupport().get()) {
+        if (prefs.enable_power_tag_support().get()) {
             Executors.newSingleThreadExecutor().execute(() -> {
                 try {
                     PowerTagManager.getPowerTagManager();
@@ -1386,7 +1385,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .filterAmiiboSeries().put(newBrowserSettings.getAmiiboSeriesFilter())
                 .filterAmiiboType().put(newBrowserSettings.getAmiiboTypeFilter())
                 .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
-                .imageNetworkSetting().put(newBrowserSettings.getImageNetworkSettings())
+                .image_network_settings().put(newBrowserSettings.getImageNetworkSettings())
                 .showDownloads().put(newBrowserSettings.isShowingDownloads())
                 .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
                 .showMissingFiles().put(newBrowserSettings.isShowingMissingFiles())
@@ -1577,7 +1576,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void launchEliteActivity(Intent resultData) {
-        if (TagMo.getPrefs().enableEliteSupport().get()
+        if (TagMo.getPrefs().enable_elite_support().get()
                 && resultData.hasExtra(TagMo.EXTRA_SIGNATURE)) {
             Intent eliteIntent = new Intent(this, BankListActivity.class);
             eliteIntent.putExtras(resultData.getExtras());
@@ -1596,7 +1595,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
 
         // If we're supporting, didn't arrive from, but scanned an N2...
-        if (TagMo.getPrefs().enableEliteSupport().get()
+        if (TagMo.getPrefs().enable_elite_support().get()
                 && result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
             launchEliteActivity(result.getData());
         } else {
@@ -2046,7 +2045,7 @@ public class BrowserActivity extends AppCompatActivity implements
             mifare = NTAG215.get(tag);
             String tagTech = TagUtils.getTagTechnology(tag);
             if (mifare == null) {
-                if (prefs.enableEliteSupport().get()) {
+                if (prefs.enable_elite_support().get()) {
                     mifare = new NTAG215(NfcA.get(tag));
                     try {
                         mifare.connect();
@@ -2083,7 +2082,7 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 if (isEliteDevice) {
                     String signature = TagReader.getTagSignature(mifare);
-                    prefs.eliteSignature().put(signature);
+                    prefs.settings_elite_signature().put(signature);
                     prefs.eliteActiveBank().put(active_bank);
                     prefs.eliteBankCount().put(bank_count);
 
@@ -2108,7 +2107,7 @@ public class BrowserActivity extends AppCompatActivity implements
             Debug.Log(e);
             String error = e.getMessage();
             error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
-            if (null != error && prefs.enableEliteSupport().get()) {
+            if (null != error && prefs.enable_elite_support().get()) {
                 if (e instanceof android.nfc.TagLostException) {
                     new Toasty(this).Short(R.string.speed_scan);
                     try {

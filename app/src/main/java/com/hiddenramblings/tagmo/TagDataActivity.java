@@ -1171,6 +1171,99 @@ public class TagDataActivity extends AppCompatActivity {
         onAppDataSSBChecked(isAppDataInitialized);
     }
 
+    private void enableAppDataTP(byte[] appData) {
+        try {
+            appDataTP = new AppDataTP(appData);
+        } catch (Exception e) {
+            appDataViewTP.setVisibility(View.GONE);
+            return;
+        }
+
+        txtHearts1 = findViewById(R.id.txtHearts1);
+        txtHearts2 = findViewById(R.id.txtHearts2);
+        txtLevelTP = findViewById(R.id.txtLevelTP);
+
+        setListForSpinners(new Spinner[]{ txtHearts2 }, R.array.editor_tp_hearts);
+
+        int level, hearts;
+        if (initialAppDataInitialized) {
+            try {
+                level = appDataTP.getLevel();
+            } catch (Exception e) {
+                level = 40;
+            }
+            try {
+                hearts = appDataTP.getHearts();
+            } catch (Exception e) {
+                hearts = AppDataTP.HEARTS_MAX_VALUE;
+            }
+        } else {
+            level = 40;
+            hearts = AppDataTP.HEARTS_MAX_VALUE;
+        }
+        txtLevelTP.setText(String.valueOf(level));
+        txtHearts1.setText(String.valueOf((hearts / 4)));
+        txtHearts2.setSelection(hearts % 4);
+        txtHearts2.setEnabled((hearts / 4) < 20);
+
+        txtLevelTP.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    int level = Integer.parseInt(txtLevelTP.getText().toString());
+                    try {
+                        appDataTP.checkLevel(level);
+                        txtLevelTP.setError(null);
+                    } catch (Exception e) {
+                        txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
+                    }
+                } catch (NumberFormatException e) {
+                    txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
+
+        txtHearts1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                onHeartsUpdate();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
+
+        onAppDataTPChecked(isAppDataInitialized);
+    }
+
+    void onHeartsUpdate() {
+        try {
+            int hearts = Integer.parseInt(txtHearts1.getText().toString());
+            txtHearts2.setEnabled(hearts < 20);
+            if (!txtHearts2.isEnabled()) {
+                txtHearts2.setSelection(0);
+            }
+            try {
+                appDataTP.checkHearts(hearts * 4);
+                txtHearts1.setError(null);
+            } catch (Exception e) {
+                txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
+            }
+        } catch (NumberFormatException e) {
+            txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
+            txtHearts2.setEnabled(txtHearts1.isEnabled());
+        }
+    }
+
     void setEffectValue(Spinner spinner, int value) {
         if (value == 0xFF)
             value = 0;
@@ -1191,6 +1284,15 @@ public class TagDataActivity extends AppCompatActivity {
             value--;
 
         return value;
+    }
+
+    public void onAppDataTPChecked(boolean enabled) {
+        if (null == txtHearts2 )
+            return;
+
+        txtHearts1.setEnabled(enabled);
+        onHeartsUpdate();
+        txtLevelTP.setEnabled(enabled);
     }
 
     public void onAppDataSSBChecked(boolean enabled) {
@@ -1311,108 +1413,6 @@ public class TagDataActivity extends AppCompatActivity {
         }
 
         return appDataSSB.array();
-    }
-
-    private void enableAppDataTP(byte[] appData) {
-        try {
-            appDataTP = new AppDataTP(appData);
-        } catch (Exception e) {
-            appDataViewTP.setVisibility(View.GONE);
-            return;
-        }
-
-        txtHearts1 = findViewById(R.id.txtHearts1);
-        txtHearts2 = findViewById(R.id.txtHearts2);
-        txtLevelTP = findViewById(R.id.txtLevelTP);
-
-        setListForSpinners(new Spinner[]{ txtHearts2 }, R.array.editor_tp_hearts);
-
-        int level, hearts;
-        if (initialAppDataInitialized) {
-            try {
-                level = appDataTP.getLevel();
-            } catch (Exception e) {
-                level = 40;
-            }
-            try {
-                hearts = appDataTP.getHearts();
-            } catch (Exception e) {
-                hearts = AppDataTP.HEARTS_MAX_VALUE;
-            }
-        } else {
-            level = 40;
-            hearts = AppDataTP.HEARTS_MAX_VALUE;
-        }
-        txtLevelTP.setText(String.valueOf(level));
-        txtHearts1.setText(String.valueOf((hearts / 4)));
-        txtHearts2.setSelection(hearts % 4);
-        txtHearts2.setEnabled((hearts / 4) < 20);
-
-        txtLevelTP.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                try {
-                    int level = Integer.parseInt(txtLevelTP.getText().toString());
-                    try {
-                        appDataTP.checkLevel(level);
-                        txtLevelTP.setError(null);
-                    } catch (Exception e) {
-                        txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
-                    }
-                } catch (NumberFormatException e) {
-                    txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) { }
-        });
-
-        txtHearts1.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                onHeartsUpdate();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) { }
-        });
-
-        onAppDataTPChecked(isAppDataInitialized);
-    }
-
-    void onHeartsUpdate() {
-        try {
-            int hearts = Integer.parseInt(txtHearts1.getText().toString());
-            txtHearts2.setEnabled(hearts < 20);
-            if (!txtHearts2.isEnabled()) {
-                txtHearts2.setSelection(0);
-            }
-            try {
-                appDataTP.checkHearts(hearts * 4);
-                txtHearts1.setError(null);
-            } catch (Exception e) {
-                txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
-            }
-        } catch (NumberFormatException e) {
-            txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
-            txtHearts2.setEnabled(txtHearts1.isEnabled());
-        }
-    }
-
-    public void onAppDataTPChecked(boolean enabled) {
-        if (null == txtHearts2 )
-            return;
-
-        txtHearts1.setEnabled(enabled);
-        onHeartsUpdate();
-        txtLevelTP.setEnabled(enabled);
     }
 
     public byte[] onAppDataTPSaved() {

@@ -264,7 +264,7 @@ public class NfcActivity extends AppCompatActivity {
             mifare = NTAG215.get(tag);
             tagTech = TagUtils.getTagTechnology(tag);
             if (null == mifare) {
-                if (prefs.enableEliteSupport().get()) {
+                if (prefs.enable_elite_support().get()) {
                     mifare = new NTAG215(NfcA.get(tag));
                     try {
                         mifare.connect();
@@ -324,7 +324,7 @@ public class NfcActivity extends AppCompatActivity {
                     case TagMo.ACTION_WRITE_TAG_RAW:
                         update = TagReader.readFromTag(mifare);
                         TagWriter.writeToTagRaw(mifare, data,
-                                prefs.enableTagTypeValidation().get());
+                                prefs.enable_tag_type_validation().get());
                         setResult(Activity.RESULT_OK);
                         break;
 
@@ -356,7 +356,7 @@ public class NfcActivity extends AppCompatActivity {
                         } else {
                             update = TagReader.readFromTag(mifare);
                             TagWriter.writeToTagAuto(mifare, data, this.keyManager,
-                                    prefs.enableTagTypeValidation().get());
+                                    prefs.enable_tag_type_validation().get());
                             setResult(Activity.RESULT_OK);
                         }
                         break;
@@ -365,7 +365,7 @@ public class NfcActivity extends AppCompatActivity {
                         boolean ignoreUid = commandIntent.getBooleanExtra(
                                 TagMo.EXTRA_IGNORE_TAG_ID, false);
                         TagWriter.restoreTag(mifare, data, ignoreUid, this.keyManager,
-                                prefs.enableTagTypeValidation().get());
+                                prefs.enable_tag_type_validation().get());
                         setResult(Activity.RESULT_OK);
                         break;
 
@@ -505,7 +505,7 @@ public class NfcActivity extends AppCompatActivity {
             Debug.Log(e);
             String error = e.getMessage();
             error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
-            if (null != error && prefs.enableEliteSupport().get()) {
+            if (null != error && prefs.enable_elite_support().get()) {
                 if (e instanceof android.nfc.TagLostException) {
                     txtMessage.setText(R.string.speed_scan);
                     try {

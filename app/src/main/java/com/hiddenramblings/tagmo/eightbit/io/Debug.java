@@ -82,7 +82,7 @@ public class Debug {
     }
 
     public static void Log(Class<?> source, String params) {
-        if (!TagMo.getPrefs().disableDebug().get()) Log.w(TAG(source), params);
+        if (!TagMo.getPrefs().settings_disable_debug().get()) Log.w(TAG(source), params);
     }
 
     public static void Log(Class<?> source, int resource) {
@@ -94,7 +94,7 @@ public class Debug {
     }
 
     public static void Log(Exception ex) {
-        if (TagMo.getPrefs().disableDebug().get()) return;
+        if (TagMo.getPrefs().settings_disable_debug().get()) return;
         if (ex.getStackTrace().length > 0) {
             StringWriter exception = new StringWriter();
             ex.printStackTrace(new PrintWriter(exception));
@@ -103,7 +103,7 @@ public class Debug {
     }
 
     public static void Log(int resource, Exception ex) {
-        if (!TagMo.getPrefs().disableDebug().get())
+        if (!TagMo.getPrefs().settings_disable_debug().get())
             Log.w(TAG(ex.getClass()), TagMo.getContext().getString(resource), ex);
     }
 

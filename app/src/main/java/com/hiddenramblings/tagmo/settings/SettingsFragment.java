@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo.settings;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -129,20 +128,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         disableDebug = findPreference(getString(R.string.settings_disable_debug));
         stableChannel = findPreference(getString(R.string.settings_stable_channel));
 
-        this.enableTagTypeValidation.setChecked(prefs.enableTagTypeValidation().get());
-        this.disableDebug.setChecked(prefs.disableDebug().get());
-        this.stableChannel.setChecked(prefs.stableChannel().get());
+        this.enableTagTypeValidation.setChecked(prefs.enable_tag_type_validation().get());
+        this.disableDebug.setChecked(prefs.settings_disable_debug().get());
+        this.stableChannel.setChecked(prefs.settings_stable_channel().get());
 
         loadAmiiboManager();
         updateKeySummary();
         updateAmiiboStats();
-        onImageNetworkChange(prefs.imageNetworkSetting().get());
+        onImageNetworkChange(prefs.image_network_settings().get());
 
-        boolean isElite = prefs.enableEliteSupport().get();
+        boolean isElite = prefs.enable_elite_support().get();
         this.enableEliteSupport.setChecked(isElite);
-        if (isElite && prefs.eliteSignature().get().length() > 1) {
+        if (isElite && prefs.settings_elite_signature().get().length() > 1) {
             this.enableEliteSupport.setSummary(getString(
-                    R.string.elite_signature, prefs.eliteSignature().get()));
+                    R.string.elite_signature, prefs.settings_elite_signature().get()));
         }
         lockEliteHardware.setVisible(isElite);
         unlockEliteHardware.setVisible(isElite);
@@ -153,13 +152,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         enableTagTypeValidation.setOnPreferenceClickListener(preference -> {
-            prefs.enableTagTypeValidation().put(enableTagTypeValidation.isChecked());
+            prefs.enable_tag_type_validation().put(enableTagTypeValidation.isChecked());
             return SettingsFragment.super.onPreferenceTreeClick(preference);
         });
 
         enableAutomaticScan.setOnPreferenceClickListener(preference -> {
             boolean isChecked = enableAutomaticScan.isChecked();
-            prefs.enableAutomaticScan().put(isChecked);
+            prefs.enable_automatic_scan().put(isChecked);
             if (isChecked) {
                 requireContext().getPackageManager().setComponentEnabledSetting(
                         TagMo.NFCIntentFilter,
@@ -176,17 +175,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         enablePowerTagSupport.setOnPreferenceClickListener(preference -> {
             boolean isEnabled = enablePowerTagSupport.isChecked();
-            prefs.enablePowerTagSupport().put(isEnabled);
+            prefs.enable_power_tag_support().put(isEnabled);
             if (isEnabled) ((BrowserActivity) requireActivity()).setPowerTagResult();
             return SettingsFragment.super.onPreferenceTreeClick(preference);
         });
 
         enableEliteSupport.setOnPreferenceClickListener(preference -> {
             boolean isEnabled = enableEliteSupport.isChecked();
-            prefs.enableEliteSupport().put(enableEliteSupport.isChecked());
-            if (isEnabled && prefs.eliteSignature().get().length() > 1)
+            prefs.enable_elite_support().put(enableEliteSupport.isChecked());
+            if (isEnabled && prefs.settings_elite_signature().get().length() > 1)
                 enableEliteSupport.setSummary(getString(
-                        R.string.elite_signature, prefs.eliteSignature().get()));
+                        R.string.elite_signature, prefs.settings_elite_signature().get()));
             else
                 enableEliteSupport.setSummary(getString(R.string.elite_details));
             lockEliteHardware.setVisible(isEnabled);
@@ -347,11 +346,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         disableDebug.setOnPreferenceClickListener(preference -> {
-            prefs.disableDebug().put(disableDebug.isChecked());
+            prefs.settings_disable_debug().put(disableDebug.isChecked());
             return SettingsFragment.super.onPreferenceTreeClick(preference);
         });
         stableChannel.setOnPreferenceClickListener(preference -> {
-            prefs.stableChannel().put(stableChannel.isChecked());
+            prefs.settings_stable_channel().put(stableChannel.isChecked());
             return SettingsFragment.super.onPreferenceTreeClick(preference);
         });
 
@@ -374,7 +373,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (index == -1) {
             onImageNetworkChange(IMAGE_NETWORK_ALWAYS);
         } else {
-            prefs.imageNetworkSetting().put(newValue);
+            prefs.image_network_settings().put(newValue);
             imageNetworkSetting.setValue(newValue);
             imageNetworkSetting.setSummary(imageNetworkSetting.getEntries()[index]);
         }

@@ -31,7 +31,7 @@ public class GlideTagModule extends AppGlideModule {
     }
 
     public RequestOptions onlyRetrieveFromCache(Context context, RequestOptions requestOptions) {
-        String imageNetworkSetting = TagMo.getPrefs().imageNetworkSetting().get();
+        String imageNetworkSetting = TagMo.getPrefs().image_network_settings().get();
         if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
             return requestOptions.onlyRetrieveFromCache(true);
         } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {

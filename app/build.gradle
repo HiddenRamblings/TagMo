@@ -93,5 +93,5 @@ dependencies {
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
     implementation 'com.github.Dimezis:BlurView:version-1.6.6'
     // Required for Lollipop Amiibo API download compatibility
-    api 'com.google.android.gms:play-services-safetynet:17.0.1'
+    api 'com.google.android.gms:play-services-safetynet:18.0.0'
 }

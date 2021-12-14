@@ -1,15 +1,10 @@
 package com.hiddenramblings.tagmo.settings;
 
-import android.annotation.SuppressLint;
-
-import com.hiddenramblings.tagmo.R;
-
 import org.androidannotations.annotations.sharedpreferences.DefaultBoolean;
 import org.androidannotations.annotations.sharedpreferences.DefaultInt;
 import org.androidannotations.annotations.sharedpreferences.DefaultString;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
 
-@SuppressLint("NonConstantResourceId")
 @SuppressWarnings("unused")
 @SharedPref(value = SharedPref.Scope.UNIQUE)
 public interface Preferences {
@@ -26,35 +21,40 @@ public interface Preferences {
 
     String filterAmiiboType();
 
-    @DefaultBoolean(keyRes = R.string.settings_tag_type_validation, value = true)
-    boolean enableTagTypeValidation();
+    @DefaultInt(1/*VIEW.COMPACT*/)
+    int browserAmiiboView();
 
-    @DefaultBoolean(keyRes = R.string.settings_enable_automatic_scan, value = true)
-    boolean enableAutomaticScan();
+    @DefaultBoolean(true)
+    boolean enable_tag_type_validation();
 
-    @DefaultBoolean(keyRes = R.string.settings_enable_power_tag_support, value = false)
-    boolean enablePowerTagSupport();
+    @DefaultBoolean(true)
+    boolean enable_automatic_scan();
 
-    @DefaultBoolean(keyRes = R.string.settings_enable_elite_support, value = false)
-    boolean enableEliteSupport();
+    @DefaultString(SettingsFragment.IMAGE_NETWORK_ALWAYS)
+    String image_network_settings();
 
-    @DefaultString(keyRes = R.string.settings_elite_signature, value = "")
-    String eliteSignature();
+    @DefaultBoolean(false)
+    boolean enable_power_tag_support();
+
+    @DefaultBoolean(false)
+    boolean enable_elite_support();
+
+    @DefaultString("")
+    String settings_elite_signature();
+
+    @DefaultBoolean(false)
+    boolean settings_disable_debug();
+
+    @DefaultBoolean(true)
+    boolean settings_stable_channel();
+
+    String browserRootFolder();
 
     @DefaultInt(200)
     int eliteBankCount();
 
     @DefaultInt(0)
     int eliteActiveBank();
-
-    @DefaultInt(1/*VIEW.COMPACT*/)
-    int browserAmiiboView();
-
-    @DefaultString(keyRes = R.string.image_network_settings,
-            value = SettingsFragment.IMAGE_NETWORK_ALWAYS)
-    String imageNetworkSetting();
-
-    String browserRootFolder();
 
     @DefaultBoolean(true)
     boolean recursiveFolders();
@@ -65,14 +65,8 @@ public interface Preferences {
     @DefaultBoolean(false)
     boolean showMissingFiles();
 
-    @DefaultBoolean(keyRes = R.string.settings_disable_debug, value = false)
-    boolean disableDebug();
-
     @DefaultBoolean(false)
     boolean preferEmulated();
-
-    @DefaultBoolean(keyRes = R.string.settings_stable_channel, value = true)
-    boolean stableChannel();
 
     @DefaultBoolean(false)
     boolean enableScaling();

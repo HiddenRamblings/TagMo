@@ -150,7 +150,7 @@ public class BrowserSettings implements Parcelable {
         this.setCharacterFilter(prefs.filterCharacter().get());
         this.setGameSeriesFilter(prefs.filterGameSeries().get());
         this.setAmiiboView(prefs.browserAmiiboView().get());
-        this.setImageNetworkSettings(prefs.imageNetworkSetting().get());
+        this.setImageNetworkSettings(prefs.image_network_settings().get());
         this.setShowDownloads(prefs.showDownloads().get());
         this.setRecursiveEnabled(prefs.recursiveFolders().get());
         this.setShowMissingFiles(prefs.showMissingFiles().get());

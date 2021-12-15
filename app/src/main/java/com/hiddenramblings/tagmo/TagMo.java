@@ -1,9 +1,7 @@
 package com.hiddenramblings.tagmo;
 
 import android.app.Application;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.util.Log;
@@ -27,45 +25,6 @@ import java.util.Locale;
 
 @EApplication
 public class TagMo extends Application {
-
-    public static final String ACTION_EDIT_COMPLETE = BuildConfig.APPLICATION_ID + ".EDIT_COMPLETE";
-    public static final String ACTION_SCAN_TAG = BuildConfig.APPLICATION_ID + ".SCAN_TAG";
-    public static final String ACTION_WRITE_TAG_FULL = BuildConfig.APPLICATION_ID + ".WRITE_TAG_FULL";
-    public static final String ACTION_WRITE_TAG_RAW = BuildConfig.APPLICATION_ID + ".WRITE_TAG_RAW";
-    public static final String ACTION_WRITE_TAG_DATA = BuildConfig.APPLICATION_ID + ".WRITE_TAG_DATA";
-    public static final String ACTION_UPDATE_TAG = BuildConfig.APPLICATION_ID + ".UPDATE_TAG";
-    public static final String ACTION_WRITE_ALL_TAGS = BuildConfig.APPLICATION_ID + ".WRITE_ALL_TAGS";
-    public static final String ACTION_ERASE_ALL_TAGS = BuildConfig.APPLICATION_ID + ".CLEAR_ALL_TAGS";
-    public static final String ACTION_ACTIVATE_BANK = BuildConfig.APPLICATION_ID + ".ACTIVATE_BANK";
-    public static final String ACTION_SET_BANK_COUNT = BuildConfig.APPLICATION_ID + ".SET_BANK_COUNT";
-    public static final String ACTION_ERASE_BANK = BuildConfig.APPLICATION_ID + ".ERASE_BANK";
-    public static final String ACTION_LOCK_AMIIBO = BuildConfig.APPLICATION_ID + ".LOCK_AMIIBO";
-    public static final String ACTION_UNLOCK_UNIT = BuildConfig.APPLICATION_ID + ".UNLOCK_UNIT";
-    public static final String ACTION_BACKUP_AMIIBO = BuildConfig.APPLICATION_ID + ".BACKUP_AMIIBO";
-    public static final String ACTION_FIX_BANK_DATA = BuildConfig.APPLICATION_ID + ".FIX_BANK_DATA";
-    public static final String ACTION_NFC_SCANNED = BuildConfig.APPLICATION_ID + ".NFC_SCANNED";
-    public static final String ACTION_BROWSE_GITLAB = BuildConfig.APPLICATION_ID + ".BROWSE_GITLAB";
-
-    public static final String EXTRA_TAG_DATA = BuildConfig.APPLICATION_ID + ".EXTRA_TAG_DATA";
-    public static final String EXTRA_AMIIBO_LIST = BuildConfig.APPLICATION_ID + ".EXTRA_AMIIBO_LIST";
-    public static final String EXTRA_IGNORE_TAG_ID = BuildConfig.APPLICATION_ID + ".EXTRA_IGNORE_TAG_ID";
-    public static final String EXTRA_AMIIBO_ID = BuildConfig.APPLICATION_ID + ".AMIIBO_ID";
-    public static final String EXTRA_AMIIBO_FILES = BuildConfig.APPLICATION_ID + ".EXTRA_AMIIBO_FILES";
-    public static final String EXTRA_SIGNATURE = BuildConfig.APPLICATION_ID + ".EXTRA_SIGNATURE";
-    public static final String EXTRA_ACTIVE_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_ACTIVE_BANK";
-    public static final String EXTRA_BANK_COUNT = BuildConfig.APPLICATION_ID + ".EXTRA_BANK_COUNT";
-    public static final String EXTRA_CURRENT_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_CURRENT_BANK";
-
-    public static class Website {
-        public static final String AMIIBOAPI = "https://www.amiiboapi.com/api/amiibo/";
-        public static final String LASTUPDATED = "https://www.amiiboapi.com/api/lastupdated/";
-        public static final String AMIIBO_IMAGE = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08x-%08x.png";
-        public static final String TAGMO_GIT_API = "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/";
-        public static final String TAGMO_GITLAB = "https://tagmo.gitlab.io/";
-    }
-
-    public static ComponentName NFCIntentFilter = new ComponentName(BuildConfig.APPLICATION_ID,
-            BuildConfig.APPLICATION_ID + "." + "NFCIntentFilter");
 
     @Pref
     Preferences_ prefs;
@@ -130,14 +89,6 @@ public class TagMo extends Application {
             return ScaledContext.wrap(mContext.get());
         else
             return ScaledContext.restore(mContext.get());
-    }
-
-    public static Intent getIntent(Intent intent) {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? intent.addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
-                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                .setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                : intent.addCategory(Intent.CATEGORY_OPENABLE).setType("*/*");
     }
 
     static void setScaledTheme(Context context, int theme) {

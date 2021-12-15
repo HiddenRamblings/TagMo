@@ -30,7 +30,6 @@ import androidx.webkit.WebViewAssetLoader.AssetsPathHandler;
 import androidx.webkit.WebViewClientCompat;
 import androidx.webkit.WebViewFeature;
 
-import com.hiddenramblings.tagmo.TagMo.Website;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
@@ -123,11 +122,11 @@ public class WebActivity extends AppCompatActivity {
         });
 
         if (null != action) {
-            if (TagMo.ACTION_BROWSE_GITLAB.equals(action)) {
+            if (NFCIntent.ACTION_BROWSE_GITLAB.equals(action)) {
                 webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
                         "(?i)" + Pattern.quote("android"), "TagMo"));
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-                mWebView.loadUrl(Website.TAGMO_GITLAB);
+                mWebView.loadUrl("https://tagmo.gitlab.io/");
             }
         } else {
             webViewSettings.setBuiltInZoomControls(true);

@@ -3,10 +3,12 @@ package com.hiddenramblings.tagmo.amiibo;
 
 import androidx.annotation.NonNull;
 
-import com.hiddenramblings.tagmo.TagMo.Website;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 public class Amiibo implements Comparable<Amiibo> {
+
+    private static final String AMIIBO_IMAGE =
+            "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_%08x-%08x.png";
 
     static long HEAD_MASK = 0xFFFFFFFF00000000L;
     static long TAIL_MASK = 0x00000000FFFFFFFFL;
@@ -108,13 +110,13 @@ public class Amiibo implements Comparable<Amiibo> {
     }
 
     public String getImageUrl() {
-        return String.format(Website.AMIIBO_IMAGE, getHead(), getTail());
+        return String.format(AMIIBO_IMAGE, getHead(), getTail());
     }
 
     public static String getImageUrl(long amiiboId) {
         int head = (int) ((amiiboId & HEAD_MASK) >> HEAD_BITSHIFT);
         int tail = (int) ((amiiboId & TAIL_MASK) >> TAIL_BITSHIFT);
-        return String.format(Website.AMIIBO_IMAGE, head, tail);
+        return String.format(AMIIBO_IMAGE, head, tail);
     }
 
     @Override

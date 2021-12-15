@@ -167,7 +167,7 @@ public class TagDataActivity extends AppCompatActivity {
         appDataViewSSB = findViewById(R.id.appDataSSB);
         appDataViewTP = findViewById(R.id.appDataTP);
 
-        byte[] tagData = getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        byte[] tagData = getIntent().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
 
         keyManager = new KeyManager(this);
         if (keyManager.isKeyMissing()) {
@@ -517,8 +517,8 @@ public class TagDataActivity extends AppCompatActivity {
             return;
         }
 
-        Intent intent = new Intent(TagMo.ACTION_EDIT_COMPLETE);
-        intent.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+        Intent intent = new Intent(NFCIntent.ACTION_EDIT_COMPLETE);
+        intent.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData);
         setResult(Activity.RESULT_OK, intent);
         finish();
     }
@@ -1441,7 +1441,7 @@ public class TagDataActivity extends AppCompatActivity {
                 .setMessage(msgRes)
                 .setPositiveButton(R.string.close, (dialog, which) -> finish())
                 .show();
-        setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_FIX_BANK_DATA));
+        setResult(Activity.RESULT_OK, new Intent(NFCIntent.ACTION_FIX_BANK_DATA));
     }
 
     @Override

@@ -70,7 +70,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.TagMo.Website;
 import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
 import com.hiddenramblings.tagmo.adapter.BrowserFoldersAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -135,6 +134,9 @@ public class BrowserActivity extends AppCompatActivity implements
         SwipeRefreshLayout.OnRefreshListener,
         BrowserSettingsListener,
         BrowserAmiibosAdapter.OnAmiiboClickListener {
+
+    private static final String TAGMO_GIT_API =
+            "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/";
 
     private final Preferences_ prefs = TagMo.getPrefs();
 
@@ -262,7 +264,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         if (null != intent) {
-            if (getComponentName().equals(TagMo.NFCIntentFilter)) {
+            if (getComponentName().equals(NFCIntent.FilterComponent)) {
                 Intent browser = new Intent(this, BrowserActivity.class);
                 browser.setAction(intent.getAction());
                 browser.putExtras(intent.getExtras());
@@ -374,16 +376,16 @@ public class BrowserActivity extends AppCompatActivity implements
             popup.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_scan) {
                     onNFCActivity.launch(new Intent(this,
-                            NfcActivity.class).setAction(TagMo.ACTION_SCAN_TAG));
+                            NfcActivity.class).setAction(NFCIntent.ACTION_SCAN_TAG));
                     return true;
                 } else if (item.getItemId() == R.id.mnu_backup) {
                     Intent backup = new Intent(this, NfcActivity.class);
-                    backup.setAction(TagMo.ACTION_BACKUP_AMIIBO);
+                    backup.setAction(NFCIntent.ACTION_BACKUP_AMIIBO);
                     onBackupActivity.launch(backup);
                     return true;
                 } else if (item.getItemId() == R.id.mnu_validate) {
                     onValidateActivity.launch(new Intent(this,
-                            NfcActivity.class).setAction(TagMo.ACTION_SCAN_TAG));
+                            NfcActivity.class).setAction(NFCIntent.ACTION_SCAN_TAG));
                     return true;
                 }
                 return false;
@@ -421,24 +423,24 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
 
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+        if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
-        if (result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
-            String signature = result.getData().getStringExtra(TagMo.EXTRA_SIGNATURE);
+        if (result.getData().hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
+            String signature = result.getData().getStringExtra(NFCIntent.EXTRA_SIGNATURE);
             prefs.settings_elite_signature().put(signature);
             int active_bank = result.getData().getIntExtra(
-                    TagMo.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
+                    NFCIntent.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
             prefs.eliteActiveBank().put(active_bank);
             int bank_count = result.getData().getIntExtra(
-                    TagMo.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
+                    NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
             prefs.eliteBankCount().put(bank_count);
 
             Intent eliteIntent = new Intent(this, BankListActivity.class);
             eliteIntent.putExtras(result.getData());
-            eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
+            eliteIntent.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
             startActivity(eliteIntent);
         } else {
-            updateAmiiboView(result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
+            updateAmiiboView(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
         }
     });
 
@@ -446,9 +448,9 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
 
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+        if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
-        byte[] tagData = result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        byte[] tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
 
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, amiibosView, false);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
@@ -474,10 +476,10 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
 
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+        if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         try {
-            TagUtils.validateData(result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
+            TagUtils.validateData(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
             new Toasty(this).Dialog(R.string.validation_success);
         } catch (Exception e) {
             new Toasty(this).Dialog(e.getMessage());
@@ -500,7 +502,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 String output = null != path ? Storage.getRelativePath(new File(path),
                         prefs.preferEmulated().get()) : uri.getPath();
                 new Toasty(this).Long(getString(R.string.wrote_logcat, output));
-                startActivity(TagMo.getIntent(new Intent(this,
+                startActivity(NFCIntent.getIntent(new Intent(this,
                         WebActivity.class)).setData(uri));
             } catch (IOException e) {
                 new Toasty(this).Short(e.getMessage());
@@ -1019,7 +1021,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
         Bundle bundle = new Bundle();
-        bundle.putLong(TagMo.EXTRA_AMIIBO_ID, amiiboFile.getId());
+        bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile.getId());
 
         Intent intent = new Intent(this, ImageActivity.class);
         intent.putExtras(bundle);
@@ -1098,7 +1100,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,
                             getApplicationInfo().packageName);
                     try {
-                        startActivity(TagMo.getIntent(intent));
+                        startActivity(NFCIntent.getIntent(intent));
                     } catch (ActivityNotFoundException anf) {
                         try {
                             startActivity(intent.setAction(Intent.ACTION_VIEW));
@@ -1157,7 +1159,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (isMaster && null != lastCommit && null != downloadUrl) {
             String finalLastCommit = lastCommit;
             String finalDownloadUrl = downloadUrl;
-            new JSONExecutor(Website.TAGMO_GIT_API + "experimental")
+            new JSONExecutor(TAGMO_GIT_API + "experimental")
                     .setResultListener(experimental -> {
                 try {
                     JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();
@@ -1175,7 +1177,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void checkForUpdate() {
         Executors.newSingleThreadExecutor().execute(() -> {
             boolean isMaster = prefs.settings_stable_channel().get();
-            new JSONExecutor(Website.TAGMO_GIT_API + (isMaster
+            new JSONExecutor(TAGMO_GIT_API + (isMaster
                     ? "master" : "experimental")).setResultListener(result -> {
                 if (null != result) parseUpdateJSON(result, isMaster);
             });
@@ -1376,8 +1378,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         prefs.edit()
                 .browserRootFolder().put(Storage.getRelativePath(
-                newBrowserSettings.getBrowserRootFolder(),
-                prefs.preferEmulated().get()))
+                newBrowserSettings.getBrowserRootFolder(), prefs.preferEmulated().get()))
                 .query().put(newBrowserSettings.getQuery())
                 .sort().put(newBrowserSettings.getSort())
                 .filterGameSeries().put(newBrowserSettings.getGameSeriesFilter())
@@ -1577,7 +1578,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void launchEliteActivity(Intent resultData) {
         if (TagMo.getPrefs().enable_elite_support().get()
-                && resultData.hasExtra(TagMo.EXTRA_SIGNATURE)) {
+                && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             Intent eliteIntent = new Intent(this, BankListActivity.class);
             eliteIntent.putExtras(resultData.getExtras());
             startActivity(eliteIntent);
@@ -1589,17 +1590,17 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
 
-        if (!TagMo.ACTION_NFC_SCANNED.equals(result.getData().getAction())
-                && !TagMo.ACTION_UPDATE_TAG.equals(result.getData().getAction())
-                && !TagMo.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
+        if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())
+                && !NFCIntent.ACTION_UPDATE_TAG.equals(result.getData().getAction())
+                && !NFCIntent.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
 
 
         // If we're supporting, didn't arrive from, but scanned an N2...
         if (TagMo.getPrefs().enable_elite_support().get()
-                && result.getData().hasExtra(TagMo.EXTRA_SIGNATURE)) {
+                && result.getData().hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             launchEliteActivity(result.getData());
         } else {
-            updateAmiiboView(result.getData().getByteArrayExtra(TagMo.EXTRA_TAG_DATA));
+            updateAmiiboView(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
             toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
         }
     });
@@ -1663,18 +1664,18 @@ public class BrowserActivity extends AppCompatActivity implements
             Bundle args = new Bundle();
             Intent scan = new Intent(this, NfcActivity.class);
             if (item.getItemId() == R.id.mnu_scan) {
-                scan.setAction(TagMo.ACTION_SCAN_TAG);
+                scan.setAction(NFCIntent.ACTION_SCAN_TAG);
                 onUpdateTagResult.launch(scan);
                 return true;
             } else if (item.getItemId() == R.id.mnu_write) {
-                args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
-                scan.setAction(TagMo.ACTION_WRITE_TAG_FULL);
+                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
+                scan.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
                 onUpdateTagResult.launch(scan.putExtras(args));
                 return true;
             } else if (item.getItemId() == R.id.mnu_update) {
-                args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
-                scan.setAction(TagMo.ACTION_WRITE_TAG_DATA);
-                scan.putExtra(TagMo.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
+                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
+                scan.setAction(NFCIntent.ACTION_WRITE_TAG_DATA);
+                scan.putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
                 onUpdateTagResult.launch(scan.putExtras(args));
                 return true;
             } else if (item.getItemId() == R.id.mnu_save) {
@@ -1698,13 +1699,13 @@ public class BrowserActivity extends AppCompatActivity implements
                         backupDialog.dismiss());
                 return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
-                args.putByteArray(TagMo.EXTRA_TAG_DATA, tagData);
+                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
                 Intent tagEdit = new Intent(this, TagDataActivity.class);
                 onUpdateTagResult.launch(tagEdit.putExtras(args));
                 return true;
             } else if (item.getItemId() == R.id.mnu_view_hex) {
                 Intent hexView = new Intent(this, HexViewerActivity.class);
-                hexView.putExtra(TagMo.EXTRA_TAG_DATA, tagData);
+                hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData);
                 startActivity(hexView);
                 return true;
             } else if (item.getItemId() == R.id.mnu_validate) {
@@ -1984,7 +1985,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                         intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
                         intent.putExtra("android.content.extra.FANCY", true);
-                        onDocumentTree.launch(TagMo.getIntent(intent));
+                        onDocumentTree.launch(NFCIntent.getIntent(intent));
                     }
                 }
             });
@@ -2089,11 +2090,11 @@ public class BrowserActivity extends AppCompatActivity implements
                     Intent eliteIntent = new Intent(this, BankListActivity.class);
                     Bundle args = new Bundle();
                     ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
-                    eliteIntent.putExtra(TagMo.EXTRA_SIGNATURE, signature);
-                    eliteIntent.putExtra(TagMo.EXTRA_BANK_COUNT, bank_count);
-                    eliteIntent.putExtra(TagMo.EXTRA_ACTIVE_BANK, active_bank);
-                    args.putStringArrayList(TagMo.EXTRA_AMIIBO_LIST, titles);
-                    eliteIntent.putExtra(TagMo.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
+                    eliteIntent.putExtra(NFCIntent.EXTRA_SIGNATURE, signature);
+                    eliteIntent.putExtra(NFCIntent.EXTRA_BANK_COUNT, bank_count);
+                    eliteIntent.putExtra(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
+                    args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles);
+                    eliteIntent.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
                     onTagLaunchActivity.launch(eliteIntent.putExtras(args));
                 } else {
                     updateAmiiboView(TagReader.readFromTag(mifare));

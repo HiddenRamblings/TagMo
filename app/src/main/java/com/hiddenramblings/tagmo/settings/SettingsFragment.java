@@ -31,8 +31,8 @@ import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.TagMo.Website;
 import com.hiddenramblings.tagmo.WebActivity;
 import com.hiddenramblings.tagmo.adapter.SettingsAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -107,7 +107,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
-            new JSONExecutor(Website.LASTUPDATED).setResultListener(result -> {
+            new JSONExecutor("https://www.amiiboapi.com/api/lastupdated/")
+                    .setResultListener(result -> {
                 if (null != result) parseUpdateJSON(result);
             });
         }
@@ -161,12 +162,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             prefs.enable_automatic_scan().put(isChecked);
             if (isChecked) {
                 requireContext().getPackageManager().setComponentEnabledSetting(
-                        TagMo.NFCIntentFilter,
+                        NFCIntent.FilterComponent,
                         PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                         PackageManager.DONT_KILL_APP);
             } else {
                 requireContext().getPackageManager().setComponentEnabledSetting(
-                        TagMo.NFCIntentFilter,
+                        NFCIntent.FilterComponent,
                         PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                         PackageManager.DONT_KILL_APP);
             }
@@ -198,7 +199,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     .setMessage(R.string.lock_elite_warning)
                     .setPositiveButton(R.string.write, (dialog, which) -> {
                         Intent lock = new Intent(requireContext(), NfcActivity.class);
-                        lock.setAction(TagMo.ACTION_LOCK_AMIIBO);
+                        lock.setAction(NFCIntent.ACTION_LOCK_AMIIBO);
                         startActivity(lock);
                         dialog.dismiss();
                     })
@@ -211,7 +212,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     .setMessage(R.string.prepare_unlock)
                     .setPositiveButton(R.string.start, (dialog, which) -> {
                         Intent unlock = new Intent(requireContext(), NfcActivity.class);
-                        unlock.setAction(TagMo.ACTION_UNLOCK_UNIT);
+                        unlock.setAction(NFCIntent.ACTION_UNLOCK_UNIT);
                         startActivity(unlock);
                         dialog.dismiss();
                     }).show();
@@ -358,7 +359,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (null != viewGuides) {
             viewGuides.setOnPreferenceClickListener(preference -> {
                 startActivity(new Intent(requireActivity(), WebActivity.class)
-                        .setAction(TagMo.ACTION_BROWSE_GITLAB));
+                        .setAction(NFCIntent.ACTION_BROWSE_GITLAB));
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
@@ -522,7 +523,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Executors.newSingleThreadExecutor().execute(() -> {
             showSnackbar(getString(R.string.sync_amiibo_process), Snackbar.LENGTH_INDEFINITE);
             try {
-                URL url = new URL(Website.AMIIBOAPI);
+                URL url = new URL("https://www.amiiboapi.com/api/amiibo/");
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.setUseCaches(false);
@@ -609,7 +610,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                                 getResources().getStringArray(R.array.mimetype_bin));
                     }
                     onLoadKeys.launch(Intent.createChooser(
-                            TagMo.getIntent(intent), title));
+                            NFCIntent.getIntent(intent), title));
                 } catch (ActivityNotFoundException ex) {
                     Debug.Log(ex);
                 }
@@ -621,7 +622,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                                 getResources().getStringArray(R.array.mimetype_json));
                     }
                     onImportAmiiboDatabase.launch(Intent.createChooser(
-                            TagMo.getIntent(intent), title));
+                            NFCIntent.getIntent(intent), title));
                 } catch (ActivityNotFoundException ex) {
                     Debug.Log(ex);
                 }

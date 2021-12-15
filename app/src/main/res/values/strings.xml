@@ -161,7 +161,7 @@
     <string name="enable_tag_validation">NTAG215 validation</string>
     <string name="tag_validation_details">Not all NFC chipsets correctly verify NFC tags.\nDisable to allow tags that may be incompatible.</string>
     <string name="enable_automatic_scan">Automatic NFC Scan</string>
-    <string name="automatic_scan_details">Disabling may avoid unexpected scan attempts.\nNFC scanning may malfunction when disabled.</string>
+    <string name="automatic_scan_details">Disable to prevent unexpected scan attempts.</string>
     <string name="enable_power_tag">Enable Power Tag support</string>
     <string name="power_tag_details">See Github for limitations and use.</string>
     <string name="enable_elite">Enable N2 Elite support</string>

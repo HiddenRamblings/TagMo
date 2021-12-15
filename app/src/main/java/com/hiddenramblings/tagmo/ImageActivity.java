@@ -68,7 +68,7 @@ public class ImageActivity extends AppCompatActivity {
         txtAmiiboType = findViewById(R.id.txtAmiiboType);
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
 
-        amiiboId = getIntent().getLongExtra(TagMo.EXTRA_AMIIBO_ID, -1);
+        amiiboId = getIntent().getLongExtra(NFCIntent.EXTRA_AMIIBO_ID, -1);
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);

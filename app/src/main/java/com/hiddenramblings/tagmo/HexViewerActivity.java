@@ -22,7 +22,7 @@ public class HexViewerActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_hex_viewer);
 
-        byte[] tagData = getIntent().getByteArrayExtra(TagMo.EXTRA_TAG_DATA);
+        byte[] tagData = getIntent().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
         KeyManager keyManager = new KeyManager(this);
         if (keyManager.isKeyMissing()) {
             showErrorDialog(R.string.no_decrypt_key);
@@ -53,6 +53,6 @@ public class HexViewerActivity extends AppCompatActivity {
                 .setMessage(msgRes)
                 .setPositiveButton(R.string.close, (dialog, which) -> finish())
                 .show();
-        setResult(Activity.RESULT_OK, new Intent(TagMo.ACTION_FIX_BANK_DATA));
+        setResult(Activity.RESULT_OK, new Intent(NFCIntent.ACTION_FIX_BANK_DATA));
     }
 }

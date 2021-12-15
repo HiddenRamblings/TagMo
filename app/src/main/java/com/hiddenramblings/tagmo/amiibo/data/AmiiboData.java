@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.nfctech.NfcByte;
 
 import java.io.IOException;
@@ -146,19 +147,19 @@ public class AmiiboData {
     }
 
     public String getNickname() throws UnsupportedEncodingException {
-        return getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE);
+        return getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, CharsetCompat.UTF_16BE);
     }
 
     public void setNickname(String value) {
-            putString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, TagMo.UTF_16BE, value);
+            putString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, CharsetCompat.UTF_16BE, value);
     }
 
     public String getMiiName() throws UnsupportedEncodingException {
-        return getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16LE);
+        return getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, CharsetCompat.UTF_16LE);
     }
 
     public void setMiiName(String value) {
-        putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, TagMo.UTF_16LE, value);
+        putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, CharsetCompat.UTF_16LE, value);
     }
 
     @SuppressWarnings("unused")

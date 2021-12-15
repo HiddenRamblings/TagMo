@@ -31,6 +31,7 @@ import androidx.webkit.WebViewClientCompat;
 import androidx.webkit.WebViewFeature;
 
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -147,7 +148,7 @@ public class WebActivity extends AppCompatActivity {
                     total.append(line).append("\n");
                 }
                 mWebView.loadData(total.toString(), getString(R.string.mimetype_text)
-                        + "; charset=" + TagMo.UTF_8.displayName(), null);
+                        + "; charset=" + CharsetCompat.UTF_8.displayName(), null);
             } catch (Exception e) {
                 Debug.Log(e);
                 new Toasty(this).Short(R.string.fail_logcat);

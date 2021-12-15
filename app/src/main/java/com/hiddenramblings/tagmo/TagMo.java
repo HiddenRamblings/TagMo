@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.util.Log;
 
 import com.hiddenramblings.tagmo.eightbit.content.ScaledContext;
@@ -19,8 +18,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.ref.SoftReference;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 @EApplication
@@ -29,29 +26,12 @@ public class TagMo extends Application {
     @Pref
     Preferences_ prefs;
 
-    public static Charset UTF_8;
-    public static Charset ISO_8859_1;
-    public static Charset UTF_16BE;
-    public static Charset UTF_16LE;
-
     private static SoftReference<Context> mContext;
     private static SoftReference<Preferences_> mPrefs;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            UTF_8 = StandardCharsets.UTF_8;
-            ISO_8859_1 = StandardCharsets.ISO_8859_1;
-            UTF_16BE = StandardCharsets.UTF_16BE;
-            UTF_16LE = StandardCharsets.UTF_16LE;
-        } else {
-            UTF_8 = Charset.forName("UTF-8");
-            ISO_8859_1 = Charset.forName("ISO-8859-1");
-            UTF_16BE = Charset.forName("UTF-16BE");
-            UTF_16LE = Charset.forName("UTF-16LE");
-        }
 
         mPrefs = new SoftReference<>(this.prefs);
         mContext = new SoftReference<>(this);

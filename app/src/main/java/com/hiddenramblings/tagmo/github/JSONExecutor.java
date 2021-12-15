@@ -1,6 +1,7 @@
 package com.hiddenramblings.tagmo.github;
 
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import java.io.BufferedReader;
@@ -31,7 +32,7 @@ public class JSONExecutor {
 
                 InputStream in = conn.getInputStream();
                 BufferedReader streamReader = new BufferedReader(
-                        new InputStreamReader(in, TagMo.UTF_8));
+                        new InputStreamReader(in, CharsetCompat.UTF_8));
                 StringBuilder responseStrBuilder = new StringBuilder();
 
                 String inputStr;

@@ -60,10 +60,10 @@ public interface Preferences {
     boolean recursiveFolders();
 
     @DefaultBoolean(false)
-    boolean showDownloads();
+    boolean showMissingFiles();
 
     @DefaultBoolean(false)
-    boolean showMissingFiles();
+    boolean showDownloads();
 
     @DefaultBoolean(false)
     boolean preferEmulated();
@@ -269,16 +269,6 @@ public interface Preferences {
 //        }
 //    }
 //
-//    public class showDownloads {
-//        public boolean get() {
-//            return preferences.getBoolean("showDownloads", false);
-//        }
-//
-//        public void put(boolean value) {
-//            preferences.edit().putBoolean("showDownloads", value).apply();
-//        }
-//    }
-//
 //    public class showMissingFiles {
 //        public boolean get() {
 //            return preferences.getBoolean("showMissingFiles", false);
@@ -286,6 +276,16 @@ public interface Preferences {
 //
 //        public void put(boolean value) {
 //            preferences.edit().putBoolean("showMissingFiles", value).apply();
+//        }
+//    }
+//
+//    public class showDownloads {
+//        public boolean get() {
+//            return preferences.getBoolean("showDownloads", false);
+//        }
+//
+//        public void put(boolean value) {
+//            preferences.edit().putBoolean("showDownloads", value).apply();
 //        }
 //    }
 //

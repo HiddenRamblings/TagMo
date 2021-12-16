@@ -45,9 +45,9 @@
     <string name="amiibo_character_caps">CHARACTER</string>
     <string name="amiibo_path_caps">PATH</string>
 
-    <string name="show_downloads">Show \'Download\'</string>
     <string name="recursive_folders">Recursive Search</string>
     <string name="show_missing">Missing amiibo™</string>
+    <string name="show_downloads">Show \'Download\'</string>
     <string name="enable_scale">View Scale Mods</string>
 
     <string name="simple">Text Banners</string>

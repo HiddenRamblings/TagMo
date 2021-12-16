@@ -1611,9 +1611,10 @@ public class BrowserActivity extends AppCompatActivity implements
                     .setMessage(getString(R.string.warn_delete_file, Storage.getRelativePath(
                             amiiboFile.getFilePath(), prefs.preferEmulated().get())))
                     .setPositiveButton(R.string.delete, (dialog, which) -> {
+                        amiiboContainer.setVisibility(View.GONE);
                         //noinspection ResultOfMethodCallIgnored
                         amiiboFile.getFilePath().delete();
-                        this.onRootFolderChanged(false);
+                        this.onRootFolderChanged(true);
                         dialog.dismiss();
                     })
                     .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();

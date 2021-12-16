@@ -282,12 +282,11 @@ public class BrowserAmiibosAdapter
         private void setIsHighlighted(boolean isHighlighted) {
             View highlight = this.itemView.findViewById(R.id.highlight);
             if (isHighlighted) {
-                highlight.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                        TagMo.isDarkTheme() ? R.color.backgroundWhite
-                                : R.color.backgroundBlack));
+                highlight.setBackgroundResource(TagMo.isDarkTheme()
+                        ? R.drawable.rounded_view_dark
+                        : R.drawable.rounded_view_light);
             } else {
-                highlight.setBackgroundColor(ContextCompat.getColor(
-                        TagMo.getContext(), android.R.color.transparent));
+                highlight.setBackgroundResource(0);
             }
         }
 

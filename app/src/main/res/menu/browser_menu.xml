@@ -112,11 +112,6 @@
             <group
                 android:id="@+id/content">
                 <item
-                    android:id="@+id/show_downloads"
-                    android:checkable="true"
-                    android:title="@string/show_downloads"
-                    app:showAsAction="ifRoom"/>
-                <item
                     android:id="@+id/recursive"
                     android:checkable="true"
                     android:title="@string/recursive_folders"
@@ -125,6 +120,11 @@
                     android:id="@+id/show_missing"
                     android:checkable="true"
                     android:title="@string/show_missing"
+                    app:showAsAction="ifRoom"/>
+                <item
+                    android:id="@+id/show_downloads"
+                    android:checkable="true"
+                    android:title="@string/show_downloads"
                     app:showAsAction="ifRoom"/>
                 <item
                     android:id="@+id/enable_scale"

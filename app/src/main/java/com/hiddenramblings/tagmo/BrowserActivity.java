@@ -168,9 +168,9 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuViewCompact;
     private MenuItem menuViewLarge;
     private MenuItem menuViewImage;
-    private MenuItem menuShowDownloads;
     private MenuItem menuRecursiveFiles;
     private MenuItem menuShowMissing;
+    private MenuItem menuShowDownloads;
     private MenuItem menuEnableScale;
 
     private BlurView amiiboContainer;
@@ -878,18 +878,18 @@ public class BrowserActivity extends AppCompatActivity implements
         menuViewCompact = menu.findItem(R.id.view_compact);
         menuViewLarge = menu.findItem(R.id.view_large);
         menuViewImage = menu.findItem(R.id.view_image);
-        menuShowDownloads = menu.findItem(R.id.show_downloads);
         menuRecursiveFiles = menu.findItem(R.id.recursive);
         menuShowMissing = menu.findItem(R.id.show_missing);
+        menuShowDownloads = menu.findItem(R.id.show_downloads);
         menuEnableScale = menu.findItem(R.id.enable_scale);
 
         if (null == this.settings) return false;
 
         this.onSortChanged();
         this.onViewChanged();
-        this.onShowDownloadsChanged();
         this.onRecursiveFilesChanged();
         this.onShowMissingChanged();
+        this.onShowDownloadsChanged();
         this.onEnableScaleChanged();
 
         // setOnQueryTextListener will clear this, so make a copy
@@ -971,14 +971,14 @@ public class BrowserActivity extends AppCompatActivity implements
             this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
             settings.setAmiiboView(VIEW.IMAGE.getValue());
             settings.notifyChanges();
-        } else if (item.getItemId() == R.id.show_downloads) {
-            this.settings.setShowDownloads(!this.settings.isShowingDownloads());
-            this.settings.notifyChanges();
         } else if (item.getItemId() == R.id.recursive) {
             this.settings.setRecursiveEnabled(!this.settings.isRecursiveEnabled());
             this.settings.notifyChanges();
         } else if (item.getItemId() == R.id.show_missing) {
             this.settings.setShowMissingFiles(!this.settings.isShowingMissingFiles());
+            this.settings.notifyChanges();
+        } else if (item.getItemId() == R.id.show_downloads) {
+            this.settings.setShowDownloads(!this.settings.isShowingDownloads());
             this.settings.notifyChanges();
         } else if (item.getItemId() == R.id.enable_scale) {
             prefs.enableScaling().put(!menuEnableScale.isChecked());
@@ -1333,10 +1333,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 oldBrowserSettings.getBrowserRootFolder())) {
             folderChanged = true;
         }
-        if (newBrowserSettings.isShowingDownloads() != oldBrowserSettings.isShowingDownloads()) {
-            folderChanged = true;
-            onShowDownloadsChanged();
-        }
         if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
             folderChanged = true;
             onRecursiveFilesChanged();
@@ -1344,6 +1340,10 @@ public class BrowserActivity extends AppCompatActivity implements
         if (newBrowserSettings.isShowingMissingFiles() != oldBrowserSettings.isShowingMissingFiles()) {
             folderChanged = true;
             onShowMissingChanged();
+        }
+        if (newBrowserSettings.isShowingDownloads() != oldBrowserSettings.isShowingDownloads()) {
+            folderChanged = true;
+            onShowDownloadsChanged();
         }
         if (folderChanged) {
             onRootFolderChanged(true);
@@ -1387,9 +1387,9 @@ public class BrowserActivity extends AppCompatActivity implements
                 .filterAmiiboType().put(newBrowserSettings.getAmiiboTypeFilter())
                 .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
                 .image_network_settings().put(newBrowserSettings.getImageNetworkSettings())
-                .showDownloads().put(newBrowserSettings.isShowingDownloads())
                 .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
                 .showMissingFiles().put(newBrowserSettings.isShowingMissingFiles())
+                .showDownloads().put(newBrowserSettings.isShowingDownloads())
                 .apply();
 
         File rootFolder = newBrowserSettings.getBrowserRootFolder();
@@ -1548,13 +1548,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             };
 
-    private void onShowDownloadsChanged() {
-        if (null == menuShowDownloads)
-            return;
-
-        menuShowDownloads.setChecked(settings.isShowingDownloads());
-    }
-
     private void onRecursiveFilesChanged() {
         if (null == menuRecursiveFiles)
             return;
@@ -1567,6 +1560,13 @@ public class BrowserActivity extends AppCompatActivity implements
             return;
 
         menuShowMissing.setChecked(settings.isShowingMissingFiles());
+    }
+
+    private void onShowDownloadsChanged() {
+        if (null == menuShowDownloads)
+            return;
+
+        menuShowDownloads.setChecked(settings.isShowingDownloads());
     }
 
     private void onEnableScaleChanged() {

@@ -15,8 +15,14 @@
     app:cardCornerRadius="@dimen/card_radius"
     tools:ignore="SmallSp">
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/highlight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="0dp">
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -130,4 +136,5 @@
         android:textColor="@color/tag_text_light"
         android:textSize="10sp"
         android:visibility="gone"/>
+    </FrameLayout>
 </androidx.cardview.widget.CardView>

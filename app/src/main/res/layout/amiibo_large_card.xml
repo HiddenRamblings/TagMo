@@ -15,8 +15,14 @@
     android:foreground="@drawable/card_foreground"
     app:cardCornerRadius="@dimen/card_radius">
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/highlight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="0dp">
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -153,4 +159,5 @@
                 android:visibility="gone" />
         </RelativeLayout>
     </LinearLayout>
+    </FrameLayout>
 </androidx.cardview.widget.CardView>

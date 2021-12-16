@@ -137,31 +137,44 @@ public class Debug {
         }
         reader.close();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName);
-            contentValues.put(MediaStore.MediaColumns.MIME_TYPE,
-                    context.getString(R.string.mimetype_text));
-            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS
-                    + File.separator + "TagMo" + File.separator +  "Logcat");
-            ContentResolver resolver = context.getContentResolver();
-            Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
-            try (OutputStream fos = resolver.openOutputStream(uri)) {
-                fos.write(log.toString().getBytes());
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName);
+                contentValues.put(MediaStore.MediaColumns.MIME_TYPE,
+                        context.getString(R.string.mimetype_text));
+                contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH,
+                        Environment.DIRECTORY_DOWNLOADS + File.separator
+                                + "TagMo" + File.separator + "Logcat");
+                ContentResolver resolver = context.getContentResolver();
+                Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
+                try (OutputStream fos = resolver.openOutputStream(uri)) {
+                    fos.write(log.toString().getBytes());
+                }
+                return uri;
+            } else {
+                File file = new File(Storage.getDownloadDir("TagMo",
+                        "Logcat"), displayName + ".txt");
+                try (FileOutputStream fos = new FileOutputStream(file)) {
+                    fos.write(log.toString().getBytes());
+                }
+                try {
+                    MediaScannerConnection.scanFile(context, new String[]{
+                            file.getAbsolutePath()
+                    }, new String[]{context.getString(R.string.mimetype_text)}, null);
+                } catch (Exception e) {
+                    // Media scan can fail without adverse consequences
+                }
+                return Uri.fromFile(file);
             }
-            return uri;
-        } else {
-            File file = new File(Storage.getDownloadDir("TagMo",
-                    "Logcat"), displayName + ".txt");
+        } catch (Exception e) {
+            if (!"crash_logcat".equals(displayName))
+                throw new IOException(context.getString(R.string.fail_logcat));
+
+            File file = new File(context.getExternalFilesDir(null),
+                    displayName + ".txt");
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(log.toString().getBytes());
-            }
-            try {
-                MediaScannerConnection.scanFile(context, new String[] {
-                        file.getAbsolutePath()
-                }, new String[]{ context.getString(R.string.mimetype_text) }, null);
-            } catch (Exception e) {
-                // Media scan can fail without adverse consequences
             }
             return Uri.fromFile(file);
         }

@@ -141,12 +141,11 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
     private void setIsHighlighted(AmiiboViewHolder holder, boolean isHighlighted) {
         View highlight = holder.itemView.findViewById(R.id.highlight);
         if (isHighlighted) {
-            highlight.setBackgroundColor(ContextCompat.getColor(TagMo.getContext(),
-                    TagMo.isDarkTheme() ? android.R.color.holo_green_dark
-                            : android.R.color.holo_green_light));
+            highlight.setBackgroundResource(TagMo.isDarkTheme()
+                    ? R.drawable.rounded_neon_dark
+                    : R.drawable.rounded_neon_light);
         } else {
-            highlight.setBackgroundColor(ContextCompat.getColor(
-                    TagMo.getContext(), android.R.color.transparent));
+            highlight.setBackgroundResource(0);
         }
     }
 

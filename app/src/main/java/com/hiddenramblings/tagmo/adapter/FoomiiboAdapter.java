@@ -121,9 +121,9 @@ public class FoomiiboAdapter
     }
 
     private void setIsHighlighted(AmiiboViewHolder holder) {
-        holder.itemView.findViewById(R.id.highlight).setBackgroundColor(
-                ContextCompat.getColor(TagMo.getContext(), TagMo.isDarkTheme()
-                        ? R.color.backgroundWhite : R.color.backgroundBlack));
+        holder.itemView.findViewById(R.id.highlight).setBackgroundResource(TagMo.isDarkTheme()
+                ? R.drawable.rounded_view_dark
+                : R.drawable.rounded_view_light);
     }
 
     @Override

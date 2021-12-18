@@ -509,7 +509,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    private final ActivityResultLauncher<Intent> onBuildFoomiibo = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> onFoomiiboEditor = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK) return;
         this.onRootFolderChanged(true);
@@ -984,8 +984,8 @@ public class BrowserActivity extends AppCompatActivity implements
             this.recreate();
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
-        } else if (item.getItemId() == R.id.build_foomiibo) {
-            onBuildFoomiibo.launch(new Intent(this, FoomiiboActivity.class));
+        } else if (item.getItemId() == R.id.foomiibo_editor) {
+            onFoomiiboEditor.launch(new Intent(this, FoomiiboActivity.class));
         } else if (item.getItemId() == R.id.filter_game_series) {
             return onFilterGameSeriesClick();
         } else if (item.getItemId() == R.id.filter_character) {

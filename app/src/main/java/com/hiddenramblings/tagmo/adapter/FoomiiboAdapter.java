@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.request.target.CustomTarget;
@@ -34,17 +33,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class FoomiiboAdapter
-        extends RecyclerView.Adapter<FoomiiboAdapter.AmiiboViewHolder>
+        extends RecyclerView.Adapter<FoomiiboAdapter.FoomiiboViewHolder>
         implements Filterable, BrowserSettingsListener {
 
     private final BrowserSettings settings;
-    private final OnAmiiboClickListener listener;
+    private final OnFoomiiboClickListener listener;
     private final ArrayList<Amiibo> data = new ArrayList<>();
     private ArrayList<Amiibo> filteredData;
-    private AmiiboFilter filter;
+    private FoomiiboFilter filter;
     boolean firstRun = true;
 
-    public FoomiiboAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
+    public FoomiiboAdapter(BrowserSettings settings, OnFoomiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
 
@@ -106,7 +105,7 @@ public class FoomiiboAdapter
 
     @NonNull
     @Override
-    public AmiiboViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FoomiiboViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (VIEW.valueOf(viewType)) {
             case COMPACT:
                 return new CompactViewHolder(parent, settings, listener);
@@ -120,17 +119,17 @@ public class FoomiiboAdapter
         }
     }
 
-    private void setIsHighlighted(AmiiboViewHolder holder) {
+    private void setIsHighlighted(FoomiiboViewHolder holder) {
         holder.itemView.findViewById(R.id.highlight).setBackgroundResource(TagMo.isDarkTheme()
                 ? R.drawable.rounded_view_dark
                 : R.drawable.rounded_view_light);
     }
 
     @Override
-    public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
+    public void onBindViewHolder(final FoomiiboViewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.listener) {
-                holder.listener.onAmiiboClicked(holder.amiibo);
+                holder.listener.onFoomiiboClicked(holder.foomiibo);
                 setIsHighlighted(holder);
             }
         });
@@ -138,9 +137,9 @@ public class FoomiiboAdapter
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.listener) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
-                        holder.listener.onAmiiboClicked(holder.amiibo);
+                        holder.listener.onFoomiiboClicked(holder.foomiibo);
                     } else {
-                        holder.listener.onAmiiboImageClicked(holder.amiibo);
+                        holder.listener.onFoomiiboImageClicked(holder.foomiibo);
                     }
                     setIsHighlighted(holder);
                 }
@@ -154,14 +153,14 @@ public class FoomiiboAdapter
     }
 
     @Override
-    public AmiiboFilter getFilter() {
+    public FoomiiboFilter getFilter() {
         if (null == this.filter) {
-            this.filter = new AmiiboFilter();
+            this.filter = new FoomiiboFilter();
         }
         return this.filter;
     }
 
-    class AmiiboFilter extends Filter {
+    class FoomiiboFilter extends Filter {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             String query = null != constraint ? constraint.toString() : "";
@@ -209,9 +208,9 @@ public class FoomiiboAdapter
         }
     }
 
-    protected static abstract class AmiiboViewHolder extends RecyclerView.ViewHolder {
+    protected static abstract class FoomiiboViewHolder extends RecyclerView.ViewHolder {
         private final BrowserSettings settings;
-        private final OnAmiiboClickListener listener;
+        private final OnFoomiiboClickListener listener;
 
         public final TextView txtError;
         public final TextView txtName;
@@ -223,7 +222,7 @@ public class FoomiiboAdapter
         public final TextView txtPath;
         public final ImageView imageAmiibo;
 
-        Amiibo amiibo = null;
+        Amiibo foomiibo = null;
 
         private final BoldSpannable boldSpannable = new BoldSpannable();
 
@@ -250,7 +249,7 @@ public class FoomiiboAdapter
             }
         };
 
-        public AmiiboViewHolder(View itemView, BrowserSettings settings, OnAmiiboClickListener listener) {
+        public FoomiiboViewHolder(View itemView, BrowserSettings settings, OnFoomiiboClickListener listener) {
             super(itemView);
 
             this.settings = settings;
@@ -268,7 +267,7 @@ public class FoomiiboAdapter
         }
 
         void bind(final Amiibo item) {
-            this.amiibo = item;
+            this.foomiibo = item;
 
             String tagInfo = null;
             String amiiboHexId = "";
@@ -310,17 +309,17 @@ public class FoomiiboAdapter
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {
-                    setAmiiboInfoText(this.txtError, tagInfo, false);
+                    setFoomiiboInfoText(this.txtError, tagInfo, false);
                 } else {
                     this.txtError.setVisibility(View.GONE);
                 }
-                setAmiiboInfoText(this.txtName, amiiboName, false);
-                setAmiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query), hasTagInfo);
-                setAmiiboInfoText(this.txtAmiiboSeries,
+                setFoomiiboInfoText(this.txtName, amiiboName, false);
+                setFoomiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query), hasTagInfo);
+                setFoomiiboInfoText(this.txtAmiiboSeries,
                         boldSpannable.IndexOf(amiiboSeries, query), hasTagInfo);
-                setAmiiboInfoText(this.txtAmiiboType,
+                setFoomiiboInfoText(this.txtAmiiboType,
                         boldSpannable.IndexOf(amiiboType, query), hasTagInfo);
-                setAmiiboInfoText(this.txtGameSeries,
+                setFoomiiboInfoText(this.txtGameSeries,
                         boldSpannable.IndexOf(gameSeries, query), hasTagInfo);
                 // setAmiiboInfoText(this.txtCharacter,
                 // boldText.Matching(character, query), hasTagInfo);
@@ -334,7 +333,7 @@ public class FoomiiboAdapter
             }
         }
 
-        void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+        void setFoomiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
             if (hasTagInfo) {
                 textView.setVisibility(View.GONE);
             } else {
@@ -350,9 +349,9 @@ public class FoomiiboAdapter
         }
     }
 
-    static class SimpleViewHolder extends AmiiboViewHolder {
+    static class SimpleViewHolder extends FoomiiboViewHolder {
         public SimpleViewHolder(ViewGroup parent, BrowserSettings settings,
-                                OnAmiiboClickListener listener) {
+                                OnFoomiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
@@ -361,9 +360,9 @@ public class FoomiiboAdapter
         }
     }
 
-    static class CompactViewHolder extends AmiiboViewHolder {
+    static class CompactViewHolder extends FoomiiboViewHolder {
         public CompactViewHolder(ViewGroup parent, BrowserSettings settings,
-                                 OnAmiiboClickListener listener) {
+                                 OnFoomiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
@@ -372,9 +371,9 @@ public class FoomiiboAdapter
         }
     }
 
-    static class LargeViewHolder extends AmiiboViewHolder {
+    static class LargeViewHolder extends FoomiiboViewHolder {
         public LargeViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnAmiiboClickListener listener) {
+                               OnFoomiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
@@ -383,9 +382,9 @@ public class FoomiiboAdapter
         }
     }
 
-    static class ImageViewHolder extends AmiiboViewHolder {
+    static class ImageViewHolder extends FoomiiboViewHolder {
         public ImageViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnAmiiboClickListener listener) {
+                               OnFoomiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_image_card, parent, false),
@@ -394,9 +393,9 @@ public class FoomiiboAdapter
         }
     }
 
-    public interface OnAmiiboClickListener {
-        void onAmiiboClicked(Amiibo amiibo);
+    public interface OnFoomiiboClickListener {
+        void onFoomiiboClicked(Amiibo foomiibo);
 
-        void onAmiiboImageClicked(Amiibo amiibo);
+        void onFoomiiboImageClicked(Amiibo foomiibo);
     }
 }

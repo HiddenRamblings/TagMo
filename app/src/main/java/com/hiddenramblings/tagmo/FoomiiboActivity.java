@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,16 +37,14 @@ import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class FoomiiboActivity extends AppCompatActivity implements
-        FoomiiboAdapter.OnAmiiboClickListener {
-
-    RecyclerView amiibosView;
+        FoomiiboAdapter.OnFoomiiboClickListener {
 
     private final Foomiibo foomiibo = new Foomiibo();
     private final File directory = Storage.getDownloadDir("TagMo", "Foomiibo");
     private ProgressDialog dialog;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    BrowserSettings settings;
+    private BrowserSettings settings;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,9 +53,6 @@ public class FoomiiboActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_foomiibo);
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
-
-        amiibosView = findViewById(R.id.amiibos_list);
-
         setResult(RESULT_CANCELED);
 
         this.settings = new BrowserSettings().initialize();
@@ -79,41 +75,24 @@ public class FoomiiboActivity extends AppCompatActivity implements
             });
         });
 
-        if (this.settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
-        else
-            this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        this.amiibosView.setAdapter(new FoomiiboAdapter(settings, this));
-        this.settings.addChangeListener((BrowserSettingsListener) this.amiibosView.getAdapter());
+        RecyclerView amiibosView = findViewById(R.id.amiibos_list);
+        AppCompatButton clearFoomiiboSet = findViewById(R.id.clear_foomiibo_set);
+        AppCompatButton buildFoomiiboSet = findViewById(R.id.build_foomiibo_set);
 
-        findViewById(R.id.clear_foomiibo_set).setOnClickListener(view -> {
+        if (this.settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
+            amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+        else
+            amiibosView.setLayoutManager(new LinearLayoutManager(this));
+        amiibosView.setAdapter(new FoomiiboAdapter(settings, this));
+        this.settings.addChangeListener((BrowserSettingsListener) amiibosView.getAdapter());
+
+        clearFoomiiboSet.setOnClickListener(view -> {
             deleteDir(directory);
             setResult(RESULT_OK);
             finish();
         });
 
-        findViewById(R.id.build_foomiibo_set).setOnClickListener(view ->
-                Executors.newSingleThreadExecutor().execute(() -> {
-            AmiiboManager amiiboManager = settings.getAmiiboManager();
-            if (null == amiiboManager) return;
-
-            handler.post(() -> dialog = ProgressDialog.show(FoomiiboActivity.this,
-                    "", "", true));
-
-            deleteDir(directory);
-            //noinspection ResultOfMethodCallIgnored
-            directory.mkdirs();
-
-            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                buildFoomiiboFile(amiibo);
-                handler.post(() -> dialog.setMessage(getString(
-                        R.string.foomiibo_progress, amiibo.getCharacter().name)));
-            }
-            handler.post(() -> dialog.dismiss());
-
-            setResult(RESULT_OK);
-            finish();
-        }));
+        buildFoomiiboSet.setOnClickListener(view -> buildFoomiiboSet());
     }
 
     private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
@@ -174,16 +153,46 @@ public class FoomiiboActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void onAmiiboClicked(Amiibo amiibo) {
+    private void buildFoomiiboSet() {
+        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        if (null == amiiboManager) return;
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            handler.post(() -> dialog = ProgressDialog.show(FoomiiboActivity.this,
+                    "", "", true));
+
+            deleteDir(directory);
+            //noinspection ResultOfMethodCallIgnored
+            directory.mkdirs();
+
+            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                buildFoomiiboFile(amiibo);
+                handler.post(() -> dialog.setMessage(getString(
+                        R.string.foomiibo_progress, amiibo.getCharacter().name)));
+            }
+            handler.post(() -> dialog.dismiss());
+
+            setResult(RESULT_OK);
+            finish();
+        });
+    }
+
+    private void onBuildFoomiibo(Amiibo amiibo) {
+        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        if (null == amiiboManager) return;
+
         buildFoomiiboFile(amiibo);
         setResult(RESULT_OK);
     }
 
     @Override
-    public void onAmiiboImageClicked(Amiibo amiibo) {
-        buildFoomiiboFile(amiibo);
-        setResult(RESULT_OK);
+    public void onFoomiiboClicked(Amiibo foomiibo) {
+        onBuildFoomiibo(foomiibo);
+    }
+
+    @Override
+    public void onFoomiiboImageClicked(Amiibo foomiibo) {
+        onBuildFoomiibo(foomiibo);
     }
 
     @Override

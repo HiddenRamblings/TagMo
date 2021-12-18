@@ -135,9 +135,9 @@
         </menu>
     </item>
     <item
-        android:id="@+id/build_foomiibo"
+        android:id="@+id/foomiibo_editor"
         android:icon="@drawable/ic_github_white_24dp"
-        android:title="@string/build_foomiibo"
+        android:title="@string/foomiibo_editor"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/capture_logcat"

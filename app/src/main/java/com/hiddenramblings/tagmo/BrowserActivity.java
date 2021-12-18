@@ -437,7 +437,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
             Intent eliteIntent = new Intent(this, BankListActivity.class);
             eliteIntent.putExtras(result.getData());
-            eliteIntent.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
             startActivity(eliteIntent);
         } else {
             updateAmiiboView(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
@@ -2038,99 +2037,94 @@ public class BrowserActivity extends AppCompatActivity implements
         if (settings.getAmiiboFiles().isEmpty()) this.onRefresh();
     });
 
-    private void onTagDiscovered(Intent intent) {
-        if (keyManager.isKeyMissing())
-            return;
-        NTAG215 mifare = null;
-        try {
-            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            mifare = NTAG215.get(tag);
-            String tagTech = TagUtils.getTagTechnology(tag);
-            if (mifare == null) {
-                if (prefs.enable_elite_support().get()) {
-                    mifare = new NTAG215(NfcA.get(tag));
-                    try {
-                        mifare.connect();
-                    } catch (Exception ex) {
-                        Debug.Log(ex);
-                    }
-                    if (TagReader.needsFirmware(mifare)) {
-                        if (TagWriter.updateFirmware(mifare))
-                            new Toasty(this).Short(R.string.firmware_update);
-                        mifare.close();
-                        finish();
-                    }
-                }
-                throw new Exception(getString(R.string.error_tag_protocol, tagTech));
-            }
-            mifare.connect();
-            if (!hasTestedElite) {
-                hasTestedElite = true;
-                if (!TagUtils.isPowerTag(mifare)) {
-                    isEliteDevice = TagUtils.isElite(mifare);
-                }
-            }
-            byte[] bank_details;
-            int bank_count;
-            int active_bank;
-            if (!isEliteDevice) {
-                bank_count = -1;
-                active_bank = -1;
-            } else {
-                bank_details = TagReader.getBankDetails(mifare);
-                bank_count = bank_details[1] & 0xFF;
-                active_bank = bank_details[0] & 0xFF;
-            }
-            try {
-                if (isEliteDevice) {
-                    String signature = TagReader.getTagSignature(mifare);
-                    prefs.settings_elite_signature().put(signature);
-                    prefs.eliteActiveBank().put(active_bank);
-                    prefs.eliteBankCount().put(bank_count);
-
-                    Intent eliteIntent = new Intent(this, BankListActivity.class);
-                    Bundle args = new Bundle();
-                    ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
-                    eliteIntent.putExtra(NFCIntent.EXTRA_SIGNATURE, signature);
-                    eliteIntent.putExtra(NFCIntent.EXTRA_BANK_COUNT, bank_count);
-                    eliteIntent.putExtra(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
-                    args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles);
-                    eliteIntent.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, settings.getAmiiboFiles());
-                    onTagLaunchActivity.launch(eliteIntent.putExtras(args));
-                } else {
-                    updateAmiiboView(TagReader.readFromTag(mifare));
-                }
-                hasTestedElite = false;
-                isEliteDevice = false;
-            } finally {
-                mifare.close();
-            }
-        } catch (Exception e) {
-            Debug.Log(e);
-            String error = e.getMessage();
-            error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
-            if (null != error && prefs.enable_elite_support().get()) {
-                if (e instanceof android.nfc.TagLostException) {
-                    new Toasty(this).Short(R.string.speed_scan);
-                    try {
-                        if (null != mifare) mifare.close();
-                    } catch (IOException ex) {
-                        Debug.Log(ex);
-                    }
-                }
-            } else {
-                new Toasty(this).Short(error);
-            }
-        }
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            onTagDiscovered(intent);
+            if (keyManager.isKeyMissing())
+                return;
+            NTAG215 mifare = null;
+            try {
+                Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                mifare = NTAG215.get(tag);
+                String tagTech = TagUtils.getTagTechnology(tag);
+                if (mifare == null) {
+                    if (prefs.enable_elite_support().get()) {
+                        mifare = new NTAG215(NfcA.get(tag));
+                        try {
+                            mifare.connect();
+                        } catch (Exception ex) {
+                            Debug.Log(ex);
+                        }
+                        if (TagReader.needsFirmware(mifare)) {
+                            if (TagWriter.updateFirmware(mifare))
+                                new Toasty(this).Short(R.string.firmware_update);
+                            mifare.close();
+                            finish();
+                        }
+                    }
+                    throw new Exception(getString(R.string.error_tag_protocol, tagTech));
+                }
+                mifare.connect();
+                if (!hasTestedElite) {
+                    hasTestedElite = true;
+                    if (!TagUtils.isPowerTag(mifare)) {
+                        isEliteDevice = TagUtils.isElite(mifare);
+                    }
+                }
+                byte[] bank_details;
+                int bank_count;
+                int active_bank;
+                if (!isEliteDevice) {
+                    bank_count = -1;
+                    active_bank = -1;
+                } else {
+                    bank_details = TagReader.getBankDetails(mifare);
+                    bank_count = bank_details[1] & 0xFF;
+                    active_bank = bank_details[0] & 0xFF;
+                }
+                try {
+                    if (isEliteDevice) {
+                        String signature = TagReader.getTagSignature(mifare);
+                        prefs.settings_elite_signature().put(signature);
+                        prefs.eliteActiveBank().put(active_bank);
+                        prefs.eliteBankCount().put(bank_count);
+
+                        Intent eliteIntent = new Intent(this, BankListActivity.class);
+                        Bundle args = new Bundle();
+                        ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
+                        eliteIntent.putExtra(NFCIntent.EXTRA_SIGNATURE, signature);
+                        eliteIntent.putExtra(NFCIntent.EXTRA_BANK_COUNT, bank_count);
+                        eliteIntent.putExtra(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
+                        args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles);
+                        onTagLaunchActivity.launch(eliteIntent.putExtras(args));
+                    } else {
+                        updateAmiiboView(TagReader.readFromTag(mifare));
+                    }
+                    hasTestedElite = false;
+                    isEliteDevice = false;
+                } finally {
+                    mifare.close();
+                }
+            } catch (Exception e) {
+                Debug.Log(e);
+                String error = e.getMessage();
+                error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
+                if (null != error && prefs.enable_elite_support().get()) {
+                    if (e instanceof android.nfc.TagLostException) {
+                        new Toasty(this).Short(R.string.speed_scan);
+                        try {
+                            if (null != mifare) mifare.close();
+                        } catch (IOException ex) {
+                            Debug.Log(ex);
+                        }
+                    }
+                } else {
+                    new Toasty(this).Short(error);
+                }
+            }
         }
     }
 }

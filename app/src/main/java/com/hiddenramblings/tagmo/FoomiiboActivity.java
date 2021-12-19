@@ -32,6 +32,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.Executors;
@@ -43,6 +44,7 @@ public class FoomiiboActivity extends AppCompatActivity implements
     private final File directory = Storage.getDownloadDir("TagMo", "Foomiibo");
     private ProgressDialog dialog;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private ArrayList<Long> missingIds = new ArrayList<>();
 
     private BrowserSettings settings;
 
@@ -54,6 +56,14 @@ public class FoomiiboActivity extends AppCompatActivity implements
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         setResult(RESULT_CANCELED);
+
+        if (getIntent().hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
+            ArrayList<String> missing = getIntent()
+                    .getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST);
+            for (String amiiboId : missing) {
+                missingIds.add(Long.parseLong(amiiboId));
+            }
+        }
 
         this.settings = new BrowserSettings().initialize();
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -83,7 +93,7 @@ public class FoomiiboActivity extends AppCompatActivity implements
             amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
         else
             amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        amiibosView.setAdapter(new FoomiiboAdapter(settings, this));
+        amiibosView.setAdapter(new FoomiiboAdapter(settings, missingIds, this));
         this.settings.addChangeListener((BrowserSettingsListener) amiibosView.getAdapter());
 
         clearFoomiiboSet.setOnClickListener(view -> {

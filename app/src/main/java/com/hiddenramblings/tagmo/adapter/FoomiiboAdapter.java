@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo.adapter;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 public class FoomiiboAdapter
         extends RecyclerView.Adapter<FoomiiboAdapter.FoomiiboViewHolder>
@@ -42,9 +44,12 @@ public class FoomiiboAdapter
     private ArrayList<Amiibo> filteredData;
     private FoomiiboFilter filter;
     boolean firstRun = true;
+    private final ArrayList<Long> missingIds;
 
-    public FoomiiboAdapter(BrowserSettings settings, OnFoomiiboClickListener listener) {
+    public FoomiiboAdapter(BrowserSettings settings, ArrayList<Long> missingIds,
+                           OnFoomiiboClickListener listener) {
         this.settings = settings;
+        this.missingIds = missingIds;
         this.listener = listener;
 
         this.filteredData = this.data;
@@ -203,6 +208,16 @@ public class FoomiiboAdapter
                 //noinspection unchecked
                 filteredData = (ArrayList<Amiibo>) filterResults.values;
                 Collections.sort(filteredData, new AmiiboComparator(settings));
+                if (null != missingIds && !missingIds.isEmpty()) {
+                    ArrayList<Amiibo> missingFiles = new ArrayList<>();
+                    for (Amiibo amiibo : filteredData) {
+                        if (missingIds.contains(amiibo.id)) {
+                            missingFiles.add(amiibo);
+                        }
+                    }
+                    filteredData.removeAll(missingFiles);
+                    filteredData.addAll(0, missingFiles);
+                }
                 notifyDataSetChanged();
             }
         }

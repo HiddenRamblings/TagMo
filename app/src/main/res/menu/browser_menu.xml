@@ -117,11 +117,6 @@
                     android:title="@string/recursive_folders"
                     app:showAsAction="ifRoom"/>
                 <item
-                    android:id="@+id/show_missing"
-                    android:checkable="true"
-                    android:title="@string/show_missing"
-                    app:showAsAction="ifRoom"/>
-                <item
                     android:id="@+id/show_downloads"
                     android:checkable="true"
                     android:title="@string/show_downloads"

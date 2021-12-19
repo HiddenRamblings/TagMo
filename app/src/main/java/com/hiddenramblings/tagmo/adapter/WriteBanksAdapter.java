@@ -3,6 +3,8 @@ package com.hiddenramblings.tagmo.adapter;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.request.target.CustomTarget;
@@ -408,6 +409,15 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                             TagMo.getPrefs().preferEmulated().get()).replace(
                                     TagMo.getPrefs().browserRootFolder().get(), "");
                     this.txtPath.setText(boldSpannable.IndexOf(relativeFile, query));
+                    TypedValue a = new TypedValue();
+                    this.txtPath.getContext().getTheme().resolveAttribute(
+                            android.R.attr.textColor, a, true);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                        this.txtPath.setTextColor(a.data);
+                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                        this.txtPath.setTextColor(a.data);
+                    }
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");

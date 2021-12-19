@@ -60,9 +60,6 @@ public interface Preferences {
     boolean recursiveFolders();
 
     @DefaultBoolean(false)
-    boolean showMissingFiles();
-
-    @DefaultBoolean(false)
     boolean showDownloads();
 
     @DefaultBoolean(false)

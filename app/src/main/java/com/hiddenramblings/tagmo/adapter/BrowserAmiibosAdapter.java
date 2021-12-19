@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.request.target.CustomTarget;
@@ -34,10 +33,8 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListene
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 
 public class BrowserAmiibosAdapter
         extends RecyclerView.Adapter<BrowserAmiibosAdapter.AmiiboViewHolder>
@@ -74,9 +71,7 @@ public class BrowserAmiibosAdapter
                 !BrowserSettings.equals(newBrowserSettings.getAmiiboSeriesFilter(),
                         oldBrowserSettings.getAmiiboSeriesFilter()) ||
                 !BrowserSettings.equals(newBrowserSettings.getAmiiboTypeFilter(),
-                        oldBrowserSettings.getAmiiboTypeFilter()) ||
-                !BrowserSettings.equals(newBrowserSettings.isShowingMissingFiles(),
-                        oldBrowserSettings.isShowingMissingFiles());
+                        oldBrowserSettings.getAmiiboTypeFilter());
 
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
@@ -178,25 +173,13 @@ public class BrowserAmiibosAdapter
                 data.addAll(settings.getAmiiboFiles());
             }
 
-            AmiiboManager amiiboManager = settings.getAmiiboManager();
-            if (null != amiiboManager && settings.isShowingMissingFiles()) {
-                HashSet<Long> amiiboIds = new HashSet<>();
-                for (AmiiboFile amiiboFile : data) {
-                    amiiboIds.add(amiiboFile.getId());
-                }
-                for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                    if (!amiiboIds.contains(amiibo.id)) {
-                        data.add(new AmiiboFile(null, amiibo.id));
-                    }
-                }
-            }
-
             FilterResults filterResults = new FilterResults();
             ArrayList<AmiiboFile> tempList = new ArrayList<>();
             String queryText = query.trim().toLowerCase();
             for (AmiiboFile amiiboFile : data) {
                 boolean add;
 
+                AmiiboManager amiiboManager = settings.getAmiiboManager();
                 if (null != amiiboManager) {
                     Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
                     if (null == amiibo)
@@ -290,23 +273,6 @@ public class BrowserAmiibosAdapter
             }
         }
 
-        private void setPathTextHighlight(File filePath) {
-            if (settings.isShowingMissingFiles() || null != filePath) {
-                TypedValue a = new TypedValue();
-                this.txtPath.getContext().getTheme().resolveAttribute(
-                        android.R.attr.textColor, a, true);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
-                    this.txtPath.setTextColor(a.data);
-                } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
-                        && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-                    this.txtPath.setTextColor(a.data);
-                }
-            } else {
-                this.txtPath.setTextColor(this.txtPath.getResources().getColor(
-                        TagMo.isDarkTheme() ? R.color.tag_text_dark : R.color.tag_text_light));
-            }
-        }
-
         public AmiiboViewHolder(View itemView, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(itemView);
 
@@ -382,17 +348,27 @@ public class BrowserAmiibosAdapter
                 // setAmiiboInfoText(this.txtCharacter,
                 // boldText.Matching(character, query), hasTagInfo);
                 if (null != item.getFilePath()) {
-                    this.itemView.setEnabled(true);
                     String relativeFile = Storage.getRelativePath(item.getFilePath(),
                             TagMo.getPrefs().preferEmulated().get()).replace(
-                                    TagMo.getPrefs().browserRootFolder().get(), "");
+                            TagMo.getPrefs().browserRootFolder().get(), "");
+                    this.itemView.setEnabled(true);
                     this.txtPath.setText(boldSpannable.IndexOf(relativeFile, query));
+                    TypedValue a = new TypedValue();
+                    this.txtPath.getContext().getTheme().resolveAttribute(
+                            android.R.attr.textColor, a, true);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                        this.txtPath.setTextColor(a.data);
+                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                        this.txtPath.setTextColor(a.data);
+                    }
                     setIsHighlighted(relativeFile.contains("Foomiibo"));
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");
+                    this.txtPath.setTextColor(this.txtPath.getResources().getColor(
+                            TagMo.isDarkTheme() ? R.color.tag_text_dark : R.color.tag_text_light));
                 }
-                setPathTextHighlight(item.getFilePath());
                 this.txtPath.setVisibility(View.VISIBLE);
             }
             if (null != this.imageAmiibo) {

@@ -125,6 +125,7 @@ public class FoomiiboAdapter
     }
 
     private void setIsHighlighted(FoomiiboViewHolder holder) {
+        holder.isHighlighted = true;
         holder.itemView.findViewById(R.id.highlight).setBackgroundResource(TagMo.isDarkTheme()
                 ? R.drawable.rounded_view_dark
                 : R.drawable.rounded_view_light);
@@ -133,14 +134,14 @@ public class FoomiiboAdapter
     @Override
     public void onBindViewHolder(final FoomiiboViewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
-            if (null != holder.listener) {
+            if (null != holder.listener && !holder.isHighlighted) {
                 holder.listener.onFoomiiboClicked(holder.foomiibo);
                 setIsHighlighted(holder);
             }
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (null != holder.listener) {
+                if (null != holder.listener && !holder.isHighlighted) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
                         holder.listener.onFoomiiboClicked(holder.foomiibo);
                     } else {
@@ -238,6 +239,7 @@ public class FoomiiboAdapter
         public final ImageView imageAmiibo;
 
         Amiibo foomiibo = null;
+        boolean isHighlighted = false;
 
         private final BoldSpannable boldSpannable = new BoldSpannable();
 

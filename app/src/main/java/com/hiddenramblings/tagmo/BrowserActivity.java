@@ -1344,6 +1344,7 @@ public class BrowserActivity extends AppCompatActivity implements
             folderChanged = true;
         }
         if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
+            settings.getAmiiboFiles().clear();
             folderChanged = true;
             onRecursiveFilesChanged();
         }

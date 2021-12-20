@@ -1399,8 +1399,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .apply();
 
         File rootFolder = newBrowserSettings.getBrowserRootFolder();
-        String relativeRoot = Storage.getRelativePath(rootFolder,
-                prefs.preferEmulated().get());
+        String relativeRoot = Storage.getRelativePath(rootFolder, prefs.preferEmulated().get());
         setFolderText(relativeRoot.length() > 1 ? relativeRoot : rootFolder.getAbsolutePath(),
                 folderChanged ? 3000 : 1500);
     }
@@ -1907,18 +1906,6 @@ public class BrowserActivity extends AppCompatActivity implements
         fakeSnackbar.setVisibility(View.VISIBLE);
     }
 
-    private void showSetupSnackbar() {
-        onAmiiboFilesChanged();
-        Snackbar setupBar = new IconifiedSnackbar(this, mainLayout)
-                .buildTickerBar(getString(R.string.keys_not_found), Snackbar.LENGTH_INDEFINITE);
-        setupBar.setAction(R.string.setup, v -> {
-            showSettingsFragment();
-            settingsFragment.onImportKeysClicked();
-            setupBar.dismiss();
-        });
-        setupBar.show();
-    }
-
     private boolean keyNameMatcher(String name) {
         boolean isValid = name.toLowerCase(Locale.ROOT).endsWith(".bin");
         return name.toLowerCase(Locale.ROOT).endsWith("retail.bin") ||
@@ -1960,7 +1947,16 @@ public class BrowserActivity extends AppCompatActivity implements
             }
 
             if (keyManager.isKeyMissing()) {
-                showSetupSnackbar();
+                Snackbar setupBar = new IconifiedSnackbar(this, mainLayout).buildTickerBar(
+                        getString(R.string.keys_not_found), Snackbar.LENGTH_INDEFINITE);
+                setupBar.setAction(R.string.setup, v -> {
+                    showSettingsFragment();
+                    settingsFragment.onImportKeysClicked();
+                    setupBar.dismiss();
+                });
+                setupBar.show();
+                fakeSnackbar.setVisibility(View.GONE);
+                mainLayout.setPadding(0, 0, 0, 0);
             } else {
                 this.onRefresh();
             }

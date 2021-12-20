@@ -43,8 +43,6 @@ public class FoomiiboActivity extends AppCompatActivity implements
     private final Foomiibo foomiibo = new Foomiibo();
     private final File directory = Storage.getDownloadDir("TagMo", "Foomiibo");
     private ProgressDialog dialog;
-    private final Handler handler = new Handler(Looper.getMainLooper());
-    private ArrayList<Long> missingIds = new ArrayList<>();
 
     private BrowserSettings settings;
 
@@ -56,14 +54,6 @@ public class FoomiiboActivity extends AppCompatActivity implements
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         setResult(RESULT_CANCELED);
-
-        if (getIntent().hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
-            ArrayList<String> missing = getIntent()
-                    .getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST);
-            for (String amiiboId : missing) {
-                missingIds.add(Long.parseLong(amiiboId));
-            }
-        }
 
         this.settings = new BrowserSettings().initialize();
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -84,6 +74,15 @@ public class FoomiiboActivity extends AppCompatActivity implements
                 settings.notifyChanges();
             });
         });
+
+        ArrayList<Long> missingIds = new ArrayList<>();
+        if (getIntent().hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
+            ArrayList<String> missing = getIntent()
+                    .getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST);
+            for (String amiiboId : missing) {
+                missingIds.add(Long.parseLong(amiiboId));
+            }
+        }
 
         RecyclerView amiibosView = findViewById(R.id.amiibos_list);
         AppCompatButton clearFoomiiboSet = findViewById(R.id.clear_foomiibo_set);
@@ -166,6 +165,7 @@ public class FoomiiboActivity extends AppCompatActivity implements
     private void buildFoomiiboSet() {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         if (null == amiiboManager) return;
+        Handler handler = new Handler(Looper.getMainLooper());
 
         Executors.newSingleThreadExecutor().execute(() -> {
             handler.post(() -> dialog = ProgressDialog.show(FoomiiboActivity.this,

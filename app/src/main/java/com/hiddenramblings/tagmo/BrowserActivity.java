@@ -1947,16 +1947,15 @@ public class BrowserActivity extends AppCompatActivity implements
             }
 
             if (keyManager.isKeyMissing()) {
-                Snackbar setupBar = new IconifiedSnackbar(this, mainLayout).buildTickerBar(
-                        getString(R.string.keys_not_found), Snackbar.LENGTH_INDEFINITE);
-                setupBar.setAction(R.string.setup, v -> {
+                new IconifiedSnackbar(this, mainLayout).buildTickerBar(
+                        getString(R.string.keys_not_found), Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.setup, v -> {
                     showSettingsFragment();
                     settingsFragment.onImportKeysClicked();
-                    setupBar.dismiss();
-                });
-                setupBar.show();
-                fakeSnackbar.setVisibility(View.GONE);
+                    ((Snackbar) v.getParent()).dismiss();
+                }).show();
                 mainLayout.setPadding(0, 0, 0, 0);
+                fakeSnackbar.setVisibility(View.GONE);
             } else {
                 this.onRefresh();
             }

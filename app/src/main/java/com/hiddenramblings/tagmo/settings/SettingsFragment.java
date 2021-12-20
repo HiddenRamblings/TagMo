@@ -63,6 +63,8 @@ import java.util.concurrent.Executors;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 
+    private static final String API_LAST_UPDATED = "https://www.amiiboapi.com/api/lastupdated/";
+
     public static final String IMAGE_NETWORK_NEVER = "NEVER";
     public static final String IMAGE_NETWORK_WIFI = "WIFI_ONLY";
     public static final String IMAGE_NETWORK_ALWAYS = "ALWAYS";
@@ -90,7 +92,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private KeyManager keyManager;
     private AmiiboManager amiiboManager = null;
-    private String lastUpdated;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -107,9 +108,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
-            new JSONExecutor("https://www.amiiboapi.com/api/lastupdated/")
-                    .setResultListener(result -> {
-                if (null != result) parseUpdateJSON(result);
+            new JSONExecutor(API_LAST_UPDATED).setResultListener(result -> {
+                if (null != result) parseUpdateJSON(result, false);
             });
         }
 
@@ -222,7 +222,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Preference syncInfo = findPreference(getString(R.string.settings_import_info_amiiboapi));
         if (null != syncInfo) {
             syncInfo.setOnPreferenceClickListener(preference -> {
-                downloadAmiiboAPIData(lastUpdated);
+                new JSONExecutor(API_LAST_UPDATED).setResultListener(result -> {
+                    if (null != result) parseUpdateJSON(result, true);
+                });
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
@@ -634,20 +636,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         new IconifiedSnackbar(requireActivity()).buildSnackbar(msg, length, null).show();
     }
 
-    private void showInstallSnackbar(String lastUpdated) {
-        Snackbar snackbar =  new IconifiedSnackbar(requireActivity()).buildSnackbar(
-                getString(
-                R.string.update_amiibo_api), Snackbar.LENGTH_LONG, null);
-        snackbar.setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated));
-        snackbar.show();
-    }
-
-    private void parseUpdateJSON(String result) {
+    private void parseUpdateJSON(String result, boolean isMenuClicked) {
         try {
             JSONObject jsonObject = new JSONObject(result);
-            lastUpdated = (String) jsonObject.get("lastUpdated");
-            if (!prefs.lastUpdated().get().equals(lastUpdated)) {
-                showInstallSnackbar(lastUpdated);
+            String lastUpdated = (String) jsonObject.get("lastUpdated");
+            if (isMenuClicked) {
+                downloadAmiiboAPIData(lastUpdated);
+            } else if (!prefs.lastUpdated().get().equals(lastUpdated)) {
+                new IconifiedSnackbar(requireActivity()).buildSnackbar(
+                        getString(R.string.update_amiibo_api), Snackbar.LENGTH_LONG, null)
+                        .setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated)).show();
             }
         } catch (Exception e) {
             Debug.Log(e);

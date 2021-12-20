@@ -407,17 +407,21 @@ public class BankListActivity extends AppCompatActivity implements
                     NFCIntent.EXTRA_CURRENT_BANK, clickedPosition);
         }
 
+        byte[] tagData = null != amiibos.get(clickedPosition)
+                ? amiibos.get(clickedPosition).data : null;
+
         if (result.getData().hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
-            byte[] tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
+            tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
             if (null != amiibos.get(clickedPosition))
                 amiibos.get(clickedPosition).data = tagData;
-            updateAmiiboView(tagData, -1, clickedPosition);
         }
 
         if (result.getData().hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
             updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(
                     NFCIntent.EXTRA_AMIIBO_LIST));
         }
+
+        updateAmiiboView(tagData, -1, clickedPosition);
 
         if (status == CLICKED.ERASE_BANK) {
             status = CLICKED.NOTHING;

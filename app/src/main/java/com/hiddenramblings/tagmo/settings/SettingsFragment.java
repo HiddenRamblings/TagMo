@@ -29,9 +29,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.GlideApp;
+import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.WebActivity;
 import com.hiddenramblings.tagmo.adapter.SettingsAmiiboAdapter;
@@ -367,11 +367,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    public void onImportKeysClicked() {
+    private void onImportKeysClicked() {
         showFileChooser(getString(R.string.decryption_keys), RESULT_KEYS);
     }
 
-    private void onImageNetworkChange (String newValue){
+    private void onImageNetworkChange(String newValue) {
         int index = imageNetworkSetting.findIndexOfValue(newValue);
         if (index == -1) {
             onImageNetworkChange(IMAGE_NETWORK_ALWAYS);

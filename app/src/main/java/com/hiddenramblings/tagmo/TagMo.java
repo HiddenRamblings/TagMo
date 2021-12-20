@@ -2,7 +2,9 @@ package com.hiddenramblings.tagmo;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.util.Log;
 
 import com.hiddenramblings.tagmo.eightbit.content.ScaledContext;
@@ -56,6 +58,8 @@ public class TagMo extends Application {
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://github.com/HiddenRamblings/TagMo/wiki#reporting-issues")));
             System.exit(1);
         });
     }

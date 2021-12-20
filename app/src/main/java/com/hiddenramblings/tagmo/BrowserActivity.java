@@ -847,6 +847,11 @@ public class BrowserActivity extends AppCompatActivity implements
             switchStorageRoot.setVisibility(View.GONE);
         }
         if (keyManager.isKeyMissing()) {
+            try {
+                keyManager.decipherKey();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             showFakeSnackbar(getString(R.string.locating_keys));
             locateKeyFiles();
         } else {
@@ -1383,8 +1388,7 @@ public class BrowserActivity extends AppCompatActivity implements
             onAmiiboFilesChanged();
         }
 
-        prefs.edit()
-                .browserRootFolder().put(Storage.getRelativePath(
+        prefs.edit().browserRootFolder().put(Storage.getRelativePath(
                 newBrowserSettings.getBrowserRootFolder(), prefs.preferEmulated().get()))
                 .query().put(newBrowserSettings.getQuery())
                 .sort().put(newBrowserSettings.getSort())
@@ -1415,18 +1419,17 @@ public class BrowserActivity extends AppCompatActivity implements
             animate.setFillAfter(false);
             animate.setAnimationListener(new Animation.AnimationListener() {
                 @Override
-                public void onAnimationStart(Animation animation) {
-                }
+                public void onAnimationStart(Animation animation) { }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     animation.setAnimationListener(null);
                     fakeSnackbar.setVisibility(View.GONE);
+                    amiibosView.smoothScrollToPosition(0);
                 }
 
                 @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
+                public void onAnimationRepeat(Animation animation) { }
             });
             fakeSnackbar.startAnimation(animate);
 
@@ -1947,15 +1950,17 @@ public class BrowserActivity extends AppCompatActivity implements
             }
 
             if (keyManager.isKeyMissing()) {
-                new IconifiedSnackbar(this, mainLayout).buildTickerBar(
-                        getString(R.string.keys_not_found), Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.setup, v -> {
-                    showSettingsFragment();
-                    settingsFragment.onImportKeysClicked();
-                    ((Snackbar) v.getParent()).dismiss();
-                }).show();
-                mainLayout.setPadding(0, 0, 0, 0);
-                fakeSnackbar.setVisibility(View.GONE);
+                this.runOnUiThread(() -> {
+                    Snackbar snackbar = new IconifiedSnackbar(this, mainLayout)
+                            .buildTickerBar(getString(R.string.keys_not_found),
+                                    Snackbar.LENGTH_INDEFINITE);
+                    snackbar.setAction(R.string.setup, v -> {
+                        showSettingsFragment();
+                        snackbar.dismiss();
+                    }).show();
+                    mainLayout.setPadding(0, 0, 0, 0);
+                    fakeSnackbar.setVisibility(View.GONE);
+                });
             } else {
                 this.onRefresh();
             }

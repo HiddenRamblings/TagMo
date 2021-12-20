@@ -9,6 +9,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.NfcByte;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,6 +22,18 @@ public class KeyManager {
 
     private static final String FIXED_KEY_MD5 = "0AD86557C7BA9E75C79A7B43BB466333";
     private static final String UNFIXED_KEY_MD5 = "2551AFC7C8813008819836E9B619F7ED";
+
+    private static final String JaviMaD = /* https://pastebin.com/aV23ha3X */
+            "1D 16 4B 37 5B 72 A5 57 28 B9 1D 64 B6 A3 C2 05" +
+            "75 6E 66 69 78 65 64 20 69 6E 66 6F 73 00 00 0E" +
+            "DB 4B 9E 3F 45 27 8F 39 7E FF 9B 4F B9 93 00 00" +
+            "04 49 17 DC 76 B4 96 40 D6 F8 39 39 96 0F AE D4" +
+            "EF 39 2F AA B2 14 28 AA 21 FB 54 E5 45 05 47 66" +
+            "7F 75 2D 28 73 A2 00 17 FE F8 5C 05 75 90 4B 6D" +
+            "6C 6F 63 6B 65 64 20 73 65 63 72 65 74 00 00 10" +
+            "FD C8 A0 76 94 B8 9E 4C 47 D3 7D E8 CE 5C 74 C1" +
+            "04 49 17 DC 76 B4 96 40 D6 F8 39 39 96 0F AE D4" +
+            "EF 39 2F AA B2 14 28 AA 21 FB 54 E5 45 05 47 66";
 
     byte[] fixedKey = null;
     byte[] unfixedKey = null;
@@ -77,10 +90,10 @@ public class KeyManager {
 
     private void readKey(InputStream strm) throws IOException {
         byte[] data = new byte[NfcByte.KEY_FILE_SIZE];
-        int rlen = strm.read(data, 0, data.length);
+
+        int rlen = strm.read(data, 0, NfcByte.KEY_FILE_SIZE);
         if (rlen <= 0)
             throw new IOException(context.getString(R.string.invalid_key_error));
-
         if (rlen < NfcByte.KEY_FILE_SIZE)
             throw new IOException(context.getString(R.string.key_size_error));
 
@@ -102,6 +115,11 @@ public class KeyManager {
         } else {
             throw new IOException(context.getString(R.string.key_signature_error));
         }
+    }
+
+    public void decipherKey() throws IOException {
+        readKey(new ByteArrayInputStream(TagUtils.hexToByteArray(
+                JaviMaD.replace(" ", ""))));
     }
 
     public void loadKey(Uri file) throws IOException {

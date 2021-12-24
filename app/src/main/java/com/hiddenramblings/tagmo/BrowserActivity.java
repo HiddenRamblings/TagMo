@@ -802,10 +802,6 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    public void setPowerTagResult() {
-        this.loadPTagKeyManager();
-    }
-
     private void showSettingsFragment() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         menuSettings.setIcon(R.drawable.ic_folder_white_24dp);
@@ -1199,7 +1195,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    private void loadPTagKeyManager() {
+    public void loadPTagKeyManager() {
         if (prefs.enable_power_tag_support().get()) {
             Executors.newSingleThreadExecutor().execute(() -> {
                 try {

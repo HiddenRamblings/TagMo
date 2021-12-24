@@ -24,7 +24,6 @@ public class NFCIntent {
     public static final String ACTION_BACKUP_AMIIBO = BuildConfig.APPLICATION_ID + ".BACKUP_AMIIBO";
     public static final String ACTION_FIX_BANK_DATA = BuildConfig.APPLICATION_ID + ".FIX_BANK_DATA";
     public static final String ACTION_NFC_SCANNED = BuildConfig.APPLICATION_ID + ".NFC_SCANNED";
-    public static final String ACTION_BROWSE_GITLAB = BuildConfig.APPLICATION_ID + ".BROWSE_GITLAB";
 
     public static final String EXTRA_TAG_DATA = BuildConfig.APPLICATION_ID + ".EXTRA_TAG_DATA";
     public static final String EXTRA_AMIIBO_LIST = BuildConfig.APPLICATION_ID + ".EXTRA_AMIIBO_LIST";
@@ -35,6 +34,9 @@ public class NFCIntent {
     public static final String EXTRA_ACTIVE_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_ACTIVE_BANK";
     public static final String EXTRA_BANK_COUNT = BuildConfig.APPLICATION_ID + ".EXTRA_BANK_COUNT";
     public static final String EXTRA_CURRENT_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_CURRENT_BANK";
+
+    public static final String SITE_GITLAB_README = "https://tagmo.gitlab.io/";
+    public static final String SITE_POWERTAG_HELP = "https://tagmo.gitlab.io/powertags.html";
 
     public static Intent getIntent(Intent intent) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N

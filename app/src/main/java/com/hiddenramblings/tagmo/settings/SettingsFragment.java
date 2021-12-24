@@ -177,7 +177,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         enablePowerTagSupport.setOnPreferenceClickListener(preference -> {
             boolean isEnabled = enablePowerTagSupport.isChecked();
             prefs.enable_power_tag_support().put(isEnabled);
-            if (isEnabled) ((BrowserActivity) requireActivity()).setPowerTagResult();
+            if (isEnabled) {
+                ((BrowserActivity) requireActivity()).loadPTagKeyManager();
+                startActivity(new Intent(requireActivity(), WebActivity.class)
+                        .setAction(NFCIntent.SITE_POWERTAG_HELP));
+            }
             return SettingsFragment.super.onPreferenceTreeClick(preference);
         });
 
@@ -185,8 +189,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             boolean isEnabled = enableEliteSupport.isChecked();
             prefs.enable_elite_support().put(enableEliteSupport.isChecked());
             if (isEnabled && prefs.settings_elite_signature().get().length() > 1)
-                enableEliteSupport.setSummary(getString(
-                        R.string.elite_signature, prefs.settings_elite_signature().get()));
+                enableEliteSupport.setSummary(getString(R.string.elite_signature,
+                        prefs.settings_elite_signature().get()));
             else
                 enableEliteSupport.setSummary(getString(R.string.elite_details));
             lockEliteHardware.setVisible(isEnabled);
@@ -361,7 +365,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (null != viewGuides) {
             viewGuides.setOnPreferenceClickListener(preference -> {
                 startActivity(new Intent(requireActivity(), WebActivity.class)
-                        .setAction(NFCIntent.ACTION_BROWSE_GITLAB));
+                        .setAction(NFCIntent.SITE_GITLAB_README));
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }

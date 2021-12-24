@@ -123,11 +123,11 @@ public class WebActivity extends AppCompatActivity {
         });
 
         if (null != action) {
-            if (NFCIntent.ACTION_BROWSE_GITLAB.equals(action)) {
+            if (action.startsWith(NFCIntent.SITE_GITLAB_README)) {
                 webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
                         "(?i)" + Pattern.quote("android"), "TagMo"));
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-                mWebView.loadUrl("https://tagmo.gitlab.io/");
+                mWebView.loadUrl(action);
             }
         } else {
             webViewSettings.setBuiltInZoomControls(true);

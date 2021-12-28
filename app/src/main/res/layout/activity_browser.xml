@@ -92,7 +92,7 @@
             tools:ignore="RelativeOverlap" />
     </RelativeLayout>
 
-    <eightbitlab.com.blurview.BlurView
+    <com.eightbitlab.blurview.BlurView
         android:id="@+id/amiiboContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -105,7 +105,7 @@
         <include
             layout="@layout/active_card_layout"
             android:id="@+id/amiiboCard" />
-    </eightbitlab.com.blurview.BlurView>
+    </com.eightbitlab.blurview.BlurView>
 
     <LinearLayout
         android:id="@+id/bottom_sheet"

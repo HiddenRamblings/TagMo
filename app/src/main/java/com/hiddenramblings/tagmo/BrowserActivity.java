@@ -65,7 +65,7 @@ import androidx.transition.TransitionManager;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.eightbitlab.supportrenderscriptblur.SupportRenderScriptBlur;
+import com.eightbitlab.blurview.SupportRenderScriptBlur;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -125,9 +125,9 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.BlurViewFacade;
-import eightbitlab.com.blurview.RenderScriptBlur;
+import com.eightbitlab.blurview.BlurView;
+import com.eightbitlab.blurview.BlurViewFacade;
+import com.eightbitlab.blurview.RenderScriptBlur;
 
 public class BrowserActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,

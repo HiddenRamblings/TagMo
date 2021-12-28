@@ -1,20 +1,21 @@
-package com.eightbitlab.supportrenderscriptblur;
+package com.eightbitlab.blurview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import androidx.annotation.NonNull;
-import androidx.renderscript.Allocation;
-import androidx.renderscript.Element;
-import androidx.renderscript.RenderScript;
-import androidx.renderscript.ScriptIntrinsicBlur;
+import android.os.Build;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 
-import eightbitlab.com.blurview.BlurAlgorithm;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 /**
  * Blur using RenderScript, processed on GPU.
- * Uses Renderscript from support library
+ * Requires API 17+
  */
-public final class SupportRenderScriptBlur implements BlurAlgorithm {
+public final class RenderScriptBlur implements BlurAlgorithm {
     private final RenderScript renderScript;
     private final ScriptIntrinsicBlur blurScript;
     private Allocation outAllocation;
@@ -25,7 +26,8 @@ public final class SupportRenderScriptBlur implements BlurAlgorithm {
     /**
      * @param context Context to create the {@link RenderScript}
      */
-    public SupportRenderScriptBlur(Context context) {
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public RenderScriptBlur(Context context) {
         renderScript = RenderScript.create(context);
         blurScript = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
     }
@@ -39,6 +41,7 @@ public final class SupportRenderScriptBlur implements BlurAlgorithm {
      * @param blurRadius blur radius (1..25)
      * @return blurred bitmap
      */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public final Bitmap blur(Bitmap bitmap, float blurRadius) {
         //Allocation will use the same backing array of pixels as bitmap if created with USAGE_SHARED flag

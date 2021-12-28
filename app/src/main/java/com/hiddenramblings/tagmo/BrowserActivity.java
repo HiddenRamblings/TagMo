@@ -413,6 +413,16 @@ public class BrowserActivity extends AppCompatActivity implements
 
         findViewById(R.id.amiiboContainer).setOnClickListener(view ->
                 amiiboContainer.setVisibility(View.GONE));
+
+        if (!prefs.hasAcceptedTOS().get()) {
+            new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.support_notice))
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.accept, (dialog, which) -> {
+                        prefs.hasAcceptedTOS().put(true);
+                        dialog.dismiss();
+                    }).show();
+        }
     }
 
     private void onProviderInstallerNotAvailable() {

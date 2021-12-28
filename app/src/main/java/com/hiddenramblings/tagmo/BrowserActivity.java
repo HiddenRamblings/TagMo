@@ -172,6 +172,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuShowDownloads;
     private MenuItem menuEnableScale;
 
+    private Snackbar fooSnackbar;
+
     private BlurView amiiboContainer;
     private Toolbar toolbar;
     private View amiiboInfo;
@@ -1281,18 +1283,10 @@ public class BrowserActivity extends AppCompatActivity implements
 
             if (Thread.currentThread().isInterrupted()) return;
 
-            if (amiiboFiles.isEmpty()) {
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    showFakeSnackbar(getString(R.string.amiibo_not_found));
-                    menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
-                    preferences.setVisibility(View.GONE);
-                }, 200);
-            } else {
-                this.runOnUiThread(() -> {
-                    settings.setAmiiboFiles(amiiboFiles);
-                    settings.notifyChanges();
-                });
-            }
+            this.runOnUiThread(() -> {
+                settings.setAmiiboFiles(amiiboFiles);
+                settings.notifyChanges();
+            });
         });
     }
 
@@ -1430,6 +1424,20 @@ public class BrowserActivity extends AppCompatActivity implements
 
             TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
             mainLayout.setPadding(0, 0, 0, 0);
+        }
+        if (settings.getAmiiboFiles().isEmpty()) {
+            menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
+            preferences.setVisibility(View.GONE);
+            handler.postDelayed(() -> {
+                fooSnackbar = new IconifiedSnackbar(this, mainLayout)
+                        .buildTickerBar(getString(R.string.amiibo_not_found));
+                fooSnackbar.setAction(R.string.setup, v -> {
+                    onFoomiiboEditor.launch(new Intent(this, FoomiiboActivity.class));
+                    fooSnackbar.dismiss();
+                }).show();
+            }, 200);
+        } else if (null != fooSnackbar && fooSnackbar.isShown()) {
+            fooSnackbar.dismiss();
         }
     }
 
@@ -1946,17 +1954,18 @@ public class BrowserActivity extends AppCompatActivity implements
 
             if (keyManager.isKeyMissing()) {
                 this.runOnUiThread(() -> {
-                    Snackbar snackbar = new IconifiedSnackbar(this, mainLayout)
-                            .buildTickerBar(getString(R.string.keys_not_found),
-                                    Snackbar.LENGTH_INDEFINITE);
-                    snackbar.setAction(R.string.setup, v -> {
+                    fooSnackbar = new IconifiedSnackbar(this, mainLayout)
+                            .buildTickerBar(getString(R.string.keys_not_found));
+                    fooSnackbar.setAction(R.string.setup, v -> {
                         showSettingsFragment();
-                        snackbar.dismiss();
+                        fooSnackbar.dismiss();
                     }).show();
                     mainLayout.setPadding(0, 0, 0, 0);
                     fakeSnackbar.setVisibility(View.GONE);
                 });
             } else {
+                if (null != fooSnackbar && fooSnackbar.isShown())
+                    this.runOnUiThread(() -> fooSnackbar.dismiss());
                 this.onRefresh();
             }
         });

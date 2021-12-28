@@ -103,8 +103,8 @@ public class IconifiedSnackbar {
         return snackbar;
     }
 
-    public Snackbar buildTickerBar(String msg, int length) {
-        Snackbar snackbar = buildSnackbar(msg, length, null)
+    public Snackbar buildTickerBar(String msg) {
+        Snackbar snackbar = buildSnackbar(msg, Snackbar.LENGTH_INDEFINITE, null)
                 .addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {

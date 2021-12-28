@@ -1286,7 +1286,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     showFakeSnackbar(getString(R.string.amiibo_not_found));
                     menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
                     preferences.setVisibility(View.GONE);
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }, 200);
             } else {
                 this.runOnUiThread(() -> {

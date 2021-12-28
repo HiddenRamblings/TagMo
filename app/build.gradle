@@ -8,7 +8,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 31
         versionCode 12
-        versionName "2.7.8"
+        versionName "2.7.9"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -91,7 +91,6 @@ dependencies {
     implementation 'com.robertlevonyan.view:MaterialChipView:2.2.7'
     implementation 'org.apmem.tools:layouts:1.10@aar'
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
-    implementation 'com.github.Dimezis:BlurView:version-1.6.6'
     // Required for Lollipop Amiibo API download compatibility
     api 'com.google.android.gms:play-services-safetynet:18.0.0'
 }

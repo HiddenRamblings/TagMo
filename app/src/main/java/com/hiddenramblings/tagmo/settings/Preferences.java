@@ -56,6 +56,9 @@ public interface Preferences {
     @DefaultInt(0)
     int eliteActiveBank();
 
+    @DefaultBoolean(false)
+    boolean hasAcceptedTOS();
+
     @DefaultBoolean(true)
     boolean recursiveFolders();
 

@@ -133,4 +133,8 @@
         <item name="android:minHeight">36dp</item>
     </style>
 
+    <declare-styleable name="BlurView">
+        <attr name="blurOverlayColor" format="color"/>
+    </declare-styleable>
+
 </resources>

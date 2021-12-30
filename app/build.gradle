@@ -84,6 +84,7 @@ dependencies {
     api 'androidx.preference:preference:1.1.1'
     api 'androidx.cardview:cardview:1.0.0'
     api 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    api "androidx.browser:browser:1.4.0"
     api "org.androidannotations:androidannotations-api:4.6.0"
     annotationProcessor "org.androidannotations:androidannotations:4.6.0"
     implementation 'com.github.bumptech.glide:glide:4.12.0'

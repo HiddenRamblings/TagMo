@@ -51,6 +51,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -801,6 +802,14 @@ public class BrowserActivity extends AppCompatActivity implements
         subMenu.setGroupCheckable(R.id.filter_amiibo_type_group, true, true);
 
         return true;
+    }
+
+    private void openFlaskEditor() {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabsIntent = builder.build();
+        // builder.setActionButton(icon, description, pendingIntent, tint); // action button
+        // builder.addMenuItem(menuItemTitle, menuItemPendingIntent); // menu item
+        customTabsIntent.launchUrl(this, Uri.parse("https://flask.run/"));
     }
 
     private final MenuItem.OnMenuItemClickListener onFilterAmiiboTypeItemClick

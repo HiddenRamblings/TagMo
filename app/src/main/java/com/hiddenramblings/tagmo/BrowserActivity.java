@@ -804,14 +804,6 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    private void openFlaskEditor() {
-        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        CustomTabsIntent customTabsIntent = builder.build();
-        // builder.setActionButton(icon, description, pendingIntent, tint); // action button
-        // builder.addMenuItem(menuItemTitle, menuItemPendingIntent); // menu item
-        customTabsIntent.launchUrl(this, Uri.parse("https://flask.run/"));
-    }
-
     private final MenuItem.OnMenuItemClickListener onFilterAmiiboTypeItemClick
             = new MenuItem.OnMenuItemClickListener() {
         @Override

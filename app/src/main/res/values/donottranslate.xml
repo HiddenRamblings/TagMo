@@ -20,6 +20,7 @@
     <string name="settings_enable_power_tag_support">enable_power_tag_support</string>
     <string name="settings_enable_elite_support">enable_elite_support</string>
     <string name="settings_elite_signature">settings_elite_signature</string>
+    <string name="settings_open_flask_editor">settings_open_flask_editor</string>
     <string name="settings_import_info">import_info</string>
     <string name="settings_reset_info">reset_info</string>
     <string name="settings_export_info">settings_export_info</string>
@@ -49,6 +50,7 @@
 
     <string name="power_tag">Power Tag</string>
     <string name="elite_device">N2 Elite</string>
+    <string name="flask_device">Bluup Flask</string>
     <string name="mifare_classic">Mifare Classic</string>
     <string name="mifare_plus">Mifare Plus</string>
     <string name="mifare_pro">Mifare Pro</string>

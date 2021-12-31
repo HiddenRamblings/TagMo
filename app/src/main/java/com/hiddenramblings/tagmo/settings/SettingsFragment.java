@@ -21,6 +21,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -81,6 +82,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     CheckBoxPreference enableEliteSupport;
     Preference lockEliteHardware;
     Preference unlockEliteHardware;
+    Preference launchFlaskEditor;
     Preference amiiboStats;
     Preference gameSeriesStats;
     Preference characterStats;
@@ -120,6 +122,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         enableEliteSupport = findPreference(getString(R.string.settings_enable_elite_support));
         lockEliteHardware = findPreference(getString(R.string.lock_elite_hardware));
         unlockEliteHardware = findPreference(getString(R.string.unlock_elite_hardware));
+        launchFlaskEditor = findPreference(getString(R.string.settings_open_flask_editor));
         amiiboStats = findPreference(getString(R.string.settings_info_amiibo));
         gameSeriesStats = findPreference(getString(R.string.settings_info_game_series));
         characterStats = findPreference(getString(R.string.settings_info_characters));
@@ -220,6 +223,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         startActivity(unlock);
                         dialog.dismiss();
                     }).show();
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+
+        launchFlaskEditor.setOnPreferenceClickListener(preference -> {
+            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+            CustomTabsIntent customTabsIntent = builder.build();
+            // builder.setActionButton(icon, description, pendingIntent, tint); // action button
+            // builder.addMenuItem(menuItemTitle, menuItemPendingIntent); // menu item
+            customTabsIntent.launchUrl(requireActivity(), Uri.parse("https://flask.run/"));
             return SettingsFragment.super.onPreferenceTreeClick(preference);
         });
 

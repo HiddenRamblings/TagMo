@@ -67,6 +67,15 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
+        android:title="@string/flask_device"
+        app:iconSpaceReserved="false">
+        <androidx.preference.Preference
+            android:key="@string/settings_open_flask_editor"
+            android:title="@string/flask_editor"
+            app:iconSpaceReserved="false" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
         android:title="@string/amiibo_info"
         app:iconSpaceReserved="false">
         <androidx.preference.Preference

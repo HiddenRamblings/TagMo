@@ -512,8 +512,7 @@ public class NfcActivity extends AppCompatActivity {
                         mifare.close();
                     } catch (IOException ignored) { }
                     return;
-                }
-                if (getString(R.string.error_tag_rewrite).equals(error)) {
+                } else if (getString(R.string.error_tag_rewrite).equals(error)) {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update);
                     setResult(Activity.RESULT_OK, new Intent(NFCIntent.ACTION_UPDATE_TAG).putExtras(args));
                     runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)

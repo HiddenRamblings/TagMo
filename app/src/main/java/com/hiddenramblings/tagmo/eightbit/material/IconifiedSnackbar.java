@@ -103,6 +103,10 @@ public class IconifiedSnackbar {
         return snackbar;
     }
 
+    public Snackbar buildSnackbar(int msgRes, int length, View anchor) {
+        return buildSnackbar(mActivity.get().getString(msgRes), length, anchor);
+    }
+
     public Snackbar buildTickerBar(String msg) {
         Snackbar snackbar = buildSnackbar(msg, Snackbar.LENGTH_INDEFINITE, null)
                 .addCallback(new Snackbar.Callback() {

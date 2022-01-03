@@ -51,7 +51,6 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -66,6 +65,9 @@ import androidx.transition.TransitionManager;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.eightbitlab.blurview.BlurView;
+import com.eightbitlab.blurview.BlurViewFacade;
+import com.eightbitlab.blurview.RenderScriptBlur;
 import com.eightbitlab.blurview.SupportRenderScriptBlur;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
@@ -125,10 +127,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.Executors;
-
-import com.eightbitlab.blurview.BlurView;
-import com.eightbitlab.blurview.BlurViewFacade;
-import com.eightbitlab.blurview.RenderScriptBlur;
 
 public class BrowserActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
@@ -491,9 +489,11 @@ public class BrowserActivity extends AppCompatActivity implements
 
         try {
             TagUtils.validateData(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
-            new Toasty(this).Dialog(R.string.validation_success);
+            new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                    R.string.validation_success, Snackbar.LENGTH_SHORT, null).show();
         } catch (Exception e) {
-            new Toasty(this).Dialog(e.getMessage());
+            new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                    e.getMessage(), Snackbar.LENGTH_LONG, null).show();
         }
     });
 
@@ -1727,9 +1727,11 @@ public class BrowserActivity extends AppCompatActivity implements
             } else if (item.getItemId() == R.id.mnu_validate) {
                 try {
                     TagUtils.validateData(tagData);
-                    new Toasty(this).Dialog(R.string.validation_success);
+                    new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                            R.string.validation_success, Snackbar.LENGTH_SHORT, null).show();
                 } catch (Exception e) {
-                    new Toasty(this).Dialog(e.getMessage());
+                    new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                            e.getMessage(), Snackbar.LENGTH_LONG, null).show();
                 }
                 return true;
             } else if (item.getItemId() == R.id.mnu_delete) {

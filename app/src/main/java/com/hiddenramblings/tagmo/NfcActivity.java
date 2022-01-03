@@ -279,7 +279,23 @@ public class NfcActivity extends AppCompatActivity {
                 throw new Exception(getString(R.string.error_tag_protocol, tagTech));
             }
             mifare.connect();
-            if (!hasTestedElite) {
+            if (isUnlocking) {
+                if (null != mifare.amiiboPrepareUnlock()) {
+                    runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
+                            .setMessage(R.string.progress_unlock)
+                            .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                                mifare.amiiboUnlock();
+                                isUnlocking = false;
+                                dialog.dismiss();
+                            }).show());
+                    while (isUnlocking) {
+                        setResult(Activity.RESULT_OK);
+                    }
+                } else {
+                    isUnlocking = false;
+                    throw new Exception(getString(R.string.fail_unlock));
+                }
+            } else if (!hasTestedElite) {
                 hasTestedElite = true;
                 if (TagUtils.isPowerTag(mifare)) {
                     showMessage(getString(R.string.tag_scanning, getString(R.string.power_tag)));
@@ -475,24 +491,8 @@ public class NfcActivity extends AppCompatActivity {
                         break;
 
                     case NFCIntent.ACTION_UNLOCK_UNIT:
-                        if (isUnlocking) {
-                            if (null != mifare.amiiboPrepareUnlock()) {
-                                runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
-                                        .setMessage(R.string.progress_unlock)
-                                        .setPositiveButton(R.string.proceed, (dialog, which) -> {
-                                            mifare.amiiboUnlock();
-                                            isUnlocking = false;
-                                            dialog.dismiss();
-                                        }).show());
-                                while (isUnlocking) {
-                                    setResult(Activity.RESULT_OK);
-                                }
-                            } else {
-                                isUnlocking = false;
-                                throw new Exception(getString(R.string.fail_unlock));
-                            }
-                        }
-                       break;
+                        setResult(Activity.RESULT_OK);
+                        break;
 
                     default:
                         throw new Exception(getString(R.string.error_state, mode));

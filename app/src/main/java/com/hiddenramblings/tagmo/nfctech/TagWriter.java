@@ -78,7 +78,7 @@ public class TagWriter {
                                       boolean validateNtag) throws Exception {
         byte[] idPages = mifare.readPages(0);
         if (null == idPages  || idPages.length != NfcByte.PAGE_SIZE * 4)
-            throw new Exception(TagMo.getContext()
+            throw new IOException(TagMo.getContext()
                     .getString(R.string.fail_read_size));
 
         boolean isPowerTag = TagUtils.isPowerTag(mifare);
@@ -163,7 +163,7 @@ public class TagWriter {
             tagData = keyManager.encrypt(tagData);
             boolean write = mifare.amiiboFastWrite(0, active_bank, tagData);
             if (!write) write = mifare.amiiboWrite(0, active_bank, tagData);
-            if (!write) throw new Exception(TagMo.getContext()
+            if (!write) throw new IOException(TagMo.getContext()
                     .getString(R.string.error_elite_write));
         } else {
             throw new Exception(TagMo.getContext()
@@ -234,7 +234,7 @@ public class TagWriter {
         byte[] pages0_1 = tag.readPages(0);
 
         if (null == pages0_1  || pages0_1.length != NfcByte.PAGE_SIZE * 4)
-            throw new Exception(TagMo.getContext().getString(R.string.fail_read));
+            throw new IOException(TagMo.getContext().getString(R.string.fail_read));
 
         byte[] uid = uidFromPages(pages0_1);
         byte[] password = keygen(uid);

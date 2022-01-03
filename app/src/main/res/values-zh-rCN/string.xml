@@ -36,13 +36,13 @@
     <string name="pref_amiibo_characters">角色</string>
     <string name="pref_amiibo_types">Amiibo 类型</string>
 
-    <string name="amiibo_name_caps">NAME</string>
+    <string name="amiibo_name_caps">名称</string>
     <string name="amiibo_id_caps">TagID</string>
-    <string name="amiibo_type_caps">AMIIBO TYPE</string>
-    <string name="amiibo_game_caps">GAME SERIES</string>
-    <string name="amiibo_series_caps">AMIIBO SERIES</string>
-    <string name="amiibo_character_caps">CHARACTER</string>
-    <string name="amiibo_path_caps">PATH</string>
+    <string name="amiibo_type_caps">AMIIBO 类型</string>
+    <string name="amiibo_game_caps">游戏</string>
+    <string name="amiibo_series_caps">AMIIBO 系列</string>
+    <string name="amiibo_character_caps">角色</string>
+    <string name="amiibo_path_caps">文件路径</string>
 
     <string name="recursive_folders">搜索子文件夹</string>
     <string name="show_downloads">显示 \'Download\'</string>

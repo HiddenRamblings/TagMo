@@ -26,9 +26,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -38,6 +40,7 @@ import com.hiddenramblings.tagmo.widget.BankPicker;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
 
 public class NfcActivity extends AppCompatActivity {
 
@@ -57,7 +60,6 @@ public class NfcActivity extends AppCompatActivity {
     private boolean isEliteIntent;
     private boolean isEliteDevice;
     private NTAG215 mifare;
-    private volatile boolean isUnlocking;
     private int write_count;
     private String tagTech;
     private boolean hasTestedElite;
@@ -198,7 +200,6 @@ public class NfcActivity extends AppCompatActivity {
                 setTitle(R.string.lock_amiibo);
                 break;
             case NFCIntent.ACTION_UNLOCK_UNIT:
-                isUnlocking = true;
                 setTitle(R.string.unlock_elite);
                 break;
             case NFCIntent.ACTION_ACTIVATE_BANK:
@@ -227,22 +228,28 @@ public class NfcActivity extends AppCompatActivity {
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             String tech = null != tagTech ? tagTech : getString(R.string.nfc_tag);
-            showMessage(getString(R.string.tag_detected, tech));
-            this.onTagDiscovered(intent);
+            showMessage(R.string.tag_detected, tech);
+            Executors.newSingleThreadExecutor().execute(() -> this.onTagDiscovered(intent));
         }
     }
 
-    private void showMessage(String msg) {
-        txtMessage.setText(msg);
+    private void showMessage(int msgRes) {
+        this.runOnUiThread(() -> txtMessage.setText(msgRes));
+    }
+
+    private void showMessage(int msgRes, String params) {
+        this.runOnUiThread(() -> txtMessage.setText(getString(msgRes, params)));
     }
 
     private void showError(String msg) {
-        txtError.setText(msg);
-        txtError.setVisibility(View.VISIBLE);
-        txtMessage.setVisibility(View.GONE);
-        imgNfcCircle.setVisibility(View.GONE);
-        imgNfcBar.setVisibility(View.GONE);
-        imgNfcBar.clearAnimation();
+        this.runOnUiThread(() -> {
+            txtError.setText(msg);
+            txtError.setVisibility(View.VISIBLE);
+            txtMessage.setVisibility(View.GONE);
+            imgNfcCircle.setVisibility(View.GONE);
+            imgNfcBar.setVisibility(View.GONE);
+            imgNfcBar.clearAnimation();
+        });
     }
 
     private void clearError() {
@@ -271,7 +278,7 @@ public class NfcActivity extends AppCompatActivity {
                     } catch (Exception ignored) { }
                     if (TagReader.needsFirmware(mifare)) {
                         if (TagWriter.updateFirmware(mifare))
-                            showMessage(getString(R.string.firmware_update));
+                            showMessage(R.string.firmware_update);
                         mifare.close();
                         finish();
                     }
@@ -279,32 +286,17 @@ public class NfcActivity extends AppCompatActivity {
                 throw new Exception(getString(R.string.error_tag_protocol, tagTech));
             }
             mifare.connect();
-            if (isUnlocking) {
-                if (null != mifare.amiiboPrepareUnlock()) {
-                    runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
-                            .setMessage(R.string.progress_unlock)
-                            .setPositiveButton(R.string.proceed, (dialog, which) -> {
-                                mifare.amiiboUnlock();
-                                isUnlocking = false;
-                                dialog.dismiss();
-                            }).show());
-                    while (isUnlocking) {
-                        setResult(Activity.RESULT_OK);
-                    }
-                } else {
-                    isUnlocking = false;
-                    throw new Exception(getString(R.string.fail_unlock));
-                }
-            } else if (!hasTestedElite) {
+            if (!hasTestedElite) {
                 hasTestedElite = true;
                 if (TagUtils.isPowerTag(mifare)) {
-                    showMessage(getString(R.string.tag_scanning, getString(R.string.power_tag)));
+                    showMessage(R.string.tag_scanning, getString(R.string.power_tag));
                 } else {
-                    isEliteDevice = TagUtils.isElite(mifare);
+                    isEliteDevice = TagUtils.isElite(mifare)
+                            || NFCIntent.ACTION_UNLOCK_UNIT.equals(mode);
                     if (isEliteDevice) {
-                        showMessage(getString(R.string.tag_scanning, getString(R.string.elite_device)));
+                        showMessage(R.string.tag_scanning, getString(R.string.elite_device));
                     } else {
-                        showMessage(getString(R.string.tag_scanning, tagTech));
+                        showMessage(R.string.tag_scanning, tagTech);
                     }
                 }
             }
@@ -347,8 +339,8 @@ public class NfcActivity extends AppCompatActivity {
                     case NFCIntent.ACTION_WRITE_TAG_FULL:
                         if (isEliteDevice) {
                             if (bankPicker.getVisibility() == View.GONE) {
+                                showMessage(R.string.bank_select);
                                 this.runOnUiThread(() -> {
-                                    txtMessage.setText(R.string.bank_select);
                                     bankPicker.setVisibility(View.VISIBLE);
                                     bankPicker.setEnabled(true);
                                     bankTextView.setVisibility(View.VISIBLE);
@@ -491,7 +483,20 @@ public class NfcActivity extends AppCompatActivity {
                         break;
 
                     case NFCIntent.ACTION_UNLOCK_UNIT:
-                        setResult(Activity.RESULT_OK);
+                        if (null != mifare.amiiboPrepareUnlock()) {
+                            Snackbar unlockBar = new IconifiedSnackbar(this,
+                                    findViewById(R.id.nfc_layout))
+                                    .buildTickerBar(getString(R.string.progress_unlock));
+                            unlockBar.setAction(R.string.proceed, v -> {
+                                mifare.amiiboUnlock();
+                                unlockBar.dismiss();
+                            }).show();
+                            while (unlockBar.isShown()) {
+                                setResult(Activity.RESULT_OK);
+                            }
+                        } else {
+                            throw new Exception(getString(R.string.fail_unlock));
+                        }
                         break;
 
                     default:

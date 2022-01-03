@@ -204,7 +204,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         lockEliteHardware.setOnPreferenceClickListener(preference -> {
             new AlertDialog.Builder(requireContext())
                     .setMessage(R.string.lock_elite_warning)
-                    .setPositiveButton(R.string.write, (dialog, which) -> {
+                    .setPositiveButton(R.string.accept, (dialog, which) -> {
                         Intent lock = new Intent(requireContext(), NfcActivity.class);
                         lock.setAction(NFCIntent.ACTION_LOCK_AMIIBO);
                         startActivity(lock);
@@ -218,9 +218,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             new AlertDialog.Builder(requireContext())
                     .setMessage(R.string.prepare_unlock)
                     .setPositiveButton(R.string.start, (dialog, which) -> {
-                        Intent unlock = new Intent(requireContext(), NfcActivity.class);
-                        unlock.setAction(NFCIntent.ACTION_UNLOCK_UNIT);
-                        startActivity(unlock);
+                        startActivity(new Intent(requireContext(), NfcActivity.class)
+                                .setAction(NFCIntent.ACTION_UNLOCK_UNIT));
                         dialog.dismiss();
                     }).show();
             return SettingsFragment.super.onPreferenceTreeClick(preference);

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TagMo</string>
+    <string name="app_name" translatable="false">TagMo</string>
 
     <string name="topCenterTextMessage">Place the tag under the phone</string>
 

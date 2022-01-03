@@ -17,7 +17,7 @@ public class TagReader {
 
     private static final int BULK_READ_PAGE_COUNT = 4;
 
-    static void validateBlankTag(NTAG215 mifare) throws Exception {
+    static void validateBlankTag(NTAG215 mifare) throws IOException {
         byte[] lockPage = mifare.readPages(0x02);
         Debug.Log(TagWriter.class, TagUtils.bytesToHex(lockPage));
         if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {

@@ -84,7 +84,12 @@ public class TagWriter {
         boolean isPowerTag = TagUtils.isPowerTag(mifare);
         Debug.Log(TagWriter.class, R.string.power_tag_verify, String.valueOf(isPowerTag));
 
-        tagData = keyManager.decrypt(tagData);
+        try {
+            tagData = keyManager.decrypt(tagData);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+
         if (isPowerTag) {
             // use a pre-determined static id for Power Tag
             tagData = patchUid(NfcByte.POWERTAG_IDPAGES, tagData);
@@ -99,8 +104,8 @@ public class TagWriter {
             TagUtils.validateNtag(mifare, tagData, validateNtag);
             try {
                 TagReader.validateBlankTag(mifare);
-            } catch (Exception e) {
-                throw new Exception(e.getMessage());
+            } catch (IOException e) {
+                throw new IOException(e);
             }
         }
 

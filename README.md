@@ -27,9 +27,9 @@ If you want to contribute, please make sure to adress your PRs to the 'experimen
 ## [Reporting Issues](https://github.com/HiddenRamblings/TagMo/wiki#reporting-issues)
 
 # Credits
-This app is a result of work by many others. Thanks go out to (In alphabetical order):
+This app is the result of work by many. Thanks go out to (in alphabetical order):
 
-* \_Tim\_ - The originial idea
+* \_Tim\_ - The original idea
 * 1RedOne - Support / README
 * AbandonedCart - Rebuild, N2 Elite, and more
 * azsde - Bug fixes / maintenance
@@ -48,7 +48,9 @@ This app is a result of work by many others. Thanks go out to (In alphabetical o
 * possi - Wolf link editor
 * socram8888 - Decryption / encryption code
 * Supercool330 - Encryption algorithm help
-* Others who preferred to remain anonymous
-* Many more who helped in testing
+* Others who prefer to remain anonymous and testers
+### Translations
+* NoiRioN - Polish
+* Oosl - Chinese
 
 *TagMo is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Nintendo. No  amiibo™ or digital representations of amiibo™ are included in this project. Binaries created with this project are not intended for sale or distribution. This project is for educational and archival purposes only.*

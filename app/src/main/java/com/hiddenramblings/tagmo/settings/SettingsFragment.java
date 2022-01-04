@@ -414,6 +414,23 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
+    private void onImportKeysFailed() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                this.keyManager.decipherKey();
+            } catch (Exception e) {
+                Debug.Log(e);
+                requireActivity().runOnUiThread(() ->
+                        showSnackbar(e.getMessage(), Snackbar.LENGTH_SHORT));
+            }
+            if (Thread.currentThread().isInterrupted())
+                return;
+
+            ((BrowserActivity) requireActivity()).onRefresh();
+            updateKeySummary();
+        });
+    }
+
     private void updateKeySummary() {
         String unfixedText;
         ForegroundColorSpan unfixedSpan;
@@ -594,9 +611,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private final ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
-
-        if (null != result.getData().getClipData()) {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+            onImportKeysFailed();
+        } else if (null != result.getData().getClipData()) {
             for (int i = 0; i < result.getData().getClipData().getItemCount(); i++) {
                 validateKeys(result.getData().getClipData().getItemAt(i).getUri());
             }

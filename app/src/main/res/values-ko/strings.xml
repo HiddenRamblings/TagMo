@@ -1,16 +1,16 @@
 <resources>
-    <string name="topCenterTextMessage">携帯電話の下にタグを配置します。</string>
+    <string name="topCenterTextMessage">전화 아래에 태그를 배치</string>
 
     <string name="fixed_key_found">Locked Key cached / loaded.</string>
     <string name="fixed_key_missing">No Locked Key!</string>
     <string name="unfixed_key_found">Unfixed Key  cached / loaded.</string>
     <string name="unfixed_key_missing">No Unfixed Key!</string>
 
-    <string name="nfc_unsupported">NFCはサポートされていません！</string>
-    <string name="nfc_disabled">NFCを無効にしました！</string>
-    <string name="nfc_query">NFCは現在無効になっています。 NFCを有効にしますか？</string>
+    <string name="nfc_unsupported">지원 안됨!</string>
+    <string name="nfc_disabled">사용 안 함!</string>
+    <string name="nfc_query">현재 사용할 수 없습니다. 사용 가능?</string>
 
-    <string name="no_decrypt_key">復号化キーがインポートされていない</string>
+    <string name="no_decrypt_key">복호화 키를 가져오지 않음</string>
 
     <string name="search">Search</string>
     <string name="filter">amiibo™ Filters</string>

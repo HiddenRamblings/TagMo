@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.NfcA;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -270,21 +269,6 @@ public class NfcActivity extends AppCompatActivity {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             mifare = NTAG215.get(tag);
             tagTech = TagUtils.getTagTechnology(tag);
-            if (null == mifare) {
-                if (prefs.enable_elite_support().get()) {
-                    mifare = new NTAG215(NfcA.get(tag));
-                    try {
-                        mifare.connect();
-                        if (TagReader.needsFirmware(mifare)) {
-                            if (TagWriter.updateFirmware(mifare))
-                                showMessage(R.string.firmware_update);
-                            mifare.close();
-                            finish();
-                        }
-                    } catch (Exception ignored) { }
-                }
-                throw new Exception(getString(R.string.error_tag_protocol, tagTech));
-            }
             mifare.connect();
             if (!hasTestedElite) {
                 hasTestedElite = true;
@@ -311,6 +295,12 @@ public class NfcActivity extends AppCompatActivity {
                 bank_count = -1;
                 active_bank = -1;
             } else {
+                if (TagReader.needsFirmware(mifare)) {
+                    if (TagWriter.updateFirmware(mifare))
+                        showMessage(R.string.firmware_update);
+                    mifare.close();
+                    finish();
+                }
                 selection = 0;
                 bank_details = TagReader.getBankDetails(mifare);
                 bank_count = bank_details[1] & 0xFF;
@@ -485,9 +475,9 @@ public class NfcActivity extends AppCompatActivity {
                         break;
 
                     case NFCIntent.ACTION_UNLOCK_UNIT:
-                        if (null != mifare.amiiboPrepareUnlock()) {
+                        if (null == mifare.amiiboPrepareUnlock()) {
                             Snackbar unlockBar = new IconifiedSnackbar(this,
-                                    findViewById(R.id.nfc_layout))
+                                    findViewById(R.id.coordinator))
                                     .buildTickerBar(getString(R.string.progress_unlock));
                             unlockBar.setAction(R.string.proceed, v -> {
                                 mifare.amiiboUnlock();

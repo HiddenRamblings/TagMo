@@ -1,76 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nfc_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.hiddenramblings.tagmo.NfcActivity">
+    android:id="@+id/coordinator" >
 
-    <TextView
-        android:id="@+id/txtMessage"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/topCenterTextMessage"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="16.5sp" />
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        tools:context="com.hiddenramblings.tagmo.NfcActivity">
 
-    <TextView
-        android:id="@+id/txtError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/middleCenterError"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#fa0505" />
+        <TextView
+            android:id="@+id/txtMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="@string/topCenterTextMessage"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="16.5sp" />
 
-    <ImageView
-        android:id="@+id/imgNfcCircle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/nfcIconDescription"
-        android:minWidth="100dip"
-        android:minHeight="100dip"
-        android:src="@drawable/ic_nfc_24dp" />
+        <TextView
+            android:id="@+id/txtError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/middleCenterError"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#fa0505" />
 
-    <ImageView
-        android:id="@+id/imgNfcBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:contentDescription="@string/movingBarDescription"
-        android:minWidth="100dip"
-        android:minHeight="100dip"
-        android:padding="5dp"
-        android:src="@drawable/ic_bar_24dp" />
+        <ImageView
+            android:id="@+id/imgNfcCircle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/nfcIconDescription"
+            android:minWidth="100dip"
+            android:minHeight="100dip"
+            android:src="@drawable/ic_nfc_24dp" />
 
-    <com.hiddenramblings.tagmo.widget.BankPicker
-        android:id="@+id/bank_number_picker"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/picker_border_dark"
-        android:layout_alignParentBottom="true" />
+        <ImageView
+            android:id="@+id/imgNfcBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/movingBarDescription"
+            android:minWidth="100dip"
+            android:minHeight="100dip"
+            android:padding="5dp"
+            android:src="@drawable/ic_bar_24dp" />
 
-    <TextView
-        android:id="@+id/bank_number_details"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/bank_number_picker"
-        android:layout_marginBottom="6dp"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="@string/bank_select_details"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="16.5sp" />
-</RelativeLayout>
+        <com.hiddenramblings.tagmo.widget.BankPicker
+            android:id="@+id/bank_number_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/picker_border_dark"
+            android:layout_alignParentBottom="true" />
+
+        <TextView
+            android:id="@+id/bank_number_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/bank_number_picker"
+            android:layout_marginBottom="6dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="@string/bank_select_details"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="16.5sp" />
+    </RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

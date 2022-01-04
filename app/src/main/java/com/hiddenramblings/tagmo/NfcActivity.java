@@ -275,13 +275,13 @@ public class NfcActivity extends AppCompatActivity {
                     mifare = new NTAG215(NfcA.get(tag));
                     try {
                         mifare.connect();
+                        if (TagReader.needsFirmware(mifare)) {
+                            if (TagWriter.updateFirmware(mifare))
+                                showMessage(R.string.firmware_update);
+                            mifare.close();
+                            finish();
+                        }
                     } catch (Exception ignored) { }
-                    if (TagReader.needsFirmware(mifare)) {
-                        if (TagWriter.updateFirmware(mifare))
-                            showMessage(R.string.firmware_update);
-                        mifare.close();
-                        finish();
-                    }
                 }
                 throw new Exception(getString(R.string.error_tag_protocol, tagTech));
             }
@@ -290,7 +290,7 @@ public class NfcActivity extends AppCompatActivity {
                 hasTestedElite = true;
                 if (TagUtils.isPowerTag(mifare)) {
                     showMessage(R.string.tag_scanning, getString(R.string.power_tag));
-                } else {
+                } else if (prefs.enable_elite_support().get()) {
                     isEliteDevice = TagUtils.isElite(mifare)
                             || NFCIntent.ACTION_UNLOCK_UNIT.equals(mode);
                     if (isEliteDevice) {
@@ -298,6 +298,8 @@ public class NfcActivity extends AppCompatActivity {
                     } else {
                         showMessage(R.string.tag_scanning, tagTech);
                     }
+                } else {
+                    showMessage(R.string.tag_scanning, tagTech);
                 }
             }
             int selection;

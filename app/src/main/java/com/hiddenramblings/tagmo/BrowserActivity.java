@@ -1918,9 +1918,11 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void showFakeSnackbar(String msg) {
-        mainLayout.setPadding(0, fakeSnackbarIcon.getHeight(), 0, 0);
-        fakeSnackbarText.setText(msg);
-        fakeSnackbar.setVisibility(View.VISIBLE);
+        this.runOnUiThread(() -> {
+            mainLayout.setPadding(0, fakeSnackbarIcon.getHeight(), 0, 0);
+            fakeSnackbarText.setText(msg);
+            fakeSnackbar.setVisibility(View.VISIBLE);
+        });
     }
 
     private boolean keyNameMatcher(String name) {

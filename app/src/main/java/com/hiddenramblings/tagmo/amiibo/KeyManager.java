@@ -88,15 +88,27 @@ public class KeyManager {
         }
     }
 
-    private void readKey(InputStream strm) throws IOException {
-        byte[] data = new byte[NfcByte.KEY_FILE_SIZE];
+    private void evaluateKey(InputStream strm) throws IOException {
+        byte[] data = new byte[NfcByte.KEY_FILE_SIZE * 2];
 
-        int rlen = strm.read(data, 0, NfcByte.KEY_FILE_SIZE);
-        if (rlen <= 0)
+        int rlen = strm.read(data, 0, NfcByte.KEY_FILE_SIZE * 2);
+        if (rlen <= 0) {
             throw new IOException(context.getString(R.string.invalid_key_error));
-        if (rlen < NfcByte.KEY_FILE_SIZE)
+        } else if (rlen == NfcByte.KEY_FILE_SIZE * 2) {
+            byte[] key2 = new byte[NfcByte.KEY_FILE_SIZE];
+            System.arraycopy(data, NfcByte.KEY_FILE_SIZE, key2, 0, NfcByte.KEY_FILE_SIZE);
+            readKey(key2);
+            byte[] key1 = new byte[NfcByte.KEY_FILE_SIZE];
+            System.arraycopy(data, 0, key1, 0, NfcByte.KEY_FILE_SIZE);
+            readKey(key1);
+        } else if (rlen == NfcByte.KEY_FILE_SIZE) {
+            readKey(data);
+        } else {
             throw new IOException(context.getString(R.string.key_size_error));
+        }
+    }
 
+    private void readKey(byte[] data) throws IOException {
         String md5 = null;
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -111,26 +123,25 @@ public class KeyManager {
         } else if (UNFIXED_KEY_MD5.equals(md5)) {
             saveKeyFile(UNFIXED_KEY_MD5, data);
             this.unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5);
-            if (!hasFixedKey()) readKey(strm);
         } else {
             throw new IOException(context.getString(R.string.key_signature_error));
         }
     }
 
     public void decipherKey() throws IOException {
-        readKey(new ByteArrayInputStream(TagUtils.hexToByteArray(
+        evaluateKey(new ByteArrayInputStream(TagUtils.hexToByteArray(
                 JaviMaD.replace(" ", ""))));
     }
 
     public void loadKey(Uri file) throws IOException {
         try (InputStream strm = context.getContentResolver().openInputStream(file)) {
-            readKey(strm);
+            evaluateKey(strm);
         }
     }
 
     public void loadKey(File file) throws IOException {
         try (FileInputStream inputStream = new FileInputStream(file)) {
-            readKey(inputStream);
+            evaluateKey(inputStream);
         }
     }
 

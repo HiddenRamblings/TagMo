@@ -307,7 +307,6 @@ public class BrowserActivity extends AppCompatActivity implements
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
-                    onBottomSheetCollapsed();
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
                 }
@@ -825,15 +824,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 .beginTransaction()
                 .replace(R.id.preferences, settingsFragment)
                 .commit();
-    }
-
-    private void onBottomSheetCollapsed() {
-        if (preferences.isShown()) {
-            showSettingsFragment();
-        } else {
-            menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
-            preferences.setVisibility(View.GONE);
-        }
     }
 
     private void onBottomSheetChanged() {

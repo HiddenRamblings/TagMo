@@ -6,9 +6,9 @@
     <string name="unfixed_key_found">Unfixed Key  cached / loaded.</string>
     <string name="unfixed_key_missing">No Unfixed Key!</string>
 
-    <string name="nfc_unsupported">NFC Not Supported!</string>
-    <string name="nfc_disabled">NFC Disabled!</string>
-    <string name="nfc_query">NFC is currently disabled. Enable NFC?</string>
+    <string name="nfc_unsupported">¡No es Compatible con NFC!</string>
+    <string name="nfc_disabled">NFC Desactivado!</string>
+    <string name="nfc_query">NFC está deshabilitado actualmente. ¿Habilitar NFC?</string>
 
     <string name="no_decrypt_key">Decryption keys not imported</string>
 

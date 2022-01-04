@@ -218,7 +218,7 @@
     <string name="emulated_storage_root">浏览模拟存储</string>
     <string name="physical_storage_root">浏览物理存储</string>
 
-    <string name="prepare_unlock">一旦扫描完毕，在完成之前，不要将设备从NFC感应区移开。</string>
+    <string name="prepare_unlock">一旦扫描开始，在完成之前，不要将设备从NFC感应区移开。</string>
     <string name="progress_unlock">按住N2按钮，直到解锁完成。</string>
     <string name="possible_lock">此 N2 Elite 是否已被锁定?</string>
     <string name="tag_update_only">之前写入的 tags 需要 \"Update\"</string>

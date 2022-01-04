@@ -854,11 +854,6 @@ public class BrowserActivity extends AppCompatActivity implements
             switchStorageRoot.setVisibility(View.GONE);
         }
         if (keyManager.isKeyMissing()) {
-            try {
-                keyManager.decipherKey();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             showFakeSnackbar(getString(R.string.locating_keys));
             locateKeyFiles();
         } else {

@@ -219,8 +219,8 @@
     <string name="emulated_storage_root">Browse Emulated Storage</string>
     <string name="physical_storage_root">Browse Physical Storage</string>
 
-    <string name="prepare_unlock">Once scanned, do not remove the unit from the NFC field until completion.</string>
-    <string name="progress_unlock">Press and hold the N2 button and continue to wait for unlock to complete.</string>
+    <string name="prepare_unlock">Once the N2 is scanned, it cannot be removed from the NFC field until the operation is complete.</string>
+    <string name="progress_unlock">Press and hold the N2 button without disconnecting from NFC.</string>
     <string name="possible_lock">Is this N2 Elite locked?</string>
     <string name="tag_update_only">Previously written tags require \"Update\"</string>
 

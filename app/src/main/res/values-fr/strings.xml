@@ -59,7 +59,7 @@
     <string name="save">Save</string>
     <string name="write">Write</string>
     <string name="cancel">Cancel</string>
-    <string name="accept">Accept</string>
+    <string name="accept">Accepter</string>
     <string name="start">Start</string>
     <string name="delete">Delete</string>
     <string name="erase">Erase</string>
@@ -327,5 +327,5 @@
     <string name="mkdir_failed">Mkdir "%1$s" failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>
 
-    <string name="support_notice">Please report any issues on GitHub. Answers from reddit may result in damage to your device or console.\n\nOnly accept files from trusted sources. Do NOT use with files that require sending a DM or joining a Discord.</string>
+    <string name="support_notice">Veuillez signaler tout problème sur GitHub. Les réponses de reddit peuvent endommager votre appareil ou votre console. N\'acceptez que les fichiers provenant de sources fiables. Ne PAS utiliser avec des fichiers qui nécessitent l\'envoi d\'un DM ou la jonction d\'une Discorde.</string>
 </resources>

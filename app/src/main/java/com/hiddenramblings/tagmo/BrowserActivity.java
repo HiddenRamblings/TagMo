@@ -307,6 +307,7 @@ public class BrowserActivity extends AppCompatActivity implements
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
+                    onBottomSheetCollapsed();
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
                 }
@@ -816,7 +817,6 @@ public class BrowserActivity extends AppCompatActivity implements
     };
 
     private void showSettingsFragment() {
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         menuSettings.setIcon(R.drawable.ic_folder_white_24dp);
         preferences.setVisibility(View.VISIBLE);
         if (null == settingsFragment || settingsFragment.isDetached())
@@ -825,18 +825,26 @@ public class BrowserActivity extends AppCompatActivity implements
                 .beginTransaction()
                 .replace(R.id.preferences, settingsFragment)
                 .commit();
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    private void onBottomSheetCollapsed() {
+        if (preferences.isShown()) {
+            showSettingsFragment();
+        } else {
+            menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
+            preferences.setVisibility(View.GONE);
+        }
     }
 
     private void onBottomSheetChanged() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         if (preferences.isShown()) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
             preferences.setVisibility(View.GONE);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {
             showSettingsFragment();
         }
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @Override
@@ -1970,7 +1978,10 @@ public class BrowserActivity extends AppCompatActivity implements
                     fooSnackbar = new IconifiedSnackbar(this, mainLayout)
                             .buildTickerBar(getString(R.string.keys_not_found));
                     fooSnackbar.setAction(R.string.setup, v -> {
+                        if (!preferences.isShown())
+                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         showSettingsFragment();
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                         fooSnackbar.dismiss();
                     }).show();
                     mainLayout.setPadding(0, 0, 0, 0);

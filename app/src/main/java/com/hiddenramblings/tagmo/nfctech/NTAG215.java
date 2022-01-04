@@ -62,6 +62,19 @@ public class NTAG215 implements TagTechnology {
         }
     }
 
+    public byte[] transceive(byte[] data) {
+        try {
+            if (null != m_mifare) {
+                return m_mifare.transceive(data);
+            } else if (null != m_nfcA) {
+                return m_nfcA.transceive(data);
+            }
+        } catch (IOException e) {
+            Debug.Log(e);
+        }
+        return null;
+    }
+
     public byte[] readPages(int pageOffset) throws IOException {
         if (null != m_mifare)
             return m_mifare.readPages(pageOffset);
@@ -92,19 +105,6 @@ public class NTAG215 implements TagTechnology {
 
             m_nfcA.transceive(cmd);
         }
-    }
-
-    public byte[] transceive(byte[] data) {
-        try {
-            if (null != m_mifare) {
-                return m_mifare.transceive(data);
-            } else if (null != m_nfcA) {
-                return m_nfcA.transceive(data);
-            }
-        } catch (IOException e) {
-            Debug.Log(e);
-        }
-        return null;
     }
 
     private static void validatePageIndex(int pageIndex) {
@@ -210,32 +210,20 @@ public class NTAG215 implements TagTechnology {
     }
 
     public byte[] fastRead(int startAddr, int endAddr) {
-        return internalFastRead((startAddr1, endAddr1, bank) -> {
-            try {
-                return this.transceive(new byte[]{
-                        NfcByte.CMD_FAST_READ,
-                        (byte) (startAddr1 & 0xFF),
-                        (byte) (endAddr1 & 0xFF)
-                });
-            } catch (Exception e) {
-                return null;
-            }
-        }, startAddr, endAddr, 0);
+        return internalFastRead((startAddr1, endAddr1, bank) -> this.transceive(new byte[]{
+                NfcByte.CMD_FAST_READ,
+                (byte) (startAddr1 & 0xFF),
+                (byte) (endAddr1 & 0xFF)
+        }), startAddr, endAddr, 0);
     }
 
     public byte[] amiiboFastRead(int startAddr, int endAddr, int bank) {
-        return internalFastRead((startAddr1, endAddr1, bank1) -> {
-            try {
-                return this.transceive(new byte[]{
-                        NfcByte.N2_FAST_READ,
-                        (byte) (startAddr1 & 0xFF),
-                        (byte) (endAddr1 & 0xFF),
-                        (byte) (bank1 & 0xFF)
-                });
-            } catch (Exception e) {
-                return null;
-            }
-        }, startAddr, endAddr, bank);
+        return internalFastRead((startAddr1, endAddr1, bank1) -> this.transceive(new byte[]{
+                NfcByte.N2_FAST_READ,
+                (byte) (startAddr1 & 0xFF),
+                (byte) (endAddr1 & 0xFF),
+                (byte) (bank1 & 0xFF)
+        }), startAddr, endAddr, bank);
     }
 
     private byte[] internalFastRead(IFastRead method, int startAddr, int endAddr, int bank) {

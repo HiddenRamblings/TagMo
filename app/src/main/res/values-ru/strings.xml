@@ -327,5 +327,4 @@
     <string name="mkdir_failed">Mkdir "%1$s" failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>
 
-    <string name="support_notice">Пожалуйста, сообщайте о любых проблемах на GitHub. Ответы от reddit могут привести к повреждению вашего устройства или консоли. Принимайте файлы только из надежных источников. НЕ используйте с файлами, которые требуют отправки DM или присоединения к Discord.</string>
 </resources>

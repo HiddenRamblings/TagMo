@@ -327,5 +327,4 @@
     <string name="mkdir_failed">Tworzenie katalogu "%1$s" nieudane!</string>
     <string name="downloads_hidden">Pobrane są obecnie ukryte!</string>
 
-    <string name="support_notice">Proszę o zgłaszanie wszelkich błedów przez GitHub. Odpowiedzi z reddita mogą skutkować uszkodzeniem twojego urządzenia lub konsoli.\n\nKorzystaj tylko z plików ze sprawdzonych źródeł. NIE używaj z plikami, które wymagają wysłania PW lub dołączania do Discorda.</string>
 </resources>

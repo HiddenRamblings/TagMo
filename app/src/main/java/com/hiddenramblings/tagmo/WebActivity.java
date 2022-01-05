@@ -122,38 +122,16 @@ public class WebActivity extends AppCompatActivity {
             }
         });
 
-        if (null != action) {
-            if (action.startsWith(NFCIntent.SITE_GITLAB_README)) {
-                webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
-                        "(?i)" + Pattern.quote("android"), "TagMo"));
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-                mWebView.loadUrl(action);
-            }
-        } else {
+        if (null != action && action.startsWith(NFCIntent.SITE_GITLAB_README)) {
+            webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
+                    "(?i)" + Pattern.quote("android"), "TagMo"));
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+            mWebView.loadUrl(action);
+        } else if (getIntent().hasExtra(WEBSITE)) {
             webViewSettings.setBuiltInZoomControls(true);
             webViewSettings.setSupportZoom(true);
-
-            if (getIntent().hasExtra(WEBSITE)) {
-                webViewSettings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-                String url = getIntent().getStringExtra(WEBSITE);
-                mWebView.loadUrl(url);
-                return;
-            }
-
-            try (InputStream in = getContentResolver().openInputStream(getIntent().getData());
-                 BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
-                StringBuilder total = new StringBuilder();
-                String line;
-                while (null != (line = r.readLine())) {
-                    total.append(line).append("\n");
-                }
-                mWebView.loadData(total.toString(), getString(R.string.mimetype_text)
-                        + "; charset=" + CharsetCompat.UTF_8.displayName(), null);
-            } catch (Exception e) {
-                Debug.Log(e);
-                new Toasty(this).Short(R.string.fail_logcat);
-                finish();
-            }
+            webViewSettings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+            mWebView.loadUrl(getIntent().getStringExtra(WEBSITE));
         }
     }
 

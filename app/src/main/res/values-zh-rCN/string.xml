@@ -325,7 +325,6 @@
     <string name="mkdir_failed">无法创建 "%1$s" 目录！</string>
     <string name="downloads_hidden">目前已隐藏 Downloads 文件夹！</string>
     <string name="speed_scan">Tag 卡片离手机远点试试</string>
-    <string name="support_notice">github是反馈问题的唯一途径，网上其他途径获取到的信息都有可能损坏你的设备。请确保从可信的来源获取文件，务必不要使用任何需要加入群组才能获取到的文件。</string>
     <string name="accept">明白</string>
     <string name="flask_editor">打开 Flask 编辑器（Web）</string>
 </resources>

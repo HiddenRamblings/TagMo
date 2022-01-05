@@ -83,6 +83,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
@@ -110,11 +111,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -414,13 +417,25 @@ public class BrowserActivity extends AppCompatActivity implements
                 amiiboContainer.setVisibility(View.GONE));
 
         if (!prefs.hasAcceptedTOS().get()) {
-            new AlertDialog.Builder(this)
-                    .setMessage(getString(R.string.support_notice))
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.accept, (dialog, which) -> {
-                        prefs.hasAcceptedTOS().put(true);
-                        dialog.dismiss();
-                    }).show();
+            try (InputStream in = getResources().openRawResource(R.raw.disclaimer);
+                 BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
+                StringBuilder total = new StringBuilder();
+                String line;
+                while (null != (line = r.readLine())) {
+                    total.append(line).append("\n");
+                }
+                new AlertDialog.Builder(this)
+                        .setMessage(total.toString())
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.accept, (dialog, which) -> {
+                            prefs.hasAcceptedTOS().put(true);
+                            dialog.dismiss();
+                        }).show().getWindow()
+                        .setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT);
+            } catch (Exception e) {
+                Debug.Log(e);
+            }
         }
     }
 
@@ -513,8 +528,22 @@ public class BrowserActivity extends AppCompatActivity implements
                 String output = null != path ? Storage.getRelativePath(new File(path),
                         prefs.preferEmulated().get()) : uri.getPath();
                 new Toasty(this).Long(getString(R.string.wrote_logcat, output));
-                startActivity(NFCIntent.getIntent(new Intent(this,
-                        WebActivity.class)).setData(uri));
+                try (InputStream in = getContentResolver().openInputStream(uri);
+                     BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
+                    StringBuilder total = new StringBuilder();
+                    String line;
+                    while (null != (line = r.readLine())) {
+                        total.append(line).append("\n");
+                    }
+                    this.runOnUiThread(() -> new AlertDialog.Builder(this)
+                            .setMessage(total.toString())
+                            .setPositiveButton(R.string.close, null).show().getWindow()
+                            .setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
+                                    LinearLayout.LayoutParams.WRAP_CONTENT));
+                } catch (Exception e) {
+                    Debug.Log(e);
+                    new Toasty(this).Short(R.string.fail_logcat);
+                }
             } catch (IOException e) {
                 new Toasty(this).Short(e.getMessage());
             }

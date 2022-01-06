@@ -83,7 +83,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
@@ -436,6 +435,25 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 Debug.Log(e);
             }
+        }
+
+        if (null != intent && null != intent.getAction()
+                && Intent.ACTION_VIEW.equals(intent.getAction())) {
+            try {
+                if (null != intent.getClipData()) {
+                    for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
+                        Uri uri = intent.getClipData().getItemAt(i).getUri();
+                        byte[] data = TagReader.readTagDocument(uri);
+                        updateAmiiboView(data, new AmiiboFile(new File(uri.getPath()),
+                                TagUtils.amiiboIdFromTag(data), data));
+                    }
+                } else if (null != intent.getData()) {
+                    Uri uri = intent.getData();
+                    byte[] data = TagReader.readTagDocument(uri);
+                    updateAmiiboView(data, new AmiiboFile(new File(uri.getPath()),
+                            TagUtils.amiiboIdFromTag(data), data));
+                }
+            } catch (Exception ignored) {}
         }
     }
 

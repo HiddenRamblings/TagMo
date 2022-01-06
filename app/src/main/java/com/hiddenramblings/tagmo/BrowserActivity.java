@@ -1661,7 +1661,7 @@ public class BrowserActivity extends AppCompatActivity implements
     });
 
     private void deleteAmiiboFile(AmiiboFile amiiboFile) {
-        if (null != amiiboFile.getFilePath()) {
+        if (null != amiiboFile && null != amiiboFile.getFilePath()) {
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.warn_delete_file, Storage.getRelativePath(
                             amiiboFile.getFilePath(), prefs.preferEmulated().get())))
@@ -1956,7 +1956,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void setAmiiboStats() {
         handler.removeCallbacksAndMessages(null);
-        setAmiiboStatsText();
+        this.runOnUiThread(this::setAmiiboStatsText);
     }
 
     private void showFakeSnackbar(String msg) {

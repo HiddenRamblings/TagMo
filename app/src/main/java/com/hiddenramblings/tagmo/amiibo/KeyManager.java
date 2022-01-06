@@ -90,7 +90,6 @@ public class KeyManager {
 
     private void evaluateKey(InputStream strm) throws IOException {
         byte[] data = new byte[NfcByte.KEY_FILE_SIZE * 2];
-
         int rlen = strm.read(data, 0, NfcByte.KEY_FILE_SIZE * 2);
         if (rlen <= 0) {
             throw new IOException(context.getString(R.string.invalid_key_error));
@@ -133,12 +132,13 @@ public class KeyManager {
                 JaviMaD.replace(" ", ""))));
     }
 
-    public void loadKey(Uri file) throws IOException {
-        try (InputStream strm = context.getContentResolver().openInputStream(file)) {
+    public void loadKey(Uri uri) throws IOException {
+        try (InputStream strm = context.getContentResolver().openInputStream(uri)) {
             evaluateKey(strm);
         }
     }
 
+    @SuppressWarnings("unused")
     public void loadKey(File file) throws IOException {
         try (FileInputStream inputStream = new FileInputStream(file)) {
             evaluateKey(inputStream);

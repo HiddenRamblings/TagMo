@@ -43,10 +43,10 @@ public class TagReader {
         }
     }
 
-    static byte[] readTagDocument(Uri file) throws Exception {
+    public static byte[] readTagDocument(Uri uri) throws Exception {
         try (InputStream inputStream = TagMo.getContext()
-                .getContentResolver().openInputStream(file)) {
-            return getTagData(file.getPath(), inputStream);
+                .getContentResolver().openInputStream(uri)) {
+            return getTagData(uri.getPath(), inputStream);
         }
     }
 

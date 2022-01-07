@@ -30,7 +30,7 @@ public class TagReader {
 
     private static byte[] getTagData(String path, InputStream inputStream) throws Exception {
         int length = inputStream.available();
-        if (length != NfcByte.TAG_FILE_SIZE) {
+        if (length < NfcByte.TAG_FILE_SIZE) {
             if (length == NfcByte.KEY_FILE_SIZE)
                 return null;
             else

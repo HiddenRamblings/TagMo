@@ -7,6 +7,7 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,12 +29,16 @@ public class TagReader {
     }
 
     private static byte[] getTagData(String path, InputStream inputStream) throws Exception {
+        int length = inputStream.available();
+        if (length != NfcByte.TAG_FILE_SIZE) {
+            if (length == NfcByte.KEY_FILE_SIZE)
+                return null;
+            else
+                throw new IOException(TagMo.getContext().getString(
+                        R.string.invalid_file_size, path, length, NfcByte.TAG_FILE_SIZE));
+        }
         byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
-        int length = inputStream.read(data);
-        if (length == NfcByte.KEY_FILE_SIZE) return null;
-        if (length != NfcByte.TAG_FILE_SIZE)
-            throw new IOException(TagMo.getContext().getString(
-                    R.string.invalid_file_size, path, length, NfcByte.TAG_FILE_SIZE));
+        new DataInputStream(inputStream).readFully(data);
         return data;
     }
 

@@ -10,6 +10,7 @@ import com.hiddenramblings.tagmo.nfctech.NfcByte;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -89,18 +90,21 @@ public class KeyManager {
     }
 
     private void evaluateKey(InputStream strm) throws IOException {
-        byte[] data = new byte[NfcByte.KEY_FILE_SIZE * 2];
-        int rlen = strm.read(data, 0, NfcByte.KEY_FILE_SIZE * 2);
-        if (rlen <= 0) {
+        int length = strm.available();
+        if (length <= 0) {
             throw new IOException(context.getString(R.string.invalid_key_error));
-        } else if (rlen == NfcByte.KEY_FILE_SIZE * 2) {
+        } else if (length == NfcByte.KEY_FILE_SIZE * 2) {
+            byte[] data = new byte[NfcByte.KEY_FILE_SIZE * 2];
+            new DataInputStream(strm).readFully(data);
             byte[] key2 = new byte[NfcByte.KEY_FILE_SIZE];
             System.arraycopy(data, NfcByte.KEY_FILE_SIZE, key2, 0, NfcByte.KEY_FILE_SIZE);
             readKey(key2);
             byte[] key1 = new byte[NfcByte.KEY_FILE_SIZE];
             System.arraycopy(data, 0, key1, 0, NfcByte.KEY_FILE_SIZE);
             readKey(key1);
-        } else if (rlen == NfcByte.KEY_FILE_SIZE) {
+        } else if (length == NfcByte.KEY_FILE_SIZE) {
+            byte[] data = new byte[NfcByte.KEY_FILE_SIZE];
+            new DataInputStream(strm).readFully(data);
             readKey(data);
         } else {
             throw new IOException(context.getString(R.string.key_size_error));

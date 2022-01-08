@@ -269,6 +269,7 @@ public class NfcActivity extends AppCompatActivity {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             mifare = NTAG215.get(tag);
             tagTech = TagUtils.getTagTechnology(tag);
+            showMessage(R.string.tag_scanning, tagTech);
             mifare.connect();
             if (!hasTestedElite) {
                 hasTestedElite = true;
@@ -277,13 +278,8 @@ public class NfcActivity extends AppCompatActivity {
                 } else if (prefs.enable_elite_support().get()) {
                     isEliteDevice = TagUtils.isElite(mifare)
                             || NFCIntent.ACTION_UNLOCK_UNIT.equals(mode);
-                    if (isEliteDevice) {
+                    if (isEliteDevice)
                         showMessage(R.string.tag_scanning, getString(R.string.elite_device));
-                    } else {
-                        showMessage(R.string.tag_scanning, tagTech);
-                    }
-                } else {
-                    showMessage(R.string.tag_scanning, tagTech);
                 }
             }
             int selection;

@@ -69,7 +69,7 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:paddingTop="4dp"
-                android:paddingBottom="40dp"
+                android:paddingBottom="@dimen/button_height_min"
                 android:scrollbars="vertical"/>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -115,7 +115,7 @@
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
-        app:behavior_peekHeight="40dp"
+        app:behavior_peekHeight="@dimen/button_height_min"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <LinearLayout

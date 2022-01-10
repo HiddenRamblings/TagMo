@@ -65,7 +65,6 @@ public class BankListActivity extends AppCompatActivity implements
     private final Preferences_ prefs = TagMo.getPrefs();
 
     private RecyclerView amiibosView;
-    private ImageView toggle;
 
     private RelativeLayout writeBankLayout;
     private RecyclerView amiiboFilesView;
@@ -120,7 +119,6 @@ public class BankListActivity extends AppCompatActivity implements
                 ViewGroup.LayoutParams.MATCH_PARENT);
 
         amiibosView = findViewById(R.id.amiibos_list);
-        toggle = findViewById(R.id.toggle);
 
         writeBankLayout = findViewById(R.id.write_banks_layout);
         amiiboFilesView = findViewById(R.id.amiibo_files_list);
@@ -146,6 +144,7 @@ public class BankListActivity extends AppCompatActivity implements
 
         this.settings = new BrowserSettings().initialize();
 
+        ImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(
@@ -170,6 +169,15 @@ public class BankListActivity extends AppCompatActivity implements
                     amiibosView.smoothScrollToPosition(clickedPosition);
             }
         });
+
+        toggle.setOnClickListener(view -> {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
         toolbar.inflateMenu(R.menu.bank_menu);
 
         int bank_count = getIntent().getIntExtra(NFCIntent.EXTRA_BANK_COUNT,
@@ -244,14 +252,6 @@ public class BankListActivity extends AppCompatActivity implements
                 settings.setQuery(query);
                 settings.notifyChanges();
                 return true;
-            }
-        });
-
-        findViewById(R.id.toggle).setOnClickListener(view -> {
-            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            } else {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
 

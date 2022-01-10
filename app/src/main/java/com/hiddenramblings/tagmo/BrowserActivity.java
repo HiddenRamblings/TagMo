@@ -149,7 +149,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private RecyclerView amiibosView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView currentFolderView;
-    private ImageView toggle;
     private CoordinatorLayout preferences;
     private AppCompatButton switchStorageRoot;
 
@@ -213,10 +212,8 @@ public class BrowserActivity extends AppCompatActivity implements
         amiibosView = findViewById(R.id.amiibos_list);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         currentFolderView = findViewById(R.id.current_folder);
-        toggle = findViewById(R.id.toggle);
         preferences = findViewById(R.id.preferences);
         switchStorageRoot = findViewById(R.id.switch_storage_root);
-
         amiiboContainer = findViewById(R.id.amiiboContainer);
         toolbar = findViewById(R.id.toolbar);
         amiiboInfo = findViewById(R.id.amiiboInfo);
@@ -302,6 +299,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         this.settings.addChangeListener(this);
 
+        ImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -316,6 +314,14 @@ public class BrowserActivity extends AppCompatActivity implements
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+
+        toggle.setOnClickListener(view -> {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
 
@@ -392,14 +398,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
                 return false;
             });
-        });
-
-        findViewById(R.id.toggle).setOnClickListener(view -> {
-            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            } else {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            }
         });
 
         findViewById(R.id.switch_storage_root).setOnClickListener(view -> {

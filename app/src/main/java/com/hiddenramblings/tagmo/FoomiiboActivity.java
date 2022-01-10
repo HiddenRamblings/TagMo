@@ -1,21 +1,26 @@
 package com.hiddenramblings.tagmo;
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -84,9 +89,34 @@ public class FoomiiboActivity extends AppCompatActivity implements
             }
         }
 
+        ImageView toggle = findViewById(R.id.toggle);
+        BottomSheetBehavior<View> bottomSheetBehavior =
+                BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
+                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+
+        toggle.setOnClickListener(view -> {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
         RecyclerView amiibosView = findViewById(R.id.amiibos_list);
-        AppCompatButton clearFoomiiboSet = findViewById(R.id.clear_foomiibo_set);
-        AppCompatButton buildFoomiiboSet = findViewById(R.id.build_foomiibo_set);
 
         if (this.settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
             amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
@@ -95,13 +125,34 @@ public class FoomiiboActivity extends AppCompatActivity implements
         amiibosView.setAdapter(new FoomiiboAdapter(settings, missingIds, this));
         this.settings.addChangeListener((BrowserSettingsListener) amiibosView.getAdapter());
 
-        clearFoomiiboSet.setOnClickListener(view -> {
+        SearchView searchView = findViewById(R.id.amiibo_search);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setIconifiedByDefault(false);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                settings.setQuery(query);
+                settings.notifyChanges();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                settings.setQuery(query);
+                settings.notifyChanges();
+                return true;
+            }
+        });
+
+        findViewById(R.id.clear_foomiibo_set).setOnClickListener(view -> {
             deleteDir(directory);
             setResult(RESULT_OK);
             finish();
         });
 
-        buildFoomiiboSet.setOnClickListener(view -> buildFoomiiboSet());
+        findViewById(R.id.build_foomiibo_set).setOnClickListener(view -> buildFoomiiboSet());
     }
 
     private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {

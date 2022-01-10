@@ -130,7 +130,7 @@
     </style>
 
     <style name="SlimButton" parent="Widget.AppCompat.Button">
-        <item name="android:minHeight">36dp</item>
+        <item name="android:minHeight">@dimen/button_height_min</item>
     </style>
 
     <declare-styleable name="BlurView">

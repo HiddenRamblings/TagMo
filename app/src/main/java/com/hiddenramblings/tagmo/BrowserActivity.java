@@ -1946,7 +1946,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void setFolderText(String text, int delay) {
-        this.currentFolderView.setGravity(Gravity.NO_GRAVITY);
+        this.currentFolderView.setGravity(Gravity.CENTER_VERTICAL);
         this.currentFolderView.setText(text);
         handler.removeCallbacksAndMessages(null);
         handler.postDelayed(this::setAmiiboStatsText, delay);

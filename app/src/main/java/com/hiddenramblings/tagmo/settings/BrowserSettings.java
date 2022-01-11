@@ -137,8 +137,10 @@ public class BrowserSettings implements Parcelable {
 
     public BrowserSettings initialize() {
         final Preferences_ prefs = TagMo.getPrefs();
-        this.setBrowserRootFolder(new File(Storage.getFile(prefs.preferEmulated().get()),
-                prefs.browserRootFolder().get()));
+        this.setBrowserRootFolder(null != prefs.browserRootFolder()
+                ? new File(Storage.getFile(prefs.preferEmulated().get()),
+                prefs.browserRootFolder().get())
+                : Storage.getDownloadDir(null));
         this.setQuery(prefs.query().get());
         this.setSort(prefs.sort().get());
         this.setAmiiboSeriesFilter(prefs.filterAmiiboSeries().get());

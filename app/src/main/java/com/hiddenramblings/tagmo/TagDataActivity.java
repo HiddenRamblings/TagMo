@@ -234,8 +234,7 @@ public class TagDataActivity extends AppCompatActivity {
                 new Toasty(this).Short(getString(R.string.amiibo_info_parse_error));
             }
 
-            if (Thread.currentThread().isInterrupted())
-                return;
+            if (Thread.currentThread().isInterrupted()) return;
 
             this.amiiboManager = amiiboManager;
             runOnUiThread(() -> updateAmiiboView(finalTagData));

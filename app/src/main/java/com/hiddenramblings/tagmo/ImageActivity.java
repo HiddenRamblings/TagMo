@@ -100,8 +100,7 @@ public class ImageActivity extends AppCompatActivity {
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
             }
-            if (Thread.currentThread().isInterrupted())
-                return;
+            if (Thread.currentThread().isInterrupted()) return;
 
             this.amiiboManager = amiiboManager;
             runOnUiThread(() -> updateView(amiiboId));

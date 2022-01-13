@@ -399,32 +399,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void validateKeys(Uri data) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            try {
-                this.keyManager.loadKey(data);
+            try (InputStream strm = requireContext().getContentResolver().openInputStream(data)) {
+                this.keyManager.evaluateKey(strm);
             } catch (Exception e) {
                 Debug.Log(e);
                 requireActivity().runOnUiThread(() ->
                         showSnackbar(e.getMessage(), Snackbar.LENGTH_SHORT));
             }
-            if (Thread.currentThread().isInterrupted())
-                return;
-
-            ((BrowserActivity) requireActivity()).onRefresh();
-            updateKeySummary();
-        });
-    }
-
-    private void onImportKeysFailed() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            try {
-                this.keyManager.decipherKey();
-            } catch (Exception e) {
-                Debug.Log(e);
-                requireActivity().runOnUiThread(() ->
-                        showSnackbar(e.getMessage(), Snackbar.LENGTH_SHORT));
-            }
-            if (Thread.currentThread().isInterrupted())
-                return;
+            if (Thread.currentThread().isInterrupted()) return;
 
             ((BrowserActivity) requireActivity()).onRefresh();
             updateKeySummary();
@@ -474,8 +456,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 new Toasty(requireActivity()).Short(R.string.amiibo_failure_load);
                 return;
             }
-            if (Thread.currentThread().isInterrupted())
-                return;
+            if (Thread.currentThread().isInterrupted()) return;
 
             setAmiiboManager(amiiboManager);
         });
@@ -496,8 +477,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return;
             }
 
-            if (Thread.currentThread().isInterrupted())
-                return;
+            if (Thread.currentThread().isInterrupted()) return;
 
             try {
                 AmiiboManager.saveDatabase(amiiboManager);
@@ -524,8 +504,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 Debug.Log(e);
                 new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse_default);
             }
-            if (Thread.currentThread().isInterrupted())
-                return;
+            if (Thread.currentThread().isInterrupted()) return;
 
             setAmiiboManager(amiiboManager);
             requireActivity().runOnUiThread(() -> showSnackbar(
@@ -590,8 +569,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                     String json = response.toString();
                     AmiiboManager amiiboManager = AmiiboManager.parseAmiiboAPI(new JSONObject(json));
-                    if (Thread.currentThread().isInterrupted())
-                        return;
+                    if (Thread.currentThread().isInterrupted()) return;
 
                     AmiiboManager.saveDatabase(amiiboManager);
                     setAmiiboManager(amiiboManager);
@@ -611,9 +589,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private final ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
-            onImportKeysFailed();
-        } else if (null != result.getData().getClipData()) {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+        if (null != result.getData().getClipData()) {
             for (int i = 0; i < result.getData().getClipData().getItemCount(); i++) {
                 validateKeys(result.getData().getClipData().getItemAt(i).getUri());
             }

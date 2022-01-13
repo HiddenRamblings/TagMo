@@ -111,8 +111,10 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -127,6 +129,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
@@ -1980,8 +1983,8 @@ public class BrowserActivity extends AppCompatActivity implements
             if (file.isDirectory() && file != Storage.getDownloadDir(null)) {
                 locateKeyFilesRecursive(file);
             } else if (keyNameMatcher(file.getName())) {
-                try {
-                    this.keyManager.loadKey(file);
+                try (FileInputStream inputStream = new FileInputStream(file)) {
+                    this.keyManager.evaluateKey(inputStream);
                 } catch (Exception e) {
                     Debug.Log(e);
                 }
@@ -1995,8 +1998,8 @@ public class BrowserActivity extends AppCompatActivity implements
                     .listFiles((dir, name) -> keyNameMatcher(name));
             if (null != files && files.length > 0) {
                 for (File file : files) {
-                    try {
-                        this.keyManager.loadKey(file);
+                    try (FileInputStream inputStream = new FileInputStream(file)) {
+                        this.keyManager.evaluateKey(inputStream);
                     } catch (Exception e) {
                         Debug.Log(e);
                     }
@@ -2007,15 +2010,23 @@ public class BrowserActivity extends AppCompatActivity implements
 
             if (keyManager.isKeyMissing()) {
                 this.runOnUiThread(() -> {
-                    fooSnackbar = new IconifiedSnackbar(this, mainLayout)
-                            .buildTickerBar(getString(R.string.keys_not_found));
-                    fooSnackbar.setAction(R.string.setup, v -> {
-                        if (!preferences.isShown())
-                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                        showSettingsFragment();
-                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                        fooSnackbar.dismiss();
-                    }).show();
+                    Executors.newSingleThreadExecutor().execute(() -> {
+                        try {
+                            Scanner scanner = new Scanner(new URL(
+                                    "https://pastebin.com/raw/aV23ha3X").openStream());
+                            for (int i = 0; i < 4; i++) {
+                                if (scanner.hasNextLine()) scanner.nextLine();
+                            }
+                            this.keyManager.evaluateKey(new ByteArrayInputStream(
+                                    TagUtils.hexToByteArray(scanner.nextLine()
+                                            .replace(" ", ""))));
+                            scanner.close();
+                        } catch (IOException e) {
+                            Debug.Log(e);
+                        }
+                        if (Thread.currentThread().isInterrupted()) return;
+                        onRefresh();
+                    });
                     mainLayout.setPadding(0, 0, 0, 0);
                     fakeSnackbar.setVisibility(View.GONE);
                 });

@@ -70,7 +70,6 @@
     <string name="unspecified">Nieokreślony_a</string>
     <string name="install">Instaluj</string>
     <string name="sync">Synchronizuj</string>
-    <string name="setup">Ustaw</string>
     <string name="enable">Włącz</string>
     <string name="replace">Zamień</string>
     <string name="update">Aktualizuj</string>
@@ -197,7 +196,6 @@
     <string name="update_amiibo_api">Baza AmiiboAPI została zaktualizowana!</string>
 
     <string name="locating_keys">Lokalizuję klucze kryptograficzne&#8230;</string>
-    <string name="keys_not_found">Klucze kryptograficzne nie znalezione!</string>
     <string name="refreshing_list">Szukam amiibo™&#8230;</string>
     <string name="amiibo_not_found">Pliki .bin z amiibo™ nie znalezione!</string>
 

@@ -70,7 +70,6 @@
     <string name="unspecified">不详</string>
     <string name="install">安装</string>
     <string name="sync">同步</string>
-    <string name="setup">设置</string>
     <string name="enable">启用</string>
     <string name="replace">替换</string>
     <string name="update">更新</string>
@@ -196,7 +195,6 @@
     <string name="update_amiibo_api">AmiiboAPI 数据库已更新!</string>
 
     <string name="locating_keys">正在查找加密密钥&#8230;</string>
-    <string name="keys_not_found">未找到加密密钥！</string>
     <string name="refreshing_list">正在查找 amiibo™&#8230;</string>
     <string name="amiibo_not_found">未找到 amiibo™ bin 文件！</string>
 

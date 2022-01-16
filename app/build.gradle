@@ -78,7 +78,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     api 'com.google.android.material:material:1.4.0'
-    api 'androidx.appcompat:appcompat:1.4.0'
+    api 'androidx.appcompat:appcompat:1.4.1'
     api 'androidx.recyclerview:recyclerview:1.2.1'
     api 'androidx.webkit:webkit:1.4.0'
     api 'androidx.preference:preference:1.1.1'

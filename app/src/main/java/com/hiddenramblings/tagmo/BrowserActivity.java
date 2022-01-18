@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -11,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInstaller;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -52,8 +52,6 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -129,6 +127,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -282,13 +281,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 requestScopedStorage();
             }
         } else {
-            int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
-            } else {
-                this.onStorageEnabled();
-            }
+            onRequestStorage.launch(PERMISSIONS_STORAGE);
         }
 
         if (null == this.settings) {
@@ -2038,44 +2031,44 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
-    private static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
     private static final String[] PERMISSIONS_STORAGE = {
-            READ_EXTERNAL_STORAGE,
-            WRITE_EXTERNAL_STORAGE
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+
+    private void showStoragePrompt() {
+        Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
+                R.string.permission_required, Snackbar.LENGTH_LONG);
+        storageBar.setAction(R.string.allow, v -> onRequestStorage.launch(PERMISSIONS_STORAGE));
+        storageBar.show();
+    }
+
+    ActivityResultLauncher<String[]> onRequestStorage = registerForActivityResult(
+                    new ActivityResultContracts.RequestMultiplePermissions(),
+    permissions -> { boolean isStorageEnabled = true;
+        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
+            if (!entry.getValue()) isStorageEnabled = false;
+        }
+        if (isStorageEnabled)
+            this.onStorageEnabled();
+        else
+            showStoragePrompt();
+    });
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (Environment.isExternalStorageManager()) {
-                    this.onStorageEnabled();
-                } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                        intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
-                        intent.putExtra("android.content.extra.FANCY", true);
-                        onDocumentTree.launch(NFCIntent.getIntent(intent));
-                    }
-                }
-            });
-
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        int permission = ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE);
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
-                    R.string.permission_required, Snackbar.LENGTH_LONG);
-            storageBar.setAction(R.string.allow, v -> ActivityCompat.requestPermissions(
-                    BrowserActivity.this, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE));
-            storageBar.show();
-        } else {
+        if (Environment.isExternalStorageManager()) {
             this.onStorageEnabled();
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+                intent.putExtra("android.content.extra.FANCY", true);
+                onDocumentTree.launch(NFCIntent.getIntent(intent));
+            }
         }
-    }
+    });
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     void requestScopedStorage() {

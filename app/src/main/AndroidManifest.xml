@@ -108,6 +108,9 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".github.InstallReceiver"/>
+        <meta-data
+            android:name="com.android.packageinstaller.notification.smallIcon"
+            android:resource="@mipmap/ic_launcher" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

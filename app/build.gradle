@@ -93,5 +93,5 @@ dependencies {
     implementation 'org.apmem.tools:layouts:1.10@aar'
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
     // Required for Lollipop Amiibo API download compatibility
-    api 'com.google.android.gms:play-services-safetynet:18.0.0'
+    api 'com.google.android.gms:play-services-safetynet:18.0.1'
 }

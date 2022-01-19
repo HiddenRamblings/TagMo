@@ -263,7 +263,7 @@ public class BankListActivity extends AppCompatActivity implements
 
         findViewById(R.id.erase_open_banks).setOnClickListener(view -> {
             Intent collection = new Intent(this, NfcActivity.class);
-            collection.setAction(NFCIntent.ACTION_WRITE_ALL_TAGS);
+            collection.setAction(NFCIntent.ACTION_ERASE_ALL_TAGS);
             collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
             onOpenBanksActivity.launch(collection);
         });

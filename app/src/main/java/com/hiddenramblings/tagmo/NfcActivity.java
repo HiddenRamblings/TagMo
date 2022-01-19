@@ -107,6 +107,7 @@ public class NfcActivity extends AppCompatActivity {
                 }
             case NFCIntent.ACTION_WRITE_TAG_RAW:
             case NFCIntent.ACTION_WRITE_ALL_TAGS:
+            case NFCIntent.ACTION_ERASE_ALL_TAGS:
             case NFCIntent.ACTION_BACKUP_AMIIBO:
             case NFCIntent.ACTION_SCAN_TAG:
             case NFCIntent.ACTION_SET_BANK_COUNT:
@@ -150,6 +151,7 @@ public class NfcActivity extends AppCompatActivity {
                 bankPicker.setMaxValue(prefs.eliteBankCount().get());
                 break;
             case NFCIntent.ACTION_WRITE_ALL_TAGS:
+            case NFCIntent.ACTION_ERASE_ALL_TAGS:
             case NFCIntent.ACTION_SCAN_TAG:
             case NFCIntent.ACTION_SET_BANK_COUNT:
             case NFCIntent.ACTION_LOCK_AMIIBO:
@@ -179,6 +181,9 @@ public class NfcActivity extends AppCompatActivity {
                 break;
             case NFCIntent.ACTION_WRITE_ALL_TAGS:
                 setTitle(R.string.write_collection);
+                break;
+            case NFCIntent.ACTION_ERASE_ALL_TAGS:
+                setTitle(R.string.erase_collection);
                 break;
             case NFCIntent.ACTION_BACKUP_AMIIBO:
                 setTitle(R.string.amiibo_backup);
@@ -302,7 +307,8 @@ public class NfcActivity extends AppCompatActivity {
                 bank_count = bank_details[1] & 0xFF;
                 active_bank = bank_details[0] & 0xFF;
                 if (!NFCIntent.ACTION_SET_BANK_COUNT.equals(mode)
-                        && !NFCIntent.ACTION_WRITE_ALL_TAGS.equals(mode)) {
+                        && !NFCIntent.ACTION_WRITE_ALL_TAGS.equals(mode)
+                        && !NFCIntent.ACTION_ERASE_ALL_TAGS.equals(mode)) {
                     selection = bankPicker.getPosition();
                     if (selection > bank_count) {
                         throw new Exception(getString(R.string.fail_bank_oob));

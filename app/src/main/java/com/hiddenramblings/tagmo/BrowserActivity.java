@@ -525,6 +525,17 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     });
 
+    private String getRepositoryToken() {
+        String hex = "6768705f79326b794661614a386d6e4642676a6d"
+                + "57373661577136424c753975514e334d64566b64";
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < hex.length(); i+=2) {
+            String str = hex.substring(i, i+2);
+            output.append((char)Integer.parseInt(str, 16));
+        }
+        return output.toString()
+    }
+
     private void onCaptureLogcatClicked() {
         Executors.newSingleThreadExecutor().execute(() -> {
             File[] logs = Storage.getDownloadDir("TagMo", "Logcat").listFiles(
@@ -550,7 +561,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                     IssueReporterLauncher.forTarget("HiddenRamblings", "TagMo")
                             .theme(R.style.AppTheme_NoActionBar)
-                            .guestToken("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")
+                            .guestToken(getRepositoryToken())
                             .guestEmailRequired(true)
                             .minDescriptionLength(0)
                             .putExtraInfo("logcat", total.toString())

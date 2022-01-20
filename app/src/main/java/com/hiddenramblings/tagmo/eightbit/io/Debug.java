@@ -110,28 +110,16 @@ public class Debug {
     public static Uri processLogcat(Context context, String displayName) throws IOException {
         final StringBuilder log = new StringBuilder();
         String separator = System.getProperty("line.separator");
-        log.append(Build.MANUFACTURER);
-        log.append(" ");
-        log.append(Build.MODEL);
-        log.append(separator);
-        log.append("Android SDK ");
-        log.append(Build.VERSION.SDK_INT);
-        log.append(" (");
-        log.append(Build.VERSION.RELEASE);
-        log.append(")");
-        log.append(separator);
-        log.append("TagMo " + BuildConfig.COMMIT);
+        log.append(context.getString(R.string.app_name)).append(" " + BuildConfig.COMMIT);
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d", BuildConfig.APPLICATION_ID, "-t", "512"
         });
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 mLogcatProc.getInputStream()));
-        log.append(separator);
-        log.append(separator);
+        log.append(separator).append(separator);
         String line;
         while (null != (line = reader.readLine())) {
-            log.append(line);
-            log.append(separator);
+            log.append(line).append(separator);
         }
         reader.close();
 

@@ -71,6 +71,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
+import com.heinrichreimersoftware.androidissuereporter.IssueReporterLauncher;
 import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
 import com.hiddenramblings.tagmo.adapter.BrowserFoldersAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -547,11 +548,13 @@ public class BrowserActivity extends AppCompatActivity implements
                     while (null != (line = r.readLine())) {
                         total.append(line).append("\n");
                     }
-                    this.runOnUiThread(() -> new AlertDialog.Builder(this)
-                            .setMessage(total.toString())
-                            .setPositiveButton(R.string.close, null).show().getWindow()
-                            .setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
-                                    LinearLayout.LayoutParams.WRAP_CONTENT));
+                    IssueReporterLauncher.forTarget("HiddenRamblings", "TagMo")
+                            .theme(R.style.AppTheme_NoActionBar)
+                            .guestToken("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")
+                            .guestEmailRequired(true)
+                            .minDescriptionLength(0)
+                            .putExtraInfo("logcat", total.toString())
+                            .homeAsUpEnabled(false).launch(this);
                 } catch (Exception e) {
                     Debug.Log(e);
                     new Toasty(this).Short(R.string.fail_logcat);

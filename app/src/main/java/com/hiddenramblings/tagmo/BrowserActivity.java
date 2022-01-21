@@ -563,8 +563,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             .theme(R.style.AppTheme_NoActionBar)
                             .guestToken(getRepositoryToken())
                             .guestEmailRequired(true)
-                            .titleTextDefault(getString(R.string.app_name)
-                                    + " (" + BuildConfig.COMMIT + ")")
+                            .titleTextDefault(getString(R.string.app_name) + " " + BuildConfig.COMMIT)
                             .minDescriptionLength(0)
                             .putExtraInfo("logcat", total.toString())
                             .homeAsUpEnabled(false).launch(this);

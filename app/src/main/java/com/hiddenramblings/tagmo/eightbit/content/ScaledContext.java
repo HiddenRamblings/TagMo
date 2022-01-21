@@ -54,6 +54,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
@@ -72,14 +73,19 @@ public class ScaledContext extends ContextWrapper {
     }
 
     private static int[] getDisplayParams(Context context) {
-        DisplayMetrics metrics = new DisplayMetrics();
         WindowManager mWindowManager = (WindowManager)
                 context.getSystemService(Context.WINDOW_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-            mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
-        else
-            mWindowManager.getDefaultDisplay().getMetrics(metrics);
-        return new int[] { metrics.widthPixels, metrics.heightPixels };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Rect metrics = mWindowManager.getCurrentWindowMetrics().getBounds();
+            return new int[] { metrics.width(), metrics.height() };
+        } else {
+            DisplayMetrics metrics = new DisplayMetrics();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
+            else
+                mWindowManager.getDefaultDisplay().getMetrics(metrics);
+            return new int[]{metrics.widthPixels, metrics.heightPixels};
+        }
     }
 
     public static ScaledContext wrap(Context context) {

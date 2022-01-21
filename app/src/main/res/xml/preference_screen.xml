@@ -150,7 +150,7 @@
         </androidx.preference.Preference>
         <androidx.preference.Preference
             android:key="@string/settings_version"
-            android:title="@string/pref_build_hash"
+            android:title="@string/build_hash"
             app:icon="@drawable/gitlab_icon_rgb" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

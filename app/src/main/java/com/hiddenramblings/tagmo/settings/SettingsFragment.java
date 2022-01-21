@@ -117,7 +117,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         Preference version = findPreference(getString(R.string.settings_version));
         if (null != version)
-            version.setTitle(getString(R.string.pref_build_hash, BuildConfig.COMMIT));
+            version.setTitle(getString(R.string.build_hash, BuildConfig.COMMIT));
 
         loadAmiiboManager();
         updateKeySummary();

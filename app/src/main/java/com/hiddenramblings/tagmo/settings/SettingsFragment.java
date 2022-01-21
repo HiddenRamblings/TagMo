@@ -29,6 +29,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.BrowserActivity;
+import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.NfcActivity;
@@ -76,21 +77,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     Preferences_ prefs;
 
     Preference importKeys;
-    CheckBoxPreference enableTagTypeValidation;
-    CheckBoxPreference enableAutomaticScan;
-    CheckBoxPreference enablePowerTagSupport;
-    CheckBoxPreference enableEliteSupport;
-    Preference lockEliteHardware;
-    Preference unlockEliteHardware;
-    Preference launchFlaskEditor;
     Preference amiiboStats;
     Preference gameSeriesStats;
     Preference characterStats;
     Preference amiiboSeriesStats;
     Preference amiiboTypeStats;
-    ListPreference imageNetworkSetting;
-    CheckBoxPreference disableDebug;
-    CheckBoxPreference stableChannel;
 
     private KeyManager keyManager;
     private AmiiboManager amiiboManager = null;
@@ -116,123 +107,148 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
 
         importKeys = findPreference(getString(R.string.settings_import_keys));
-        enableTagTypeValidation = findPreference(getString(R.string.settings_tag_type_validation));
-        enableAutomaticScan = findPreference(getString(R.string.settings_enable_automatic_scan));
-        enablePowerTagSupport = findPreference(getString(R.string.settings_enable_power_tag_support));
-        enableEliteSupport = findPreference(getString(R.string.settings_enable_elite_support));
-        lockEliteHardware = findPreference(getString(R.string.lock_elite_hardware));
-        unlockEliteHardware = findPreference(getString(R.string.unlock_elite_hardware));
-        launchFlaskEditor = findPreference(getString(R.string.settings_open_flask_editor));
+
         amiiboStats = findPreference(getString(R.string.settings_info_amiibo));
         gameSeriesStats = findPreference(getString(R.string.settings_info_game_series));
         characterStats = findPreference(getString(R.string.settings_info_characters));
         amiiboSeriesStats = findPreference(getString(R.string.settings_info_amiibo_series));
         amiiboTypeStats = findPreference(getString(R.string.settings_info_amiibo_types));
-        imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
-        disableDebug = findPreference(getString(R.string.settings_disable_debug));
-        stableChannel = findPreference(getString(R.string.settings_stable_channel));
 
-        this.enableTagTypeValidation.setChecked(prefs.enable_tag_type_validation().get());
-        this.disableDebug.setChecked(prefs.settings_disable_debug().get());
-        this.stableChannel.setChecked(prefs.settings_stable_channel().get());
+
+        Preference version = findPreference(getString(R.string.settings_version));
+        if (null != version)
+            version.setTitle(getString(R.string.pref_build_hash, BuildConfig.COMMIT));
 
         loadAmiiboManager();
         updateKeySummary();
         updateAmiiboStats();
-        onImageNetworkChange(prefs.image_network_settings().get());
 
-        boolean isElite = prefs.enable_elite_support().get();
-        this.enableEliteSupport.setChecked(isElite);
-        if (isElite && prefs.settings_elite_signature().get().length() > 1) {
-            this.enableEliteSupport.setSummary(getString(
-                    R.string.elite_signature, prefs.settings_elite_signature().get()));
+        ListPreference imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
+        if (null != imageNetworkSetting) {
+            onImageNetworkChange(imageNetworkSetting, prefs.image_network_settings().get());
+            imageNetworkSetting.setOnPreferenceChangeListener((preference, newValue) -> {
+                onImageNetworkChange((ListPreference) preference, newValue.toString());
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
         }
-        lockEliteHardware.setVisible(isElite);
-        unlockEliteHardware.setVisible(isElite);
 
         importKeys.setOnPreferenceClickListener(preference -> {
             onImportKeysClicked();
             return SettingsFragment.super.onPreferenceTreeClick(preference);
         });
 
-        enableTagTypeValidation.setOnPreferenceClickListener(preference -> {
-            prefs.enable_tag_type_validation().put(enableTagTypeValidation.isChecked());
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
+        CheckBoxPreference enableTagTypeValidation = findPreference(getString(R.string.settings_tag_type_validation));
+        if (null != enableTagTypeValidation) {
+            enableTagTypeValidation.setChecked(prefs.enable_tag_type_validation().get());
+            enableTagTypeValidation.setOnPreferenceClickListener(preference -> {
+                prefs.enable_tag_type_validation().put(enableTagTypeValidation.isChecked());
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
 
-        enableAutomaticScan.setOnPreferenceClickListener(preference -> {
-            boolean isChecked = enableAutomaticScan.isChecked();
-            prefs.enable_automatic_scan().put(isChecked);
-            if (isChecked) {
-                requireContext().getPackageManager().setComponentEnabledSetting(
-                        NFCIntent.FilterComponent,
-                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                        PackageManager.DONT_KILL_APP);
-            } else {
-                requireContext().getPackageManager().setComponentEnabledSetting(
-                        NFCIntent.FilterComponent,
-                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                        PackageManager.DONT_KILL_APP);
+        CheckBoxPreference enableAutomaticScan = findPreference(getString(R.string.settings_enable_automatic_scan));
+        if (null != enableAutomaticScan) {
+            enableAutomaticScan.setOnPreferenceClickListener(preference -> {
+                boolean isChecked = enableAutomaticScan.isChecked();
+                prefs.enable_automatic_scan().put(isChecked);
+                if (isChecked) {
+                    requireContext().getPackageManager().setComponentEnabledSetting(
+                            NFCIntent.FilterComponent,
+                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                            PackageManager.DONT_KILL_APP);
+                } else {
+                    requireContext().getPackageManager().setComponentEnabledSetting(
+                            NFCIntent.FilterComponent,
+                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                            PackageManager.DONT_KILL_APP);
+                }
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
+        CheckBoxPreference enablePowerTagSupport = findPreference(getString(R.string.settings_enable_power_tag_support));
+        if (null != enablePowerTagSupport) {
+            enablePowerTagSupport.setOnPreferenceClickListener(preference -> {
+                boolean isEnabled = enablePowerTagSupport.isChecked();
+                prefs.enable_power_tag_support().put(isEnabled);
+                if (isEnabled) {
+                    ((BrowserActivity) requireActivity()).loadPTagKeyManager();
+                    startActivity(new Intent(requireActivity(), WebActivity.class)
+                            .setAction(NFCIntent.SITE_POWERTAG_HELP));
+                }
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
+        Preference lockEliteHardware = findPreference(getString(R.string.lock_elite_hardware));
+        if (null != lockEliteHardware) {
+            lockEliteHardware.setOnPreferenceClickListener(preference -> {
+                new AlertDialog.Builder(requireContext())
+                        .setMessage(R.string.lock_elite_warning)
+                        .setPositiveButton(R.string.accept, (dialog, which) -> {
+                            Intent lock = new Intent(requireContext(), NfcActivity.class);
+                            lock.setAction(NFCIntent.ACTION_LOCK_AMIIBO);
+                            startActivity(lock);
+                            dialog.dismiss();
+                        })
+                        .setNegativeButton(R.string.cancel, null).show();
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
+        Preference unlockEliteHardware = findPreference(getString(R.string.unlock_elite_hardware));
+        if (null != unlockEliteHardware) {
+            unlockEliteHardware.setOnPreferenceClickListener(preference -> {
+                new AlertDialog.Builder(requireContext())
+                        .setMessage(R.string.prepare_unlock)
+                        .setPositiveButton(R.string.start, (dialog, which) -> {
+                            startActivity(new Intent(requireContext(), NfcActivity.class)
+                                    .setAction(NFCIntent.ACTION_UNLOCK_UNIT));
+                            dialog.dismiss();
+                        }).show();
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
+        CheckBoxPreference enableEliteSupport = findPreference(getString(R.string.settings_enable_elite_support));
+        if (null != enableEliteSupport) {
+            boolean isElite = prefs.enable_elite_support().get();
+            enableEliteSupport.setChecked(isElite);
+            if (isElite && prefs.settings_elite_signature().get().length() > 1) {
+                enableEliteSupport.setSummary(getString(
+                        R.string.elite_signature, prefs.settings_elite_signature().get()));
             }
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
+            if (null != lockEliteHardware)
+                lockEliteHardware.setVisible(isElite);
+            if (null != unlockEliteHardware)
+                unlockEliteHardware.setVisible(isElite);
+            enableEliteSupport.setOnPreferenceClickListener(preference -> {
+                boolean isEnabled = enableEliteSupport.isChecked();
+                prefs.enable_elite_support().put(enableEliteSupport.isChecked());
+                if (isEnabled && prefs.settings_elite_signature().get().length() > 1)
+                    enableEliteSupport.setSummary(getString(R.string.elite_signature,
+                            prefs.settings_elite_signature().get()));
+                else
+                    enableEliteSupport.setSummary(getString(R.string.elite_details));
+                if (null != lockEliteHardware)
+                    lockEliteHardware.setVisible(isEnabled);
+                if (null != unlockEliteHardware)
+                    unlockEliteHardware.setVisible(isEnabled);
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
 
-        enablePowerTagSupport.setOnPreferenceClickListener(preference -> {
-            boolean isEnabled = enablePowerTagSupport.isChecked();
-            prefs.enable_power_tag_support().put(isEnabled);
-            if (isEnabled) {
-                ((BrowserActivity) requireActivity()).loadPTagKeyManager();
-                startActivity(new Intent(requireActivity(), WebActivity.class)
-                        .setAction(NFCIntent.SITE_POWERTAG_HELP));
-            }
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
-
-        enableEliteSupport.setOnPreferenceClickListener(preference -> {
-            boolean isEnabled = enableEliteSupport.isChecked();
-            prefs.enable_elite_support().put(enableEliteSupport.isChecked());
-            if (isEnabled && prefs.settings_elite_signature().get().length() > 1)
-                enableEliteSupport.setSummary(getString(R.string.elite_signature,
-                        prefs.settings_elite_signature().get()));
-            else
-                enableEliteSupport.setSummary(getString(R.string.elite_details));
-            lockEliteHardware.setVisible(isEnabled);
-            unlockEliteHardware.setVisible(isEnabled);
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
-
-        lockEliteHardware.setOnPreferenceClickListener(preference -> {
-            new AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.lock_elite_warning)
-                    .setPositiveButton(R.string.accept, (dialog, which) -> {
-                        Intent lock = new Intent(requireContext(), NfcActivity.class);
-                        lock.setAction(NFCIntent.ACTION_LOCK_AMIIBO);
-                        startActivity(lock);
-                        dialog.dismiss();
-                    })
-                    .setNegativeButton(R.string.cancel, null).show();
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
-
-        unlockEliteHardware.setOnPreferenceClickListener(preference -> {
-            new AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.prepare_unlock)
-                    .setPositiveButton(R.string.start, (dialog, which) -> {
-                        startActivity(new Intent(requireContext(), NfcActivity.class)
-                                .setAction(NFCIntent.ACTION_UNLOCK_UNIT));
-                        dialog.dismiss();
-                    }).show();
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
-
-        launchFlaskEditor.setOnPreferenceClickListener(preference -> {
-            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-            CustomTabsIntent customTabsIntent = builder.build();
-            // builder.setActionButton(icon, description, pendingIntent, tint); // action button
-            // builder.addMenuItem(menuItemTitle, menuItemPendingIntent); // menu item
-            customTabsIntent.launchUrl(requireActivity(), Uri.parse("https://flask.run/"));
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
+        Preference launchFlaskEditor = findPreference(getString(R.string.settings_open_flask_editor));
+        if (null != launchFlaskEditor) {
+            launchFlaskEditor.setOnPreferenceClickListener(preference -> {
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                CustomTabsIntent customTabsIntent = builder.build();
+                // builder.setActionButton(icon, description, pendingIntent, tint); // action button
+                // builder.addMenuItem(menuItemTitle, menuItemPendingIntent); // menu item
+                customTabsIntent.launchUrl(requireActivity(), Uri.parse("https://flask.run/"));
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
 
         Preference syncInfo = findPreference(getString(R.string.settings_import_info_amiiboapi));
         if (null != syncInfo) {
@@ -268,11 +284,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             amiiboManager.amiibos.values())), null)
                     .setPositiveButton(R.string.close, null)
                     .show();
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
-
-        imageNetworkSetting.setOnPreferenceChangeListener((preference, newValue) -> {
-            onImageNetworkChange(newValue.toString());
             return SettingsFragment.super.onPreferenceTreeClick(preference);
         });
 
@@ -363,14 +374,23 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return SettingsFragment.super.onPreferenceTreeClick(preference);
         });
 
-        disableDebug.setOnPreferenceClickListener(preference -> {
-            prefs.settings_disable_debug().put(disableDebug.isChecked());
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
-        stableChannel.setOnPreferenceClickListener(preference -> {
-            prefs.settings_stable_channel().put(stableChannel.isChecked());
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
+        CheckBoxPreference disableDebug = findPreference(getString(R.string.settings_disable_debug));
+        if (null != disableDebug) {
+            disableDebug.setChecked(prefs.settings_disable_debug().get());
+            disableDebug.setOnPreferenceClickListener(preference -> {
+                prefs.settings_disable_debug().put(disableDebug.isChecked());
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
+        CheckBoxPreference stableChannel = findPreference(getString(R.string.settings_stable_channel));
+        if (null != stableChannel) {
+            stableChannel.setChecked(prefs.settings_stable_channel().get());
+            stableChannel.setOnPreferenceClickListener(preference -> {
+                prefs.settings_stable_channel().put(stableChannel.isChecked());
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
 
         Preference viewGuides = findPreference(getString(R.string.settings_view_guides));
         if (null != viewGuides) {
@@ -386,10 +406,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         showFileChooser(getString(R.string.decryption_keys), RESULT_KEYS);
     }
 
-    private void onImageNetworkChange(String newValue) {
+    private void onImageNetworkChange(ListPreference imageNetworkSetting, String newValue) {
         int index = imageNetworkSetting.findIndexOfValue(newValue);
         if (index == -1) {
-            onImageNetworkChange(IMAGE_NETWORK_ALWAYS);
+            onImageNetworkChange(imageNetworkSetting, IMAGE_NETWORK_ALWAYS);
         } else {
             prefs.image_network_settings().put(newValue);
             imageNetworkSetting.setValue(newValue);

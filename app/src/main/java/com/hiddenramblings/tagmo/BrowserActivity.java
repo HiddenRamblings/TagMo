@@ -562,7 +562,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     IssueReporterLauncher.forTarget("HiddenRamblings", "TagMo")
                             .theme(R.style.AppTheme_NoActionBar)
                             .guestToken(getRepositoryToken())
-                            .guestEmailRequired(true)
+                            .guestEmailRequired(false)
                             .titleTextDefault(getString(R.string.build_hash, BuildConfig.COMMIT))
                             .minDescriptionLength(0)
                             .putExtraInfo("logcat", total.toString())

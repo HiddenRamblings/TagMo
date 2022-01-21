@@ -36,6 +36,7 @@
     <string name="settings_stable_channel">settings_stable_channel</string>
     <string name="settings_view_guides">settings_view_guides</string>
     <string name="settings_sponsor_dev">settings_sponsor_dev</string>
+    <string name="settings_version">settings_version</string>
     <string name="image_network_settings">image_network_settings</string>
 
     <string name="mimetype_text">text/plain</string>

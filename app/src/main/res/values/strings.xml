@@ -188,7 +188,7 @@
     <string name="pref_resources">Resources</string>
     <string name="pref_guides_link">Browse TagMo Guides</string>
     <string name="pref_donate_link">Sponsor Development</string>
-    <string name="build_hash"> TagMo build %1$s</string>
+    <string name="build_hash"> TagMo build #%1$s</string>
 
     <string name="amiibo_info_updated">Updated amiibo™ database!</string>
     <string name="sync_amiibo_process">Syncing with AmiiboAPI&#8230;</string>

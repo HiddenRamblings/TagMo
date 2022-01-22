@@ -104,7 +104,7 @@ public class Storage extends Environment {
                 if (line.contains("asec")) continue;
                 if (line.matches(reg)) {
                     for (String part : line.split(" ")) {
-                        if (part.startsWith("/") && !part.contains("vold"))
+                        if (part.startsWith(File.separator) && !part.contains("vold"))
                             out.add(part);
                     }
                 }

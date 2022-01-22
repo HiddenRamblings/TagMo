@@ -1121,7 +1121,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void installUpdateTask(String apkUrl) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            File apk = new File(getFilesDir(), apkUrl.substring(apkUrl.lastIndexOf('/') + 1));
+            File apk = new File(getFilesDir(), apkUrl.substring(
+                    apkUrl.lastIndexOf(File.separator) + 1));
             try {
                 DataInputStream dis = new DataInputStream(new URL(apkUrl).openStream());
 

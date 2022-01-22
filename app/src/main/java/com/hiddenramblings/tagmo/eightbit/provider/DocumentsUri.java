@@ -60,6 +60,8 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import java.io.File;
+
 public class DocumentsUri {
     /**
      * Get a file path from a Uri. This will get the the path for Storage Access
@@ -83,7 +85,7 @@ public class DocumentsUri {
                 final String type = split[0];
 
                 if ("primary".equalsIgnoreCase(type)) {
-                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                    return Environment.getExternalStorageDirectory() + File.separator + split[1];
                 }
 
                 // TODO handle non-primary volumes

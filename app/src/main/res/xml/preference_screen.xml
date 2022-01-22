@@ -151,6 +151,6 @@
         <androidx.preference.Preference
             android:key="@string/settings_version"
             android:title="@string/build_hash"
-            app:icon="@drawable/gitlab_icon_rgb" />
+            app:icon="@drawable/ic_github_white_24dp" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

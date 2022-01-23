@@ -81,9 +81,4 @@ public class TagMo extends Application {
         else
             ScaledContext.restore(context).setTheme(theme);
     }
-
-    public static boolean isDarkTheme() {
-        return (getContext().getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
-    }
 }

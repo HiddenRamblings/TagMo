@@ -63,7 +63,7 @@
             android:id="@+id/bank_number_picker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/picker_border_dark"
+            android:background="@drawable/picker_border"
             android:layout_alignParentBottom="true" />
 
         <TextView

@@ -24,6 +24,7 @@
         android:name=".TagMo_"
         android:allowBackup="true"
         android:fullBackupContent="@xml/full_backup_content"
+        android:dataExtractionRules="@xml/extraction_content"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

@@ -395,13 +395,11 @@ public class NfcActivity extends AppCompatActivity {
 
                     case NFCIntent.ACTION_ERASE_ALL_TAGS:
                         mifare.setBankCount(write_count);
-                        for (int x = 0; x < write_count; x++) {
+                        for (int x = 1; x < write_count; x++) {
                             txtMessage.setText(getString(R.string.bank_erasing,
                                     x + 1, write_count));
                             TagWriter.wipeBankData(mifare, x);
                         }
-                        if (active_bank <= write_count)
-                            mifare.activateBank(active_bank);
                         Intent erase = new Intent(NFCIntent.ACTION_NFC_SCANNED);
                         erase.putExtra(NFCIntent.EXTRA_BANK_COUNT, write_count);
                         args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST,

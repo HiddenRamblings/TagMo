@@ -299,7 +299,8 @@ public class BrowserActivity extends AppCompatActivity implements
         ImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        this.bottomSheetBehavior.addBottomSheetCallback(
+                new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -310,8 +311,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
 
             @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            }
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
         });
 
         toggle.setOnClickListener(view -> {

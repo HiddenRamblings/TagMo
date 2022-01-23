@@ -93,7 +93,8 @@ public class FoomiiboActivity extends AppCompatActivity implements
         BottomSheetBehavior<View> bottomSheetBehavior =
                 BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.addBottomSheetCallback(
+                new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -104,8 +105,7 @@ public class FoomiiboActivity extends AppCompatActivity implements
             }
 
             @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            }
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
         });
 
         toggle.setOnClickListener(view -> {

@@ -86,8 +86,7 @@ public class NfcActivity extends AppCompatActivity {
         this.keyManager = new KeyManager(this);
         configureInterface();
 
-        bankPicker.setBackgroundResource(TagMo.isDarkTheme()
-                ? R.drawable.picker_border_dark : R.drawable.picker_border_light);
+        bankPicker.setBackgroundResource(R.drawable.picker_border);
 
         nfcAnimation = AnimationUtils.loadAnimation(this, R.anim.nfc_scanning);
     }

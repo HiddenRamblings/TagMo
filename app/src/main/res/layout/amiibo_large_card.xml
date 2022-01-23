@@ -36,7 +36,7 @@
             android:padding="8dp"
             android:text="@string/error_caps"
             android:textAlignment="center"
-            android:textColor="@color/tag_text_light"
+            android:textColor="@color/tag_text"
             android:textSize="16sp"/>
 
         <RelativeLayout
@@ -68,7 +68,7 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
                 android:text="@string/amiibo_name_caps"
-                android:textColor="@color/tag_text_light"
+                android:textColor="@color/tag_text"
                 android:textSize="16sp"/>
 
             <LinearLayout
@@ -85,7 +85,7 @@
                     android:layout_weight="1"
                     android:gravity="start"
                     android:text="@string/amiibo_id_caps"
-                    android:textColor="@color/tag_text_light"
+                    android:textColor="@color/tag_text"
                     android:textSize="10sp" />
 
                 <View
@@ -99,7 +99,7 @@
                     android:layout_weight="1"
                     android:gravity="end"
                     android:text="@string/amiibo_type_caps"
-                    android:textColor="@color/tag_text_light"
+                    android:textColor="@color/tag_text"
                     android:textSize="10sp"/>
             </LinearLayout>
 
@@ -117,7 +117,7 @@
                     android:layout_weight="1"
                     android:gravity="start"
                     android:text="@string/amiibo_game_caps"
-                    android:textColor="@color/tag_text_light"
+                    android:textColor="@color/tag_text"
                     android:textSize="10sp"/>
 
                 <View
@@ -131,7 +131,7 @@
                     android:layout_weight="1"
                     android:gravity="end"
                     android:text="@string/amiibo_series_caps"
-                    android:textColor="@color/tag_text_light"
+                    android:textColor="@color/tag_text"
                     android:textSize="10sp"/>
             </LinearLayout>
 
@@ -143,7 +143,7 @@
                 android:layout_below="@id/group2"
                 android:layout_marginTop="2dp"
                 android:text="@string/amiibo_path_caps"
-                android:textColor="@color/tag_text_light"
+                android:textColor="@color/tag_text"
                 android:textSize="10sp"
                 android:visibility="gone"/>
 
@@ -154,7 +154,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:text="@string/amiibo_character_caps"
-                android:textColor="@color/tag_text_light"
+                android:textColor="@color/tag_text"
                 android:textSize="10sp"
                 android:visibility="gone" />
         </RelativeLayout>

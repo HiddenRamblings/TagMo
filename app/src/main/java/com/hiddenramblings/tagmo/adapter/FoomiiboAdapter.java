@@ -124,9 +124,7 @@ public class FoomiiboAdapter
 
     private void setIsHighlighted(FoomiiboViewHolder holder) {
         holder.isHighlighted = true;
-        holder.itemView.findViewById(R.id.highlight).setBackgroundResource(TagMo.isDarkTheme()
-                ? R.drawable.rounded_view_dark
-                : R.drawable.rounded_view_light);
+        holder.itemView.findViewById(R.id.highlight).setBackgroundResource(R.drawable.rounded_view);
     }
 
     @Override

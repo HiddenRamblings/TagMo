@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.request.target.CustomTarget;
@@ -88,9 +87,7 @@ public class BankBrowserAdapter
     public void onBindViewHolder(@NonNull final AmiiboViewHolder holder, int position) {
         View highlight = holder.itemView.findViewById(R.id.highlight);
         if (TagMo.getPrefs().eliteActiveBank().get() == position) {
-            highlight.setBackgroundResource(TagMo.isDarkTheme()
-                    ? R.drawable.rounded_neon_dark
-                    : R.drawable.rounded_neon_light);
+            highlight.setBackgroundResource(R.drawable.rounded_neon);
         } else {
             highlight.setBackgroundResource(0);
         }

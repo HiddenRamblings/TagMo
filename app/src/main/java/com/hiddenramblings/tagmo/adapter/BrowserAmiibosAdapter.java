@@ -265,9 +265,7 @@ public class BrowserAmiibosAdapter
         private void setIsHighlighted(boolean isHighlighted) {
             View highlight = this.itemView.findViewById(R.id.highlight);
             if (isHighlighted) {
-                highlight.setBackgroundResource(TagMo.isDarkTheme()
-                        ? R.drawable.rounded_view_dark
-                        : R.drawable.rounded_view_light);
+                highlight.setBackgroundResource(R.drawable.rounded_view);
             } else {
                 highlight.setBackgroundResource(0);
             }
@@ -366,8 +364,7 @@ public class BrowserAmiibosAdapter
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");
-                    this.txtPath.setTextColor(this.txtPath.getResources().getColor(
-                            TagMo.isDarkTheme() ? R.color.tag_text_dark : R.color.tag_text_light));
+                    this.txtPath.setTextColor(this.txtPath.getResources().getColor(R.color.tag_text));
                 }
                 this.txtPath.setVisibility(View.VISIBLE);
             }

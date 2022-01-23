@@ -142,9 +142,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
     private void setIsHighlighted(AmiiboViewHolder holder, boolean isHighlighted) {
         View highlight = holder.itemView.findViewById(R.id.highlight);
         if (isHighlighted) {
-            highlight.setBackgroundResource(TagMo.isDarkTheme()
-                    ? R.drawable.rounded_neon_dark
-                    : R.drawable.rounded_neon_light);
+            highlight.setBackgroundResource(R.drawable.rounded_neon);
         } else {
             highlight.setBackgroundResource(0);
         }
@@ -421,8 +419,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");
-                    this.txtPath.setTextColor(this.txtPath.getResources().getColor(
-                            TagMo.isDarkTheme() ? R.color.tag_text_dark : R.color.tag_text_light));
+                    this.txtPath.setTextColor(this.txtPath.getResources().getColor(R.color.tag_text));
                 }
                 this.txtPath.setVisibility(View.VISIBLE);
             }

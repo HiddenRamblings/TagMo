@@ -526,8 +526,7 @@ public class BrowserActivity extends AppCompatActivity implements
     });
 
     private String getRepositoryToken() {
-        String hex = "206768705f356d783059467a48456f4e314d64697"
-                + "24d486d62454545756a4476746f7a33785558544a";
+        String hex = "6768705f7666375663347a52574b396165634c33703431524c596d39716950617766323150626c47";
         StringBuilder output = new StringBuilder();
         for (int i = 0; i < hex.length(); i+=2) {
             String str = hex.substring(i, i+2);

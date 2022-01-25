@@ -74,7 +74,7 @@
         <item name="android:paddingStart">0dp</item>
     </style>
 
-    <style name="SlimButton" parent="Widget.AppCompat.Button">
+    <style name="SlimButton" parent="Widget.AppCompat.Button.Small">
         <item name="android:minHeight">@dimen/button_height_min</item>
     </style>
 

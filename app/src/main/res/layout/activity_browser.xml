@@ -23,7 +23,7 @@
             android:layout_height="36dp"
             android:layout_marginRight="4dp"
             android:layout_marginEnd="4dp"
-            android:src="@drawable/ic_stat_notice"
+            app:srcCompat="@drawable/ic_stat_notice"
             android:contentDescription="@string/imageview_icon" />
 
         <TextView
@@ -86,7 +86,7 @@
             android:layout_marginTop="16dp"
             android:clickable="true"
             android:focusable="true"
-            android:src="@drawable/ic_nfc_white_24dp"
+            app:srcCompat="@drawable/ic_nfc_white_24dp"
             app:fabSize="normal"
             android:contentDescription="@string/nfcIconDescription"
             tools:ignore="RelativeOverlap" />
@@ -134,7 +134,7 @@
                 android:layout_gravity="center"
                 android:layout_marginRight="4dp"
                 android:layout_marginEnd="4dp"
-                android:src="@drawable/ic_folder_open_white_24dp"
+                app:srcCompat="@drawable/ic_folder_open_white_24dp"
                 android:contentDescription="@string/imageview_folder" />
 
             <TextView
@@ -153,7 +153,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_expand_less_white_24dp"
+                app:srcCompat="@drawable/ic_expand_less_white_24dp"
                 android:contentDescription="@string/imageview_toggle" />
         </LinearLayout>
 

@@ -19,7 +19,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="DialogTheme" parent="Theme.AppCompat.DayNight.Dialog">
+    <style name="DialogTheme" parent="Theme.AppCompat.DayNight.Dialog.MinWidth">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>

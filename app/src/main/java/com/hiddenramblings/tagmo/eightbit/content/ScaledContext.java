@@ -68,7 +68,7 @@ public class ScaledContext extends ContextWrapper {
         super(base);
     }
 
-    public static void setOrientation(int orientation) {
+    public static void setBaseline(int orientation) {
         layout = orientation;
     }
 

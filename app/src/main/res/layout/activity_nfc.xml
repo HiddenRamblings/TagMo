@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/coordinator" >
+    android:id="@+id/coordinator">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -45,7 +46,7 @@
             android:contentDescription="@string/nfcIconDescription"
             android:minWidth="100dip"
             android:minHeight="100dip"
-            android:src="@drawable/ic_nfc_24dp" />
+            app:srcCompat="@drawable/ic_nfc_24dp" />
 
         <ImageView
             android:id="@+id/imgNfcBar"
@@ -57,7 +58,7 @@
             android:minWidth="100dip"
             android:minHeight="100dip"
             android:padding="5dp"
-            android:src="@drawable/ic_bar_24dp" />
+            app:srcCompat="@drawable/ic_bar_24dp" />
 
         <com.hiddenramblings.tagmo.widget.BankPicker
             android:id="@+id/bank_number_picker"

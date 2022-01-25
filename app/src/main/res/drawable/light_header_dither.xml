@@ -1,4 +1,5 @@
 <nine-patch
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:alpha="0.12"
-    android:src="@drawable/list_section_divider_mtrl_alpha"/>
+    app:srcCompat="@drawable/list_section_divider_mtrl_alpha"/>

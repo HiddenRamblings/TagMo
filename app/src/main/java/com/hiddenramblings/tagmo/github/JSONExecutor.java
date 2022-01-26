@@ -24,10 +24,14 @@ public class JSONExecutor {
                 conn.setDefaultUseCaches(false);
 
                 int responseCode = conn.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM)
-                    conn = (HttpURLConnection) new URL(
-                            conn.getHeaderField("Location")).openConnection();
-                else if (responseCode != 200) return;
+                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM) {
+                    conn.disconnect();
+                    conn = (HttpURLConnection) new URL(conn
+                            .getHeaderField("Location")).openConnection();
+                } else if (responseCode != 200) {
+                    conn.disconnect();
+                    return;
+                }
 
                 InputStream in = conn.getInputStream();
                 BufferedReader streamReader = new BufferedReader(
@@ -39,6 +43,9 @@ public class JSONExecutor {
                     responseStrBuilder.append(inputStr);
 
                 listener.onResults(responseStrBuilder.toString());
+                streamReader.close();
+                in.close();
+                conn.disconnect();
             } catch (IOException e) {
                 Debug.Log(e);
             }

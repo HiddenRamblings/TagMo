@@ -3,9 +3,10 @@ package com.hiddenramblings.tagmo;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.util.Log;
+
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.hiddenramblings.tagmo.eightbit.content.ScaledContext;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -34,6 +35,8 @@ public class TagMo extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         mPrefs = new SoftReference<>(this.prefs);
         mContext = new SoftReference<>(this);

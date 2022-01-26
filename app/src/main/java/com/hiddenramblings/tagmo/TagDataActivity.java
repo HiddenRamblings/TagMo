@@ -21,7 +21,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -31,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.bumptech.glide.request.target.CustomTarget;
@@ -73,7 +73,7 @@ public class TagDataActivity extends AppCompatActivity {
     // private TextView txtCharacter;
     private TextView txtAmiiboType;
     private TextView txtAmiiboSeries;
-    private ImageView imageAmiibo;
+    private AppCompatImageView imageAmiibo;
 
     private MaskedEditText txtUID;
     private Spinner txtCountryCode;

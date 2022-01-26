@@ -7,11 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -118,7 +118,7 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
         TextView txtGameSeries;
         TextView txtCharacter;
         TextView txtPath;
-        ImageView imageAmiibo;
+        AppCompatImageView imageAmiibo;
 
         private final CustomTarget<Bitmap> target = new CustomTarget<>() {
             @Override

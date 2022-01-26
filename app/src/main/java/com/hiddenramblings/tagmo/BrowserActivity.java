@@ -35,7 +35,6 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -48,6 +47,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -145,7 +145,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private final Preferences_ prefs = TagMo.getPrefs();
 
     private LinearLayout fakeSnackbar;
-    private ImageView fakeSnackbarIcon;
+    private AppCompatImageView fakeSnackbarIcon;
     private TextView fakeSnackbarText;
     private RelativeLayout mainLayout;
     private FlowLayout chipList;
@@ -187,7 +187,7 @@ public class BrowserActivity extends AppCompatActivity implements
     // private TextView txtCharacter;
     private TextView txtAmiiboType;
     private TextView txtAmiiboSeries;
-    private ImageView imageAmiibo;
+    private AppCompatImageView imageAmiibo;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private SettingsFragment settingsFragment;
@@ -296,7 +296,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         this.settings.addChangeListener(this);
 
-        ImageView toggle = findViewById(R.id.toggle);
+        AppCompatImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(

@@ -10,11 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.request.target.CustomTarget;
@@ -233,7 +233,7 @@ public class BrowserAmiibosAdapter
         public final TextView txtGameSeries;
         // public final TextView txtCharacter;
         public final TextView txtPath;
-        public final ImageView imageAmiibo;
+        public final AppCompatImageView imageAmiibo;
 
         AmiiboFile amiiboFile = null;
 

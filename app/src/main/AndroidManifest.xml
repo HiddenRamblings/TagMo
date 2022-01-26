@@ -102,7 +102,7 @@
         <activity
             android:name=".TagDataActivity"/>
         <receiver
-            android:name=".GithubReceiver"
+            android:name=".UpdateReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>

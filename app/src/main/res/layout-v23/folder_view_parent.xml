@@ -13,7 +13,7 @@
     android:paddingTop="8dp"
     tools:ignore="UseCompoundDrawables">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/icon"
         android:contentDescription="@string/imageview_arrow"
         android:layout_width="wrap_content"

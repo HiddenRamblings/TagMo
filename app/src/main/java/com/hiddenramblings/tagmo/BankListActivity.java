@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -80,7 +80,7 @@ public class BankListActivity extends AppCompatActivity implements
     // private TextView txtCharacter;
     private TextView txtAmiiboType;
     private TextView txtAmiiboSeries;
-    private ImageView imageAmiibo;
+    private AppCompatImageView imageAmiibo;
 
     private TextView bankStats;
     private BankPicker eliteBankCount;
@@ -144,7 +144,7 @@ public class BankListActivity extends AppCompatActivity implements
 
         this.settings = new BrowserSettings().initialize();
 
-        ImageView toggle = findViewById(R.id.toggle);
+        AppCompatImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(

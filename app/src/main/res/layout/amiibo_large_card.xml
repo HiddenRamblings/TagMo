@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             tools:ignore="SmallSp">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imageAmiibo"
                 android:contentDescription="@string/imageview_amiibo"
                 android:layout_width="match_parent"

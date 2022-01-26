@@ -28,7 +28,7 @@
         android:orientation="horizontal"
         android:padding="8dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageAmiibo"
             android:contentDescription="@string/imageview_amiibo"
             android:layout_width="60dp"

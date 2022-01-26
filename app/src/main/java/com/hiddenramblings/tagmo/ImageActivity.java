@@ -7,13 +7,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -37,9 +37,9 @@ import java.util.concurrent.Executors;
 
 public class ImageActivity extends AppCompatActivity {
 
-    private ImageView imageView;
+    private AppCompatImageView imageView;
     private View bottomSheet;
-    private ImageView toggle;
+    private AppCompatImageView toggle;
     private TextView txtTagId;
     private TextView txtName;
     private TextView txtGameSeries;

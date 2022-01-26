@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.amiibo;
 
 import android.content.Context;
-import android.net.Uri;
 
 import com.hiddenramblings.tagmo.AmiiTool;
 import com.hiddenramblings.tagmo.R;
@@ -9,9 +8,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.NfcByte;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;

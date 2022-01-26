@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo.github;
 
-import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 

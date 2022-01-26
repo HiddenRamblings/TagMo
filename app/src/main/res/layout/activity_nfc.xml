@@ -36,7 +36,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#fa0505" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgNfcCircle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
             android:minHeight="100dip"
             app:srcCompat="@drawable/ic_nfc_24dp" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgNfcBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

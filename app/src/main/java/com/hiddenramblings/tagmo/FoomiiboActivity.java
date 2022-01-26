@@ -11,10 +11,10 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -89,7 +89,7 @@ public class FoomiiboActivity extends AppCompatActivity implements
             }
         }
 
-        ImageView toggle = findViewById(R.id.toggle);
+        AppCompatImageView toggle = findViewById(R.id.toggle);
         BottomSheetBehavior<View> bottomSheetBehavior =
                 BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);

@@ -8,18 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -232,7 +231,7 @@ public class FoomiiboAdapter
         public final TextView txtGameSeries;
         // public final TextView txtCharacter;
         public final TextView txtPath;
-        public final ImageView imageAmiibo;
+        public final AppCompatImageView imageAmiibo;
 
         Amiibo foomiibo = null;
         boolean isHighlighted = false;

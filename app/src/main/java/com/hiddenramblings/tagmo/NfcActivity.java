@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -24,6 +23,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
@@ -47,8 +47,8 @@ public class NfcActivity extends AppCompatActivity {
 
     TextView txtMessage;
     TextView txtError;
-    ImageView imgNfcBar;
-    ImageView imgNfcCircle;
+    AppCompatImageView imgNfcBar;
+    AppCompatImageView imgNfcCircle;
     BankPicker bankPicker;
     TextView bankTextView;
 

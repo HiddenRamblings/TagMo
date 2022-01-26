@@ -564,7 +564,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             .guestEmailRequired(true)
                             .guestAllowUsername(true)
                             .titleTextDefault(getString(R.string.build_hash, BuildConfig.COMMIT))
-                            .minDescriptionLength(0)
+                            .minDescriptionLength(50)
                             .putExtraInfo("logcat", total.toString())
                             .homeAsUpEnabled(false).launch(this);
                 } catch (Exception e) {

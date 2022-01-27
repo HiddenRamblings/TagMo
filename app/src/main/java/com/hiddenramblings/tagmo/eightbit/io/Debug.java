@@ -112,7 +112,7 @@ public class Debug {
         String separator = System.getProperty("line.separator");
         log.append(context.getString(R.string.build_hash, BuildConfig.COMMIT));
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
-                "logcat", "-d", "-t", "512", BuildConfig.APPLICATION_ID,
+                "logcat", "-d", "-t", "256", BuildConfig.APPLICATION_ID,
                 "ViewRootImpl:S", "IssueReporterActivity:S",
         });
         BufferedReader reader = new BufferedReader(new InputStreamReader(

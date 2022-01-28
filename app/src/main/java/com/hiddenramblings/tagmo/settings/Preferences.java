@@ -48,6 +48,9 @@ public interface Preferences {
     @DefaultBoolean(true)
     boolean settings_stable_channel();
 
+    @DefaultBoolean(false)
+    boolean settings_enable_updates();
+
     String browserRootFolder();
 
     @DefaultInt(200)

@@ -235,30 +235,33 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkForUpdate();
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            ProviderInstaller.installIfNeededAsync(this,
-                    new ProviderInstaller.ProviderInstallListener() {
-                @Override
-                public void onProviderInstalled() {
-                    checkForUpdate();
-                }
+        boolean updatesEnabled = prefs.settings_enable_updates().get();
+        if (updatesEnabled) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                checkForUpdate();
+            } else {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                ProviderInstaller.installIfNeededAsync(this,
+                        new ProviderInstaller.ProviderInstallListener() {
+                            @Override
+                            public void onProviderInstalled() {
+                                checkForUpdate();
+                            }
 
-                @Override
-                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                    GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
-                    if (availability.isUserResolvableError(errorCode)) {
-                        availability.showErrorDialogFragment(
-                                BrowserActivity.this, errorCode, 7000,
-                                dialog -> onProviderInstallerNotAvailable());
-                    } else {
-                        onProviderInstallerNotAvailable();
-                    }
-                }
-            });
+                            @Override
+                            public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
+                                GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
+                                if (availability.isUserResolvableError(errorCode)) {
+                                    availability.showErrorDialogFragment(
+                                            BrowserActivity.this, errorCode, 7000,
+                                            dialog -> onProviderInstallerNotAvailable());
+                                } else {
+                                    onProviderInstallerNotAvailable();
+                                }
+                            }
+                        });
+            }
         }
 
         Intent intent = getIntent();

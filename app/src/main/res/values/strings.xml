@@ -184,7 +184,9 @@
     <string name="pref_disable_debug">Disable Debug Logger</string>
     <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
+    <string name="pref_enable_updates">Update Checks</string>
     <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
+    <string name="settings_enable_updates_details">Check for TagMo application updates</string>
     <string name="pref_resources">Resources</string>
     <string name="pref_guides_link">Browse TagMo Guides</string>
     <string name="pref_donate_link">Sponsor Development</string>

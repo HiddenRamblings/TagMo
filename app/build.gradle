@@ -21,6 +21,7 @@ android {
 
         def commit = 'git rev-parse --short HEAD'.execute().text.trim()
         buildConfigField "String", "COMMIT", "\""+commit+"\""
+        signingConfig signingConfigs.debug
         project.archivesBaseName = "TagMo-" + commit
     }
 

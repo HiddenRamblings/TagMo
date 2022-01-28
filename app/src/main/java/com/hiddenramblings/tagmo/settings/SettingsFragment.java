@@ -87,6 +87,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     ListPreference imageNetworkSetting;
     CheckBoxPreference disableDebug;
     CheckBoxPreference stableChannel;
+    CheckBoxPreference enableUpdates;
 
     private KeyManager keyManager;
     private AmiiboManager amiiboManager = null;
@@ -128,10 +129,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
         disableDebug = findPreference(getString(R.string.settings_disable_debug));
         stableChannel = findPreference(getString(R.string.settings_stable_channel));
+        enableUpdates = stableChannel = findPreference(getString(R.string.settings_enable_updates));
 
         this.enableTagTypeValidation.setChecked(prefs.enable_tag_type_validation().get());
         this.disableDebug.setChecked(prefs.settings_disable_debug().get());
         this.stableChannel.setChecked(prefs.settings_stable_channel().get());
+        this.enableUpdates.setChecked(prefs.settings_enable_updates().get());
 
         loadAmiiboManager();
         updateKeySummary();
@@ -352,6 +355,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
         stableChannel.setOnPreferenceClickListener(preference -> {
             prefs.settings_stable_channel().put(stableChannel.isChecked());
+            return SettingsFragment.super.onPreferenceTreeClick(preference);
+        });
+        enableUpdates.setOnPreferenceClickListener(preference -> {
+            prefs.settings_enable_updates().put(enableUpdates.isChecked());
             return SettingsFragment.super.onPreferenceTreeClick(preference);
         });
 

@@ -26,11 +26,11 @@ public class InstallReceiver extends BroadcastReceiver {
                 // Installation was successful
                 break;
             default:
-                Toast.makeText(
-                        TagMo.getContext(),
-                        intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE),
-                        Toast.LENGTH_LONG
-                ).show();
+                String error = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE);
+                if (error.contains("Session was abandoned"))
+                    Toast.makeText(
+                            context, error, Toast.LENGTH_LONG
+                    ).show();
                 break;
         }
     }

@@ -4,14 +4,10 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.app.SearchManager;
-import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInstaller;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -86,8 +82,6 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.provider.DocumentsUri;
-import com.hiddenramblings.tagmo.github.InstallReceiver;
-import com.hiddenramblings.tagmo.github.JSONExecutor;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
@@ -104,24 +98,17 @@ import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
 
 import org.apmem.tools.layouts.FlowLayout;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -139,10 +126,8 @@ public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,
         BrowserAmiibosAdapter.OnAmiiboClickListener {
 
-    private static final String TAGMO_GIT_API =
-            "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/";
-
     private final Preferences_ prefs = TagMo.getPrefs();
+    private CheckUpdatesTask updates;
 
     private LinearLayout fakeSnackbar;
     private AppCompatImageView fakeSnackbarIcon;
@@ -229,17 +214,8 @@ public class BrowserActivity extends AppCompatActivity implements
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
         imageAmiibo = findViewById(R.id.imageAmiibo);
 
-        File[] files = getFilesDir().listFiles((dir, name) ->
-                name.toLowerCase(Locale.ROOT).endsWith(".apk"));
-        if (null != files && files.length > 0) {
-            for (File file : files) {
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
-            }
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkForUpdate();
+            updates = new CheckUpdatesTask(this);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
@@ -247,7 +223,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     new ProviderInstaller.ProviderInstallListener() {
                 @Override
                 public void onProviderInstalled() {
-                    checkForUpdate();
+                    updates = new CheckUpdatesTask(BrowserActivity.this);
                 }
 
                 @Override
@@ -1119,147 +1095,9 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-    private void installUpdateTask(String apkUrl) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            File apk = new File(getFilesDir(), apkUrl.substring(
-                    apkUrl.lastIndexOf(File.separator) + 1));
-            try {
-                DataInputStream dis = new DataInputStream(new URL(apkUrl).openStream());
 
-                byte[] buffer = new byte[1024];
-                int length;
-                FileOutputStream fos = new FileOutputStream(apk);
-                while ((length = dis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, length);
-                }
-                fos.close();
 
-                if (!apk.getName().toLowerCase(Locale.ROOT).endsWith(".apk"))
-                    //noinspection ResultOfMethodCallIgnored
-                    apk.delete();
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    PackageInstaller installer = getPackageManager().getPackageInstaller();
-                    ContentResolver resolver = getContentResolver();
-                    for (PackageInstaller.SessionInfo session : installer.getMySessions()) {
-                        installer.abandonSession(session.getSessionId());
-                    }
-                    Uri apkUri = Storage.getFileUri(apk);
-                    InputStream apkStream = resolver.openInputStream(apkUri);
-                    PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
-                            PackageInstaller.SessionParams.MODE_FULL_INSTALL);
-                    int sessionId = installer.createSession(params);
-                    PackageInstaller.Session session = installer.openSession(sessionId);
-                    DocumentFile document = DocumentFile.fromSingleUri(this, apkUri);
-                    if (document == null)
-                        throw new IOException(getString(R.string.fail_invalid_size));
-                    OutputStream sessionStream = session.openWrite(
-                            "NAME", 0, document.length());
-                    byte[] buf = new byte[8192];
-                    int size;
-                    while ((size = apkStream.read(buf)) > 0) {
-                        sessionStream.write(buf, 0, size);
-                    }
-                    session.fsync(sessionStream);
-                    apkStream.close();
-                    sessionStream.close();
-                    PendingIntent pi = PendingIntent.getBroadcast(this, 8675309,
-                            new Intent(this, InstallReceiver.class),
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                                    ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
-                                    : PendingIntent.FLAG_UPDATE_CURRENT);
-                    session.commit(pi.getIntentSender());
-                } else {
-                    Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-                    intent.setDataAndType(Storage.getFileUri(apk),
-                            getString(R.string.mimetype_apk));
-                    intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-                    intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME,
-                            getApplicationInfo().packageName);
-                    try {
-                        startActivity(NFCIntent.getIntent(intent));
-                    } catch (ActivityNotFoundException anf) {
-                        try {
-                            startActivity(intent.setAction(Intent.ACTION_VIEW));
-                        } catch (ActivityNotFoundException ignored) {
-
-                        }
-                    }
-                }
-            } catch (MalformedURLException mue) {
-                Debug.Log(mue);
-            } catch (IOException ioe) {
-                Debug.Log(ioe);
-            } catch (SecurityException se) {
-                Debug.Log(se);
-            }
-        });
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private final ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (getPackageManager().canRequestPackageInstalls())
-            installUpdateTask(prefs.downloadUrl().get());
-        prefs.downloadUrl().remove();
-    });
-
-    private void installUpdateCompat(String apkUrl) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (getPackageManager().canRequestPackageInstalls()) {
-                installUpdateTask(apkUrl);
-            } else {
-                prefs.downloadUrl().put(apkUrl);
-                Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
-                intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
-                onRequestInstall.launch(intent);
-            }
-        } else {
-            installUpdateTask(apkUrl);
-        }
-    }
-
-    private void parseUpdateJSON(String result, boolean isMaster) {
-        String lastCommit = null, downloadUrl = null;
-        try {
-            JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-            lastCommit = ((String) jsonObject.get("name")).substring(6);
-            JSONArray assets = (JSONArray) jsonObject.get("assets");
-            JSONObject asset = (JSONObject) assets.get(0);
-            downloadUrl = (String) asset.get("browser_download_url");
-            if (!isMaster && !BuildConfig.COMMIT.equals(lastCommit))
-                installUpdateCompat(downloadUrl);
-        } catch (JSONException e) {
-            Debug.Log(e);
-        }
-
-        if (isMaster && null != lastCommit && null != downloadUrl) {
-            String finalLastCommit = lastCommit;
-            String finalDownloadUrl = downloadUrl;
-            new JSONExecutor(TAGMO_GIT_API + "experimental")
-                    .setResultListener(experimental -> {
-                try {
-                    JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();
-                    String extraCommit = ((String) jsonObject.get("name")).substring(6);
-                    if (!BuildConfig.COMMIT.equals(extraCommit)
-                            && !BuildConfig.COMMIT.equals(finalLastCommit))
-                        installUpdateCompat(finalDownloadUrl);
-                } catch (JSONException e) {
-                    Debug.Log(e);
-                }
-            });
-        }
-    }
-
-    private void checkForUpdate() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            boolean isMaster = prefs.settings_stable_channel().get();
-            new JSONExecutor(TAGMO_GIT_API + (isMaster
-                    ? "master" : "experimental")).setResultListener(result -> {
-                if (null != result) parseUpdateJSON(result, isMaster);
-            });
-        });
-    }
 
     public void loadPTagKeyManager() {
         if (prefs.enable_power_tag_support().get()) {
@@ -2118,6 +1956,14 @@ public class BrowserActivity extends AppCompatActivity implements
     private final ActivityResultLauncher<Intent> onTagLaunchActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (settings.getAmiiboFiles().isEmpty()) this.onRefresh();
+    });
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    final ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (getPackageManager().canRequestPackageInstalls())
+            updates.installUpdateTask(prefs.downloadUrl().get());
+        prefs.downloadUrl().remove();
     });
 
     @Override

@@ -44,6 +44,13 @@ public class CheckUpdatesTask {
 
     CheckUpdatesTask(BrowserActivity activity) {
         this.activity = new SoftReference<>(activity);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            PackageInstaller installer = activity.getApplicationContext()
+                    .getPackageManager().getPackageInstaller();
+            for (PackageInstaller.SessionInfo session : installer.getMySessions()) {
+                installer.abandonSession(session.getSessionId());
+            }
+        }
         Executors.newSingleThreadExecutor().execute(() -> {
             File[] files = activity.getFilesDir().listFiles((dir, name) ->
                     name.toLowerCase(Locale.ROOT).endsWith(".apk"));
@@ -87,9 +94,6 @@ public class CheckUpdatesTask {
                     PackageInstaller installer = applicationContext
                             .getPackageManager().getPackageInstaller();
                     ContentResolver resolver = applicationContext.getContentResolver();
-                    for (PackageInstaller.SessionInfo session : installer.getMySessions()) {
-                        installer.abandonSession(session.getSessionId());
-                    }
                     Uri apkUri = Storage.getFileUri(apk);
                     InputStream apkStream = resolver.openInputStream(apkUri);
                     PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(

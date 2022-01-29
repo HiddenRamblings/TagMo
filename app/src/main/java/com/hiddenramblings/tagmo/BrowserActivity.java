@@ -1139,9 +1139,12 @@ public class BrowserActivity extends AppCompatActivity implements
                     apk.delete();
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Uri apkUri = Storage.getFileUri(apk);
                     PackageInstaller installer = getPackageManager().getPackageInstaller();
                     ContentResolver resolver = getContentResolver();
+                    for (PackageInstaller.SessionInfo session : installer.getMySessions()) {
+                        installer.abandonSession(session.getSessionId());
+                    }
+                    Uri apkUri = Storage.getFileUri(apk);
                     InputStream apkStream = resolver.openInputStream(apkUri);
                     PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
                             PackageInstaller.SessionParams.MODE_FULL_INSTALL);

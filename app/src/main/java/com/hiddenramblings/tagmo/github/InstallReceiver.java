@@ -27,7 +27,7 @@ public class InstallReceiver extends BroadcastReceiver {
                 break;
             default:
                 String error = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE);
-                if (error.contains("Session was abandoned"))
+                if (!error.contains("Session was abandoned"))
                     Toast.makeText(
                             context, error, Toast.LENGTH_LONG
                     ).show();

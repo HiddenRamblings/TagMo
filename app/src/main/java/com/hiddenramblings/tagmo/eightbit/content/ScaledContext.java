@@ -62,14 +62,8 @@ import android.view.WindowManager;
 public class ScaledContext extends ContextWrapper {
 
     private static int fullscreen = -1;
-    private static int layout;
-
     public ScaledContext(Context base) {
         super(base);
-    }
-
-    public static void setBaseline(int orientation) {
-        layout = orientation;
     }
 
     private static int[] getDisplayParams(Context context) {
@@ -93,7 +87,7 @@ public class ScaledContext extends ContextWrapper {
         DisplayMetrics metrics = resources.getDisplayMetrics();
         int[] displayParams = getDisplayParams(context);
 
-        int orientation = layout != -1 ? layout : resources.getConfiguration().orientation;
+        int orientation = resources.getConfiguration().orientation;
 
         if (fullscreen == -1) {
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {

@@ -113,6 +113,7 @@ public class Debug {
         log.append(context.getString(R.string.build_hash, BuildConfig.COMMIT));
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d", "-t", "256", BuildConfig.APPLICATION_ID,
+                "AndroidRuntime", "System.err",
                 "ViewRootImpl:S", "IssueReporterActivity:S",
         });
         BufferedReader reader = new BufferedReader(new InputStreamReader(

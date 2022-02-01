@@ -165,6 +165,11 @@ public class FoomiiboAdapter
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             String query = null != constraint ? constraint.toString() : "";
+            FilterResults filterResults = new FilterResults();
+            if (query.trim().isEmpty()) {
+                filterResults.count = data.size();
+                filterResults.values = data;
+            }
             settings.setQuery(query);
 
             data.clear();
@@ -173,20 +178,16 @@ public class FoomiiboAdapter
 
             AmiiboManager amiiboManager = settings.getAmiiboManager();
 
-            FilterResults filterResults = new FilterResults();
             ArrayList<Amiibo> tempList = new ArrayList<>();
             String queryText = query.trim().toLowerCase();
             for (Amiibo amiiboFile : data) {
-                boolean add;
-
+                boolean add = false;
                 if (null != amiiboManager) {
                     Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.id);
                     if (null == amiibo)
                         amiibo = new Amiibo(amiiboManager, amiiboFile.id,
                                 null, null);
                     add = settings.amiiboContainsQuery(amiibo, queryText);
-                } else {
-                    add = queryText.isEmpty();
                 }
                 if (add)
                     tempList.add(amiiboFile);

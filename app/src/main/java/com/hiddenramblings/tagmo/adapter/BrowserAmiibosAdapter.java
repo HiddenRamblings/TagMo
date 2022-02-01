@@ -166,6 +166,11 @@ public class BrowserAmiibosAdapter
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             String query = null != constraint ? constraint.toString() : "";
+            FilterResults filterResults = new FilterResults();
+            if (query.trim().isEmpty()) {
+                filterResults.count = data.size();
+                filterResults.values = data;
+            }
             settings.setQuery(query);
 
             data.clear();
@@ -173,12 +178,10 @@ public class BrowserAmiibosAdapter
                 data.addAll(settings.getAmiiboFiles());
             }
 
-            FilterResults filterResults = new FilterResults();
             ArrayList<AmiiboFile> tempList = new ArrayList<>();
             String queryText = query.trim().toLowerCase();
             for (AmiiboFile amiiboFile : data) {
-                boolean add;
-
+                boolean add = false;
                 AmiiboManager amiiboManager = settings.getAmiiboManager();
                 if (null != amiiboManager) {
                     Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
@@ -186,8 +189,6 @@ public class BrowserAmiibosAdapter
                         amiibo = new Amiibo(amiiboManager, amiiboFile.getId(),
                                 null, null);
                     add = settings.amiiboContainsQuery(amiibo, queryText);
-                } else {
-                    add = queryText.isEmpty();
                 }
                 if (!add && null != amiiboFile.getFilePath())
                     add = pathContainsQuery(amiiboFile.getFilePath().getAbsolutePath(), queryText);

@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.multidex.MultiDexApplication;
 
 import com.hiddenramblings.tagmo.eightbit.content.ScaledContext;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -24,7 +25,7 @@ import java.lang.ref.SoftReference;
 import java.util.Locale;
 
 @EApplication
-public class TagMo extends Application {
+public class TagMo extends MultiDexApplication {
 
     @Pref
     Preferences_ prefs;

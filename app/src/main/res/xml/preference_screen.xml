@@ -140,11 +140,11 @@
         <androidx.preference.Preference
             android:key="@string/settings_view_guides"
             android:title="@string/pref_guides_link"
-            app:icon="@drawable/gitlab_icon_rgb" />
+            app:icon="@drawable/ic_gitlab_icon_rgb" />
         <androidx.preference.Preference
             android:key="@string/settings_sponsor_dev"
             android:title="@string/pref_donate_link"
-            app:icon="@drawable/paypal_donation">
+            app:icon="@drawable/ic_paypal_donation">
         <intent android:action="android.intent.action.VIEW"
             android:data="https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"/>
         </androidx.preference.Preference>

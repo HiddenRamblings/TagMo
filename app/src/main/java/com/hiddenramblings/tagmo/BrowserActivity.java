@@ -931,7 +931,7 @@ public class BrowserActivity extends AppCompatActivity implements
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menuSearch.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setSubmitButtonEnabled(true);
+        searchView.setSubmitButtonEnabled(false);
         searchView.setOnQueryTextListener(this);
         menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override

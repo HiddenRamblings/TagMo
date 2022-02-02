@@ -82,6 +82,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.provider.DocumentsUri;
+import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
@@ -129,7 +130,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private final Preferences_ prefs = TagMo.getPrefs();
     private CheckUpdatesTask updates;
 
-    private LinearLayout fakeSnackbar;
+    private AnimatedLinearLayout fakeSnackbar;
     private AppCompatImageView fakeSnackbarIcon;
     private TextView fakeSnackbarText;
     private RelativeLayout mainLayout;
@@ -1308,19 +1309,16 @@ public class BrowserActivity extends AppCompatActivity implements
                     0, 0, 0, -fakeSnackbar.getHeight());
             animate.setDuration(150);
             animate.setFillAfter(false);
-            animate.setAnimationListener(new Animation.AnimationListener() {
+            fakeSnackbar.setAnimationListener(new AnimatedLinearLayout.AnimationListener() {
                 @Override
-                public void onAnimationStart(Animation animation) { }
+                public void onAnimationStart(AnimatedLinearLayout layout) { }
 
                 @Override
-                public void onAnimationEnd(Animation animation) {
-                    animation.setAnimationListener(null);
+                public void onAnimationEnd(AnimatedLinearLayout layout) {
+                    layout.setAnimationListener(null);
                     fakeSnackbar.setVisibility(View.GONE);
                     amiibosView.smoothScrollToPosition(0);
                 }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) { }
             });
             fakeSnackbar.startAnimation(animate);
 

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:id="@+id/coordinator" >
 
-    <LinearLayout
+    <com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
         android:id="@+id/fake_snackbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
             android:singleLine="true"
             android:textSize="16sp"
             android:textColor="@android:color/white" />
-    </LinearLayout>
+    </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
 
     <RelativeLayout
         android:id="@+id/main_layout"

@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.ref.SoftReference;
 import java.util.Locale;
+import java.util.concurrent.Executors;
 
 @EApplication
 public class TagMo extends MultiDexApplication {
@@ -42,15 +43,17 @@ public class TagMo extends MultiDexApplication {
         mPrefs = new SoftReference<>(this.prefs);
         mContext = new SoftReference<>(this);
 
-        File[] logs = Storage.getDownloadDir("TagMo",
-                "Logcat").listFiles((dir, name) ->
-                name.toLowerCase(Locale.ROOT).startsWith("crash_logcat"));
-        if (null != logs && logs.length > 0) {
-            for (File file : logs) {
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            File[] logs = Storage.getDownloadDir("TagMo", "Logcat")
+                    .listFiles((dir, name) ->
+                    name.toLowerCase(Locale.ROOT).startsWith("crash_logcat"));
+            if (null != logs && logs.length > 0) {
+                for (File file : logs) {
+                    //noinspection ResultOfMethodCallIgnored
+                    file.delete();
+                }
             }
-        }
+        });
 
         Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
             StringWriter exception = new StringWriter();
@@ -62,8 +65,6 @@ public class TagMo extends MultiDexApplication {
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://github.com/HiddenRamblings/TagMo/wiki#reporting-issues")));
             System.exit(1);
         });
     }
@@ -79,7 +80,7 @@ public class TagMo extends MultiDexApplication {
             return ScaledContext.restore(mContext.get());
     }
 
-    static void setScaledTheme(Context context, int theme) {
+    void setScaledTheme(Context context, int theme) {
         if (null != mPrefs && mPrefs.get().enableScaling().get())
             ScaledContext.wrap(context).setTheme(theme);
         else

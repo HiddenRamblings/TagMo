@@ -27,7 +27,6 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -540,7 +539,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             .guestToken(getRepositoryToken())
                             .guestEmailRequired(true)
                             .guestAllowUsername(true)
-                            .titleTextDefault(getString(R.string.build_hash, BuildConfig.COMMIT))
+                            .titleTextDefault(getString(R.string.git_issue_title, BuildConfig.COMMIT))
                             .minDescriptionLength(50)
                             .putExtraInfo("logcat", total.toString())
                             .homeAsUpEnabled(false).launch(this);

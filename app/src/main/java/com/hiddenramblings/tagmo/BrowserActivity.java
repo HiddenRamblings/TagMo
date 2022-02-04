@@ -187,7 +187,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TagMo.setScaledTheme(this, R.style.AppTheme);
+        ((TagMo) getApplication()).setScaledTheme(this, R.style.AppTheme);
         keyManager = new KeyManager(this);
 
         setContentView(R.layout.activity_browser);

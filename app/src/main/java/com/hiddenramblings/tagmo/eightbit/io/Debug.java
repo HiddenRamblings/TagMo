@@ -110,7 +110,7 @@ public class Debug {
     public static Uri processLogcat(Context context, String displayName) throws IOException {
         final StringBuilder log = new StringBuilder();
         String separator = System.getProperty("line.separator");
-        log.append(context.getString(R.string.build_hash, BuildConfig.COMMIT));
+        log.append(context.getString(R.string.build_hash_full, BuildConfig.COMMIT));
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d", "-t", "256", BuildConfig.APPLICATION_ID,
                 "AndroidRuntime", "System.err",

@@ -150,7 +150,10 @@
         </androidx.preference.Preference>
         <androidx.preference.Preference
             android:key="@string/settings_version"
-            android:title="@string/build_hash"
-            app:icon="@drawable/ic_github_octocat_24dp" />
+            android:title="@string/build_hash_title"
+            app:icon="@drawable/ic_github_octocat_24dp">
+        <intent android:action="android.intent.action.VIEW"
+            android:data="https://github.com/HiddenRamblings/TagMo"/>
+        </androidx.preference.Preference>
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

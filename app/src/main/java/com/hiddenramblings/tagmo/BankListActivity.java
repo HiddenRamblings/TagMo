@@ -14,8 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -66,6 +68,8 @@ public class BankListActivity extends AppCompatActivity implements
 
     private RecyclerView amiibosView;
 
+    private LinearLayout bankOptionsMenu;
+    private ToggleButton switchMenuOptions;
     private RelativeLayout writeBankLayout;
     private RecyclerView amiiboFilesView;
 
@@ -120,6 +124,8 @@ public class BankListActivity extends AppCompatActivity implements
 
         amiibosView = findViewById(R.id.amiibos_list);
 
+        switchMenuOptions = findViewById(R.id.switch_menu_options);
+        bankOptionsMenu = findViewById(R.id.bank_options_menu);
         writeBankLayout = findViewById(R.id.write_banks_layout);
         amiiboFilesView = findViewById(R.id.amiibo_files_list);
 
@@ -230,6 +236,16 @@ public class BankListActivity extends AppCompatActivity implements
             }
         });
         this.settings.addChangeListener(writeFileAdapter);
+
+        switchMenuOptions.setOnClickListener(view -> {
+            if (bankOptionsMenu.isShown()) {
+                amiiboCard.setVisibility(View.VISIBLE);
+                bankOptionsMenu.setVisibility(View.GONE);
+            } else {
+                bankOptionsMenu.setVisibility(View.VISIBLE);
+                amiiboCard.setVisibility(View.GONE);
+            }
+        });
 
         writeListAdapter = new WriteBanksAdapter(settings, this::writeAmiiboCollection);
         this.settings.addChangeListener(writeListAdapter);
@@ -345,12 +361,10 @@ public class BankListActivity extends AppCompatActivity implements
     private void onBottomSheetChanged(boolean isMenu, boolean hasAmiibo) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         amiiboCard.setVisibility(isMenu && hasAmiibo ? View.VISIBLE : View.GONE);
+        switchMenuOptions.setVisibility(isMenu && hasAmiibo ? View.VISIBLE : View.GONE);
+        bankOptionsMenu.setVisibility(isMenu && !hasAmiibo ? View.VISIBLE : View.GONE);
         if (isMenu) writeListAdapter.resetSelections();
-        writeBankLayout.setVisibility(isMenu ? View.GONE : View.VISIBLE);
-        writeOpenBanks.setVisibility(isMenu ? View.VISIBLE : View.GONE);
-        eraseOpenBanks.setVisibility(isMenu ? View.VISIBLE : View.GONE);
-        eliteBankCount.setVisibility(isMenu ? View.VISIBLE : View.GONE);
-        writeBankCount.setVisibility(isMenu ? View.VISIBLE : View.GONE);
+        writeBankLayout.setVisibility(isMenu || hasAmiibo ? View.GONE : View.VISIBLE);
     }
 
     private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<>() {

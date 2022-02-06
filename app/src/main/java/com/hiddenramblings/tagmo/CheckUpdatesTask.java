@@ -52,7 +52,13 @@ public class CheckUpdatesTask {
             }
         }
         Executors.newSingleThreadExecutor().execute(() -> {
-            File[] files = activity.getFilesDir().listFiles((dir, name) ->
+            File directory;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                directory = activity.getNoBackupFilesDir();
+            } else {
+                directory = activity.getFilesDir();
+            }
+            File[] files = directory.listFiles((dir, name) ->
                     name.toLowerCase(Locale.ROOT).endsWith(".apk"));
             if (null != files && files.length > 0) {
                 for (File file : files) {
@@ -72,7 +78,13 @@ public class CheckUpdatesTask {
 
     void installUpdateTask(String apkUrl) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            File apk = new File(activity.get().getFilesDir(), apkUrl.substring(
+            File directory;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                directory = activity.get().getNoBackupFilesDir();
+            } else {
+                directory = activity.get().getFilesDir();
+            }
+            File apk = new File(directory, apkUrl.substring(
                     apkUrl.lastIndexOf(File.separator) + 1));
             try {
                 DataInputStream dis = new DataInputStream(new URL(apkUrl).openStream());
@@ -179,18 +191,17 @@ public class CheckUpdatesTask {
         if (isMaster && null != lastCommit && null != downloadUrl) {
             String finalLastCommit = lastCommit;
             String finalDownloadUrl = downloadUrl;
-            new JSONExecutor(TAGMO_GIT_API + "experimental")
-                    .setResultListener(experimental -> {
-                        try {
-                            JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();
-                            String extraCommit = ((String) jsonObject.get("name")).substring(6);
-                            if (!BuildConfig.COMMIT.equals(extraCommit)
-                                    && !BuildConfig.COMMIT.equals(finalLastCommit))
-                                installUpdateCompat(finalDownloadUrl);
-                        } catch (JSONException e) {
-                            Debug.Log(e);
-                        }
-                    });
+            new JSONExecutor(TAGMO_GIT_API + "experimental").setResultListener(experimental -> {
+                try {
+                    JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();
+                    String extraCommit = ((String) jsonObject.get("name")).substring(6);
+                    if (!BuildConfig.COMMIT.equals(extraCommit)
+                            && !BuildConfig.COMMIT.equals(finalLastCommit))
+                        installUpdateCompat(finalDownloadUrl);
+                } catch (JSONException e) {
+                    Debug.Log(e);
+                }
+            });
         }
     }
 }

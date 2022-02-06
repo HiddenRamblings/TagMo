@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <declare-styleable name="BankPicker">
-        <attr name="maxValue" format="integer" />
-        <attr name="minValue" format="integer" />
-        <attr name="startValue" format="integer" />
-    </declare-styleable>
-</resources>

@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">TagMo</string>
 
+    <string name="tagmo">TagMo</string>
     <string name="build_hash_full"> TagMo - #%1$s</string>
     <string name="build_hash_title">TagMo build #%1$s</string>
     <string name="git_issue_title">Logcat - TagMo #%1$s</string>

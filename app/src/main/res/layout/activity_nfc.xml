@@ -60,12 +60,9 @@
             android:padding="5dp"
             app:srcCompat="@drawable/ic_bar_24dp" />
 
-        <com.hiddenramblings.tagmo.widget.BankPicker
-            android:id="@+id/bank_number_picker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/picker_border"
-            android:layout_alignParentBottom="true" />
+        <include
+            layout="@layout/bank_picker"
+            android:id="@+id/bank_number_picker" />
 
         <TextView
             android:id="@+id/bank_number_details"

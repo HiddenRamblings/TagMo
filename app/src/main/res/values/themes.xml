@@ -37,11 +37,6 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="DialogTheme.Picker" parent="DialogTheme" >
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="colorControlNormal">@android:color/background_light</item>
-    </style>
-
     <style name="PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
         <item name="overlapAnchor">false</item>
         <item name="android:dropDownVerticalOffset">-8dp</item>

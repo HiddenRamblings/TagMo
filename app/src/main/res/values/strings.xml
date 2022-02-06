@@ -203,6 +203,8 @@
     <string name="files_displayed">%1$d Files: ? / ? amiibo™</string>
     <string name="amiibo_collected">%1$d Files: %2$d / %3$d amiibo™</string>
 
+    <string name="view_device_options">Switch to N2 Elite Options</string>
+    <string name="view_amiibo_details">Switch to amiibo™ Details</string>
     <string name="write_open_banks">Write %1$d Banks to N2 Elite</string>
     <string name="erase_open_banks">Erase %1$d Banks on N2 Elite</string>
     <string name="write_bank_count">Write Bank Count to N2 Elite</string>

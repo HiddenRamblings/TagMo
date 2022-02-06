@@ -52,13 +52,7 @@ public class CheckUpdatesTask {
             }
         }
         Executors.newSingleThreadExecutor().execute(() -> {
-            File directory;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                directory = activity.getNoBackupFilesDir();
-            } else {
-                directory = activity.getFilesDir();
-            }
-            File[] files = directory.listFiles((dir, name) ->
+            File[] files = activity.getExternalCacheDir().listFiles((dir, name) ->
                     name.toLowerCase(Locale.ROOT).endsWith(".apk"));
             if (null != files && files.length > 0) {
                 for (File file : files) {
@@ -78,13 +72,7 @@ public class CheckUpdatesTask {
 
     void installUpdateTask(String apkUrl) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            File directory;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                directory = activity.get().getNoBackupFilesDir();
-            } else {
-                directory = activity.get().getFilesDir();
-            }
-            File apk = new File(directory, apkUrl.substring(
+            File apk = new File(activity.get().getExternalCacheDir(), apkUrl.substring(
                     apkUrl.lastIndexOf(File.separator) + 1));
             try {
                 DataInputStream dis = new DataInputStream(new URL(apkUrl).openStream());

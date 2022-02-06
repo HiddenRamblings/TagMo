@@ -163,10 +163,11 @@ public class CheckUpdatesTask {
     }
 
     private void parseUpdateJSON(String result, boolean isMaster) {
+        int offset = activity.get().getString(R.string.tagmo).length() + 1;
         String lastCommit = null, downloadUrl = null;
         try {
             JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-            lastCommit = ((String) jsonObject.get("name")).substring(6);
+            lastCommit = ((String) jsonObject.get("name")).substring(offset);
             JSONArray assets = (JSONArray) jsonObject.get("assets");
             JSONObject asset = (JSONObject) assets.get(0);
             downloadUrl = (String) asset.get("browser_download_url");
@@ -182,7 +183,7 @@ public class CheckUpdatesTask {
             new JSONExecutor(TAGMO_GIT_API + "experimental").setResultListener(experimental -> {
                 try {
                     JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();
-                    String extraCommit = ((String) jsonObject.get("name")).substring(6);
+                    String extraCommit = ((String) jsonObject.get("name")).substring(offset);
                     if (!BuildConfig.COMMIT.equals(extraCommit)
                             && !BuildConfig.COMMIT.equals(finalLastCommit))
                         installUpdateCompat(finalDownloadUrl);

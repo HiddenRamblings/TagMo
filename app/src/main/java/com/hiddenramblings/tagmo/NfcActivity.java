@@ -35,7 +35,7 @@ import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.Preferences_;
-import com.hiddenramblings.tagmo.widget.BankPicker;
+import com.shawnlin.numberpicker.NumberPicker;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class NfcActivity extends AppCompatActivity {
     TextView txtError;
     AppCompatImageView imgNfcBar;
     AppCompatImageView imgNfcCircle;
-    BankPicker bankPicker;
+    NumberPicker bankPicker;
     TextView bankTextView;
 
     private NfcAdapter nfcAdapter;
@@ -119,6 +119,14 @@ public class NfcActivity extends AppCompatActivity {
         }
     }
 
+    public int getPosition(NumberPicker picker) {
+        return picker.getValue() - picker.getMinValue();
+    }
+
+    public void setPosition(NumberPicker picker, int position) {
+        picker.setValue(position + picker.getMinValue());
+    }
+
     private void configureInterface() {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
@@ -127,10 +135,10 @@ public class NfcActivity extends AppCompatActivity {
             isEliteIntent = BankListActivity.class.getName().equals(
                     getCallingActivity().getClassName());
         if (commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
-            bankPicker.setPosition(commandIntent.getIntExtra(
-                    NFCIntent.EXTRA_CURRENT_BANK, bankPicker.getPosition()));
+            setPosition(bankPicker, commandIntent.getIntExtra(
+                    NFCIntent.EXTRA_CURRENT_BANK, getPosition(bankPicker)));
         } else if (isEliteIntent) {
-            bankPicker.setPosition(prefs.eliteActiveBank().get());
+            setPosition(bankPicker, prefs.eliteActiveBank().get());
         } else {
             bankTextView.setVisibility(View.GONE);
             bankPicker.setVisibility(View.GONE);
@@ -308,7 +316,7 @@ public class NfcActivity extends AppCompatActivity {
                 if (!NFCIntent.ACTION_SET_BANK_COUNT.equals(mode)
                         && !NFCIntent.ACTION_WRITE_ALL_TAGS.equals(mode)
                         && !NFCIntent.ACTION_ERASE_ALL_TAGS.equals(mode)) {
-                    selection = bankPicker.getPosition();
+                    selection = getPosition(bankPicker);
                     if (selection > bank_count) {
                         throw new Exception(getString(R.string.fail_bank_oob));
                     }

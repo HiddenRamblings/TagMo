@@ -137,7 +137,7 @@ public class BankListActivity extends AppCompatActivity implements
         imageAmiibo = findViewById(R.id.imageAmiibo);
 
         bankStats = findViewById(R.id.bank_stats);
-        eliteBankCount = findViewById(R.id.bank_count_picker);
+        eliteBankCount = findViewById(R.id.bank_number_picker);
         writeOpenBanks = findViewById(R.id.write_open_banks);
         eraseOpenBanks = findViewById(R.id.erase_open_banks);
         writeBankCount = findViewById(R.id.write_bank_count);

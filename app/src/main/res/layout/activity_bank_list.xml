@@ -106,14 +106,9 @@
             android:layout_marginBottom="6dp"
             android:text="@string/erase_open_banks" />
 
-        <com.hiddenramblings.tagmo.widget.BankPicker
-            android:id="@+id/bank_count_picker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:theme="@style/DialogTheme.Picker"
-            android:background="@drawable/picker_border_elite" />
+        <include
+            layout="@layout/bank_picker"
+            android:id="@+id/bank_count_picker" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/write_bank_count"

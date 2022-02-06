@@ -47,8 +47,8 @@ import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.settings.Preferences_;
-import com.hiddenramblings.tagmo.widget.BankPicker;
 import com.hiddenramblings.tagmo.widget.Toasty;
+import com.shawnlin.numberpicker.NumberPicker;
 
 import org.json.JSONException;
 
@@ -83,7 +83,7 @@ public class BankListActivity extends AppCompatActivity implements
     private AppCompatImageView imageAmiibo;
 
     private TextView bankStats;
-    private BankPicker eliteBankCount;
+    private NumberPicker eliteBankCount;
     private AppCompatButton writeOpenBanks;
     private AppCompatButton eraseOpenBanks;
     private AppCompatButton writeBankCount;
@@ -196,8 +196,8 @@ public class BankListActivity extends AppCompatActivity implements
         amiibosView.setAdapter(adapter);
         this.settings.addChangeListener(adapter);
         updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
-        bankStats.setText(getString(R.string.bank_stats, eliteBankCount
-                .getValueForPosition(active_bank), bank_count));
+        bankStats.setText(getString(R.string.bank_stats,
+                getValueForPosition(eliteBankCount, active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
         eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
 
@@ -389,8 +389,8 @@ public class BankListActivity extends AppCompatActivity implements
         prefs.eliteActiveBank().put(active_bank);
 
         int bank_count = prefs.eliteBankCount().get();
-        bankStats.setText(getString(R.string.bank_stats, eliteBankCount
-                .getValueForPosition(active_bank), bank_count));
+        bankStats.setText(getString(R.string.bank_stats,
+                getValueForPosition(eliteBankCount, active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
         eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
     });
@@ -704,8 +704,8 @@ public class BankListActivity extends AppCompatActivity implements
             txtError.setVisibility(View.GONE);
             amiiboInfo.setVisibility(View.VISIBLE);
         }
-        setAmiiboInfoText(txtBank, getString(R.string.bank_number, eliteBankCount
-                .getValueForPosition(current_bank)), hasTagInfo);
+        setAmiiboInfoText(txtBank, getString(R.string.bank_number,
+                getValueForPosition(eliteBankCount, current_bank)), hasTagInfo);
         setAmiiboInfoText(txtName, amiiboName, hasTagInfo);
         setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo);
         setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo);
@@ -749,8 +749,8 @@ public class BankListActivity extends AppCompatActivity implements
 
         eliteBankCount.setValue(bank_count);
         updateEliteHardwareAdapter(result.getData().getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
-        bankStats.setText(getString(R.string.bank_stats, eliteBankCount
-                .getValueForPosition(prefs.eliteActiveBank().get()), bank_count));
+        bankStats.setText(getString(R.string.bank_stats,
+                getValueForPosition(eliteBankCount, prefs.eliteActiveBank().get()), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
         eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
     });
@@ -785,6 +785,10 @@ public class BankListActivity extends AppCompatActivity implements
         else
             mWindowManager.getDefaultDisplay().getMetrics(metrics);
         return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
+    }
+
+    public int getValueForPosition(NumberPicker picker, int value) {
+        return value + picker.getMinValue();
     }
 
     @Override

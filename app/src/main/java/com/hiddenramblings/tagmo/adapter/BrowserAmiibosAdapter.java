@@ -216,7 +216,8 @@ public class BrowserAmiibosAdapter
             if (filteredData.isEmpty() || filteredData != filterResults.values) {
                 //noinspection unchecked
                 filteredData = (ArrayList<AmiiboFile>) filterResults.values;
-                Collections.sort(filteredData, new AmiiboFileComparator(settings));
+                if (!filteredData.isEmpty())
+                    Collections.sort(filteredData, new AmiiboFileComparator(settings));
                 notifyDataSetChanged();
             }
         }

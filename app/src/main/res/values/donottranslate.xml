@@ -1,51 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TagMo</string>
+    <string name="app_name" translatable="false">TagMo</string>
 
-    <string name="tagmo">TagMo</string>
-    <string name="build_hash_full"> TagMo - #%1$s</string>
-    <string name="build_hash_title">TagMo build #%1$s</string>
-    <string name="git_issue_title">Logcat - TagMo #%1$s</string>
+    <string name="tagmo" translatable="false">TagMo</string>
+    <string name="build_hash_full" translatable="false"> TagMo - #%1$s</string>
+    <string name="build_hash_title" translatable="false">TagMo build #%1$s</string>
+    <string name="git_issue_title" translatable="false">Logcat - TagMo #%1$s</string>
 
-    <string name="imageview_amiibo">amiibo™ Image</string>
-    <string name="imageview_icon">TagMo Image</string>
-    <string name="imageview_arrow">Arrow Icon</string>
-    <string name="imageview_folder">Folder Icon</string>
-    <string name="imageview_toggle">Toggle Icon</string>
-    <string name="nfcIconDescription">NFC Icon</string>
-    <string name="movingBarDescription">Moving bar indicating the scanning process</string>
+    <string name="imageview_amiibo" translatable="false">amiibo™ Image</string>
+    <string name="imageview_icon" translatable="false">TagMo Image</string>
+    <string name="imageview_arrow" translatable="false">Arrow Icon</string>
+    <string name="imageview_folder" translatable="false">Folder Icon</string>
+    <string name="imageview_toggle" translatable="false">Toggle Icon</string>
+    <string name="nfcIconDescription" translatable="false">NFC Icon</string>
+    <string name="movingBarDescription" translatable="false">Moving bar indicating the scanning process</string>
 
-    <string name="tag_data">tagData</string>
-    <string name="hex_ff">FF</string>
-    <string name="hex_ffff">FFFF</string>
+    <string name="tag_data" translatable="false">tagData</string>
+    <string name="hex_ff" translatable="false">FF</string>
+    <string name="hex_ffff" translatable="false">FFFF</string>
 
-    <string name="middleCenterError"> </string>
+    <string name="settings_import_keys" translatable="false">import_keys</string>
+    <string name="settings_tag_type_validation" translatable="false">enable_tag_type_validation</string>
+    <string name="settings_enable_automatic_scan" translatable="false">enable_automatic_scan</string>
+    <string name="settings_enable_power_tag_support" translatable="false">enable_power_tag_support</string>
+    <string name="settings_enable_elite_support" translatable="false">enable_elite_support</string>
+    <string name="settings_elite_signature" translatable="false">settings_elite_signature</string>
+    <string name="settings_open_flask_editor" translatable="false">settings_open_flask_editor</string>
+    <string name="settings_import_info" translatable="false">import_info</string>
+    <string name="settings_reset_info" translatable="false">reset_info</string>
+    <string name="settings_export_info" translatable="false">settings_export_info</string>
+    <string name="settings_info_amiibo" translatable="false">settings_info_amiibo</string>
+    <string name="settings_info_game_series" translatable="false">settings_info_game_series</string>
+    <string name="settings_info_characters" translatable="false">settings_info_characters</string>
+    <string name="settings_info_amiibo_series" translatable="false">settings_info_amiibo_series</string>
+    <string name="settings_info_amiibo_types" translatable="false">settings_info_amiibo_types</string>
+    <string name="settings_import_info_amiiboapi" translatable="false">settings_sync_info_amiiboapi</string>
+    <string name="settings_disable_debug" translatable="false">settings_disable_debug</string>
+    <string name="settings_stable_channel" translatable="false">settings_stable_channel</string>
+    <string name="settings_view_guides" translatable="false">settings_view_guides</string>
+    <string name="settings_sponsor_dev" translatable="false">settings_sponsor_dev</string>
+    <string name="settings_version" translatable="false">settings_version</string>
+    <string name="image_network_settings" translatable="false">image_network_settings</string>
 
-    <string name="settings_import_keys">import_keys</string>
-    <string name="settings_tag_type_validation">enable_tag_type_validation</string>
-    <string name="settings_enable_automatic_scan">enable_automatic_scan</string>
-    <string name="settings_enable_power_tag_support">enable_power_tag_support</string>
-    <string name="settings_enable_elite_support">enable_elite_support</string>
-    <string name="settings_elite_signature">settings_elite_signature</string>
-    <string name="settings_open_flask_editor">settings_open_flask_editor</string>
-    <string name="settings_import_info">import_info</string>
-    <string name="settings_reset_info">reset_info</string>
-    <string name="settings_export_info">settings_export_info</string>
-    <string name="settings_info_amiibo">settings_info_amiibo</string>
-    <string name="settings_info_game_series">settings_info_game_series</string>
-    <string name="settings_info_characters">settings_info_characters</string>
-    <string name="settings_info_amiibo_series">settings_info_amiibo_series</string>
-    <string name="settings_info_amiibo_types">settings_info_amiibo_types</string>
-    <string name="settings_import_info_amiiboapi">settings_sync_info_amiiboapi</string>
-    <string name="settings_disable_debug">settings_disable_debug</string>
-    <string name="settings_stable_channel">settings_stable_channel</string>
-    <string name="settings_view_guides">settings_view_guides</string>
-    <string name="settings_sponsor_dev">settings_sponsor_dev</string>
-    <string name="settings_version">settings_version</string>
-    <string name="image_network_settings">image_network_settings</string>
-
-    <string name="mimetype_text">text/plain</string>
-    <string name="mimetype_apk">application/vnd.android.package-archive</string>
+    <string name="mimetype_text" translatable="false">text/plain</string>
+    <string name="mimetype_apk" translatable="false">application/vnd.android.package-archive</string>
     <string-array name="mimetype_bin">
         <item>application/octet-stream</item>
         <item>application/x-binary</item>
@@ -54,20 +52,20 @@
         <item>application/json</item>
         <item>application/javascript</item>
     </string-array>
-    <string name="mimetype_zip">application/zip</string>
+    <string name="mimetype_zip" translatable="false">application/zip</string>
 
-    <string name="power_tag">Power Tag</string>
-    <string name="elite_device">N2 Elite</string>
-    <string name="flask_device">Bluup Flask</string>
-    <string name="mifare_classic">Mifare Classic</string>
-    <string name="mifare_plus">Mifare Plus</string>
-    <string name="mifare_pro">Mifare Pro</string>
-    <string name="mifare_ultralight">Mifare UltraLight</string>
-    <string name="mifare_ultralight_c">Mifare UltraLight C</string>
-    <string name="isodep">IsoDep</string>
-    <string name="ndef">Ndef</string>
-    <string name="ndef_formatable">NdefFormatable</string>
+    <string name="power_tag" translatable="false">Power Tag</string>
+    <string name="elite_device" translatable="false">N2 Elite</string>
+    <string name="flask_device" translatable="false">Bluup Flask</string>
+    <string name="mifare_classic" translatable="false">Mifare Classic</string>
+    <string name="mifare_plus" translatable="false">Mifare Plus</string>
+    <string name="mifare_pro" translatable="false">Mifare Pro</string>
+    <string name="mifare_ultralight" translatable="false">Mifare UltraLight</string>
+    <string name="mifare_ultralight_c" translatable="false">Mifare UltraLight C</string>
+    <string name="isodep" translatable="false">IsoDep</string>
+    <string name="ndef" translatable="false">Ndef</string>
+    <string name="ndef_formatable" translatable="false">NdefFormatable</string>
 
-    <string name="nfc_null_array">Attempt to read from null array</string>
+    <string name="nfc_null_array" translatable="false">Attempt to read from null array</string>
 
 </resources>

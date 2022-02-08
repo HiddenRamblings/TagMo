@@ -299,6 +299,7 @@ public class BankListActivity extends AppCompatActivity implements
         });
 
         updateAmiiboView(null, amiibos.get(active_bank).id, active_bank);
+        onBottomSheetChanged(true, true);
     }
 
     private void updateEliteHardwareAdapter(ArrayList<String> amiiboList) {

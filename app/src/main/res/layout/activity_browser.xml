@@ -85,7 +85,7 @@
 
         <include
             layout="@layout/active_card_layout"
-            android:id="@+id/amiiboCard" />
+            android:id="@+id/active_card_layout" />
     </com.eightbitlab.blurview.BlurView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

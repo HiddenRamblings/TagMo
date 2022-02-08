@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout
+    android:id="@+id/bank_options_menu"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/write_open_banks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="@string/write_open_banks" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/erase_open_banks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:text="@string/erase_open_banks" />
+
+    <include
+        layout="@layout/bank_picker"
+        android:id="@+id/bank_number_picker" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/write_bank_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:text="@string/write_bank_count" />
+</LinearLayout>
+</merge>

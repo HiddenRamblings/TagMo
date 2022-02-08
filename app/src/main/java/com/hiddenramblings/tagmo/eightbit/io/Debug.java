@@ -60,6 +60,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.heinrichreimersoftware.androidissuereporter.IssueReporterLauncher;
 import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -77,24 +78,32 @@ import java.io.StringWriter;
 @SuppressWarnings("unused")
 public class Debug {
 
+    private static Context getContext() {
+        return TagMo.getContext();
+    }
+
+    private static boolean hasDebugging() {
+        return !TagMo.getPrefs().settings_disable_debug().get();
+    }
+
     public static String TAG(Class<?> source) {
         return source.getSimpleName();
     }
 
     public static void Log(Class<?> source, String params) {
-        if (!TagMo.getPrefs().settings_disable_debug().get()) Log.w(TAG(source), params);
+        if (hasDebugging()) Log.w(TAG(source), params);
     }
 
     public static void Log(Class<?> source, int resource) {
-        Log(source, TagMo.getContext().getString(resource));
+        Log(source, getContext().getString(resource));
     }
 
     public static void Log(Class<?> source, int resource, String params) {
-        Log(source, TagMo.getContext().getString(resource, params));
+        Log(source, getContext().getString(resource, params));
     }
 
     public static void Log(Exception ex) {
-        if (TagMo.getPrefs().settings_disable_debug().get()) return;
+        if (!hasDebugging()) return;
         if (ex.getStackTrace().length > 0) {
             StringWriter exception = new StringWriter();
             ex.printStackTrace(new PrintWriter(exception));
@@ -103,11 +112,25 @@ public class Debug {
     }
 
     public static void Log(int resource, Exception ex) {
-        if (!TagMo.getPrefs().settings_disable_debug().get())
-            Log.w(TAG(ex.getClass()), TagMo.getContext().getString(resource), ex);
+        if (hasDebugging())
+            Log.w(TAG(ex.getClass()), getContext().getString(resource), ex);
+    }
+
+    private static String getRepositoryToken() {
+        String hex = "6768705f7666375663347a52574b396165634c33703431524c596d39716950617766323150626c47";
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < hex.length(); i+=2) {
+            String str = hex.substring(i, i+2);
+            output.append((char)Integer.parseInt(str, 16));
+        }
+        return output.toString();
     }
 
     public static Uri processLogcat(Context context, String displayName) throws IOException {
+        String project = context.getString(R.string.tagmo);
+        String username = "HiddenRamblings";
+        String uncaughtExceptions = "crash_logcat";
+
         final StringBuilder log = new StringBuilder();
         String separator = System.getProperty("line.separator");
         log.append(context.getString(R.string.build_hash_full, BuildConfig.COMMIT));
@@ -125,6 +148,18 @@ public class Debug {
         }
         reader.close();
 
+        if (!uncaughtExceptions.equals(displayName)) {
+            IssueReporterLauncher.forTarget(username, project)
+                    .theme(R.style.AppTheme_NoActionBar)
+                    .guestToken(getRepositoryToken())
+                    .guestEmailRequired(true)
+                    .guestAllowUsername(true)
+                    .titleTextDefault(context.getString(R.string.git_issue_title, BuildConfig.COMMIT))
+                    .minDescriptionLength(50)
+                    .putExtraInfo("logcat", log.toString())
+                    .homeAsUpEnabled(false).launch(context);
+        }
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 ContentValues contentValues = new ContentValues();
@@ -133,7 +168,7 @@ public class Debug {
                         context.getString(R.string.mimetype_text));
                 contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH,
                         Environment.DIRECTORY_DOWNLOADS + File.separator
-                                + "TagMo" + File.separator + "Logcat");
+                                + project + File.separator + "Logcat");
                 ContentResolver resolver = context.getContentResolver();
                 Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
                 try (OutputStream fos = resolver.openOutputStream(uri)) {
@@ -141,7 +176,7 @@ public class Debug {
                 }
                 return uri;
             } else {
-                File file = new File(Storage.getDownloadDir("TagMo",
+                File file = new File(Storage.getDownloadDir(project,
                         "Logcat"), displayName + ".txt");
                 try (FileOutputStream fos = new FileOutputStream(file)) {
                     fos.write(log.toString().getBytes());
@@ -156,7 +191,7 @@ public class Debug {
                 return Uri.fromFile(file);
             }
         } catch (Exception e) {
-            if (!"crash_logcat".equals(displayName))
+            if (!uncaughtExceptions.equals(displayName))
                 throw new IOException(context.getString(R.string.fail_logcat));
 
             File file = new File(context.getExternalFilesDir(null),

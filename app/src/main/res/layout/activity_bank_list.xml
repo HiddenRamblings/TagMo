@@ -90,40 +90,11 @@
 
         <include
             layout="@layout/active_card_layout"
-            android:id="@+id/amiiboCard" />
-
-        <LinearLayout
-            android:id="@+id/bank_options_menu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/write_open_banks"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/write_open_banks" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/erase_open_banks"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:text="@string/erase_open_banks" />
+            android:id="@+id/active_card_layout" />
 
         <include
-            layout="@layout/bank_picker"
-            android:id="@+id/bank_number_picker" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/write_bank_count"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:text="@string/write_bank_count" />
-        </LinearLayout>
+            layout="@layout/bank_options_menu"
+            android:id="@+id/bank_options_menu" />
 
         <ToggleButton
             android:id="@+id/switch_menu_options"
@@ -134,32 +105,8 @@
             android:textOff="@string/view_device_options"
             android:textOn="@string/view_amiibo_details"/>
 
-        <RelativeLayout
-            android:id="@+id/write_banks_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="-8dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone">
-
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/amiibo_search"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="2dp"
-                android:layout_marginEnd="2dp"
-                android:lineSpacingExtra="0dp"
-                android:lineSpacingMultiplier="0" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/amiibo_files_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingBottom="40dp"
-                android:scrollbars="vertical"
-                android:layout_alignParentBottom="true"
-                android:layout_below="@+id/amiibo_search"/>
-        </RelativeLayout>
+        <include
+            layout="@layout/write_banks_layout"
+            android:id="@+id/write_banks_layout" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

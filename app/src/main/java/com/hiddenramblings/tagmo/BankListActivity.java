@@ -129,7 +129,7 @@ public class BankListActivity extends AppCompatActivity implements
         writeBankLayout = findViewById(R.id.write_banks_layout);
         amiiboFilesView = findViewById(R.id.amiibo_files_list);
 
-        amiiboCard = findViewById(R.id.amiiboCard);
+        amiiboCard = findViewById(R.id.active_card_layout);
         toolbar = findViewById(R.id.toolbar);
         amiiboInfo = findViewById(R.id.amiiboInfo);
         txtError = findViewById(R.id.txtError);

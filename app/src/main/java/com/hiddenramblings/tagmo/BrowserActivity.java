@@ -501,16 +501,6 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     });
 
-    private String getRepositoryToken() {
-        String hex = "6768705f7666375663347a52574b396165634c33703431524c596d39716950617766323150626c47";
-        StringBuilder output = new StringBuilder();
-        for (int i = 0; i < hex.length(); i+=2) {
-            String str = hex.substring(i, i+2);
-            output.append((char)Integer.parseInt(str, 16));
-        }
-        return output.toString();
-    }
-
     private void onCaptureLogcatClicked() {
         Executors.newSingleThreadExecutor().execute(() -> {
             File[] logs = Storage.getDownloadDir("TagMo", "Logcat").listFiles(
@@ -527,26 +517,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 String output = null != path ? Storage.getRelativePath(new File(path),
                         prefs.preferEmulated().get()) : uri.getPath();
                 new Toasty(this).Long(getString(R.string.wrote_logcat, output));
-                try (InputStream in = getContentResolver().openInputStream(uri);
-                     BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
-                    StringBuilder total = new StringBuilder();
-                    String line;
-                    while (null != (line = r.readLine())) {
-                        total.append(line).append("\n");
-                    }
-                    IssueReporterLauncher.forTarget("HiddenRamblings", "TagMo")
-                            .theme(R.style.AppTheme_NoActionBar)
-                            .guestToken(getRepositoryToken())
-                            .guestEmailRequired(true)
-                            .guestAllowUsername(true)
-                            .titleTextDefault(getString(R.string.git_issue_title, BuildConfig.COMMIT))
-                            .minDescriptionLength(50)
-                            .putExtraInfo("logcat", total.toString())
-                            .homeAsUpEnabled(false).launch(this);
-                } catch (Exception e) {
-                    Debug.Log(e);
-                    new Toasty(this).Short(R.string.fail_logcat);
-                }
             } catch (IOException e) {
                 new Toasty(this).Short(e.getMessage());
             }

@@ -245,6 +245,7 @@ public class BankListActivity extends AppCompatActivity implements
                 bankOptionsMenu.setVisibility(View.VISIBLE);
                 amiiboCard.setVisibility(View.GONE);
             }
+            amiibosView.invalidate();
         });
 
         writeListAdapter = new WriteBanksAdapter(settings, this::writeAmiiboCollection);
@@ -300,6 +301,7 @@ public class BankListActivity extends AppCompatActivity implements
 
         updateAmiiboView(null, amiibos.get(active_bank).id, active_bank);
         onBottomSheetChanged(true, true);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     private void updateEliteHardwareAdapter(ArrayList<String> amiiboList) {

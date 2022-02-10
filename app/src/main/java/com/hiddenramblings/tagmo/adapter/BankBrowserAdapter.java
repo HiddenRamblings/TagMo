@@ -36,6 +36,7 @@ public class BankBrowserAdapter
     private ArrayList<Amiibo> amiibos = new ArrayList<>();
 
     public BankBrowserAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
+        // setHasStableIds(true);
         this.settings = settings;
         this.listener = listener;
     }
@@ -85,32 +86,34 @@ public class BankBrowserAdapter
 
     @Override
     public void onBindViewHolder(@NonNull final AmiiboViewHolder holder, int position) {
+        if (hasStableIds()) position = holder.getBindingAdapterPosition();
         View highlight = holder.itemView.findViewById(R.id.highlight);
         if (TagMo.getPrefs().eliteActiveBank().get() == position) {
             highlight.setBackgroundResource(R.drawable.rounded_neon);
         } else {
             highlight.setBackgroundResource(0);
         }
+        final int clickPosition = position;
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.listener)
-                holder.listener.onAmiiboClicked(holder.amiiboItem, position);
+                holder.listener.onAmiiboClicked(holder.amiiboItem, clickPosition);
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.listener) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                        holder.listener.onAmiiboClicked(holder.amiiboItem, position);
+                        holder.listener.onAmiiboClicked(holder.amiiboItem, clickPosition);
                     else
-                        holder.listener.onAmiiboImageClicked(holder.amiiboItem, position);
+                        holder.listener.onAmiiboImageClicked(holder.amiiboItem, clickPosition);
                 }
             });
         }
         holder.itemView.setOnLongClickListener(view -> {
             if (null != holder.listener)
-                return holder.listener.onAmiiboLongClicked(holder.amiiboItem, position);
+                return holder.listener.onAmiiboLongClicked(holder.amiiboItem, clickPosition);
             return false;
         });
-        holder.bind(getItem(position));
+        holder.bind(getItem(clickPosition));
     }
 
     protected static abstract class AmiiboViewHolder extends RecyclerView.ViewHolder {

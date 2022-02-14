@@ -74,6 +74,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 
 @SuppressWarnings("unused")
 public class Debug {
@@ -134,6 +135,23 @@ public class Debug {
         final StringBuilder log = new StringBuilder();
         String separator = System.getProperty("line.separator");
         log.append(context.getString(R.string.build_hash_full, BuildConfig.COMMIT));
+        log.append(separator);
+        log.append("Android ");
+        Field[] fields = Build.VERSION_CODES.class.getFields();
+        String codeName = "UNKNOWN";
+        for (Field field : fields) {
+            try {
+                if (field.getInt(Build.VERSION_CODES.class) == Build.VERSION.SDK_INT) {
+                    codeName = field.getName();
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        log.append(codeName);
+        log.append(" (");
+        log.append(Build.VERSION.RELEASE);
+        log.append(")");
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d", "-t", "256", BuildConfig.APPLICATION_ID,
                 "AndroidRuntime", "System.err",

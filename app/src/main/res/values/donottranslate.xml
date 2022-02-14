@@ -7,7 +7,7 @@
     <string name="build_hash_title" translatable="false">TagMo build #%1$s</string>
     <string name="git_issue_title" translatable="false">Logcat - TagMo #%1$s</string>
 
-    <string name="imageview_amiibo" translatable="false">amiibo™ Image</string>
+    <string name="imageview_amiibo" translatable="false">amiibo&#8482; Image</string>
     <string name="imageview_icon" translatable="false">TagMo Image</string>
     <string name="imageview_arrow" translatable="false">Arrow Icon</string>
     <string name="imageview_folder" translatable="false">Folder Icon</string>

@@ -109,6 +109,8 @@
             android:name=".ImageActivity"/>
         <activity
             android:name=".TagDataActivity"/>
+        <service
+            android:name=".BluetoothLeService" />
         <receiver
             android:name=".UpdateReceiver"
             android:exported="true">

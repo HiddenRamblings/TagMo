@@ -4,7 +4,7 @@ package com.hiddenramblings.tagmo.nfctech;
 public class NfcByte {
 
     public static final int KEY_FILE_SIZE = 80;
-    public static final int TAG_FILE_SIZE = 532;
+    public static final int TAG_FILE_SIZE = 532; // 572 with signature
     public static final int PAGE_SIZE = 4;
 
     public static final int CMD_GET_VERSION = 0x60;

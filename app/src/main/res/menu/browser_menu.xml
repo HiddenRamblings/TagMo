@@ -3,18 +3,13 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/search"
-        android:icon="@drawable/ic_search_white_24dp"
+        android:icon="@drawable/ic_search_24dp"
         android:title="@string/search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="collapseActionView|always"/>
     <item
-        android:id="@+id/install_update"
-        android:icon="@drawable/ic_github_octocat_24dp"
-        android:title="@string/install"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/filter"
-        android:icon="@drawable/ic_filter_list_white_24dp"
+        android:icon="@drawable/ic_filter_list_24dp"
         android:title="@string/filter"
         app:showAsAction="always">
         <menu>
@@ -58,7 +53,7 @@
     </item>
     <item
         android:id="@+id/sort"
-        android:icon="@drawable/ic_sort_white_24dp"
+        android:icon="@drawable/ic_sort_24dp"
         android:title="@string/sorting"
         app:showAsAction="ifRoom">
         <menu>
@@ -90,11 +85,16 @@
     <item
         android:id="@+id/settings"
         android:title="@string/settings"
-        android:icon="@drawable/ic_settings_white_24dp"
+        android:icon="@drawable/ic_settings_24dp"
         app:showAsAction="always" />
     <item
+        android:id="@+id/install_update"
+        android:icon="@drawable/ic_github_octocat_24dp"
+        android:title="@string/install"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/view"
-        android:icon="@drawable/ic_view_array_white_24dp"
+        android:icon="@drawable/ic_view_array_24dp"
         android:title="@string/display_options"
         app:showAsAction="ifRoom">
         <menu>
@@ -141,7 +141,7 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/capture_logcat"
-        android:icon="@drawable/ic_save_white_24dp"
+        android:icon="@drawable/ic_save_24dp"
         android:title="@string/capture_logcat"
         app:showAsAction="ifRoom"/>
 </menu>

@@ -7,10 +7,10 @@
         android:title="@string/scan_tag"/>
     <item
         android:id="@+id/mnu_backup"
-        android:icon="@drawable/ic_save_white_24dp"
+        android:icon="@drawable/ic_save_24dp"
         android:title="@string/amiibo_backup"/>
     <item
         android:id="@+id/mnu_validate"
-        android:icon="@drawable/ic_settings_white_24dp"
+        android:icon="@drawable/ic_settings_24dp"
         android:title="@string/validate_data"/>
 </menu>

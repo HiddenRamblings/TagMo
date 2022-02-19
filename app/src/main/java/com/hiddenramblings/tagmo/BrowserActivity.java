@@ -477,8 +477,9 @@ public class BrowserActivity extends AppCompatActivity implements
             new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                     R.string.validation_success, Snackbar.LENGTH_SHORT, null).show();
         } catch (Exception e) {
-            new IconifiedSnackbar(this, mainLayout).buildSnackbar(
-                    e.getMessage(), Snackbar.LENGTH_LONG, null).show();
+            IconifiedSnackbar notice = new IconifiedSnackbar(this, mainLayout);
+            notice.buildSnackbar(e.getMessage(), Snackbar.LENGTH_LONG, null);
+            notice.setIcon(R.drawable.ic_baseline_bug_report_24).show();
         }
     });
 
@@ -1616,8 +1617,9 @@ public class BrowserActivity extends AppCompatActivity implements
                     new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                             R.string.validation_success, Snackbar.LENGTH_SHORT, null).show();
                 } catch (Exception e) {
-                    new IconifiedSnackbar(this, mainLayout).buildSnackbar(
-                            e.getMessage(), Snackbar.LENGTH_LONG, null).show();
+                    IconifiedSnackbar notice = new IconifiedSnackbar(this, mainLayout);
+                    notice.buildSnackbar(e.getMessage(), Snackbar.LENGTH_LONG, null);
+                    notice.setIcon(R.drawable.ic_baseline_bug_report_24).show();
                 }
                 return true;
             } else if (item.getItemId() == R.id.mnu_delete) {

@@ -69,6 +69,7 @@ public class IconifiedSnackbar {
 
     private final WeakReference<Activity> mActivity;
     private final ViewGroup layout;
+    private Snackbar snackbar;
 
     public IconifiedSnackbar(Activity activity, ViewGroup layout) {
         mActivity = new WeakReference<>(activity);
@@ -80,7 +81,7 @@ public class IconifiedSnackbar {
     }
 
     public Snackbar buildSnackbar(String msg, int length, View anchor) {
-        Snackbar snackbar = Snackbar.make(mActivity.get()
+        snackbar = Snackbar.make(mActivity.get()
                 .findViewById(R.id.coordinator), msg, length);
         View snackbarLayout = snackbar.getView();
         TextView textView = snackbarLayout.findViewById(
@@ -108,7 +109,7 @@ public class IconifiedSnackbar {
     }
 
     public Snackbar buildTickerBar(String msg) {
-        Snackbar snackbar = buildSnackbar(msg, Snackbar.LENGTH_INDEFINITE, null)
+        snackbar = buildSnackbar(msg, Snackbar.LENGTH_INDEFINITE, null)
                 .addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
@@ -136,6 +137,23 @@ public class IconifiedSnackbar {
                 snackbar.getView().getLayoutParams();
         params.gravity = Gravity.TOP;
         snackbar.getView().setLayoutParams(params);
+        return snackbar;
+    }
+
+    public Snackbar setIcon(int iconRes) {
+        View snackbarLayout = snackbar.getView();
+        TextView textView = snackbarLayout.findViewById(
+                com.google.android.material.R.id.snackbar_text);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    iconRes, 0, 0, 0);
+        } else {
+            textView.setCompoundDrawablesWithIntrinsicBounds(
+                    iconRes, 0, 0, 0);
+        }
+        textView.setGravity(Gravity.CENTER_VERTICAL);
+        textView.setCompoundDrawablePadding(textView.getResources()
+                .getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
         return snackbar;
     }
 }

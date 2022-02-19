@@ -101,7 +101,7 @@
         android:layout_marginTop="16dp"
         android:clickable="true"
         android:focusable="true"
-        app:srcCompat="@drawable/ic_nfc_white_24dp"
+        app:srcCompat="@drawable/ic_nfc_icon_24dp"
         app:fabSize="normal"
         android:contentDescription="@string/nfcIconDescription"
         tools:ignore="RelativeOverlap"

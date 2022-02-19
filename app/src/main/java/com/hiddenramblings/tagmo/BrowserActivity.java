@@ -215,32 +215,11 @@ public class BrowserActivity extends AppCompatActivity implements
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
         imageAmiibo = findViewById(R.id.imageAmiibo);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            updates = new CheckUpdatesTask(this);
-            updates.setUpdateListener(downloadUrl -> updateUrl = downloadUrl);
-        } else {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            ProviderInstaller.installIfNeededAsync(this,
-                    new ProviderInstaller.ProviderInstallListener() {
-                @Override
-                public void onProviderInstalled() {
-                    updates = new CheckUpdatesTask(BrowserActivity.this);
-                    updates.setUpdateListener(downloadUrl -> updateUrl = downloadUrl);
-                }
-                @Override
-                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                    GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
-                    if (availability.isUserResolvableError(errorCode)) {
-                        availability.showErrorDialogFragment(
-                                BrowserActivity.this, errorCode, 7000,
-                                dialog -> onProviderInstallerNotAvailable());
-                    } else {
-                        onProviderInstallerNotAvailable();
-                    }
-                }
-            });
         }
+        checkForUpdates();
 
         Intent intent = getIntent();
         if (null != intent) {
@@ -848,11 +827,39 @@ public class BrowserActivity extends AppCompatActivity implements
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
+    private void checkForUpdates() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            updates = new CheckUpdatesTask(this);
+            updates.setUpdateListener(downloadUrl -> updateUrl = downloadUrl);
+        } else {
+            ProviderInstaller.installIfNeededAsync(this,
+                    new ProviderInstaller.ProviderInstallListener() {
+                @Override
+                public void onProviderInstalled() {
+                    updates = new CheckUpdatesTask(BrowserActivity.this);
+                    updates.setUpdateListener(downloadUrl -> updateUrl = downloadUrl);
+                }
+                @Override
+                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
+                    GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
+                    if (availability.isUserResolvableError(errorCode)) {
+                        availability.showErrorDialogFragment(
+                                BrowserActivity.this, errorCode, 7000,
+                                dialog -> onProviderInstallerNotAvailable());
+                    } else {
+                        onProviderInstallerNotAvailable();
+                    }
+                }
+            });
+        }
+    }
+
     @Override
     public void onRefresh() {
         this.swipeRefreshLayout.setRefreshing(false);
         this.loadAmiiboManager();
         this.onRootFolderChanged(true);
+        checkForUpdates();
     }
 
     private void onStorageEnabled() {

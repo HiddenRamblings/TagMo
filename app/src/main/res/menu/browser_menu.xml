@@ -89,7 +89,7 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/install_update"
-        android:icon="@drawable/ic_github_octocat_24dp"
+        android:icon="@drawable/ic_baseline_browser_updated_24"
         android:title="@string/install"
         app:showAsAction="always"/>
     <item
@@ -141,7 +141,7 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/capture_logcat"
-        android:icon="@drawable/ic_save_24dp"
+        android:icon="@drawable/ic_baseline_bug_report_24"
         android:title="@string/capture_logcat"
         app:showAsAction="ifRoom"/>
 </menu>

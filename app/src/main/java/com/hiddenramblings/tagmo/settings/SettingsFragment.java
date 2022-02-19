@@ -423,8 +423,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 this.keyManager.evaluateKey(strm);
             } catch (Exception e) {
                 Debug.Log(e);
-                requireActivity().runOnUiThread(() ->
-                        showSnackbar(e.getMessage(), Snackbar.LENGTH_SHORT));
+                requireActivity().runOnUiThread(() -> showSnackbar(
+                        e.getMessage(), Snackbar.LENGTH_SHORT));
             }
             if (Thread.currentThread().isInterrupted()) return;
 
@@ -601,8 +601,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 prefs.lastUpdated().put(lastUpdated);
             } catch (Exception e) {
                 Debug.Log(e);
-                requireActivity().runOnUiThread(() ->
-                        showSnackbar(getString(R.string.sync_amiibo_failed), Snackbar.LENGTH_SHORT));
+                requireActivity().runOnUiThread(() -> showSnackbar(
+                        getString(R.string.sync_amiibo_failed), Snackbar.LENGTH_SHORT));
             }
         });
     }

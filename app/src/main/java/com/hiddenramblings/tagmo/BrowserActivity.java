@@ -819,7 +819,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onBottomSheetChanged() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         if (preferences.isShown()) {
-            menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
+            menuSettings.setIcon(R.drawable.ic_settings_24dp);
             preferences.setVisibility(View.GONE);
         } else {
             showSettingsFragment();
@@ -834,6 +834,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 updateUrl = downloadUrl;
                 invalidateOptionsMenu();
             });
+
         } else {
             ProviderInstaller.installIfNeededAsync(this,
                     new ProviderInstaller.ProviderInstallListener() {
@@ -1322,7 +1323,7 @@ public class BrowserActivity extends AppCompatActivity implements
             mainLayout.setPadding(0, 0, 0, 0);
         }
         if (settings.getAmiiboFiles().isEmpty()) {
-            menuSettings.setIcon(R.drawable.ic_settings_white_24dp);
+            menuSettings.setIcon(R.drawable.ic_settings_24dp);
             preferences.setVisibility(View.GONE);
             handler.postDelayed(() -> {
                 fooSnackbar = new IconifiedSnackbar(this, mainLayout)

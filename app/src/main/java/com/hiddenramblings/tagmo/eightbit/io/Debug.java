@@ -165,8 +165,8 @@ public class Debug {
             log.append(line).append(separator);
         }
         reader.close();
-
-        if (!uncaughtExceptions.equals(displayName)) {
+        String logText = log.toString();
+        if (uncaughtExceptions.equals(displayName) || logText.contains("AndroidRuntime")) {
             IssueReporterLauncher.forTarget(username, project)
                     .theme(R.style.AppTheme_NoActionBar)
                     .guestToken(getRepositoryToken())
@@ -174,7 +174,7 @@ public class Debug {
                     .guestAllowUsername(true)
                     .titleTextDefault(context.getString(R.string.git_issue_title, BuildConfig.COMMIT))
                     .minDescriptionLength(50)
-                    .putExtraInfo("logcat", log.toString())
+                    .putExtraInfo("logcat", logText)
                     .homeAsUpEnabled(false).launch(context);
         }
 
@@ -190,14 +190,14 @@ public class Debug {
                 ContentResolver resolver = context.getContentResolver();
                 Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
                 try (OutputStream fos = resolver.openOutputStream(uri)) {
-                    fos.write(log.toString().getBytes());
+                    fos.write(logText.getBytes());
                 }
                 return uri;
             } else {
                 File file = new File(Storage.getDownloadDir(project,
                         "Logcat"), displayName + ".txt");
                 try (FileOutputStream fos = new FileOutputStream(file)) {
-                    fos.write(log.toString().getBytes());
+                    fos.write(logText.getBytes());
                 }
                 try {
                     MediaScannerConnection.scanFile(context, new String[]{
@@ -215,7 +215,7 @@ public class Debug {
             File file = new File(context.getExternalFilesDir(null),
                     displayName + ".txt");
             try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(log.toString().getBytes());
+                fos.write(logText.getBytes());
             }
             return Uri.fromFile(file);
         }

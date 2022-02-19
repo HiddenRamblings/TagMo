@@ -830,14 +830,20 @@ public class BrowserActivity extends AppCompatActivity implements
     private void checkForUpdates() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             updates = new CheckUpdatesTask(this);
-            updates.setUpdateListener(downloadUrl -> updateUrl = downloadUrl);
+            updates.setUpdateListener(downloadUrl -> {
+                updateUrl = downloadUrl;
+                invalidateOptionsMenu();
+            });
         } else {
             ProviderInstaller.installIfNeededAsync(this,
                     new ProviderInstaller.ProviderInstallListener() {
                 @Override
                 public void onProviderInstalled() {
                     updates = new CheckUpdatesTask(BrowserActivity.this);
-                    updates.setUpdateListener(downloadUrl -> updateUrl = downloadUrl);
+                    updates.setUpdateListener(downloadUrl -> {
+                        updateUrl = downloadUrl;
+                        invalidateOptionsMenu();
+                    });
                 }
                 @Override
                 public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {

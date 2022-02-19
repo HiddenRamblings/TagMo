@@ -16,7 +16,6 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.github.InstallReceiver;
 import com.hiddenramblings.tagmo.github.JSONExecutor;
-import com.hiddenramblings.tagmo.settings.Preferences_;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +38,7 @@ public class CheckUpdatesTask {
 
     private static final String TAGMO_GIT_API =
             "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/";
-    private final Preferences_ prefs = TagMo.getPrefs();
+    private CheckUpdateListener listener;
     private final SoftReference<BrowserActivity> activity;
 
     CheckUpdatesTask(BrowserActivity activity) {
@@ -62,7 +61,7 @@ public class CheckUpdatesTask {
             }
         });
         Executors.newSingleThreadExecutor().execute(() -> {
-            boolean isMaster = prefs.settings_stable_channel().get();
+            boolean isMaster = TagMo.getPrefs().settings_stable_channel().get();
             new JSONExecutor(TAGMO_GIT_API + (isMaster
                     ? "master" : "experimental")).setResultListener(result -> {
                 if (null != result) parseUpdateJSON(result, isMaster);
@@ -146,12 +145,12 @@ public class CheckUpdatesTask {
         });
     }
 
-    private void installUpdateCompat(String apkUrl) {
+    void installUpdateCompat(String apkUrl) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (activity.get().getPackageManager().canRequestPackageInstalls()) {
                 installUpdateTask(apkUrl);
             } else {
-                prefs.downloadUrl().put(apkUrl);
+                TagMo.getPrefs().downloadUrl().put(apkUrl);
                 Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
                 intent.setData(Uri.parse(String
                         .format("package:%s", activity.get().getPackageName())));
@@ -172,7 +171,7 @@ public class CheckUpdatesTask {
             JSONObject asset = (JSONObject) assets.get(0);
             downloadUrl = (String) asset.get("browser_download_url");
             if (!isMaster && !BuildConfig.COMMIT.equals(lastCommit))
-                installUpdateCompat(downloadUrl);
+                if (null != listener) listener.onUpdateFound(downloadUrl);
         } catch (JSONException e) {
             Debug.Log(e);
         }
@@ -186,11 +185,19 @@ public class CheckUpdatesTask {
                     String extraCommit = ((String) jsonObject.get("name")).substring(offset);
                     if (!BuildConfig.COMMIT.equals(extraCommit)
                             && !BuildConfig.COMMIT.equals(finalLastCommit))
-                        installUpdateCompat(finalDownloadUrl);
+                        if (null != listener) listener.onUpdateFound(finalDownloadUrl);
                 } catch (JSONException e) {
                     Debug.Log(e);
                 }
             });
         }
+    }
+
+    void setUpdateListener(CheckUpdateListener listener) {
+        this.listener = listener;
+    }
+
+    interface CheckUpdateListener {
+        void onUpdateFound(String downloadUrl);
     }
 }

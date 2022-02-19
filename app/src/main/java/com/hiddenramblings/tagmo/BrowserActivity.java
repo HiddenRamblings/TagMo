@@ -49,6 +49,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.MenuCompat;
 import androidx.documentfile.provider.DocumentFile;
+import androidx.preference.Preference;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -66,7 +67,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
-import com.heinrichreimersoftware.androidissuereporter.IssueReporterLauncher;
 import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
 import com.hiddenramblings.tagmo.adapter.BrowserFoldersAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -183,6 +183,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private boolean ignoreTagTd;
     private BrowserSettings settings;
+    private String updateUrl;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -216,6 +217,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             updates = new CheckUpdatesTask(this);
+            updates.setUpdateListener(downloadUrl -> updateUrl = downloadUrl);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
@@ -224,8 +226,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 @Override
                 public void onProviderInstalled() {
                     updates = new CheckUpdatesTask(BrowserActivity.this);
+                    updates.setUpdateListener(downloadUrl -> updateUrl = downloadUrl);
                 }
-
                 @Override
                 public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
                     GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
@@ -826,6 +828,13 @@ public class BrowserActivity extends AppCompatActivity implements
                 .beginTransaction()
                 .replace(R.id.preferences, settingsFragment)
                 .commit();
+        Preference build = settingsFragment.findPreference(getString(R.string.settings_version));
+        if (null != updateUrl && null != build) {
+            build.setOnPreferenceClickListener(preference -> {
+                updates.installUpdateCompat(updateUrl);
+                return settingsFragment.onPreferenceTreeClick(preference);
+            });
+        }
     }
 
     private void onBottomSheetChanged() {
@@ -869,6 +878,7 @@ public class BrowserActivity extends AppCompatActivity implements
         MenuCompat.setGroupDividerEnabled(menu, true);
 
         MenuItem menuSearch = menu.findItem(R.id.search);
+        MenuItem menuUpdate = menu.findItem(R.id.install_update);
         menuSortId = menu.findItem(R.id.sort_id);
         menuSortName = menu.findItem(R.id.sort_name);
         menuSortGameSeries = menu.findItem(R.id.sort_game_series);
@@ -931,12 +941,16 @@ public class BrowserActivity extends AppCompatActivity implements
             searchView.clearFocus();
         }
 
+        menuUpdate.setVisible(null != updateUrl);
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.sort_id) {
+        if (item.getItemId() == R.id.install_update) {
+            updates.installUpdateCompat(updateUrl);
+        } else if (item.getItemId() == R.id.sort_id) {
             settings.setSort(SORT.ID.getValue());
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.sort_name) {

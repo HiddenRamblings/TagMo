@@ -8,6 +8,11 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="collapseActionView|always"/>
     <item
+        android:id="@+id/install_update"
+        android:icon="@drawable/ic_github_octocat_24dp"
+        android:title="@string/install"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/filter"
         android:icon="@drawable/ic_filter_list_white_24dp"
         android:title="@string/filter"

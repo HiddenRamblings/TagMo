@@ -158,7 +158,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuViewImage;
     private MenuItem menuRecursiveFiles;
     private MenuItem menuShowDownloads;
-    private MenuItem menuEnableScale;
 
     private Snackbar fooSnackbar;
 
@@ -188,7 +187,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((TagMo) getApplication()).setScaledTheme(this, R.style.AppTheme);
+        setTheme(R.style.AppTheme);
         keyManager = new KeyManager(this);
 
         setContentView(R.layout.activity_browser);
@@ -912,7 +911,6 @@ public class BrowserActivity extends AppCompatActivity implements
         menuViewImage = menu.findItem(R.id.view_image);
         menuRecursiveFiles = menu.findItem(R.id.recursive);
         menuShowDownloads = menu.findItem(R.id.show_downloads);
-        menuEnableScale = menu.findItem(R.id.enable_scale);
 
         if (null == this.settings) return false;
 
@@ -920,7 +918,6 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onViewChanged();
         this.onRecursiveFilesChanged();
         this.onShowDownloadsChanged();
-        this.onEnableScaleChanged();
 
         // setOnQueryTextListener will clear this, so make a copy
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -1011,9 +1008,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.show_downloads) {
             this.settings.setShowDownloads(!this.settings.isShowingDownloads());
             this.settings.notifyChanges();
-        } else if (item.getItemId() == R.id.enable_scale) {
-            prefs.enableScaling().put(!menuEnableScale.isChecked());
-            this.recreate();
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
         } else if (item.getItemId() == R.id.foomiibo_editor) {
@@ -1469,13 +1463,6 @@ public class BrowserActivity extends AppCompatActivity implements
             return;
 
         menuShowDownloads.setChecked(settings.isShowingDownloads());
-    }
-
-    private void onEnableScaleChanged() {
-        if (null == menuEnableScale)
-            return;
-
-        menuEnableScale.setChecked(prefs.enableScaling().get());
     }
 
     private void launchEliteActivity(Intent resultData) {

@@ -1,15 +1,11 @@
 package com.hiddenramblings.tagmo;
 
-import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDexApplication;
 
-import com.hiddenramblings.tagmo.eightbit.content.ScaledContext;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.settings.Preferences_;
@@ -74,16 +70,6 @@ public class TagMo extends MultiDexApplication {
     }
 
     public static Context getContext() {
-        if (null != mPrefs && mPrefs.get().enableScaling().get())
-            return ScaledContext.wrap(mContext.get());
-        else
-            return ScaledContext.restore(mContext.get());
-    }
-
-    void setScaledTheme(Context context, int theme) {
-        if (null != mPrefs && mPrefs.get().enableScaling().get())
-            ScaledContext.wrap(context).setTheme(theme);
-        else
-            ScaledContext.restore(context).setTheme(theme);
+        return mContext.get();
     }
 }

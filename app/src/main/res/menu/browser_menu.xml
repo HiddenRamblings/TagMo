@@ -126,11 +126,6 @@
                     android:checkable="true"
                     android:title="@string/show_downloads"
                     app:showAsAction="ifRoom"/>
-                <item
-                    android:id="@+id/enable_scale"
-                    android:checkable="true"
-                    android:title="@string/enable_scale"
-                    app:showAsAction="ifRoom"/>
             </group>
         </menu>
     </item>

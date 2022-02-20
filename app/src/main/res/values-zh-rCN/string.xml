@@ -46,7 +46,6 @@
 
     <string name="recursive_folders">搜索子文件夹</string>
     <string name="show_downloads">显示 \'Download\'</string>
-    <string name="enable_scale">启用缩放</string>
 
     <string name="simple">紧凑列表</string>
     <string name="compact">标准列表</string>

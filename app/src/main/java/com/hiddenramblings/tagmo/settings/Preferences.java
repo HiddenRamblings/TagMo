@@ -68,9 +68,6 @@ public interface Preferences {
     @DefaultBoolean(false)
     boolean preferEmulated();
 
-    @DefaultBoolean(false)
-    boolean enableScaling();
-
     String lastUpdated();
 
     String downloadUrl();
@@ -296,16 +293,6 @@ public interface Preferences {
 //
 //        public void put(boolean value) {
 //            preferences.edit().putBoolean("preferEmulated", value).apply();
-//        }
-//    }
-//
-//    public class enableScaling {
-//        public boolean get() {
-//            return preferences.getBoolean("enableScaling", false);
-//        }
-//
-//        public void put(boolean value) {
-//            preferences.edit().putBoolean("enableScaling", value).apply();
 //        }
 //    }
 //

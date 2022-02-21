@@ -13,9 +13,9 @@ body:
     id: what-happened
     attributes:
       label: Issue Description
-      description: Please describe the issue
-      placeholder: Explain the issue
-      value: "Issue description"
+      description: Please describe the issue in your own words
+      placeholder: Detailed Issue Description
+      value: "Error messages, steps to reproduce, etc."
     validations:
       required: true
   - type: textarea
@@ -46,8 +46,24 @@ body:
   - type: checkboxes
     id: terms
     attributes:
-      label: Wiki Confirmation
-      description: By submitting this issue, you confirm reading the [Wiki](https://github.com/HiddenRamblings/TagMo/wiki)
+      label: Limitations and Requirements
+      description: |
+          Limitations
+
+          Only NTAG215 tags can be used to clone amiibo™. No other type (eg: NTAG216/NTAG213) are supported.
+          You will require the key files used in amiibo™ encryption. Keys cannot be shared for legal reasons.
+          Once you write an NFC card, it is effectively permanent. Rewriting will break amiibo™ recognition.
+          This means that writing to cards can not replace N2 Elite or other amiibo™ emulator devices
+          Only Android phones with NFC capabilities are supported.
+
+          Requirements
+
+          amiibo™ Key Files. (These cannot be shared for legal reasons. See limitations)
+          Blank NTAG 215 tags, Power Tags, or Amiiqo / N2 Elite (Ebay / Aliexpress / Amazon)
+          Android phone with NFC (Tested on various Samsung, Asus, and Nexus devices)
+          Previous amiibo™ backups or amiibo™. (Again, these cannot be shared for legal reasons)
+
+          By submitting this issue, you confirm reading the limitations and requirements
       options:
-        - label: I have read and understood the wiki
+        - label: I have read and understood the limitations and requirements
           required: true

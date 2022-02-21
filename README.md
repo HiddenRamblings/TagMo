@@ -1,5 +1,3 @@
-![TagMo Logo](assets/tagmo_feature.png)
-
 # What is TagMo?
 
 TagMo is an Android app for cloning amiibo™ to NTAG215 NFC tags, Power Tags, and Amiiqo / N2 Elite devices.
@@ -53,4 +51,7 @@ This app is the result of work by many. Thanks go out to (in alphabetical order)
 * NoiRioN - Polish
 * Oosl - Chinese
 
+##
+![TagMo Logo](assets/tagmo_feature.png)
+  
 *TagMo is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Nintendo. No  amiibo™ or digital representations of amiibo™ are included in this project. Binaries created with this project are not intended for sale or distribution. This project is for educational and archival purposes only.*

@@ -1,0 +1,53 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug", "triage"]
+assignees:
+  - AbandonedCart
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide as much detail as possible
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Issue Description
+      description: Please describe the issue
+      placeholder: Explain the issue
+      value: "Issue description"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logcat Output
+      description: |
+          Logcat (with App Working)
+
+          All logs are saved to the TagMo external files directory
+          (sdcard)/Android/files/com.hiddenrablings.tagmo/files
+          Newer versions output log files to the Download folder
+
+          Perform the action causing a crash or issue
+          Click the extended (3 dot) menu in the browser
+          Select the "Capture Logcat" item at the bottom
+          Log automatically saved as "tagmo_logcat.txt"
+
+          Logcat (with Instant Crash)
+
+          All logs are saved to the TagMo external files directory
+          (sdcard)/Android/files/com.hiddenrablings.tagmo/files
+          Newer versions output log files to the Download folder
+
+          Log automatically saved as "crash_logcat.txt"
+
+      render: shell
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Wiki Confirmation
+      description: By submitting this issue, you confirm reading the [Wiki](https://github.com/HiddenRamblings/TagMo/wiki)
+      options:
+        - label: I have read and understood the wiki
+          required: true

@@ -46,7 +46,7 @@
             android:contentDescription="@string/nfcIconDescription"
             android:minWidth="100dip"
             android:minHeight="100dip"
-            app:srcCompat="@drawable/ic_nfc_24dp" />
+            app:srcCompat="@drawable/ic_device_outline_24dp" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgNfcBar"
@@ -58,7 +58,7 @@
             android:minWidth="100dip"
             android:minHeight="100dip"
             android:padding="5dp"
-            app:srcCompat="@drawable/ic_bar_24dp" />
+            app:srcCompat="@drawable/ic_signal_bar_24dp" />
 
         <include
             layout="@layout/bank_picker"

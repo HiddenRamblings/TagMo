@@ -53,5 +53,6 @@ This app is the result of work by many. Thanks go out to (in alphabetical order)
 
 ##
 ![TagMo Logo](assets/tagmo_feature.png)
+
   
 *TagMo is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Nintendo. No  amiibo™ or digital representations of amiibo™ are included in this project. Binaries created with this project are not intended for sale or distribution. This project is for educational and archival purposes only.*

@@ -43,7 +43,7 @@ public class BrowserAmiibosAdapter
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
     private final ArrayList<AmiiboFile> data = new ArrayList<>();
-    private ArrayList<AmiiboFile> filteredData;
+    private ArrayList<AmiiboFile> filteredData = new ArrayList<>();
     private AmiiboFilter filter;
     boolean firstRun = true;
 
@@ -51,7 +51,6 @@ public class BrowserAmiibosAdapter
         this.settings = settings;
         this.listener = listener;
 
-        this.filteredData = this.data;
         this.setHasStableIds(true);
     }
 
@@ -210,11 +209,12 @@ public class BrowserAmiibosAdapter
                     path.toLowerCase().contains(query);
         }
 
+        @SuppressWarnings("unchecked")
         @SuppressLint("NotifyDataSetChanged")
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            if (filteredData.isEmpty() || filteredData != filterResults.values) {
-                //noinspection unchecked
+            if (null == filteredData || filteredData.isEmpty() || !filteredData.containsAll(
+                    (ArrayList<AmiiboFile>) filterResults.values)) {
                 filteredData = (ArrayList<AmiiboFile>) filterResults.values;
                 if (!filteredData.isEmpty())
                     Collections.sort(filteredData, new AmiiboFileComparator(settings));

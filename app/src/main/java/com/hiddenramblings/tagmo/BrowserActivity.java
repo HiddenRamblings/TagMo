@@ -278,13 +278,11 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         });
 
-        View decorView = getWindow().getDecorView();
-        BlurViewFacade blurView = amiiboContainer.setupWith(
-                decorView.findViewById(R.id.coordinator))
-                .setFrameClearDrawable(decorView.getBackground())
-                .setBlurRadius(2f)
-                .setBlurAutoUpdate(true)
-                .setHasFixedTransformationMatrix(true);
+        CoordinatorLayout coordinator = findViewById(R.id.coordinator);
+        BlurViewFacade blurView = amiiboContainer.setupWith(coordinator)
+                .setFrameClearDrawable(coordinator.getBackground())
+                .setBlurRadius(2f).setBlurAutoUpdate(true)
+                .setHasFixedTransformationMatrix(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
             blurView.setBlurAlgorithm(new RenderScriptBlur(this));
         else

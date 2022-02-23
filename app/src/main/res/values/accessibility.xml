@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="imageview_amiibo">amiibo&#8482; Image</string>
+    <string name="imageview_icon">TagMo Image</string>
+    <string name="imageview_arrow">Arrow Icon</string>
+    <string name="imageview_folder">Folder Icon</string>
+    <string name="imageview_toggle">Toggle Icon</string>
+    <string name="nfcIconDescription">NFC Icon</string>
+    <string name="movingBarDescription">Moving bar indicating the scanning process</string>
+</resources>

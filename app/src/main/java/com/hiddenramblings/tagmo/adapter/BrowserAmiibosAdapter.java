@@ -213,8 +213,8 @@ public class BrowserAmiibosAdapter
         @SuppressLint("NotifyDataSetChanged")
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            if (null == filteredData || filteredData.isEmpty() || !filteredData.containsAll(
-                    (ArrayList<AmiiboFile>) filterResults.values)) {
+            if (null == filteredData || filteredData.isEmpty()
+                    || filteredData != filterResults.values) {
                 filteredData = (ArrayList<AmiiboFile>) filterResults.values;
                 if (!filteredData.isEmpty())
                     Collections.sort(filteredData, new AmiiboFileComparator(settings));

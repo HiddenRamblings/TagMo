@@ -21,6 +21,7 @@ import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -198,11 +199,12 @@ public class FoomiiboAdapter
             return filterResults;
         }
 
+        @SuppressWarnings("unchecked")
         @SuppressLint("NotifyDataSetChanged")
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            if (filteredData.isEmpty() || filteredData != filterResults.values) {
-                //noinspection unchecked
+            if (null == filteredData || filteredData.isEmpty()
+                    || filteredData != filterResults.values) {
                 filteredData = (ArrayList<Amiibo>) filterResults.values;
                 Collections.sort(filteredData, new AmiiboComparator(settings));
                 if (null != missingIds && !missingIds.isEmpty()) {

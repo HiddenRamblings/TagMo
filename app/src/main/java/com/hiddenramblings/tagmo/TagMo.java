@@ -1,10 +1,10 @@
 package com.hiddenramblings.tagmo;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.multidex.MultiDexApplication;
 
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
@@ -22,7 +22,7 @@ import java.util.Locale;
 import java.util.concurrent.Executors;
 
 @EApplication
-public class TagMo extends MultiDexApplication {
+public class TagMo extends Application {
 
     @Pref
     Preferences_ prefs;

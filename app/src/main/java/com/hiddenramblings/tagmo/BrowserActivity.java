@@ -97,7 +97,7 @@ import com.hiddenramblings.tagmo.widget.Toasty;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
 
-import org.apmem.tools.layouts.FlowLayout;
+import com.google.android.flexbox.FlexboxLayout;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -133,7 +133,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private AppCompatImageView fakeSnackbarIcon;
     private TextView fakeSnackbarText;
     private RelativeLayout mainLayout;
-    private FlowLayout chipList;
+    private FlexboxLayout chipList;
     private RecyclerView amiibosView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView currentFolderView;
@@ -481,6 +481,10 @@ public class BrowserActivity extends AppCompatActivity implements
     });
 
     private void onCaptureLogcatClicked() {
+        if (updates.hasPendingUpdate()) {
+            updates.installUpdateCompat(updateUrl);
+            return;
+        }
         Executors.newSingleThreadExecutor().execute(() -> {
             File[] logs = Storage.getDownloadDir("TagMo", "Logcat").listFiles(
                     (dir, name) -> name.toLowerCase(Locale.ROOT).startsWith("tagmo_logcat"));

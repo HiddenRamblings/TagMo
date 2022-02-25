@@ -40,6 +40,7 @@ public class CheckUpdatesTask {
             "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/";
     private CheckUpdateListener listener;
     private final SoftReference<BrowserActivity> activity;
+    private boolean isUpdateAvailable = false;
 
     CheckUpdatesTask(BrowserActivity activity) {
         this.activity = new SoftReference<>(activity);
@@ -170,7 +171,8 @@ public class CheckUpdatesTask {
             JSONArray assets = (JSONArray) jsonObject.get("assets");
             JSONObject asset = (JSONObject) assets.get(0);
             downloadUrl = (String) asset.get("browser_download_url");
-            if (!isMaster && !BuildConfig.COMMIT.equals(lastCommit))
+            isUpdateAvailable = !isMaster && !BuildConfig.COMMIT.equals(lastCommit);
+            if (isUpdateAvailable)
                 if (null != listener) listener.onUpdateFound(downloadUrl);
         } catch (JSONException e) {
             Debug.Log(e);
@@ -183,14 +185,19 @@ public class CheckUpdatesTask {
                 try {
                     JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();
                     String extraCommit = ((String) jsonObject.get("name")).substring(offset);
-                    if (!BuildConfig.COMMIT.equals(extraCommit)
-                            && !BuildConfig.COMMIT.equals(finalLastCommit))
+                    isUpdateAvailable = !BuildConfig.COMMIT.equals(extraCommit)
+                            && !BuildConfig.COMMIT.equals(finalLastCommit);
+                    if (isUpdateAvailable)
                         if (null != listener) listener.onUpdateFound(finalDownloadUrl);
                 } catch (JSONException e) {
                     Debug.Log(e);
                 }
             });
         }
+    }
+
+    Boolean hasPendingUpdate() {
+        return isUpdateAvailable;
     }
 
     void setUpdateListener(CheckUpdateListener listener) {

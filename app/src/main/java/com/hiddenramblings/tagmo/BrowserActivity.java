@@ -280,7 +280,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
         BlurViewFacade blurView = amiiboContainer.setupWith(coordinator)
-                .setFrameClearDrawable(coordinator.getBackground())
+                .setFrameClearDrawable(getWindow().getDecorView().getBackground())
                 .setBlurRadius(2f).setBlurAutoUpdate(true)
                 .setHasFixedTransformationMatrix(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)

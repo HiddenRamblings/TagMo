@@ -9,7 +9,6 @@ android {
         targetSdkVersion 31
         versionCode 12
         versionName "2.7.9"
-        multiDexEnabled true
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -31,7 +30,7 @@ android {
     buildTypes {
         release {
             getIsDefault().set(true)
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -96,8 +95,7 @@ dependencies {
     implementation 'org.apmem.tools:layouts:1.10@aar'
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
     implementation 'io.github.ShawnLin013:number-picker:2.4.13'
-    implementation 'com.github.SamSprung:android-issue-reporter:d8de5a7'
+    implementation 'com.github.SamSprung:android-issue-reporter:24b48a8'
     // Required for Lollipop Amiibo API download compatibility
     api 'com.google.android.gms:play-services-safetynet:18.0.1'
-    implementation "androidx.multidex:multidex:2.0.1"
 }

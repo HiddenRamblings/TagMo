@@ -1,7 +1,7 @@
 name: Bug Report
 description: File a bug report
 title: "[Bug]: "
-labels: ["bug", "triage"]
+labels: ["logcat"]
 assignees:
   - AbandonedCart
 body:
@@ -14,7 +14,7 @@ body:
     attributes:
       label: Issue Description
       description: Please describe the issue in your own words
-      placeholder: Detailed Issue Description
+      placeholder: Detailed Description
       value: "Error messages, steps to reproduce, etc."
     validations:
       required: true
@@ -43,6 +43,8 @@ body:
           Log automatically saved as "crash_logcat.txt"
 
       render: shell
+    validations:
+      required: true
   - type: checkboxes
     id: terms
     attributes:

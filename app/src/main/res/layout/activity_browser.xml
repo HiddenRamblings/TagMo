@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <org.apmem.tools.layouts.FlowLayout
+        <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/chip_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

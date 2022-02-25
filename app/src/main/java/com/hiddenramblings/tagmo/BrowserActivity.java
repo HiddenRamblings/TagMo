@@ -838,27 +838,30 @@ public class BrowserActivity extends AppCompatActivity implements
             });
 
         } else {
-            ProviderInstaller.installIfNeededAsync(this,
-                    new ProviderInstaller.ProviderInstallListener() {
-                @Override
-                public void onProviderInstalled() {
-                    updates = new CheckUpdatesTask(BrowserActivity.this);
-                    updates.setUpdateListener(downloadUrl -> {
-                        updateUrl = downloadUrl;
-                        invalidateOptionsMenu();
-                    });
-                }
-                @Override
-                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                    GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
-                    if (availability.isUserResolvableError(errorCode)) {
-                        availability.showErrorDialogFragment(
-                                BrowserActivity.this, errorCode, 7000,
-                                dialog -> onProviderInstallerNotAvailable());
-                    } else {
-                        onProviderInstallerNotAvailable();
+            this.runOnUiThread(() -> {
+                ProviderInstaller.installIfNeededAsync(this,
+                        new ProviderInstaller.ProviderInstallListener() {
+                    @Override
+                    public void onProviderInstalled() {
+                        updates = new CheckUpdatesTask(BrowserActivity.this);
+                        updates.setUpdateListener(downloadUrl -> {
+                            updateUrl = downloadUrl;
+                            invalidateOptionsMenu();
+                        });
                     }
-                }
+
+                    @Override
+                    public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
+                        GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
+                        if (availability.isUserResolvableError(errorCode)) {
+                            availability.showErrorDialogFragment(
+                                    BrowserActivity.this, errorCode, 7000,
+                                    dialog -> onProviderInstallerNotAvailable());
+                        } else {
+                            onProviderInstallerNotAvailable();
+                        }
+                    }
+                });
             });
         }
     }

@@ -1093,10 +1093,6 @@ public class BrowserActivity extends AppCompatActivity implements
         return true;
     }
 
-
-
-
-
     public void loadPTagKeyManager() {
         if (prefs.enable_power_tag_support().get()) {
             Executors.newSingleThreadExecutor().execute(() -> {

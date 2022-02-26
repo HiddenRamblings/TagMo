@@ -304,8 +304,8 @@
                     <TextView
                         style="@style/TagEditor.InputHint"
                         android:gravity="end"
-                        android:layout_marginRight="2dp"
                         android:layout_marginEnd="2dp"
+                        android:layout_marginRight="2dp"
                         android:text="@string/mod_serial"/>
 
                     <EditText

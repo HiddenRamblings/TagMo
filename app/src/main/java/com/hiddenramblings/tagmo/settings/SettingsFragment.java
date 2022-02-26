@@ -463,7 +463,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         keySummary.append("\n");
         keySummary.append(fixedBuilder);
 
-        importKeys.setSummary(keySummary);
+        requireActivity().runOnUiThread(() -> importKeys.setSummary(keySummary));
     }
 
     private void loadAmiiboManager() {

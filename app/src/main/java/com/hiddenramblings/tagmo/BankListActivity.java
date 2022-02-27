@@ -245,7 +245,7 @@ public class BankListActivity extends AppCompatActivity implements
                 bankOptionsMenu.setVisibility(View.VISIBLE);
                 amiiboCard.setVisibility(View.GONE);
             }
-            amiibosView.invalidate();
+            amiibosView.requestLayout();
         });
 
         writeListAdapter = new WriteBanksAdapter(settings, this::writeAmiiboCollection);

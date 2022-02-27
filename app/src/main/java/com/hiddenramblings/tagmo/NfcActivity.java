@@ -591,7 +591,7 @@ public class NfcActivity extends AppCompatActivity {
     }
 
     private void stopNfcMonitor() {
-        if (null == nfcAdapter) {
+        if (null == nfcAdapter || !nfcAdapter.isEnabled()) {
             return;
         }
         nfcAdapter.disableForegroundDispatch(this);

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -1903,11 +1904,16 @@ public class BrowserActivity extends AppCompatActivity implements
         if (Environment.isExternalStorageManager()) {
             this.onStorageEnabled();
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
-                intent.putExtra("android.content.extra.FANCY", true);
-                onDocumentTree.launch(NFCIntent.getIntent(intent));
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                    intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+                    intent.putExtra("android.content.extra.FANCY", true);
+                    onDocumentTree.launch(NFCIntent.getIntent(intent));
+                }
+            }  catch (ActivityNotFoundException anfex) {
+                new Toasty(this).Long(R.string.storage_unavailable);
+                finish();
             }
         }
     });

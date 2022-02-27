@@ -308,7 +308,7 @@ public class BankListActivity extends AppCompatActivity implements
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         if (null == amiiboManager) {
             try {
-                amiiboManager = AmiiboManager.getAmiiboManager();
+                amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
                 amiiboManager = null;

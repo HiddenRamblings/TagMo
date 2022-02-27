@@ -150,6 +150,7 @@
     <string name="erase_collection">Erase Collection</string>
 
     <string name="permission_required">Storage permission required!</string>
+    <string name="storage_unavailable">Device storage inaccessible!</string>
     <string name="allow">Allow</string>
 
     <string name="crypto_keys">Crypto Keys</string>

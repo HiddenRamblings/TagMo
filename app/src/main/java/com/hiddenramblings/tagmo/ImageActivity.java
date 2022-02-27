@@ -97,7 +97,7 @@ public class ImageActivity extends AppCompatActivity {
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager = null;
             try {
-                amiiboManager = AmiiboManager.getAmiiboManager();
+                amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
             }

@@ -470,7 +470,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {
-                amiiboManager = AmiiboManager.getAmiiboManager();
+                amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
                 new Toasty(requireActivity()).Short(R.string.amiibo_failure_load);
@@ -500,7 +500,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             if (Thread.currentThread().isInterrupted()) return;
 
             try {
-                AmiiboManager.saveDatabase(amiiboManager);
+                AmiiboManager.saveDatabase(amiiboManager, requireContext().getApplicationContext());
             } catch (JSONException | IOException e) {
                 Debug.Log(e);
                 new Toasty(requireActivity()).Short(R.string.amiibo_failure_update);
@@ -519,7 +519,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             AmiiboManager amiiboManager = null;
             try {
-                amiiboManager = AmiiboManager.getDefaultAmiiboManager();
+                amiiboManager = AmiiboManager.getDefaultAmiiboManager(requireContext().getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
                 new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse_default);
@@ -534,7 +534,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void setAmiiboManager(AmiiboManager amiiboManager) {
         this.amiiboManager = amiiboManager;
-        new Thread(() -> GlideApp.get(TagMo.getContext()).clearDiskCache());
+        new Thread(() -> GlideApp.get(requireContext().getApplicationContext()).clearDiskCache());
         requireActivity().runOnUiThread(() -> {
             GlideApp.get(requireContext()).clearMemory();
             updateAmiiboStats();
@@ -591,7 +591,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     AmiiboManager amiiboManager = AmiiboManager.parseAmiiboAPI(new JSONObject(json));
                     if (Thread.currentThread().isInterrupted()) return;
 
-                    AmiiboManager.saveDatabase(amiiboManager);
+                    AmiiboManager.saveDatabase(amiiboManager, requireContext().getApplicationContext());
                     setAmiiboManager(amiiboManager);
                     requireActivity().runOnUiThread(() -> showSnackbar(
                             getString(R.string.sync_amiibo_complete), Snackbar.LENGTH_SHORT));

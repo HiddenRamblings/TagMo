@@ -6,7 +6,6 @@ import android.net.Uri;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
@@ -216,26 +215,25 @@ public class AmiiboManager {
         JSONObject amiiboSeriesJSON = new JSONObject();
         for (Map.Entry<Long, AmiiboSeries> entry : this.amiiboSeries.entrySet()) {
             AmiiboSeries amiiboSeries = entry.getValue();
-            amiiboSeriesJSON.put(String.format("0x%02X", amiiboSeries.id >> AmiiboSeries.BITSHIFT), amiiboSeries.name);
+            amiiboSeriesJSON.put(String.format("0x%02X",
+                    amiiboSeries.id >> AmiiboSeries.BITSHIFT), amiiboSeries.name);
         }
         outputJSON.put("amiibo_series", amiiboSeriesJSON);
 
         return outputJSON;
     }
 
-    public static AmiiboManager getDefaultAmiiboManager()
+    public static AmiiboManager getDefaultAmiiboManager(Context context)
             throws IOException, JSONException, ParseException {
-        return AmiiboManager.parse(TagMo.getContext().getResources().openRawResource(R.raw.amiibo));
+        return AmiiboManager.parse(context.getResources().openRawResource(R.raw.amiibo));
     }
 
-    public static AmiiboManager getAmiiboManager()
+    public static AmiiboManager getAmiiboManager(Context context)
             throws IOException, JSONException, ParseException {
         AmiiboManager amiiboManager;
-        if (new File(TagMo.getContext().getExternalFilesDir(null),
-                AMIIBO_DATABASE_FILE).exists()) {
+        if (new File(context.getExternalFilesDir(null), AMIIBO_DATABASE_FILE).exists()) {
             try {
-                amiiboManager = AmiiboManager.parse(
-                        TagMo.getContext().openFileInput(AMIIBO_DATABASE_FILE));
+                amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
             } catch (IOException | JSONException | ParseException e) {
                 amiiboManager = null;
                 Debug.Log(R.string.error_amiibo_parse, e);
@@ -244,7 +242,7 @@ public class AmiiboManager {
             amiiboManager = null;
         }
         if (null == amiiboManager) {
-            amiiboManager = getDefaultAmiiboManager();
+            amiiboManager = getDefaultAmiiboManager(context);
         }
 
         return amiiboManager;
@@ -268,11 +266,11 @@ public class AmiiboManager {
         }
     }
 
-    public static void saveDatabase(AmiiboManager amiiboManager) throws IOException, JSONException {
+    public static void saveDatabase(AmiiboManager amiiboManager, Context context)
+            throws IOException, JSONException {
         OutputStream outputStream = null;
         try {
-            outputStream = TagMo.getContext().openFileOutput(
-                    AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
+            outputStream = context.openFileOutput(AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE);
             saveDatabase(amiiboManager, outputStream);
         } finally {
             if (null != outputStream) {

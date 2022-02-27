@@ -200,7 +200,7 @@ public class WebActivity extends AppCompatActivity {
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         try {
-            AmiiboManager amiiboManager = AmiiboManager.getAmiiboManager();
+            AmiiboManager amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             input.setText(TagUtils.decipherFilename(amiiboManager, tagData));
         } catch (IOException | JSONException | ParseException e) {
             Debug.Log(e);

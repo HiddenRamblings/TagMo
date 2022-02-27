@@ -64,7 +64,7 @@ public class FoomiiboActivity extends AppCompatActivity implements
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {
-                amiiboManager = AmiiboManager.getAmiiboManager();
+                amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
                 amiiboManager = null;

@@ -228,7 +228,7 @@ public class TagDataActivity extends AppCompatActivity {
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager = null;
             try {
-                amiiboManager = AmiiboManager.getAmiiboManager();
+                amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
                 new Toasty(this).Short(getString(R.string.amiibo_info_parse_error));

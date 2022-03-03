@@ -21,7 +21,6 @@ import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
-import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -203,22 +202,21 @@ public class FoomiiboAdapter
         @SuppressLint("NotifyDataSetChanged")
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            if (null == filteredData || filteredData.isEmpty()
-                    || filteredData != filterResults.values) {
-                filteredData = (ArrayList<Amiibo>) filterResults.values;
+            if (null != filteredData && filteredData == filterResults.values) return;
+            filteredData = (ArrayList<Amiibo>) filterResults.values;
+            if (null != filteredData && !filteredData.isEmpty())
                 Collections.sort(filteredData, new AmiiboComparator(settings));
-                if (null != missingIds && !missingIds.isEmpty()) {
-                    ArrayList<Amiibo> missingFiles = new ArrayList<>();
-                    for (Amiibo amiibo : filteredData) {
-                        if (missingIds.contains(amiibo.id)) {
-                            missingFiles.add(amiibo);
-                        }
+            if (null != missingIds && !missingIds.isEmpty()) {
+                ArrayList<Amiibo> missingFiles = new ArrayList<>();
+                for (Amiibo amiibo : filteredData) {
+                    if (missingIds.contains(amiibo.id)) {
+                        missingFiles.add(amiibo);
                     }
-                    filteredData.removeAll(missingFiles);
-                    filteredData.addAll(0, missingFiles);
                 }
-                notifyDataSetChanged();
+                filteredData.removeAll(missingFiles);
+                filteredData.addAll(0, missingFiles);
             }
+            notifyDataSetChanged();
         }
     }
 

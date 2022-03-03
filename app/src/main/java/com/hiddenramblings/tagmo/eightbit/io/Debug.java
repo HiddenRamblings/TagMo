@@ -118,7 +118,7 @@ public class Debug {
     }
 
     private static String getRepositoryToken() {
-        String hex = "6768705f7666375663347a52574b396165634c33703431524c596d39716950617766323150626c47";
+        String hex = "6768705f74314953736669344f4c4158315373657167636a4f5a42783641736b6f33314f7650697a";
         StringBuilder output = new StringBuilder();
         for (int i = 0; i < hex.length(); i+=2) {
             String str = hex.substring(i, i+2);
@@ -173,11 +173,10 @@ public class Debug {
                     .guestEmailRequired(true)
                     .guestAllowUsername(true)
                     .titleTextDefault(context.getString(R.string.git_issue_title, BuildConfig.COMMIT))
-                    .minDescriptionLength(50)
+                    .minDescriptionLength(0)
                     .putExtraInfo("logcat", logText)
                     .homeAsUpEnabled(false).launch(context);
         }
-
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 ContentValues contentValues = new ContentValues();

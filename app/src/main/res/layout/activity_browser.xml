@@ -80,7 +80,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:blurOverlayColor="@color/bottomSheetTint"
-        android:padding="16dp"
+        android:paddingTop="16dp"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:paddingBottom="92dp"
         android:visibility="gone">
 
         <include

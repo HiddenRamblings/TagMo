@@ -511,7 +511,7 @@ public class NfcActivity extends AppCompatActivity {
             error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
             if (null != error && prefs.enable_elite_support().get()) {
                 if (e instanceof android.nfc.TagLostException) {
-                    txtMessage.setText(R.string.speed_scan);
+                    runOnUiThread(() -> txtMessage.setText(R.string.speed_scan));
                     try {
                         mifare.close();
                     } catch (IOException ignored) { }

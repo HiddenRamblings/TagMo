@@ -79,15 +79,15 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    api 'com.google.android.material:material:1.5.0'
-    api 'androidx.appcompat:appcompat:1.4.1'
-    api 'androidx.recyclerview:recyclerview:1.2.1'
-    api 'androidx.webkit:webkit:1.4.0'
-    api 'androidx.preference:preference:1.2.0'
-    api 'androidx.cardview:cardview:1.0.0'
-    api 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    api "androidx.browser:browser:1.4.0"
-    api "org.androidannotations:androidannotations-api:4.6.0"
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.webkit:webkit:1.4.0'
+    implementation 'androidx.preference:preference:1.2.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation "androidx.browser:browser:1.4.0"
+    implementation "org.androidannotations:androidannotations-api:4.6.0"
     annotationProcessor "org.androidannotations:androidannotations:4.6.0"
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
@@ -97,5 +97,5 @@ dependencies {
     implementation 'io.github.ShawnLin013:number-picker:2.4.13'
     implementation 'com.github.SamSprung:android-issue-reporter:24b48a8'
     // Required for Lollipop Amiibo API download compatibility
-    api 'com.google.android.gms:play-services-safetynet:18.0.1'
+    implementation 'com.google.android.gms:play-services-safetynet:18.0.1'
 }

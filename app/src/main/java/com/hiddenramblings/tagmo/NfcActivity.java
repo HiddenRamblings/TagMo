@@ -560,7 +560,8 @@ public class NfcActivity extends AppCompatActivity {
     }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> startNfcMonitor()
+            new ActivityResultContracts.StartActivityForResult(), result ->
+            runOnUiThread(() -> startNfcMonitor())
     );
 
     void startNfcMonitor() {
@@ -625,8 +626,8 @@ public class NfcActivity extends AppCompatActivity {
                 if (!nfcAdapter.isEnabled()) {
                     showError(getString(R.string.nfc_disabled));
                 } else {
-                    listenForTags();
                     clearError();
+                    listenForTags();
                 }
             }
         }

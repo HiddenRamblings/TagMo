@@ -116,7 +116,7 @@ public class BluetoothLeService extends Service {
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
             final StringBuilder stringBuilder = new StringBuilder(data.length);
-            for(byte byteChar : data)
+            for (byte byteChar : data)
                 stringBuilder.append(String.format("%02X ", byteChar));
             intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
         }
@@ -286,19 +286,21 @@ public class BluetoothLeService extends Service {
             return;
         }
 
-
-
+        BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskRX);
         /*check if the service is available on the device*/
-        BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString("00002b10-0000-1000-8000-00805f9b34fb"));
-        if(mCustomService == null){
+        // BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString("00002b10-0000-1000-8000-00805f9b34fb"));
+        if (mCustomService == null) {
             Log.w(TAG, "Custom BLE Service not found on read");
             return;
         }
         /*get the read characteristic from the service*/
-        BluetoothGattCharacteristic mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString("00002b10-0000-1000-8000-00805f9b34fb"));
-        if(mBluetoothGatt.readCharacteristic(mReadCharacteristic) == false){
+        BluetoothGattCharacteristic mReadCharacteristic = mCustomService.getCharacteristic(FlaskRX);
+        // BluetoothGattCharacteristic mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString("00002b10-0000-1000-8000-00805f9b34fb"));
+        if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
             Log.w(TAG, "Failed to read characteristic");
         }
+
+
     }
 
     public void writeCustomCharacteristic(int value) {
@@ -307,16 +309,18 @@ public class BluetoothLeService extends Service {
             return;
         }
         /*check if the service is available on the device*/
-        BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString("00002b11-0000-1000-8000-00805f9b34fb"));
+        BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskTX);
+        // BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString("00002b11-0000-1000-8000-00805f9b34fb"));
         if(mCustomService == null){
             Log.w(TAG, "Custom BLE Service not found on write");
             return;
         }
         /*get the read characteristic from the service*/
-        BluetoothGattCharacteristic mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString("00002b11-0000-1000-8000-00805f9b34fb"));
+        BluetoothGattCharacteristic mWriteCharacteristic = mCustomService.getCharacteristic(FlaskTX);
+        // BluetoothGattCharacteristic mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString("00002b11-0000-1000-8000-00805f9b34fb"));
 
         mWriteCharacteristic.setValue(value,android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8,0);
-        if(mBluetoothGatt.writeCharacteristic(mWriteCharacteristic) == false){
+        if (!mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             Log.w(TAG, "Failed to write characteristic");
         }
     }

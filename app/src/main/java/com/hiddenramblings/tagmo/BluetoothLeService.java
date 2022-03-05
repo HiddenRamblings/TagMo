@@ -88,18 +88,17 @@ public class BluetoothLeService extends Service {
         }
 
         @Override
-        public void onCharacteristicRead(BluetoothGatt gatt,
-                                         BluetoothGattCharacteristic characteristic,
-                                         int status) {
+        public void onCharacteristicRead(
+                BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+                broadcastUpdate(characteristic);
             }
         }
 
         @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt,
-                                            BluetoothGattCharacteristic characteristic) {
-            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+        public void onCharacteristicChanged(
+                BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            broadcastUpdate(characteristic);
         }
     };
 
@@ -108,9 +107,8 @@ public class BluetoothLeService extends Service {
         sendBroadcast(intent);
     }
 
-    private void broadcastUpdate(final String action,
-                                 final BluetoothGattCharacteristic characteristic) {
-        final Intent intent = new Intent(action);
+    private void broadcastUpdate(final BluetoothGattCharacteristic characteristic) {
+        final Intent intent = new Intent(BluetoothLeService.ACTION_DATA_AVAILABLE);
 
         // For all other profiles, writes the data formatted in HEX.
         final byte[] data = characteristic.getValue();
@@ -259,8 +257,8 @@ public class BluetoothLeService extends Service {
      * @param characteristic Characteristic to act on.
      * @param enabled If true, enable notification.  False otherwise.
      */
-    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled) {
+    public void setCharacteristicNotification(
+            BluetoothGattCharacteristic characteristic, boolean enabled) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
@@ -311,7 +309,7 @@ public class BluetoothLeService extends Service {
         /*check if the service is available on the device*/
         BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskTX);
         // BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString("00002b11-0000-1000-8000-00805f9b34fb"));
-        if(mCustomService == null){
+        if (mCustomService == null) {
             Log.w(TAG, "Custom BLE Service not found on write");
             return;
         }

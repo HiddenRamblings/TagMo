@@ -423,8 +423,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 this.keyManager.evaluateKey(strm);
             } catch (Exception e) {
                 Debug.Log(e);
-                requireActivity().runOnUiThread(() -> showSnackbar(
-                        e.getMessage(), Snackbar.LENGTH_SHORT));
+                requireActivity().runOnUiThread(() ->
+                        new IconifiedSnackbar(requireActivity()).buildSnackbar(
+                                e.getMessage(), Snackbar.LENGTH_SHORT).show());
             }
             if (Thread.currentThread().isInterrupted()) return;
 
@@ -509,7 +510,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             setAmiiboManager(amiiboManager);
             requireActivity().runOnUiThread(() -> showSnackbar(
-                    getString(R.string.amiibo_info_updated), Snackbar.LENGTH_SHORT));
+                    R.string.amiibo_info_updated, Snackbar.LENGTH_SHORT));
         });
     }
 
@@ -528,7 +529,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             setAmiiboManager(amiiboManager);
             requireActivity().runOnUiThread(() -> showSnackbar(
-                    getString(R.string.removing_amiibo_info), Snackbar.LENGTH_SHORT));
+                    R.string.removing_amiibo_info, Snackbar.LENGTH_SHORT));
         });
     }
 
@@ -556,7 +557,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void downloadAmiiboAPIData(String lastUpdated) {
-        showSnackbar(getString(R.string.sync_amiibo_process), Snackbar.LENGTH_INDEFINITE);
+        showSnackbar(R.string.sync_amiibo_process, Snackbar.LENGTH_INDEFINITE);
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 URL url = new URL("https://www.amiiboapi.com/api/amiibo/");
@@ -594,7 +595,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     AmiiboManager.saveDatabase(amiiboManager, requireContext().getApplicationContext());
                     setAmiiboManager(amiiboManager);
                     requireActivity().runOnUiThread(() -> showSnackbar(
-                            getString(R.string.sync_amiibo_complete), Snackbar.LENGTH_SHORT));
+                            R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT));
                 } else {
                     throw new Exception(String.valueOf(statusCode));
                 }
@@ -602,7 +603,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             } catch (Exception e) {
                 Debug.Log(e);
                 requireActivity().runOnUiThread(() -> showSnackbar(
-                        getString(R.string.sync_amiibo_failed), Snackbar.LENGTH_SHORT));
+                        R.string.sync_amiibo_failed, Snackbar.LENGTH_SHORT));
             }
         });
     }
@@ -664,8 +665,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    private void showSnackbar(String msg, int length) {
-        new IconifiedSnackbar(requireActivity()).buildSnackbar(msg, length, null).show();
+    private void showSnackbar(int msgRes, int length) {
+        new IconifiedSnackbar(requireActivity()).buildSnackbar(msgRes, length).show();
     }
 
     private void parseUpdateJSON(String result, boolean isMenuClicked) {
@@ -676,7 +677,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 downloadAmiiboAPIData(lastUpdated);
             } else if (!prefs.lastUpdated().get().equals(lastUpdated)) {
                 new IconifiedSnackbar(requireActivity()).buildSnackbar(
-                        getString(R.string.update_amiibo_api), Snackbar.LENGTH_LONG, null)
+                        R.string.update_amiibo_api, Snackbar.LENGTH_LONG)
                         .setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated)).show();
             }
         } catch (Exception e) {

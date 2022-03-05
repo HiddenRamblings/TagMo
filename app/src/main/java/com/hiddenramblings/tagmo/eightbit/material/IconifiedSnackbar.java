@@ -80,7 +80,7 @@ public class IconifiedSnackbar {
         this(activity, null);
     }
 
-    public Snackbar buildSnackbar(String msg, int length, View anchor) {
+    public Snackbar buildSnackbar(String msg, int drawable, int length, View anchor) {
         snackbar = Snackbar.make(mActivity.get()
                 .findViewById(R.id.coordinator), msg, length);
         View snackbarLayout = snackbar.getView();
@@ -88,10 +88,10 @@ public class IconifiedSnackbar {
                 com.google.android.material.R.id.snackbar_text);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_stat_notice, 0, 0, 0);
+                    drawable, 0, 0, 0);
         } else {
             textView.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_stat_notice, 0, 0, 0);
+                    drawable, 0, 0, 0);
         }
         textView.setGravity(Gravity.CENTER_VERTICAL);
         textView.setCompoundDrawablePadding(textView.getResources()
@@ -104,12 +104,21 @@ public class IconifiedSnackbar {
         return snackbar;
     }
 
-    public Snackbar buildSnackbar(int msgRes, int length, View anchor) {
-        return buildSnackbar(mActivity.get().getString(msgRes), length, anchor);
+    public Snackbar buildSnackbar(String msg, int drawable, int length) {
+        return buildSnackbar(msg, drawable, length, null);
     }
 
-    public Snackbar buildTickerBar(String msg) {
-        snackbar = buildSnackbar(msg, Snackbar.LENGTH_INDEFINITE, null)
+    public Snackbar buildSnackbar(String msg, int length) {
+        return buildSnackbar(msg, R.drawable.ic_stat_notice, length, null);
+    }
+
+    public Snackbar buildSnackbar(int msgRes, int length) {
+        return buildSnackbar(mActivity.get().getString(msgRes),
+                R.drawable.ic_stat_notice, length, null);
+    }
+
+    public Snackbar buildTickerBar(String msg, int drawable, int length) {
+        snackbar = buildSnackbar(msg, drawable, length, null)
                 .addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
@@ -140,20 +149,8 @@ public class IconifiedSnackbar {
         return snackbar;
     }
 
-    public Snackbar setIcon(int iconRes) {
-        View snackbarLayout = snackbar.getView();
-        TextView textView = snackbarLayout.findViewById(
-                com.google.android.material.R.id.snackbar_text);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    iconRes, 0, 0, 0);
-        } else {
-            textView.setCompoundDrawablesWithIntrinsicBounds(
-                    iconRes, 0, 0, 0);
-        }
-        textView.setGravity(Gravity.CENTER_VERTICAL);
-        textView.setCompoundDrawablePadding(textView.getResources()
-                .getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
-        return snackbar;
+    public Snackbar buildTickerBar(int msgRes) {
+        return buildTickerBar(mActivity.get().getString(msgRes),
+                R.drawable.ic_stat_notice, Snackbar.LENGTH_INDEFINITE);
     }
 }

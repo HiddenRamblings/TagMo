@@ -37,6 +37,20 @@ public class FlaskActivity extends AppCompatActivity {
             } else {
                 onRequestBluetooth.launch(Manifest.permission.BLUETOOTH_CONNECT);
             }
+        } else  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED) {
+                BluetoothAdapter bluetoothAdapter = ((BluetoothManager) getSystemService
+                        (Context.BLUETOOTH_SERVICE)).getAdapter();
+                if (bluetoothAdapter.isEnabled()) {
+                    startFlaskService();
+                } else {
+                    onRequestOldBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+                }
+            } else {
+                onRequestLocation.launch(Manifest.permission.ACCESS_COARSE_LOCATION);
+            }
         } else {
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if (!mBluetoothAdapter.isEnabled()){
@@ -54,7 +68,29 @@ public class FlaskActivity extends AppCompatActivity {
         if (!bluetoothAdapter.isEnabled()) {
             bluetoothAdapter.enable();
         }
-                startFlaskService();
+        startFlaskService();
+    });
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    ActivityResultLauncher<Intent> onRequestOldBluetooth = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        BluetoothAdapter bluetoothAdapter = ((BluetoothManager) getSystemService
+                (Context.BLUETOOTH_SERVICE)).getAdapter();
+        if (bluetoothAdapter.isEnabled()) {
+            startFlaskService();
+        }
+    });
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    ActivityResultLauncher<String> onRequestLocation = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), isEnabled -> {
+        BluetoothAdapter bluetoothAdapter = ((BluetoothManager) getSystemService
+                (Context.BLUETOOTH_SERVICE)).getAdapter();
+        if (bluetoothAdapter.isEnabled()) {
+            startFlaskService();
+        } else {
+            onRequestOldBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+        }
     });
 
     protected ServiceConnection mServerConn = new ServiceConnection() {

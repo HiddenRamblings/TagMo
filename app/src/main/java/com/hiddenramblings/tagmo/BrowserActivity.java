@@ -473,11 +473,10 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             TagUtils.validateData(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
             new IconifiedSnackbar(this, mainLayout).buildSnackbar(
-                    R.string.validation_success, Snackbar.LENGTH_SHORT, null).show();
+                    R.string.validation_success, Snackbar.LENGTH_SHORT).show();
         } catch (Exception e) {
-            IconifiedSnackbar notice = new IconifiedSnackbar(this, mainLayout);
-            notice.buildSnackbar(e.getMessage(), Snackbar.LENGTH_LONG, null);
-            notice.setIcon(R.drawable.ic_baseline_bug_report_24).show();
+            new IconifiedSnackbar(this, mainLayout).buildSnackbar(e.getMessage(),
+                    R.drawable.ic_baseline_bug_report_24, Snackbar.LENGTH_LONG).show();
         }
     });
 
@@ -1324,7 +1323,7 @@ public class BrowserActivity extends AppCompatActivity implements
             preferences.setVisibility(View.GONE);
             handler.postDelayed(() -> {
                 fooSnackbar = new IconifiedSnackbar(this, mainLayout)
-                        .buildTickerBar(getString(R.string.amiibo_not_found));
+                        .buildTickerBar(R.string.amiibo_not_found);
                 fooSnackbar.setAction(R.string.search, v -> {
                     onFoomiiboEditor.launch(new Intent(this, FoomiiboActivity.class));
                     fooSnackbar.dismiss();
@@ -1604,11 +1603,10 @@ public class BrowserActivity extends AppCompatActivity implements
                 try {
                     TagUtils.validateData(tagData);
                     new IconifiedSnackbar(this, mainLayout).buildSnackbar(
-                            R.string.validation_success, Snackbar.LENGTH_SHORT, null).show();
+                            R.string.validation_success, Snackbar.LENGTH_SHORT).show();
                 } catch (Exception e) {
-                    IconifiedSnackbar notice = new IconifiedSnackbar(this, mainLayout);
-                    notice.buildSnackbar(e.getMessage(), Snackbar.LENGTH_LONG, null);
-                    notice.setIcon(R.drawable.ic_baseline_bug_report_24).show();
+                    new IconifiedSnackbar(this, mainLayout).buildSnackbar(e.getMessage(),
+                            R.drawable.ic_baseline_bug_report_24, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
             } else if (item.getItemId() == R.id.mnu_delete) {

@@ -25,11 +25,11 @@ public class FlaskActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.BLUETOOTH_CONNECT
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.BLUETOOTH_CONNECT
             ) == PackageManager.PERMISSION_GRANTED) {
-                BluetoothAdapter bluetoothAdapter = ((BluetoothManager) getSystemService
-                        (Context.BLUETOOTH_SERVICE)).getAdapter();
+                BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
+                        getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
                 if (!bluetoothAdapter.isEnabled()) {
                     bluetoothAdapter.enable();
                 }
@@ -38,11 +38,11 @@ public class FlaskActivity extends AppCompatActivity {
                 onRequestBluetooth.launch(Manifest.permission.BLUETOOTH_CONNECT);
             }
         } else  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED) {
-                BluetoothAdapter bluetoothAdapter = ((BluetoothManager) getSystemService
-                        (Context.BLUETOOTH_SERVICE)).getAdapter();
+                BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
+                        getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
                 if (bluetoothAdapter.isEnabled()) {
                     startFlaskService();
                 } else {
@@ -63,8 +63,8 @@ public class FlaskActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     ActivityResultLauncher<String> onRequestBluetooth = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), isEnabled -> {
-        BluetoothAdapter bluetoothAdapter = ((BluetoothManager) getSystemService
-                (Context.BLUETOOTH_SERVICE)).getAdapter();
+        BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
+                getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
         if (!bluetoothAdapter.isEnabled()) {
             bluetoothAdapter.enable();
         }
@@ -74,8 +74,8 @@ public class FlaskActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     ActivityResultLauncher<Intent> onRequestOldBluetooth = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        BluetoothAdapter bluetoothAdapter = ((BluetoothManager) getSystemService
-                (Context.BLUETOOTH_SERVICE)).getAdapter();
+        BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
+                getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
         if (bluetoothAdapter.isEnabled()) {
             startFlaskService();
         }
@@ -84,8 +84,8 @@ public class FlaskActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     ActivityResultLauncher<String> onRequestLocation = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), isEnabled -> {
-        BluetoothAdapter bluetoothAdapter = ((BluetoothManager) getSystemService
-                (Context.BLUETOOTH_SERVICE)).getAdapter();
+        BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
+                getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
         if (bluetoothAdapter.isEnabled()) {
             startFlaskService();
         } else {

@@ -228,8 +228,8 @@ public class NfcActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        stopNfcMonitor();
         super.onPause();
+        stopNfcMonitor();
     }
 
     @Override
@@ -560,8 +560,10 @@ public class NfcActivity extends AppCompatActivity {
     }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result ->
-            runOnUiThread(() -> startNfcMonitor())
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (!nfcAdapter.isEnabled())
+                    runOnUiThread(this::startNfcMonitor);
+            }
     );
 
     void startNfcMonitor() {
@@ -577,9 +579,7 @@ public class NfcActivity extends AppCompatActivity {
                         else
                             onNFCActivity.launch(new Intent(Settings.ACTION_NFC_SETTINGS));
                     })
-                    .setNegativeButton(R.string.no, (dialog, which) ->
-                            finish()
-                    )
+                    .setNegativeButton(R.string.no, (dialog, which) -> finish())
                     .show();
         } else {
             // monitor nfc status
@@ -592,11 +592,12 @@ public class NfcActivity extends AppCompatActivity {
     }
 
     private void stopNfcMonitor() {
-        if (null == nfcAdapter || !nfcAdapter.isEnabled()) {
-            return;
+        if (null != nfcAdapter) {
+            nfcAdapter.disableForegroundDispatch(this);
         }
-        nfcAdapter.disableForegroundDispatch(this);
-        this.unregisterReceiver(mReceiver);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            this.unregisterReceiver(mReceiver);
+        }
     }
 
     private void listenForTags() {

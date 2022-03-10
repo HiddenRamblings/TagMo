@@ -48,7 +48,9 @@ public class CheckUpdatesTask {
             PackageInstaller installer = activity.getApplicationContext()
                     .getPackageManager().getPackageInstaller();
             for (PackageInstaller.SessionInfo session : installer.getMySessions()) {
-                installer.abandonSession(session.getSessionId());
+                try {
+                    installer.abandonSession(session.getSessionId());
+                } catch (Exception ignored) { }
             }
         }
         Executors.newSingleThreadExecutor().execute(() -> {

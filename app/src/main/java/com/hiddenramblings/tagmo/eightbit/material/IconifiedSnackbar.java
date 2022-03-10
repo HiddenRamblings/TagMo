@@ -118,8 +118,11 @@ public class IconifiedSnackbar {
     }
 
     public Snackbar buildTickerBar(String msg, int drawable, int length) {
-        snackbar = buildSnackbar(msg, drawable, length, null)
+        Snackbar snackbar = buildSnackbar(msg, drawable, length, null)
                 .addCallback(new Snackbar.Callback() {
+            final int top = null != layout ? layout.getPaddingTop() : 0;
+            final int bottom = null != layout ? layout.getPaddingBottom() : 0;
+
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 if (null == layout) {
@@ -127,7 +130,7 @@ public class IconifiedSnackbar {
                     return;
                 }
                 TransitionManager.beginDelayedTransition(layout);
-                layout.setPadding(0, 0, 0, 0);
+                layout.setPadding(0, top, 0, bottom);
                 super.onDismissed(snackbar, event);
             }
 
@@ -137,8 +140,8 @@ public class IconifiedSnackbar {
                     super.onShown(snackbar);
                     return;
                 }
-                layout.setPadding(0, snackbar.getView().getMeasuredHeight(),
-                        0, 0);
+                int adjusted = top + snackbar.getView().getMeasuredHeight();
+                layout.setPadding(0, adjusted, 0, bottom);
                 super.onShown(snackbar);
             }
         });

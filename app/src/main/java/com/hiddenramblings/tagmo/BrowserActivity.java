@@ -476,7 +476,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     R.string.validation_success, Snackbar.LENGTH_SHORT).show();
         } catch (Exception e) {
             new IconifiedSnackbar(this, mainLayout).buildSnackbar(e.getMessage(),
-                    R.drawable.ic_baseline_bug_report_24, Snackbar.LENGTH_LONG).show();
+                    R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG).show();
         }
     });
 
@@ -1606,7 +1606,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             R.string.validation_success, Snackbar.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     new IconifiedSnackbar(this, mainLayout).buildSnackbar(e.getMessage(),
-                            R.drawable.ic_baseline_bug_report_24, Snackbar.LENGTH_LONG).show();
+                            R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
             } else if (item.getItemId() == R.id.mnu_delete) {

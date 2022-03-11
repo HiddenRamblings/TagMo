@@ -14,6 +14,7 @@ import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
@@ -560,11 +561,17 @@ public class NfcActivity extends AppCompatActivity {
     }
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (!nfcAdapter.isEnabled())
-                    runOnUiThread(this::startNfcMonitor);
+            new ActivityResultContracts.StartActivityForResult(), result -> runOnUiThread(() -> {
+        TextView txtMessage = findViewById(R.id.txtMessage);
+        txtMessage.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                txtMessage.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                startNfcMonitor();
             }
-    );
+        });
+    }));
 
     void startNfcMonitor() {
         if (null == nfcAdapter) {

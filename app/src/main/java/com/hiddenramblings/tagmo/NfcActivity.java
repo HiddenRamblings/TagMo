@@ -562,7 +562,7 @@ public class NfcActivity extends AppCompatActivity {
 
     ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> runOnUiThread(() -> {
-        TextView txtMessage = findViewById(R.id.txtMessage);
+        txtMessage = findViewById(R.id.txtMessage);
         txtMessage.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -603,7 +603,9 @@ public class NfcActivity extends AppCompatActivity {
             nfcAdapter.disableForegroundDispatch(this);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            this.unregisterReceiver(mReceiver);
+            try {
+                this.unregisterReceiver(mReceiver);
+            } catch (IllegalArgumentException ignored) { }
         }
     }
 

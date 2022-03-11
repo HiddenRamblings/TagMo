@@ -45,7 +45,6 @@ import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.github.JSONExecutor;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.json.JSONException;

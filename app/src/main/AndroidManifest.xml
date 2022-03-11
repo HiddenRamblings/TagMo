@@ -117,9 +117,9 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".github.InstallReceiver"/>
         <meta-data
             android:name="com.android.packageinstaller.notification.smallIcon"
             android:resource="@mipmap/ic_launcher" />

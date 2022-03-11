@@ -109,12 +109,12 @@ public class IconifiedSnackbar {
     }
 
     public Snackbar buildSnackbar(String msg, int length) {
-        return buildSnackbar(msg, R.drawable.ic_stat_notice, length, null);
+        return buildSnackbar(msg, R.drawable.ic_stat_notice_24dp, length, null);
     }
 
     public Snackbar buildSnackbar(int msgRes, int length) {
         return buildSnackbar(mActivity.get().getString(msgRes),
-                R.drawable.ic_stat_notice, length, null);
+                R.drawable.ic_stat_notice_24dp, length, null);
     }
 
     public Snackbar buildTickerBar(String msg, int drawable, int length) {
@@ -154,6 +154,6 @@ public class IconifiedSnackbar {
 
     public Snackbar buildTickerBar(int msgRes) {
         return buildTickerBar(mActivity.get().getString(msgRes),
-                R.drawable.ic_stat_notice, Snackbar.LENGTH_INDEFINITE);
+                R.drawable.ic_stat_notice_24dp, Snackbar.LENGTH_INDEFINITE);
     }
 }

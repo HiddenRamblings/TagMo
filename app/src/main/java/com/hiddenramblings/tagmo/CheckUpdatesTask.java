@@ -14,8 +14,7 @@ import androidx.documentfile.provider.DocumentFile;
 
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
-import com.hiddenramblings.tagmo.github.InstallReceiver;
-import com.hiddenramblings.tagmo.github.JSONExecutor;
+import com.hiddenramblings.tagmo.settings.JSONExecutor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -116,7 +115,7 @@ public class CheckUpdatesTask {
                     apkStream.close();
                     sessionStream.close();
                     PendingIntent pi = PendingIntent.getBroadcast(applicationContext, 8675309,
-                            new Intent(applicationContext, InstallReceiver.class),
+                            new Intent(applicationContext, UpdateReceiver.class),
                             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                                     ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
                                     : PendingIntent.FLAG_UPDATE_CURRENT);

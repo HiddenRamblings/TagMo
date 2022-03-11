@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.github;
+package com.hiddenramblings.tagmo.settings;
 
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;

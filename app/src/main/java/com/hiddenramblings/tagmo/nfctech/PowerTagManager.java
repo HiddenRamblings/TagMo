@@ -8,6 +8,7 @@ import com.hiddenramblings.tagmo.TagMo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,6 +50,18 @@ public class PowerTagManager {
         keys = keytable;
     }
 
+    static boolean resetPowerTag(NTAG215 mifare) {
+        try (InputStream stream = TagMo.getContext().getResources()
+                .openRawResource(R.raw.powertag)) {
+            byte[] data = new byte[stream.available()];
+            //noinspection ResultOfMethodCallIgnored
+            stream.read(data);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     static byte[] getPowerTagKey(byte[] uid, String page10bytes) throws NullPointerException {
         if (null == keys )
             throw new NullPointerException(TagMo.getContext()
@@ -65,11 +78,11 @@ public class PowerTagManager {
         uidc[6] = (byte) (uid[6] & 0xFE);
 
         HashMap<String, byte[]> keymap = keys.get(TagUtils.bytesToHex(uidc));
-        if (null == keymap )
+        if (null == keymap)
             throw new NullPointerException(TagMo.getContext().getString(R.string.uid_key_missing));
 
         byte[] key = keymap.get(page10bytes);
-        if (null == key )
+        if (null == key)
             throw new NullPointerException(TagMo.getContext().getString(R.string.p10_key_missing));
 
         return key;

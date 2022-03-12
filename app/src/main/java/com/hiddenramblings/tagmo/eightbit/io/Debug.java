@@ -160,25 +160,24 @@ public class Debug {
         }
         reader.close();
         String logText = log.toString();
+        String issueUrl = "https://github.com/HiddenRamblings/TagMo/issues/new?"
+                + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+";
         try {
             IssueReporterLauncher.forTarget(username, project)
                     .theme(R.style.AppTheme_NoActionBar)
                     .guestToken(getRepositoryToken())
-                    .guestEmailRequired(true)
-                    .guestAllowUsername(true)
+                    .guestEmailRequired(false)
+                    .publicIssueUrl(issueUrl)
                     .titleTextDefault(context.getString(R.string.git_issue_title, BuildConfig.COMMIT))
                     .minDescriptionLength(0)
                     .putExtraInfo("logcat", logText)
                     .homeAsUpEnabled(false).launch(context);
-            return false;
+            return true;
         } catch (Exception ignored) {
             ClipboardManager clipboard = (ClipboardManager) context
                     .getSystemService(Context.CLIPBOARD_SERVICE);
             clipboard.setPrimaryClip(ClipData.newPlainText("logcat", logText));
-            context.startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://github.com/HiddenRamblings/TagMo/issues/new?"
-                            + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+"))
-            );
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
             return true;
         }
     }

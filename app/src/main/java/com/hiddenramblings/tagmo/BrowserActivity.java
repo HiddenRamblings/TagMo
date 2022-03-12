@@ -486,20 +486,10 @@ public class BrowserActivity extends AppCompatActivity implements
             return;
         }
         Executors.newSingleThreadExecutor().execute(() -> {
-            File[] logs = Storage.getDownloadDir("TagMo", "Logcat").listFiles(
-                    (dir, name) -> name.toLowerCase(Locale.ROOT).startsWith("tagmo_logcat"));
-            if (null != logs && logs.length > 0) {
-                for (File file : logs) {
-                    //noinspection ResultOfMethodCallIgnored
-                    file.delete();
-                }
-            }
             try {
-                Uri uri = Debug.processLogcat(this, "tagmo_logcat");
-                String path = DocumentsUri.getPath(this, uri);
-                String output = null != path ? Storage.getRelativePath(new File(path),
-                        prefs.preferEmulated().get()) : uri.getPath();
-                new Toasty(this).Long(getString(R.string.wrote_logcat, output));
+                if (Debug.processLogcat(this )) {
+                    new Toasty(this).Long(getString(R.string.wrote_logcat));
+                }
             } catch (IOException e) {
                 new Toasty(this).Short(e.getMessage());
             }

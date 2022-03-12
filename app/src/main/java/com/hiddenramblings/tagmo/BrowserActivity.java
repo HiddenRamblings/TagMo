@@ -487,8 +487,8 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                if (Debug.processLogcat(this )) {
-                    new Toasty(this).Long(getString(R.string.wrote_logcat));
+                if (!Debug.processLogcat(this )) {
+                    new Toasty(this).Long(getString(R.string.logcat_failed));
                 }
             } catch (IOException e) {
                 new Toasty(this).Short(e.getMessage());

@@ -132,9 +132,9 @@ public class Debug {
         String username = "HiddenRamblings";
         String uncaughtExceptions = "crash_logcat";
 
-        final StringBuilder log = new StringBuilder();
+        final StringBuilder log = new StringBuilder(context
+                .getString(R.string.build_hash_full, BuildConfig.COMMIT));
         String separator = System.getProperty("line.separator");
-        log.append(context.getString(R.string.build_hash_full, BuildConfig.COMMIT));
         log.append(separator);
         log.append("Android ");
         Field[] fields = Build.VERSION_CODES.class.getFields();

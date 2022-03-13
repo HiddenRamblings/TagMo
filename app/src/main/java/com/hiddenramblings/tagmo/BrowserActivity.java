@@ -64,6 +64,7 @@ import com.eightbitlab.blurview.BlurView;
 import com.eightbitlab.blurview.BlurViewFacade;
 import com.eightbitlab.blurview.RenderScriptBlur;
 import com.eightbitlab.blurview.SupportRenderScriptBlur;
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -81,7 +82,6 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
-import com.hiddenramblings.tagmo.eightbit.provider.DocumentsUri;
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
@@ -98,7 +98,6 @@ import com.hiddenramblings.tagmo.widget.Toasty;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
 
-import com.google.android.flexbox.FlexboxLayout;
 import org.json.JSONException;
 
 import java.io.BufferedReader;

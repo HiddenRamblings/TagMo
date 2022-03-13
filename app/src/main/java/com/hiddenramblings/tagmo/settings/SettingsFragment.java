@@ -1,7 +1,9 @@
 package com.hiddenramblings.tagmo.settings;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,6 +32,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.BuildConfig;
+import com.hiddenramblings.tagmo.FlaskActivity;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.NfcActivity;
@@ -240,12 +243,22 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Preference launchFlaskEditor = findPreference(getString(R.string.settings_open_flask_editor));
         if (null != launchFlaskEditor) {
             launchFlaskEditor.setOnPreferenceClickListener(preference -> {
-                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                CustomTabsIntent customTabsIntent = builder.build();
-                // builder.setActionButton(icon, description, pendingIntent, tint); // action button
-                // builder.addMenuItem(menuItemTitle, menuItemPendingIntent); // menu item
-                customTabsIntent.launchUrl(requireActivity(), Uri.parse("https://flask.run/"));
-                return SettingsFragment.super.onPreferenceTreeClick(preference);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    startActivity(new Intent(requireContext(), FlaskActivity.class));
+                    return SettingsFragment.super.onPreferenceTreeClick(preference);
+                } else {
+                    @SuppressLint("UnspecifiedImmutableFlag")
+                    PendingIntent tagPendingIntent = PendingIntent.getActivity(requireContext()
+                            .getApplicationContext(), 0, new Intent(requireContext()
+                            .getApplicationContext(), this.getClass()),
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                    CustomTabsIntent customTabsIntent = builder.build();
+                    builder.addMenuItem(getString(R.string.cutom_tabs_menu), tagPendingIntent);
+                    customTabsIntent.launchUrl(requireActivity(), Uri.parse("https://flask.run/"));
+                    return SettingsFragment.super.onPreferenceTreeClick(preference);
+                }
             });
         }
 

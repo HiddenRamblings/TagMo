@@ -242,23 +242,28 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         Preference launchFlaskEditor = findPreference(getString(R.string.settings_open_flask_editor));
         if (null != launchFlaskEditor) {
-            launchFlaskEditor.setOnPreferenceClickListener(preference -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                launchFlaskEditor.setTitle(R.string.flask_editor_ble);
+                launchFlaskEditor.setOnPreferenceClickListener(preference -> {
                     startActivity(new Intent(requireContext(), FlaskActivity.class));
-                } else {
+                    return SettingsFragment.super.onPreferenceTreeClick(preference);
+                });
+            } else {
+                launchFlaskEditor.setTitle(R.string.flask_editor_web);
+                launchFlaskEditor.setOnPreferenceClickListener(preference -> {
                     @SuppressLint("UnspecifiedImmutableFlag")
                     PendingIntent tagPendingIntent = PendingIntent.getActivity(requireContext()
-                            .getApplicationContext(), 0, new Intent(requireContext()
-                            .getApplicationContext(), this.getClass()),
+                                    .getApplicationContext(), 0, new Intent(requireContext()
+                                    .getApplicationContext(), this.getClass()),
                             PendingIntent.FLAG_UPDATE_CURRENT);
 
                     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                     CustomTabsIntent customTabsIntent = builder.build();
-                    builder.addMenuItem(getString(R.string.cutom_tabs_menu), tagPendingIntent);
+                    builder.addMenuItem(getString(R.string.custom_tab_return), tagPendingIntent);
                     customTabsIntent.launchUrl(requireActivity(), Uri.parse("https://flask.run/"));
-                }
-                return SettingsFragment.super.onPreferenceTreeClick(preference);
-            });
+                    return SettingsFragment.super.onPreferenceTreeClick(preference);
+                });
+            }
         }
 
         Preference syncInfo = findPreference(getString(R.string.settings_import_info_amiiboapi));

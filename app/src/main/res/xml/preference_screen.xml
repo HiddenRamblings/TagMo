@@ -71,7 +71,7 @@
         app:iconSpaceReserved="false">
         <androidx.preference.Preference
             android:key="@string/settings_open_flask_editor"
-            android:title="@string/flask_editor"
+            android:title="@string/flask_editor_ble"
             app:iconSpaceReserved="false" />
     </androidx.preference.PreferenceCategory>
 

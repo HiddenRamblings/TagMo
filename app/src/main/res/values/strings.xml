@@ -170,7 +170,8 @@
     <string name="lock_elite_warning">Lock N2 Elite Hardware?</string>
     <string name="unlock_elite_hardware">Unlock N2 Elite Hardware</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
-    <string name="flask_editor">Launch Flask editor (Web)</string>
+    <string name="flask_editor_web">Launch Flask editor (Web)</string>
+    <string name="flask_editor_ble">Launch FLask editor (BLE)</string>
     <string name="amiibo_info">amiibo&#8482; Database</string>
     <string name="sync_amiibo_info">Sync database with AmiiboAPI</string>
     <string name="import_json_details">Load amiibo&#8482; database (JSON)</string>
@@ -225,6 +226,8 @@
     <string name="progress_unlock">Press and hold the N2 button without disconnecting from NFC.</string>
     <string name="possible_lock">Is this N2 Elite locked?</string>
     <string name="tag_update_only">Previously written tags require \"Update\"</string>
+
+    <string name="custom_tab_return">Return to TagMo</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>
@@ -328,6 +331,4 @@
     <string name="unzip_item">Unzipping %1$s&#8230;</string>
     <string name="mkdir_failed">Mkdir "%1$s" failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>
-
-    <string name="cutom_tabs_menu">Return to TagMo</string>
 </resources>

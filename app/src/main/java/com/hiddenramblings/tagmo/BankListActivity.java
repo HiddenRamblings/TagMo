@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -734,6 +735,7 @@ public class BankListActivity extends AppCompatActivity implements
             imageAmiibo.setVisibility(View.GONE);
             GlideApp.with(this).clear(amiiboImageTarget);
             if (null != amiiboImageUrl) {
+                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 2);
                 GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
             }
             final long amiiboTagId = amiiboId;

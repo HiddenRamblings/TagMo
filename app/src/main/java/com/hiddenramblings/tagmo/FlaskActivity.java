@@ -1,6 +1,7 @@
 package com.hiddenramblings.tagmo;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.ComponentName;
@@ -19,6 +20,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class FlaskActivity extends AppCompatActivity {
 
     @Override
@@ -60,18 +62,15 @@ public class FlaskActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @SuppressLint("MissingPermission")
     ActivityResultLauncher<String> onRequestBluetooth = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), isEnabled -> {
         BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
                 getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
-        if (!bluetoothAdapter.isEnabled()) {
-            bluetoothAdapter.enable();
-        }
+        if (!bluetoothAdapter.isEnabled()) bluetoothAdapter.enable();
         startFlaskService();
     });
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     ActivityResultLauncher<Intent> onRequestOldBluetooth = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
@@ -81,7 +80,6 @@ public class FlaskActivity extends AppCompatActivity {
         }
     });
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     ActivityResultLauncher<String> onRequestLocation = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), isEnabled -> {
         BluetoothAdapter bluetoothAdapter = ((BluetoothManager)

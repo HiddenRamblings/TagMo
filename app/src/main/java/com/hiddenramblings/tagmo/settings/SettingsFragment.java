@@ -245,7 +245,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             launchFlaskEditor.setOnPreferenceClickListener(preference -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                     startActivity(new Intent(requireContext(), FlaskActivity.class));
-                    return SettingsFragment.super.onPreferenceTreeClick(preference);
                 } else {
                     @SuppressLint("UnspecifiedImmutableFlag")
                     PendingIntent tagPendingIntent = PendingIntent.getActivity(requireContext()
@@ -257,8 +256,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     CustomTabsIntent customTabsIntent = builder.build();
                     builder.addMenuItem(getString(R.string.cutom_tabs_menu), tagPendingIntent);
                     customTabsIntent.launchUrl(requireActivity(), Uri.parse("https://flask.run/"));
-                    return SettingsFragment.super.onPreferenceTreeClick(preference);
                 }
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
 

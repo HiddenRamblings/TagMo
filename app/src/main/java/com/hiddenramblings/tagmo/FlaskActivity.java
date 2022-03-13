@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -20,8 +22,17 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+@SuppressLint("MissingPermission")
 public class FlaskActivity extends AppCompatActivity {
+
+    private BluetoothLeService leService;
+    private String flaskAddress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +50,7 @@ public class FlaskActivity extends AppCompatActivity {
             } else {
                 onRequestBluetooth.launch(Manifest.permission.BLUETOOTH_CONNECT);
             }
-        } else  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(
                     this, Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED) {
@@ -62,7 +73,6 @@ public class FlaskActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("MissingPermission")
     ActivityResultLauncher<String> onRequestBluetooth = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), isEnabled -> {
         BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
@@ -91,10 +101,24 @@ public class FlaskActivity extends AppCompatActivity {
         }
     });
 
+    private void selectBluetoothDevice() {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+        for (BluetoothDevice bt : pairedDevices) {
+            if (bt.getName().toLowerCase(Locale.ROOT).contains("flask"))
+                flaskAddress = bt.getAddress();
+        }
+
+    }
+
     protected ServiceConnection mServerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             Log.d("Flask", "onServiceConnected");
+            BluetoothLeService.LocalBinder localBinder = (BluetoothLeService.LocalBinder) binder;
+            leService = localBinder.getService();
+            if (leService.initialize()) leService.connect(flaskAddress);
         }
 
         @Override
@@ -104,6 +128,7 @@ public class FlaskActivity extends AppCompatActivity {
     };
 
     public void startFlaskService() {
+        selectBluetoothDevice();
         Intent service = new Intent(this, BluetoothLeService.class);
         bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
         startService(service);

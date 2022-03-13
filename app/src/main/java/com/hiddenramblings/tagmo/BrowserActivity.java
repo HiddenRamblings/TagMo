@@ -9,6 +9,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -1687,6 +1688,7 @@ public class BrowserActivity extends AppCompatActivity implements
             imageAmiibo.setVisibility(View.GONE);
             GlideApp.with(this).clear(amiiboImageTarget);
             if (null != amiiboImageUrl) {
+                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 2);
                 GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
             }
         }

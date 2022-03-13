@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -26,6 +27,7 @@ import java.util.UUID;
  * given Bluetooth LE device.
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+@SuppressLint("MissingPermission")
 public class BluetoothLeService extends Service {
     private final static String TAG = BluetoothLeService.class.getSimpleName();
 
@@ -116,7 +118,7 @@ public class BluetoothLeService extends Service {
             final StringBuilder stringBuilder = new StringBuilder(data.length);
             for (byte byteChar : data)
                 stringBuilder.append(String.format("%02X ", byteChar));
-            intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
+            intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder);
         }
         sendBroadcast(intent);
     }
@@ -149,8 +151,7 @@ public class BluetoothLeService extends Service {
      * @return Return true if the initialization is successful.
      */
     public boolean initialize() {
-        // For API level 18 and above, get a reference to BluetoothAdapter through
-        // BluetoothManager.
+        // For API level 18 and above, get a reference to BluetoothAdapter through BluetoothManager.
         if (mBluetoothManager == null) {
             mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             if (mBluetoothManager == null) {

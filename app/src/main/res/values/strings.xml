@@ -329,4 +329,5 @@
     <string name="mkdir_failed">Mkdir "%1$s" failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>
 
+    <string name="cutom_tabs_menu">Return to TagMo</string>
 </resources>

@@ -102,7 +102,12 @@
         <activity
             android:name=".FlaskActivity"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.PAIRING_REQUEST" />
+                <action android:name="android.bluetooth.device.action.PAIRING_CANCEL" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".HexViewerActivity"/>

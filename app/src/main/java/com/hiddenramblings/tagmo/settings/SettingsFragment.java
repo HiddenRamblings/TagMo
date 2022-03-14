@@ -259,7 +259,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                     CustomTabsIntent customTabsIntent = builder.build();
-                    builder.addMenuItem(getString(R.string.custom_tab_return), tagPendingIntent);
+                    builder.addMenuItem(getString(R.string.custom_tab_back), tagPendingIntent);
                     customTabsIntent.launchUrl(requireActivity(), Uri.parse("https://flask.run/"));
                     return SettingsFragment.super.onPreferenceTreeClick(preference);
                 });

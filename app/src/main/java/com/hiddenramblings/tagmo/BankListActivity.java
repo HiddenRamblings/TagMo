@@ -385,6 +385,8 @@ public class BankListActivity extends AppCompatActivity implements
 
         @Override
         public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+            imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 2);
+            imageAmiibo.requestLayout();
             imageAmiibo.setImageBitmap(resource);
             imageAmiibo.setVisibility(View.VISIBLE);
         }
@@ -735,23 +737,22 @@ public class BankListActivity extends AppCompatActivity implements
             imageAmiibo.setVisibility(View.GONE);
             GlideApp.with(this).clear(amiiboImageTarget);
             if (null != amiiboImageUrl) {
-                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 2);
                 GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
+                final long amiiboTagId = amiiboId;
+                imageAmiibo.setOnClickListener(view -> {
+                    if (amiiboTagId == -1) {
+                        return;
+                    }
+
+                    Bundle bundle = new Bundle();
+                    bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId);
+
+                    Intent intent = new Intent(this, ImageActivity.class);
+                    intent.putExtras(bundle);
+
+                    startActivity(intent);
+                });
             }
-            final long amiiboTagId = amiiboId;
-            imageAmiibo.setOnClickListener(view -> {
-                if (amiiboTagId == -1) {
-                    return;
-                }
-
-                Bundle bundle = new Bundle();
-                bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId);
-
-                Intent intent = new Intent(this, ImageActivity.class);
-                intent.putExtras(bundle);
-
-                startActivity(intent);
-            });
         }
     }
 

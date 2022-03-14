@@ -1689,6 +1689,7 @@ public class BrowserActivity extends AppCompatActivity implements
             GlideApp.with(this).clear(amiiboImageTarget);
             if (null != amiiboImageUrl) {
                 imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 2);
+                imageAmiibo.requestLayout();
                 GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
             }
         }

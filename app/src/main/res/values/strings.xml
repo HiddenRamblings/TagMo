@@ -171,7 +171,7 @@
     <string name="unlock_elite_hardware">Unlock N2 Elite Hardware</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="flask_editor_web">Launch Flask editor (Web)</string>
-    <string name="flask_editor_ble">Launch FLask editor (BLE)</string>
+    <string name="flask_editor_ble">Launch Flask editor (BLE)</string>
     <string name="amiibo_info">amiibo&#8482; Database</string>
     <string name="sync_amiibo_info">Sync database with AmiiboAPI</string>
     <string name="import_json_details">Load amiibo&#8482; database (JSON)</string>

@@ -558,7 +558,7 @@ public class BankListActivity extends AppCompatActivity implements
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
-        Dialog backupDialog = dialog.setView(view).show();
+        Dialog backupDialog = dialog.setView(view).create();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
                 String fileName = TagUtils.writeBytesToFile(
@@ -573,6 +573,7 @@ public class BankListActivity extends AppCompatActivity implements
             backupDialog.dismiss();
         });
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+        backupDialog.show();
     }
 
     private void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {

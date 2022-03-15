@@ -86,7 +86,7 @@
             android:ellipsize="none"
             android:text="@string/amiibo_not_found"
             android:textColor="@android:color/white"
-            android:textSize="16sp"/>
+            android:textSize="14sp"/>
 
         <include
             layout="@layout/active_card_layout"

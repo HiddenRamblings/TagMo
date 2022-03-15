@@ -150,7 +150,7 @@
                 android:singleLine="true"
                 android:ellipsize="start"
                 android:textColor="@android:color/white"
-                android:textSize="16sp"/>
+                android:textSize="14sp"/>
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/toggle"

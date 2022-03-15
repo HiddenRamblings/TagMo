@@ -205,12 +205,13 @@ public class WebActivity extends AppCompatActivity {
         } catch (IOException | JSONException | ParseException e) {
             Debug.Log(e);
         }
-        Dialog backupDialog = dialog.setView(view).show();
+        Dialog backupDialog = dialog.setView(view).create();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             saveBinFile(tagData, input.getText().toString());
             backupDialog.dismiss();
         });
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+        backupDialog.show();
     }
 
     private class JavaScriptInterface {

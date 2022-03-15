@@ -448,7 +448,7 @@ public class BrowserActivity extends AppCompatActivity implements
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
-        Dialog backupDialog = dialog.setView(view).show();
+        Dialog backupDialog = dialog.setView(view).create();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
                 String fileName = TagUtils.writeBytesToFile(
@@ -462,6 +462,7 @@ public class BrowserActivity extends AppCompatActivity implements
             backupDialog.dismiss();
         });
         view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+        backupDialog.show();
     });
 
     private final ActivityResultLauncher<Intent> onValidateActivity = registerForActivityResult(
@@ -1566,7 +1567,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                 final EditText input = view.findViewById(R.id.backup_entry);
                 input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
-                Dialog backupDialog = dialog.setView(view).show();
+                Dialog backupDialog = dialog.setView(view).create();
                 view.findViewById(R.id.save_backup).setOnClickListener(v -> {
                     try {
                         String fileName = TagUtils.writeBytesToFile(
@@ -1580,6 +1581,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 });
                 view.findViewById(R.id.cancel_backup).setOnClickListener(v ->
                         backupDialog.dismiss());
+                backupDialog.show();
                 return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);

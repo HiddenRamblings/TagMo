@@ -64,7 +64,7 @@
                 android:ellipsize="none"
                 android:text="@string/foomiibo_editor"
                 android:textColor="@android:color/white"
-                android:textSize="16sp"/>
+                android:textSize="14sp"/>
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/toggle"

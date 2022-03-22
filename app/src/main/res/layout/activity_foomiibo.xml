@@ -61,7 +61,7 @@
                 android:gravity="center"
                 android:layout_weight="1"
                 android:singleLine="true"
-                android:ellipsize="none"
+                android:ellipsize="marquee"
                 android:text="@string/foomiibo_editor"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"/>

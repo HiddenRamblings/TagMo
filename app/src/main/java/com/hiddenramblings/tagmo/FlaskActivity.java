@@ -45,9 +45,7 @@ public class FlaskActivity extends AppCompatActivity {
             ) == PackageManager.PERMISSION_GRANTED) {
                 BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
                         getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
-                if (!bluetoothAdapter.isEnabled()) {
-                    bluetoothAdapter.enable();
-                }
+                if (!bluetoothAdapter.isEnabled()) bluetoothAdapter.enable();
                 selectBluetoothDevice();
             } else {
                 onRequestBluetooth.launch(Manifest.permission.BLUETOOTH_CONNECT);
@@ -58,19 +56,16 @@ public class FlaskActivity extends AppCompatActivity {
             ) == PackageManager.PERMISSION_GRANTED) {
                 BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
                         getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
-                if (bluetoothAdapter.isEnabled()) {
+                if (bluetoothAdapter.isEnabled())
                     selectBluetoothDevice();
-                } else {
+                else
                     onRequestOldBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
-                }
             } else {
                 onRequestLocation.launch(Manifest.permission.ACCESS_COARSE_LOCATION);
             }
         } else {
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (!mBluetoothAdapter.isEnabled()){
-                mBluetoothAdapter.enable();
-            }
+            if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
             selectBluetoothDevice();
         }
     }
@@ -87,20 +82,18 @@ public class FlaskActivity extends AppCompatActivity {
             new ActivityResultContracts.StartActivityForResult(), result -> {
         BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
                 getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
-        if (bluetoothAdapter.isEnabled()) {
+        if (bluetoothAdapter.isEnabled())
             selectBluetoothDevice();
-        }
     });
 
     ActivityResultLauncher<String> onRequestLocation = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), isEnabled -> {
         BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
                 getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
-        if (bluetoothAdapter.isEnabled()) {
+        if (bluetoothAdapter.isEnabled())
             selectBluetoothDevice();
-        } else {
+        else
             onRequestOldBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
-        }
     });
 
     private void selectBluetoothDevice() {
@@ -130,6 +123,8 @@ public class FlaskActivity extends AppCompatActivity {
                                    .getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                            if (!device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
                                unregisterReceiver(this);
+                               if (mBluetoothAdapter.isDiscovering())
+                                   mBluetoothAdapter.cancelDiscovery();
                                new Toasty(FlaskActivity.this).Long(R.string.flask_not_found);
                                finish();
                            }
@@ -139,10 +134,14 @@ public class FlaskActivity extends AppCompatActivity {
                            device.setPairingConfirmation(true);
                            flaskAddress = device.getAddress();
                            unregisterReceiver(this);
+                           if (mBluetoothAdapter.isDiscovering())
+                               mBluetoothAdapter.cancelDiscovery();
                            startFlaskService();
                        } catch (Exception ex) {
                            ex.printStackTrace();
                            unregisterReceiver(this);
+                           if (mBluetoothAdapter.isDiscovering())
+                               mBluetoothAdapter.cancelDiscovery();
                            new Toasty(FlaskActivity.this).Long(R.string.flask_not_found);
                            finish();
                        }
@@ -184,6 +183,8 @@ public class FlaskActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter.isDiscovering()) mBluetoothAdapter.cancelDiscovery();
         stopFlaskService();
     }
 }

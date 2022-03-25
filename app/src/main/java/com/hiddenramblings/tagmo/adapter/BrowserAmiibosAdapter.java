@@ -97,7 +97,7 @@ public class BrowserAmiibosAdapter
 
     @Override
     public int getItemCount() {
-        return filteredData.size();
+        return null != filteredData ? filteredData.size() : 0;
     }
 
     @Override

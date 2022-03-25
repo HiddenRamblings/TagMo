@@ -1518,8 +1518,11 @@ public class BrowserActivity extends AppCompatActivity implements
 
         @Override
         public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
-            imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 2);
-            imageAmiibo.requestLayout();
+            int height = Resources.getSystem().getDisplayMetrics().heightPixels;
+            if (resource.getHeight() > height / 2) {
+                imageAmiibo.setMaxHeight(height / 3);
+                imageAmiibo.requestLayout();
+            }
             imageAmiibo.setImageBitmap(resource);
             imageAmiibo.setVisibility(View.VISIBLE);
         }

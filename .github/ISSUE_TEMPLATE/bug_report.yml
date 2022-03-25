@@ -12,8 +12,7 @@ body:
     attributes:
       label: Issue Description
       description: Please describe the issue in your own words
-      placeholder: Detailed Description
-      value: "Error messages, steps to reproduce, etc."
+      placeholder: Issues without a meaningful description are closed
     validations:
       required: true
   - type: textarea

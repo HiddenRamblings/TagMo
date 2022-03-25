@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -23,6 +24,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -43,7 +45,17 @@ public class FlaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_flask);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            onRequestLocationQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED) {
+                activateBluetooth();
+            } else {
+                final String[] PERMISSIONS_LOCATION = {
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                };
+                onRequestLocationQ.launch(PERMISSIONS_LOCATION);
+            }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             final String[] PERMISSIONS_LOCATION = {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -54,6 +66,23 @@ public class FlaskActivity extends AppCompatActivity {
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
             selectBluetoothDevice();
+        }
+    }
+
+    private void activateBluetooth() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            final String[] PERMISSIONS_BLUETOOTH = {
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.BLUETOOTH_SCAN
+            };
+            onRequestBluetoothS.launch(PERMISSIONS_BLUETOOTH);
+        } else {
+            BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
+                    getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+            if (bluetoothAdapter.isEnabled())
+                selectBluetoothDevice();
+            else
+                onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
         }
     }
 
@@ -87,23 +116,15 @@ public class FlaskActivity extends AppCompatActivity {
     });
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
-    ActivityResultLauncher<String> onRequestLocationQ = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                final String[] PERMISSIONS_BLUETOOTH = {
-                        Manifest.permission.BLUETOOTH_CONNECT,
-                        Manifest.permission.BLUETOOTH_SCAN
-                };
-                onRequestBluetoothS.launch(PERMISSIONS_BLUETOOTH);
-            } else {
-                BluetoothAdapter bluetoothAdapter = ((BluetoothManager)
-                        getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
-                if (bluetoothAdapter.isEnabled())
-                    selectBluetoothDevice();
-                else
-                    onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
-            }
+    ActivityResultLauncher<String[]> onRequestLocationQ = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            permissions -> { boolean isLocationAvailable = true;
+        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
+            if (entry.getKey().equals(Manifest.permission.ACCESS_FINE_LOCATION)
+                    && !entry.getValue()) isLocationAvailable = false;
+        }
+        if (isLocationAvailable) {
+            activateBluetooth();
         } else {
             new Toasty(FlaskActivity.this).Long(R.string.flask_not_found);
             finish();

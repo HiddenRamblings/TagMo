@@ -95,7 +95,7 @@ dependencies {
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
     implementation 'io.github.ShawnLin013:number-picker:2.4.13'
-    implementation 'com.github.SamSprung:android-issue-reporter:c9f9cb0'
+    implementation 'com.github.SamSprung:android-issue-reporter:a2be025'
     // Required for Lollipop Amiibo API download compatibility
     implementation 'com.google.android.gms:play-services-safetynet:18.0.1'
 }

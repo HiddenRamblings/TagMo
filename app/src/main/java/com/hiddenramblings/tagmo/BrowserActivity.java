@@ -1518,11 +1518,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         @Override
         public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
-            int height = Resources.getSystem().getDisplayMetrics().heightPixels;
-            if (resource.getHeight() > height / 2) {
-                imageAmiibo.setMaxHeight(height / 3);
-                imageAmiibo.requestLayout();
-            }
+            imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 3);
+            imageAmiibo.requestLayout();
             imageAmiibo.setImageBitmap(resource);
             imageAmiibo.setVisibility(View.VISIBLE);
         }
@@ -1936,14 +1933,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (BottomSheetBehavior.STATE_COLLAPSED == bottomSheetBehavior.getState()
-                && View.GONE == amiiboContainer.getVisibility())
-            super.onBackPressed();
-
-        if (View.VISIBLE == amiiboContainer.getVisibility())
-            amiiboContainer.setVisibility(View.GONE);
         if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState())
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        else if (View.VISIBLE == amiiboContainer.getVisibility())
+            amiiboContainer.setVisibility(View.GONE);
+        else
+            super.onBackPressed();
     }
 
     private boolean hasTestedElite;

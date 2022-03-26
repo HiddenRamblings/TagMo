@@ -335,9 +335,11 @@ public class BrowserActivity extends AppCompatActivity implements
             }
             popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
-                popup.getMenu().findItem(R.id.mnu_flask).setTitle(R.string.flask_editor_ble);
+                popup.getMenu().findItem(R.id.mnu_flask)
+                        .setIcon(R.drawable.ic_baseline_bluetooth_searching_24);
             else
-                popup.getMenu().findItem(R.id.mnu_flask).setTitle(R.string.flask_editor_web);
+                popup.getMenu().findItem(R.id.mnu_flask)
+                        .setIcon(R.drawable.ic_baseline_webhook_24);
             popup.show();
             popup.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_scan) {

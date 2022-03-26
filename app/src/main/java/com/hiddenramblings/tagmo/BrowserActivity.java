@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -48,6 +49,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.MenuCompat;
 import androidx.documentfile.provider.DocumentFile;
@@ -332,6 +334,10 @@ public class BrowserActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
             popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
+                popup.getMenu().findItem(R.id.mnu_flask).setTitle(R.string.flask_editor_ble);
+            else
+                popup.getMenu().findItem(R.id.mnu_flask).setTitle(R.string.flask_editor_web);
             popup.show();
             popup.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_scan) {
@@ -342,6 +348,9 @@ public class BrowserActivity extends AppCompatActivity implements
                     Intent backup = new Intent(this, NfcActivity.class);
                     backup.setAction(NFCIntent.ACTION_BACKUP_AMIIBO);
                     onBackupActivity.launch(backup);
+                    return true;
+                } else if (item.getItemId() == R.id.mnu_flask) {
+                    launchFlaskEditor();
                     return true;
                 } else if (item.getItemId() == R.id.mnu_validate) {
                     onValidateActivity.launch(new Intent(this,
@@ -410,6 +419,24 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onProviderInstallerNotAvailable() {
         new Toasty(BrowserActivity.this).Long(R.string.fail_ssl_update);
         finish();
+    }
+
+    private void launchFlaskEditor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            startActivity(new Intent(BrowserActivity.this, FlaskActivity.class));
+        } else {
+            @SuppressLint("UnspecifiedImmutableFlag")
+            PendingIntent tagPendingIntent = PendingIntent.getActivity(
+                    getApplicationContext(), 0,
+                    new Intent(getApplicationContext(), this.getClass()),
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            );
+
+            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+            CustomTabsIntent customTabsIntent = builder.build();
+            builder.addMenuItem(getString(R.string.custom_tab_back), tagPendingIntent);
+            customTabsIntent.launchUrl(BrowserActivity.this, Uri.parse("https://flask.run/"));
+        }
     }
 
     private final ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
@@ -829,31 +856,29 @@ public class BrowserActivity extends AppCompatActivity implements
             });
 
         } else {
-            this.runOnUiThread(() -> {
-                ProviderInstaller.installIfNeededAsync(this,
-                        new ProviderInstaller.ProviderInstallListener() {
-                    @Override
-                    public void onProviderInstalled() {
-                        updates = new CheckUpdatesTask(BrowserActivity.this);
-                        updates.setUpdateListener(downloadUrl -> {
-                            updateUrl = downloadUrl;
-                            invalidateOptionsMenu();
-                        });
-                    }
+            this.runOnUiThread(() -> ProviderInstaller.installIfNeededAsync(this,
+                    new ProviderInstaller.ProviderInstallListener() {
+                @Override
+                public void onProviderInstalled() {
+                    updates = new CheckUpdatesTask(BrowserActivity.this);
+                    updates.setUpdateListener(downloadUrl -> {
+                        updateUrl = downloadUrl;
+                        invalidateOptionsMenu();
+                    });
+                }
 
-                    @Override
-                    public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                        GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
-                        if (availability.isUserResolvableError(errorCode)) {
-                            availability.showErrorDialogFragment(
-                                    BrowserActivity.this, errorCode, 7000,
-                                    dialog -> onProviderInstallerNotAvailable());
-                        } else {
-                            onProviderInstallerNotAvailable();
-                        }
+                @Override
+                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
+                    GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
+                    if (availability.isUserResolvableError(errorCode)) {
+                        availability.showErrorDialogFragment(
+                                BrowserActivity.this, errorCode, 7000,
+                                dialog -> onProviderInstallerNotAvailable());
+                    } else {
+                        onProviderInstallerNotAvailable();
                     }
-                });
-            });
+                }
+            }));
         }
     }
 
@@ -1216,14 +1241,12 @@ public class BrowserActivity extends AppCompatActivity implements
     });
 
     @Override
-    public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,
-                                         BrowserSettings oldBrowserSettings) {
+    public void onBrowserSettingsChanged(
+            BrowserSettings newBrowserSettings,
+            BrowserSettings oldBrowserSettings) {
         if (newBrowserSettings == null || oldBrowserSettings == null) return;
-        boolean folderChanged = false;
-        if (!BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(),
-                oldBrowserSettings.getBrowserRootFolder())) {
-            folderChanged = true;
-        }
+        boolean folderChanged = !BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(),
+                oldBrowserSettings.getBrowserRootFolder());
         if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
             settings.getAmiiboFiles().clear();
             folderChanged = true;

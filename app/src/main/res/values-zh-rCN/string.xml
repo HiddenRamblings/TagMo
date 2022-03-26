@@ -323,5 +323,4 @@
     <string name="downloads_hidden">目前已隐藏 Downloads 文件夹！</string>
     <string name="speed_scan">Tag 卡片离手机远点试试</string>
     <string name="accept">明白</string>
-    <string name="flask_editor">打开 Flask 编辑器（Web）</string>
 </resources>

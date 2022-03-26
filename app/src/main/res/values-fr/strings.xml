@@ -167,7 +167,6 @@
     <string name="lock_elite_warning">Lock N2 Elite Hardware?</string>
     <string name="unlock_elite_hardware">Unlock N2 Elite Hardware</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
-    <string name="flask_editor">Launch Flask editor (Web)</string>
     <string name="amiibo_info">amiibo™ Database</string>
     <string name="sync_amiibo_info">Sync database with AmiiboAPI</string>
     <string name="import_json_details">Load amiibo™ database (JSON)</string>

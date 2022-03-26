@@ -1,9 +1,7 @@
 package com.hiddenramblings.tagmo.settings;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,7 +21,6 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -32,7 +29,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.BuildConfig;
-import com.hiddenramblings.tagmo.FlaskActivity;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.NfcActivity;
@@ -238,32 +234,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     unlockEliteHardware.setVisible(isEnabled);
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
-        }
-
-        Preference launchFlaskEditor = findPreference(getString(R.string.settings_open_flask_editor));
-        if (null != launchFlaskEditor) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                launchFlaskEditor.setTitle(R.string.flask_editor_ble);
-                launchFlaskEditor.setOnPreferenceClickListener(preference -> {
-                    startActivity(new Intent(requireContext(), FlaskActivity.class));
-                    return SettingsFragment.super.onPreferenceTreeClick(preference);
-                });
-            } else {
-                launchFlaskEditor.setTitle(R.string.flask_editor_web);
-                launchFlaskEditor.setOnPreferenceClickListener(preference -> {
-                    @SuppressLint("UnspecifiedImmutableFlag")
-                    PendingIntent tagPendingIntent = PendingIntent.getActivity(requireContext()
-                                    .getApplicationContext(), 0, new Intent(requireContext()
-                                    .getApplicationContext(), this.getClass()),
-                            PendingIntent.FLAG_UPDATE_CURRENT);
-
-                    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                    CustomTabsIntent customTabsIntent = builder.build();
-                    builder.addMenuItem(getString(R.string.custom_tab_back), tagPendingIntent);
-                    customTabsIntent.launchUrl(requireActivity(), Uri.parse("https://flask.run/"));
-                    return SettingsFragment.super.onPreferenceTreeClick(preference);
-                });
-            }
         }
 
         Preference syncInfo = findPreference(getString(R.string.settings_import_info_amiiboapi));

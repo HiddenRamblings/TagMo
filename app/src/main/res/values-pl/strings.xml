@@ -167,7 +167,6 @@
     <string name="lock_elite_warning">Blokada sprzętowa N2 Elite?</string>
     <string name="unlock_elite_hardware">Odblokuj sprzętowo N2 Elite</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
-    <string name="flask_editor">Uruchom edytor Flask (www)</string>
     <string name="amiibo_info">Baza danych amiibo™</string>
     <string name="sync_amiibo_info">Synchronizuj bazę danych z AmiiboAPI</string>
     <string name="import_json_details">Załaduj bazę danych amiibo™ (JSON)</string>

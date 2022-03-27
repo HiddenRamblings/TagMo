@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -12,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
@@ -432,17 +432,11 @@ public class BrowserActivity extends AppCompatActivity implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             onFlaskActivity.launch(new Intent(this, FlaskActivity.class));
         } else {
-            @SuppressLint("UnspecifiedImmutableFlag")
-            PendingIntent tagPendingIntent = PendingIntent.getActivity(
-                    getApplicationContext(), 0,
-                    new Intent(getApplicationContext(), this.getClass()),
-                    PendingIntent.FLAG_UPDATE_CURRENT
-            );
-
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             CustomTabsIntent customTabsIntent = builder.build();
-            builder.addMenuItem(getString(R.string.custom_tab_back), tagPendingIntent);
-            customTabsIntent.launchUrl(BrowserActivity.this, Uri.parse("https://flask.run/"));
+            builder.setCloseButtonIcon(BitmapFactory.decodeResource(getResources(),
+                    R.drawable.ic_stat_notice_24dp));
+            customTabsIntent.launchUrl(this, Uri.parse("https://flask.run/"));
         }
     }
 

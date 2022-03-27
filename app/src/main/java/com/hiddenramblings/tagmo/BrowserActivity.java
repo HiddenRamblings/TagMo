@@ -423,9 +423,14 @@ public class BrowserActivity extends AppCompatActivity implements
         finish();
     }
 
+    private final ActivityResultLauncher<Intent> onFlaskActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK) return;
+    });
+
     private void launchFlaskEditor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            startActivity(new Intent(BrowserActivity.this, FlaskActivity.class));
+            onFlaskActivity.launch(new Intent(this, FlaskActivity.class));
         } else {
             @SuppressLint("UnspecifiedImmutableFlag")
             PendingIntent tagPendingIntent = PendingIntent.getActivity(

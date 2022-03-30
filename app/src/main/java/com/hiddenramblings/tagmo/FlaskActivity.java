@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -40,7 +41,6 @@ public class FlaskActivity extends AppCompatActivity {
     private BluetoothAdapter mBluetoothAdapter;
     private String flaskAddress;
     private BroadcastReceiver pairingRequest;
-    private boolean isServiceRunning = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -201,10 +201,8 @@ public class FlaskActivity extends AppCompatActivity {
             }
         };
 
-        boolean hasFoundFlask = false;
         for (BluetoothDevice bt : pairedDevices) {
             if (bt.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-                hasFoundFlask = true;
                 flaskAddress = bt.getAddress();
                 break;
             } else {
@@ -222,14 +220,15 @@ public class FlaskActivity extends AppCompatActivity {
                 ((LinearLayout) findViewById(R.id.bluetooth_devices)).addView(view);
             }
         }
-        if (hasFoundFlask) {
+        if (null != flaskAddress) {
             startFlaskService();
         } else {
             IntentFilter filter = new IntentFilter(
                     "android.bluetooth.device.action.PAIRING_REQUEST"
             );
            registerReceiver(pairingRequest, filter);
-           if (mBluetoothAdapter.isDiscovering()) mBluetoothAdapter.cancelDiscovery();
+           if (mBluetoothAdapter.isDiscovering())
+               mBluetoothAdapter.cancelDiscovery();
            mBluetoothAdapter.startDiscovery();
         }
     }
@@ -250,16 +249,14 @@ public class FlaskActivity extends AppCompatActivity {
     };
 
     public void startFlaskService() {
-        isServiceRunning = true;
         Intent service = new Intent(this, BluetoothLeService.class);
-        bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
         startService(service);
+        bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
     }
 
     public void stopFlaskService() {
-        isServiceRunning = false;
-        stopService(new Intent(this, BluetoothLeService.class));
         unbindService(mServerConn);
+        stopService(new Intent(this, BluetoothLeService.class));
     }
 
     private void dismissFlaskActivity() {
@@ -269,8 +266,20 @@ public class FlaskActivity extends AppCompatActivity {
         if (null != mBluetoothAdapter) {
             if (mBluetoothAdapter.isDiscovering())
                 mBluetoothAdapter.cancelDiscovery();
-            if (isServiceRunning) stopFlaskService();
+            if (isServiceRunning())
+                stopFlaskService();
         }
+    }
+
+    private boolean isServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service
+                : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (BluetoothLeService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

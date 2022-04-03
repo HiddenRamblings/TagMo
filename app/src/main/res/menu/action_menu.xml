@@ -11,8 +11,8 @@
         android:title="@string/amiibo_backup"/>
     <item
         android:id="@+id/mnu_flask"
-        android:icon="@drawable/ic_baseline_bluetooth_searching_24"
-        android:title="@string/flask_editor"/>
+        android:icon="@drawable/ic_bluup_flask_24dp"
+        android:title="@string/flask_editor_ble"/>
     <item
         android:id="@+id/mnu_validate"
         android:icon="@drawable/ic_settings_24dp"

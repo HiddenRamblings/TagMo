@@ -125,10 +125,10 @@
             android:name=".BluetoothLeService" />
         <receiver
             android:name=".UpdateReceiver"
+            android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-                <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
         <meta-data

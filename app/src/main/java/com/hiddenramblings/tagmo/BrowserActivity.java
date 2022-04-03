@@ -344,13 +344,13 @@ public class BrowserActivity extends AppCompatActivity implements
                     onNFCActivity.launch(new Intent(this,
                             NfcActivity.class).setAction(NFCIntent.ACTION_SCAN_TAG));
                     return true;
+                } else if (item.getItemId() == R.id.mnu_flask) {
+                    launchFlaskEditor();
+                    return true;
                 } else if (item.getItemId() == R.id.mnu_backup) {
                     Intent backup = new Intent(this, NfcActivity.class);
                     backup.setAction(NFCIntent.ACTION_BACKUP_AMIIBO);
                     onBackupActivity.launch(backup);
-                    return true;
-                } else if (item.getItemId() == R.id.mnu_flask) {
-                    launchFlaskEditor();
                     return true;
                 } else if (item.getItemId() == R.id.mnu_validate) {
                     onValidateActivity.launch(new Intent(this,

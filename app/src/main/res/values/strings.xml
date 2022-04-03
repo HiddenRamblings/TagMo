@@ -135,7 +135,7 @@
     <string name="write_raw">Write to Tag (Raw)</string>
     <string name="write_auto">Write to Tag (Auto)</string>
     <string name="update_tag">Update Tag</string>
-    <string name="scan_tag">Scan NFC Tag</string>
+    <string name="scan_tag">Scan an NFC Tag</string>
     <string name="unlock_elite">Unlock N2 Elite</string>
     <string name="scan_bank_no">Scan Bank %1$d</string>
     <string name="scan_bank">Scan Bank %1$s</string>

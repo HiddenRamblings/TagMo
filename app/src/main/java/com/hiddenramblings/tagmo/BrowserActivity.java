@@ -347,6 +347,25 @@ public class BrowserActivity extends AppCompatActivity implements
                 } else if (item.getItemId() == R.id.mnu_flask) {
                     launchFlaskEditor();
                     return true;
+                } else if (item.getItemId() == R.id.mnu_foomiibo) {
+                    Intent foomiibo = new Intent(this, FoomiiboActivity.class);
+                    if (null != amiibosView.getAdapter()) {
+                        final ArrayList<String> missingIds = new ArrayList<>();
+                        AmiiboManager amiiboManager = settings.getAmiiboManager();
+                        if (null != amiiboManager) {
+                            HashSet<Long> amiiboIds = new HashSet<>();
+                            for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
+                                amiiboIds.add(amiiboFile.getId());
+                            }
+                            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                                if (!amiiboIds.contains(amiibo.id)) {
+                                    missingIds.add(String.valueOf(amiibo.id));
+                                }
+                            }
+                        }
+                        foomiibo.putStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST, missingIds);
+                    }
+                    onFoomiiboEditor.launch(foomiibo);
                 } else if (item.getItemId() == R.id.mnu_backup) {
                     Intent backup = new Intent(this, NfcActivity.class);
                     backup.setAction(NFCIntent.ACTION_BACKUP_AMIIBO);
@@ -1030,25 +1049,6 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.notifyChanges();
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
-        } else if (item.getItemId() == R.id.foomiibo_editor) {
-            Intent foomiibo = new Intent(this, FoomiiboActivity.class);
-            if (null != amiibosView.getAdapter()) {
-                final ArrayList<String> missingIds = new ArrayList<>();
-                AmiiboManager amiiboManager = settings.getAmiiboManager();
-                if (null != amiiboManager) {
-                    HashSet<Long> amiiboIds = new HashSet<>();
-                    for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-                        amiiboIds.add(amiiboFile.getId());
-                    }
-                    for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                        if (!amiiboIds.contains(amiibo.id)) {
-                            missingIds.add(String.valueOf(amiibo.id));
-                        }
-                    }
-                }
-                foomiibo.putStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST, missingIds);
-            }
-            onFoomiiboEditor.launch(foomiibo);
         } else if (item.getItemId() == R.id.filter_game_series) {
             return onFilterGameSeriesClick();
         } else if (item.getItemId() == R.id.filter_character) {

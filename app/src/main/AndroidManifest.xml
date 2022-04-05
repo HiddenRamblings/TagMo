@@ -109,7 +109,8 @@
             android:name=".FlaskActivity"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/DialogTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.PAIRING_REQUEST" />
                 <action android:name="android.bluetooth.device.action.PAIRING_CANCEL" />

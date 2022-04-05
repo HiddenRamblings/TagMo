@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -8,19 +9,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatImageView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -29,7 +30,6 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.json.JSONException;
@@ -42,92 +42,60 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
-public class FoomiiboActivity extends AppCompatActivity implements
+public class FoomiiboFragment extends Fragment implements
         FoomiiboAdapter.OnFoomiiboClickListener {
 
     private final Foomiibo foomiibo = new Foomiibo();
     private final File directory = Storage.getDownloadDir("TagMo", "Foomiibo");
+    private RecyclerView amiibosView;
     private ProgressDialog dialog;
 
     private BrowserSettings settings;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return (ViewGroup) inflater.inflate(
+                R.layout.fragment_foomiibo, container, false);
+    }
 
-        setContentView(R.layout.activity_foomiibo);
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        setResult(RESULT_CANCELED);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         this.settings = new BrowserSettings().initialize();
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {
-                amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
+                amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
                 amiiboManager = null;
-                new Toasty(this).Short(R.string.amiibo_info_parse_error);
+                new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
             }
 
             if (Thread.currentThread().isInterrupted()) return;
 
             final AmiiboManager uiAmiiboManager = amiiboManager;
-            this.runOnUiThread(() -> {
+            requireActivity().runOnUiThread(() -> {
                 settings.setAmiiboManager(uiAmiiboManager);
                 settings.notifyChanges();
             });
         });
 
-        ArrayList<Long> missingIds = new ArrayList<>();
-        if (getIntent().hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
-            ArrayList<String> missing = getIntent()
-                    .getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST);
-            for (String amiiboId : missing) {
-                missingIds.add(Long.parseLong(amiiboId));
-            }
-        }
-
-        AppCompatImageView toggle = findViewById(R.id.toggle);
-        BottomSheetBehavior<View> bottomSheetBehavior =
-                BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        bottomSheetBehavior.addBottomSheetCallback(
-                new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
-                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
-        });
-
-        toggle.setOnClickListener(view -> {
-            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            } else {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            }
-        });
-
-        RecyclerView amiibosView = findViewById(R.id.amiibos_list);
-
+        amiibosView = view.findViewById(R.id.amiibos_list);
+        ArrayList<Long> missingIds = ((BrowserActivity) requireActivity()).getMissingIds();
         if (this.settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+            amiibosView.setLayoutManager(new GridLayoutManager(requireActivity(), getColumnCount()));
         else
-            amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            amiibosView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         amiibosView.setAdapter(new FoomiiboAdapter(settings, missingIds, this));
-        this.settings.addChangeListener((BrowserSettingsListener) amiibosView.getAdapter());
+        this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) amiibosView.getAdapter());
+        refreshMissingIds();
 
-        SearchView searchView = findViewById(R.id.amiibo_search);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        SearchView searchView = view.findViewById(R.id.amiibo_search);
+        SearchManager searchManager = (SearchManager) requireContext().getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().getComponentName()));
         searchView.setSubmitButtonEnabled(false);
         searchView.setIconifiedByDefault(false);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -146,13 +114,18 @@ public class FoomiiboActivity extends AppCompatActivity implements
             }
         });
 
-        findViewById(R.id.clear_foomiibo_set).setOnClickListener(view -> {
+        view.findViewById(R.id.clear_foomiibo_set).setOnClickListener(clickView -> {
             deleteDir(directory);
-            setResult(RESULT_OK);
-            finish();
+            ((BrowserActivity) requireActivity()).onRootFolderChanged(true);
         });
 
-        findViewById(R.id.build_foomiibo_set).setOnClickListener(view -> buildFoomiiboSet());
+        view.findViewById(R.id.build_foomiibo_set).setOnClickListener(clickView -> buildFoomiiboSet());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        refreshMissingIds();
     }
 
     private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
@@ -177,12 +150,21 @@ public class FoomiiboActivity extends AppCompatActivity implements
 
     private int getColumnCount() {
         DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        WindowManager mWindowManager = (WindowManager) requireContext().getSystemService(Context.WINDOW_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
             mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
         else
             mWindowManager.getDefaultDisplay().getMetrics(metrics);
         return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    void refreshMissingIds() {
+        ArrayList<Long> missingIds = ((BrowserActivity) requireActivity()).getMissingIds();
+        if (null != amiibosView.getAdapter()) {
+            ((FoomiiboAdapter) amiibosView.getAdapter()).setMissingIds(missingIds);
+            ((FoomiiboAdapter) amiibosView.getAdapter()).notifyDataSetChanged();
+        }
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -219,7 +201,7 @@ public class FoomiiboActivity extends AppCompatActivity implements
         Handler handler = new Handler(Looper.getMainLooper());
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            handler.post(() -> dialog = ProgressDialog.show(FoomiiboActivity.this,
+            handler.post(() -> dialog = ProgressDialog.show(requireActivity(),
                     "", "", true));
 
             deleteDir(directory);
@@ -233,8 +215,7 @@ public class FoomiiboActivity extends AppCompatActivity implements
             }
             handler.post(() -> dialog.dismiss());
 
-            setResult(RESULT_OK);
-            finish();
+            ((BrowserActivity) requireActivity()).onRootFolderChanged(true);
         });
     }
 
@@ -243,7 +224,7 @@ public class FoomiiboActivity extends AppCompatActivity implements
         if (null == amiiboManager) return;
 
         buildFoomiiboFile(amiibo);
-        setResult(RESULT_OK);
+        ((BrowserActivity) requireActivity()).onRootFolderChanged(true);
     }
 
     @Override
@@ -255,9 +236,5 @@ public class FoomiiboActivity extends AppCompatActivity implements
     public void onFoomiiboImageClicked(Amiibo foomiibo) {
         onBuildFoomiibo(foomiibo);
     }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
 }
+

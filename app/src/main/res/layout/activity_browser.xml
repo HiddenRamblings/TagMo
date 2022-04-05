@@ -37,43 +37,10 @@
             android:textColor="@android:color/white" />
     </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/main_layout"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/amiibo_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/chip_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="4dp"/>
-
-        <View
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@+id/chip_list"
-            android:background="?android:attr/listDivider"/>
-
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_refresh"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_below="@+id/divider"
-            android:layout_alignParentBottom="true">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/amiibos_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingTop="4dp"
-                android:paddingBottom="@dimen/button_height_min"
-                android:scrollbars="vertical" />
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    </RelativeLayout>
+        android:layout_height="match_parent" />
 
     <com.eightbitlab.blurview.BlurView
         android:id="@+id/amiiboContainer"

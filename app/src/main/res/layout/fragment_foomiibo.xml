@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:background="@color/backgroundBlack">
+
+    <LinearLayout
+        android:id="@+id/bottom_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:layout_alignParentTop="true">
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/amiibo_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
+            android:layout_marginEnd="2dp"
+            android:lineSpacingExtra="0dp"
+            android:lineSpacingMultiplier="0" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimaryDark"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/clear_foomiibo_set"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="-2dp"
+                android:layout_marginEnd="-2dp"
+                android:layout_weight="1"
+                android:text="@string/clear_foomiibo_set" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/build_foomiibo_set"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-2dp"
+                android:layout_marginStart="-2dp"
+                android:layout_weight="1"
+                android:text="@string/build_foomiibo_set" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/amiibos_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:layout_marginTop="6dp"
+        android:paddingBottom="@dimen/button_height_min"
+        android:scrollbars="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/bottom_panel"/>
+</RelativeLayout>

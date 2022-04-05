@@ -5,7 +5,7 @@
     android:id="@+id/bluetooth_item"
     android:layout_width="match_parent"
     android:layout_height="36dp"
-    android:paddingVertical="6dp"
+    android:padding="10dp"
     android:layout_gravity="center"
     android:orientation="horizontal"
     tools:ignore="UseCompoundDrawables">
@@ -22,7 +22,7 @@
         android:id="@+id/bluetooth_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
+        android:layout_marginStart="6dp"
         android:layout_gravity="center_vertical"
         android:gravity="center"
         android:layout_weight="1"

@@ -154,7 +154,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuFilterCharacter;
     private MenuItem menuFilterAmiiboSeries;
     private MenuItem menuFilterAmiiboType;
-    private MenuItem menuSettings;
     private MenuItem menuViewSimple;
     private MenuItem menuViewCompact;
     private MenuItem menuViewLarge;
@@ -264,6 +263,22 @@ public class BrowserActivity extends AppCompatActivity implements
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
+                    preferences.setVisibility(View.VISIBLE);
+                    if (null == settingsFragment || settingsFragment.isDetached())
+                        settingsFragment = new SettingsFragment();
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.preferences, settingsFragment)
+                            .commit();
+                    Preference build = settingsFragment.findPreference(
+                            getString(R.string.settings_version)
+                    );
+                    if (null != updateUrl && null != build) {
+                        build.setOnPreferenceClickListener(preference -> {
+                            updates.installUpdateCompat(updateUrl);
+                            return settingsFragment.onPreferenceTreeClick(preference);
+                        });
+                    }
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
                 }
@@ -836,35 +851,6 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    private void showSettingsFragment() {
-        menuSettings.setIcon(R.drawable.ic_folder_white_24dp);
-        preferences.setVisibility(View.VISIBLE);
-        if (null == settingsFragment || settingsFragment.isDetached())
-            settingsFragment = new SettingsFragment();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences, settingsFragment)
-                .commit();
-        Preference build = settingsFragment.findPreference(getString(R.string.settings_version));
-        if (null != updateUrl && null != build) {
-            build.setOnPreferenceClickListener(preference -> {
-                updates.installUpdateCompat(updateUrl);
-                return settingsFragment.onPreferenceTreeClick(preference);
-            });
-        }
-    }
-
-    private void onBottomSheetChanged() {
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        if (preferences.isShown()) {
-            menuSettings.setIcon(R.drawable.ic_settings_24dp);
-            preferences.setVisibility(View.GONE);
-        } else {
-            showSettingsFragment();
-        }
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-    }
-
     private void checkForUpdates() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             updates = new CheckUpdatesTask(this);
@@ -943,7 +929,6 @@ public class BrowserActivity extends AppCompatActivity implements
         menuFilterCharacter = menu.findItem(R.id.filter_character);
         menuFilterAmiiboSeries = menu.findItem(R.id.filter_amiibo_series);
         menuFilterAmiiboType = menu.findItem(R.id.filter_amiibo_type);
-        menuSettings = menu.findItem(R.id.settings);
         menuViewSimple = menu.findItem(R.id.view_simple);
         menuViewCompact = menu.findItem(R.id.view_compact);
         menuViewLarge = menu.findItem(R.id.view_large);
@@ -1047,6 +1032,9 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.show_downloads) {
             this.settings.setShowDownloads(!this.settings.isShowingDownloads());
             this.settings.notifyChanges();
+        } else if (item.getItemId() == R.id.tagmo_settings) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
         } else if (item.getItemId() == R.id.filter_game_series) {
@@ -1057,8 +1045,10 @@ public class BrowserActivity extends AppCompatActivity implements
             return onFilterAmiiboSeriesClick();
         } else if (item.getItemId() == R.id.filter_amiibo_type) {
             return onFilterAmiiboTypeClick();
-        } else if (item.getItemId() == R.id.settings) {
-            onBottomSheetChanged();
+        } else if (item.getItemId() == R.id.home_folder) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            preferences.setVisibility(View.GONE);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -1332,7 +1322,6 @@ public class BrowserActivity extends AppCompatActivity implements
             mainLayout.setPadding(0, 0, 0, 0);
         }
         if (settings.getAmiiboFiles().isEmpty()) {
-            menuSettings.setIcon(R.drawable.ic_settings_24dp);
             preferences.setVisibility(View.GONE);
             handler.postDelayed(() -> {
                 fooSnackbar = new IconifiedSnackbar(this, mainLayout)

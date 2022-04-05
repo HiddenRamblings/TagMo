@@ -233,12 +233,11 @@ public class BrowserActivity extends AppCompatActivity implements
                     if (null != menuSearch) menuSearch.setVisible(true);
                 } else if (position == 1) {
                     setTitle(R.string.foomiibo_editor);
+                    checkForUpdates();
                     if (null != menuSearch) menuSearch.setVisible(false);
                 }
             }
         });
-
-        checkForUpdates();
 
         Intent intent = getIntent();
         if (null != intent) {

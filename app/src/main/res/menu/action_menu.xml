@@ -10,6 +10,10 @@
         android:icon="@drawable/ic_bluup_flask_24dp"
         android:title="@string/flask_editor_ble"/>
     <item
+        android:id="@+id/mnu_foomiibo"
+        android:icon="@drawable/ic_statue_generic_24dp"
+        android:title="@string/foomiibo_editor"/>
+    <item
         android:id="@+id/mnu_backup"
         android:icon="@drawable/ic_save_24dp"
         android:title="@string/amiibo_backup"/>

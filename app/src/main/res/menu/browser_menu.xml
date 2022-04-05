@@ -130,11 +130,6 @@
         </menu>
     </item>
     <item
-        android:id="@+id/foomiibo_editor"
-        android:icon="@drawable/ic_statue_generic_24dp"
-        android:title="@string/foomiibo_editor"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/capture_logcat"
         android:icon="@drawable/ic_android_studio_24dp"
         android:title="@string/capture_logcat"

@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bluetooth_item"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:layout_margin="10dp"
+    android:layout_height="36dp"
+    android:paddingVertical="6dp"
     android:layout_gravity="center"
     android:orientation="horizontal"
     tools:ignore="UseCompoundDrawables">
@@ -13,18 +13,22 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/bluetooth_icon"
         app:srcCompat="@drawable/ic_baseline_bluetooth_connected_24dp"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:gravity="center"
         android:contentDescription="@string/imageview_icon" />
 
     <TextView
         android:id="@+id/bluetooth_text"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_gravity="center_vertical"
         android:gravity="center"
         android:layout_weight="1"
         android:textSize="28sp"
-        android:textColor="@android:color/white"
-        android:layout_height="wrap_content" />
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:textColor="@android:color/white" />
 
 </LinearLayout>

@@ -84,8 +84,8 @@
     </item>
     <item
         android:id="@+id/home_folder"
-        android:title="@string/configure_folder"
-        android:icon="@drawable/ic_folder_white_24dp"
+        android:title="@string/folder_selection"
+        android:icon="@drawable/ic_baseline_folder_special_24dp"
         app:showAsAction="always" />
     <item
         android:id="@+id/install_update"

@@ -83,9 +83,9 @@
         </menu>
     </item>
     <item
-        android:id="@+id/settings"
-        android:title="@string/settings"
-        android:icon="@drawable/ic_settings_24dp"
+        android:id="@+id/home_folder"
+        android:title="@string/configure_folder"
+        android:icon="@drawable/ic_folder_white_24dp"
         app:showAsAction="always" />
     <item
         android:id="@+id/install_update"
@@ -129,6 +129,11 @@
             </group>
         </menu>
     </item>
+    <item
+        android:id="@+id/tagmo_settings"
+        android:icon="@drawable/ic_settings_24dp"
+        android:title="@string/tagmo_settings"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/capture_logcat"
         android:icon="@drawable/ic_android_studio_24dp"

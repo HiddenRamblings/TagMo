@@ -41,7 +41,7 @@ public class FoomiiboAdapter
     private ArrayList<Amiibo> filteredData;
     private FoomiiboFilter filter;
     boolean firstRun = true;
-    private final ArrayList<Long> missingIds;
+    private ArrayList<Long> missingIds;
 
     public FoomiiboAdapter(BrowserSettings settings, ArrayList<Long> missingIds,
                            OnFoomiiboClickListener listener) {
@@ -51,6 +51,10 @@ public class FoomiiboAdapter
 
         this.filteredData = this.data;
         this.setHasStableIds(true);
+    }
+
+    public void setMissingIds(ArrayList<Long> missingIds) {
+        this.missingIds = missingIds;
     }
 
     @Override

@@ -88,12 +88,6 @@
             android:theme="@style/DialogTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".FoomiiboActivity"
-            android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
-            android:launchMode="singleTop"
-            android:theme="@style/DialogTheme.NoActionBar">
-        </activity>
-        <activity
             android:name=".WebActivity"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop"

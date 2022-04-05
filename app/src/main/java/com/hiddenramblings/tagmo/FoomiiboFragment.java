@@ -9,10 +9,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -98,6 +101,10 @@ public class FoomiiboFragment extends Fragment implements
         searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().getComponentName()));
         searchView.setSubmitButtonEnabled(false);
         searchView.setIconifiedByDefault(false);
+        LinearLayout searchBar = searchView.findViewById(R.id.search_bar);
+        searchBar.getLayoutParams().height = (int)
+                getResources().getDimension(R.dimen.button_height_min);
+        searchBar.setGravity(Gravity.CENTER_VERTICAL);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

@@ -20,7 +20,7 @@
         <androidx.appcompat.widget.SearchView
             android:id="@+id/amiibo_search"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/button_height_min"
             android:layout_marginRight="2dp"
             android:layout_marginEnd="2dp"
             android:lineSpacingExtra="0dp"

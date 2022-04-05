@@ -52,10 +52,20 @@
         </menu>
     </item>
     <item
+        android:id="@+id/home_folder"
+        android:title="@string/folder_selection"
+        android:icon="@drawable/ic_baseline_folder_special_24dp"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/install_update"
+        android:icon="@drawable/ic_baseline_browser_updated_24dp"
+        android:title="@string/install"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/sort"
         android:icon="@drawable/ic_sort_24dp"
         android:title="@string/sorting"
-        app:showAsAction="ifRoom">
+        app:showAsAction="never">
         <menu>
             <group android:checkableBehavior="single">
                 <item
@@ -83,20 +93,10 @@
         </menu>
     </item>
     <item
-        android:id="@+id/home_folder"
-        android:title="@string/folder_selection"
-        android:icon="@drawable/ic_baseline_folder_special_24dp"
-        app:showAsAction="always" />
-    <item
-        android:id="@+id/install_update"
-        android:icon="@drawable/ic_baseline_browser_updated_24dp"
-        android:title="@string/install"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/view"
         android:icon="@drawable/ic_view_array_24dp"
         android:title="@string/display_options"
-        app:showAsAction="ifRoom">
+        app:showAsAction="never">
         <menu>
             <group
                 android:id="@+id/layout"
@@ -133,10 +133,10 @@
         android:id="@+id/tagmo_settings"
         android:icon="@drawable/ic_settings_24dp"
         android:title="@string/tagmo_settings"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
     <item
         android:id="@+id/capture_logcat"
         android:icon="@drawable/ic_android_studio_24dp"
         android:title="@string/capture_logcat"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 </menu>

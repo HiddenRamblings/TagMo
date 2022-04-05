@@ -235,6 +235,9 @@ public class BrowserActivity extends AppCompatActivity implements
                     setTitle(R.string.foomiibo_editor);
                     checkForUpdates();
                     if (null != menuSearch) menuSearch.setVisible(false);
+                } else if (position == 2) {
+                    setTitle(R.string.flask_editor_ble);
+                    if (null != menuSearch) menuSearch.setVisible(false);
                 }
             }
         });
@@ -280,22 +283,7 @@ public class BrowserActivity extends AppCompatActivity implements
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
-                    preferences.setVisibility(View.VISIBLE);
-                    if (null == settingsFragment || settingsFragment.isDetached())
-                        settingsFragment = new SettingsFragment();
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.preferences, settingsFragment)
-                            .commit();
-                    Preference build = settingsFragment.findPreference(
-                            getString(R.string.settings_version)
-                    );
-                    if (null != updateUrl && null != build) {
-                        build.setOnPreferenceClickListener(preference -> {
-                            updates.installUpdateCompat(updateUrl);
-                            return settingsFragment.onPreferenceTreeClick(preference);
-                        });
-                    }
+                    onDisplaySettingSheet();
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
                 }
@@ -312,7 +300,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
-        preferences.setVisibility(View.GONE);
+        onDisplaySettingSheet();
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
         BlurViewFacade blurView = amiiboContainer.setupWith(coordinator)
@@ -442,14 +430,28 @@ public class BrowserActivity extends AppCompatActivity implements
         finish();
     }
 
-    private final ActivityResultLauncher<Intent> onFlaskActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK) return;
-    });
+    private void onDisplaySettingSheet() {
+        preferences.setVisibility(View.VISIBLE);
+        if (null == settingsFragment || settingsFragment.isDetached())
+            settingsFragment = new SettingsFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences, settingsFragment)
+                .commit();
+        Preference build = settingsFragment.findPreference(
+                getString(R.string.settings_version)
+        );
+        if (null != updateUrl && null != build) {
+            build.setOnPreferenceClickListener(preference -> {
+                updates.installUpdateCompat(updateUrl);
+                return settingsFragment.onPreferenceTreeClick(preference);
+            });
+        }
+    }
 
     private void launchFlaskEditor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            onFlaskActivity.launch(new Intent(this, FlaskActivity.class));
+            mainLayout.setCurrentItem(2, true);
         } else {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             CustomTabsIntent customTabsIntent = builder.build();

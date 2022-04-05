@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -24,9 +25,11 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -37,23 +40,105 @@ import java.util.Set;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
-public class FlaskActivity extends AppCompatActivity {
+public class FlaskFragment extends Fragment {
 
+    private View fragmentView;
     private BluetoothAdapter mBluetoothAdapter;
     private String flaskAddress;
     private BroadcastReceiver pairingRequest;
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    ActivityResultLauncher<String[]> onRequestLocationQ = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            permissions -> { boolean isLocationAvailable = true;
+        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
+            if (entry.getKey().equals(Manifest.permission.ACCESS_FINE_LOCATION)
+                    && !entry.getValue()) isLocationAvailable = false;
+        }
+        if (isLocationAvailable) {
+            activateBluetooth();
+        } else {
+            new Toasty(requireActivity()).Long(R.string.flask_permissions);
+            // finish();
+        }
+    });
+    private BluetoothLeService flaskService;
+    ActivityResultLauncher<String[]> onRequestBluetoothS = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            permissions -> { boolean isBluetoothAvailable = true;
+        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
+            if (!entry.getValue()) isBluetoothAvailable = false;
+        }
+        if (isBluetoothAvailable) {
+            mBluetoothAdapter = getBluetoothAdapter();
+            if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
+            selectBluetoothDevice();
+        } else {
+            new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+            // finish();
+        }
+    });
+    ActivityResultLauncher<Intent> onRequestBluetooth = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+        mBluetoothAdapter = getBluetoothAdapter();
+        if (mBluetoothAdapter.isEnabled()) {
+            selectBluetoothDevice();
+        } else {
+            new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+            // finish();
+        }
+    });
+    ActivityResultLauncher<String[]> onRequestLocation = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            permissions -> { boolean isLocationAvailable = true;
+        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
+            if (!entry.getValue()) isLocationAvailable = false;
+        }
+        if (isLocationAvailable) {
+            mBluetoothAdapter = getBluetoothAdapter();
+            if (mBluetoothAdapter.isEnabled())
+                selectBluetoothDevice();
+            else
+                onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+        } else {
+            new Toasty(requireActivity()).Long(R.string.flask_permissions);
+            // finish();
+        }
+    });
+    protected ServiceConnection mServerConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            Log.d("Flask", "onServiceConnected");
+            BluetoothLeService.LocalBinder localBinder = (BluetoothLeService.LocalBinder) binder;
+            flaskService = localBinder.getService();
+            if (flaskService.initialize()) {
+                if (flaskService.connect(flaskAddress)) {
+                    // TODO: TBD
+                } else {
+                    stopFlaskService();
+                    new Toasty(requireActivity()).Long(R.string.flask_not_found);
+                }
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d("Flask", "onServiceDisconnected");
+        }
+    };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return (ViewGroup) inflater.inflate(
+                R.layout.fragment_flask, container, false);
+    }
 
-        setContentView(R.layout.activity_flask);
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        fragmentView = view;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.ACCESS_FINE_LOCATION
+                    requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED) {
                 activateBluetooth();
             } else {
@@ -76,6 +161,11 @@ public class FlaskActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+    }
+
     private void activateBluetooth() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             final String[] PERMISSIONS_BLUETOOTH = {
@@ -92,72 +182,11 @@ public class FlaskActivity extends AppCompatActivity {
         }
     }
 
-    ActivityResultLauncher<String[]> onRequestBluetoothS = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(),
-            permissions -> { boolean isBluetoothAvailable = true;
-        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (!entry.getValue()) isBluetoothAvailable = false;
-        }
-        if (isBluetoothAvailable) {
-            mBluetoothAdapter = getBluetoothAdapter();
-            if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
-            selectBluetoothDevice();
-        } else {
-            new Toasty(FlaskActivity.this).Long(R.string.flask_bluetooth);
-            finish();
-        }
-    });
-
-    ActivityResultLauncher<Intent> onRequestBluetooth = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        mBluetoothAdapter = getBluetoothAdapter();
-        if (mBluetoothAdapter.isEnabled()) {
-            selectBluetoothDevice();
-        } else {
-            new Toasty(FlaskActivity.this).Long(R.string.flask_bluetooth);
-            finish();
-        }
-    });
-
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    ActivityResultLauncher<String[]> onRequestLocationQ = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(),
-            permissions -> { boolean isLocationAvailable = true;
-        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (entry.getKey().equals(Manifest.permission.ACCESS_FINE_LOCATION)
-                    && !entry.getValue()) isLocationAvailable = false;
-        }
-        if (isLocationAvailable) {
-            activateBluetooth();
-        } else {
-            new Toasty(FlaskActivity.this).Long(R.string.flask_permissions);
-            finish();
-        }
-    });
-
-    ActivityResultLauncher<String[]> onRequestLocation = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(),
-            permissions -> { boolean isLocationAvailable = true;
-        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (!entry.getValue()) isLocationAvailable = false;
-        }
-        if (isLocationAvailable) {
-            mBluetoothAdapter = getBluetoothAdapter();
-            if (mBluetoothAdapter.isEnabled())
-                selectBluetoothDevice();
-            else
-                onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
-        } else {
-            new Toasty(FlaskActivity.this).Long(R.string.flask_permissions);
-            finish();
-        }
-    });
-
     private BluetoothAdapter getBluetoothAdapter() {
         BluetoothAdapter mBluetoothAdapter;
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1)
             mBluetoothAdapter = ((BluetoothManager)
-                    getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+                    requireContext().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
         else
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         return mBluetoothAdapter;
@@ -175,7 +204,7 @@ public class FlaskActivity extends AppCompatActivity {
                         BluetoothDevice device = intent
                                 .getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                         if (!device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-                            new Toasty(FlaskActivity.this).Long(R.string.flask_not_found);
+                            new Toasty(requireActivity()).Long(R.string.flask_not_found);
                             return;
                         }
                         device.setPin((String.valueOf(intent.getIntExtra(
@@ -187,7 +216,7 @@ public class FlaskActivity extends AppCompatActivity {
                         startFlaskService();
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        new Toasty(FlaskActivity.this).Long(R.string.flask_not_found);
+                        new Toasty(requireActivity()).Long(R.string.flask_not_found);
                     }
                 }
             }
@@ -198,14 +227,14 @@ public class FlaskActivity extends AppCompatActivity {
                 flaskAddress = bt.getAddress();
                 break;
             } else {
-                View view = getLayoutInflater().inflate(R.layout.bluetooth_device, null);
-                view.setOnClickListener(view1 -> {
+                View device = getLayoutInflater().inflate(R.layout.bluetooth_device, null);
+                device.setOnClickListener(view1 -> {
                     flaskAddress = bt.getAddress();
                     dismissFlaskDiscovery();
                     startFlaskService();
                 });
-                ((TextView) view.findViewById(R.id.bluetooth_text)).setText(bt.getName());
-                ((LinearLayout) findViewById(R.id.bluetooth_devices)).addView(view);
+                ((TextView) device.findViewById(R.id.bluetooth_text)).setText(bt.getName());
+                ((LinearLayout) fragmentView.findViewById(R.id.bluetooth_devices)).addView(device);
             }
         }
         if (null != flaskAddress) {
@@ -214,51 +243,28 @@ public class FlaskActivity extends AppCompatActivity {
             IntentFilter filter = new IntentFilter(
                     "android.bluetooth.device.action.PAIRING_REQUEST"
             );
-           registerReceiver(pairingRequest, filter);
+            requireActivity().registerReceiver(pairingRequest, filter);
            if (mBluetoothAdapter.isDiscovering())
                mBluetoothAdapter.cancelDiscovery();
            mBluetoothAdapter.startDiscovery();
         }
     }
 
-    private BluetoothLeService flaskService;
-    protected ServiceConnection mServerConn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            Log.d("Flask", "onServiceConnected");
-            BluetoothLeService.LocalBinder localBinder = (BluetoothLeService.LocalBinder) binder;
-            flaskService = localBinder.getService();
-            if (flaskService.initialize()) {
-                if (flaskService.connect(flaskAddress)) {
-                    // TODO: TBD
-                } else {
-                    stopFlaskService();
-                    new Toasty(FlaskActivity.this).Long(R.string.flask_not_found);
-                }
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d("Flask", "onServiceDisconnected");
-        }
-    };
-
     public void startFlaskService() {
-        Intent service = new Intent(this, BluetoothLeService.class);
-        startService(service);
-        bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
+        Intent service = new Intent(requireActivity(), BluetoothLeService.class);
+        requireActivity().startService(service);
+        requireActivity().bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
     }
 
     public void stopFlaskService() {
         flaskService.disconnect();
-        unbindService(mServerConn);
-        stopService(new Intent(this, BluetoothLeService.class));
+        requireActivity().unbindService(mServerConn);
+        requireActivity().stopService(new Intent(requireActivity(), BluetoothLeService.class));
     }
 
     private void dismissFlaskDiscovery() {
         try {
-            unregisterReceiver(pairingRequest);
+            requireActivity().unregisterReceiver(pairingRequest);
         } catch (Exception ignored) { }
         if (null != mBluetoothAdapter) {
             if (mBluetoothAdapter.isDiscovering())
@@ -269,7 +275,7 @@ public class FlaskActivity extends AppCompatActivity {
     }
 
     private boolean isServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager manager = (ActivityManager) requireContext().getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service
                 : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (BluetoothLeService.class.getName().equals(service.service.getClassName())) {
@@ -280,13 +286,19 @@ public class FlaskActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onDetach() {
+        super.onDetach();
         dismissFlaskDiscovery();
-        super.onBackPressed();
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroyView() {
+        super.onDestroyView();
+        dismissFlaskDiscovery();
+    }
+
+    @Override
+    public void onDestroy() {
         super.onDestroy();
         dismissFlaskDiscovery();
     }

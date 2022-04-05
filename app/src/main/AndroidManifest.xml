@@ -61,6 +61,10 @@
                 <data android:mimeType="*/*" />
                 <data android:pathPattern=".*\\.bin" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.PAIRING_REQUEST" />
+                <action android:name="android.bluetooth.device.action.PAIRING_CANCEL" />
+            </intent-filter>
         </activity>
         <activity-alias
             android:name=".NFCIntentFilter"
@@ -98,17 +102,6 @@
             android:permission="android.permission.BIND_NFC_SERVICE"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop">
-        </activity>
-        <activity
-            android:name=".FlaskActivity"
-            android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
-            android:launchMode="singleTop"
-            android:exported="true"
-            android:theme="@style/DialogTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.bluetooth.device.action.PAIRING_REQUEST" />
-                <action android:name="android.bluetooth.device.action.PAIRING_CANCEL" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".HexViewerActivity"/>

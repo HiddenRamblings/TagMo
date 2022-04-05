@@ -141,6 +141,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private CoordinatorLayout preferences;
     private AppCompatButton switchStorageRoot;
 
+    private MenuItem menuSearch;
     private MenuItem menuSortId;
     private MenuItem menuSortName;
     private MenuItem menuSortGameSeries;
@@ -227,10 +228,13 @@ public class BrowserActivity extends AppCompatActivity implements
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                if (position == 0)
+                if (position == 0) {
                     setTitle(R.string.tagmo);
-                else if (position == 1)
+                    if (null != menuSearch) menuSearch.setVisible(true);
+                } else if (position == 1) {
                     setTitle(R.string.foomiibo_editor);
+                    if (null != menuSearch) menuSearch.setVisible(false);
+                }
             }
         });
 
@@ -896,7 +900,7 @@ public class BrowserActivity extends AppCompatActivity implements
         getMenuInflater().inflate(R.menu.browser_menu, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
 
-        MenuItem menuSearch = menu.findItem(R.id.search);
+        menuSearch = menu.findItem(R.id.search);
         MenuItem menuUpdate = menu.findItem(R.id.install_update);
         menuSortId = menu.findItem(R.id.sort_id);
         menuSortName = menu.findItem(R.id.sort_name);

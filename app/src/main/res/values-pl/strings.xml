@@ -109,7 +109,8 @@
     <string name="bonus_two">Bonus Efekt 2</string>
     <string name="bonus_three">Bonus Efekt 3</string>
 
-    <string name="settings">Ustawienia</string>
+    <string name="folder_selection">Set Home Folder</string>
+    <string name="tagmo_settings">TagMo Settings</string>
     <string name="capture_logcat">Przechw. Logcat</string>
     <string name="foomiibo_editor">Edytor Foomiibo</string>
     <string name="clear_foomiibo_set">Wyczyść Foomiibo</string>
@@ -117,7 +118,7 @@
     <string name="foomiibo_progress">Budowanie %1$s&#8230;</string>
 
     <string name="wrote_file">Plik zapisany w %1$s</string>
-    <string name="wrote_logcat">Logcat zapisany w %1$s</string>
+    <string name="logcat_failed">Logcat escaped! Try a Pokeball</string>
     <string name="nfc_tag">Tag NFC</string>
     <string name="tag_detected">%1$s wykryty&#8230;</string>
     <string name="tag_scanning">%1$s skanowany&#8230;</string>

@@ -229,9 +229,11 @@
     <string name="tag_update_only">Previously written tags require \"Update\"</string>
 
     <string name="custom_tab_back">Back to TagMo</string>
-    <string name="flask_not_found">Flask not connected!</string>
+    <string name="flask_failed">Flask pairing failed!</string>
+    <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="flask_permissions">Required permission denied!</string>
+    <string name="bluetooth_pair">Pair new Bluetooth device</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>

@@ -283,7 +283,7 @@ public class BrowserActivity extends AppCompatActivity implements
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
-                    onDisplaySettingSheet();
+                    preferences.setVisibility(View.GONE);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
                 }
@@ -295,12 +295,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
         toggle.setOnClickListener(view -> {
             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                preferences.setVisibility(View.GONE);
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             } else {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
-        onDisplaySettingSheet();
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
         BlurViewFacade blurView = amiiboContainer.setupWith(coordinator)
@@ -1030,9 +1030,6 @@ public class BrowserActivity extends AppCompatActivity implements
             return onFilterAmiiboSeriesClick();
         } else if (item.getItemId() == R.id.filter_amiibo_type) {
             return onFilterAmiiboTypeClick();
-        } else if (item.getItemId() == R.id.home_folder) {
-            preferences.setVisibility(View.GONE);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {
             return super.onOptionsItemSelected(item);
         }

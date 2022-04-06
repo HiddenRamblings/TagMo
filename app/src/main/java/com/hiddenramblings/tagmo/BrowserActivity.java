@@ -1018,7 +1018,7 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.setShowDownloads(!this.settings.isShowingDownloads());
             this.settings.notifyChanges();
         } else if (item.getItemId() == R.id.tagmo_settings) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            onDisplaySettingSheet();
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
@@ -1031,7 +1031,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.filter_amiibo_type) {
             return onFilterAmiiboTypeClick();
         } else if (item.getItemId() == R.id.home_folder) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             preferences.setVisibility(View.GONE);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {

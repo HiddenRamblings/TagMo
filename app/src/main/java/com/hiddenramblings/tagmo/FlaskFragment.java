@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.nfc.TagLostException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -58,7 +59,7 @@ public class FlaskFragment extends Fragment {
             activateBluetooth();
         } else {
             new Toasty(requireActivity()).Long(R.string.flask_permissions);
-            // finish();
+            ((BrowserActivity) requireActivity()).showBrowserPage();
         }
     });
     private BluetoothLeService flaskService;
@@ -74,7 +75,7 @@ public class FlaskFragment extends Fragment {
             selectBluetoothDevice();
         } else {
             new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-            // finish();
+            ((BrowserActivity) requireActivity()).showBrowserPage();
         }
     });
     ActivityResultLauncher<Intent> onRequestBluetooth = registerForActivityResult(
@@ -84,7 +85,7 @@ public class FlaskFragment extends Fragment {
             selectBluetoothDevice();
         } else {
             new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-            // finish();
+            ((BrowserActivity) requireActivity()).showBrowserPage();
         }
     });
     ActivityResultLauncher<String[]> onRequestLocation = registerForActivityResult(
@@ -101,7 +102,7 @@ public class FlaskFragment extends Fragment {
                 onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
         } else {
             new Toasty(requireActivity()).Long(R.string.flask_permissions);
-            // finish();
+            ((BrowserActivity) requireActivity()).showBrowserPage();
         }
     });
     protected ServiceConnection mServerConn = new ServiceConnection() {
@@ -112,10 +113,15 @@ public class FlaskFragment extends Fragment {
             flaskService = localBinder.getService();
             if (flaskService.initialize()) {
                 if (flaskService.connect(flaskAddress)) {
-                    // TODO: TBD
+                    try {
+                        flaskService.readCustomCharacteristic();
+                    } catch (TagLostException tle) {
+                        stopFlaskService();
+                        new Toasty(requireActivity()).Long(R.string.flask_invalid);
+                    }
                 } else {
                     stopFlaskService();
-                    new Toasty(requireActivity()).Long(R.string.flask_not_found);
+                    new Toasty(requireActivity()).Long(R.string.flask_invalid);
                 }
             }
         }
@@ -129,8 +135,7 @@ public class FlaskFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return (ViewGroup) inflater.inflate(
-                R.layout.fragment_flask, container, false);
+        return inflater.inflate(R.layout.fragment_flask, container, false);
     }
 
     @Override
@@ -203,50 +208,61 @@ public class FlaskFragment extends Fragment {
                     try {
                         BluetoothDevice device = intent
                                 .getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                        if (!device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-                            new Toasty(requireActivity()).Long(R.string.flask_not_found);
-                            return;
-                        }
                         device.setPin((String.valueOf(intent.getIntExtra(
                                 "android.bluetooth.device.extra.PAIRING_KEY", 0
                         ))).getBytes(CharsetCompat.UTF_8));
                         device.setPairingConfirmation(true);
-                        flaskAddress = device.getAddress();
-                        dismissFlaskDiscovery();
-                        startFlaskService();
+                        if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
+                            flaskAddress = device.getAddress();
+                            dismissFlaskDiscovery();
+                            startFlaskService();
+                        } else {
+                            View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device, null);
+                            bonded.setOnClickListener(view1 -> {
+                                flaskAddress = device.getAddress();
+                                dismissFlaskDiscovery();
+                                startFlaskService();
+                            });
+                            ((TextView) bonded.findViewById(R.id.bluetooth_text)).setText(device.getName());
+                            ((LinearLayout) fragmentView.findViewById(R.id.bluetooth_devices)).addView(bonded);
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        new Toasty(requireActivity()).Long(R.string.flask_not_found);
+                        new Toasty(requireActivity()).Long(R.string.flask_failed);
                     }
                 }
             }
         };
-
         for (BluetoothDevice bt : pairedDevices) {
             if (bt.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
                 flaskAddress = bt.getAddress();
                 break;
             } else {
-                View device = getLayoutInflater().inflate(R.layout.bluetooth_device, null);
-                device.setOnClickListener(view1 -> {
+                View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device, null);
+                bonded.setOnClickListener(view1 -> {
                     flaskAddress = bt.getAddress();
                     dismissFlaskDiscovery();
                     startFlaskService();
                 });
-                ((TextView) device.findViewById(R.id.bluetooth_text)).setText(bt.getName());
-                ((LinearLayout) fragmentView.findViewById(R.id.bluetooth_devices)).addView(device);
+                ((TextView) bonded.findViewById(R.id.bluetooth_text)).setText(bt.getName());
+                ((LinearLayout) fragmentView.findViewById(R.id.bluetooth_devices)).addView(bonded);
             }
         }
         if (null != flaskAddress) {
             startFlaskService();
         } else {
-            IntentFilter filter = new IntentFilter(
-                    "android.bluetooth.device.action.PAIRING_REQUEST"
-            );
-            requireActivity().registerReceiver(pairingRequest, filter);
-           if (mBluetoothAdapter.isDiscovering())
-               mBluetoothAdapter.cancelDiscovery();
-           mBluetoothAdapter.startDiscovery();
+            View device = getLayoutInflater().inflate(R.layout.bluetooth_device, null);
+            device.setOnClickListener(view1 -> {
+                IntentFilter filter = new IntentFilter(
+                        "android.bluetooth.device.action.PAIRING_REQUEST"
+                );
+                requireActivity().registerReceiver(pairingRequest, filter);
+                if (mBluetoothAdapter.isDiscovering())
+                    mBluetoothAdapter.cancelDiscovery();
+                mBluetoothAdapter.startDiscovery();
+            });
+            ((TextView) device.findViewById(R.id.bluetooth_text)).setText(R.string.bluetooth_pair);
+            ((LinearLayout) fragmentView.findViewById(R.id.bluetooth_devices)).addView(device, 0);
         }
     }
 

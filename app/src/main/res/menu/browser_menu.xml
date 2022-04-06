@@ -52,10 +52,10 @@
         </menu>
     </item>
     <item
-        android:id="@+id/home_folder"
-        android:title="@string/folder_selection"
-        android:icon="@drawable/ic_baseline_folder_special_24dp"
-        app:showAsAction="always" />
+        android:id="@+id/tagmo_settings"
+        android:icon="@drawable/ic_settings_24dp"
+        android:title="@string/tagmo_settings"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/install_update"
         android:icon="@drawable/ic_baseline_browser_updated_24dp"
@@ -129,11 +129,6 @@
             </group>
         </menu>
     </item>
-    <item
-        android:id="@+id/tagmo_settings"
-        android:icon="@drawable/ic_settings_24dp"
-        android:title="@string/tagmo_settings"
-        app:showAsAction="never"/>
     <item
         android:id="@+id/capture_logcat"
         android:icon="@drawable/ic_android_studio_24dp"

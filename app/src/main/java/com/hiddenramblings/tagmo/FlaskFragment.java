@@ -43,6 +43,7 @@ import java.util.Set;
 @SuppressLint("MissingPermission")
 public class FlaskFragment extends Fragment {
 
+    private boolean isPermissionPrompt = false;
     private View fragmentView;
     private BluetoothAdapter mBluetoothAdapter;
     private String flaskAddress;
@@ -141,15 +142,17 @@ public class FlaskFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         fragmentView = view;
+        verifyPermissions();
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        verifyPermissions();
+        if (!isPermissionPrompt) verifyPermissions();
     }
 
     private void verifyPermissions() {
+        isPermissionPrompt = true;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
@@ -305,20 +308,9 @@ public class FlaskFragment extends Fragment {
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        dismissFlaskDiscovery();
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
-        dismissFlaskDiscovery();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+        isPermissionPrompt = false;
         dismissFlaskDiscovery();
     }
 }

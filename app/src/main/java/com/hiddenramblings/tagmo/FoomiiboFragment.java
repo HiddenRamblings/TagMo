@@ -58,8 +58,7 @@ public class FoomiiboFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return (ViewGroup) inflater.inflate(
-                R.layout.fragment_foomiibo, container, false);
+        return inflater.inflate(R.layout.fragment_foomiibo, container, false);
     }
 
     @Override

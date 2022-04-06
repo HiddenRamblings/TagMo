@@ -1785,6 +1785,10 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
+    void showBrowserPage() {
+        mainLayout.setCurrentItem(0, true);
+    }
+
     BrowserSettings getSettings() {
         return this.settings;
     }

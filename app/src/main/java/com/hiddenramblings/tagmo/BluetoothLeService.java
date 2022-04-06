@@ -12,6 +12,7 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.TagLostException;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -279,10 +280,10 @@ public class BluetoothLeService extends Service {
         return mBluetoothGatt.getServices();
     }
 
-    public void readCustomCharacteristic() {
+    public void readCustomCharacteristic() throws TagLostException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
+            throw new TagLostException();
         }
 
         BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskRX);
@@ -290,7 +291,7 @@ public class BluetoothLeService extends Service {
         // BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString("00002b10-0000-1000-8000-00805f9b34fb"));
         if (mCustomService == null) {
             Log.w(TAG, "Custom BLE Service not found on read");
-            return;
+            throw new TagLostException();
         }
         /*get the read characteristic from the service*/
         BluetoothGattCharacteristic mReadCharacteristic = mCustomService.getCharacteristic(FlaskRX);
@@ -298,8 +299,6 @@ public class BluetoothLeService extends Service {
         if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
             Log.w(TAG, "Failed to read characteristic");
         }
-
-
     }
 
     public void writeCustomCharacteristic(int value) {

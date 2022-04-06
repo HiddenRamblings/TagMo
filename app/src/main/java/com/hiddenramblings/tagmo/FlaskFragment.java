@@ -72,8 +72,12 @@ public class FlaskFragment extends Fragment {
         }
         if (isBluetoothAvailable) {
             mBluetoothAdapter = getBluetoothAdapter();
-            if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
-            selectBluetoothDevice();
+            if (null != mBluetoothAdapter) {
+                selectBluetoothDevice();
+            } else {
+                new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+                ((BrowserActivity) requireActivity()).showBrowserPage();
+            }
         } else {
             new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
             ((BrowserActivity) requireActivity()).showBrowserPage();
@@ -82,7 +86,7 @@ public class FlaskFragment extends Fragment {
     ActivityResultLauncher<Intent> onRequestBluetooth = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         mBluetoothAdapter = getBluetoothAdapter();
-        if (mBluetoothAdapter.isEnabled()) {
+        if (null != mBluetoothAdapter) {
             selectBluetoothDevice();
         } else {
             new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
@@ -97,7 +101,7 @@ public class FlaskFragment extends Fragment {
         }
         if (isLocationAvailable) {
             mBluetoothAdapter = getBluetoothAdapter();
-            if (mBluetoothAdapter.isEnabled())
+            if (null != mBluetoothAdapter)
                 selectBluetoothDevice();
             else
                 onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
@@ -172,8 +176,10 @@ public class FlaskFragment extends Fragment {
             onRequestLocation.launch(PERMISSIONS_LOCATION);
         } else {
             mBluetoothAdapter = getBluetoothAdapter();
-            if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
-            selectBluetoothDevice();
+            if (null != mBluetoothAdapter)
+                selectBluetoothDevice();
+            else
+                onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
         }
     }
 
@@ -186,7 +192,7 @@ public class FlaskFragment extends Fragment {
             onRequestBluetoothS.launch(PERMISSIONS_BLUETOOTH);
         } else {
             mBluetoothAdapter = getBluetoothAdapter();
-            if (mBluetoothAdapter.isEnabled())
+            if (null != mBluetoothAdapter)
                 selectBluetoothDevice();
             else
                 onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
@@ -195,12 +201,17 @@ public class FlaskFragment extends Fragment {
 
     private BluetoothAdapter getBluetoothAdapter() {
         BluetoothAdapter mBluetoothAdapter;
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1)
-            mBluetoothAdapter = ((BluetoothManager)
-                    requireContext().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
-        else
-            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        return mBluetoothAdapter;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            mBluetoothAdapter = ((BluetoothManager) requireContext()
+                    .getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+            if (null != mBluetoothAdapter) {
+                if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
+                return mBluetoothAdapter;
+            }
+        } else {
+            return BluetoothAdapter.getDefaultAdapter();
+        }
+        return null;
     }
 
     private void selectBluetoothDevice() {

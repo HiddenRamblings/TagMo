@@ -141,6 +141,15 @@ public class FlaskFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         fragmentView = view;
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        verifyPermissions();
+    }
+
+    private void verifyPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
@@ -148,8 +157,7 @@ public class FlaskFragment extends Fragment {
                 activateBluetooth();
             } else {
                 final String[] PERMISSIONS_LOCATION = {
-                        Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
                 };
                 onRequestLocationQ.launch(PERMISSIONS_LOCATION);
             }
@@ -164,11 +172,6 @@ public class FlaskFragment extends Fragment {
             if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
             selectBluetoothDevice();
         }
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
     }
 
     private void activateBluetooth() {

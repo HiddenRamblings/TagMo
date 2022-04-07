@@ -29,6 +29,6 @@
         android:textSize="28sp"
         android:singleLine="true"
         android:ellipsize="marquee"
-        android:textColor="@android:color/white" />
+        android:textColor="?android:textColorPrimary" />
 
 </LinearLayout>

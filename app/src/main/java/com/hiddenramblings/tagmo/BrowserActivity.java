@@ -135,7 +135,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private ViewPager2 mainLayout;
     private FloatingActionButton nfcFab;
     private BrowserFragment browserFragment;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private TextView currentFolderView;
     private CoordinatorLayout preferences;
     private AppCompatButton switchStorageRoot;
@@ -195,8 +194,8 @@ public class BrowserActivity extends AppCompatActivity implements
         fakeSnackbar = findViewById(R.id.fake_snackbar);
         fakeSnackbarIcon = findViewById(R.id.snackbar_icon);
         fakeSnackbarText = findViewById(R.id.snackbar_text);
-        mainLayout = (ViewPager2) findViewById(R.id.amiibo_pager);
-        nfcFab = (FloatingActionButton) findViewById(R.id.nfc_fab);
+        mainLayout = findViewById(R.id.amiibo_pager);
+        nfcFab = findViewById(R.id.nfc_fab);
         currentFolderView = findViewById(R.id.current_folder);
         preferences = findViewById(R.id.preferences);
         switchStorageRoot = findViewById(R.id.switch_storage_root);
@@ -220,7 +219,6 @@ public class BrowserActivity extends AppCompatActivity implements
         NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
         mainLayout.setAdapter(pagerAdapter);
         browserFragment = pagerAdapter.getBrowser();
-        swipeRefreshLayout = browserFragment.getSwipeRefreshLayout();
 
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -871,8 +869,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onRefresh() {
-        if (null != swipeRefreshLayout)
-            this.swipeRefreshLayout.setRefreshing(false);
+        if (null != browserFragment.getSwipeRefreshLayout())
+            browserFragment.getSwipeRefreshLayout().setRefreshing(false);
         this.loadAmiiboManager();
         this.onRootFolderChanged(true);
         checkForUpdates();

@@ -214,6 +214,9 @@ public class FlaskFragment extends Fragment {
         return null;
     }
 
+    ActivityResultLauncher<Intent> onRequestPairing = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> { });
+
     private void selectBluetoothDevice() {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
@@ -225,23 +228,27 @@ public class FlaskFragment extends Fragment {
                     try {
                         BluetoothDevice device = intent
                                 .getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                        device.setPin((String.valueOf(intent.getIntExtra(
-                                "android.bluetooth.device.extra.PAIRING_KEY", 0
-                        ))).getBytes(CharsetCompat.UTF_8));
-                        device.setPairingConfirmation(true);
                         if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
+                            device.setPin((String.valueOf(intent.getIntExtra(
+                                    "android.bluetooth.device.extra.PAIRING_KEY", 0
+                            ))).getBytes(CharsetCompat.UTF_8));
+                            device.setPairingConfirmation(true);
                             flaskAddress = device.getAddress();
                             dismissFlaskDiscovery();
                             startFlaskService();
                         } else {
-                            View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device, null);
+                            View bonded = getLayoutInflater().inflate(
+                                    R.layout.bluetooth_device, null);
                             bonded.setOnClickListener(view1 -> {
+                                device.setPin((String.valueOf(intent.getIntExtra(
+                                        "android.bluetooth.device.extra.PAIRING_KEY", 0
+                                ))).getBytes(CharsetCompat.UTF_8));
+                                device.setPairingConfirmation(true);
                                 flaskAddress = device.getAddress();
                                 dismissFlaskDiscovery();
                                 startFlaskService();
                             });
-                            ((TextView) bonded.findViewById(R.id.bluetooth_text)).setText(device.getName());
-                            ((LinearLayout) fragmentView.findViewById(R.id.bluetooth_devices)).addView(bonded);
+                            setButtonText(bonded, device);
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -250,26 +257,25 @@ public class FlaskFragment extends Fragment {
                 }
             }
         };
-        for (BluetoothDevice bt : pairedDevices) {
-            if (bt.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-                flaskAddress = bt.getAddress();
+        for (BluetoothDevice device : pairedDevices) {
+            if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
+                flaskAddress = device.getAddress();
                 break;
             } else {
                 View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device, null);
                 bonded.setOnClickListener(view1 -> {
-                    flaskAddress = bt.getAddress();
+                    flaskAddress = device.getAddress();
                     dismissFlaskDiscovery();
                     startFlaskService();
                 });
-                ((TextView) bonded.findViewById(R.id.bluetooth_text)).setText(bt.getName());
-                ((LinearLayout) fragmentView.findViewById(R.id.bluetooth_devices)).addView(bonded);
+                setButtonText(bonded, device);
             }
         }
         if (null != flaskAddress) {
             startFlaskService();
         } else {
-            View device = getLayoutInflater().inflate(R.layout.bluetooth_device, null);
-            device.setOnClickListener(view1 -> {
+            View paired = getLayoutInflater().inflate(R.layout.bluetooth_device, null);
+            paired.setOnClickListener(view1 -> {
                 IntentFilter filter = new IntentFilter(
                         "android.bluetooth.device.action.PAIRING_REQUEST"
                 );
@@ -277,10 +283,17 @@ public class FlaskFragment extends Fragment {
                 if (mBluetoothAdapter.isDiscovering())
                     mBluetoothAdapter.cancelDiscovery();
                 mBluetoothAdapter.startDiscovery();
+
+//                onRequestPairing.launch(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
             });
-            ((TextView) device.findViewById(R.id.bluetooth_text)).setText(R.string.bluetooth_pair);
-            ((LinearLayout) fragmentView.findViewById(R.id.bluetooth_devices)).addView(device, 0);
+            ((TextView) paired.findViewById(R.id.bluetooth_text)).setText(R.string.bluetooth_pair);
+            ((LinearLayout) fragmentView.findViewById(R.id.bluetooth_devices)).addView(paired, 0);
         }
+    }
+
+    private void setButtonText(View button, BluetoothDevice device) {
+        ((TextView) button.findViewById(R.id.bluetooth_text)).setText(device.getName());
+        ((LinearLayout) fragmentView.findViewById(R.id.bluetooth_devices)).addView(button);
     }
 
     public void startFlaskService() {
@@ -308,7 +321,8 @@ public class FlaskFragment extends Fragment {
     }
 
     private boolean isServiceRunning() {
-        ActivityManager manager = (ActivityManager) requireContext().getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager manager = (ActivityManager)
+                requireContext().getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service
                 : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (BluetoothLeService.class.getName().equals(service.service.getClassName())) {

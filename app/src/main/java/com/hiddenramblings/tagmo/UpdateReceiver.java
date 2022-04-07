@@ -7,8 +7,6 @@ import android.content.pm.PackageInstaller;
 import android.os.Build;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
-
 public class UpdateReceiver extends BroadcastReceiver {
 
     @Override

@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
-    android:id="@+id/bluetooth_devices"
-    android:orientation="vertical" />
+    android:paddingBottom="@dimen/button_height_min"
+    android:orientation="vertical">
+    <ProgressBar
+        android:id="@+id/progress_pairing"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:max="100"
+        android:layout_alignParentBottom="true"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/bluetooth_devices"
+        android:orientation="vertical"
+        android:layout_above="@+id/progressbar"/>
+</RelativeLayout>

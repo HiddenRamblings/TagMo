@@ -56,13 +56,12 @@ android {
         }
     }
 
+    ndkVersion '21.4.7075529'
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
         }
     }
-
-    ndkVersion "21.4.7075529"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11

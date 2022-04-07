@@ -33,6 +33,7 @@ This app is the result of work by many. Thanks go out to (in alphabetical order)
 * azsde - Bug fixes / maintenance
 * Bombastisch - Support and motivation
 * brunomarchand - Change AmiiboAPI to https and upgrade to cmake
+* Catflap62 - N2 Elite hardware and testing
 * DanTheMan827 - Fixes to Amiibo Generator
 * FinalDoom - Bug fixes / maintenance
 * H3llK33p3r - Images for browser and main screen
@@ -46,6 +47,7 @@ This app is the result of work by many. Thanks go out to (in alphabetical order)
 * possi - Wolf link editor
 * socram8888 - Decryption / encryption code
 * Supercool330 - Encryption algorithm help
+* withgallantry - Bluup Flask and much more
 * Others who prefer to remain anonymous and testers
 ### Translations
 * NoiRioN - Polish

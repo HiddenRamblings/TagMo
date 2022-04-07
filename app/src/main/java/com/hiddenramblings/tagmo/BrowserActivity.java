@@ -139,7 +139,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private CoordinatorLayout preferences;
     private AppCompatButton switchStorageRoot;
 
-    private MenuItem menuSearch;
     private MenuItem menuSortId;
     private MenuItem menuSortName;
     private MenuItem menuSortGameSeries;
@@ -157,6 +156,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuViewImage;
     private MenuItem menuRecursiveFiles;
     private MenuItem menuShowDownloads;
+    private boolean isSearchVisible;
 
     private Snackbar fooSnackbar;
 
@@ -226,15 +226,16 @@ public class BrowserActivity extends AppCompatActivity implements
                 super.onPageSelected(position);
                 if (position == 0) {
                     setTitle(R.string.tagmo);
-                    if (null != menuSearch) menuSearch.setVisible(true);
+                    isSearchVisible = true;
                 } else if (position == 1) {
                     setTitle(R.string.foomiibo_editor);
                     checkForUpdates();
-                    if (null != menuSearch) menuSearch.setVisible(false);
+                    isSearchVisible = false;
                 } else if (position == 2) {
                     setTitle(R.string.flask_editor_ble);
-                    if (null != menuSearch) menuSearch.setVisible(false);
+                    isSearchVisible = false;
                 }
+                invalidateOptionsMenu();
             }
         });
 
@@ -898,7 +899,7 @@ public class BrowserActivity extends AppCompatActivity implements
         getMenuInflater().inflate(R.menu.browser_menu, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
 
-        menuSearch = menu.findItem(R.id.search);
+        MenuItem menuSearch = menu.findItem(R.id.search);
         MenuItem menuUpdate = menu.findItem(R.id.install_update);
         menuSortId = menu.findItem(R.id.sort_id);
         menuSortName = menu.findItem(R.id.sort_name);
@@ -925,38 +926,43 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onRecursiveFilesChanged();
         this.onShowDownloadsChanged();
 
-        // setOnQueryTextListener will clear this, so make a copy
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menuSearch.getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setSubmitButtonEnabled(false);
-        searchView.setOnQueryTextListener(this);
-        menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                    onBackPressed();
-                    return false;
-                } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    onBackPressed();
-                    return false;
-                } else {
+        if (isSearchVisible) {
+            menuSearch.setVisible(true);
+            // setOnQueryTextListener will clear this, so make a copy
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView = (SearchView) menuSearch.getActionView();
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            searchView.setSubmitButtonEnabled(false);
+            searchView.setOnQueryTextListener(this);
+            menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem menuItem) {
                     return true;
                 }
-            }
-        });
 
-        //focus the SearchView
-        String query = settings.getQuery();
-        if (!query.isEmpty()) {
-            menuSearch.expandActionView();
-            searchView.setQuery(query, true);
-            searchView.clearFocus();
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                        onBackPressed();
+                        return false;
+                    } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                        onBackPressed();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            });
+
+            //focus the SearchView
+            String query = settings.getQuery();
+            if (!query.isEmpty()) {
+                menuSearch.expandActionView();
+                searchView.setQuery(query, true);
+                searchView.clearFocus();
+            }
+        } else {
+            menuSearch.setVisible(false);
         }
 
         menuUpdate.setVisible(null != updateUrl);

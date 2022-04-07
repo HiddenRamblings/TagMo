@@ -135,7 +135,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private ViewPager2 mainLayout;
     private FloatingActionButton nfcFab;
     private BrowserFragment browserFragment;
-    private RecyclerView amiibosView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView currentFolderView;
     private CoordinatorLayout preferences;
@@ -221,7 +220,6 @@ public class BrowserActivity extends AppCompatActivity implements
         NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
         mainLayout.setAdapter(pagerAdapter);
         browserFragment = pagerAdapter.getBrowser();
-        amiibosView = browserFragment.getAmiibosView();
         swipeRefreshLayout = browserFragment.getSwipeRefreshLayout();
 
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -494,7 +492,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         byte[] tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
 
-        View view = getLayoutInflater().inflate(R.layout.dialog_backup, amiibosView, false);
+        View view = getLayoutInflater().inflate(R.layout.dialog_backup,
+                browserFragment.getAmiibosView(), false);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
@@ -969,6 +968,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        RecyclerView amiibosView = browserFragment.getAmiibosView();
         if (item.getItemId() == R.id.install_update) {
             updates.installUpdateCompat(updateUrl);
         } else if (item.getItemId() == R.id.sort_id) {
@@ -994,21 +994,21 @@ public class BrowserActivity extends AppCompatActivity implements
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.view_simple) {
             if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
+                amiibosView.setLayoutManager(new LinearLayoutManager(this));
             settings.setAmiiboView(VIEW.SIMPLE.getValue());
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.view_compact) {
             if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
+                amiibosView.setLayoutManager(new LinearLayoutManager(this));
             settings.setAmiiboView(VIEW.COMPACT.getValue());
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.view_large) {
             if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                this.amiibosView.setLayoutManager(new LinearLayoutManager(this));
+                amiibosView.setLayoutManager(new LinearLayoutManager(this));
             settings.setAmiiboView(VIEW.LARGE.getValue());
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.view_image) {
-            this.amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+            amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
             settings.setAmiiboView(VIEW.IMAGE.getValue());
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.recursive) {
@@ -1294,8 +1294,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 public void onAnimationEnd(AnimatedLinearLayout layout) {
                     layout.setAnimationListener(null);
                     fakeSnackbar.setVisibility(View.GONE);
-                    if (null != amiibosView)
-                        amiibosView.smoothScrollToPosition(0);
+                    if (null != browserFragment.getAmiibosView())
+                        browserFragment.getAmiibosView().smoothScrollToPosition(0);
                 }
             });
             fakeSnackbar.startAnimation(animate);
@@ -1715,7 +1715,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private int[] getAdapterStats() {
-        BrowserAmiibosAdapter adapter = (BrowserAmiibosAdapter) amiibosView.getAdapter();
+        BrowserAmiibosAdapter adapter = (BrowserAmiibosAdapter)
+                browserFragment.getAmiibosView().getAdapter();
         if (adapter == null) return new int[]{0, 0};
         int size = adapter.getItemCount();
         int count = 0;

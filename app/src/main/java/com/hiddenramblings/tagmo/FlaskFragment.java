@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -48,6 +49,8 @@ public class FlaskFragment extends Fragment {
     private BluetoothAdapter mBluetoothAdapter;
     private String flaskAddress;
     private BroadcastReceiver pairingRequest;
+    private ProgressBar progressBar;
+
     @RequiresApi(api = Build.VERSION_CODES.Q)
     ActivityResultLauncher<String[]> onRequestLocationQ = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
@@ -146,6 +149,7 @@ public class FlaskFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         fragmentView = view;
+        progressBar = view.findViewById(R.id.progress_pairing);
         verifyPermissions();
     }
 
@@ -285,6 +289,7 @@ public class FlaskFragment extends Fragment {
                 if (mBluetoothAdapter.isDiscovering())
                     mBluetoothAdapter.cancelDiscovery();
                 mBluetoothAdapter.startDiscovery();
+                progressBar.setVisibility(View.VISIBLE);
 
 //                onRequestPairing.launch(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
             });
@@ -317,8 +322,7 @@ public class FlaskFragment extends Fragment {
         if (null != mBluetoothAdapter) {
             if (mBluetoothAdapter.isDiscovering())
                 mBluetoothAdapter.cancelDiscovery();
-            if (isServiceRunning())
-                stopFlaskService();
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -337,6 +341,15 @@ public class FlaskFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        isPermissionPrompt = false;
+        dismissFlaskDiscovery();
+        if (isServiceRunning())
+            stopFlaskService();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
         isPermissionPrompt = false;
         dismissFlaskDiscovery();
     }

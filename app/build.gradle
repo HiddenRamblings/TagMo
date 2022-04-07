@@ -35,6 +35,7 @@ android {
         }
         debug {
             initWith release
+            getIsDefault().set(false)
             debuggable true
             try {
                 def keystoreProps = new Properties()
@@ -52,6 +53,7 @@ android {
         }
         publish {
             initWith release
+            getIsDefault().set(false)
             applicationIdSuffix ".eightbit"
         }
     }

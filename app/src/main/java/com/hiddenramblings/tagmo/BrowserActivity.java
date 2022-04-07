@@ -1835,7 +1835,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private void locateKeyFiles() {
+    public void locateKeyFiles() {
         Executors.newSingleThreadExecutor().execute(() -> {
             File[] files = Storage.getDownloadDir(null)
                     .listFiles((dir, name) -> keyNameMatcher(name));
@@ -1970,8 +1970,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            if (keyManager.isKeyMissing())
-                return;
+            if (keyManager.isKeyMissing()) return;
             NTAG215 mifare = null;
             try {
                 Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);

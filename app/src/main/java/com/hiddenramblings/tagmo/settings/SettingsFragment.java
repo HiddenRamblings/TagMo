@@ -596,7 +596,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private final ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+            ((BrowserActivity) requireActivity()).locateKeyFiles();
+            return;
+        }
         if (null != result.getData().getClipData()) {
             for (int i = 0; i < result.getData().getClipData().getItemCount(); i++) {
                 validateKeys(result.getData().getClipData().getItemAt(i).getUri());

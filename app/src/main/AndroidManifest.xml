@@ -30,6 +30,10 @@
     <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
 
+    <queries>
+        <package android:name="com.hiddenramblings.tagmo" />
+    </queries>
+
     <application
         android:name=".TagMo_"
         android:allowBackup="true"
@@ -113,10 +117,13 @@
             android:name=".BluetoothLeService" />
         <receiver
             android:name=".UpdateReceiver"
-            android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
         <meta-data

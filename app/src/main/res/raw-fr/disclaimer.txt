@@ -2,8 +2,6 @@ TagMo is an amiibo™ manager and NFC reader / writer utility. Files used with T
 
 Please report any issues using the official TagMo issues page on GitHub. Issues reported elsewhere may not receive support.
 
-Compatibility with older Android versions and devices is tested using the emulator. Unreported issues may not be addressed.
+TagMo is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Nintendo. No amiibo™ or their digital representations are included in this project.
 
-Any support provided by third parties should be assumed the personal opinion of the author and is not endorsed by TagMo.
-
-TagMo is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Nintendo. No amiibo™ or digital representations of amiibo™ are included in this project. Binaries created with this project are not intended for sale or distribution. This project is for educational and archival purposes only.
+Binaries created with this project are not intended for sale or distribution. This project is for educational and archival purposes only.

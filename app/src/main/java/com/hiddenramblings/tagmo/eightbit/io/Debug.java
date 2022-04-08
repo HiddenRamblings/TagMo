@@ -146,7 +146,7 @@ public class Debug {
         log.append(Build.VERSION.RELEASE);
         log.append(")");
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
-                "logcat", "-d", "-t", "256", BuildConfig.APPLICATION_ID,
+                "logcat", "-d", "-t", "192", BuildConfig.APPLICATION_ID,
                 "AndroidRuntime", "System.err",
                 "ViewRootImpl:S", "IssueReporterActivity:S",
         });

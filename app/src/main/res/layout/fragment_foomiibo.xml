@@ -8,7 +8,7 @@
     android:background="@color/backgroundBlack">
 
     <LinearLayout
-        android:id="@+id/bottom_panel"
+        android:id="@+id/control_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimaryDark"
@@ -53,14 +53,22 @@
         </LinearLayout>
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/amiibos_list"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:layout_marginTop="6dp"
-        android:paddingBottom="@dimen/button_height_min"
-        android:scrollbars="vertical"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/bottom_panel"/>
+        android:layout_height="0dp"
+        android:layout_below="@+id/control_panel"
+        android:layout_alignParentBottom="true">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/amiibos_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:layout_marginTop="6dp"
+            android:paddingBottom="@dimen/button_height_min"
+            android:scrollbars="vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/control_panel"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </RelativeLayout>

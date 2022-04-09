@@ -46,8 +46,8 @@ import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class FoomiiboFragment extends Fragment implements
-        FoomiiboAdapter.OnFoomiiboClickListener,
-        SwipeRefreshLayout.OnRefreshListener {
+        SwipeRefreshLayout.OnRefreshListener,
+        FoomiiboAdapter.OnFoomiiboClickListener{
 
     private final Foomiibo foomiibo = new Foomiibo();
     private final File directory = Storage.getDownloadDir("TagMo", "Foomiibo");
@@ -138,17 +138,13 @@ public class FoomiiboFragment extends Fragment implements
 
     private int getColumnCount() {
         DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager mWindowManager = (WindowManager) requireContext().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager mWindowManager = (WindowManager)
+                requireContext().getSystemService(Context.WINDOW_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
             mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
         else
             mWindowManager.getDefaultDisplay().getMetrics(metrics);
         return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    void refreshMissingIds() {
-
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -217,16 +213,6 @@ public class FoomiiboFragment extends Fragment implements
         this.onRefresh();
     }
 
-    @Override
-    public void onFoomiiboClicked(Amiibo foomiibo) {
-        onBuildFoomiibo(foomiibo);
-    }
-
-    @Override
-    public void onFoomiiboImageClicked(Amiibo foomiibo) {
-        onBuildFoomiibo(foomiibo);
-    }
-
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onRefresh() {
@@ -256,6 +242,16 @@ public class FoomiiboFragment extends Fragment implements
             amiibosView.getAdapter().notifyDataSetChanged();
         }
         swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onFoomiiboClicked(Amiibo foomiibo) {
+        onBuildFoomiibo(foomiibo);
+    }
+
+    @Override
+    public void onFoomiiboImageClicked(Amiibo foomiibo) {
+        onBuildFoomiibo(foomiibo);
     }
 }
 

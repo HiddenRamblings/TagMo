@@ -832,7 +832,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    private void checkForUpdates() {
+    void checkForUpdates() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             updates = new CheckUpdatesTask(this);
             updates.setUpdateListener(downloadUrl -> {
@@ -870,7 +870,6 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onRefresh() {
         this.loadAmiiboManager();
         this.onRootFolderChanged(true);
-        checkForUpdates();
     }
 
     private void onStorageEnabled() {

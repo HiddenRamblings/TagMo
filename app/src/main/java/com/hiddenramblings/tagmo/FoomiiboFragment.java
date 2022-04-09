@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -46,11 +46,13 @@ import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class FoomiiboFragment extends Fragment implements
-        FoomiiboAdapter.OnFoomiiboClickListener {
+        FoomiiboAdapter.OnFoomiiboClickListener,
+        SwipeRefreshLayout.OnRefreshListener {
 
     private final Foomiibo foomiibo = new Foomiibo();
     private final File directory = Storage.getDownloadDir("TagMo", "Foomiibo");
     private RecyclerView amiibosView;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressDialog dialog;
 
     private BrowserSettings settings;
@@ -66,24 +68,6 @@ public class FoomiiboFragment extends Fragment implements
         super.onViewCreated(view, savedInstanceState);
 
         this.settings = new BrowserSettings().initialize();
-        Executors.newSingleThreadExecutor().execute(() -> {
-            AmiiboManager amiiboManager;
-            try {
-                amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
-            } catch (IOException | JSONException | ParseException e) {
-                Debug.Log(e);
-                amiiboManager = null;
-                new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
-            }
-
-            if (Thread.currentThread().isInterrupted()) return;
-
-            final AmiiboManager uiAmiiboManager = amiiboManager;
-            requireActivity().runOnUiThread(() -> {
-                settings.setAmiiboManager(uiAmiiboManager);
-                settings.notifyChanges();
-            });
-        });
 
         amiibosView = view.findViewById(R.id.amiibos_list);
         ArrayList<Long> missingIds = ((BrowserActivity) requireActivity()).getMissingIds();
@@ -93,7 +77,11 @@ public class FoomiiboFragment extends Fragment implements
             amiibosView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         amiibosView.setAdapter(new FoomiiboAdapter(settings, missingIds, this));
         this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) amiibosView.getAdapter());
-        refreshMissingIds();
+
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
+        this.swipeRefreshLayout.setOnRefreshListener(this);
+        this.swipeRefreshLayout.setProgressViewOffset(false, 0,
+                (int) getResources().getDimension(R.dimen.swipe_progress_end));
 
         SearchView searchView = view.findViewById(R.id.amiibo_search);
         SearchManager searchManager = (SearchManager) requireContext().getSystemService(Context.SEARCH_SERVICE);
@@ -128,12 +116,6 @@ public class FoomiiboFragment extends Fragment implements
         view.findViewById(R.id.build_foomiibo_set).setOnClickListener(clickView -> buildFoomiiboSet());
     }
 
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        refreshMissingIds();
-    }
-
     private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
         try {
             long amiiboId = TagUtils.amiiboIdFromTag(tagData);
@@ -166,11 +148,7 @@ public class FoomiiboFragment extends Fragment implements
 
     @SuppressLint("NotifyDataSetChanged")
     void refreshMissingIds() {
-        ArrayList<Long> missingIds = ((BrowserActivity) requireActivity()).getMissingIds();
-        if (null != amiibosView.getAdapter()) {
-            ((FoomiiboAdapter) amiibosView.getAdapter()).setMissingIds(missingIds);
-            ((FoomiiboAdapter) amiibosView.getAdapter()).notifyDataSetChanged();
-        }
+
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -234,6 +212,12 @@ public class FoomiiboFragment extends Fragment implements
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        this.onRefresh();
+    }
+
+    @Override
     public void onFoomiiboClicked(Amiibo foomiibo) {
         onBuildFoomiibo(foomiibo);
     }
@@ -241,6 +225,37 @@ public class FoomiiboFragment extends Fragment implements
     @Override
     public void onFoomiiboImageClicked(Amiibo foomiibo) {
         onBuildFoomiibo(foomiibo);
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    public void onRefresh() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            AmiiboManager amiiboManager;
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager(
+                        requireContext().getApplicationContext()
+                );
+            } catch (IOException | JSONException | ParseException e) {
+                Debug.Log(e);
+                amiiboManager = null;
+                new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
+            }
+
+            if (Thread.currentThread().isInterrupted()) return;
+
+            final AmiiboManager uiAmiiboManager = amiiboManager;
+            requireActivity().runOnUiThread(() -> {
+                settings.setAmiiboManager(uiAmiiboManager);
+                settings.notifyChanges();
+            });
+        });
+        ArrayList<Long> missingIds = ((BrowserActivity) requireActivity()).getMissingIds();
+        if (null != amiibosView.getAdapter()) {
+            ((FoomiiboAdapter) amiibosView.getAdapter()).setMissingIds(missingIds);
+            amiibosView.getAdapter().notifyDataSetChanged();
+        }
+        swipeRefreshLayout.setRefreshing(false);
     }
 }
 

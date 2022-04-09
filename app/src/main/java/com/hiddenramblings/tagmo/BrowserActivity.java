@@ -122,7 +122,6 @@ import java.util.concurrent.Executors;
 
 public class BrowserActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener,
-        SwipeRefreshLayout.OnRefreshListener,
         BrowserSettingsListener,
         BrowserAmiibosAdapter.OnAmiiboClickListener {
 
@@ -868,10 +867,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
     public void onRefresh() {
-        if (null != browserFragment.getSwipeRefreshLayout())
-            browserFragment.getSwipeRefreshLayout().setRefreshing(false);
         this.loadAmiiboManager();
         this.onRootFolderChanged(true);
         checkForUpdates();

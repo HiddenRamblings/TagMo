@@ -21,7 +21,8 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
 
-public class BrowserFragment extends Fragment {
+public class BrowserFragment extends Fragment implements
+        SwipeRefreshLayout.OnRefreshListener{
 
     private FlexboxLayout chipList;
     private RecyclerView amiibosView;
@@ -41,7 +42,7 @@ public class BrowserFragment extends Fragment {
         amiibosView = view.findViewById(R.id.amiibos_list);
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
 
-        this.swipeRefreshLayout.setOnRefreshListener((BrowserActivity) requireActivity());
+        this.swipeRefreshLayout.setOnRefreshListener(this);
         this.swipeRefreshLayout.setProgressViewOffset(false, 0,
                 (int) getResources().getDimension(R.dimen.swipe_progress_end));
 
@@ -61,10 +62,6 @@ public class BrowserFragment extends Fragment {
         return amiibosView;
     }
 
-    public SwipeRefreshLayout getSwipeRefreshLayout() {
-        return swipeRefreshLayout;
-    }
-
     @SuppressLint("InflateParams")
     public void addFilterItemView(String text, String tag, OnCloseClickListener listener) {
         FrameLayout chipContainer = chipList.findViewWithTag(tag);
@@ -81,6 +78,12 @@ public class BrowserFragment extends Fragment {
         } else if (chipList.getChildCount() == 0) {
             chipList.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        swipeRefreshLayout.setRefreshing(false);
+        ((BrowserActivity) requireActivity()).onRefresh();
     }
 }
 

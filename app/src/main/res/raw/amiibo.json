@@ -8136,6 +8136,17 @@
 				"na": "2021-11-05"
 			}
 		},
+		"0x0a40000000000002":
+		{
+			"name": "Min Min",
+			"release":
+			{
+				"au": "2022-04-29",
+				"eu": "2022-04-29",
+				"jp": "2022-04-29",
+				"na": "2022-04-29"
+			}
+		},
 		"0x1902000003830002":
 		{
 			"name": "Ivysaur",
@@ -8521,6 +8532,28 @@
 				"na": "2015-02-01"
 			}
 		},
+		"0x2241000000000002":
+		{
+			"name": "Pyra",
+			"release":
+			{
+				"au": null,
+				"eu": null,
+				"jp": null,
+				"na": null
+			}
+		},
+		"0x2242000000000002":
+		{
+			"name": "Mythra",
+			"release":
+			{
+				"au": null,
+				"eu": null,
+				"jp": null,
+				"na": null
+			}
+		},
 		"0x22800000002c0002":
 		{
 			"name": "Ness",
@@ -8607,6 +8640,17 @@
 				"eu": "2018-10-19",
 				"jp": "2018-10-18",
 				"na": "2018-10-19"
+			}
+		},
+		"0x33c0000000000002":
+		{
+			"name": "Kazuya",
+			"release":
+			{
+				"au": null,
+				"eu": null,
+				"jp": null,
+				"na": null
 			}
 		},
 		"0x3480000000310002":
@@ -8873,6 +8917,17 @@
 				"na": "2017-07-21"
 			}
 		},
+		"0x3601000000000002":
+		{
+			"name": "Sephiroth",
+			"release":
+			{
+				"au": null,
+				"eu": null,
+				"jp": null,
+				"na": null
+			}
+		},
 		"0x3640000003a20002":
 		{
 			"name": "Hero",
@@ -9113,6 +9168,17 @@
 				"eu": "2021-03-26",
 				"jp": "2021-03-26",
 				"na": "2021-03-26"
+			}
+		},
+		"0x3dc0000000000002":
+		{
+			"name": "Steve",
+			"release":
+			{
+				"au": null,
+				"eu": null,
+				"jp": null,
+				"na": null
 			}
 		}
 	},
@@ -9669,6 +9735,7 @@
 		"0x0a1e": "Azalea",
 		"0x0a1f": "Roswell",
 		"0x0a20": "Faith",
+		"0x0a40": "Min Min",
 		"0x1902": "Ivysaur",
 		"0x1906": "Charizard",
 		"0x1907": "Squirtle",
@@ -9699,6 +9766,8 @@
 		"0x2109": "Tiki",
 		"0x210b": "Byleth",
 		"0x2240": "Shulk",
+		"0x2241": "Pyra",
+		"0x2242": "Mythra",
 		"0x2280": "Ness",
 		"0x2281": "Lucas",
 		"0x22c0": "Chibi-Robo",
@@ -9706,6 +9775,7 @@
 		"0x3240": "Bayonetta",
 		"0x3340": "PAC-MAN",
 		"0x3380": "Solaire of Astora",
+		"0x33c0": "Kazuya",
 		"0x3480": "Mega Man",
 		"0x34c0": "Ryu",
 		"0x34c1": "Ken",
@@ -9725,6 +9795,7 @@
 		"0x35c2": "Specter Knight",
 		"0x35c3": "King Knight",
 		"0x3600": "Cloud Strife",
+		"0x3601": "Sephiroth",
 		"0x3640": "Hero",
 		"0x3740": "Mario Cereal",
 		"0x3780": "Snake",
@@ -9746,7 +9817,8 @@
 		"0x38c0": "Loot Goblin",
 		"0x3a00": "Joker",
 		"0x3b40": "Banjo",
-		"0x3c80": "Terry"
+		"0x3c80": "Terry",
+		"0x3dc0": "Steve"
 	},
 	"game_series":
 	{
@@ -9827,6 +9899,7 @@
 		"0x080": "Splatoon",
 		"0x09c": "Mario Sports Superstars",
 		"0x09d": "Mario Sports Superstars",
+		"0x0a4": "Arms",
 		"0x190": "Pokemon",
 		"0x191": "Pokemon",
 		"0x192": "Pokemon",
@@ -9847,6 +9920,7 @@
 		"0x324": "Bayonetta",
 		"0x334": "Pac-man",
 		"0x338": "Dark Souls",
+		"0x33c": "Tekken",
 		"0x348": "Megaman",
 		"0x34c": "Street fighter",
 		"0x350": "Monster Hunter",
@@ -9861,7 +9935,8 @@
 		"0x38c": "Diablo",
 		"0x3a0": "Persona",
 		"0x3b4": "Banjo Kazooie",
-		"0x3c8": "Fatal Fury"
+		"0x3c8": "Fatal Fury",
+		"0x3dc": "Minecraft"
 	},
 	"types":
 	{

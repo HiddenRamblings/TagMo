@@ -892,6 +892,7 @@ public class BrowserActivity extends AppCompatActivity implements
             locateKeyFiles();
         } else {
             this.onRefresh();
+            checkForUpdates();
         }
     }
 

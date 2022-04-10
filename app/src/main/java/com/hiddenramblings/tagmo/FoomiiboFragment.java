@@ -176,7 +176,10 @@ public class FoomiiboFragment extends Fragment implements
 
             deleteDir(handler, directory);
 
-            handler.post(() -> dialog.dismiss());
+            handler.post(() -> {
+                dialog.dismiss();
+                this.onRefresh();
+            });
         });
     }
 

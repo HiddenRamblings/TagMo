@@ -32,6 +32,8 @@ import java.util.UUID;
 public class BluetoothLeService extends Service {
     private final static String TAG = BluetoothLeService.class.getSimpleName();
 
+    private FlaskServiceListener listener;
+
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
@@ -61,6 +63,13 @@ public class BluetoothLeService extends Service {
     private UUID flaskReadService = null;
     private UUID flaskWriteService = null;
 
+    public void setListener(FlaskServiceListener listener) {
+        this.listener = listener;
+    }
+    interface FlaskServiceListener {
+        public void onServicesDiscovered();
+    }
+
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
@@ -87,6 +96,7 @@ public class BluetoothLeService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
+                if (null != listener) listener.onServicesDiscovered();
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
@@ -314,10 +324,12 @@ public class BluetoothLeService extends Service {
                 /*get the read characteristic from the service*/
                 BluetoothGattCharacteristic mReadCharacteristic =
                         mCustomService.getCharacteristic(FlaskRX);
-                if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
-                    flaskReadService = mCustomService.getUuid();
-                    break;
-                }
+                try {
+                    if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
+                        flaskReadService = mCustomService.getUuid();
+                        break;
+                    }
+                } catch (NullPointerException ignored) { }
             }
             if (null == flaskReadService) {
                 Log.w(TAG, "Failed to read characteristic");
@@ -359,10 +371,12 @@ public class BluetoothLeService extends Service {
                 BluetoothGattCharacteristic mWriteCharacteristic = mCustomService.getCharacteristic(FlaskTX);
 
                 mWriteCharacteristic.setValue(value, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-                if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
-                    flaskWriteService = mCustomService.getUuid();
-                    break;
-                }
+                try {
+                    if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
+                        flaskWriteService = mCustomService.getUuid();
+                        break;
+                    }
+                } catch (NullPointerException ignored) { }
             }
 
             if (null == flaskWriteService) {

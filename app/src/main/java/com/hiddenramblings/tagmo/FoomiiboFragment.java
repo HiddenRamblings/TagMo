@@ -230,15 +230,11 @@ public class FoomiiboFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        Executors.newSingleThreadExecutor().execute(() ->
-                Glide.get(requireActivity()).clearDiskCache());
-        Glide.get(requireActivity()).clearMemory();
-        this.onRefresh();
+        rebuildFoomiibo();
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    @Override
-    public void onRefresh() {
+    private void rebuildFoomiibo() {
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {
@@ -264,6 +260,15 @@ public class FoomiiboFragment extends Fragment implements
             ((FoomiiboAdapter) amiibosView.getAdapter()).setMissingIds(missingIds);
             amiibosView.getAdapter().notifyDataSetChanged();
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    public void onRefresh() {
+        Executors.newSingleThreadExecutor().execute(() ->
+                Glide.get(requireActivity()).clearDiskCache());
+        Glide.get(requireActivity()).clearMemory();
+        rebuildFoomiibo();
         swipeRefreshLayout.setRefreshing(false);
     }
 

@@ -304,7 +304,7 @@ public class BluetoothLeService extends Service {
             /*check if the service is available on the device*/
             if (mCustomService == null) {
                 flaskReadService = null;
-                Log.w(TAG, "Custom BLE Service not found on read");
+                Log.w(TAG, "BLE Service not found for read");
                 throw new TagLostException();
             }
             BluetoothGattCharacteristic mReadCharacteristic =
@@ -316,7 +316,7 @@ public class BluetoothLeService extends Service {
         } else {
             List<BluetoothGattService> services = getSupportedGattServices();
             if (null == services || services.isEmpty()) {
-                Log.w(TAG, "Custom BLE Service not found on read");
+                Log.w(TAG, "No BLE Services found for read");
                 throw new TagLostException();
             }
 
@@ -349,7 +349,7 @@ public class BluetoothLeService extends Service {
             /*check if the service is available on the device*/
             if (mCustomService == null) {
                 flaskWriteService = null;
-                Log.w(TAG, "Custom BLE Service not found on write");
+                Log.w(TAG, "BLE Service not found for write");
                 return;
             }
             BluetoothGattCharacteristic mWriteCharacteristic = mCustomService.getCharacteristic(FlaskTX);
@@ -362,7 +362,7 @@ public class BluetoothLeService extends Service {
         } else {
             List<BluetoothGattService> services = getSupportedGattServices();
             if (null == services || services.isEmpty()) {
-                Log.w(TAG, "Custom BLE Service not found on write");
+                Log.w(TAG, "No BLE Services found for write");
                 throw new TagLostException();
             }
 

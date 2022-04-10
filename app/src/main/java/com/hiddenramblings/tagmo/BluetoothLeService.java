@@ -309,7 +309,7 @@ public class BluetoothLeService extends Service {
                 Log.w(TAG, "Custom BLE Service not found on read");
                 throw new TagLostException();
             }
-            
+
             for (BluetoothGattService mCustomService : services) {
                 /*get the read characteristic from the service*/
                 BluetoothGattCharacteristic mReadCharacteristic =

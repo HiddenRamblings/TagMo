@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -269,7 +270,13 @@ public class FoomiiboFragment extends Fragment implements
 
     @Override
     public void onFoomiiboImageClicked(Amiibo foomiibo) {
-        onBuildFoomiibo(foomiibo);
+        Bundle bundle = new Bundle();
+        bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, foomiibo.id);
+
+        Intent intent = new Intent(requireContext(), ImageActivity.class);
+        intent.putExtras(bundle);
+
+        this.startActivity(intent);
     }
 }
 

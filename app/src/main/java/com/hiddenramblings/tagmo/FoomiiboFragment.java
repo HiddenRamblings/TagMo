@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -229,6 +230,9 @@ public class FoomiiboFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
+        Executors.newSingleThreadExecutor().execute(() ->
+                Glide.get(requireActivity()).clearDiskCache());
+        Glide.get(requireActivity()).clearMemory();
         this.onRefresh();
     }
 

@@ -1318,9 +1318,8 @@ public class BrowserActivity extends AppCompatActivity implements
             handler.postDelayed(() -> {
                 fooSnackbar = new IconifiedSnackbar(this, mainLayout)
                         .buildSnackbar(R.string.amiibo_not_found, Snackbar.LENGTH_INDEFINITE);
-                fooSnackbar.setAction(R.string.search, v -> {
-                    mainLayout.setCurrentItem(1, true);
-                }).show();
+                fooSnackbar.setAction(R.string.search, v ->
+                        mainLayout.setCurrentItem(1, true)).show();
             }, 200);
         } else if (null != fooSnackbar && fooSnackbar.isShown()) {
             fooSnackbar.dismiss();

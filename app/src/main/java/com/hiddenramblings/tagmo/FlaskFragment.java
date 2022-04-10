@@ -125,6 +125,7 @@ public class FlaskFragment extends Fragment {
                 if (flaskService.connect(flaskAddress)) {
                     try {
                         flaskService.readCustomCharacteristic();
+                        new Toasty(requireActivity()).Long(R.string.flask_located);
                     } catch (TagLostException tle) {
                         stopFlaskService();
                         new Toasty(requireActivity()).Long(R.string.flask_invalid);

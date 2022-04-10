@@ -286,18 +286,34 @@ public class BluetoothLeService extends Service {
             throw new TagLostException();
         }
 
-        BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskRX);
-        /*check if the service is available on the device*/
-        // BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString("00002b10-0000-1000-8000-00805f9b34fb"));
-        if (mCustomService == null) {
+//        BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskRX);
+//        /*check if the service is available on the device*/
+//         BluetoothGattService mCustomService = mBluetoothGatt
+//                 .getService(UUID.fromString("00002b10-0000-1000-8000-00805f9b34fb"));
+//        if (mCustomService == null) {
+//            Log.w(TAG, "Custom BLE Service not found on read");
+//            throw new TagLostException();
+//        }
+
+        List<BluetoothGattService> services = getSupportedGattServices();
+        if (null == services || services.isEmpty()) {
             Log.w(TAG, "Custom BLE Service not found on read");
             throw new TagLostException();
         }
-        /*get the read characteristic from the service*/
-        BluetoothGattCharacteristic mReadCharacteristic = mCustomService.getCharacteristic(FlaskRX);
-        // BluetoothGattCharacteristic mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString("00002b10-0000-1000-8000-00805f9b34fb"));
-        if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
+
+        boolean hasFlaskService = false;
+        for (BluetoothGattService mCustomService : services) {
+            /*get the read characteristic from the service*/
+            BluetoothGattCharacteristic mReadCharacteristic =
+                    mCustomService.getCharacteristic(FlaskRX);
+            if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
+                hasFlaskService = true;
+                break;
+            }
+        }
+        if (!hasFlaskService) {
             Log.w(TAG, "Failed to read characteristic");
+            throw new TagLostException();
         }
     }
 

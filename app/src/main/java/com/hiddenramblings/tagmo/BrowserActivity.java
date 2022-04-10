@@ -223,8 +223,15 @@ public class BrowserActivity extends AppCompatActivity implements
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+                if (position != 0) {
+                    isSearchVisible = false;
+                    if (null != fooSnackbar && fooSnackbar.isShown()) {
+                        fooSnackbar.dismiss();
+                    }
+                }
                 switch (position) {
                     case 0:
+                        isSearchVisible = true;
                         setTitle(R.string.tagmo);
                         break;
                     case 1:
@@ -233,12 +240,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     case 2:
                         setTitle(R.string.flask_editor_ble);
                         break;
-                }
-                if (position != 0) {
-                    isSearchVisible = false;
-                    if (null != fooSnackbar && fooSnackbar.isShown()) {
-                        fooSnackbar.dismiss();
-                    }
                 }
                 invalidateOptionsMenu();
             }

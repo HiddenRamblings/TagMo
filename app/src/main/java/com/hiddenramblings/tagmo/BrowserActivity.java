@@ -54,7 +54,6 @@ import androidx.preference.Preference;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.transition.AutoTransition;
 import androidx.transition.TransitionManager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -93,7 +92,6 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
-import com.hiddenramblings.tagmo.settings.JSONExecutor;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -436,7 +434,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void onDisplaySettingSheet() {
         preferences.setVisibility(View.VISIBLE);
-        if (null == settingsFragment || settingsFragment.isDetached())
+        if (null == settingsFragment)
             settingsFragment = new SettingsFragment();
         getSupportFragmentManager()
                 .beginTransaction()

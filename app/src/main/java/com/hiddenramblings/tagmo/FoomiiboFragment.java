@@ -107,11 +107,13 @@ public class FoomiiboFragment extends Fragment implements
             }
         });
 
-        view.findViewById(R.id.clear_foomiibo_set).setOnClickListener(clickView -> {
-            deleteDir(directory);
-        });
+        view.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
+                clickView -> clearFoomiiboSet(directory)
+        );
 
-        view.findViewById(R.id.build_foomiibo_set).setOnClickListener(clickView -> buildFoomiiboSet());
+        view.findViewById(R.id.build_foomiibo_set).setOnClickListener(
+                clickView -> buildFoomiiboSet()
+        );
     }
 
     private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
@@ -146,18 +148,37 @@ public class FoomiiboFragment extends Fragment implements
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void deleteDir(File dir) {
+    private void deleteDir(Handler handler, File dir) {
         if (!directory.exists()) return;
         File[] files = dir.listFiles();
         if (null != files && files.length > 0) {
             for (File file : files) {
-                if (file.isDirectory())
-                    deleteDir(file);
-                else
+                if (file.isDirectory()) {
+                    if (null != handler) {
+                        handler.post(() -> dialog.setMessage(getString(
+                                R.string.foomiibo_removing, file.getName())));
+                    }
+                    deleteDir(handler, file);
+                } else {
                     file.delete();
+                }
             }
         }
         dir.delete();
+    }
+
+    private void clearFoomiiboSet(File directory) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        Executors.newSingleThreadExecutor().execute(() -> {
+            handler.post(() -> dialog = ProgressDialog.show(requireActivity(),
+                    "", "", true));
+
+            deleteDir(handler, directory);
+
+            handler.post(() -> {
+                dialog.dismiss();
+            });
+        });
     }
 
     private void buildFoomiiboFile(Amiibo amiibo) {
@@ -182,7 +203,7 @@ public class FoomiiboFragment extends Fragment implements
             handler.post(() -> dialog = ProgressDialog.show(requireActivity(),
                     "", "", true));
 
-            deleteDir(directory);
+            deleteDir(null, directory);
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
 
@@ -191,7 +212,11 @@ public class FoomiiboFragment extends Fragment implements
                 handler.post(() -> dialog.setMessage(getString(
                         R.string.foomiibo_progress, amiibo.getCharacter().name)));
             }
-            handler.post(() -> dialog.dismiss());
+            handler.post(() -> {
+                dialog.dismiss();
+                onRefresh();
+            });
+
         });
     }
 

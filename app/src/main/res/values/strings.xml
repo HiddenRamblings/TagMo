@@ -111,6 +111,7 @@
     <string name="bonus_three">Bonus Effect 2</string>
 
     <string name="tagmo_settings">TagMo Settings</string>
+    <string name="rebuild_database">Sync AmiiboAPI</string>
     <string name="capture_logcat">Capture Logcat</string>
     <string name="foomiibo_editor">Foomiibo Editor</string>
     <string name="clear_foomiibo_set">Clear Foomiibo</string>

@@ -93,6 +93,7 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
+import com.hiddenramblings.tagmo.settings.JSONExecutor;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -534,6 +535,13 @@ public class BrowserActivity extends AppCompatActivity implements
                     R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG).show();
         }
     });
+
+    private void onRebuildDatabaseClicked() {
+        if (null == settingsFragment || settingsFragment.isDetached())
+            settingsFragment = new SettingsFragment();
+        settingsFragment.rebuildAmiiboDatabase();
+        this.recreate();
+    }
 
     private void onCaptureLogcatClicked() {
         if (updates.hasPendingUpdate()) {
@@ -1027,6 +1035,8 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.tagmo_settings) {
             onDisplaySettingSheet();
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        } else if (item.getItemId() == R.id.rebuild_database) {
+            onRebuildDatabaseClicked();
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
         } else if (item.getItemId() == R.id.filter_game_series) {

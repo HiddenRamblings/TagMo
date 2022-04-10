@@ -22,7 +22,7 @@ import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
 
 public class BrowserFragment extends Fragment implements
-        SwipeRefreshLayout.OnRefreshListener{
+        SwipeRefreshLayout.OnRefreshListener {
 
     private FlexboxLayout chipList;
     private RecyclerView amiibosView;

@@ -128,16 +128,16 @@ public class FlaskFragment extends Fragment {
                         public void onServicesDiscovered() {
                             try {
                                 flaskService.readCustomCharacteristic();
-                                new Toasty(requireActivity()).Long(R.string.flask_located);
+                                new Toasty(requireActivity()).Short(R.string.flask_located);
                             } catch (TagLostException tle) {
                                 stopFlaskService();
-                                new Toasty(requireActivity()).Long(R.string.flask_invalid);
+                                new Toasty(requireActivity()).Short(R.string.flask_invalid);
                             }
                         }
                     });
                 } else {
                     stopFlaskService();
-                    new Toasty(requireActivity()).Long(R.string.flask_invalid);
+                    new Toasty(requireActivity()).Short(R.string.flask_invalid);
                 }
             }
         }
@@ -255,7 +255,7 @@ public class FlaskFragment extends Fragment {
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    new Toasty(requireActivity()).Long(R.string.flask_failed);
+                    new Toasty(requireActivity()).Short(R.string.flask_failed);
                 }
             }
         }

@@ -223,16 +223,22 @@ public class BrowserActivity extends AppCompatActivity implements
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                if (position == 0) {
-                    setTitle(R.string.tagmo);
-                    isSearchVisible = true;
-                } else if (position == 1) {
-                    setTitle(R.string.foomiibo_editor);
-                    checkForUpdates();
+                switch (position) {
+                    case 0:
+                        setTitle(R.string.tagmo);
+                        break;
+                    case 1:
+                        setTitle(R.string.foomiibo_editor);
+                        break;
+                    case 2:
+                        setTitle(R.string.flask_editor_ble);
+                        break;
+                }
+                if (position != 0) {
                     isSearchVisible = false;
-                } else if (position == 2) {
-                    setTitle(R.string.flask_editor_ble);
-                    isSearchVisible = false;
+                    if (null != fooSnackbar && fooSnackbar.isShown()) {
+                        fooSnackbar.dismiss();
+                    }
                 }
                 invalidateOptionsMenu();
             }
@@ -1167,6 +1173,9 @@ public class BrowserActivity extends AppCompatActivity implements
             this.runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
+                if (settings.getAmiiboFiles().isEmpty()) {
+                    onAmiiboFilesChanged();
+                }
             });
         });
     }
@@ -1304,12 +1313,13 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (settings.getAmiiboFiles().isEmpty()) {
             preferences.setVisibility(View.GONE);
+            fakeSnackbar.setAnimationListener(null);
+            fakeSnackbar.setVisibility(View.GONE);
             handler.postDelayed(() -> {
                 fooSnackbar = new IconifiedSnackbar(this, mainLayout)
-                        .buildTickerBar(R.string.amiibo_not_found);
+                        .buildSnackbar(R.string.amiibo_not_found, Snackbar.LENGTH_INDEFINITE);
                 fooSnackbar.setAction(R.string.search, v -> {
                     mainLayout.setCurrentItem(1, true);
-                    fooSnackbar.dismiss();
                 }).show();
             }, 200);
         } else if (null != fooSnackbar && fooSnackbar.isShown()) {

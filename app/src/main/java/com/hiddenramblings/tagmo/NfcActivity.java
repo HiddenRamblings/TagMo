@@ -484,9 +484,9 @@ public class NfcActivity extends AppCompatActivity {
 
                     case NFCIntent.ACTION_UNLOCK_UNIT:
                         if (null == mifare.amiiboPrepareUnlock()) {
-                            Snackbar unlockBar = new IconifiedSnackbar(this,
-                                    findViewById(R.id.coordinator))
-                                    .buildTickerBar(R.string.progress_unlock);
+                            Snackbar unlockBar = new IconifiedSnackbar(
+                                    this, findViewById(R.id.coordinator)
+                            ).buildTickerBar(R.string.progress_unlock);
                             unlockBar.setAction(R.string.proceed, v -> {
                                 mifare.amiiboUnlock();
                                 unlockBar.dismiss();

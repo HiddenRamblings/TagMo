@@ -132,6 +132,8 @@ public class FoomiiboAdapter
 
     @Override
     public void onBindViewHolder(final FoomiiboViewHolder holder, int position) {
+        holder.isHighlighted = false;
+        holder.itemView.findViewById(R.id.highlight).setBackground(null);
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.listener && !holder.isHighlighted) {
                 holder.listener.onFoomiiboClicked(holder.foomiibo);

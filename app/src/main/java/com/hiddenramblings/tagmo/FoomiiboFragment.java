@@ -80,8 +80,7 @@ public class FoomiiboFragment extends Fragment implements
 
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
         this.swipeRefreshLayout.setOnRefreshListener(this);
-        this.swipeRefreshLayout.setProgressViewOffset(false, 0,
-                (int) getResources().getDimension(R.dimen.swipe_progress_end));
+        this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
 
         SearchView searchView = view.findViewById(R.id.amiibo_search);
         SearchManager searchManager = (SearchManager) requireContext().getSystemService(Context.SEARCH_SERVICE);
@@ -110,7 +109,6 @@ public class FoomiiboFragment extends Fragment implements
 
         view.findViewById(R.id.clear_foomiibo_set).setOnClickListener(clickView -> {
             deleteDir(directory);
-            ((BrowserActivity) requireActivity()).onRootFolderChanged(true);
         });
 
         view.findViewById(R.id.build_foomiibo_set).setOnClickListener(clickView -> buildFoomiiboSet());
@@ -194,8 +192,6 @@ public class FoomiiboFragment extends Fragment implements
                         R.string.foomiibo_progress, amiibo.getCharacter().name)));
             }
             handler.post(() -> dialog.dismiss());
-
-            ((BrowserActivity) requireActivity()).onRootFolderChanged(true);
         });
     }
 
@@ -204,7 +200,6 @@ public class FoomiiboFragment extends Fragment implements
         if (null == amiiboManager) return;
 
         buildFoomiiboFile(amiibo);
-        ((BrowserActivity) requireActivity()).onRootFolderChanged(true);
     }
 
     @Override

@@ -43,8 +43,7 @@ public class BrowserFragment extends Fragment implements
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
 
         this.swipeRefreshLayout.setOnRefreshListener(this);
-        this.swipeRefreshLayout.setProgressViewOffset(false, 0,
-                (int) getResources().getDimension(R.dimen.swipe_progress_end));
+        this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
 
         BrowserActivity activity = (BrowserActivity) requireActivity();
         BrowserSettings settings = activity.getSettings();
@@ -78,6 +77,12 @@ public class BrowserFragment extends Fragment implements
         } else if (chipList.getChildCount() == 0) {
             chipList.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((BrowserActivity) requireActivity()).onRefresh();
     }
 
     @Override

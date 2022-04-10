@@ -26,10 +26,10 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.BuildConfig;
-import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
@@ -239,9 +239,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Preference syncInfo = findPreference(getString(R.string.settings_import_info_amiiboapi));
         if (null != syncInfo) {
             syncInfo.setOnPreferenceClickListener(preference -> {
-                new JSONExecutor(API_LAST_UPDATED).setResultListener(result -> {
-                    if (null != result) parseUpdateJSON(result, true);
-                });
+                rebuildAmiiboDatabase();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
@@ -469,6 +467,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
+    public void rebuildAmiiboDatabase() {
+        new JSONExecutor(API_LAST_UPDATED).setResultListener(result -> {
+            if (null != result) parseUpdateJSON(result, true);
+        });
+    }
+
     private void updateAmiiboManager(Uri data) {
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
@@ -520,12 +524,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void setAmiiboManager(AmiiboManager amiiboManager) {
+        Executors.newSingleThreadExecutor().execute(() ->
+                Glide.get(requireActivity()).clearDiskCache());
+        requireActivity().runOnUiThread(() ->
+                Glide.get(requireActivity()).clearMemory());
         this.amiiboManager = amiiboManager;
-        new Thread(() -> GlideApp.get(requireContext().getApplicationContext()).clearDiskCache());
-        requireActivity().runOnUiThread(() -> {
-            GlideApp.get(requireContext()).clearMemory();
-            updateAmiiboStats();
-        });
+        requireActivity().runOnUiThread(this::updateAmiiboStats);
     }
 
     void updateAmiiboStats() {

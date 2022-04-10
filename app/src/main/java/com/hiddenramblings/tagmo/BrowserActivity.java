@@ -1364,7 +1364,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    void onRootFolderChanged(boolean indicator) {
+    private void onRootFolderChanged(boolean indicator) {
         if (null != this.settings) {
             File rootFolder = this.settings.getBrowserRootFolder();
             if (!keyManager.isKeyMissing()) {

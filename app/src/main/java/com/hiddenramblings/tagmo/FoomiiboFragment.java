@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.bumptech.glide.Glide;
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -230,11 +229,12 @@ public class FoomiiboFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        rebuildFoomiibo();
+        this.onRefresh();
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void rebuildFoomiibo() {
+    @Override
+    public void onRefresh() {
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {
@@ -260,15 +260,6 @@ public class FoomiiboFragment extends Fragment implements
             ((FoomiiboAdapter) amiibosView.getAdapter()).setMissingIds(missingIds);
             amiibosView.getAdapter().notifyDataSetChanged();
         }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    @Override
-    public void onRefresh() {
-        Executors.newSingleThreadExecutor().execute(() ->
-                Glide.get(requireActivity()).clearDiskCache());
-        Glide.get(requireActivity()).clearMemory();
-        rebuildFoomiibo();
         swipeRefreshLayout.setRefreshing(false);
     }
 

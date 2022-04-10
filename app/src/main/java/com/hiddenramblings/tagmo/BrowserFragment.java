@@ -38,6 +38,9 @@ public class BrowserFragment extends Fragment implements
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        BrowserActivity activity = (BrowserActivity) requireActivity();
+        BrowserSettings settings = activity.getSettings();
+
         chipList = view.findViewById(R.id.chip_list);
         amiibosView = view.findViewById(R.id.amiibos_list);
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
@@ -45,8 +48,6 @@ public class BrowserFragment extends Fragment implements
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
 
-        BrowserActivity activity = (BrowserActivity) requireActivity();
-        BrowserSettings settings = activity.getSettings();
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
             this.amiibosView.setLayoutManager(new GridLayoutManager(requireActivity(),
                     activity.getColumnCount()));
@@ -63,6 +64,7 @@ public class BrowserFragment extends Fragment implements
 
     @SuppressLint("InflateParams")
     public void addFilterItemView(String text, String tag, OnCloseClickListener listener) {
+        if (null == chipList) return;
         FrameLayout chipContainer = chipList.findViewWithTag(tag);
         chipList.removeView(chipContainer);
         if (!text.isEmpty()) {

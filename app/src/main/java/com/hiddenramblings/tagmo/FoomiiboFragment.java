@@ -71,6 +71,10 @@ public class FoomiiboFragment extends Fragment implements
 
         this.settings = new BrowserSettings().initialize();
 
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
+        this.swipeRefreshLayout.setOnRefreshListener(this);
+        this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
+
         amiibosView = view.findViewById(R.id.amiibos_list);
         ArrayList<Long> missingIds = ((BrowserActivity) requireActivity()).getMissingIds();
         if (this.settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
@@ -79,10 +83,6 @@ public class FoomiiboFragment extends Fragment implements
             amiibosView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         amiibosView.setAdapter(new FoomiiboAdapter(settings, missingIds, this));
         this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) amiibosView.getAdapter());
-
-        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
-        this.swipeRefreshLayout.setOnRefreshListener(this);
-        this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
 
         SearchView searchView = view.findViewById(R.id.amiibo_search);
         SearchManager searchManager = (SearchManager) requireContext().getSystemService(Context.SEARCH_SERVICE);

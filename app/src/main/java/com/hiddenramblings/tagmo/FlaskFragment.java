@@ -123,16 +123,13 @@ public class FlaskFragment extends Fragment {
             flaskService = localBinder.getService();
             if (flaskService.initialize()) {
                 if (flaskService.connect(flaskAddress)) {
-                    flaskService.setListener(new BluetoothLeService.FlaskServiceListener() {
-                        @Override
-                        public void onServicesDiscovered() {
-                            try {
-                                flaskService.readCustomCharacteristic();
-                                new Toasty(requireActivity()).Short(R.string.flask_located);
-                            } catch (TagLostException tle) {
-                                stopFlaskService();
-                                new Toasty(requireActivity()).Short(R.string.flask_invalid);
-                            }
+                    flaskService.setListener(() -> {
+                        try {
+                            flaskService.readCustomCharacteristic();
+                            new Toasty(requireActivity()).Short(R.string.flask_located);
+                        } catch (TagLostException tle) {
+                            stopFlaskService();
+                            new Toasty(requireActivity()).Short(R.string.flask_invalid);
                         }
                     });
                 } else {

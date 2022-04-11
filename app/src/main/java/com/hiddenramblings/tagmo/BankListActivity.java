@@ -159,6 +159,8 @@ public class BankListActivity extends AppCompatActivity implements
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    if (writeBankLayout.getVisibility() == View.VISIBLE)
+                        onBottomSheetChanged(true, false);
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);

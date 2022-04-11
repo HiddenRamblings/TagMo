@@ -32,7 +32,7 @@ import java.util.UUID;
 public class BluetoothLeService extends Service {
     private final static String TAG = BluetoothLeService.class.getSimpleName();
 
-    private FlaskServiceListener listener;
+    private BluetoothGattListener listener;
 
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -63,10 +63,10 @@ public class BluetoothLeService extends Service {
     private UUID flaskReadService = null;
     private UUID flaskWriteService = null;
 
-    public void setListener(FlaskServiceListener listener) {
+    public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
     }
-    interface FlaskServiceListener {
+    interface BluetoothGattListener {
         public void onServicesDiscovered();
     }
 

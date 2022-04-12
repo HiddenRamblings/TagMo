@@ -1384,7 +1384,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     void onRootFolderChanged(boolean indicator) {
-        if (null != this.settings) {
+        if (null != this.settings && fakeSnackbar.getVisibility() != View.VISIBLE) {
             File rootFolder = this.settings.getBrowserRootFolder();
             if (!keyManager.isKeyMissing()) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));

@@ -1383,7 +1383,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private void onRootFolderChanged(boolean indicator) {
+    void onRootFolderChanged(boolean indicator) {
         if (null != this.settings) {
             File rootFolder = this.settings.getBrowserRootFolder();
             if (!keyManager.isKeyMissing()) {
@@ -1679,8 +1679,13 @@ public class BrowserActivity extends AppCompatActivity implements
                 // if (null != amiibo.getCharacter() )
                 //     character = amiibo.getCharacter().name;
             } else {
-                tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
+                amiiboHexId = TagUtils.amiiboIdToHex(amiiboId);
+                tagInfo = "ID: " + amiiboHexId;
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
+            }
+            if (amiiboHexId.endsWith("0000002")) {
+                txtTagId.setEnabled(false);
+                toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(false);
             }
         }
 

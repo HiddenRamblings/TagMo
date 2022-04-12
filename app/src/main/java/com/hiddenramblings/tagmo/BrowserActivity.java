@@ -1683,10 +1683,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 tagInfo = "ID: " + amiiboHexId;
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
             }
-            if (amiiboHexId.endsWith("0000002")) {
-                txtTagId.setEnabled(false);
-                toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(false);
-            }
         }
 
         boolean hasTagInfo = null != tagInfo ;
@@ -1720,6 +1716,14 @@ public class BrowserActivity extends AppCompatActivity implements
                     startActivity(intent);
                 });
             }
+        }
+        if (amiiboHexId.endsWith("0000002")) {
+            txtTagId.setEnabled(false);
+            toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
+            toolbar.getMenu().findItem(R.id.mnu_update).setEnabled(false);
+            toolbar.getMenu().findItem(R.id.mnu_save).setEnabled(false);
+            toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(false);
+            toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(false);
         }
     }
 

@@ -239,6 +239,7 @@ public class FoomiiboFragment extends Fragment implements
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onRefresh() {
+        ((BrowserActivity) requireActivity()).onRootFolderChanged(false);
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {

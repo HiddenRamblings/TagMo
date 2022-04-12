@@ -15,6 +15,6 @@
         android:title="@string/amiibo_backup"/>
     <item
         android:id="@+id/mnu_validate"
-        android:icon="@drawable/ic_settings_24dp"
+        android:icon="@drawable/ic_baseline_compare_24dp"
         android:title="@string/validate_data"/>
 </menu>

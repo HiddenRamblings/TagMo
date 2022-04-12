@@ -319,7 +319,8 @@ public class FoomiiboAdapter
                 // if (null != amiibo.getCharacter())
                 //     gameSeries = amiibo.getCharacter().name;
             } else {
-                tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
+                amiiboHexId = TagUtils.amiiboIdToHex(amiiboId);
+                tagInfo = "ID: " + amiiboHexId;
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
             }
 
@@ -349,6 +350,9 @@ public class FoomiiboAdapter
                 if (null != amiiboImageUrl) {
                     GlideApp.with(itemView).asBitmap().load(amiiboImageUrl).into(target);
                 }
+            }
+            if (amiiboHexId.endsWith("0000002")) {
+                txtTagId.setEnabled(false);
             }
         }
 

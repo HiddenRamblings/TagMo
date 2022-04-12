@@ -84,7 +84,7 @@ public class BrowserFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        ((BrowserActivity) requireActivity()).onRefresh();
+        ((BrowserActivity) requireActivity()).onRootFolderChanged(false);
     }
 
     @Override

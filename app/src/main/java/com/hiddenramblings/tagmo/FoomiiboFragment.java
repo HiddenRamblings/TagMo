@@ -178,7 +178,7 @@ public class FoomiiboFragment extends Fragment implements
 
             handler.post(() -> {
                 dialog.dismiss();
-                this.onRefresh();
+                onRefresh();
             });
         });
     }
@@ -214,6 +214,7 @@ public class FoomiiboFragment extends Fragment implements
                 handler.post(() -> dialog.setMessage(getString(
                         R.string.foomiibo_progress, amiibo.getCharacter().name)));
             }
+
             handler.post(() -> {
                 dialog.dismiss();
                 onRefresh();

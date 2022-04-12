@@ -951,10 +951,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
                 @Override
                 public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                        onBackPressed();
-                        return false;
-                    } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState()
+                            || View.VISIBLE == amiiboContainer.getVisibility()
+                            || getSupportFragmentManager().getBackStackEntryCount() > 0) {
                         onBackPressed();
                         return false;
                     } else {

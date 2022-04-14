@@ -231,13 +231,13 @@ public class BrowserActivity extends AppCompatActivity implements
                 switch (position) {
                     case 0:
                         isSearchVisible = true;
-                        setTitle(R.string.tagmo);
+                        setTitle(R.string.tagmo_browser);
                         break;
                     case 1:
-                        setTitle(R.string.foomiibo_editor);
+                        setTitle(R.string.foomiibo);
                         break;
                     case 2:
-                        setTitle(R.string.flask_editor_ble);
+                        setTitle(R.string.bluup_flask_ble);
                         break;
                 }
                 invalidateOptionsMenu();
@@ -346,9 +346,9 @@ public class BrowserActivity extends AppCompatActivity implements
             }
             popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
-                popup.getMenu().findItem(R.id.mnu_flask).setTitle(R.string.flask_editor_ble);
+                popup.getMenu().findItem(R.id.mnu_flask).setTitle(R.string.bluup_flask_ble);
             else
-                popup.getMenu().findItem(R.id.mnu_flask).setTitle(R.string.flask_editor_web);
+                popup.getMenu().findItem(R.id.mnu_flask).setTitle(R.string.bluup_flask_web);
             popup.show();
             popup.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_scan) {
@@ -1327,8 +1327,11 @@ public class BrowserActivity extends AppCompatActivity implements
             handler.postDelayed(() -> {
                 fooSnackbar = new IconifiedSnackbar(this, mainLayout)
                         .buildSnackbar(R.string.amiibo_not_found, Snackbar.LENGTH_INDEFINITE);
-                fooSnackbar.setAction(R.string.search, v ->
-                        mainLayout.setCurrentItem(1, true)).show();
+                fooSnackbar.setAction(R.string.search, v -> {
+                    mainLayout.setCurrentItem(1, true);
+                    preferences.setVisibility(View.GONE);
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }).show();
             }, 200);
         } else if (null != fooSnackbar && fooSnackbar.isShown()) {
             fooSnackbar.dismiss();

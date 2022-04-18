@@ -1719,7 +1719,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 });
             }
         }
-        if (amiiboHexId.endsWith("0000002")) {
+        if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
             txtTagId.setEnabled(false);
             toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
             toolbar.getMenu().findItem(R.id.mnu_update).setEnabled(false);

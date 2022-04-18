@@ -351,7 +351,7 @@ public class FoomiiboAdapter
                     GlideApp.with(itemView).asBitmap().load(amiiboImageUrl).into(target);
                 }
             }
-            if (amiiboHexId.endsWith("0000002")) {
+            if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
                 txtTagId.setEnabled(false);
             }
         }

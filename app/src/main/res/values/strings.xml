@@ -234,7 +234,8 @@
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="flask_failed">Flask pairing failed!</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
-    <string name="flask_located">Bluup Flask identified!</string>
+    <string name="flask_located">Connecting Bluup Flask&#8230;</string>
+    <string name="flask_connected">Bluup Flask connected!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="flask_permissions">Required permission denied!</string>
     <string name="bluetooth_pair">Pair new Bluetooth device</string>

@@ -20,6 +20,7 @@ public class Bonuses {
             if (!Arrays.asList(excludeIds).contains(TagUtils.amiiboIdToHex(amiibo.id)))
                 bonuses.add("Breath of the Wild");
         }
+
         return bonuses;
     }
 }

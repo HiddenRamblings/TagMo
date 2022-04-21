@@ -235,6 +235,7 @@
     <string name="flask_failed">Flask pairing failed!</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
+    <string name="flask_selected">Connecting BLE device&#8230;</string>
     <string name="flask_connected">Bluup Flask connected!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="flask_permissions">Required permission denied!</string>

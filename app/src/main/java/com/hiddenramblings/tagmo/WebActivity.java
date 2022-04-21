@@ -167,7 +167,7 @@ public class WebActivity extends AppCompatActivity {
                 }
                 zipIn.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Debug.Log(e);
             } finally {
                 dialog.dismiss();
                 this.archive.delete();

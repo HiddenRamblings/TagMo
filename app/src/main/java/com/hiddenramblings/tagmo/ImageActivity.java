@@ -214,7 +214,7 @@ public class ImageActivity extends AppCompatActivity {
         } catch (FileNotFoundException e) {
             Debug.Log(e);
         } catch (IOException e) {
-            e.printStackTrace();
+            Debug.Log(e);
         }
     }
 

@@ -7,6 +7,7 @@ import androidx.documentfile.provider.DocumentFile;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import org.json.JSONArray;
@@ -231,7 +232,7 @@ public class AmiiboManager {
     public static AmiiboManager getAmiiboManager(Context context)
             throws IOException, JSONException, ParseException {
         AmiiboManager amiiboManager;
-        if (new File(context.getExternalFilesDir(null), AMIIBO_DATABASE_FILE).exists()) {
+        if (new File(Storage.getDownloadDir("TagMo"), AMIIBO_DATABASE_FILE).exists()) {
             try {
                 amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
             } catch (IOException | JSONException | ParseException e) {

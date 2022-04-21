@@ -78,6 +78,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
+import com.hiddenramblings.tagmo.amiibo.GamesManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
@@ -173,6 +174,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private SettingsFragment settingsFragment;
     private KeyManager keyManager;
+    private GamesManager gamesManager;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private int filteredCount;
     private AmiiboFile clickedAmiibo = null;
@@ -217,6 +219,11 @@ public class BrowserActivity extends AppCompatActivity implements
         NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
         mainLayout.setAdapter(pagerAdapter);
         browserFragment = pagerAdapter.getBrowser();
+        try {
+            gamesManager = GamesManager.getGamesManager(this);
+        } catch (Exception ex) {
+            Debug.Log(ex);
+        }
 
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -342,7 +349,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Debug.Log(e);
             }
             popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -1596,6 +1603,16 @@ public class BrowserActivity extends AppCompatActivity implements
                         backupDialog.dismiss());
                 backupDialog.show();
                 return true;
+            } else if (item.getItemId() == R.id.mnu_usage) {
+                try {
+                    long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+                    gamesManager.get3DSGames(amiiboId);
+                    gamesManager.getWiiUGames(amiiboId);
+                    gamesManager.getSwitchGames(amiiboId);
+                } catch (Exception e) {
+                    Debug.Log(e);
+                }
+                return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
                 Intent tagEdit = new Intent(this, TagDataActivity.class);
@@ -1649,6 +1666,7 @@ public class BrowserActivity extends AppCompatActivity implements
         toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_update).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_save).setEnabled(available);
+        toolbar.getMenu().findItem(R.id.mnu_usage).setEnabled(null != gamesManager);
         toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_view_hex).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(available);

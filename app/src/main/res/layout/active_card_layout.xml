@@ -184,10 +184,22 @@
                         android:visibility="gone"/>
 
                     <TextView
-                        android:id="@+id/txtUsage"
+                        android:id="@+id/txtUsageLabel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/txtPath"
+                        android:textColor="@color/tag_text"
+                        android:textSize="12sp"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/game_usage_view"
+                        android:gravity="center"
+                        tools:ignore="SmallSp"/>
+
+                    <TextView
+                        android:id="@+id/txtUsage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/txtUsageLabel"
                         android:textColor="@color/tag_text"
                         android:textSize="10sp"
                         tools:ignore="SmallSp"/>

@@ -7,6 +7,7 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,7 +46,7 @@ public class GamesManager {
         return parse(new String(data));
     }
 
-    static GamesManager parse(String json) throws JSONException, ParseException {
+    static GamesManager parse(String json) throws JSONException {
         return parse(new JSONObject(json));
     }
 
@@ -57,30 +58,27 @@ public class GamesManager {
             JSONObject amiiboJSON = amiibosJSON.getJSONObject(amiiboKey);
 
             ArrayList<String> amiibo3DS = new ArrayList<>();
-            JSONObject games3DSJSON = amiiboJSON.getJSONObject("games3DS");
-            for (Iterator<String> iterator = games3DSJSON.keys(); iterator.hasNext();) {
-                String key = iterator.next();
-                JSONObject game = games3DSJSON.getJSONObject(key);
+            JSONArray games3DSJSON = amiiboJSON.getJSONArray("games3DS");
+            for (int i = 0; i < games3DSJSON.length(); i++) {
+                JSONObject game = games3DSJSON.getJSONObject(i);
                 String name = game.getString("gameName");
                 amiibo3DS.add(name);
             }
             manager.games3DS.put(hexToId(amiiboKey), amiibo3DS);
 
             ArrayList<String> amiiboWiiU = new ArrayList<>();
-            JSONObject gamesWiiUJSON = amiiboJSON.getJSONObject("gamesWiiU");
-            for (Iterator<String> iterator = gamesWiiUJSON.keys(); iterator.hasNext();) {
-                String key = iterator.next();
-                JSONObject game = gamesWiiUJSON.getJSONObject(key);
+            JSONArray gamesWiiUJSON = amiiboJSON.getJSONArray("gamesWiiU");
+            for (int i = 0; i < gamesWiiUJSON.length(); i++) {
+                JSONObject game = gamesWiiUJSON.getJSONObject(i);
                 String name = game.getString("gameName");
                 amiiboWiiU.add(name);
             }
             manager.gamesWiiU.put(hexToId(amiiboKey), amiiboWiiU);
 
             ArrayList<String> amiiboSwitch = new ArrayList<>();
-            JSONObject gamesSwitchJSON = amiiboJSON.getJSONObject("gamesSwitch");
-            for (Iterator<String> iterator = gamesSwitchJSON.keys(); iterator.hasNext();) {
-                String key = iterator.next();
-                JSONObject game = gamesSwitchJSON.getJSONObject(key);
+            JSONArray gamesSwitchJSON = amiiboJSON.getJSONArray("gamesSwitch");
+            for (int i = 0; i < gamesSwitchJSON.length(); i++) {
+                JSONObject game = gamesSwitchJSON.getJSONObject(i);
                 String name = game.getString("gameName");
                 amiiboSwitch.add(name);
             }

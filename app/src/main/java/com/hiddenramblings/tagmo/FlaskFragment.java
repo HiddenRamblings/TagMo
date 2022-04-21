@@ -37,6 +37,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
@@ -257,7 +258,7 @@ public class FlaskFragment extends Fragment {
                         setButtonText(bonded, device);
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    Debug.Log(ex);
                     new Toasty(requireActivity()).Short(R.string.flask_failed);
                 }
             }

@@ -20,6 +20,10 @@
         android:title="@string/save"
         app:showAsAction="always"/>
     <item
+        android:id="@+id/mnu_usage"
+        android:title="@string/game_compat"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/mnu_edit"
         android:title="@string/edit_props"
         app:showAsAction="ifRoom"/>

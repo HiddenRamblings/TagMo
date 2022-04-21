@@ -84,6 +84,7 @@
     <string name="write_count">Write Counter</string>
     <string name="mod_serial">Serial Number</string>
     <string name="view_hex">View Hex Code</string>
+    <string name="game_compat">amiibo&#8482; Usage</string>
     <string name="edit_props">Edit Properties</string>
     <string name="delete_amiibo">Delete amiibo&#8482;</string>
     <string name="ignore_tag_id">Ignore Tag ID #</string>

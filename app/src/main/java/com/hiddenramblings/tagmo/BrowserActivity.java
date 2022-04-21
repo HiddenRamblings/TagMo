@@ -174,7 +174,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private SettingsFragment settingsFragment;
     private KeyManager keyManager;
-    private GamesManager gamesManager;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private int filteredCount;
     private AmiiboFile clickedAmiibo = null;
@@ -219,11 +218,6 @@ public class BrowserActivity extends AppCompatActivity implements
         NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
         mainLayout.setAdapter(pagerAdapter);
         browserFragment = pagerAdapter.getBrowser();
-        try {
-            gamesManager = GamesManager.getGamesManager(this);
-        } catch (Exception ex) {
-            Debug.Log(ex);
-        }
 
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -1603,16 +1597,6 @@ public class BrowserActivity extends AppCompatActivity implements
                         backupDialog.dismiss());
                 backupDialog.show();
                 return true;
-            } else if (item.getItemId() == R.id.mnu_usage) {
-                try {
-                    long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-                    gamesManager.get3DSGames(amiiboId);
-                    gamesManager.getWiiUGames(amiiboId);
-                    gamesManager.getSwitchGames(amiiboId);
-                } catch (Exception e) {
-                    Debug.Log(e);
-                }
-                return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
                 Intent tagEdit = new Intent(this, TagDataActivity.class);
@@ -1666,7 +1650,6 @@ public class BrowserActivity extends AppCompatActivity implements
         toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_update).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_save).setEnabled(available);
-        toolbar.getMenu().findItem(R.id.mnu_usage).setEnabled(null != gamesManager);
         toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_view_hex).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(available);
@@ -1719,6 +1702,39 @@ public class BrowserActivity extends AppCompatActivity implements
         setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo);
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo);
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
+
+        try {
+            GamesManager gamesManager = GamesManager.getGamesManager(this);
+
+            StringBuilder usage = new StringBuilder();
+            usage.append("\n3DS:");
+            for (String game : gamesManager.get3DSGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            usage.append("\n\nWiiU:");
+            for (String game : gamesManager.getWiiUGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            usage.append("\n\nSwitch:");
+            for (String game : gamesManager.getSwitchGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            ((TextView) findViewById(R.id.txtUsage)).setText(usage);
+        } catch (Exception ex) {
+            Debug.Log(ex);
+        }
 
         if (null != imageAmiibo) {
             imageAmiibo.setVisibility(View.GONE);

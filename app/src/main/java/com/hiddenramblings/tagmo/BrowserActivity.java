@@ -1706,6 +1706,8 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             GamesManager gamesManager = GamesManager.getGamesManager(this);
 
+            TextView txtUsage = findViewById(R.id.txtUsage);
+
             StringBuilder usage = new StringBuilder();
             usage.append("\n3DS:");
             for (String game : gamesManager.get3DSGames(amiiboId)) {
@@ -1731,7 +1733,18 @@ public class BrowserActivity extends AppCompatActivity implements
                     usage.append(", ");
                 usage.append(game);
             }
-            ((TextView) findViewById(R.id.txtUsage)).setText(usage);
+            txtUsage.setText(usage);
+            txtUsage.setVisibility(View.GONE);
+            TextView label = findViewById(R.id.txtUsageLabel);
+            label.setOnClickListener(view -> {
+                if (txtUsage.getVisibility() == View.VISIBLE) {
+                    txtUsage.setVisibility(View.GONE);
+                    label.setText(R.string.game_usage_view);
+                } else {
+                    txtUsage.setVisibility(View.VISIBLE);
+                    label.setText(R.string.game_usage_hide);
+                }
+            });
         } catch (Exception ex) {
             Debug.Log(ex);
         }

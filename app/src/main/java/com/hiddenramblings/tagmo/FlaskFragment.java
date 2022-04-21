@@ -35,7 +35,9 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
+import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import java.util.Locale;
@@ -52,6 +54,7 @@ public class FlaskFragment extends Fragment {
     private ProgressBar progressBar;
     private BluetoothAdapter mBluetoothAdapter;
     private String flaskAddress;
+    private Snackbar statusBar;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     ActivityResultLauncher<String[]> onRequestLocationQ = registerForActivityResult(
@@ -126,7 +129,8 @@ public class FlaskFragment extends Fragment {
                     flaskService.setListener(() -> {
                         try {
                             flaskService.readCustomCharacteristic();
-                            new Toasty(requireActivity()).Short(R.string.flask_located);
+                            if (null != statusBar && statusBar.isShown()) statusBar.dismiss();
+                            new Toasty(requireActivity()).Short(R.string.flask_connected);
                         } catch (TagLostException tle) {
                             stopFlaskService();
                             new Toasty(requireActivity()).Short(R.string.flask_invalid);
@@ -235,6 +239,9 @@ public class FlaskFragment extends Fragment {
                         device.setPairingConfirmation(true);
                         flaskAddress = device.getAddress();
                         dismissFlaskDiscovery();
+                        statusBar = new IconifiedSnackbar(requireActivity(), fragmentView)
+                                .buildSnackbar(R.string.flask_located, Snackbar.LENGTH_INDEFINITE);
+                        statusBar.show();
                         startFlaskService();
                     } else {
                         View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device,
@@ -265,6 +272,9 @@ public class FlaskFragment extends Fragment {
         for (BluetoothDevice device : pairedDevices) {
             if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
                 flaskAddress = device.getAddress();
+                statusBar = new IconifiedSnackbar(requireActivity(), fragmentView)
+                        .buildSnackbar(R.string.flask_located, Snackbar.LENGTH_INDEFINITE);
+                statusBar.show();
                 break;
             } else {
                 View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device,

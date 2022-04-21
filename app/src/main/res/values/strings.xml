@@ -88,6 +88,8 @@
     <string name="delete_amiibo">Delete amiibo&#8482;</string>
     <string name="ignore_tag_id">Ignore Tag ID #</string>
     <string name="random_serial">Random Serial Number</string>
+    <string name="game_usage_view">View Compatible Games</string>
+    <string name="game_usage_hide">Hide Compatible Games</string>
 
     <string name="properties">Properties</string>
     <string name="mii">Mii</string>

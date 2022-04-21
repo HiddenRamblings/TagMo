@@ -108,6 +108,10 @@ public class IconifiedSnackbar {
         return buildSnackbar(msg, drawable, length, null);
     }
 
+    public Snackbar buildSnackbar(int msgRes, int drawable, int length) {
+        return buildSnackbar(mActivity.get().getString(msgRes), drawable, length, null);
+    }
+
     public Snackbar buildSnackbar(String msg, int length) {
         return buildSnackbar(msg, R.drawable.ic_stat_notice_24dp, length, null);
     }

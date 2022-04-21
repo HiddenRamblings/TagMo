@@ -239,9 +239,7 @@ public class FlaskFragment extends Fragment {
                         device.setPairingConfirmation(true);
                         flaskAddress = device.getAddress();
                         dismissFlaskDiscovery();
-                        statusBar = new IconifiedSnackbar(requireActivity(), fragmentView)
-                                .buildSnackbar(R.string.flask_located, Snackbar.LENGTH_INDEFINITE);
-                        statusBar.show();
+                        showConnectionNotice(true);
                         startFlaskService();
                     } else {
                         View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device,
@@ -253,6 +251,7 @@ public class FlaskFragment extends Fragment {
                             device.setPairingConfirmation(true);
                             flaskAddress = device.getAddress();
                             dismissFlaskDiscovery();
+                            showConnectionNotice(false);
                             startFlaskService();
                         });
                         setButtonText(bonded, device);
@@ -272,9 +271,7 @@ public class FlaskFragment extends Fragment {
         for (BluetoothDevice device : pairedDevices) {
             if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
                 flaskAddress = device.getAddress();
-                statusBar = new IconifiedSnackbar(requireActivity(), fragmentView)
-                        .buildSnackbar(R.string.flask_located, Snackbar.LENGTH_INDEFINITE);
-                statusBar.show();
+                showConnectionNotice(true);
                 break;
             } else {
                 View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device,
@@ -282,6 +279,7 @@ public class FlaskFragment extends Fragment {
                 bonded.setOnClickListener(view1 -> {
                     flaskAddress = device.getAddress();
                     dismissFlaskDiscovery();
+                    showConnectionNotice(false);
                     startFlaskService();
                 });
                 setButtonText(bonded, device);
@@ -316,6 +314,14 @@ public class FlaskFragment extends Fragment {
     private void setButtonText(View button, BluetoothDevice device) {
         ((TextView) button.findViewById(R.id.bluetooth_text)).setText(device.getName());
         deviceList.addView(button);
+    }
+
+    private void showConnectionNotice(boolean wasFound) {
+        int message = wasFound ? R.string.flask_located : R.string.flask_selected;
+        statusBar = new IconifiedSnackbar(requireActivity(), fragmentView).buildSnackbar(
+                message, R.drawable.ic_bluup_flask_24dp, Snackbar.LENGTH_INDEFINITE
+        );
+        statusBar.show();
     }
 
     public void startFlaskService() {

@@ -190,7 +190,7 @@
                         android:layout_below="@id/txtPath"
                         android:textColor="@color/tag_text"
                         android:textSize="12sp"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginTop="4dp"
                         android:text="@string/game_usage_view"
                         android:gravity="center"
                         tools:ignore="SmallSp"/>

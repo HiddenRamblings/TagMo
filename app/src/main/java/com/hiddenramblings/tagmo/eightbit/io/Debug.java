@@ -148,7 +148,7 @@ public class Debug {
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d", "-t", "192", BuildConfig.APPLICATION_ID,
                 "AndroidRuntime", "System.err",
-                "ViewRootImpl:S", "IssueReporterActivity:S",
+                "ViewRootImpl*:S", "IssueReporterActivity:S",
         });
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 mLogcatProc.getInputStream()));

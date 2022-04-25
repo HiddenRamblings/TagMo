@@ -427,22 +427,38 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        if (null == settingsFragment) settingsFragment = new SettingsFragment();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences, settingsFragment)
-                .commit();
         prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                Preference build = settingsFragment.findPreference(
-                        getString(R.string.settings_version)
-                );
-                if (null != updateUrl && null != build) {
-                    build.setOnPreferenceClickListener(preference -> {
+                if (null == settingsFragment) settingsFragment = new SettingsFragment();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.preferences, settingsFragment)
+                        .commit();
+                ((TextView) findViewById(R.id.build_text)).setText(
+                        getString(R.string.build_hash, BuildConfig.COMMIT));
+                findViewById(R.id.build_layout).setOnClickListener(view -> {
+                    closePrefsDrawer();
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                            "https://github.com/HiddenRamblings/TagMo"
+                    )));
+                });
+                findViewById(R.id.guide_layout).setOnClickListener(view -> {
+                    closePrefsDrawer();
+                    startActivity(new Intent(BrowserActivity.this, WebActivity.class)
+                            .setAction(NFCIntent.SITE_GITLAB_README));
+                });
+                findViewById(R.id.donate_layout).setOnClickListener(view -> {
+                    closePrefsDrawer();
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                            "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
+                    )));
+                });
+                if (null != updateUrl) {
+                    findViewById(R.id.build_layout).setOnClickListener(view -> {
+                        closePrefsDrawer();
                         updates.installUpdateCompat(updateUrl);
-                        return settingsFragment.onPreferenceTreeClick(preference);
                     });
                 }
             }
@@ -1862,6 +1878,11 @@ public class BrowserActivity extends AppCompatActivity implements
 
     void showBrowserPage() {
         mainLayout.setCurrentItem(0, true);
+    }
+
+    public void closePrefsDrawer() {
+        if (prefsDrawer.isDrawerOpen(GravityCompat.START))
+            prefsDrawer.closeDrawer(GravityCompat.START);
     }
 
     BrowserSettings getSettings() {

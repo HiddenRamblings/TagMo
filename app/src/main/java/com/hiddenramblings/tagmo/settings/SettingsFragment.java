@@ -112,11 +112,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         amiiboSeriesStats = findPreference(getString(R.string.settings_info_amiibo_series));
         amiiboTypeStats = findPreference(getString(R.string.settings_info_amiibo_types));
 
-
-        Preference version = findPreference(getString(R.string.settings_version));
-        if (null != version)
-            version.setTitle(getString(R.string.build_hash_title, BuildConfig.COMMIT));
-
         loadAmiiboManager();
         updateKeySummary();
         updateAmiiboStats();
@@ -375,15 +370,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
-
-        Preference viewGuides = findPreference(getString(R.string.settings_view_guides));
-        if (null != viewGuides) {
-            viewGuides.setOnPreferenceClickListener(preference -> {
-                startActivity(new Intent(requireActivity(), WebActivity.class)
-                        .setAction(NFCIntent.SITE_GITLAB_README));
-                return SettingsFragment.super.onPreferenceTreeClick(preference);
-            });
-        }
     }
 
     private void onImportKeysClicked() {
@@ -409,7 +395,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 Debug.Log(e);
                 requireActivity().runOnUiThread(() ->
                         new IconifiedSnackbar(requireActivity()).buildSnackbar(
-                                e.getMessage(), Snackbar.LENGTH_SHORT).show());
+                                requireActivity().findViewById(R.id.preferences),
+                                e.getMessage(), Snackbar.LENGTH_SHORT
+                        ).show());
             }
             if (Thread.currentThread().isInterrupted()) return;
 
@@ -657,7 +645,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void showSnackbar(int msgRes, int length) {
-        new IconifiedSnackbar(requireActivity()).buildSnackbar(msgRes, length).show();
+        new IconifiedSnackbar(requireActivity()).buildSnackbar(
+                requireActivity().findViewById(R.id.preferences), msgRes, length
+        ).show();
     }
 
     private void parseUpdateJSON(String result, boolean isMenuClicked) {
@@ -668,8 +658,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 downloadAmiiboAPIData(lastUpdated);
             } else if (!prefs.lastUpdated().get().equals(lastUpdated)) {
                 new IconifiedSnackbar(requireActivity()).buildSnackbar(
-                        R.string.update_amiibo_api, Snackbar.LENGTH_LONG)
-                        .setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated)).show();
+                        requireActivity().findViewById(R.id.preferences),
+                        R.string.update_amiibo_api, Snackbar.LENGTH_LONG
+                ).setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated)).show();
             }
         } catch (Exception e) {
             Debug.Log(e);

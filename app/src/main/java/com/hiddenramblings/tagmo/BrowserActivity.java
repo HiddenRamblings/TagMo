@@ -137,7 +137,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private FloatingActionButton nfcFab;
     private BrowserFragment browserFragment;
     private TextView currentFolderView;
-    private DrawerLayout drawer;
+    private DrawerLayout prefsDrawer;
     private AppCompatButton switchStorageRoot;
 
     private MenuItem menuSortId;
@@ -198,7 +198,7 @@ public class BrowserActivity extends AppCompatActivity implements
         mainLayout = findViewById(R.id.amiibo_pager);
         nfcFab = findViewById(R.id.nfc_fab);
         currentFolderView = findViewById(R.id.current_folder);
-        drawer = findViewById(R.id.drawer_layout);
+        prefsDrawer = findViewById(R.id.drawer_layout);
         switchStorageRoot = findViewById(R.id.switch_storage_root);
         amiiboContainer = findViewById(R.id.amiiboContainer);
         toolbar = findViewById(R.id.toolbar);
@@ -432,15 +432,21 @@ public class BrowserActivity extends AppCompatActivity implements
                 .beginTransaction()
                 .replace(R.id.preferences, settingsFragment)
                 .commit();
-        Preference build = settingsFragment.findPreference(
-                getString(R.string.settings_version)
-        );
-        if (null != updateUrl && null != build) {
-            build.setOnPreferenceClickListener(preference -> {
-                updates.installUpdateCompat(updateUrl);
-                return settingsFragment.onPreferenceTreeClick(preference);
-            });
-        }
+        prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                Preference build = settingsFragment.findPreference(
+                        getString(R.string.settings_version)
+                );
+                if (null != updateUrl && null != build) {
+                    build.setOnPreferenceClickListener(preference -> {
+                        updates.installUpdateCompat(updateUrl);
+                        return settingsFragment.onPreferenceTreeClick(preference);
+                    });
+                }
+            }
+        });
     }
 
     private void onProviderInstallerNotAvailable() {
@@ -1027,10 +1033,10 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.setShowDownloads(!this.settings.isShowingDownloads());
             this.settings.notifyChanges();
         } else if (item.getItemId() == R.id.tagmo_settings) {
-            if (drawer.isDrawerOpen(GravityCompat.START))
-                drawer.closeDrawer(GravityCompat.START);
+            if (prefsDrawer.isDrawerOpen(GravityCompat.START))
+                prefsDrawer.closeDrawer(GravityCompat.START);
             else
-                drawer.openDrawer(GravityCompat.START);
+                prefsDrawer.openDrawer(GravityCompat.START);
         } else if (item.getItemId() == R.id.rebuild_database) {
             onRebuildDatabaseClicked();
         } else if (item.getItemId() == R.id.capture_logcat) {
@@ -2006,8 +2012,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START))
-            drawer.closeDrawer(GravityCompat.START);
+        if (prefsDrawer.isDrawerOpen(GravityCompat.START))
+            prefsDrawer.closeDrawer(GravityCompat.START);
         else if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState())
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         else if (mainLayout.getCurrentItem() != 0)

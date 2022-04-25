@@ -48,8 +48,10 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuCompat;
 import androidx.documentfile.provider.DocumentFile;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.preference.Preference;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -135,7 +137,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private FloatingActionButton nfcFab;
     private BrowserFragment browserFragment;
     private TextView currentFolderView;
-    private CoordinatorLayout preferences;
+    private DrawerLayout drawer;
     private AppCompatButton switchStorageRoot;
 
     private MenuItem menuSortId;
@@ -196,7 +198,7 @@ public class BrowserActivity extends AppCompatActivity implements
         mainLayout = findViewById(R.id.amiibo_pager);
         nfcFab = findViewById(R.id.nfc_fab);
         currentFolderView = findViewById(R.id.current_folder);
-        preferences = findViewById(R.id.preferences);
+        drawer = findViewById(R.id.drawer_layout);
         switchStorageRoot = findViewById(R.id.switch_storage_root);
         amiiboContainer = findViewById(R.id.amiiboContainer);
         toolbar = findViewById(R.id.toolbar);
@@ -286,7 +288,6 @@ public class BrowserActivity extends AppCompatActivity implements
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
-                    preferences.setVisibility(View.GONE);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
                 }
@@ -298,7 +299,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
         toggle.setOnClickListener(view -> {
             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                preferences.setVisibility(View.GONE);
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             } else {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -426,17 +426,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             } catch (Exception ignored) {}
         }
-    }
 
-    private void onProviderInstallerNotAvailable() {
-        new Toasty(BrowserActivity.this).Long(R.string.fail_ssl_update);
-        finish();
-    }
-
-    private void onDisplaySettingSheet() {
-        preferences.setVisibility(View.VISIBLE);
-        if (null == settingsFragment)
-            settingsFragment = new SettingsFragment();
+        if (null == settingsFragment) settingsFragment = new SettingsFragment();
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.preferences, settingsFragment)
@@ -450,6 +441,11 @@ public class BrowserActivity extends AppCompatActivity implements
                 return settingsFragment.onPreferenceTreeClick(preference);
             });
         }
+    }
+
+    private void onProviderInstallerNotAvailable() {
+        new Toasty(BrowserActivity.this).Long(R.string.fail_ssl_update);
+        finish();
     }
 
     private void launchFlaskEditor() {
@@ -1031,8 +1027,10 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.setShowDownloads(!this.settings.isShowingDownloads());
             this.settings.notifyChanges();
         } else if (item.getItemId() == R.id.tagmo_settings) {
-            onDisplaySettingSheet();
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            if (drawer.isDrawerOpen(GravityCompat.START))
+                drawer.closeDrawer(GravityCompat.START);
+            else
+                drawer.openDrawer(GravityCompat.START);
         } else if (item.getItemId() == R.id.rebuild_database) {
             onRebuildDatabaseClicked();
         } else if (item.getItemId() == R.id.capture_logcat) {
@@ -1321,8 +1319,7 @@ public class BrowserActivity extends AppCompatActivity implements
             TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
             mainLayout.setPadding(0, 0, 0, 0);
         }
-        if (settings.getAmiiboFiles().isEmpty()) {
-            preferences.setVisibility(View.GONE);
+        if (settings.getAmiiboFiles().isEmpty()) { ;
             fakeSnackbar.setAnimationListener(null);
             fakeSnackbar.setVisibility(View.GONE);
             handler.postDelayed(() -> {
@@ -1330,7 +1327,6 @@ public class BrowserActivity extends AppCompatActivity implements
                         .buildSnackbar(R.string.amiibo_not_found, Snackbar.LENGTH_INDEFINITE);
                 fooSnackbar.setAction(R.string.search, v -> {
                     mainLayout.setCurrentItem(1, true);
-                    preferences.setVisibility(View.GONE);
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }).show();
             }, 200);
@@ -2010,7 +2006,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState())
+        if (drawer.isDrawerOpen(GravityCompat.START))
+            drawer.closeDrawer(GravityCompat.START);
+        else if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState())
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         else if (mainLayout.getCurrentItem() != 0)
             mainLayout.setCurrentItem(0, true);

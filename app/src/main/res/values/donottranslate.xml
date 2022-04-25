@@ -4,7 +4,7 @@
 
     <string name="tagmo" translatable="false">TagMo</string>
     <string name="build_hash_full" translatable="false"> TagMo - #%1$s</string>
-    <string name="build_hash_title" translatable="false">TagMo build #%1$s</string>
+    <string name="build_hash" translatable="false">#%1$s</string>
     <string name="git_issue_title" translatable="false">Logcat - TagMo #%1$s</string>
 
     <string name="tag_data" translatable="false">tagData</string>
@@ -28,9 +28,6 @@
     <string name="settings_import_info_amiiboapi" translatable="false">settings_sync_info_amiiboapi</string>
     <string name="settings_disable_debug" translatable="false">settings_disable_debug</string>
     <string name="settings_stable_channel" translatable="false">settings_stable_channel</string>
-    <string name="settings_view_guides" translatable="false">settings_view_guides</string>
-    <string name="settings_sponsor_dev" translatable="false">settings_sponsor_dev</string>
-    <string name="settings_version" translatable="false">settings_version</string>
     <string name="image_network_settings" translatable="false">image_network_settings</string>
 
     <string name="mimetype_text" translatable="false">text/plain</string>

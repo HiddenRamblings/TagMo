@@ -69,7 +69,6 @@ public class IconifiedSnackbar {
 
     private final WeakReference<Activity> mActivity;
     private final ViewGroup layout;
-    private Snackbar snackbar;
 
     public IconifiedSnackbar(Activity activity, ViewGroup layout) {
         mActivity = new WeakReference<>(activity);
@@ -80,9 +79,9 @@ public class IconifiedSnackbar {
         this(activity, null);
     }
 
-    public Snackbar buildSnackbar(String msg, int drawable, int length, View anchor) {
-        snackbar = Snackbar.make(mActivity.get()
-                .findViewById(R.id.coordinator), msg, length);
+    public Snackbar buildSnackbar(ViewGroup parent, String msg, int drawable, int length, View anchor) {
+        if (null == parent) parent = mActivity.get().findViewById(R.id.coordinator);
+        Snackbar snackbar = Snackbar.make(parent, msg, length);
         View snackbarLayout = snackbar.getView();
         TextView textView = snackbarLayout.findViewById(
                 com.google.android.material.R.id.snackbar_text);
@@ -105,24 +104,29 @@ public class IconifiedSnackbar {
     }
 
     public Snackbar buildSnackbar(String msg, int drawable, int length) {
-        return buildSnackbar(msg, drawable, length, null);
+        return buildSnackbar(null, msg, drawable, length, null);
     }
 
     public Snackbar buildSnackbar(int msgRes, int drawable, int length) {
-        return buildSnackbar(mActivity.get().getString(msgRes), drawable, length, null);
+        return buildSnackbar(null, mActivity.get().getString(msgRes), drawable, length, null);
     }
 
-    public Snackbar buildSnackbar(String msg, int length) {
-        return buildSnackbar(msg, R.drawable.ic_stat_notice_24dp, length, null);
+    public Snackbar buildSnackbar(ViewGroup parent, String msg, int length) {
+        return buildSnackbar(parent, msg, R.drawable.ic_stat_notice_24dp, length, null);
+    }
+
+    public Snackbar buildSnackbar(ViewGroup parent, int msgRes, int length) {
+        return buildSnackbar(parent, mActivity.get().getString(msgRes),
+                R.drawable.ic_stat_notice_24dp, length, null);
     }
 
     public Snackbar buildSnackbar(int msgRes, int length) {
-        return buildSnackbar(mActivity.get().getString(msgRes),
+        return buildSnackbar(null, mActivity.get().getString(msgRes),
                 R.drawable.ic_stat_notice_24dp, length, null);
     }
 
     public Snackbar buildTickerBar(String msg, int drawable, int length) {
-        Snackbar snackbar = buildSnackbar(msg, drawable, length, null)
+        Snackbar snackbar = buildSnackbar(null, msg, drawable, length, null)
                 .addCallback(new Snackbar.Callback() {
             final int top = null != layout ? layout.getPaddingTop() : 0;
             final int bottom = null != layout ? layout.getPaddingBottom() : 0;

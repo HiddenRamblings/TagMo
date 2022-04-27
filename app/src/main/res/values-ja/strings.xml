@@ -111,7 +111,6 @@
 
     <string name="tagmo_settings">TagMo Settings</string>
     <string name="capture_logcat">Capture Logcat</string>
-    <string name="foomiibo_editor">Foomiibo Editor</string>
     <string name="clear_foomiibo_set">Clear Foomiibo</string>
     <string name="build_foomiibo_set">Build Foomiibo</string>
     <string name="foomiibo_progress">Building %1$s&#8230;</string>
@@ -182,9 +181,6 @@
     <string name="disable_debug_details">May improve performance, but limits available details to resolve issues</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
     <string name="stable_channel_details">Only check application updates from the stable release branch of TagMo</string>
-    <string name="pref_resources">Resources</string>
-    <string name="pref_guides_link">Browse TagMo Guides</string>
-    <string name="pref_donate_link">Sponsor Development</string>
 
     <string name="amiibo_info_updated">Updated amiibo™ database!</string>
     <string name="sync_amiibo_process">Syncing with AmiiboAPI&#8230;</string>
@@ -322,5 +318,28 @@
     <string name="unzip_item">Unzipping %1$s&#8230;</string>
     <string name="mkdir_failed">Mkdir "%1$s" failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>
+    <string name="game_usage_view">互換性のあるゲームを表示する</string>
+    <string name="game_usage_hide">互換性のあるゲームを隠す</string>
+    <string name="tagmo_browser">TagMo</string>
+    <string name="rebuild_database">Sync AmiiboAPI</string>
+    <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
+    <string name="foomiibo_builder">Foomiibo Builder</string>
+    <string name="erase_collection">Erase Collection</string>
+    <string name="storage_unavailable">Device storage inaccessible!</string>
+    <string name="view_device_options">Switch to N2 Elite Options</string>
+    <string name="view_amiibo_details">Switch to amiibo&#8482; Details</string>
+    <string name="bluetooth_pair">Pair new Bluetooth device</string>
+    <string name="flask_permissions">Required permission denied!</string>
+    <string name="custom_tab_back">Back to TagMo</string>
+    <string name="flask_failed">Flask pairing failed!</string>
+    <string name="flask_invalid">Not a valid Flask device!</string>
+    <string name="flask_located">Connecting Bluup Flask&#8230;</string>
+    <string name="flask_selected">Connecting BLE device&#8230;</string>
+    <string name="flask_connected">Bluup Flask connected!</string>
+    <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
+    <string name="pref_guides">Guides</string>
+    <string name="pref_donate">Donate</string>
+    <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
+    <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
 
 </resources>

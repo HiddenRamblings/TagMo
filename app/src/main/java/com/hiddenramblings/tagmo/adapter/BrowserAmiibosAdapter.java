@@ -377,7 +377,7 @@ public class BrowserAmiibosAdapter
                 }
             }
             if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
-                txtTagId.setEnabled(false);
+                if (null != txtTagId) txtTagId.setEnabled(false);
             }
         }
 

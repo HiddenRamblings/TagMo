@@ -8,12 +8,14 @@
     android:focusable="true"
     android:foreground="@drawable/card_foreground"
     app:cardBackgroundColor="@android:color/transparent"
-    app:cardCornerRadius="@dimen/card_radius">
+    app:cardCornerRadius="@dimen/card_radius"
+    android:layout_gravity="center">
 
     <LinearLayout
         android:id="@+id/highlight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatImageView

@@ -111,7 +111,6 @@
 
     <string name="tagmo_settings">TagMo 设置</string>
     <string name="capture_logcat">抓取日志</string>
-    <string name="foomiibo_editor">Foomiibo 编辑器</string>
     <string name="clear_foomiibo_set">删除本地所有 Foomiibo</string>
     <string name="build_foomiibo_set">创建 Foomiibo</string>
     <string name="foomiibo_progress">%1$s 创建中&#8230;</string>
@@ -182,9 +181,6 @@
     <string name="disable_debug_details">可能提升应用性能，但是会减少发生问题时能提供给开发者的信息。</string>
     <string name="pref_stable_channel">检查稳定版更新</string>
     <string name="stable_channel_details">只检查 TagMo 稳定版的更新。</string>
-    <string name="pref_resources">关于</string>
-    <string name="pref_guides_link">查阅 TagMo 指南</string>
-    <string name="pref_donate_link">捐赠开发者</string>
 
     <string name="amiibo_info_updated">已更新 amiibo™ 数据库！</string>
     <string name="sync_amiibo_process">正从 AmiiboAPI 更新中&#8230;</string>
@@ -323,4 +319,27 @@
     <string name="downloads_hidden">目前已隐藏 Downloads 文件夹！</string>
     <string name="speed_scan">Tag 卡片离手机远点试试</string>
     <string name="accept">明白</string>
+    <string name="game_usage_view">View Compatible Games</string>
+    <string name="game_usage_hide">Hide Compatible Games</string>
+    <string name="tagmo_browser">TagMo</string>
+    <string name="rebuild_database">Sync AmiiboAPI</string>
+    <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
+    <string name="foomiibo_builder">Foomiibo Builder</string>
+    <string name="erase_collection">Erase Collection</string>
+    <string name="storage_unavailable">Device storage inaccessible!</string>
+    <string name="view_device_options">Switch to N2 Elite Options</string>
+    <string name="view_amiibo_details">Switch to amiibo&#8482; Details</string>
+    <string name="bluetooth_pair">Pair new Bluetooth device</string>
+    <string name="flask_permissions">Required permission denied!</string>
+    <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
+    <string name="flask_connected">Bluup Flask connected!</string>
+    <string name="flask_selected">Connecting BLE device&#8230;</string>
+    <string name="flask_located">Connecting Bluup Flask&#8230;</string>
+    <string name="flask_invalid">Not a valid Flask device!</string>
+    <string name="flask_failed">Flask pairing failed!</string>
+    <string name="custom_tab_back">Back to TagMo</string>
+    <string name="pref_guides">指南</string>
+    <string name="pref_donate">Donate</string>
+    <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
+    <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
 </resources>

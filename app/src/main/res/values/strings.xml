@@ -116,7 +116,6 @@
     <string name="tagmo_browser">TagMo</string>
     <string name="rebuild_database">Sync AmiiboAPI</string>
     <string name="capture_logcat">Capture Logcat</string>
-    <string name="foomiibo">Foomiibo</string>
     <string name="foomiibo_builder">Foomiibo Builder</string>
     <string name="clear_foomiibo_set">Clear Foomiibo</string>
     <string name="build_foomiibo_set">Build Foomiibo</string>
@@ -161,6 +160,9 @@
     <string name="storage_unavailable">Device storage inaccessible!</string>
     <string name="allow">Allow</string>
 
+    <string name="pref_guides">Guides</string>
+    <string name="pref_donate">Donate</string>
+
     <string name="crypto_keys">Crypto Keys</string>
     <string name="pref_import_keys">Import binary keys</string>
     <string name="pref_restrictions">Restrictions</string>
@@ -193,8 +195,6 @@
     <string name="disable_debug_details">May improve performance, but limits available information to resolve issues</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
     <string name="stable_channel_details">Only check for application updates using the stable release branch of TagMo</string>
-    <string name="pref_guides">Guides</string>
-    <string name="pref_donate">Donate</string>
 
     <string name="amiibo_info_updated">Updated amiibo&#8482; database!</string>
     <string name="sync_amiibo_process">Syncing with AmiiboAPI&#8230;</string>

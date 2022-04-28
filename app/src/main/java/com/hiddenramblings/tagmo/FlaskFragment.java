@@ -53,9 +53,10 @@ public class FlaskFragment extends Fragment {
     private ViewGroup fragmentView;
     private LinearLayout deviceList;
     private ProgressBar progressBar;
-    private BluetoothAdapter mBluetoothAdapter;
-    private String flaskAddress;
     private Snackbar statusBar;
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothLeService flaskService;
+    private String flaskAddress;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     ActivityResultLauncher<String[]> onRequestLocationQ = registerForActivityResult(
@@ -72,7 +73,7 @@ public class FlaskFragment extends Fragment {
             ((BrowserActivity) requireActivity()).showBrowserPage();
         }
     });
-    private BluetoothLeService flaskService;
+
     ActivityResultLauncher<String[]> onRequestBluetoothS = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
             permissions -> { boolean isBluetoothAvailable = true;
@@ -130,7 +131,7 @@ public class FlaskFragment extends Fragment {
                     flaskService.setListener(() -> {
                         try {
                             flaskService.readCustomCharacteristic();
-                            if (null != statusBar && statusBar.isShown()) statusBar.dismiss();
+                            dismissConnectionNotice();
                             new Toasty(requireActivity()).Short(R.string.flask_connected);
                         } catch (TagLostException tle) {
                             stopFlaskService();
@@ -325,6 +326,10 @@ public class FlaskFragment extends Fragment {
         statusBar.show();
     }
 
+    private void dismissConnectionNotice() {
+        if (null != statusBar && statusBar.isShown()) statusBar.dismiss();
+    }
+
     public void startFlaskService() {
         Intent service = new Intent(requireActivity(), BluetoothLeService.class);
         requireActivity().startService(service);
@@ -332,7 +337,7 @@ public class FlaskFragment extends Fragment {
     }
 
     public void stopFlaskService() {
-        if (null != statusBar && statusBar.isShown()) statusBar.dismiss();
+        dismissConnectionNotice();
         flaskService.disconnect();
         requireActivity().unbindService(mServerConn);
         requireActivity().stopService(new Intent(requireActivity(), BluetoothLeService.class));
@@ -383,6 +388,7 @@ public class FlaskFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        dismissConnectionNotice();
         dismissFlaskDiscovery();
     }
 }

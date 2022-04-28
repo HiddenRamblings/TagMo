@@ -332,6 +332,7 @@ public class FlaskFragment extends Fragment {
     }
 
     public void stopFlaskService() {
+        if (null != statusBar && statusBar.isShown()) statusBar.dismiss();
         flaskService.disconnect();
         requireActivity().unbindService(mServerConn);
         requireActivity().stopService(new Intent(requireActivity(), BluetoothLeService.class));

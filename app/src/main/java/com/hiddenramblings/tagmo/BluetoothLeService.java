@@ -55,13 +55,11 @@ public class BluetoothLeService extends Service {
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
 
-    public final static UUID FlaskRX =
-            UUID.fromString("6E400003-B5A3-F393-E0A9-E50E24DCCA9E");
-    public final static UUID FlaskTX =
-            UUID.fromString("6E400002-B5A3-F393-E0A9-E50E24DCCA9E");
-
-    private UUID flaskReadService = null;
-    private UUID flaskWriteService = null;
+    private final UUID FlaskRX = UUID.fromString("6E400003-B5A3-F393-E0A9-E50E24DCCA9E");
+    private UUID serviceRead = null;
+    private final UUID FlaskTX = UUID.fromString("6E400002-B5A3-F393-E0A9-E50E24DCCA9E");
+    private UUID serviceWrite = null;
+    // Bluetooth Service: XXXXXXXX-0000-1000-8000-00805F9B34FB
 
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
@@ -299,11 +297,11 @@ public class BluetoothLeService extends Service {
             throw new TagLostException();
         }
 
-        if (null != flaskReadService) {
-            BluetoothGattService mCustomService = mBluetoothGatt.getService(flaskReadService);
+        if (null != serviceRead) {
+            BluetoothGattService mCustomService = mBluetoothGatt.getService(serviceRead);
             /*check if the service is available on the device*/
             if (mCustomService == null) {
-                flaskReadService = null;
+                serviceRead = null;
                 Log.w(TAG, "BLE Service not found for read");
                 throw new TagLostException();
             }
@@ -321,17 +319,18 @@ public class BluetoothLeService extends Service {
             }
 
             for (BluetoothGattService mCustomService : services) {
+                Log.d("GattReadService", mCustomService.getUuid().toString());
                 /*get the read characteristic from the service*/
                 BluetoothGattCharacteristic mReadCharacteristic =
                         mCustomService.getCharacteristic(FlaskRX);
                 try {
                     if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
-                        flaskReadService = mCustomService.getUuid();
+                        serviceRead = mCustomService.getUuid();
                         break;
                     }
                 } catch (NullPointerException ignored) { }
             }
-            if (null == flaskReadService) {
+            if (null == serviceRead) {
                 Log.w(TAG, "Failed to read characteristic");
                 throw new TagLostException();
             }
@@ -344,11 +343,11 @@ public class BluetoothLeService extends Service {
             throw new TagLostException();
         }
 
-        if (null != flaskWriteService) {
-            BluetoothGattService mCustomService = mBluetoothGatt.getService(flaskWriteService);
+        if (null != serviceWrite) {
+            BluetoothGattService mCustomService = mBluetoothGatt.getService(serviceWrite);
             /*check if the service is available on the device*/
             if (mCustomService == null) {
-                flaskWriteService = null;
+                serviceWrite = null;
                 Log.w(TAG, "BLE Service not found for write");
                 return;
             }
@@ -367,19 +366,20 @@ public class BluetoothLeService extends Service {
             }
 
             for (BluetoothGattService mCustomService : services) {
+                Log.d("GattWriteService", mCustomService.getUuid().toString());
                 /*get the read characteristic from the service*/
                 BluetoothGattCharacteristic mWriteCharacteristic = mCustomService.getCharacteristic(FlaskTX);
 
                 mWriteCharacteristic.setValue(value, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
                 try {
                     if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
-                        flaskWriteService = mCustomService.getUuid();
+                        serviceWrite = mCustomService.getUuid();
                         break;
                     }
                 } catch (NullPointerException ignored) { }
             }
 
-            if (null == flaskWriteService) {
+            if (null == serviceWrite) {
                 Log.w(TAG, "Failed to write characteristic");
                 throw new TagLostException();
             }

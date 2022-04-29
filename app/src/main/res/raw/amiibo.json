@@ -8136,7 +8136,7 @@
 				"na": "2021-11-05"
 			}
 		},
-		"0x0a40000000000002":
+		"0x0a400000041D0002":
 		{
 			"name": "Min Min",
 			"release":
@@ -9161,7 +9161,7 @@
 		},
 		"0x3c80000003a40002":
 		{
-			"name": "Terry",
+			"name": "Terry Bogard",
 			"release":
 			{
 				"au": "2021-03-26",
@@ -9816,8 +9816,8 @@
 		"0x3846": "Asana Mutsuba",
 		"0x38c0": "Loot Goblin",
 		"0x3a00": "Joker",
-		"0x3b40": "Banjo",
-		"0x3c80": "Terry",
+		"0x3b40": "Banjo & Kazooie",
+		"0x3c80": "Terry Bogard",
 		"0x3dc0": "Steve"
 	},
 	"game_series":
@@ -9899,7 +9899,7 @@
 		"0x080": "Splatoon",
 		"0x09c": "Mario Sports Superstars",
 		"0x09d": "Mario Sports Superstars",
-		"0x0a4": "Arms",
+		"0x0a4": "ARMS",
 		"0x190": "Pokemon",
 		"0x191": "Pokemon",
 		"0x192": "Pokemon",

@@ -293,7 +293,7 @@ public class BrowserAmiibosAdapter
             this.amiiboFile = item;
 
             String tagInfo = null;
-            String amiiboHexId = "";
+            String amiiboHexId;
             String amiiboName = "";
             String amiiboSeries = "";
             String amiiboType = "";

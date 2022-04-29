@@ -554,7 +554,8 @@ public class BrowserActivity extends AppCompatActivity implements
     });
 
     private void onRebuildDatabaseClicked() {
-        if (null == settingsFragment || settingsFragment.isDetached())
+        showBrowserPage();
+        if (null == settingsFragment)
             settingsFragment = new SettingsFragment();
         settingsFragment.rebuildAmiiboDatabase();
         this.recreate();

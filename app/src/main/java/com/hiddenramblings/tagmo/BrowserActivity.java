@@ -52,7 +52,6 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.preference.Preference;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -1342,7 +1341,7 @@ public class BrowserActivity extends AppCompatActivity implements
             TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
             mainLayout.setPadding(0, 0, 0, 0);
         }
-        if (settings.getAmiiboFiles().isEmpty()) { ;
+        if (settings.getAmiiboFiles().isEmpty()) {
             fakeSnackbar.setAnimationListener(null);
             fakeSnackbar.setVisibility(View.GONE);
             handler.postDelayed(() -> {

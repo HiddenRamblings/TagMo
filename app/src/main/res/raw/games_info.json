@@ -97946,6 +97946,24 @@
 				}
 			]
 		},
+		"0x0a400000041d0002": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				}
+			]
+		},
 		"0x1902000003830002": {
 			"games3DS": [],
 			"gamesWiiU": [],
@@ -102106,6 +102124,42 @@
 				}
 			]
 		},
+		"0x2241000000000002": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				}
+			]
+		},
+		"0x2242000000000002": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				}
+			]
+		},
 		"0x22800000002c0002": {
 			"games3DS": [
 				{
@@ -102832,6 +102886,24 @@
 						{
 							"Usage": "Unlock and perform the “Praise the Sun” gesture",
 							"write": false
+						}
+					]
+				}
+			]
+		},
+		"0x33c0000000000002": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
 						}
 					]
 				}
@@ -105040,6 +105112,24 @@
 				}
 			]
 		},
+		"0x3601000000000002": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				}
+			]
+		},
 		"0x3640000003a20002": {
 			"games3DS": [],
 			"gamesWiiU": [],
@@ -105422,6 +105512,24 @@
 			]
 		},
 		"0x3c80000003a40002": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				}
+			]
+		},
+		"0x3dc0000000000002": {
 			"games3DS": [],
 			"gamesWiiU": [],
 			"gamesSwitch": [

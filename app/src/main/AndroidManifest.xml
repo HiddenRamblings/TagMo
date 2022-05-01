@@ -97,6 +97,7 @@
         </activity>
         <activity
             android:name=".WebActivity"
+            android:excludeFromRecents="true"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop"
             android:theme="@style/DialogTheme.NoActionBar">

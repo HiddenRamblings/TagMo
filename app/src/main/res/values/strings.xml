@@ -161,7 +161,7 @@
     <string name="allow">Allow</string>
 
     <string name="pref_guides">Guides</string>
-    <string name="pref_donate">Donate</string>
+    <string name="pref_donate">Donation</string>
 
     <string name="crypto_keys">Crypto Keys</string>
     <string name="pref_import_keys">Import binary keys</string>

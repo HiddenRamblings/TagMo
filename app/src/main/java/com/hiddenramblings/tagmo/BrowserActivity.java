@@ -274,7 +274,6 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onFilterCharacterChanged();
             this.onFilterAmiiboSeriesChanged();
             this.onFilterAmiiboTypeChanged();
-            this.onAmiiboFilesChanged();
         }
         this.settings.addChangeListener(this);
 
@@ -443,11 +442,10 @@ public class BrowserActivity extends AppCompatActivity implements
                             "https://github.com/HiddenRamblings/TagMo"
                     )));
                 });
-                findViewById(R.id.guide_layout).setOnClickListener(view -> {
-                    closePrefsDrawer();
-                    startActivity(new Intent(BrowserActivity.this, WebActivity.class)
-                            .setAction(NFCIntent.SITE_GITLAB_README));
-                });
+                findViewById(R.id.guide_layout).setOnClickListener(view ->
+                        startActivity(new Intent(
+                                BrowserActivity.this, WebActivity.class
+                        ).setAction(NFCIntent.SITE_GITLAB_README)));
                 findViewById(R.id.donate_layout).setOnClickListener(view -> {
                     closePrefsDrawer();
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
@@ -1318,7 +1316,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onAmiiboFilesChanged() {
         if (fakeSnackbar.getVisibility() == View.VISIBLE) {
             AutoTransition autoTransition = new AutoTransition();
-            autoTransition.setDuration(250);
+            autoTransition.setDuration(200);
 
             TranslateAnimation animate = new TranslateAnimation(
                     0, 0, 0, -fakeSnackbar.getHeight());

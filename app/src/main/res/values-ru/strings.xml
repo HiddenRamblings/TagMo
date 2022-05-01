@@ -341,5 +341,6 @@
     <string name="pref_donate">Donate</string>
     <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
     <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
+    <string name="flask_missing">Device cannot be located!</string>
 
 </resources>

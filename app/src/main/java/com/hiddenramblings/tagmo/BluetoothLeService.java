@@ -60,6 +60,7 @@ public class BluetoothLeService extends Service {
     }
     interface BluetoothGattListener {
         void onServicesDiscovered();
+        void onServicesDisconnect();
     }
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -79,6 +80,7 @@ public class BluetoothLeService extends Service {
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 intentAction = ACTION_GATT_DISCONNECTED;
                 Log.i(TAG, "Disconnected from GATT server.");
+                if (null != listener) listener.onServicesDisconnect();
                 broadcastUpdate(intentAction);
             }
         }

@@ -337,8 +337,8 @@
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="flask_failed">Flask pairing failed!</string>
     <string name="custom_tab_back">Back to TagMo</string>
-    <string name="pref_guides">Guides</string>
-    <string name="pref_donate">Donate</string>
+    <string name="pref_guides">Направляющие</string>
+    <string name="pref_donate">Пожертвование</string>
     <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
     <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
     <string name="flask_missing">Device cannot be located!</string>

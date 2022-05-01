@@ -337,8 +337,8 @@
     <string name="flask_selected">Connecting BLE device&#8230;</string>
     <string name="flask_connected">Bluup Flask connected!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
-    <string name="pref_guides">Guides</string>
-    <string name="pref_donate">Donate</string>
+    <string name="pref_guides">Hilfslinien</string>
+    <string name="pref_donate">Spenden</string>
     <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
     <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
     <string name="flask_missing">Device cannot be located!</string>

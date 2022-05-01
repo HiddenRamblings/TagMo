@@ -123,7 +123,7 @@ public class FlaskFragment extends Fragment {
     protected ServiceConnection mServerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
-            Log.d("Flask", "onServiceConnected");
+            Log.d("FlaskService", "onServiceConnected");
             BluetoothLeService.LocalBinder localBinder = (BluetoothLeService.LocalBinder) binder;
             flaskService = localBinder.getService();
             if (flaskService.initialize()) {
@@ -147,7 +147,7 @@ public class FlaskFragment extends Fragment {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.d("Flask", "onServiceDisconnected");
+            Log.d("FlaskService", "onServiceDisconnected");
         }
     };
 
@@ -271,46 +271,42 @@ public class FlaskFragment extends Fragment {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
         for (BluetoothDevice device : pairedDevices) {
-            if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-                flaskAddress = device.getAddress();
-                showConnectionNotice(true);
-                break;
-            } else {
-                View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device,
-                        fragmentView, false);
-                bonded.setOnClickListener(view1 -> {
-                    flaskAddress = device.getAddress();
-                    dismissFlaskDiscovery();
-                    showConnectionNotice(false);
-                    startFlaskService();
-                });
-                setButtonText(bonded, device);
-            }
-        }
-        if (null != flaskAddress) {
-            startFlaskService();
-        } else {
-            View paired = getLayoutInflater().inflate(R.layout.bluetooth_device,
+//            if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
+//                flaskAddress = device.getAddress();
+//                showConnectionNotice(true);
+//                startFlaskService();
+//                break;
+//            }
+            View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device,
                     fragmentView, false);
-            paired.setOnClickListener(view1 -> {
-                try {
-                    onRequestPairing.launch(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
-                } catch (ActivityNotFoundException anf) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        IntentFilter filter = new IntentFilter(
-                                "android.bluetooth.device.action.PAIRING_REQUEST"
-                        );
-                        requireActivity().registerReceiver(pairingRequest, filter);
-                        if (mBluetoothAdapter.isDiscovering())
-                            mBluetoothAdapter.cancelDiscovery();
-                        mBluetoothAdapter.startDiscovery();
-                        progressBar.setVisibility(View.VISIBLE);
-                    }
-                }
+            bonded.setOnClickListener(view1 -> {
+                flaskAddress = device.getAddress();
+                dismissFlaskDiscovery();
+                showConnectionNotice(false);
+                startFlaskService();
             });
-            ((TextView) paired.findViewById(R.id.bluetooth_text)).setText(R.string.bluetooth_pair);
-            deviceList.addView(paired, 0);
+            setButtonText(bonded, device);
         }
+        View paired = getLayoutInflater().inflate(R.layout.bluetooth_device,
+                fragmentView, false);
+        paired.setOnClickListener(view1 -> {
+            try {
+                onRequestPairing.launch(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
+            } catch (ActivityNotFoundException anf) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    IntentFilter filter = new IntentFilter(
+                            "android.bluetooth.device.action.PAIRING_REQUEST"
+                    );
+                    requireActivity().registerReceiver(pairingRequest, filter);
+                    if (mBluetoothAdapter.isDiscovering())
+                        mBluetoothAdapter.cancelDiscovery();
+                    mBluetoothAdapter.startDiscovery();
+                    progressBar.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        ((TextView) paired.findViewById(R.id.bluetooth_text)).setText(R.string.bluetooth_pair);
+        deviceList.addView(paired, 0);
     }
 
     private void setButtonText(View button, BluetoothDevice device) {

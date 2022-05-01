@@ -128,14 +128,27 @@ public class FlaskFragment extends Fragment {
             flaskService = localBinder.getService();
             if (flaskService.initialize()) {
                 if (flaskService.connect(flaskAddress)) {
-                    flaskService.setListener(() -> {
-                        try {
-                            flaskService.readCustomCharacteristic();
-                            dismissConnectionNotice();
-                            new Toasty(requireActivity()).Short(R.string.flask_connected);
-                        } catch (TagLostException tle) {
-                            stopFlaskService();
-                            new Toasty(requireActivity()).Short(R.string.flask_invalid);
+                    flaskService.setListener(new BluetoothLeService.BluetoothGattListener() {
+                        boolean isServiceDiscovered = false;
+                        @Override
+                        public void onServicesDiscovered() {
+                            isServiceDiscovered = true;
+                            try {
+                                flaskService.readCustomCharacteristic();
+                                dismissConnectionNotice();
+                                new Toasty(requireActivity()).Short(R.string.flask_connected);
+                            } catch (TagLostException tle) {
+                                stopFlaskService();
+                                new Toasty(requireActivity()).Short(R.string.flask_invalid);
+                            }
+                        }
+
+                        @Override
+                        public void onServicesDisconnect() {
+                            if (!isServiceDiscovered) {
+                                stopFlaskService();
+                                new Toasty(requireActivity()).Short(R.string.flask_missing);
+                            }
                         }
                     });
                 } else {
@@ -273,6 +286,7 @@ public class FlaskFragment extends Fragment {
         for (BluetoothDevice device : pairedDevices) {
 //            if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
 //                flaskAddress = device.getAddress();
+//                dismissFlaskDiscovery();
 //                showConnectionNotice(true);
 //                startFlaskService();
 //                break;
@@ -384,7 +398,6 @@ public class FlaskFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        dismissConnectionNotice();
         dismissFlaskDiscovery();
     }
 }

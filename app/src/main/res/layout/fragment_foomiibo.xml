@@ -68,6 +68,7 @@
             android:layout_marginTop="6dp"
             android:paddingBottom="@dimen/button_height_min"
             android:scrollbars="vertical"
+            android:scrollbarSize="8dp"
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/control_panel"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

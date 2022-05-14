@@ -45,6 +45,8 @@ public class BrowserFragment extends Fragment implements
         amiibosView = view.findViewById(R.id.amiibos_list);
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
 
+        chipList.setVisibility(View.GONE);
+
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
 

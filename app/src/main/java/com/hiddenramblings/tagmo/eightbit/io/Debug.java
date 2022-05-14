@@ -69,6 +69,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class Debug {
@@ -125,9 +126,10 @@ public class Debug {
         String project = context.getString(R.string.tagmo);
         String username = "HiddenRamblings";
 
-        final StringBuilder log = new StringBuilder(context
-                .getString(R.string.build_hash_full, BuildConfig.COMMIT));
-        String separator = System.getProperty("line.separator");
+        String separator = System.getProperty("line.separator") != null
+                ? Objects.requireNonNull(System.getProperty("line.separator")) : "\n";
+        final StringBuilder log = new StringBuilder(separator);
+        log.append(context.getString(R.string.build_hash_full, BuildConfig.COMMIT));
         log.append(separator);
         log.append("Android ");
         Field[] fields = Build.VERSION_CODES.class.getFields();

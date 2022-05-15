@@ -65,10 +65,6 @@
                 <data android:mimeType="*/*" />
                 <data android:pathPattern=".*\\.bin" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.bluetooth.device.action.PAIRING_REQUEST" />
-                <action android:name="android.bluetooth.device.action.PAIRING_CANCEL" />
-            </intent-filter>
         </activity>
         <activity-alias
             android:name=".NFCIntentFilter"

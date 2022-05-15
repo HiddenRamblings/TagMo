@@ -241,7 +241,7 @@
     <string name="flask_connected">Bluup Flask connected!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="flask_permissions">Required permission denied!</string>
-    <string name="bluetooth_pair">Pair new Bluetooth device</string>
+    <string name="bluetooth_scan">Scan BLE for Bluup Flask</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>

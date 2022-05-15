@@ -6,19 +6,21 @@ import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.nfc.TagLostException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.Settings;
+import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,14 +38,12 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
-import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
-import java.util.Locale;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
@@ -55,6 +55,7 @@ public class FlaskFragment extends Fragment {
     private ProgressBar progressBar;
     private Snackbar statusBar;
     private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothAdapter.LeScanCallback scanCallback;
     private BluetoothLeService flaskService;
     private String flaskAddress;
 
@@ -236,61 +237,39 @@ public class FlaskFragment extends Fragment {
         return null;
     }
 
-    ActivityResultLauncher<Intent> onRequestPairing = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> selectBluetoothDevice());
-
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private final BroadcastReceiver pairingRequest = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals("android.bluetooth.device.action.PAIRING_REQUEST")) {
-                try {
-                    BluetoothDevice device = intent
-                            .getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-                        device.setPin((String.valueOf(intent.getIntExtra(
-                                "android.bluetooth.device.extra.PAIRING_KEY", 0
-                        ))).getBytes(CharsetCompat.UTF_8));
-                        device.setPairingConfirmation(true);
-                        flaskAddress = device.getAddress();
-                        dismissFlaskDiscovery();
-                        showConnectionNotice(true);
-                        startFlaskService();
-                    } else {
-                        View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device,
-                                fragmentView, false);
-                        bonded.setOnClickListener(view1 -> {
-                            device.setPin((String.valueOf(intent.getIntExtra(
-                                    "android.bluetooth.device.extra.PAIRING_KEY", 0
-                            ))).getBytes(CharsetCompat.UTF_8));
-                            device.setPairingConfirmation(true);
-                            flaskAddress = device.getAddress();
-                            dismissFlaskDiscovery();
-                            showConnectionNotice(false);
-                            startFlaskService();
-                        });
-                        setButtonText(bonded, device);
-                    }
-                } catch (Exception ex) {
-                    Debug.Log(ex);
-                    new Toasty(requireActivity()).Short(R.string.flask_failed);
+    private void scanBluetoothServices() {
+        progressBar.setVisibility(View.VISIBLE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
+            ParcelUuid FlaskUUID = new ParcelUuid(BluetoothLeService.FlaskNUS);
+            ScanFilter filter = new ScanFilter.Builder().setServiceUuid(FlaskUUID).build();
+            ScanSettings settings = new ScanSettings.Builder().build();
+            ScanCallback callback = new ScanCallback() {
+                @Override
+                public void onScanResult(int callbackType, ScanResult result) {
+                    super.onScanResult(callbackType, result);
+                    flaskAddress = result.getDevice().getAddress();
+                    dismissFlaskDiscovery();
+                    showConnectionNotice(true);
+                    startFlaskService();
                 }
-            }
+            };
+            scanner.startScan(Collections.singletonList(filter), settings, callback);
+        } else {
+            scanCallback = (bluetoothDevice, i, bytes) -> {
+                flaskAddress = bluetoothDevice.getAddress();
+                dismissFlaskDiscovery();
+                showConnectionNotice(true);
+                startFlaskService();
+            };
+            mBluetoothAdapter.startLeScan(new UUID[]{ BluetoothLeService.FlaskNUS }, scanCallback);
         }
-    };
+    }
 
     private void selectBluetoothDevice() {
         deviceList.removeAllViews();
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
-        for (BluetoothDevice device : pairedDevices) {
-//            if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-//                flaskAddress = device.getAddress();
-//                dismissFlaskDiscovery();
-//                showConnectionNotice(true);
-//                startFlaskService();
-//                break;
-//            }
+        for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
             View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device,
                     fragmentView, false);
             bonded.setOnClickListener(view1 -> {
@@ -301,26 +280,11 @@ public class FlaskFragment extends Fragment {
             });
             setButtonText(bonded, device);
         }
-        View paired = getLayoutInflater().inflate(R.layout.bluetooth_device,
+        View scan = getLayoutInflater().inflate(R.layout.bluetooth_device,
                 fragmentView, false);
-        paired.setOnClickListener(view1 -> {
-            try {
-                onRequestPairing.launch(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
-            } catch (ActivityNotFoundException anf) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    IntentFilter filter = new IntentFilter(
-                            "android.bluetooth.device.action.PAIRING_REQUEST"
-                    );
-                    requireActivity().registerReceiver(pairingRequest, filter);
-                    if (mBluetoothAdapter.isDiscovering())
-                        mBluetoothAdapter.cancelDiscovery();
-                    mBluetoothAdapter.startDiscovery();
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-        ((TextView) paired.findViewById(R.id.bluetooth_text)).setText(R.string.bluetooth_pair);
-        deviceList.addView(paired, 0);
+        scan.setOnClickListener(view1 -> scanBluetoothServices());
+        ((TextView) scan.findViewById(R.id.bluetooth_text)).setText(R.string.bluetooth_scan);
+        deviceList.addView(scan, 0);
     }
 
     private void setButtonText(View button, BluetoothDevice device) {
@@ -354,15 +318,10 @@ public class FlaskFragment extends Fragment {
     }
 
     private void dismissFlaskDiscovery() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            try {
-                requireActivity().unregisterReceiver(pairingRequest);
-            } catch (Exception ignored) { }
-        }
         if (null != mBluetoothAdapter) {
-            if (mBluetoothAdapter.isDiscovering())
-                mBluetoothAdapter.cancelDiscovery();
             progressBar.setVisibility(View.INVISIBLE);
+            if (null != scanCallback)
+                mBluetoothAdapter.stopLeScan(scanCallback);
         }
     }
 

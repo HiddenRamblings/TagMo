@@ -11,6 +11,7 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,13 +22,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelUuid;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -42,6 +43,7 @@ import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -250,7 +252,7 @@ public class FlaskFragment extends Fragment {
                     super.onScanResult(callbackType, result);
                     flaskAddress = result.getDevice().getAddress();
                     dismissFlaskDiscovery();
-                    showConnectionNotice(true);
+                    showConnectionNotice();
                     startFlaskService();
                 }
             };
@@ -259,41 +261,35 @@ public class FlaskFragment extends Fragment {
             scanCallback = (bluetoothDevice, i, bytes) -> {
                 flaskAddress = bluetoothDevice.getAddress();
                 dismissFlaskDiscovery();
-                showConnectionNotice(true);
+                showConnectionNotice();
                 startFlaskService();
             };
             mBluetoothAdapter.startLeScan(new UUID[]{ BluetoothLeService.FlaskNUS }, scanCallback);
         }
     }
 
+    ActivityResultLauncher<Intent> onRequestPairing = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> scanBluetoothServices());
+
     private void selectBluetoothDevice() {
         deviceList.removeAllViews();
 
         for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
-            View bonded = getLayoutInflater().inflate(R.layout.bluetooth_device,
-                    fragmentView, false);
-            bonded.setOnClickListener(view1 -> {
-                flaskAddress = device.getAddress();
+            if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
+                new Toasty(requireActivity()).Long(R.string.flask_incompatible);
                 dismissFlaskDiscovery();
-                showConnectionNotice(false);
-                startFlaskService();
-            });
-            setButtonText(bonded, device);
+                try {
+                    onRequestPairing.launch(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
+                } catch (ActivityNotFoundException anf) {
+                    scanBluetoothServices();
+                }
+            }
         }
-        View scan = getLayoutInflater().inflate(R.layout.bluetooth_device,
-                fragmentView, false);
-        scan.setOnClickListener(view1 -> scanBluetoothServices());
-        ((TextView) scan.findViewById(R.id.bluetooth_text)).setText(R.string.bluetooth_scan);
-        deviceList.addView(scan, 0);
+        scanBluetoothServices();
     }
 
-    private void setButtonText(View button, BluetoothDevice device) {
-        ((TextView) button.findViewById(R.id.bluetooth_text)).setText(device.getName());
-        deviceList.addView(button);
-    }
-
-    private void showConnectionNotice(boolean wasFound) {
-        int message = wasFound ? R.string.flask_located : R.string.flask_selected;
+    private void showConnectionNotice() {
+        int message = R.string.flask_located;
         statusBar = new IconifiedSnackbar(requireActivity(), fragmentView).buildSnackbar(
                 message, R.drawable.ic_bluup_flask_24dp, Snackbar.LENGTH_INDEFINITE
         );

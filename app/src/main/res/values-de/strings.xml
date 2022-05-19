@@ -328,13 +328,11 @@
     <string name="storage_unavailable">Device storage inaccessible!</string>
     <string name="view_device_options">Switch to N2 Elite Options</string>
     <string name="view_amiibo_details">Switch to amiibo&#8482; Details</string>
-    <string name="bluetooth_scan">Scan BLE for Bluup Flask</string>
     <string name="flask_permissions">Required permission denied!</string>
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="flask_failed">Flask pairing failed!</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
-    <string name="flask_selected">Connecting BLE device&#8230;</string>
     <string name="flask_connected">Bluup Flask connected!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="pref_guides">Hilfslinien</string>

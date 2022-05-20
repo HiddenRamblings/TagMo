@@ -333,7 +333,6 @@
     <string name="flask_connected">Bluup Flask connected!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
-    <string name="flask_failed">Flask pairing failed!</string>
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="pref_guides">Направляющие</string>
     <string name="pref_donate">Пожертвование</string>

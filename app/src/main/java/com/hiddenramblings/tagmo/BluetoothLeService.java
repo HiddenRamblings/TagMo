@@ -277,12 +277,31 @@ public class BluetoothLeService extends Service {
         return mBluetoothGatt.getServices();
     }
 
+    public BluetoothGattCharacteristic getReadCharacteristics(BluetoothGattService mCustomService) {
+        BluetoothGattCharacteristic mReadCharacteristic =
+                mCustomService.getCharacteristic(FlaskTX);
+        if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
+            return mReadCharacteristic;
+        } else {
+            for (BluetoothGattCharacteristic customRead : mCustomService.getCharacteristics()) {
+                Log.d("GattReadCharacteristic", customRead.getUuid().toString());
+                /*get the read characteristic from the service*/
+                mReadCharacteristic = mCustomService.getCharacteristic(customRead.getUuid());
+                if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
+                    break;
+                }
+            }
+        }
+        return mReadCharacteristic;
+    }
+
     public void readCustomCharacteristic() throws TagLostException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             throw new TagLostException();
         }
 
+        BluetoothGattCharacteristic mReadCharacteristic = null;
         BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskNUS);
         /*check if the service is available on the device*/
         if (null == mCustomService) {
@@ -295,28 +314,29 @@ public class BluetoothLeService extends Service {
             for (BluetoothGattService customService : services) {
                 Log.d("GattReadService", customService.getUuid().toString());
                 /*get the read characteristic from the service*/
-                BluetoothGattCharacteristic mReadCharacteristic =
-                        customService.getCharacteristic(FlaskRX);
-                try {
-                    if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
-                        mCustomService = mBluetoothGatt.getService(customService.getUuid());
-                        break;
-                    }
-                } catch (NullPointerException ignored) { }
-            }
-        }
-
-        if (null != mCustomService) {
-            BluetoothGattCharacteristic mReadCharacteristic =
-                    mCustomService.getCharacteristic(FlaskRX);
-            if (!mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
-                Log.w(TAG, "Failed to read characteristic");
-                throw new TagLostException();
+                mReadCharacteristic = getReadCharacteristics(customService);
             }
         } else {
-            Log.w(TAG, "Failed to read characteristic");
-            throw new TagLostException();
+            mReadCharacteristic = getReadCharacteristics(mCustomService);
         }
+    }
+
+    public BluetoothGattCharacteristic getWriteCharacteristics(BluetoothGattService mCustomService) {
+        BluetoothGattCharacteristic mWriteCharacteristic =
+                mCustomService.getCharacteristic(FlaskRX);
+        if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
+            return mWriteCharacteristic;
+        } else {
+            for (BluetoothGattCharacteristic customWrite : mCustomService.getCharacteristics()) {
+                Log.d("GattReadCharacteristic", customWrite.getUuid().toString());
+                /*get the write characteristic from the service*/
+                mWriteCharacteristic = mCustomService.getCharacteristic(customWrite.getUuid());
+                if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
+                    break;
+                }
+            }
+        }
+        return mWriteCharacteristic;
     }
 
     public void writeCustomCharacteristic(int value) throws TagLostException {
@@ -325,6 +345,7 @@ public class BluetoothLeService extends Service {
             throw new TagLostException();
         }
 
+        BluetoothGattCharacteristic mWriteCharacteristic = null;
         BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskNUS);
         /*check if the service is available on the device*/
         if (null == mCustomService) {
@@ -337,33 +358,10 @@ public class BluetoothLeService extends Service {
             for (BluetoothGattService customService : services) {
                 Log.d("GattWriteService", customService.getUuid().toString());
                 /*get the read characteristic from the service*/
-                BluetoothGattCharacteristic mWriteCharacteristic =
-                        customService.getCharacteristic(FlaskTX);
-
-                mWriteCharacteristic.setValue(value,
-                        BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-                try {
-                    if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
-                        mCustomService = mBluetoothGatt.getService(customService.getUuid());
-                        break;
-                    }
-                } catch (NullPointerException ignored) { }
-            }
-        }
-
-        if (null != mCustomService) {
-            BluetoothGattCharacteristic mWriteCharacteristic =
-                    mCustomService.getCharacteristic(FlaskTX);
-
-            mWriteCharacteristic.setValue(value,
-                    BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-            if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
-                Log.w(TAG, "Failed to write characteristic");
-                throw new TagLostException();
+                mWriteCharacteristic = getWriteCharacteristics(customService);
             }
         } else {
-            Log.w(TAG, "Failed to write characteristic");
-            throw new TagLostException();
+            mWriteCharacteristic = getWriteCharacteristics(mCustomService);
         }
     }
 }

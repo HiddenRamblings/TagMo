@@ -330,7 +330,6 @@
     <string name="view_amiibo_details">Switch to amiibo&#8482; Details</string>
     <string name="flask_permissions">Required permission denied!</string>
     <string name="custom_tab_back">Back to TagMo</string>
-    <string name="flask_failed">Flask pairing failed!</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
     <string name="flask_connected">Bluup Flask connected!</string>

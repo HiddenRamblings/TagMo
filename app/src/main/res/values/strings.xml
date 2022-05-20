@@ -233,14 +233,13 @@
     <string name="tag_update_only">Previously written tags require \"Update\"</string>
 
     <string name="custom_tab_back">Back to TagMo</string>
-    <string name="flask_failed">Flask pairing failed!</string>
     <string name="flask_missing">Device cannot be located!</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
     <string name="flask_connected">Bluup Flask connected!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="flask_permissions">Required permission denied!</string>
-    <string name="flask_incompatible">Unpair Flask to continue.</string>
+    <string name="flask_paired">Unpair Flask to continue.</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>

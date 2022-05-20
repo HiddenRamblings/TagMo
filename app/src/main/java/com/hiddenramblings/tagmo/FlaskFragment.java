@@ -177,7 +177,7 @@ public class FlaskFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         fragmentView = (ViewGroup) view;
         deviceList = view.findViewById(R.id.bluetooth_devices);
-        progressBar = view.findViewById(R.id.pairing_progress);
+        progressBar = view.findViewById(R.id.scanner_progress);
     }
 
     private void verifyPermissions() {
@@ -188,6 +188,7 @@ public class FlaskFragment extends Fragment {
                 activateBluetooth();
             } else {
                 final String[] PERMISSIONS_LOCATION = {
+                        Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_BACKGROUND_LOCATION
                 };
                 onRequestLocationQ.launch(PERMISSIONS_LOCATION);
@@ -276,7 +277,7 @@ public class FlaskFragment extends Fragment {
 
         for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
             if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-                new Toasty(requireActivity()).Long(R.string.flask_incompatible);
+                new Toasty(requireActivity()).Long(R.string.flask_paired);
                 dismissFlaskDiscovery();
                 try {
                     onRequestPairing.launch(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
@@ -289,9 +290,8 @@ public class FlaskFragment extends Fragment {
     }
 
     private void showConnectionNotice() {
-        int message = R.string.flask_located;
         statusBar = new IconifiedSnackbar(requireActivity(), fragmentView).buildSnackbar(
-                message, R.drawable.ic_bluup_flask_24dp, Snackbar.LENGTH_INDEFINITE
+                R.string.flask_located, R.drawable.ic_bluup_flask_24dp, Snackbar.LENGTH_INDEFINITE
         );
         statusBar.show();
     }

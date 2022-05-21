@@ -101,13 +101,7 @@ public class BluetoothLeService extends Service {
         public void onCharacteristicRead(
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                final byte[] data = characteristic.getValue();
-                if (data != null && data.length > 0) {
-                    final StringBuilder stringBuilder = new StringBuilder(data.length);
-                    for (byte byteChar : data)
-                        stringBuilder.append(String.format("%02X ", byteChar));
-                    Log.d("BluetoothBroadcast", new String(data) + "\n" + stringBuilder);
-                }
+                Log.d("BluetoothBroadcast", new String(characteristic.getValue()));
                 broadcastUpdate(characteristic);
             }
         }
@@ -115,13 +109,7 @@ public class BluetoothLeService extends Service {
         @Override
         public void onCharacteristicChanged(
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            final byte[] data = characteristic.getValue();
-            if (data != null && data.length > 0) {
-                final StringBuilder stringBuilder = new StringBuilder(data.length);
-                for (byte byteChar : data)
-                    stringBuilder.append(String.format("%02X ", byteChar));
-                Log.d("BluetoothBroadcast", new String(data) + "\n" + stringBuilder);
-            }
+            Log.d("BluetoothBroadcast", new String(characteristic.getValue()));
             broadcastUpdate(characteristic);
         }
     };
@@ -280,14 +268,7 @@ public class BluetoothLeService extends Service {
             return;
         }
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-
-        try {
-            BluetoothGattDescriptor DescriptorTX = characteristic.getDescriptor(
-                    UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-            );
-            DescriptorTX.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(DescriptorTX);
-        } catch (Exception ignored) { }
+        setNotificationDescriptor(characteristic);
     }
 
     /**
@@ -300,6 +281,39 @@ public class BluetoothLeService extends Service {
         if (mBluetoothGatt == null) return null;
 
         return mBluetoothGatt.getServices();
+    }
+
+    private void setNotificationDescriptor(BluetoothGattCharacteristic characteristic) {
+        try {
+            BluetoothGattDescriptor DescriptorRX = characteristic.getDescriptor(
+                    UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+            );
+            DescriptorRX.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            mBluetoothGatt.writeDescriptor(DescriptorRX);
+        } catch (Exception ignored) { }
+    }
+
+    private String hexToString(String value) {
+        String hex = value.replace(" ", "");
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < hex.length(); i+=2) {
+            String str = hex.substring(i, i+2);
+            output.append((char)Integer.parseInt(str, 16));
+        }
+        return output.toString();
+    }
+
+    private String getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
+        String value = "";
+        final byte[] data = characteristic.getValue();
+        if (data != null && data.length > 0) {
+            final StringBuilder stringBuilder = new StringBuilder(data.length);
+            for (byte byteChar : data)
+                stringBuilder.append(String.format("%02X ", byteChar));
+            value = hexToString(stringBuilder.toString());
+            Log.d("BluetoothBroadcast", new String(data) + "\n" + value);
+        }
+        return value;
     }
 
     public BluetoothGattCharacteristic getReadCharacteristic(BluetoothGattService mCustomService) {
@@ -347,9 +361,7 @@ public class BluetoothLeService extends Service {
         } else {
             mReadCharacteristic = getReadCharacteristic(mCustomService);
         }
-        for (BluetoothGattDescriptor descriptor : mReadCharacteristic.getDescriptors()){
-            Log.i(TAG, "BluetoothGattDescriptor: " + descriptor.getUuid().toString());
-        }
+        getCharacteristicValue(mReadCharacteristic);
         setCharacteristicNotification(mReadCharacteristic, true);
     }
 
@@ -399,13 +411,7 @@ public class BluetoothLeService extends Service {
         }
 
         if (null != mWriteCharacteristic) {
-            try {
-                BluetoothGattDescriptor DescriptorRX = mWriteCharacteristic.getDescriptor(
-                        UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-                );
-                DescriptorRX.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                mBluetoothGatt.writeDescriptor(DescriptorRX);
-            } catch (Exception ignored) { }
+            setNotificationDescriptor(mWriteCharacteristic);
             if (null != value) {
                 mWriteCharacteristic.setValue(value);
             } else {
@@ -413,6 +419,7 @@ public class BluetoothLeService extends Service {
                 mWriteCharacteristic.setValue(version.getBytes(CharsetCompat.UTF_8));
             }
             mBluetoothGatt.writeCharacteristic(mWriteCharacteristic);
+            getCharacteristicValue(mWriteCharacteristic);
         }
     }
 }

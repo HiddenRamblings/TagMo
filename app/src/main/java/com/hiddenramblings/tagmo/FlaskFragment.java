@@ -140,6 +140,7 @@ public class FlaskFragment extends Fragment {
                                 flaskService.readCustomCharacteristic();
                                 dismissConnectionNotice();
                                 new Toasty(requireActivity()).Short(R.string.flask_connected);
+                                flaskService.writeCustomCharacteristic(null);
                             } catch (TagLostException tle) {
                                 stopFlaskService();
                                 new Toasty(requireActivity()).Short(R.string.flask_invalid);
@@ -354,5 +355,7 @@ public class FlaskFragment extends Fragment {
     public void onPause() {
         super.onPause();
         dismissFlaskDiscovery();
+        if (isServiceRunning())
+            stopFlaskService();
     }
 }

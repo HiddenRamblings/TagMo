@@ -280,6 +280,14 @@ public class BluetoothLeService extends Service {
             return;
         }
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+
+        try {
+            BluetoothGattDescriptor DescriptorTX = characteristic.getDescriptor(
+                    UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+            );
+            DescriptorTX.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            mBluetoothGatt.writeDescriptor(DescriptorTX);
+        } catch (Exception ignored) { }
     }
 
     /**
@@ -391,20 +399,20 @@ public class BluetoothLeService extends Service {
         }
 
         if (null != mWriteCharacteristic) {
-            for (BluetoothGattDescriptor descriptor : mWriteCharacteristic.getDescriptors()){
-                Log.i(TAG, "BluetoothGattDescriptor: " + descriptor.getUuid().toString());
-            }
-            BluetoothGattDescriptor DescriptorRX = mWriteCharacteristic.getDescriptor(
-                    UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-            );
+            try {
+                BluetoothGattDescriptor DescriptorRX = mWriteCharacteristic.getDescriptor(
+                        UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+                );
+                DescriptorRX.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mBluetoothGatt.writeDescriptor(DescriptorRX);
+            } catch (Exception ignored) { }
             if (null != value) {
                 mWriteCharacteristic.setValue(value);
             } else {
                 String version = "screen.getVersion();";
-                DescriptorRX.setValue(version.getBytes(CharsetCompat.UTF_8));
+                mWriteCharacteristic.setValue(version.getBytes(CharsetCompat.UTF_8));
             }
-            if (mBluetoothGatt.writeDescriptor(DescriptorRX))
-                Log.d(TAG, "GattWriteDescriptor Complete");
+            mBluetoothGatt.writeCharacteristic(mWriteCharacteristic);
         }
     }
 }

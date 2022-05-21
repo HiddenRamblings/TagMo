@@ -64,10 +64,10 @@ public class FlaskFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.Q)
     ActivityResultLauncher<String[]> onRequestLocationQ = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
-            permissions -> { boolean isLocationAvailable = true;
+            permissions -> { boolean isLocationAvailable = false;
         for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
             if (entry.getKey().equals(Manifest.permission.ACCESS_FINE_LOCATION)
-                    && !entry.getValue()) isLocationAvailable = false;
+                    && entry.getValue()) isLocationAvailable = true;
         }
         if (isLocationAvailable) {
             activateBluetooth();
@@ -79,9 +79,9 @@ public class FlaskFragment extends Fragment {
 
     ActivityResultLauncher<String[]> onRequestBluetoothS = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
-            permissions -> { boolean isBluetoothAvailable = true;
+            permissions -> { boolean isBluetoothAvailable = false;
         for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (!entry.getValue()) isBluetoothAvailable = false;
+            if (entry.getValue()) isBluetoothAvailable = true;
         }
         if (isBluetoothAvailable) {
             mBluetoothAdapter = getBluetoothAdapter();
@@ -108,9 +108,9 @@ public class FlaskFragment extends Fragment {
     });
     ActivityResultLauncher<String[]> onRequestLocation = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
-            permissions -> { boolean isLocationAvailable = true;
+            permissions -> { boolean isLocationAvailable = false;
         for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (!entry.getValue()) isLocationAvailable = false;
+            if (entry.getValue()) isLocationAvailable = true;
         }
         if (isLocationAvailable) {
             mBluetoothAdapter = getBluetoothAdapter();
@@ -190,14 +190,15 @@ public class FlaskFragment extends Fragment {
             } else {
                 final String[] PERMISSIONS_LOCATION = {
                         Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.ACCESS_BACKGROUND_LOCATION
                 };
                 onRequestLocationQ.launch(PERMISSIONS_LOCATION);
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             final String[] PERMISSIONS_LOCATION = {
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
             };
             onRequestLocation.launch(PERMISSIONS_LOCATION);
         } else {

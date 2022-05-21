@@ -285,11 +285,11 @@ public class BluetoothLeService extends Service {
 
     private void setNotificationDescriptor(BluetoothGattCharacteristic characteristic) {
         try {
-            BluetoothGattDescriptor DescriptorRX = characteristic.getDescriptor(
+            BluetoothGattDescriptor descriptorTX = characteristic.getDescriptor(
                     UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             );
-            DescriptorRX.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(DescriptorRX);
+            descriptorTX.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            mBluetoothGatt.writeDescriptor(descriptorTX);
         } catch (Exception ignored) { }
     }
 
@@ -305,6 +305,7 @@ public class BluetoothLeService extends Service {
 
     private String getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         String value = "";
+        mBluetoothGatt.readCharacteristic(characteristic);
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
             final StringBuilder stringBuilder = new StringBuilder(data.length);

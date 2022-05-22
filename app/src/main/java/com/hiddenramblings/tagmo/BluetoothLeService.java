@@ -67,7 +67,6 @@ public class BluetoothLeService extends Service {
 
     private String getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         String value = "";
-        // mBluetoothGatt.readCharacteristic(characteristic);
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
             final StringBuilder stringBuilder = new StringBuilder(data.length);
@@ -76,6 +75,10 @@ public class BluetoothLeService extends Service {
             value = hexToString(stringBuilder.toString());
             Log.d("BluetoothBroadcast", characteristic.getUuid().toString() + ": "
                     + new String(data) + "\n" + value);
+        }
+        if (characteristic.getUuid() == FlaskRX) {
+            mBluetoothGatt.readCharacteristic(characteristic);
+            getCharacteristicValue(characteristic);
         }
         return value;
     }
@@ -425,7 +428,7 @@ public class BluetoothLeService extends Service {
             if (null != value) {
                 mWriteCharacteristic.setValue(value);
             } else {
-                String version = "tag.getList();";
+                String version = "tag.getList()";
                 mWriteCharacteristic.setValue(version.getBytes(CharsetCompat.UTF_8));
             }
             mBluetoothGatt.writeCharacteristic(mWriteCharacteristic);

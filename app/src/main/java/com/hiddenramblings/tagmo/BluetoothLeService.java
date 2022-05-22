@@ -54,8 +54,8 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.EXTRA_DATA";
 
     public final static UUID FlaskNUS = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
-    private final static UUID FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
+    private final static UUID FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
 
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
@@ -63,6 +63,21 @@ public class BluetoothLeService extends Service {
     interface BluetoothGattListener {
         void onServicesDiscovered();
         void onServicesDisconnect();
+    }
+
+    private String getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
+        String value = "";
+        // mBluetoothGatt.readCharacteristic(characteristic);
+        final byte[] data = characteristic.getValue();
+        if (data != null && data.length > 0) {
+            final StringBuilder stringBuilder = new StringBuilder(data.length);
+            for (byte byteChar : data)
+                stringBuilder.append(String.format("%02X ", byteChar));
+            value = hexToString(stringBuilder.toString());
+            Log.d("BluetoothBroadcast", characteristic.getUuid().toString() + ": "
+                    + new String(data) + "\n" + value);
+        }
+        return value;
     }
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -101,7 +116,7 @@ public class BluetoothLeService extends Service {
         public void onCharacteristicRead(
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.d("BluetoothBroadcast", new String(characteristic.getValue()));
+                getCharacteristicValue(characteristic);
                 broadcastUpdate(characteristic);
             }
         }
@@ -109,7 +124,7 @@ public class BluetoothLeService extends Service {
         @Override
         public void onCharacteristicChanged(
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            Log.d("BluetoothBroadcast", new String(characteristic.getValue()));
+            getCharacteristicValue(characteristic);
             broadcastUpdate(characteristic);
         }
     };
@@ -255,6 +270,23 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
+    private void setResponseDescriptors(BluetoothGattCharacteristic characteristic) {
+        try {
+            BluetoothGattDescriptor descriptorTX = characteristic.getDescriptor(
+                    UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+            );
+            descriptorTX.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            mBluetoothGatt.writeDescriptor(descriptorTX);
+        } catch (Exception ignored) { }
+        try {
+            BluetoothGattDescriptor descriptorTX = characteristic.getDescriptor(
+                    UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+            );
+            descriptorTX.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+            mBluetoothGatt.writeDescriptor(descriptorTX);
+        } catch (Exception ignored) { }
+    }
+
     /**
      * Enables or disables notification on a give characteristic.
      *
@@ -268,7 +300,7 @@ public class BluetoothLeService extends Service {
             return;
         }
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-        setNotificationDescriptor(characteristic);
+        setResponseDescriptors(characteristic);
     }
 
     /**
@@ -283,16 +315,6 @@ public class BluetoothLeService extends Service {
         return mBluetoothGatt.getServices();
     }
 
-    private void setNotificationDescriptor(BluetoothGattCharacteristic characteristic) {
-        try {
-            BluetoothGattDescriptor descriptorTX = characteristic.getDescriptor(
-                    UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-            );
-            descriptorTX.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(descriptorTX);
-        } catch (Exception ignored) { }
-    }
-
     private String hexToString(String value) {
         String hex = value.replace(" ", "");
         StringBuilder output = new StringBuilder();
@@ -303,23 +325,9 @@ public class BluetoothLeService extends Service {
         return output.toString();
     }
 
-    private String getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
-        String value = "";
-        mBluetoothGatt.readCharacteristic(characteristic);
-        final byte[] data = characteristic.getValue();
-        if (data != null && data.length > 0) {
-            final StringBuilder stringBuilder = new StringBuilder(data.length);
-            for (byte byteChar : data)
-                stringBuilder.append(String.format("%02X ", byteChar));
-            value = hexToString(stringBuilder.toString());
-            Log.d("BluetoothBroadcast", new String(data) + "\n" + value);
-        }
-        return value;
-    }
-
     public BluetoothGattCharacteristic getReadCharacteristic(BluetoothGattService mCustomService) {
         BluetoothGattCharacteristic mReadCharacteristic =
-                mCustomService.getCharacteristic(FlaskTX);
+                mCustomService.getCharacteristic(FlaskRX);
         if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
             return mReadCharacteristic;
         } else {
@@ -327,10 +335,11 @@ public class BluetoothLeService extends Service {
                 UUID customUUID = customRead.getUuid();
                 Log.d("GattReadCharacteristic", customUUID.toString());
                 /*get the read characteristic from the service*/
-                if (customUUID != FlaskTX) continue;
-                mReadCharacteristic = mCustomService.getCharacteristic(customUUID);
-                if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
-                    break;
+                if (customUUID == FlaskRX) {
+                    mReadCharacteristic = mCustomService.getCharacteristic(customUUID);
+                    if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
+                        break;
+                    }
                 }
             }
         }
@@ -362,13 +371,12 @@ public class BluetoothLeService extends Service {
         } else {
             mReadCharacteristic = getReadCharacteristic(mCustomService);
         }
-        getCharacteristicValue(mReadCharacteristic);
         setCharacteristicNotification(mReadCharacteristic, true);
     }
 
     public BluetoothGattCharacteristic getWriteCharacteristic(BluetoothGattService mCustomService) {
         BluetoothGattCharacteristic mWriteCharacteristic =
-                mCustomService.getCharacteristic(FlaskRX);
+                mCustomService.getCharacteristic(FlaskTX);
         if (mBluetoothGatt.readCharacteristic(mWriteCharacteristic)) {
             return mWriteCharacteristic;
         } else {
@@ -376,10 +384,11 @@ public class BluetoothLeService extends Service {
                 UUID customUUID = customWrite.getUuid();
                 Log.d("GattWriteCharacteristic", customUUID.toString());
                 /*get the write characteristic from the service*/
-                if (customUUID != FlaskRX) continue;
-                mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
-                if (mBluetoothGatt.readCharacteristic(mWriteCharacteristic)) {
-                    break;
+                if (customUUID == FlaskTX) {
+                    mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
+                    if (mBluetoothGatt.readCharacteristic(mWriteCharacteristic)) {
+                        break;
+                    }
                 }
             }
         }
@@ -410,13 +419,13 @@ public class BluetoothLeService extends Service {
         } else {
             mWriteCharacteristic = getWriteCharacteristic(mCustomService);
         }
+        setCharacteristicNotification(mWriteCharacteristic, true);
 
         if (null != mWriteCharacteristic) {
-            setNotificationDescriptor(mWriteCharacteristic);
             if (null != value) {
                 mWriteCharacteristic.setValue(value);
             } else {
-                String version = "screen.getVersion();";
+                String version = "tag.getList();";
                 mWriteCharacteristic.setValue(version.getBytes(CharsetCompat.UTF_8));
             }
             mBluetoothGatt.writeCharacteristic(mWriteCharacteristic);

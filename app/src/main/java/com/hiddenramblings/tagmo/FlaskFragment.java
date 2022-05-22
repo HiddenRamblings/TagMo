@@ -311,6 +311,7 @@ public class FlaskFragment extends Fragment {
     public void stopFlaskService() {
         dismissConnectionNotice();
         flaskService.disconnect();
+        flaskService.close();
         requireActivity().unbindService(mServerConn);
         requireActivity().stopService(new Intent(requireActivity(), BluetoothLeService.class));
     }

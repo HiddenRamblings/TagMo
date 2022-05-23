@@ -63,6 +63,7 @@ public class BluetoothLeService extends Service {
     interface BluetoothGattListener {
         void onServicesDiscovered();
         void onServicesDisconnect();
+        void onFlaskButtonClicked(String response);
     }
 
     StringBuilder response = new StringBuilder();
@@ -76,7 +77,8 @@ public class BluetoothLeService extends Service {
                     response.append(output);
                 }
                 if (response.toString().trim().endsWith("}")) {
-                    Log.d("BluetoothBroadcast", response.toString());
+                    if (null != listener)
+                        listener.onFlaskButtonClicked(response.toString());
                     response = new StringBuilder();
                 }
             }
@@ -398,7 +400,7 @@ public class BluetoothLeService extends Service {
         return mWriteCharacteristic;
     }
 
-    public void writeCustomCharacteristic(byte[] value) throws TagLostException {
+    public void writeCustomCharacteristic(String value) throws TagLostException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             throw new TagLostException();
@@ -428,8 +430,7 @@ public class BluetoothLeService extends Service {
             if (null != value) {
                 mWriteCharacteristic.setValue(value);
             } else {
-                String version = "tag.getList()";
-                mWriteCharacteristic.setValue(version.getBytes(CharsetCompat.UTF_8));
+                mWriteCharacteristic.setValue("tag.getList()\n");
             }
             mBluetoothGatt.writeCharacteristic(mWriteCharacteristic);
             getCharacteristicValue(mWriteCharacteristic);

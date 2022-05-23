@@ -65,22 +65,22 @@ public class BluetoothLeService extends Service {
         void onServicesDisconnect();
     }
 
-    private String getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
-        String value = "";
+    StringBuilder response = new StringBuilder();
+    private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
-            final StringBuilder stringBuilder = new StringBuilder(data.length);
-            for (byte byteChar : data)
-                stringBuilder.append(String.format("%02X ", byteChar));
-            value = hexToString(stringBuilder.toString());
-            Log.d("BluetoothBroadcast", characteristic.getUuid().toString() + ": "
-                    + new String(data) + "\n" + value);
+            String output = new String(data);
+            Log.d(characteristic.getUuid().toString(), output);
+            if (characteristic.getUuid().compareTo(FlaskRX) == 0) {
+                if (output.startsWith("{") || response.length() > 0) {
+                    response.append(output);
+                }
+                if (response.toString().trim().endsWith("}")) {
+                    Log.d("BluetoothBroadcast", response.toString());
+                    response = new StringBuilder();
+                }
+            }
         }
-        if (characteristic.getUuid() == FlaskRX) {
-            mBluetoothGatt.readCharacteristic(characteristic);
-            getCharacteristicValue(characteristic);
-        }
-        return value;
     }
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -338,7 +338,7 @@ public class BluetoothLeService extends Service {
                 UUID customUUID = customRead.getUuid();
                 Log.d("GattReadCharacteristic", customUUID.toString());
                 /*get the read characteristic from the service*/
-                if (customUUID == FlaskRX) {
+                if (customUUID.compareTo(FlaskRX) == 0) {
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID);
                     if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
                         break;
@@ -387,7 +387,7 @@ public class BluetoothLeService extends Service {
                 UUID customUUID = customWrite.getUuid();
                 Log.d("GattWriteCharacteristic", customUUID.toString());
                 /*get the write characteristic from the service*/
-                if (customUUID == FlaskTX) {
+                if (customUUID.compareTo(FlaskTX) == 0) {
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
                     if (mBluetoothGatt.readCharacteristic(mWriteCharacteristic)) {
                         break;

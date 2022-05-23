@@ -21,7 +21,8 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.UUID;
@@ -63,7 +64,7 @@ public class BluetoothLeService extends Service {
     interface BluetoothGattListener {
         void onServicesDiscovered();
         void onServicesDisconnect();
-        void onFlaskButtonClicked(String response);
+        void onFlaskButtonClicked(JSONObject jsonObject);
     }
 
     StringBuilder response = new StringBuilder();
@@ -77,8 +78,16 @@ public class BluetoothLeService extends Service {
                     response.append(output);
                 }
                 if (response.toString().trim().endsWith("}")) {
-                    if (null != listener)
-                        listener.onFlaskButtonClicked(response.toString());
+                    if (null != listener) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.toString());
+                            String event = jsonObject.getString("event");
+                            if (event.equals("button"))
+                                listener.onFlaskButtonClicked(jsonObject);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     response = new StringBuilder();
                 }
             }
@@ -318,16 +327,6 @@ public class BluetoothLeService extends Service {
         if (mBluetoothGatt == null) return null;
 
         return mBluetoothGatt.getServices();
-    }
-
-    private String hexToString(String value) {
-        String hex = value.replace(" ", "");
-        StringBuilder output = new StringBuilder();
-        for (int i = 0; i < hex.length(); i+=2) {
-            String str = hex.substring(i, i+2);
-            output.append((char)Integer.parseInt(str, 16));
-        }
-        return output.toString();
     }
 
     public BluetoothGattCharacteristic getReadCharacteristic(BluetoothGattService mCustomService) {

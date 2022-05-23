@@ -185,7 +185,7 @@ public class FlaskFragment extends Fragment {
                         }
 
                         @Override
-                        public void onFlaskButtonClicked(JSONObject jsonObject) {
+                        public void onFlaskActiveChanged(JSONObject jsonObject) {
                             try {
                                 getAmiiboByName(
                                         jsonObject.getString("name").split("\\|")[0]
@@ -193,6 +193,11 @@ public class FlaskFragment extends Fragment {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                        }
+
+                        @Override
+                        public void onFlaskActiveDeleted(JSONObject jsonObject) {
+                            amiiboCard.setVisibility(View.INVISIBLE);
                         }
                     });
                 } else {
@@ -299,6 +304,7 @@ public class FlaskFragment extends Fragment {
                 String amiiboImageUrl;
 
                 if (null != currentAmiibo) {
+                    amiiboCard.setVisibility(View.VISIBLE);
                     amiiboHexId = TagUtils.amiiboIdToHex(currentAmiibo.id);
                     amiiboImageUrl = currentAmiibo.getImageUrl();
                     amiiboName = currentAmiibo.name;
@@ -339,6 +345,7 @@ public class FlaskFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         fragmentView = (ViewGroup) view;
         amiiboCard = view.findViewById(R.id.active_tile_layout);
+        amiiboCard.setVisibility(View.INVISIBLE);
         flaskDetails = view.findViewById(R.id.flask_details);
         progressBar = view.findViewById(R.id.scanner_progress);
     }

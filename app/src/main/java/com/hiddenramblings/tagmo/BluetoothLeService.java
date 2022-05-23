@@ -21,6 +21,7 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -67,17 +68,50 @@ public class BluetoothLeService extends Service {
         void onFlaskButtonClicked(JSONObject jsonObject);
     }
 
+    private String hexToString(String value) {
+        String hex = value.replace(" ", "");
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < hex.length(); i+=2) {
+            String str = hex.substring(i, i+2);
+            output.append((char)Integer.parseInt(str, 16));
+        }
+        return output.toString();
+    }
+
+    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+    private String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
     StringBuilder response = new StringBuilder();
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
+            Log.d("BluetoothHEX", hexToString(bytesToHex(data)));
             String output = new String(data);
             Log.d(characteristic.getUuid().toString(), output);
+
             if (characteristic.getUuid().compareTo(FlaskRX) == 0) {
-                if (output.startsWith("{") || response.length() > 0) {
+                if (output.startsWith("[") || output.startsWith("{") || response.length() > 0) {
                     response.append(output);
                 }
-                if (response.toString().trim().endsWith("}")) {
+                String progress = response.length() > 0 ? response.toString().trim() : "";
+                if (progress.startsWith("[")) {
+                    if (progress.endsWith("]")) {
+                        try {
+                            JSONArray jsonArray = new JSONArray(response.toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        response = new StringBuilder();
+                    }
+                } else if (progress.endsWith("}")) {
                     if (null != listener) {
                         try {
                             JSONObject jsonObject = new JSONObject(response.toString());
@@ -120,6 +154,9 @@ public class BluetoothLeService extends Service {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (null != listener) listener.onServicesDiscovered();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    gatt.requestMtu(517);
+                }
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
@@ -423,16 +460,16 @@ public class BluetoothLeService extends Service {
         } else {
             mWriteCharacteristic = getWriteCharacteristic(mCustomService);
         }
-        setCharacteristicNotification(mWriteCharacteristic, true);
+//        setCharacteristicNotification(mWriteCharacteristic, true);
 
         if (null != mWriteCharacteristic) {
             if (null != value) {
                 mWriteCharacteristic.setValue(value);
             } else {
-                mWriteCharacteristic.setValue("tag.getList()\n");
+                String command = "\\x10Bluetooth.println(tag.getList())\\n";
+                mWriteCharacteristic.setValue(bytesToHex(command.getBytes()));
             }
             mBluetoothGatt.writeCharacteristic(mWriteCharacteristic);
-            getCharacteristicValue(mWriteCharacteristic);
         }
     }
 }

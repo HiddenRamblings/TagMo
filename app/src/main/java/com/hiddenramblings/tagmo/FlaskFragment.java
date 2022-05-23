@@ -154,14 +154,12 @@ public class FlaskFragment extends Fragment {
                             try {
                                 flaskService.readCustomCharacteristic();
                                 dismissConnectionNotice();
-                                TextView nameText = flaskDetails.findViewById(R.id.txtProfile);
-                                nameText.setText(getString(R.string.flask_profile, flaskProfile));
+                                setFragmentTitle(flaskProfile);
                                 flaskService.writeCustomCharacteristic(null);
                             } catch (TagLostException tle) {
                                 stopFlaskService();
-                                TextView nameText = flaskDetails.findViewById(R.id.txtProfile);
-                                nameText.setText(getString(R.string.flask_profile, "-"));
                                 new Toasty(requireActivity()).Short(R.string.flask_invalid);
+                                setFragmentTitle(R.string.bluup_flask_ble);
                             }
                         }
 
@@ -170,8 +168,7 @@ public class FlaskFragment extends Fragment {
                             if (!isServiceDiscovered) {
                                 stopFlaskService();
                                 new Toasty(requireActivity()).Short(R.string.flask_missing);
-                                TextView nameText = flaskDetails.findViewById(R.id.txtProfile);
-                                nameText.setText(getString(R.string.flask_profile, "-"));
+                                setFragmentTitle(R.string.bluup_flask_ble);
                             }
                         }
 
@@ -189,8 +186,7 @@ public class FlaskFragment extends Fragment {
                 } else {
                     stopFlaskService();
                     new Toasty(requireActivity()).Short(R.string.flask_invalid);
-                    TextView nameText = flaskDetails.findViewById(R.id.txtProfile);
-                    nameText.setText(getString(R.string.flask_profile, "-"));
+                    setFragmentTitle(R.string.bluup_flask_ble);
                 }
             }
         }
@@ -198,8 +194,23 @@ public class FlaskFragment extends Fragment {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Log.d("FlaskService", "onServiceDisconnected");
+            setFragmentTitle(R.string.bluup_flask_ble);
         }
     };
+
+    private void setFragmentTitle(String title) {
+        requireActivity().runOnUiThread(() -> {
+            requireActivity().setTitle(title);
+            requireActivity().invalidateOptionsMenu();
+        });
+    }
+
+    private void setFragmentTitle(int titleRes) {
+        requireActivity().runOnUiThread(() -> {
+            requireActivity().setTitle(titleRes);
+            requireActivity().invalidateOptionsMenu();
+        });
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -279,14 +290,13 @@ public class FlaskFragment extends Fragment {
     }
 
     private void scanBluetoothServices() {
-        TextView nameText = flaskDetails.findViewById(R.id.txtProfile);
-        nameText.setText(getString(R.string.flask_profile, "-"));
         progressBar.setVisibility(View.VISIBLE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
             ParcelUuid FlaskUUID = new ParcelUuid(BluetoothLeService.FlaskNUS);
             ScanFilter filter = new ScanFilter.Builder().setServiceUuid(FlaskUUID).build();
-            ScanSettings settings = new ScanSettings.Builder().build();
+            ScanSettings settings = new ScanSettings.Builder()
+                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
             ScanCallback callback = new ScanCallback() {
                 @Override
                 public void onScanResult(int callbackType, ScanResult result) {
@@ -337,9 +347,7 @@ public class FlaskFragment extends Fragment {
     }
 
     private void dismissConnectionNotice() {
-        if (null != statusBar && statusBar.isShown()) {
-            statusBar.dismiss();
-        }
+        if (null != statusBar && statusBar.isShown()) statusBar.dismiss();
     }
 
     public void startFlaskService() {

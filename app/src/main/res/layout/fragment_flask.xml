@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,24 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        android:max="100"
-        android:layout_alignParentBottom="true"/>
+        android:max="100" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="10dp"
         android:id="@+id/flask_details"
-        android:orientation="vertical"
-        android:layout_above="@+id/scanner_progress">
-
-        <TextView
-            android:id="@+id/txtProfile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:text="@string/flask_profile"
-            android:textColor="@color/tag_text"
-            android:textSize="16sp"/>
+        android:orientation="vertical" >
 
     <TextView
         android:id="@+id/txtName"
@@ -40,4 +30,4 @@
         android:textColor="@color/tag_text"
         android:textSize="16sp"/>
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

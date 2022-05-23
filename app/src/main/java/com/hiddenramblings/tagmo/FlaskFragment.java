@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -56,12 +57,13 @@ public class FlaskFragment extends Fragment {
 
     private boolean hasCheckedPermissions = false;
     private ViewGroup fragmentView;
-    private LinearLayout deviceList;
+    private LinearLayout flaskDetails;
     private ProgressBar progressBar;
     private Snackbar statusBar;
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothAdapter.LeScanCallback scanCallback;
     private BluetoothLeService flaskService;
+    private String flaskProfile;
     private String flaskAddress;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -152,10 +154,13 @@ public class FlaskFragment extends Fragment {
                             try {
                                 flaskService.readCustomCharacteristic();
                                 dismissConnectionNotice();
-                                new Toasty(requireActivity()).Short(R.string.flask_connected);
+                                TextView nameText = flaskDetails.findViewById(R.id.txtProfile);
+                                nameText.setText(getString(R.string.flask_profile, flaskProfile));
                                 flaskService.writeCustomCharacteristic(null);
                             } catch (TagLostException tle) {
                                 stopFlaskService();
+                                TextView nameText = flaskDetails.findViewById(R.id.txtProfile);
+                                nameText.setText(getString(R.string.flask_profile, "-"));
                                 new Toasty(requireActivity()).Short(R.string.flask_invalid);
                             }
                         }
@@ -165,15 +170,17 @@ public class FlaskFragment extends Fragment {
                             if (!isServiceDiscovered) {
                                 stopFlaskService();
                                 new Toasty(requireActivity()).Short(R.string.flask_missing);
+                                TextView nameText = flaskDetails.findViewById(R.id.txtProfile);
+                                nameText.setText(getString(R.string.flask_profile, "-"));
                             }
                         }
 
                         @Override
-                        public void onFlaskButtonClicked(String response) {
+                        public void onFlaskButtonClicked(JSONObject jsonObject) {
                             try {
-                                JSONObject current = new JSONObject(response);
-                                String name = current.getString("name");
-                                new Toasty(requireActivity()).Short(name);
+                                String name = jsonObject.getString("name").split("\\|")[0];
+                                TextView nameText = flaskDetails.findViewById(R.id.txtName);
+                                nameText.setText(getString(R.string.flask_current, name));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -182,6 +189,8 @@ public class FlaskFragment extends Fragment {
                 } else {
                     stopFlaskService();
                     new Toasty(requireActivity()).Short(R.string.flask_invalid);
+                    TextView nameText = flaskDetails.findViewById(R.id.txtProfile);
+                    nameText.setText(getString(R.string.flask_profile, "-"));
                 }
             }
         }
@@ -201,7 +210,7 @@ public class FlaskFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         fragmentView = (ViewGroup) view;
-        deviceList = view.findViewById(R.id.bluetooth_devices);
+        flaskDetails = view.findViewById(R.id.flask_details);
         progressBar = view.findViewById(R.id.scanner_progress);
     }
 
@@ -270,6 +279,8 @@ public class FlaskFragment extends Fragment {
     }
 
     private void scanBluetoothServices() {
+        TextView nameText = flaskDetails.findViewById(R.id.txtProfile);
+        nameText.setText(getString(R.string.flask_profile, "-"));
         progressBar.setVisibility(View.VISIBLE);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
@@ -280,6 +291,7 @@ public class FlaskFragment extends Fragment {
                 @Override
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
+                    flaskProfile = result.getDevice().getName();
                     flaskAddress = result.getDevice().getAddress();
                     dismissFlaskDiscovery();
                     showConnectionNotice();
@@ -289,6 +301,7 @@ public class FlaskFragment extends Fragment {
             scanner.startScan(Collections.singletonList(filter), settings, callback);
         } else {
             scanCallback = (bluetoothDevice, i, bytes) -> {
+                flaskProfile = bluetoothDevice.getName();
                 flaskAddress = bluetoothDevice.getAddress();
                 dismissFlaskDiscovery();
                 showConnectionNotice();
@@ -302,8 +315,6 @@ public class FlaskFragment extends Fragment {
             new ActivityResultContracts.StartActivityForResult(), result -> scanBluetoothServices());
 
     private void selectBluetoothDevice() {
-        deviceList.removeAllViews();
-
         for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
             if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
                 new Toasty(requireActivity()).Long(R.string.flask_paired);
@@ -326,7 +337,9 @@ public class FlaskFragment extends Fragment {
     }
 
     private void dismissConnectionNotice() {
-        if (null != statusBar && statusBar.isShown()) statusBar.dismiss();
+        if (null != statusBar && statusBar.isShown()) {
+            statusBar.dismiss();
+        }
     }
 
     public void startFlaskService() {

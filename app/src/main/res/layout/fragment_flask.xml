@@ -19,7 +19,25 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/bluetooth_devices"
+        android:id="@+id/flask_details"
         android:orientation="vertical"
-        android:layout_above="@+id/scanner_progress"/>
+        android:layout_above="@+id/scanner_progress">
+
+        <TextView
+            android:id="@+id/txtProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="@string/flask_profile"
+            android:textColor="@color/tag_text"
+            android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/txtName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:textColor="@color/tag_text"
+        android:textSize="16sp"/>
+    </LinearLayout>
 </RelativeLayout>

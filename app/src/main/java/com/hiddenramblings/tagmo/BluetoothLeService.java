@@ -65,7 +65,8 @@ public class BluetoothLeService extends Service {
     interface BluetoothGattListener {
         void onServicesDiscovered();
         void onServicesDisconnect();
-        void onFlaskButtonClicked(JSONObject jsonObject);
+        void onFlaskActiveChanged(JSONObject jsonObject);
+        void onFlaskActiveDeleted(JSONObject jsonObject);
     }
 
     private String hexToString(String value) {
@@ -117,7 +118,9 @@ public class BluetoothLeService extends Service {
                             JSONObject jsonObject = new JSONObject(response.toString());
                             String event = jsonObject.getString("event");
                             if (event.equals("button"))
-                                listener.onFlaskButtonClicked(jsonObject);
+                                listener.onFlaskActiveChanged(jsonObject);
+                            if (event.equals("delete"))
+                                listener.onFlaskActiveDeleted(jsonObject);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

@@ -42,6 +42,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
@@ -77,6 +80,10 @@ public class FlaskFragment extends Fragment {
         }
     });
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    ActivityResultLauncher<String> onRequestBackgroundQ = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), permission -> {});
+
     ActivityResultLauncher<String[]> onRequestBluetoothS = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
             permissions -> { boolean isBluetoothAvailable = false;
@@ -86,6 +93,9 @@ public class FlaskFragment extends Fragment {
         if (isBluetoothAvailable) {
             mBluetoothAdapter = getBluetoothAdapter();
             if (null != mBluetoothAdapter) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+                }
                 selectBluetoothDevice();
             } else {
                 new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
@@ -100,6 +110,9 @@ public class FlaskFragment extends Fragment {
             new ActivityResultContracts.StartActivityForResult(), result -> {
         mBluetoothAdapter = getBluetoothAdapter();
         if (null != mBluetoothAdapter) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+            }
             selectBluetoothDevice();
         } else {
             new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
@@ -154,6 +167,17 @@ public class FlaskFragment extends Fragment {
                                 new Toasty(requireActivity()).Short(R.string.flask_missing);
                             }
                         }
+
+                        @Override
+                        public void onFlaskButtonClicked(String response) {
+                            try {
+                                JSONObject current = new JSONObject(response);
+                                String name = current.getString("name");
+                                new Toasty(requireActivity()).Short(name);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     });
                 } else {
                     stopFlaskService();
@@ -190,8 +214,7 @@ public class FlaskFragment extends Fragment {
             } else {
                 final String[] PERMISSIONS_LOCATION = {
                         Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                        Manifest.permission.ACCESS_COARSE_LOCATION
                 };
                 onRequestLocationQ.launch(PERMISSIONS_LOCATION);
             }
@@ -219,10 +242,14 @@ public class FlaskFragment extends Fragment {
             onRequestBluetoothS.launch(PERMISSIONS_BLUETOOTH);
         } else {
             mBluetoothAdapter = getBluetoothAdapter();
-            if (null != mBluetoothAdapter)
+            if (null != mBluetoothAdapter) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+                }
                 selectBluetoothDevice();
-            else
+            } else {
                 onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+            }
         }
     }
 

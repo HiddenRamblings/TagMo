@@ -37,17 +37,17 @@ This app is the result of work by many. Thanks go out to (in alphabetical order)
 * DanTheMan827 - Fixes to Amiibo Generator
 * FinalDoom - Bug fixes / maintenance
 * H3llK33p3r - Images for browser and main screen
-* hax0karti - Amiibo Generator For Wumiibo
+* hax0karti - [Amiibo Generator For Wumiibo](https://github.com/hax0kartik/amiibo-generator)
 * javiMaD - Encryption algorithm help
 * Kidel - Bug Fixes
-* N3evin - AmiiboAPI
+* N3evin - [AmiiboAPI](https://github.com/N3evin/AmiiboAPI)
 * NevetsTheSteve - Compatibility layer for Xperia phones
 * North101 - File browser, extended amiibo™ info, QR code, general cleanup
 * masterchan-777 - Bug fixes / maintenance
 * possi - Wolf link editor
 * socram8888 - Decryption / encryption code
 * Supercool330 - Encryption algorithm help
-* withgallantry - Bluup Flask and much more
+* withgallantry - [Bluup Flask](https://www.bluuplabs.com/flask/) and much more
 * Others who prefer to remain anonymous and testers
 ### Translations
 * NoiRioN - Polish

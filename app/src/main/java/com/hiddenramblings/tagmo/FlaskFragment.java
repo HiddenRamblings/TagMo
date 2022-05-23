@@ -17,6 +17,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.nfc.TagLostException;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,20 +38,31 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Executors;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
@@ -57,6 +70,7 @@ public class FlaskFragment extends Fragment {
 
     private boolean hasCheckedPermissions = false;
     private ViewGroup fragmentView;
+    private CardView amiiboCard;
     private LinearLayout flaskDetails;
     private ProgressBar progressBar;
     private Snackbar statusBar;
@@ -146,6 +160,7 @@ public class FlaskFragment extends Fragment {
             flaskService = localBinder.getService();
             if (flaskService.initialize()) {
                 if (flaskService.connect(flaskAddress)) {
+                    setFragmentTitle(flaskProfile);
                     flaskService.setListener(new BluetoothLeService.BluetoothGattListener() {
                         boolean isServiceDiscovered = false;
                         @Override
@@ -154,12 +169,10 @@ public class FlaskFragment extends Fragment {
                             try {
                                 flaskService.readCustomCharacteristic();
                                 dismissConnectionNotice();
-                                setFragmentTitle(flaskProfile);
                                 flaskService.writeCustomCharacteristic(null);
                             } catch (TagLostException tle) {
                                 stopFlaskService();
                                 new Toasty(requireActivity()).Short(R.string.flask_invalid);
-                                setFragmentTitle(R.string.bluup_flask_ble);
                             }
                         }
 
@@ -168,16 +181,15 @@ public class FlaskFragment extends Fragment {
                             if (!isServiceDiscovered) {
                                 stopFlaskService();
                                 new Toasty(requireActivity()).Short(R.string.flask_missing);
-                                setFragmentTitle(R.string.bluup_flask_ble);
                             }
                         }
 
                         @Override
                         public void onFlaskButtonClicked(JSONObject jsonObject) {
                             try {
-                                String name = jsonObject.getString("name").split("\\|")[0];
-                                TextView nameText = flaskDetails.findViewById(R.id.txtName);
-                                nameText.setText(getString(R.string.flask_current, name));
+                                getAmiiboByName(
+                                        jsonObject.getString("name").split("\\|")[0]
+                                );
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -186,7 +198,6 @@ public class FlaskFragment extends Fragment {
                 } else {
                     stopFlaskService();
                     new Toasty(requireActivity()).Short(R.string.flask_invalid);
-                    setFragmentTitle(R.string.bluup_flask_ble);
                 }
             }
         }
@@ -212,6 +223,112 @@ public class FlaskFragment extends Fragment {
         });
     }
 
+    void setFoomiiboInfoText(TextView textView, CharSequence text) {
+            textView.setVisibility(View.VISIBLE);
+            if (text.length() == 0) {
+                textView.setText(R.string.unknown);
+                textView.setEnabled(false);
+            } else {
+                textView.setText(text);
+                textView.setEnabled(true);
+            }
+    }
+
+    private void getAmiiboByName(String name) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            AmiiboManager amiiboManager;
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager(
+                        requireContext().getApplicationContext()
+                );
+            } catch (IOException | JSONException | ParseException e) {
+                Debug.Log(e);
+                amiiboManager = null;
+                new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
+            }
+
+            if (Thread.currentThread().isInterrupted()) return;
+
+            Amiibo selectedAmiibo = null;
+            if (null != amiiboManager) {
+                for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                    if (amiibo.name.equals(name)) {
+                        selectedAmiibo = amiibo;
+                    }
+                }
+            }
+            final Amiibo currentAmiibo = selectedAmiibo;
+            requireActivity().runOnUiThread(() -> {
+                TextView txtName = amiiboCard.findViewById(R.id.txtName);
+                TextView txtTagId = amiiboCard.findViewById(R.id.txtTagId);
+                TextView txtAmiiboSeries = amiiboCard.findViewById(R.id.txtAmiiboSeries);
+                TextView txtAmiiboType = amiiboCard.findViewById(R.id.txtAmiiboType);
+                TextView txtGameSeries = amiiboCard.findViewById(R.id.txtGameSeries);
+                // this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
+                AppCompatImageView imageAmiibo = amiiboCard.findViewById(R.id.imageAmiibo);
+
+                CustomTarget<Bitmap> target = new CustomTarget<>() {
+                    @Override
+                    public void onLoadStarted(@Nullable Drawable placeholder) {
+                        imageAmiibo.setImageResource(0);
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        imageAmiibo.setVisibility(View.INVISIBLE);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                        imageAmiibo.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+                        imageAmiibo.setImageBitmap(resource);
+                        imageAmiibo.setVisibility(View.VISIBLE);
+                    }
+                };
+
+                String amiiboHexId;
+                String amiiboName = "";
+                String amiiboSeries = "";
+                String amiiboType = "";
+                String gameSeries = "";
+                // String character = "";
+                String amiiboImageUrl;
+
+                if (null != currentAmiibo) {
+                    amiiboHexId = TagUtils.amiiboIdToHex(currentAmiibo.id);
+                    amiiboImageUrl = currentAmiibo.getImageUrl();
+                    amiiboName = currentAmiibo.name;
+                    if (null != currentAmiibo.getAmiiboSeries())
+                        amiiboSeries = currentAmiibo.getAmiiboSeries().name;
+                    if (null != currentAmiibo.getAmiiboType())
+                        amiiboType = currentAmiibo.getAmiiboType().name;
+                    if (null != currentAmiibo.getGameSeries())
+                        gameSeries = currentAmiibo.getGameSeries().name;
+
+                    setFoomiiboInfoText(txtName, amiiboName);
+                    setFoomiiboInfoText(txtTagId, amiiboHexId);
+                    setFoomiiboInfoText(txtAmiiboSeries, amiiboSeries);
+                    setFoomiiboInfoText(txtAmiiboType, amiiboType);
+                    setFoomiiboInfoText(txtGameSeries, gameSeries);
+
+                    if (null != imageAmiibo) {
+                        GlideApp.with(amiiboCard).clear(target);
+                        if (null != amiiboImageUrl) {
+                            GlideApp.with(amiiboCard).asBitmap().load(amiiboImageUrl).into(target);
+                        }
+                    }
+                    if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
+                        txtTagId.setEnabled(false);
+                    }
+                }
+            });
+        });
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -221,6 +338,7 @@ public class FlaskFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         fragmentView = (ViewGroup) view;
+        amiiboCard = view.findViewById(R.id.active_tile_layout);
         flaskDetails = view.findViewById(R.id.flask_details);
         progressBar = view.findViewById(R.id.scanner_progress);
     }
@@ -358,6 +476,7 @@ public class FlaskFragment extends Fragment {
 
     public void stopFlaskService() {
         dismissConnectionNotice();
+        setFragmentTitle(R.string.bluup_flask_ble);
         flaskService.disconnect();
         flaskService.close();
         requireActivity().unbindService(mServerConn);

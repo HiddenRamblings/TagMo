@@ -240,8 +240,6 @@
     <string name="flask_permissions">Required permission denied!</string>
     <string name="flask_paired">Unpair Flask to continue.</string>
 
-    <string name="flask_current">Selected: %1$s</string>
-
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>
     <string name="lock_write">Wrote lock info</string>

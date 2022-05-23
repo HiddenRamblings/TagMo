@@ -15,19 +15,15 @@
         android:indeterminate="true"
         android:max="100" />
 
+    <include
+        layout="@layout/active_tile_layout"
+        android:id="@+id/active_tile_layout" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:id="@+id/flask_details"
         android:orientation="vertical" >
-
-    <TextView
-        android:id="@+id/txtName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="start"
-        android:textColor="@color/tag_text"
-        android:textSize="16sp"/>
     </LinearLayout>
 </LinearLayout>

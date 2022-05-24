@@ -238,9 +238,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     case 1:
                         setTitle(R.string.foomiibo);
                         break;
-                    case 2:
-                        setTitle(R.string.bluup_flask_ble);
-                        break;
                 }
                 invalidateOptionsMenu();
             }
@@ -469,7 +466,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void launchFlaskEditor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            mainLayout.setCurrentItem(2, true);
+            Intent flaskIntent = new Intent(this, BluupFlaskActivity.class);
+            startActivity(flaskIntent);
         } else {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             CustomTabsIntent customTabsIntent = builder.build();

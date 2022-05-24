@@ -26,7 +26,6 @@ import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -38,16 +37,17 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -66,9 +66,8 @@ import java.util.concurrent.Executors;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
-public class FlaskFragment extends Fragment {
+public class BluupFlaskActivity extends AppCompatActivity {
 
-    private boolean hasCheckedPermissions = false;
     private ViewGroup fragmentView;
     private CardView amiiboCard;
     private LinearLayout flaskDetails;
@@ -91,8 +90,8 @@ public class FlaskFragment extends Fragment {
         if (isLocationAvailable) {
             activateBluetooth();
         } else {
-            new Toasty(requireActivity()).Long(R.string.flask_permissions);
-            ((BrowserActivity) requireActivity()).showBrowserPage();
+            new Toasty(this).Long(R.string.flask_permissions);
+            finish();
         }
     });
 
@@ -114,12 +113,12 @@ public class FlaskFragment extends Fragment {
                 }
                 selectBluetoothDevice();
             } else {
-                new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-                ((BrowserActivity) requireActivity()).showBrowserPage();
+                new Toasty(this).Long(R.string.flask_bluetooth);
+                finish();
             }
         } else {
-            new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-            ((BrowserActivity) requireActivity()).showBrowserPage();
+            new Toasty(this).Long(R.string.flask_bluetooth);
+            finish();
         }
     });
     ActivityResultLauncher<Intent> onRequestBluetooth = registerForActivityResult(
@@ -131,8 +130,8 @@ public class FlaskFragment extends Fragment {
             }
             selectBluetoothDevice();
         } else {
-            new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-            ((BrowserActivity) requireActivity()).showBrowserPage();
+            new Toasty(this).Long(R.string.flask_bluetooth);
+           finish();
         }
     });
     ActivityResultLauncher<String[]> onRequestLocation = registerForActivityResult(
@@ -148,8 +147,8 @@ public class FlaskFragment extends Fragment {
             else
                 onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
         } else {
-            new Toasty(requireActivity()).Long(R.string.flask_permissions);
-            ((BrowserActivity) requireActivity()).showBrowserPage();
+            new Toasty(this).Long(R.string.flask_permissions);
+            finish();
         }
     });
     protected ServiceConnection mServerConn = new ServiceConnection() {
@@ -160,19 +159,28 @@ public class FlaskFragment extends Fragment {
             flaskService = localBinder.getService();
             if (flaskService.initialize()) {
                 if (flaskService.connect(flaskAddress)) {
-                    setFragmentTitle(flaskProfile);
                     flaskService.setListener(new BluetoothLeService.BluetoothGattListener() {
                         boolean isServiceDiscovered = false;
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
+                            runOnUiThread(() -> {
+                                setTitle(flaskProfile);
+                                invalidateOptionsMenu();
+                            });
                             try {
-                                flaskService.readCustomCharacteristic();
+                                flaskService.setFlaskCharacteristicRX();
                                 dismissConnectionNotice();
-                                flaskService.writeCustomCharacteristic(null);
+                                String command = "\\x15\\x10tag.getList()\\n";
+                                flaskService.writeDelayedCharacteristic(
+                                        command.getBytes(CharsetCompat.UTF_8)
+                                );
+//                                flaskService.writeDelayedCharacteristic(
+//                                        "\\x15\\x10tag.getList()\\n"
+//                                );
                             } catch (TagLostException tle) {
                                 stopFlaskService();
-                                new Toasty(requireActivity()).Short(R.string.flask_invalid);
+                                new Toasty(BluupFlaskActivity.this).Short(R.string.flask_invalid);
                             }
                         }
 
@@ -180,16 +188,14 @@ public class FlaskFragment extends Fragment {
                         public void onServicesDisconnect() {
                             if (!isServiceDiscovered) {
                                 stopFlaskService();
-                                new Toasty(requireActivity()).Short(R.string.flask_missing);
+                                new Toasty(BluupFlaskActivity.this).Short(R.string.flask_missing);
                             }
                         }
 
                         @Override
                         public void onFlaskActiveChanged(JSONObject jsonObject) {
                             try {
-                                getAmiiboByName(
-                                        jsonObject.getString("name").split("\\|")[0]
-                                );
+                                getAmiiboByName(jsonObject.getString("name"));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -202,7 +208,7 @@ public class FlaskFragment extends Fragment {
                     });
                 } else {
                     stopFlaskService();
-                    new Toasty(requireActivity()).Short(R.string.flask_invalid);
+                    new Toasty(BluupFlaskActivity.this).Short(R.string.flask_invalid);
                 }
             }
         }
@@ -210,22 +216,23 @@ public class FlaskFragment extends Fragment {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Log.d("FlaskService", "onServiceDisconnected");
-            setFragmentTitle(R.string.bluup_flask_ble);
         }
     };
 
-    private void setFragmentTitle(String title) {
-        requireActivity().runOnUiThread(() -> {
-            requireActivity().setTitle(title);
-            requireActivity().invalidateOptionsMenu();
-        });
-    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    private void setFragmentTitle(int titleRes) {
-        requireActivity().runOnUiThread(() -> {
-            requireActivity().setTitle(titleRes);
-            requireActivity().invalidateOptionsMenu();
-        });
+        setContentView(R.layout.activity_bluup_flask);
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+
+        amiiboCard = findViewById(R.id.active_tile_layout);
+        amiiboCard.setVisibility(View.INVISIBLE);
+        flaskDetails = findViewById(R.id.flask_details);
+        progressBar = findViewById(R.id.scanner_progress);
+
+        verifyPermissions();
     }
 
     void setFoomiiboInfoText(TextView textView, CharSequence text) {
@@ -243,13 +250,11 @@ public class FlaskFragment extends Fragment {
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {
-                amiiboManager = AmiiboManager.getAmiiboManager(
-                        requireContext().getApplicationContext()
-                );
+                amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
                 amiiboManager = null;
-                new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
+                new Toasty(this).Short(R.string.amiibo_info_parse_error);
             }
 
             if (Thread.currentThread().isInterrupted()) return;
@@ -257,19 +262,18 @@ public class FlaskFragment extends Fragment {
             Amiibo selectedAmiibo = null;
             if (null != amiiboManager) {
                 for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                    if (amiibo.name.equals(name)) {
+                    if (amiibo.name.startsWith(name.split("\\|")[0])) {
                         selectedAmiibo = amiibo;
                     }
                 }
             }
             final Amiibo currentAmiibo = selectedAmiibo;
-            requireActivity().runOnUiThread(() -> {
+            runOnUiThread(() -> {
                 TextView txtName = amiiboCard.findViewById(R.id.txtName);
                 TextView txtTagId = amiiboCard.findViewById(R.id.txtTagId);
                 TextView txtAmiiboSeries = amiiboCard.findViewById(R.id.txtAmiiboSeries);
                 TextView txtAmiiboType = amiiboCard.findViewById(R.id.txtAmiiboType);
                 TextView txtGameSeries = amiiboCard.findViewById(R.id.txtGameSeries);
-                // this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
                 AppCompatImageView imageAmiibo = amiiboCard.findViewById(R.id.imageAmiibo);
 
                 CustomTarget<Bitmap> target = new CustomTarget<>() {
@@ -306,8 +310,8 @@ public class FlaskFragment extends Fragment {
                 if (null != currentAmiibo) {
                     amiiboCard.setVisibility(View.VISIBLE);
                     amiiboHexId = TagUtils.amiiboIdToHex(currentAmiibo.id);
-                    amiiboImageUrl = currentAmiibo.getImageUrl();
                     amiiboName = currentAmiibo.name;
+                    amiiboImageUrl = currentAmiibo.getImageUrl();
                     if (null != currentAmiibo.getAmiiboSeries())
                         amiiboSeries = currentAmiibo.getAmiiboSeries().name;
                     if (null != currentAmiibo.getAmiiboType())
@@ -335,25 +339,10 @@ public class FlaskFragment extends Fragment {
         });
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_flask, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        fragmentView = (ViewGroup) view;
-        amiiboCard = view.findViewById(R.id.active_tile_layout);
-        amiiboCard.setVisibility(View.INVISIBLE);
-        flaskDetails = view.findViewById(R.id.flask_details);
-        progressBar = view.findViewById(R.id.scanner_progress);
-    }
-
     private void verifyPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                    this, Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED) {
                 activateBluetooth();
             } else {
@@ -401,8 +390,8 @@ public class FlaskFragment extends Fragment {
     private BluetoothAdapter getBluetoothAdapter() {
         BluetoothAdapter mBluetoothAdapter;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            mBluetoothAdapter = ((BluetoothManager) requireContext()
-                    .getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+            mBluetoothAdapter = ((BluetoothManager)
+                    getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
             if (null != mBluetoothAdapter) {
                 if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
                 return mBluetoothAdapter;
@@ -452,7 +441,7 @@ public class FlaskFragment extends Fragment {
     private void selectBluetoothDevice() {
         for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
             if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-                new Toasty(requireActivity()).Long(R.string.flask_paired);
+                new Toasty(this).Long(R.string.flask_paired);
                 dismissFlaskDiscovery();
                 try {
                     onRequestPairing.launch(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
@@ -465,7 +454,7 @@ public class FlaskFragment extends Fragment {
     }
 
     private void showConnectionNotice() {
-        statusBar = new IconifiedSnackbar(requireActivity(), fragmentView).buildSnackbar(
+        statusBar = new IconifiedSnackbar(this).buildSnackbar(
                 R.string.flask_located, R.drawable.ic_bluup_flask_24dp, Snackbar.LENGTH_INDEFINITE
         );
         statusBar.show();
@@ -476,31 +465,32 @@ public class FlaskFragment extends Fragment {
     }
 
     public void startFlaskService() {
-        Intent service = new Intent(requireActivity(), BluetoothLeService.class);
-        requireActivity().startService(service);
-        requireActivity().bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
+        Intent service = new Intent(this, BluetoothLeService.class);
+        startService(service);
+        bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
     }
 
     public void stopFlaskService() {
         dismissConnectionNotice();
-        setFragmentTitle(R.string.bluup_flask_ble);
-        flaskService.disconnect();
-        flaskService.close();
-        requireActivity().unbindService(mServerConn);
-        requireActivity().stopService(new Intent(requireActivity(), BluetoothLeService.class));
+        if (isServiceRunning()) {
+            flaskService.disconnect();
+            flaskService.close();
+            unbindService(mServerConn);
+            stopService(new Intent(this, BluetoothLeService.class));
+        }
     }
 
     private void dismissFlaskDiscovery() {
         if (null != mBluetoothAdapter) {
-            progressBar.setVisibility(View.INVISIBLE);
             if (null != scanCallback)
                 mBluetoothAdapter.stopLeScan(scanCallback);
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
     private boolean isServiceRunning() {
         ActivityManager manager = (ActivityManager)
-                requireContext().getSystemService(Context.ACTIVITY_SERVICE);
+                getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service
                 : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (BluetoothLeService.class.getName().equals(service.service.getClassName())) {
@@ -511,27 +501,9 @@ public class FlaskFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         dismissFlaskDiscovery();
-        if (isServiceRunning())
-            stopFlaskService();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!hasCheckedPermissions) {
-            hasCheckedPermissions = true;
-            verifyPermissions();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismissFlaskDiscovery();
-        if (isServiceRunning())
-            stopFlaskService();
+        stopFlaskService();
     }
 }

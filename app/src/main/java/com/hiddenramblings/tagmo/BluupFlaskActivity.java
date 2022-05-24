@@ -2,7 +2,6 @@ package com.hiddenramblings.tagmo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -25,7 +24,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -48,7 +46,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -155,15 +152,15 @@ public class BluupFlaskActivity extends AppCompatActivity {
         }
     });
     protected ServiceConnection mServerConn = new ServiceConnection() {
+        boolean isServiceDiscovered = false;
+
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
-            Log.d("FlaskService", "onServiceConnected");
             BluetoothLeService.LocalBinder localBinder = (BluetoothLeService.LocalBinder) binder;
             flaskService = localBinder.getService();
             if (flaskService.initialize()) {
                 if (flaskService.connect(flaskAddress)) {
                     flaskService.setListener(new BluetoothLeService.BluetoothGattListener() {
-                        boolean isServiceDiscovered = false;
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
@@ -173,24 +170,10 @@ public class BluupFlaskActivity extends AppCompatActivity {
                             try {
                                 flaskService.setFlaskCharacteristicRX();
                                 dismissConnectionNotice();
-                                String command = "\\x15\\x10tag.getList()\\n";
-                                flaskService.writeDelayedCharacteristic(
-                                        command.getBytes(CharsetCompat.UTF_8)
-                                );
-//                                flaskService.writeDelayedCharacteristic(
-//                                        "\\x15\\x10tag.getList()\\n"
-//                                );
+                                flaskService.writeDelayedCharacteristic("tag.getList()");
                             } catch (TagLostException tle) {
                                 stopFlaskService();
                                 new Toasty(BluupFlaskActivity.this).Short(R.string.flask_invalid);
-                            }
-                        }
-
-                        @Override
-                        public void onServicesDisconnect() {
-                            if (!isServiceDiscovered) {
-                                stopFlaskService();
-                                new Toasty(BluupFlaskActivity.this).Short(R.string.flask_missing);
                             }
                         }
 
@@ -217,7 +200,11 @@ public class BluupFlaskActivity extends AppCompatActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.d("FlaskService", "onServiceDisconnected");
+            unbindService(mServerConn);
+            stopService(new Intent(BluupFlaskActivity.this, BluetoothLeService.class));
+            if (!isServiceDiscovered) {
+                new Toasty(BluupFlaskActivity.this).Short(R.string.flask_missing);
+            }
         }
     };
 
@@ -514,12 +501,7 @@ public class BluupFlaskActivity extends AppCompatActivity {
 
     public void stopFlaskService() {
         dismissConnectionNotice();
-        if (isServiceRunning()) {
-            flaskService.disconnect();
-            flaskService.close();
-            unbindService(mServerConn);
-            stopService(new Intent(this, BluetoothLeService.class));
-        }
+        if (null != flaskService) flaskService.disconnect();
     }
 
     private void dismissFlaskDiscovery() {
@@ -528,18 +510,6 @@ public class BluupFlaskActivity extends AppCompatActivity {
                 mBluetoothAdapter.stopLeScan(scanCallback);
             progressBar.setVisibility(View.INVISIBLE);
         }
-    }
-
-    private boolean isServiceRunning() {
-        ActivityManager manager = (ActivityManager)
-                getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service
-                : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (BluetoothLeService.class.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

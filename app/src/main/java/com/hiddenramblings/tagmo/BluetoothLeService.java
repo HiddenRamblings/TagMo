@@ -18,7 +18,6 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-
 import android.os.Looper;
 import android.util.Log;
 
@@ -30,7 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,7 +71,6 @@ public class BluetoothLeService extends Service {
     }
     interface BluetoothGattListener {
         void onServicesDiscovered();
-        void onServicesDisconnect();
         void onFlaskActiveChanged(JSONObject jsonObject);
         void onFlaskActiveDeleted(JSONObject jsonObject);
     }
@@ -132,7 +129,6 @@ public class BluetoothLeService extends Service {
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 intentAction = ACTION_GATT_DISCONNECTED;
-                if (null != listener) listener.onServicesDisconnect();
                 broadcastUpdate(intentAction);
             }
         }
@@ -142,7 +138,7 @@ public class BluetoothLeService extends Service {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (null != listener) listener.onServicesDiscovered();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    gatt.requestMtu(517);
+                    mBluetoothGatt.requestMtu(517);
                 }
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
             } else {
@@ -165,6 +161,17 @@ public class BluetoothLeService extends Service {
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             getCharacteristicValue(characteristic);
             broadcastUpdate(characteristic);
+        }
+
+        @Override
+        public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Debug.Log(BluetoothLeService.class,
+                        "onMtuChange complete: " + mtu);
+            } else {
+                Debug.Log(BluetoothLeService.class,
+                        "onMtuChange received: " + status);
+            }
         }
     };
 
@@ -203,7 +210,11 @@ public class BluetoothLeService extends Service {
         // After using a given device, you should make sure that BluetoothGatt.close() is called
         // such that resources are cleaned up properly.  In this particular example, close() is
         // invoked when the UI is disconnected from the Service.
-        close();
+        if (mBluetoothGatt == null) {
+            return super.onUnbind(intent);
+        }
+        mBluetoothGatt.close();
+        mBluetoothGatt = null;
         return super.onUnbind(intent);
     }
 
@@ -273,18 +284,6 @@ public class BluetoothLeService extends Service {
             return;
         }
         mBluetoothGatt.disconnect();
-    }
-
-    /**
-     * After using a given BLE device, the app must call this method to ensure resources are
-     * released properly.
-     */
-    public void close() {
-        if (mBluetoothGatt == null) {
-            return;
-        }
-        mBluetoothGatt.close();
-        mBluetoothGatt = null;
     }
 
     /**
@@ -449,34 +448,15 @@ public class BluetoothLeService extends Service {
                     e.printStackTrace();
                 }
             }
-            for (int i = 0; i < value.length(); i += 20) {
-                final String command = value.substring(i, Math.min(i + 20, value.length()));
+            String command = "\\x10" + value + "\\n";
+            for (int i = 0; i < command.length(); i += 20) {
+                final String chunk = command.substring(i, Math.min(i + 20, command.length()));
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    Log.d(mCharacteristicTX.getUuid().toString(), command);
-                    mCharacteristicTX.setValue(command);
+                    Log.d(mCharacteristicTX.getUuid().toString(), chunk);
+                    mCharacteristicTX.setValue(chunk);
                     mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
                 }, i * 50L);
             }
-        }, 100);
-    }
-
-    public void writeDelayedCharacteristic(byte[] value) {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            if (null == mCharacteristicTX) {
-                try {
-                    setFlaskCharacteristicTX();
-                } catch (TagLostException e) {
-                    e.printStackTrace();
-                }
-            }
-            for (int i = 0; i < value.length; i += 20) {
-                final byte[] range = Arrays.copyOfRange(value, i, i + 20);
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    Log.d(mCharacteristicTX.getUuid().toString(), new String(range));
-                    mCharacteristicTX.setValue(range);
-                    mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
-                }, i * 50L);
-            }
-        }, 100);
+        }, 50);
     }
 }

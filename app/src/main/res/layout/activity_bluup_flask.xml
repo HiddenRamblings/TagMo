@@ -4,8 +4,8 @@
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp"
-    android:paddingBottom="@dimen/button_height_min"
+    android:layout_margin="6dp"
+    android:background="@color/backgroundBlack"
     android:orientation="vertical">
     <ProgressBar
         android:id="@+id/scanner_progress"

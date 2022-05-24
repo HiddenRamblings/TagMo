@@ -275,20 +275,20 @@ public class BankListActivity extends AppCompatActivity implements
             }
         });
 
-        findViewById(R.id.write_open_banks).setOnClickListener(view -> {
+        writeOpenBanks.setOnClickListener(view -> {
             onBottomSheetChanged(false, false);
             amiiboFilesView.setAdapter(writeListAdapter);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        findViewById(R.id.erase_open_banks).setOnClickListener(view -> {
+        eraseOpenBanks.setOnClickListener(view -> {
             Intent collection = new Intent(this, NfcActivity.class);
             collection.setAction(NFCIntent.ACTION_ERASE_ALL_TAGS);
             collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
             onOpenBanksActivity.launch(collection);
         });
 
-        findViewById(R.id.write_bank_count).setOnClickListener(view -> {
+        writeBankCount.setOnClickListener(view -> {
             if (prefs.eliteActiveBank().get() >= eliteBankCount.getValue()) {
                 new Toasty(this).Short(R.string.fail_active_oob);
                 onBottomSheetChanged(true, false);

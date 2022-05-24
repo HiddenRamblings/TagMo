@@ -93,9 +93,10 @@
         </activity>
         <activity
             android:name=".BluupFlaskActivity"
+            android:label="@string/bluup_flask_ble"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop"
-            android:theme="@style/DialogTheme">
+            android:theme="@style/DialogTheme.NoActionBar">
         </activity>
         <activity
             android:name=".WebActivity"

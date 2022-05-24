@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,8 +24,88 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"
+        android:paddingBottom="@dimen/button_height_min"
         android:id="@+id/flask_details"
         android:orientation="vertical" >
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical"
+        app:behavior_peekHeight="@dimen/button_height_min"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="6dp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:contentDescription="@string/imageview_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                app:srcCompat="@drawable/ic_bluup_flask_18dp" />
+
+            <TextView
+                android:id="@+id/hardware_info"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:ellipsize="start"
+                android:text="@string/bluup_flask_ble"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"/>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_expand_more_white_24dp"
+                android:contentDescription="@string/imageview_toggle" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/bank_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="6dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:text="@string/amiibo_not_found"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"/>
+
+        <include
+            layout="@layout/active_card_layout"
+            android:id="@+id/active_card_layout" />
+
+        <include
+            layout="@layout/bank_options_menu"
+            android:id="@+id/bank_options_menu" />
+
+        <ToggleButton
+            android:id="@+id/switch_menu_options"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="12dp"
+            android:textOff="@string/view_device_options"
+            android:textOn="@string/view_amiibo_details"/>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

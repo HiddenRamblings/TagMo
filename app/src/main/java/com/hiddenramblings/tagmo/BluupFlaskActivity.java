@@ -44,6 +44,7 @@ import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -68,11 +69,13 @@ import java.util.concurrent.Executors;
 @SuppressLint("MissingPermission")
 public class BluupFlaskActivity extends AppCompatActivity {
 
-    private ViewGroup fragmentView;
     private CardView amiiboCard;
     private LinearLayout flaskDetails;
     private ProgressBar progressBar;
     private Snackbar statusBar;
+
+    private BottomSheetBehavior<View> bottomSheetBehavior;
+
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothAdapter.LeScanCallback scanCallback;
     private BluetoothLeService flaskService;
@@ -165,8 +168,7 @@ public class BluupFlaskActivity extends AppCompatActivity {
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
                             runOnUiThread(() -> {
-                                setTitle(flaskProfile);
-                                invalidateOptionsMenu();
+                                ((TextView) findViewById(R.id.hardware_info)).setText(flaskProfile);
                             });
                             try {
                                 flaskService.setFlaskCharacteristicRX();
@@ -227,12 +229,42 @@ public class BluupFlaskActivity extends AppCompatActivity {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
 
-        setTitle(R.string.bluup_flask_ble);
-
         amiiboCard = findViewById(R.id.active_tile_layout);
         amiiboCard.setVisibility(View.INVISIBLE);
         flaskDetails = findViewById(R.id.flask_details);
         progressBar = findViewById(R.id.scanner_progress);
+
+        AppCompatImageView toggle = findViewById(R.id.toggle);
+        this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
+        this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        this.bottomSheetBehavior.addBottomSheetCallback(
+                new BottomSheetBehavior.BottomSheetCallback() {
+                    @Override
+                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                        if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                            toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
+                        } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                            toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
+                        }
+                    }
+
+                    @Override
+                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                        int bottomHeight = bottomSheet.getMeasuredHeight()
+                                - bottomSheetBehavior.getPeekHeight();
+                        ViewGroup mainLayout = findViewById(R.id.flask_details);
+                        mainLayout.setPadding(0, 0, 0, slideOffset > 0
+                                ? (int) (bottomHeight * slideOffset) : 0);
+                    }
+                });
+
+        toggle.setOnClickListener(view -> {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
 
         verifyPermissions();
     }

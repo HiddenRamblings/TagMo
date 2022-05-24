@@ -92,6 +92,12 @@
             android:theme="@style/DialogTheme.NoActionBar">
         </activity>
         <activity
+            android:name=".BluupFlaskActivity"
+            android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
+            android:launchMode="singleTop"
+            android:theme="@style/DialogTheme">
+        </activity>
+        <activity
             android:name=".WebActivity"
             android:excludeFromRecents="true"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"

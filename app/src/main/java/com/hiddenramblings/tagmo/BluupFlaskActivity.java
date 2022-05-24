@@ -227,6 +227,8 @@ public class BluupFlaskActivity extends AppCompatActivity {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
 
+        setTitle(R.string.bluup_flask_ble);
+
         amiiboCard = findViewById(R.id.active_tile_layout);
         amiiboCard.setVisibility(View.INVISIBLE);
         flaskDetails = findViewById(R.id.flask_details);
@@ -261,9 +263,17 @@ public class BluupFlaskActivity extends AppCompatActivity {
 
             Amiibo selectedAmiibo = null;
             if (null != amiiboManager) {
+                String amiiboName = name.split("\\|")[0];
                 for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                    if (amiibo.name.startsWith(name.split("\\|")[0])) {
+                    if (amiibo.name.equals(amiiboName)) {
                         selectedAmiibo = amiibo;
+                    }
+                }
+                if (null == selectedAmiibo) {
+                    for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                        if (amiibo.name.startsWith(amiiboName)) {
+                            selectedAmiibo = amiibo;
+                        }
                     }
                 }
             }

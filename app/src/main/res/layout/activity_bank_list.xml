@@ -99,7 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="10dp"
             android:textOff="@string/view_device_options"
             android:textOn="@string/view_amiibo_details"/>
 

@@ -24,6 +24,8 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,32 +78,10 @@ public class BluetoothLeService extends Service {
         void onFlaskActiveDeleted(JSONObject jsonObject);
     }
 
-    private String hexToString(String value) {
-        String hex = value.replace(" ", "");
-        StringBuilder output = new StringBuilder();
-        for (int i = 0; i < hex.length(); i+=2) {
-            String str = hex.substring(i, i+2);
-            output.append((char)Integer.parseInt(str, 16));
-        }
-        return output.toString();
-    }
-
-    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-    private String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
-
     StringBuilder response = new StringBuilder();
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
-            Log.d("BluetoothHEX", hexToString(bytesToHex(data)));
             String output = new String(data);
             Log.d(characteristic.getUuid().toString(), output);
 
@@ -147,14 +127,11 @@ public class BluetoothLeService extends Service {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 intentAction = ACTION_GATT_CONNECTED;
                 broadcastUpdate(intentAction);
-                Log.i(TAG, "Connected to GATT server.");
                 // Attempts to discover services after successful connection.
-                Log.i(TAG, "Attempting to start service discovery:" +
-                        mBluetoothGatt.discoverServices());
+                mBluetoothGatt.discoverServices();
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 intentAction = ACTION_GATT_DISCONNECTED;
-                Log.i(TAG, "Disconnected from GATT server.");
                 if (null != listener) listener.onServicesDisconnect();
                 broadcastUpdate(intentAction);
             }
@@ -169,7 +146,8 @@ public class BluetoothLeService extends Service {
                 }
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
             } else {
-                Log.w(TAG, "onServicesDiscovered received: " + status);
+                Debug.Log(BluetoothLeService.class,
+                        "onServicesDiscovered received: " + status);
             }
         }
 
@@ -241,14 +219,12 @@ public class BluetoothLeService extends Service {
         if (mBluetoothManager == null) {
             mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             if (mBluetoothManager == null) {
-                Log.e(TAG, "Unable to initialize BluetoothManager.");
                 return false;
             }
         }
 
         mBluetoothAdapter = mBluetoothManager.getAdapter();
         if (mBluetoothAdapter == null) {
-            Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
             return false;
         }
 
@@ -267,25 +243,21 @@ public class BluetoothLeService extends Service {
      */
     public boolean connect(final String address) {
         if (mBluetoothAdapter == null || address == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
 
         // Previously connected device.  Try to reconnect.
         if (address.equals(mBluetoothDeviceAddress) && mBluetoothGatt != null) {
-            Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             return mBluetoothGatt.connect();
         }
 
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
-            Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
-        Log.d(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
         return true;
     }
@@ -298,7 +270,6 @@ public class BluetoothLeService extends Service {
      */
     public void disconnect() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         mBluetoothGatt.disconnect();
@@ -325,7 +296,6 @@ public class BluetoothLeService extends Service {
      */
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         mBluetoothGatt.readCharacteristic(characteristic);
@@ -357,7 +327,6 @@ public class BluetoothLeService extends Service {
     public void setCharacteristicNotification(
             BluetoothGattCharacteristic characteristic, boolean enabled) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
@@ -384,7 +353,8 @@ public class BluetoothLeService extends Service {
         } else {
             for (BluetoothGattCharacteristic customRead : mCustomService.getCharacteristics()) {
                 UUID customUUID = customRead.getUuid();
-                Log.d("GattReadCharacteristic", customUUID.toString());
+                Debug.Log(BluetoothLeService.class,
+                        "GattReadCharacteristic: " + customUUID.toString());
                 /*get the read characteristic from the service*/
                 if (customUUID.compareTo(FlaskRX) == 0) {
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID);
@@ -399,7 +369,6 @@ public class BluetoothLeService extends Service {
 
     public void setFlaskCharacteristicRX() throws TagLostException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
             throw new TagLostException();
         }
 
@@ -408,12 +377,12 @@ public class BluetoothLeService extends Service {
         if (null == mCustomService) {
             List<BluetoothGattService> services = getSupportedGattServices();
             if (null == services || services.isEmpty()) {
-                Log.w(TAG, "No BLE Services found for read");
                 throw new TagLostException();
             }
 
             for (BluetoothGattService customService : services) {
-                Log.d("GattReadService", customService.getUuid().toString());
+                Debug.Log(BluetoothLeService.class,
+                        "GattReadService: " + customService.getUuid().toString());
                 /*get the read characteristic from the service*/
                 mCharacteristicRX = getCharacteristicRX(customService);
                 break;
@@ -432,7 +401,8 @@ public class BluetoothLeService extends Service {
         } else {
             for (BluetoothGattCharacteristic customWrite : mCustomService.getCharacteristics()) {
                 UUID customUUID = customWrite.getUuid();
-                Log.d("GattWriteCharacteristic", customUUID.toString());
+                Debug.Log(BluetoothLeService.class,
+                        "GattWriteCharacteristic: " + customUUID.toString());
                 /*get the write characteristic from the service*/
                 if (customUUID.compareTo(FlaskTX) == 0) {
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
@@ -447,7 +417,6 @@ public class BluetoothLeService extends Service {
 
     public void setFlaskCharacteristicTX() throws TagLostException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
             throw new TagLostException();
         }
 
@@ -456,12 +425,12 @@ public class BluetoothLeService extends Service {
         if (null == mCustomService) {
             List<BluetoothGattService> services = getSupportedGattServices();
             if (null == services || services.isEmpty()) {
-                Log.w(TAG, "No BLE Services found for write");
                 throw new TagLostException();
             }
 
             for (BluetoothGattService customService : services) {
-                Log.d("GattWriteService", customService.getUuid().toString());
+                Debug.Log(BluetoothLeService.class,
+                        "GattWriteService: " + customService.getUuid().toString());
                 /*get the read characteristic from the service*/
                 mCharacteristicTX = getCharacteristicTX(customService);
             }

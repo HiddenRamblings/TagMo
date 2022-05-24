@@ -8,26 +8,30 @@
     android:layout_margin="6dp"
     android:background="@color/backgroundBlack"
     android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="6dp"
+        android:paddingBottom="@dimen/button_height_min"
+        android:id="@+id/flask_details"
+        android:orientation="vertical" >
+
+        <include
+            layout="@layout/active_tile_layout"
+            android:id="@+id/active_tile_layout" />
+    </LinearLayout>
+
     <ProgressBar
         android:id="@+id/scanner_progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:paddingBottom="@dimen/button_height_min"
         android:indeterminate="true"
         android:max="100" />
-
-    <include
-        layout="@layout/active_tile_layout"
-        android:id="@+id/active_tile_layout" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="@dimen/button_height_min"
-        android:id="@+id/flask_details"
-        android:orientation="vertical" >
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/bottom_sheet"
@@ -94,18 +98,5 @@
         <include
             layout="@layout/active_card_layout"
             android:id="@+id/active_card_layout" />
-
-        <include
-            layout="@layout/bank_options_menu"
-            android:id="@+id/bank_options_menu" />
-
-        <ToggleButton
-            android:id="@+id/switch_menu_options"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="12dp"
-            android:textOff="@string/view_device_options"
-            android:textOn="@string/view_amiibo_details"/>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

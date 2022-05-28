@@ -23,12 +23,15 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +42,6 @@ import java.util.UUID;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
 public class BluetoothLeService extends Service {
-    private final static String TAG = BluetoothLeService.class.getSimpleName();
 
     private BluetoothGattListener listener;
 
@@ -80,7 +82,7 @@ public class BluetoothLeService extends Service {
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
             String output = new String(data);
-            Log.d(characteristic.getUuid().toString(), output);
+            Log.d(getLogTag(characteristic.getUuid()), output);
 
             if (characteristic.getUuid().compareTo(FlaskRX) == 0) {
                 if (output.startsWith("[") || output.startsWith("{") || response.length() > 0) {
@@ -347,9 +349,7 @@ public class BluetoothLeService extends Service {
     public BluetoothGattCharacteristic getCharacteristicRX(BluetoothGattService mCustomService) {
         BluetoothGattCharacteristic mReadCharacteristic =
                 mCustomService.getCharacteristic(FlaskRX);
-        if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
-            return mReadCharacteristic;
-        } else {
+        if (!mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
             for (BluetoothGattCharacteristic customRead : mCustomService.getCharacteristics()) {
                 UUID customUUID = customRead.getUuid();
                 Debug.Log(BluetoothLeService.class,
@@ -395,9 +395,7 @@ public class BluetoothLeService extends Service {
     public BluetoothGattCharacteristic getCharacteristicTX(BluetoothGattService mCustomService) {
         BluetoothGattCharacteristic mWriteCharacteristic =
                 mCustomService.getCharacteristic(FlaskTX);
-        if (mBluetoothGatt.readCharacteristic(mWriteCharacteristic)) {
-            return mWriteCharacteristic;
-        } else {
+        if (!mBluetoothGatt.readCharacteristic(mWriteCharacteristic)) {
             for (BluetoothGattCharacteristic customWrite : mCustomService.getCharacteristics()) {
                 UUID customUUID = customWrite.getUuid();
                 Debug.Log(BluetoothLeService.class,
@@ -439,24 +437,71 @@ public class BluetoothLeService extends Service {
         setCharacteristicNotification(mCharacteristicTX, true);
     }
 
-    public void writeDelayedCharacteristic(String value) {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            if (null == mCharacteristicTX) {
-                try {
-                    setFlaskCharacteristicTX();
-                } catch (TagLostException e) {
-                    e.printStackTrace();
-                }
+    // https://stackoverflow.com/a/50022158/461982
+    // this method splits your byte array into small portions
+    // and returns a list with those portions
+    public static List<byte[]> byteToPortions(byte[] largeByteArray) {
+        // create a list to keep the portions
+        List<byte[]> byteArrayPortions = new ArrayList<>();
+
+        int sizePerPortion = 20;
+        int offset = 0;
+
+        // split the array
+        while(offset < largeByteArray.length) {
+            // into 5 mb portions
+            byte[] portion = Arrays.copyOfRange(largeByteArray, offset, offset + sizePerPortion);
+            // update the offset to increment the copied area
+            offset += sizePerPortion;
+            // add the byte array portions to the list
+            byteArrayPortions.add(portion);
+        }
+
+        // return portions
+        return byteArrayPortions;
+    }
+
+    public void delayedWriteCharacteristic(String value) {
+        if (null == mCharacteristicTX) {
+            try {
+                setFlaskCharacteristicTX();
+            } catch (TagLostException e) {
+                e.printStackTrace();
             }
-            String command = "\\x10" + value + "\\n";
-            for (int i = 0; i < command.length(); i += 20) {
-                final String chunk = command.substring(i, Math.min(i + 20, command.length()));
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    Log.d(mCharacteristicTX.getUuid().toString(), chunk);
-                    mCharacteristicTX.setValue(chunk);
-                    mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
-                }, i * 50L);
-            }
-        }, 50);
+        }
+
+        // https://www.puck-js.com/puck.js
+        /*
+         * function str2ab(str) {
+         *     var buf = new ArrayBuffer(str.length);
+         *     var bufView = new Uint8Array(buf);
+         *     for (var i=0, strLen=str.length; i<strLen; i++) {
+         *         bufView[i] = str.charCodeAt(i);
+         *     }
+         *     return buf;
+         * }
+         */
+
+        // String command = "\\x10Bluetooth.println(JSON.stringify(" + value + "))\\n";
+        String command = value;
+        List<byte[]> chunks = byteToPortions(command.getBytes(CharsetCompat.UTF_16BE));
+        for (int i = 0; i < chunks.size(); i += 1) {
+            final byte[] chunk = chunks.get(i);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                Log.d(getLogTag(mCharacteristicTX.getUuid()), new String(chunk));
+                mCharacteristicTX.setValue(chunk);
+                mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
+            }, i * 50L);
+        }
+    }
+
+    private String getLogTag(UUID uuid) {
+        if (uuid.compareTo(FlaskTX) == 0) {
+            return "FlaskTX";
+        } else if (uuid.compareTo(FlaskRX) == 0) {
+            return "FlaskRX";
+        } else {
+            return "FlaskNUS";
+        }
     }
 }

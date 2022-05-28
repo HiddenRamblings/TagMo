@@ -357,9 +357,7 @@ public class BluetoothLeService extends Service {
                 /*get the read characteristic from the service*/
                 if (customUUID.compareTo(FlaskRX) == 0) {
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID);
-                    if (mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
-                        break;
-                    }
+                    break;
                 }
             }
         }
@@ -395,7 +393,7 @@ public class BluetoothLeService extends Service {
     public BluetoothGattCharacteristic getCharacteristicTX(BluetoothGattService mCustomService) {
         BluetoothGattCharacteristic mWriteCharacteristic =
                 mCustomService.getCharacteristic(FlaskTX);
-        if (!mBluetoothGatt.readCharacteristic(mWriteCharacteristic)) {
+        if (!mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             for (BluetoothGattCharacteristic customWrite : mCustomService.getCharacteristics()) {
                 UUID customUUID = customWrite.getUuid();
                 Debug.Log(BluetoothLeService.class,
@@ -403,9 +401,7 @@ public class BluetoothLeService extends Service {
                 /*get the write characteristic from the service*/
                 if (customUUID.compareTo(FlaskTX) == 0) {
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
-                    if (mBluetoothGatt.readCharacteristic(mWriteCharacteristic)) {
-                        break;
-                    }
+                    break;
                 }
             }
         }

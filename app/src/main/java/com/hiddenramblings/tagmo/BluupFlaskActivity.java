@@ -170,7 +170,7 @@ public class BluupFlaskActivity extends AppCompatActivity {
                             try {
                                 flaskService.setFlaskCharacteristicRX();
                                 dismissConnectionNotice();
-                                flaskService.writeDelayedCharacteristic("tag.getList()");
+                                flaskService.delayedWriteCharacteristic("tag.getList()");
                             } catch (TagLostException tle) {
                                 stopFlaskService();
                                 new Toasty(BluupFlaskActivity.this).Short(R.string.flask_invalid);

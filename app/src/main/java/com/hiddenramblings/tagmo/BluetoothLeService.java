@@ -53,17 +53,6 @@ public class BluetoothLeService extends Service {
     BluetoothGattCharacteristic mCharacteristicRX = null;
     BluetoothGattCharacteristic mCharacteristicTX = null;
 
-    public final static String ACTION_GATT_CONNECTED =
-            "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
-    public final static String ACTION_GATT_DISCONNECTED =
-            "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
-    public final static String ACTION_GATT_SERVICES_DISCOVERED =
-            "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
-    public final static String ACTION_DATA_AVAILABLE =
-            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
-    public final static String EXTRA_DATA =
-            "com.example.bluetooth.le.EXTRA_DATA";
-
     public final static UUID FlaskNUS = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
@@ -122,16 +111,10 @@ public class BluetoothLeService extends Service {
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            String intentAction;
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                intentAction = ACTION_GATT_CONNECTED;
-                broadcastUpdate(intentAction);
-                // Attempts to discover services after successful connection.
                 mBluetoothGatt.discoverServices();
-
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                intentAction = ACTION_GATT_DISCONNECTED;
-                broadcastUpdate(intentAction);
+
             }
         }
 
@@ -139,10 +122,9 @@ public class BluetoothLeService extends Service {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (null != listener) listener.onServicesDiscovered();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    mBluetoothGatt.requestMtu(517);
-                }
-                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    mBluetoothGatt.requestMtu(517);
+//                }
             } else {
                 Debug.Log(BluetoothLeService.class,
                         "onServicesDiscovered received: " + status);
@@ -151,18 +133,28 @@ public class BluetoothLeService extends Service {
 
         @Override
         public void onCharacteristicRead(
-                BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+                BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status
+        ) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 getCharacteristicValue(characteristic);
-                broadcastUpdate(characteristic);
             }
         }
 
         @Override
+        public void onCharacteristicWrite(
+                BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status
+        ) {
+            Log.d(getLogTag(characteristic.getUuid()), "onCharacteristicWrite " + status);
+//            if (status == BluetoothGatt.GATT_SUCCESS) {
+//                getCharacteristicValue(characteristic);
+//            }
+        }
+
+        @Override
         public void onCharacteristicChanged(
-                BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+                BluetoothGatt gatt, BluetoothGattCharacteristic characteristic
+        ) {
             getCharacteristicValue(characteristic);
-            broadcastUpdate(characteristic);
         }
 
         @Override
@@ -176,25 +168,6 @@ public class BluetoothLeService extends Service {
             }
         }
     };
-
-    private void broadcastUpdate(final String action) {
-        final Intent intent = new Intent(action);
-        sendBroadcast(intent);
-    }
-
-    private void broadcastUpdate(final BluetoothGattCharacteristic characteristic) {
-        final Intent intent = new Intent(BluetoothLeService.ACTION_DATA_AVAILABLE);
-
-        // For all other profiles, writes the data formatted in HEX.
-        final byte[] data = characteristic.getValue();
-        if (data != null && data.length > 0) {
-            final StringBuilder stringBuilder = new StringBuilder(data.length);
-            for (byte byteChar : data)
-                stringBuilder.append(String.format("%02X ", byteChar));
-            intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder);
-        }
-        sendBroadcast(intent);
-    }
 
     public class LocalBinder extends Binder {
         BluetoothLeService getService() {
@@ -237,11 +210,7 @@ public class BluetoothLeService extends Service {
         }
 
         mBluetoothAdapter = mBluetoothManager.getAdapter();
-        if (mBluetoothAdapter == null) {
-            return false;
-        }
-
-        return true;
+        return mBluetoothAdapter != null;
     }
 
     /**
@@ -352,10 +321,10 @@ public class BluetoothLeService extends Service {
         if (!mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
             for (BluetoothGattCharacteristic customRead : mCustomService.getCharacteristics()) {
                 UUID customUUID = customRead.getUuid();
-                Debug.Log(BluetoothLeService.class,
-                        "GattReadCharacteristic: " + customUUID.toString());
                 /*get the read characteristic from the service*/
                 if (customUUID.compareTo(FlaskRX) == 0) {
+                    Debug.Log(BluetoothLeService.class,
+                            "GattReadCharacteristic: " + customUUID);
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
                 }
@@ -396,10 +365,10 @@ public class BluetoothLeService extends Service {
         if (!mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             for (BluetoothGattCharacteristic customWrite : mCustomService.getCharacteristics()) {
                 UUID customUUID = customWrite.getUuid();
-                Debug.Log(BluetoothLeService.class,
-                        "GattWriteCharacteristic: " + customUUID.toString());
                 /*get the write characteristic from the service*/
                 if (customUUID.compareTo(FlaskTX) == 0) {
+                    Debug.Log(BluetoothLeService.class,
+                            "GattWriteCharacteristic: " + customUUID);
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
                 }
@@ -452,7 +421,6 @@ public class BluetoothLeService extends Service {
             // add the byte array portions to the list
             byteArrayPortions.add(portion);
         }
-
         // return portions
         return byteArrayPortions;
     }
@@ -466,29 +434,28 @@ public class BluetoothLeService extends Service {
             }
         }
 
-        // https://www.puck-js.com/puck.js
-        /*
-         * function str2ab(str) {
-         *     var buf = new ArrayBuffer(str.length);
-         *     var bufView = new Uint8Array(buf);
-         *     for (var i=0, strLen=str.length; i<strLen; i++) {
-         *         bufView[i] = str.charCodeAt(i);
-         *     }
-         *     return buf;
-         * }
-         */
+        mCharacteristicTX.setValue("echo(0)\n".getBytes(CharsetCompat.UTF_8));
+        mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
 
         // String command = "\\x10Bluetooth.println(JSON.stringify(" + value + "))\\n";
-        String command = value;
-        List<byte[]> chunks = byteToPortions(command.getBytes(CharsetCompat.UTF_16BE));
+        String command = value + "\n";
+        List<byte[]> chunks = byteToPortions(command.getBytes(CharsetCompat.UTF_8));
         for (int i = 0; i < chunks.size(); i += 1) {
             final byte[] chunk = chunks.get(i);
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 Log.d(getLogTag(mCharacteristicTX.getUuid()), new String(chunk));
                 mCharacteristicTX.setValue(chunk);
                 mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
-            }, i * 50L);
+            }, (i + 1) * 50L);
         }
+//        for (int i = 0; i < command.length(); i += 20) {
+//            String chunk = command.substring(i, i + 20);
+//            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+//                Log.d(getLogTag(mCharacteristicTX.getUuid()), chunk);
+//                mCharacteristicTX.setValue(chunk.getBytes(CharsetCompat.UTF_8));
+//                mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
+//            }, i + 50);
+//        }
     }
 
     private String getLogTag(UUID uuid) {

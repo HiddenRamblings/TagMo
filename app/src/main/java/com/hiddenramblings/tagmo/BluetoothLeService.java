@@ -67,14 +67,11 @@ public class BluetoothLeService extends Service {
 
     interface BluetoothGattListener {
         void onServicesDiscovered();
-
         void onFlaskActiveChanged(JSONObject jsonObject);
-
         void onFlaskActiveDeleted(JSONObject jsonObject);
-
         void onFlaskListRetrieved(JSONArray jsonArray);
-
         void onFlaskActiveLocated(JSONObject jsonObject);
+        void onFlaskFilesUploaded();
     }
 
     StringBuilder response = new StringBuilder();
@@ -435,7 +432,7 @@ public class BluetoothLeService extends Service {
         }
     }
 
-    public void delayedWriteCharacteristic(String value) {
+    public void delayedWriteTagCharacteristic(String value) {
         if (null == mCharacteristicTX) {
             try {
                 setFlaskCharacteristicTX();
@@ -446,25 +443,39 @@ public class BluetoothLeService extends Service {
         delayedWriteCharacteristic(("tag." + value + "\n").getBytes(CharsetCompat.UTF_8));
     }
 
+    public void delayedWriteScreenCharacteristic(String value) {
+        if (null == mCharacteristicTX) {
+            try {
+                setFlaskCharacteristicTX();
+            } catch (TagLostException e) {
+                e.printStackTrace();
+            }
+        }
+        delayedWriteCharacteristic(("screen." + value + "\n").getBytes(CharsetCompat.UTF_8));
+    }
+
     public void uploadAmiiboFile(AmiiboFile amiiboFile, Amiibo amiibo) {
-        delayedWriteCharacteristic("startTagUpload(540)");
+        delayedWriteTagCharacteristic("startTagUpload(540)");
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             List<byte[]> chunks = byteToPortions(amiiboFile.getData(), 128);
             for(int i = 0; i < chunks.size(); i+=1) {
-                delayedWriteCharacteristic(
+                delayedWriteTagCharacteristic(
                         "tagUploadChunk(" + bytesToHex(chunks.get(i)) + ")"
                 );
             }
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                delayedWriteCharacteristic("saveUploadedTag("
-                        + amiibo.name + "|" + TagUtils.amiiboIdToHex(amiibo.getTail()) + ")");
+                String flaskTail = Integer.toString(Integer.parseInt(
+                        TagUtils.amiiboIdToHex(amiibo.getTail())
+                                .substring(8, 16), 16), 32);
+                String name = amiibo.name.length() > 28
+                        ? amiibo.name.substring(0, 28) : amiibo.name;
+                delayedWriteTagCharacteristic("saveUploadedTag(\""
+                        + name + "|" + flaskTail + "\")");
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    delayedWriteCharacteristic("uploadsComplete()");
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        delayedWriteCharacteristic("getList()");
-                    }, 20);
-                }, 20);
-            }, (chunks.size() * 6L) * 20L);
+                    delayedWriteTagCharacteristic("uploadsComplete()");
+                    listener.onFlaskFilesUploaded();
+                }, 40);
+            }, (chunks.size() * 7L) * 40L);
         }, 20);
     }
 

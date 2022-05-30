@@ -169,11 +169,13 @@ public class BankListActivity extends AppCompatActivity implements
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                int bottomHeight = bottomSheet.getMeasuredHeight()
-                        - bottomSheetBehavior.getPeekHeight();
                 ViewGroup mainLayout = findViewById(R.id.main_layout);
-                mainLayout.setPadding(0, 0, 0, slideOffset > 0
-                        ? (int) (bottomHeight * slideOffset) : 0);
+                if (mainLayout.getBottom() >= bottomSheet.getTop()) {
+                    int bottomHeight = bottomSheet.getMeasuredHeight()
+                            - bottomSheetBehavior.getPeekHeight();
+                    mainLayout.setPadding(0, 0, 0, slideOffset > 0
+                            ? (int) (bottomHeight * slideOffset) : 0);
+                }
                 if (slideOffset > 0)
                     amiibosView.smoothScrollToPosition(clickedPosition);
             }

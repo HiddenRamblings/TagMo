@@ -20,6 +20,12 @@
             layout="@layout/active_tile_layout"
             android:id="@+id/active_tile_layout" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="0dp"
+            android:background="?colorPrimary" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/flask_details"
             android:layout_width="match_parent"
@@ -87,7 +93,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/bank_stats"
+            android:id="@+id/flask_stats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

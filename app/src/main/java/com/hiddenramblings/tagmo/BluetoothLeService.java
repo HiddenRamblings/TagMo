@@ -19,18 +19,19 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -422,46 +423,7 @@ public class BluetoothLeService extends Service {
         setCharacteristicNotification(mCharacteristicTX, true);
     }
 
-    // https://stackoverflow.com/a/50022158/461982
-    // this method splits your byte array into small portions
-    // and returns a list with those portions
-    public static List<byte[]> byteToPortions(byte[] largeByteArray, int sizePerPortion) {
-        // create a list to keep the portions
-        List<byte[]> byteArrayPortions = new ArrayList<>();
-        int offset = 0;
-
-        // split the array
-        while (offset < largeByteArray.length) {
-            // into 5 mb portions
-            byte[] portion = Arrays.copyOfRange(largeByteArray, offset, offset + sizePerPortion);
-            // update the offset to increment the copied area
-            offset += sizePerPortion;
-            // add the byte array portions to the list
-            byteArrayPortions.add(portion);
-        }
-        // return portions
-        return byteArrayPortions;
-    }
-
-    public void uploadAmiibo(String name, byte[] data, String tail) {
-        delayedWriteCharacteristic("tag.startTagUpload(540)");
-        List<byte[]> chunks = byteToPortions(data, 128);
-        for(int i = 0; i < chunks.size();i +=1) {
-            byte[] prefix = "tag.tagUploadChunk(".getBytes(CharsetCompat.UTF_8);
-            byte[] chunk = chunks.get(i);
-            byte[] suffix = ")\n".getBytes(CharsetCompat.UTF_8);
-            byte[] byteArray = new byte[prefix.length + chunk.length + suffix.length];
-            ByteBuffer byteBuffer = ByteBuffer.wrap(byteArray);
-            byteBuffer.put(prefix);
-            byteBuffer.put(chunk);
-            byteBuffer.put(suffix);
-            delayedWriteCharacteristic( byteBuffer.array());
-        }
-        delayedWriteCharacteristic("tag.saveUploadedTag(" + name + "|" + tail + ")");
-        delayedWriteCharacteristic("tag.uploadsComplete()");
-    }
-
-    public void delayedWriteCharacteristic(byte[] value) {
+    private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = byteToPortions(value, 20);
         for (int i = 0; i < chunks.size(); i += 1) {
             final byte[] chunk = chunks.get(i);
@@ -469,7 +431,7 @@ public class BluetoothLeService extends Service {
                 mCharacteristicTX.setValue(chunk);
                 mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
                 mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
-            }, (i + 1) * 50L);
+            }, (i + 1) * 20L);
         }
     }
 
@@ -481,7 +443,53 @@ public class BluetoothLeService extends Service {
                 e.printStackTrace();
             }
         }
-        delayedWriteCharacteristic((value + "\n").getBytes(CharsetCompat.UTF_8));
+        delayedWriteCharacteristic(("tag." + value + "\n").getBytes(CharsetCompat.UTF_8));
+    }
+
+    public void uploadAmiiboFile(AmiiboFile amiiboFile, Amiibo amiibo) {
+        delayedWriteCharacteristic("startTagUpload(540)");
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            List<byte[]> chunks = byteToPortions(amiiboFile.getData(), 128);
+            for(int i = 0; i < chunks.size(); i+=1) {
+                delayedWriteCharacteristic(
+                        "tagUploadChunk(" + bytesToHex(chunks.get(i)) + ")"
+                );
+            }
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                delayedWriteCharacteristic("saveUploadedTag("
+                        + amiibo.name + "|" + TagUtils.amiiboIdToHex(amiibo.getTail()) + ")");
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    delayedWriteCharacteristic("uploadsComplete()");
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        delayedWriteCharacteristic("getList()");
+                    }, 20);
+                }, 20);
+            }, (chunks.size() * 6L) * 20L);
+        }, 20);
+    }
+
+    // https://stackoverflow.com/a/50022158/461982
+    public static List<byte[]> byteToPortions(byte[] largeByteArray, int sizePerPortion) {
+        List<byte[]> byteArrayPortions = new ArrayList<>();
+        int offset = 0;
+        while (offset < largeByteArray.length) {
+            byte[] portion = Arrays.copyOfRange(largeByteArray, offset, offset + sizePerPortion);
+            offset += sizePerPortion;
+            byteArrayPortions.add(portion);
+        }
+        return byteArrayPortions;
+    }
+
+    //https://stackoverflow.com/a/9855338/461982
+    private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(CharsetCompat.US_ASCII);
+    public static String bytesToHex(byte[] bytes) {
+        byte[] hexChars = new byte[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars, CharsetCompat.UTF_8);
     }
 
     private String getLogTag(UUID uuid) {

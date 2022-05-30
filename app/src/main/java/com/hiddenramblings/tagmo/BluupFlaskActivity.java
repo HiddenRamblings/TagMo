@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.SearchManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -24,9 +25,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -35,9 +39,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -46,18 +53,24 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.adapter.BluupFlaskAdapter;
+import com.hiddenramblings.tagmo.adapter.WriteBanksAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.widget.Toasty;
+import com.shawnlin.numberpicker.NumberPicker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -65,6 +78,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Executors;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
@@ -75,11 +89,20 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private CardView amiiboCard;
     private RecyclerView flaskDetails;
     private TextView flaskStats;
+    private NumberPicker writeCount;
+    private AppCompatButton writeFile;
+    private AppCompatButton writeSlots;
+    private RelativeLayout writeSlotsLayout;
+    private RecyclerView amiiboFilesView;
     private ProgressBar progressBar;
     private Snackbar statusBar;
+
+    private KeyManager keyManager;
     private BrowserSettings settings;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
+    private WriteBanksAdapter writeFileAdapter;
+    private WriteBanksAdapter writeListAdapter;
 
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothAdapter.LeScanCallback scanCallback;
@@ -179,7 +202,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                             try {
                                 flaskService.setFlaskCharacteristicRX();
                                 dismissConnectionNotice();
-                                flaskService.delayedWriteCharacteristic("tag.getList()");
+                                flaskService.delayedWriteCharacteristic("getList()");
                             } catch (TagLostException tle) {
                                 stopFlaskService();
                                 new Toasty(BluupFlaskActivity.this).Short(R.string.flask_invalid);
@@ -216,8 +239,11 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                             BluupFlaskAdapter adapter = new BluupFlaskAdapter(
                                     settings, BluupFlaskActivity.this);
                             adapter.setAmiibos(amiibo);
-                            runOnUiThread(() -> flaskDetails.setAdapter(adapter));
-                            flaskService.delayedWriteCharacteristic("tag.get()");
+                            runOnUiThread(() -> {
+                                flaskDetails.setAdapter(adapter);
+                                progressBar.setVisibility(View.INVISIBLE);
+                            });
+                            flaskService.delayedWriteCharacteristic("get()");
                         }
 
                         @Override
@@ -227,8 +253,14 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                         jsonObject.getString("name")
                                 ), amiiboTile);
                                 String index = jsonObject.getString("index");
-                                runOnUiThread(() -> flaskStats.setText(getString(
-                                        R.string.flask_count, index, currentCount)));
+                                runOnUiThread(() -> {
+                                    flaskStats.setText(getString(
+                                            R.string.flask_count, index, currentCount));
+                                    int maxSlots = 85 - currentCount;
+                                    writeCount.setMaxValue(maxSlots);
+                                    writeCount.setValue(maxSlots);
+                                    writeSlots.setText(getString(R.string.write_slots, maxSlots));
+                                });
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -259,6 +291,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
 
+        keyManager = new KeyManager(this);
+
         amiiboTile = findViewById(R.id.active_tile_layout);
         amiiboTile.setVisibility(View.INVISIBLE);
         progressBar = findViewById(R.id.scanner_progress);
@@ -271,6 +305,13 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         flaskDetails.setLayoutManager(new LinearLayoutManager(this));
 
         flaskStats = findViewById(R.id.flask_stats);
+        writeFile = findViewById(R.id.write_slot_file);
+        writeCount = findViewById(R.id.bank_number_picker);
+        writeCount.setMaxValue(85);
+        writeSlots = findViewById(R.id.write_slot_count);
+
+        writeSlotsLayout = findViewById(R.id.write_banks_layout);
+        amiiboFilesView = findViewById(R.id.amiibo_files_list);
 
         settings = new BrowserSettings().initialize();
 
@@ -282,6 +323,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                     @Override
                     public void onStateChanged(@NonNull View bottomSheet, int newState) {
                         if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                            if (writeSlotsLayout.getVisibility() == View.VISIBLE)
+                                onBottomSheetChanged(true);
                             toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
                         } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                             toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
@@ -308,7 +351,112 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             }
         });
 
+        this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
+
+        if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
+            amiiboFilesView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+        else
+            amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
+
+        writeFileAdapter = new WriteBanksAdapter(settings,
+                new WriteBanksAdapter.OnAmiiboClickListener() {
+            @Override
+            public void onAmiiboClicked(AmiiboFile amiiboFile) {
+                if (null != amiiboFile) {
+                    Amiibo amiibo = null;
+                    if (null != settings.getAmiiboManager()) {
+                        try {
+                            long amiiboId = TagUtils.amiiboIdFromTag(amiiboFile.getData());
+                            amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+                            if (null == amiibo)
+                                amiibo = new Amiibo(settings.getAmiiboManager(),
+                                        amiiboId, null, null);
+                        } catch (Exception e) {
+                            Debug.Log(e);
+                        }
+                    }
+                    if (null != amiibo) {
+                        progressBar.setVisibility(View.VISIBLE);
+                        flaskService.uploadAmiiboFile(amiiboFile, amiibo);
+                    }
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
+
+            @Override
+            public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
+                if (null != amiiboFile) {
+                    Amiibo amiibo = null;
+                    if (null != settings.getAmiiboManager()) {
+                        try {
+                            long amiiboId = TagUtils.amiiboIdFromTag(amiiboFile.getData());
+                            amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+                            if (null == amiibo)
+                                amiibo = new Amiibo(settings.getAmiiboManager(),
+                                        amiiboId, null, null);
+                        } catch (Exception e) {
+                            Debug.Log(e);
+                        }
+                    }
+                    if (null != amiibo) {
+                        progressBar.setVisibility(View.VISIBLE);
+                        flaskService.uploadAmiiboFile(amiiboFile, amiibo);
+                    }
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
+        });
+        this.settings.addChangeListener(writeFileAdapter);
+
+        writeListAdapter = new WriteBanksAdapter(settings, this::writeAmiiboCollection);
+        this.settings.addChangeListener(writeListAdapter);
+
+        SearchView searchView = findViewById(R.id.amiibo_search);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(false);
+        searchView.setIconifiedByDefault(false);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                settings.setQuery(query);
+                settings.notifyChanges();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                settings.setQuery(query);
+                settings.notifyChanges();
+                return true;
+            }
+        });
+
+        writeFile.setOnClickListener(view -> {
+            onBottomSheetChanged(false);
+            amiiboFilesView.setAdapter(writeFileAdapter);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        });
+
+        writeCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) -> {
+            writeSlots.setText(getString(R.string.write_slots, valueNew));
+        });
+
+        writeSlots.setOnClickListener(view -> {
+            onBottomSheetChanged(false);
+            amiiboFilesView.setAdapter(writeListAdapter);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        });
+
         verifyPermissions();
+    }
+
+    private void onBottomSheetChanged(boolean hasAmiibo) {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        amiiboCard.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
+        writeCount.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
+        writeSlots.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
+        writeSlotsLayout.setVisibility(hasAmiibo ? View.GONE : View.VISIBLE);
     }
 
     void setAmiiboInfoText(TextView textView, CharSequence text) {
@@ -538,6 +686,43 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         scanBluetoothServices();
     }
 
+    private boolean isDirectoryHidden(File rootFolder, File directory, boolean recursive) {
+        return !rootFolder.getPath().equals(directory.getPath()) && (!recursive
+                || (!rootFolder.getPath().startsWith(directory.getPath())
+                && !directory.getPath().startsWith(rootFolder.getPath())));
+    }
+
+    private void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
+                    .listAmiibos(keyManager, rootFolder, recursiveFiles);
+            if (this.settings.isShowingDownloads()) {
+                File download = Storage.getDownloadDir(null);
+                if (isDirectoryHidden(rootFolder, download, recursiveFiles))
+                    amiiboFiles.addAll(AmiiboManager
+                            .listAmiibos(keyManager, download, true));
+            } else {
+                File foomiibo = Storage.getDownloadDir("TagMo", "Foomiibo");
+                if (isDirectoryHidden(rootFolder, foomiibo, recursiveFiles))
+                    amiiboFiles.addAll(AmiiboManager
+                            .listAmiibos(keyManager, foomiibo, true));
+            }
+
+            if (Thread.currentThread().isInterrupted()) return;
+
+            this.runOnUiThread(() -> {
+                settings.setAmiiboFiles(amiiboFiles);
+                settings.notifyChanges();
+            });
+        });
+    }
+
+    private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
+        if (null != amiiboList && amiiboList.size() == writeCount.getValue()) {
+
+        }
+    }
+
     private void showConnectionNotice() {
         statusBar = new IconifiedSnackbar(this).buildSnackbar(
                 R.string.flask_located, R.drawable.ic_bluup_flask_24dp, Snackbar.LENGTH_INDEFINITE
@@ -547,6 +732,16 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
     private void dismissConnectionNotice() {
         if (null != statusBar && statusBar.isShown()) statusBar.dismiss();
+    }
+
+    private int getColumnCount() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+            mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
+        else
+            mWindowManager.getDefaultDisplay().getMetrics(metrics);
+        return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
     public void startFlaskService() {
@@ -564,7 +759,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         if (null != mBluetoothAdapter) {
             if (null != scanCallback)
                 mBluetoothAdapter.stopLeScan(scanCallback);
-            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 

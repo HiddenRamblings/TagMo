@@ -22,7 +22,9 @@ import android.graphics.drawable.Drawable;
 import android.nfc.TagLostException;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
@@ -202,7 +204,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                             try {
                                 flaskService.setFlaskCharacteristicRX();
                                 dismissConnectionNotice();
-                                flaskService.delayedWriteCharacteristic("getList()");
+                                flaskService.delayedWriteTagCharacteristic("getList()");
                             } catch (TagLostException tle) {
                                 stopFlaskService();
                                 new Toasty(BluupFlaskActivity.this).Short(R.string.flask_invalid);
@@ -223,6 +225,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onFlaskActiveDeleted(JSONObject jsonObject) {
                             amiiboTile.setVisibility(View.INVISIBLE);
+                            flaskService.delayedWriteTagCharacteristic("getList()");
                         }
 
                         @Override
@@ -243,7 +246,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 flaskDetails.setAdapter(adapter);
                                 progressBar.setVisibility(View.INVISIBLE);
                             });
-                            flaskService.delayedWriteCharacteristic("get()");
+                            flaskService.delayedWriteTagCharacteristic("get()");
                         }
 
                         @Override
@@ -264,6 +267,11 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                        }
+
+                        @Override
+                        public void onFlaskFilesUploaded() {
+                            runOnUiThread(() -> progressBar.setVisibility(View.INVISIBLE));
                         }
                     });
                 } else {
@@ -693,6 +701,22 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     }
 
     private void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
+        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        if (null == amiiboManager) {
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
+            } catch (IOException | JSONException | ParseException e) {
+                Debug.Log(e);
+                amiiboManager = null;
+                new Toasty(this).Short(R.string.amiibo_info_parse_error);
+            }
+
+            final AmiiboManager uiAmiiboManager = amiiboManager;
+            this.runOnUiThread(() -> {
+                settings.setAmiiboManager(uiAmiiboManager);
+                settings.notifyChanges();
+            });
+        }
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiibos(keyManager, rootFolder, recursiveFiles);

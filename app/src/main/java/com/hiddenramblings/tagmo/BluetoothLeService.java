@@ -64,6 +64,7 @@ public class BluetoothLeService extends Service {
         void onServicesDiscovered();
         void onFlaskActiveChanged(JSONObject jsonObject);
         void onFlaskActiveDeleted(JSONObject jsonObject);
+        void onFlaskListRetrieved(JSONArray jsonArray);
     }
 
     StringBuilder response = new StringBuilder();
@@ -74,14 +75,19 @@ public class BluetoothLeService extends Service {
             Log.d(getLogTag(characteristic.getUuid()), output);
 
             if (characteristic.getUuid().compareTo(FlaskRX) == 0) {
-                if (output.startsWith("[") || output.startsWith("{") || response.length() > 0) {
+                if (output.startsWith("tag.getList()")) {
+                    response.append(output);
+                } else if (output.startsWith("{") || response.length() > 0) {
                     response.append(output);
                 }
                 String progress = response.length() > 0 ? response.toString().trim() : "";
-                if (progress.startsWith("[")) {
-                    if (progress.endsWith("]")) {
+                if (progress.startsWith("tag.getList()")) {
+                    if (progress.endsWith(">")) {
+                        String getList = progress.substring(progress.indexOf("["),
+                                progress.lastIndexOf("]") + 1);
                         try {
-                            JSONArray jsonArray = new JSONArray(response.toString());
+                            JSONArray jsonArray = new JSONArray(getList);
+                            listener.onFlaskListRetrieved(jsonArray);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -434,10 +440,6 @@ public class BluetoothLeService extends Service {
             }
         }
 
-        mCharacteristicTX.setValue("echo(0)\n".getBytes(CharsetCompat.UTF_8));
-        mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
-
-        // String command = "\\x10Bluetooth.println(JSON.stringify(" + value + "))\\n";
         String command = value + "\n";
         List<byte[]> chunks = byteToPortions(command.getBytes(CharsetCompat.UTF_8));
         for (int i = 0; i < chunks.size(); i += 1) {
@@ -445,6 +447,7 @@ public class BluetoothLeService extends Service {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 Log.d(getLogTag(mCharacteristicTX.getUuid()), new String(chunk));
                 mCharacteristicTX.setValue(chunk);
+                mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
                 mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
             }, (i + 1) * 50L);
         }

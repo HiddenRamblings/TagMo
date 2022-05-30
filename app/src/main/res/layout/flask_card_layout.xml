@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/active_tile_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="4dp"
+    android:layout_marginHorizontal="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="@drawable/card_foreground"
+    app:cardCornerRadius="@dimen/card_radius"
+    tools:ignore="SmallSp">
+
+    <FrameLayout
+        android:id="@+id/highlight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imageAmiibo"
+                android:contentDescription="@string/imageview_amiibo"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
+                android:visibility="invisible" />
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/txtName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/amiibo_name_caps"
+                    android:textColor="@color/tag_text"
+                    android:textSize="16sp"/>
+
+                <LinearLayout
+                    android:id="@+id/group1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txtName"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtTagId"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:text="@string/amiibo_id_caps"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10sp"/>
+
+                    <View
+                        android:layout_width="4dp"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:id="@+id/txtAmiiboType"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="@string/amiibo_type_caps"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/group2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/group1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtGameSeries"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:text="@string/amiibo_game_caps"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10sp" />
+
+                    <View
+                        android:layout_width="4dp"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:id="@+id/txtAmiiboSeries"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="@string/amiibo_series_caps"
+                        android:textColor="@color/tag_text"
+                        android:textSize="10sp"/>
+                </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtCharacter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:text="@string/amiibo_character_caps"
+            android:textColor="@color/tag_text"
+            android:textSize="10sp"
+            android:visibility="gone"/>
+    </FrameLayout>
+</androidx.cardview.widget.CardView>

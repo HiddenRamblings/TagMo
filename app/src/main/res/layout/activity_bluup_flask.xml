@@ -108,5 +108,28 @@
         <include
             layout="@layout/active_card_layout"
             android:id="@+id/active_card_layout" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/write_slot_file"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="@string/write_slot_file" />
+
+        <include
+            layout="@layout/bank_picker"
+            android:id="@+id/bank_number_picker" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/write_slot_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/write_slots" />
+
+        <include
+            layout="@layout/write_banks_layout"
+            android:id="@+id/write_banks_layout" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

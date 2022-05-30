@@ -26,7 +26,6 @@ import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -39,23 +38,30 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.adapter.BankBrowserAdapter;
+import com.hiddenramblings.tagmo.adapter.BluupFlaskAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
+import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
@@ -64,12 +70,14 @@ import java.util.concurrent.Executors;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
-public class BluupFlaskActivity extends AppCompatActivity {
+public class BluupFlaskActivity extends AppCompatActivity implements
+        BluupFlaskAdapter.OnAmiiboClickListener {
 
     private CardView amiiboCard;
-    private LinearLayout flaskDetails;
+    private RecyclerView flaskDetails;
     private ProgressBar progressBar;
     private Snackbar statusBar;
+    private BrowserSettings settings;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
 
@@ -164,9 +172,8 @@ public class BluupFlaskActivity extends AppCompatActivity {
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
-                            runOnUiThread(() -> {
-                                ((TextView) findViewById(R.id.hardware_info)).setText(flaskProfile);
-                            });
+                            runOnUiThread(() -> ((TextView) findViewById(
+                                    R.id.hardware_info)).setText(flaskProfile));
                             try {
                                 flaskService.setFlaskCharacteristicRX();
                                 dismissConnectionNotice();
@@ -180,7 +187,7 @@ public class BluupFlaskActivity extends AppCompatActivity {
                         @Override
                         public void onFlaskActiveChanged(JSONObject jsonObject) {
                             try {
-                                getAmiiboByName(jsonObject.getString("name"));
+                                getActiveAmiibo(jsonObject.getString("name"), amiiboCard);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -189,6 +196,23 @@ public class BluupFlaskActivity extends AppCompatActivity {
                         @Override
                         public void onFlaskActiveDeleted(JSONObject jsonObject) {
                             amiiboCard.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onFlaskListRetrieved(JSONArray jsonArray) {
+                            ArrayList<Amiibo> amiibo = new ArrayList<>();
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                try {
+                                    amiibo.add(getAmiiboByName(jsonArray.getString(i)));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            BluupFlaskAdapter adapter = new BluupFlaskAdapter(
+                                    settings, BluupFlaskActivity.this);
+                            adapter.setAmiibos(amiibo);
+                            runOnUiThread(() -> flaskDetails.setAdapter(adapter));
+
                         }
                     });
                 } else {
@@ -218,8 +242,12 @@ public class BluupFlaskActivity extends AppCompatActivity {
 
         amiiboCard = findViewById(R.id.active_tile_layout);
         amiiboCard.setVisibility(View.INVISIBLE);
-        flaskDetails = findViewById(R.id.flask_details);
         progressBar = findViewById(R.id.scanner_progress);
+
+        flaskDetails = findViewById(R.id.flask_details);
+        flaskDetails.setLayoutManager(new LinearLayoutManager(this));
+
+        settings = new BrowserSettings().initialize();
 
         AppCompatImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
@@ -267,43 +295,16 @@ public class BluupFlaskActivity extends AppCompatActivity {
             }
     }
 
-    private void getAmiiboByName(String name) {
+    private void getActiveAmiibo(String name, View amiiboView) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            AmiiboManager amiiboManager;
-            try {
-                amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
-            } catch (IOException | JSONException | ParseException e) {
-                Debug.Log(e);
-                amiiboManager = null;
-                new Toasty(this).Short(R.string.amiibo_info_parse_error);
-            }
-
-            if (Thread.currentThread().isInterrupted()) return;
-
-            Amiibo selectedAmiibo = null;
-            if (null != amiiboManager) {
-                String amiiboName = name.split("\\|")[0];
-                for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                    if (amiibo.name.equals(amiiboName)) {
-                        selectedAmiibo = amiibo;
-                    }
-                }
-                if (null == selectedAmiibo) {
-                    for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                        if (amiibo.name.startsWith(amiiboName)) {
-                            selectedAmiibo = amiibo;
-                        }
-                    }
-                }
-            }
-            final Amiibo currentAmiibo = selectedAmiibo;
+            Amiibo currentAmiibo = getAmiiboByName(name);
             runOnUiThread(() -> {
-                TextView txtName = amiiboCard.findViewById(R.id.txtName);
-                TextView txtTagId = amiiboCard.findViewById(R.id.txtTagId);
-                TextView txtAmiiboSeries = amiiboCard.findViewById(R.id.txtAmiiboSeries);
-                TextView txtAmiiboType = amiiboCard.findViewById(R.id.txtAmiiboType);
-                TextView txtGameSeries = amiiboCard.findViewById(R.id.txtGameSeries);
-                AppCompatImageView imageAmiibo = amiiboCard.findViewById(R.id.imageAmiibo);
+                TextView txtName = amiiboView.findViewById(R.id.txtName);
+                TextView txtTagId = amiiboView.findViewById(R.id.txtTagId);
+                TextView txtAmiiboSeries = amiiboView.findViewById(R.id.txtAmiiboSeries);
+                TextView txtAmiiboType = amiiboView.findViewById(R.id.txtAmiiboType);
+                TextView txtGameSeries = amiiboView.findViewById(R.id.txtGameSeries);
+                AppCompatImageView imageAmiibo = amiiboView.findViewById(R.id.imageAmiibo);
 
                 CustomTarget<Bitmap> target = new CustomTarget<>() {
                     @Override
@@ -333,11 +334,10 @@ public class BluupFlaskActivity extends AppCompatActivity {
                 String amiiboSeries = "";
                 String amiiboType = "";
                 String gameSeries = "";
-                // String character = "";
                 String amiiboImageUrl;
 
                 if (null != currentAmiibo) {
-                    amiiboCard.setVisibility(View.VISIBLE);
+                    amiiboView.setVisibility(View.VISIBLE);
                     amiiboHexId = TagUtils.amiiboIdToHex(currentAmiibo.id);
                     amiiboName = currentAmiibo.name;
                     amiiboImageUrl = currentAmiibo.getImageUrl();
@@ -355,9 +355,9 @@ public class BluupFlaskActivity extends AppCompatActivity {
                     setFoomiiboInfoText(txtGameSeries, gameSeries);
 
                     if (null != imageAmiibo) {
-                        GlideApp.with(amiiboCard).clear(target);
+                        GlideApp.with(amiiboView).clear(target);
                         if (null != amiiboImageUrl) {
-                            GlideApp.with(amiiboCard).asBitmap().load(amiiboImageUrl).into(target);
+                            GlideApp.with(amiiboView).asBitmap().load(amiiboImageUrl).into(target);
                         }
                     }
                     if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
@@ -366,6 +366,38 @@ public class BluupFlaskActivity extends AppCompatActivity {
                 }
             });
         });
+    }
+
+    private Amiibo getAmiiboByName(String name) {
+            AmiiboManager amiiboManager;
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
+            } catch (IOException | JSONException | ParseException e) {
+                Debug.Log(e);
+                amiiboManager = null;
+                new Toasty(this).Short(R.string.amiibo_info_parse_error);
+            }
+
+            if (Thread.currentThread().isInterrupted()) return null;
+
+            Amiibo selectedAmiibo = null;
+            if (null != amiiboManager) {
+                String amiiboName = name.split("\\|")[0];
+                for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                    if (amiibo.name.equals(amiiboName)) {
+                        selectedAmiibo = amiibo;
+                    }
+                }
+                if (null == selectedAmiibo) {
+                    for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                        if (amiibo.name.startsWith(amiiboName)) {
+                            selectedAmiibo = amiibo;
+                        }
+                    }
+                }
+            }
+            return selectedAmiibo;
+
     }
 
     private void verifyPermissions() {
@@ -517,5 +549,15 @@ public class BluupFlaskActivity extends AppCompatActivity {
         super.onDestroy();
         dismissFlaskDiscovery();
         stopFlaskService();
+    }
+
+    @Override
+    public void onFoomiiboClicked(Amiibo foomiibo) {
+
+    }
+
+    @Override
+    public void onFoomiiboImageClicked(Amiibo foomiibo) {
+
     }
 }

@@ -14,12 +14,16 @@
         android:layout_height="match_parent"
         android:layout_marginTop="6dp"
         android:paddingBottom="@dimen/button_height_min"
-        android:id="@+id/flask_details"
         android:orientation="vertical" >
 
         <include
             layout="@layout/active_tile_layout"
             android:id="@+id/active_tile_layout" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/flask_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <ProgressBar

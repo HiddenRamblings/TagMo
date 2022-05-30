@@ -30,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -62,15 +63,21 @@ public class BluetoothLeService extends Service {
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
     }
+
     interface BluetoothGattListener {
         void onServicesDiscovered();
+
         void onFlaskActiveChanged(JSONObject jsonObject);
+
         void onFlaskActiveDeleted(JSONObject jsonObject);
+
         void onFlaskListRetrieved(JSONArray jsonArray);
+
         void onFlaskActiveLocated(JSONObject jsonObject);
     }
 
     StringBuilder response = new StringBuilder();
+
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
@@ -165,7 +172,7 @@ public class BluetoothLeService extends Service {
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status
         ) {
             Debug.Log(TAG, getLogTag(characteristic.getUuid())
-                    +  " onCharacteristicWrite " + status);
+                    + " onCharacteristicWrite " + status);
         }
 
         @Override
@@ -233,11 +240,10 @@ public class BluetoothLeService extends Service {
      * Connects to the GATT server hosted on the Bluetooth LE device.
      *
      * @param address The device address of the destination device.
-     *
      * @return Return true if the connection is initiated successfully. The connection result
-     *         is reported asynchronously through the
-     *         {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
-     *         callback.
+     * is reported asynchronously through the
+     * {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
+     * callback.
      */
     public boolean connect(final String address) {
         if (mBluetoothAdapter == null || address == null) {
@@ -294,21 +300,23 @@ public class BluetoothLeService extends Service {
             );
             descriptorTX.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptorTX);
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
         try {
             BluetoothGattDescriptor descriptorTX = characteristic.getDescriptor(
                     UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             );
             descriptorTX.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptorTX);
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
     }
 
     /**
      * Enables or disables notification on a give characteristic.
      *
      * @param characteristic Characteristic to act on.
-     * @param enabled If true, enable notification.  False otherwise.
+     * @param enabled        If true, enable notification.  False otherwise.
      */
     public void setCharacteristicNotification(
             BluetoothGattCharacteristic characteristic, boolean enabled) {
@@ -417,15 +425,13 @@ public class BluetoothLeService extends Service {
     // https://stackoverflow.com/a/50022158/461982
     // this method splits your byte array into small portions
     // and returns a list with those portions
-    public static List<byte[]> byteToPortions(byte[] largeByteArray) {
+    public static List<byte[]> byteToPortions(byte[] largeByteArray, int sizePerPortion) {
         // create a list to keep the portions
         List<byte[]> byteArrayPortions = new ArrayList<>();
-
-        int sizePerPortion = 20;
         int offset = 0;
 
         // split the array
-        while(offset < largeByteArray.length) {
+        while (offset < largeByteArray.length) {
             // into 5 mb portions
             byte[] portion = Arrays.copyOfRange(largeByteArray, offset, offset + sizePerPortion);
             // update the offset to increment the copied area
@@ -437,17 +443,26 @@ public class BluetoothLeService extends Service {
         return byteArrayPortions;
     }
 
-    public void delayedWriteCharacteristic(String value) {
-        if (null == mCharacteristicTX) {
-            try {
-                setFlaskCharacteristicTX();
-            } catch (TagLostException e) {
-                e.printStackTrace();
-            }
+    public void uploadAmiibo(String name, byte[] data, String tail) {
+        delayedWriteCharacteristic("tag.startTagUpload(540)");
+        List<byte[]> chunks = byteToPortions(data, 128);
+        for(int i = 0; i < chunks.size();i +=1) {
+            byte[] prefix = "tag.tagUploadChunk(".getBytes(CharsetCompat.UTF_8);
+            byte[] chunk = chunks.get(i);
+            byte[] suffix = ")\n".getBytes(CharsetCompat.UTF_8);
+            byte[] byteArray = new byte[prefix.length + chunk.length + suffix.length];
+            ByteBuffer byteBuffer = ByteBuffer.wrap(byteArray);
+            byteBuffer.put(prefix);
+            byteBuffer.put(chunk);
+            byteBuffer.put(suffix);
+            delayedWriteCharacteristic( byteBuffer.array());
         }
+        delayedWriteCharacteristic("tag.saveUploadedTag(" + name + "|" + tail + ")");
+        delayedWriteCharacteristic("tag.uploadsComplete()");
+    }
 
-        String command = value + "\n";
-        List<byte[]> chunks = byteToPortions(command.getBytes(CharsetCompat.UTF_8));
+    public void delayedWriteCharacteristic(byte[] value) {
+        List<byte[]> chunks = byteToPortions(value, 20);
         for (int i = 0; i < chunks.size(); i += 1) {
             final byte[] chunk = chunks.get(i);
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -456,6 +471,17 @@ public class BluetoothLeService extends Service {
                 mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
             }, (i + 1) * 50L);
         }
+    }
+
+    public void delayedWriteCharacteristic(String value) {
+        if (null == mCharacteristicTX) {
+            try {
+                setFlaskCharacteristicTX();
+            } catch (TagLostException e) {
+                e.printStackTrace();
+            }
+        }
+        delayedWriteCharacteristic((value + "\n").getBytes(CharsetCompat.UTF_8));
     }
 
     private String getLogTag(UUID uuid) {

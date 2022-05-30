@@ -65,6 +65,7 @@ public class BluetoothLeService extends Service {
         void onFlaskActiveChanged(JSONObject jsonObject);
         void onFlaskActiveDeleted(JSONObject jsonObject);
         void onFlaskListRetrieved(JSONArray jsonArray);
+        void onFlaskActiveLocated(JSONObject jsonObject);
     }
 
     StringBuilder response = new StringBuilder();
@@ -75,19 +76,31 @@ public class BluetoothLeService extends Service {
             Log.d(getLogTag(characteristic.getUuid()), output);
 
             if (characteristic.getUuid().compareTo(FlaskRX) == 0) {
-                if (output.startsWith("tag.getList()")) {
-                    response.append(output);
-                } else if (output.startsWith("{") || response.length() > 0) {
+                if (output.startsWith("tag.") || output.startsWith("{") || response.length() > 0) {
                     response.append(output);
                 }
                 String progress = response.length() > 0 ? response.toString().trim() : "";
-                if (progress.startsWith("tag.getList()")) {
+                if (progress.startsWith("tag.get()")) {
+                    if (progress.endsWith(">")) {
+                        String getAmiibo = progress.substring(progress.indexOf("{"),
+                                progress.lastIndexOf("}") + 1);
+                        if (null != listener) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(getAmiibo);
+                                listener.onFlaskActiveLocated(jsonObject);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            response = new StringBuilder();
+                        }
+                    }
+                } else if (progress.startsWith("tag.getList()")) {
                     if (progress.endsWith(">")) {
                         String getList = progress.substring(progress.indexOf("["),
                                 progress.lastIndexOf("]") + 1);
                         try {
                             JSONArray jsonArray = new JSONArray(getList);
-                            listener.onFlaskListRetrieved(jsonArray);
+                            if (null != listener) listener.onFlaskListRetrieved(jsonArray);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

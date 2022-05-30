@@ -16,6 +16,9 @@ public class CharsetCompat {
     public static Charset ISO_8859_1 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
             ? StandardCharsets.ISO_8859_1
             : Charset.forName("ISO-8859-1");
+    public static Charset US_ASCII = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+            ? StandardCharsets.US_ASCII
+            : Charset.forName("US_ASCII");
     public static Charset UTF_16BE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
             ? StandardCharsets.UTF_16BE
             : Charset.forName("UTF-16BE");

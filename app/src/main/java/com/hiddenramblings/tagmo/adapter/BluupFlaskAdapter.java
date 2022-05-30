@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,12 +17,10 @@ import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
-import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
 
@@ -94,16 +91,16 @@ public class BluupFlaskAdapter
         holder.itemView.findViewById(R.id.highlight).setBackground(null);
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.listener && !holder.isHighlighted) {
-                holder.listener.onFoomiiboClicked(holder.amiibo);
+                holder.listener.onAmiiboClicked(holder.amiibo);
             }
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.listener && !holder.isHighlighted) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
-                        holder.listener.onFoomiiboClicked(holder.amiibo);
+                        holder.listener.onAmiiboClicked(holder.amiibo);
                     } else {
-                        holder.listener.onFoomiiboImageClicked(holder.amiibo);
+                        holder.listener.onAmiiboImageClicked(holder.amiibo);
                     }
                 }
             });
@@ -127,8 +124,6 @@ public class BluupFlaskAdapter
 
         Amiibo amiibo = null;
         boolean isHighlighted = false;
-
-        private final BoldSpannable boldSpannable = new BoldSpannable();
 
         CustomTarget<Bitmap> target = new CustomTarget<>() {
             @Override
@@ -193,11 +188,12 @@ public class BluupFlaskAdapter
                     gameSeries = amiibo.getGameSeries().name;
 
                 this.txtError.setVisibility(View.GONE);
-                setFoomiiboInfoText(txtName, amiiboName);
-                setFoomiiboInfoText(txtTagId, amiiboHexId);
-                setFoomiiboInfoText(txtAmiiboSeries, amiiboSeries);
-                setFoomiiboInfoText(txtAmiiboType, amiiboType);
-                setFoomiiboInfoText(txtGameSeries, gameSeries);
+                setAmiiboInfoText(txtName, amiiboName);
+                setAmiiboInfoText(txtTagId, amiiboHexId);
+                setAmiiboInfoText(txtAmiiboSeries, amiiboSeries);
+                setAmiiboInfoText(txtAmiiboType, amiiboType);
+                setAmiiboInfoText(txtGameSeries, gameSeries);
+                // setFoomiiboInfoText(txtCharacter, character);
                 this.txtPath.setVisibility(View.GONE);
                 if (null != this.imageAmiibo) {
                     GlideApp.with(itemView).clear(target);
@@ -206,12 +202,12 @@ public class BluupFlaskAdapter
                     }
                 }
                 if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
-                    if (null != txtTagId) txtTagId.setEnabled(false);
+                    txtTagId.setEnabled(false);
                 }
             }
         }
 
-        void setFoomiiboInfoText(TextView textView, CharSequence text) {
+        void setAmiiboInfoText(TextView textView, CharSequence text) {
             textView.setVisibility(View.VISIBLE);
             if (text.length() == 0) {
                 textView.setText(R.string.unknown);
@@ -268,8 +264,8 @@ public class BluupFlaskAdapter
     }
 
     public interface OnAmiiboClickListener {
-        void onFoomiiboClicked(Amiibo foomiibo);
+        void onAmiiboClicked(Amiibo amiibo);
 
-        void onFoomiiboImageClicked(Amiibo foomiibo);
+        void onAmiiboImageClicked(Amiibo amiibo);
     }
 }

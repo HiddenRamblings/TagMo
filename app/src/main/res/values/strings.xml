@@ -239,6 +239,7 @@
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="flask_permissions">Required permission denied!</string>
     <string name="flask_paired">Unpair Flask to continue.</string>
+    <string name="flask_count">Slot %1$s Active, %2$d Slots Occupied</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>

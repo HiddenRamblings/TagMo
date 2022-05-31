@@ -19,6 +19,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.nfc.TagLostException;
 import android.os.Build;
 import android.os.Bundle;
@@ -105,6 +106,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private WriteBanksAdapter writeListAdapter;
 
     private BluetoothAdapter mBluetoothAdapter;
+    private ScanCallback scanCallbackLP;
     private BluetoothAdapter.LeScanCallback scanCallback;
     private BluetoothLeService flaskService;
     private String flaskProfile;
@@ -201,7 +203,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                     R.id.hardware_info)).setText(flaskProfile));
                             try {
                                 flaskService.setFlaskCharacteristicRX();
-                                dismissConnectionNotice();
                                 flaskService.delayedWriteTagCharacteristic("getList()");
                             } catch (TagLostException tle) {
                                 stopFlaskService();
@@ -241,6 +242,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                     settings, BluupFlaskActivity.this);
                             adapter.setAmiibos(amiibo);
                             runOnUiThread(() -> {
+                                dismissSnackbarNotice();
                                 flaskDetails.setAdapter(adapter);
                             });
                             flaskService.delayedWriteTagCharacteristic("get()");
@@ -272,7 +274,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
                         @Override
                         public void onFlaskFilesUploaded() {
-
+                            dismissSnackbarNotice();
                         }
                     });
                 } else {
@@ -287,7 +289,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             unbindService(mServerConn);
             stopService(new Intent(BluupFlaskActivity.this, BluetoothLeService.class));
             if (!isServiceDiscovered) {
-                new Toasty(BluupFlaskActivity.this).Short(R.string.flask_missing);
+                showPurchaseNotice();
             }
         }
     };
@@ -611,13 +613,15 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     }
 
     private void scanBluetoothServices() {
+        showScanningNotice();
+        flaskProfile = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
             ParcelUuid FlaskUUID = new ParcelUuid(BluetoothLeService.FlaskNUS);
             ScanFilter filter = new ScanFilter.Builder().setServiceUuid(FlaskUUID).build();
             ScanSettings settings = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-            ScanCallback callback = new ScanCallback() {
+            scanCallbackLP = new ScanCallback() {
                 @Override
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
@@ -628,7 +632,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                     startFlaskService();
                 }
             };
-            scanner.startScan(Collections.singletonList(filter), settings, callback);
+            scanner.startScan(Collections.singletonList(filter), settings, scanCallbackLP);
         } else {
             scanCallback = (bluetoothDevice, i, bytes) -> {
                 flaskProfile = bluetoothDevice.getName();
@@ -639,6 +643,12 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             };
             mBluetoothAdapter.startLeScan(new UUID[]{ BluetoothLeService.FlaskNUS }, scanCallback);
         }
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (null == flaskProfile) {
+                dismissFlaskDiscovery();
+                showPurchaseNotice();
+            }
+        }, 15000);
     }
 
     ActivityResultLauncher<Intent> onRequestPairing = registerForActivityResult(
@@ -730,20 +740,55 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 }
             }
             if (null != amiibo) {
+                showUploadingNotice();
                 flaskService.uploadAmiiboFile(amiiboFile, amiibo);
             }
         }
     }
 
-    private void showConnectionNotice() {
+    private void dismissSnackbarNotice() {
+        if (null != statusBar && statusBar.isShown()) statusBar.dismiss();
+    }
+
+    private void showScanningNotice() {
+        dismissSnackbarNotice();
         statusBar = new IconifiedSnackbar(this).buildSnackbar(
-                R.string.flask_located, R.drawable.ic_bluup_flask_24dp, Snackbar.LENGTH_INDEFINITE
+                R.string.flask_scanning, R.drawable.ic_baseline_bluetooth_searching_24dp,
+                Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
         );
         statusBar.show();
     }
 
-    private void dismissConnectionNotice() {
-        if (null != statusBar && statusBar.isShown()) statusBar.dismiss();
+    private void showConnectionNotice() {
+        dismissSnackbarNotice();
+        statusBar = new IconifiedSnackbar(this).buildSnackbar(
+                R.string.flask_located, R.drawable.ic_bluup_flask_24dp,
+                Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
+        );
+        statusBar.show();
+    }
+
+    private void showUploadingNotice() {
+        dismissSnackbarNotice();
+        statusBar = new IconifiedSnackbar(this).buildSnackbar(
+                R.string.flask_upload, R.drawable.ic_bluup_flask_24dp,
+                Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
+        );
+        statusBar.show();
+    }
+
+    private void showPurchaseNotice() {
+        dismissSnackbarNotice();
+        statusBar = new IconifiedSnackbar(this).buildSnackbar(
+                R.string.flask_missing, R.drawable.ic_bluup_flask_24dp,
+                Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
+        );
+        statusBar.setAction(R.string.purchase, v -> {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                    "https://www.bluuplabs.com/flask/"
+            )));
+        });
+        statusBar.show();
     }
 
     private int getColumnCount() {
@@ -763,14 +808,19 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     }
 
     public void stopFlaskService() {
-        dismissConnectionNotice();
+        dismissSnackbarNotice();
         if (null != flaskService) flaskService.disconnect();
     }
 
     private void dismissFlaskDiscovery() {
         if (null != mBluetoothAdapter) {
-            if (null != scanCallback)
-                mBluetoothAdapter.stopLeScan(scanCallback);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (null != scanCallbackLP)
+                    mBluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallbackLP);
+            } else {
+                if (null != scanCallback)
+                    mBluetoothAdapter.stopLeScan(scanCallback);
+            }
         }
     }
 

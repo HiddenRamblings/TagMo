@@ -480,6 +480,18 @@ public class BluetoothLeService extends Service {
         delayedWriteTagCharacteristic("getList()");
     }
 
+    public void setActiveAmiibo(String name, String tail) {
+        delayedWriteTagCharacteristic("setTag(\""+ name + "|" + tail + "\")");
+    }
+
+    public void getActiveAmiibo() {
+        delayedWriteTagCharacteristic("get()");
+    }
+
+    public void getDeviceAmiibo() {
+        delayedWriteTagCharacteristic("getList()");
+    }
+
     // https://stackoverflow.com/a/50022158/461982
     public static List<byte[]> byteToPortions(byte[] largeByteArray, int sizePerPortion) {
         List<byte[]> byteArrayPortions = new ArrayList<>();

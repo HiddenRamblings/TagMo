@@ -370,46 +370,14 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 new WriteBanksAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
-                if (null != amiiboFile) {
-                    Amiibo amiibo = null;
-                    if (null != settings.getAmiiboManager()) {
-                        try {
-                            long amiiboId = TagUtils.amiiboIdFromTag(amiiboFile.getData());
-                            amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
-                            if (null == amiibo)
-                                amiibo = new Amiibo(settings.getAmiiboManager(),
-                                        amiiboId, null, null);
-                        } catch (Exception e) {
-                            Debug.Log(e);
-                        }
-                    }
-                    if (null != amiibo) {
-                        flaskService.uploadAmiiboFile(amiiboFile, amiibo);
-                    }
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                uploadAmiiboFile(amiiboFile);
             }
 
             @Override
             public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
-                if (null != amiiboFile) {
-                    Amiibo amiibo = null;
-                    if (null != settings.getAmiiboManager()) {
-                        try {
-                            long amiiboId = TagUtils.amiiboIdFromTag(amiiboFile.getData());
-                            amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
-                            if (null == amiibo)
-                                amiibo = new Amiibo(settings.getAmiiboManager(),
-                                        amiiboId, null, null);
-                        } catch (Exception e) {
-                            Debug.Log(e);
-                        }
-                    }
-                    if (null != amiibo) {
-                        flaskService.uploadAmiiboFile(amiiboFile, amiibo);
-                    }
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                uploadAmiiboFile(amiiboFile);
             }
         });
         this.settings.addChangeListener(writeFileAdapter);
@@ -740,7 +708,30 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
         if (null != amiiboList && amiiboList.size() == writeCount.getValue()) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            for (AmiiboFile amiiboFile : amiiboList) {
+                uploadAmiiboFile(amiiboFile);
+            }
+        }
+    }
 
+    private void uploadAmiiboFile(AmiiboFile amiiboFile) {
+        if (null != amiiboFile) {
+            Amiibo amiibo = null;
+            if (null != settings.getAmiiboManager()) {
+                try {
+                    long amiiboId = TagUtils.amiiboIdFromTag(amiiboFile.getData());
+                    amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+                    if (null == amiibo)
+                        amiibo = new Amiibo(settings.getAmiiboManager(),
+                                amiiboId, null, null);
+                } catch (Exception e) {
+                    Debug.Log(e);
+                }
+            }
+            if (null != amiibo) {
+                flaskService.uploadAmiiboFile(amiiboFile, amiibo);
+            }
         }
     }
 

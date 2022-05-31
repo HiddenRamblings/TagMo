@@ -88,7 +88,6 @@ public class BluetoothLeService extends Service {
                 if (output.contains(">tag.")) {
                     response = new StringBuilder();
                     response.append(output.split(">")[1]);
-                    Debug.Log(TAG, getLogTag(characteristic.getUuid()) + " TEST " + response);
                 } else if (output.startsWith("tag.") || output.startsWith("{") || response.length() > 0) {
                     response.append(output);
                 }
@@ -120,6 +119,7 @@ public class BluetoothLeService extends Service {
                             e.printStackTrace();
                         }
                         response = new StringBuilder();
+                        if (null != listener) listener.onFlaskFilesUploaded();
                     }
                 } else if (progress.endsWith("}")) {
                     if (null != listener) {
@@ -477,7 +477,6 @@ public class BluetoothLeService extends Service {
         delayedWriteTagCharacteristic("saveUploadedTag(\""
                 + name + "|" + flaskTail + "\")");
         delayedWriteTagCharacteristic("uploadsComplete()");
-        listener.onFlaskFilesUploaded();
         delayedWriteTagCharacteristic("getList()");
     }
 

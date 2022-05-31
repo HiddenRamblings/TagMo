@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -40,6 +41,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -97,6 +99,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private RelativeLayout writeSlotsLayout;
     private RecyclerView amiiboFilesView;
     private Snackbar statusBar;
+    private Dialog uploadDialog;
 
     private KeyManager keyManager;
     private BrowserSettings settings;
@@ -274,7 +277,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
                         @Override
                         public void onFlaskFilesUploaded() {
-                            dismissSnackbarNotice();
+                            runOnUiThread(() -> {
+                                if (null != uploadDialog && uploadDialog.isShowing())
+                                    uploadDialog.dismiss();
+                            });
                         }
                     });
                 } else {
@@ -373,12 +379,14 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                showUploadingNotice();
                 uploadAmiiboFile(amiiboFile);
             }
 
             @Override
             public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                showUploadingNotice();
                 uploadAmiiboFile(amiiboFile);
             }
         });
@@ -719,6 +727,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
         if (null != amiiboList && amiiboList.size() == writeCount.getValue()) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            showUploadingNotice();
             for (AmiiboFile amiiboFile : amiiboList) {
                 uploadAmiiboFile(amiiboFile);
             }
@@ -740,7 +749,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 }
             }
             if (null != amiibo) {
-                showUploadingNotice();
                 flaskService.uploadAmiiboFile(amiiboFile, amiibo);
             }
         }
@@ -769,12 +777,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     }
 
     private void showUploadingNotice() {
-        dismissSnackbarNotice();
-        statusBar = new IconifiedSnackbar(this).buildSnackbar(
-                R.string.flask_upload, R.drawable.ic_bluup_flask_24dp,
-                Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
-        );
-        statusBar.show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(R.layout.upload_dialog);
+        uploadDialog = builder.create();
+        uploadDialog.show();
     }
 
     private void showPurchaseNotice() {

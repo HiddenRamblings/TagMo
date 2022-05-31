@@ -206,7 +206,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                     R.id.hardware_info)).setText(flaskProfile));
                             try {
                                 flaskService.setFlaskCharacteristicRX();
-                                flaskService.delayedWriteTagCharacteristic("getList()");
+                                flaskService.getDeviceAmiibo();
                             } catch (TagLostException tle) {
                                 stopFlaskService();
                                 new Toasty(BluupFlaskActivity.this).Short(R.string.flask_invalid);
@@ -227,7 +227,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onFlaskActiveDeleted(JSONObject jsonObject) {
                             amiiboTile.setVisibility(View.INVISIBLE);
-                            flaskService.delayedWriteTagCharacteristic("getList()");
+                            flaskService.getDeviceAmiibo();
                         }
 
                         @Override
@@ -248,7 +248,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 dismissSnackbarNotice();
                                 flaskDetails.setAdapter(adapter);
                             });
-                            flaskService.delayedWriteTagCharacteristic("get()");
+                            flaskService.getActiveAmiibo();
                         }
 
                         @Override

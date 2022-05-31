@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.view.View;
 
 import androidx.annotation.RequiresApi;
 
@@ -83,7 +84,11 @@ public class BluetoothLeService extends Service {
             Debug.Log(TAG, getLogTag(characteristic.getUuid()) + " " + output);
 
             if (characteristic.getUuid().compareTo(FlaskRX) == 0) {
-                if (output.startsWith("tag.") || output.startsWith("{") || response.length() > 0) {
+                if (output.contains(">tag.")) {
+                    response = new StringBuilder();
+                    response.append(output.split(">")[1]);
+                    Debug.Log(TAG, getLogTag(characteristic.getUuid()) + " TEST " + response);
+                } else if (output.startsWith("tag.") || output.startsWith("{") || response.length() > 0) {
                     response.append(output);
                 }
                 String progress = response.length() > 0 ? response.toString().trim() : "";
@@ -98,8 +103,8 @@ public class BluetoothLeService extends Service {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            response = new StringBuilder();
                         }
+                        response = new StringBuilder();
                     }
                 } else if (progress.startsWith("tag.getList()")) {
                     if (progress.endsWith(">")) {
@@ -126,6 +131,8 @@ public class BluetoothLeService extends Service {
                             e.printStackTrace();
                         }
                     }
+                    response = new StringBuilder();
+                } else if (progress.endsWith(">")) {
                     response = new StringBuilder();
                 }
             }
@@ -420,16 +427,23 @@ public class BluetoothLeService extends Service {
         setCharacteristicNotification(mCharacteristicTX, true);
     }
 
+    private int commandQueue = 0;
     private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = byteToPortions(value, 20);
-        for (int i = 0; i < chunks.size(); i += 1) {
-            final byte[] chunk = chunks.get(i);
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                mCharacteristicTX.setValue(chunk);
-                mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
-                mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
-            }, (i + 1) * 20L);
-        }
+        int currentQueue = commandQueue;
+        commandQueue += 1 + chunks.size();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            for (int i = 0; i < chunks.size(); i += 1) {
+                final byte[] chunk = chunks.get(i);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    mCharacteristicTX.setValue(chunk);
+                    mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+                    mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
+                    commandQueue -= 1;
+                }, (i + 1) * 20L);
+            }
+            commandQueue -= 1;
+        }, currentQueue * 20L);
     }
 
     public void delayedWriteTagCharacteristic(String value) {
@@ -443,40 +457,25 @@ public class BluetoothLeService extends Service {
         delayedWriteCharacteristic(("tag." + value + "\n").getBytes(CharsetCompat.UTF_8));
     }
 
-    public void delayedWriteScreenCharacteristic(String value) {
-        if (null == mCharacteristicTX) {
-            try {
-                setFlaskCharacteristicTX();
-            } catch (TagLostException e) {
-                e.printStackTrace();
-            }
-        }
-        delayedWriteCharacteristic(("screen." + value + "\n").getBytes(CharsetCompat.UTF_8));
-    }
-
     public void uploadAmiiboFile(AmiiboFile amiiboFile, Amiibo amiibo) {
-        delayedWriteTagCharacteristic("startTagUpload(540)");
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            List<byte[]> chunks = byteToPortions(amiiboFile.getData(), 128);
-            for(int i = 0; i < chunks.size(); i+=1) {
-                delayedWriteTagCharacteristic(
-                        "tagUploadChunk(" + bytesToHex(chunks.get(i)) + ")"
-                );
-            }
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                String flaskTail = Integer.toString(Integer.parseInt(
-                        TagUtils.amiiboIdToHex(amiibo.getTail())
-                                .substring(8, 16), 16), 32);
-                String name = amiibo.name.length() > 28
-                        ? amiibo.name.substring(0, 28) : amiibo.name;
-                delayedWriteTagCharacteristic("saveUploadedTag(\""
-                        + name + "|" + flaskTail + "\")");
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    delayedWriteTagCharacteristic("uploadsComplete()");
-                    listener.onFlaskFilesUploaded();
-                }, 40);
-            }, (chunks.size() * 7L) * 40L);
-        }, 20);
+        delayedWriteTagCharacteristic("startTagUpload(" + amiiboFile.getData().length + ")");
+        List<byte[]> chunks = byteToPortions(amiiboFile.getData(), 128);
+        for(int i = 0; i < chunks.size(); i+=1) {
+            final byte[] chunk = chunks.get(i);
+            delayedWriteTagCharacteristic(
+                    "tagUploadChunk(" + Arrays.toString(chunk) + ")"
+            );
+        }
+        String flaskTail = Integer.toString(Integer.parseInt(
+                TagUtils.amiiboIdToHex(amiibo.getTail())
+                        .substring(8, 16), 16), 32);
+        String name = amiibo.name.length() > 28
+                ? amiibo.name.substring(0, 28) : amiibo.name;
+        delayedWriteTagCharacteristic("saveUploadedTag(\""
+                + name + "|" + flaskTail + "\")");
+        delayedWriteTagCharacteristic("uploadsComplete()");
+        listener.onFlaskFilesUploaded();
+        delayedWriteTagCharacteristic("getList()");
     }
 
     // https://stackoverflow.com/a/50022158/461982
@@ -489,18 +488,6 @@ public class BluetoothLeService extends Service {
             byteArrayPortions.add(portion);
         }
         return byteArrayPortions;
-    }
-
-    //https://stackoverflow.com/a/9855338/461982
-    private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(CharsetCompat.US_ASCII);
-    public static String bytesToHex(byte[] bytes) {
-        byte[] hexChars = new byte[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-        }
-        return new String(hexChars, CharsetCompat.UTF_8);
     }
 
     private String getLogTag(UUID uuid) {

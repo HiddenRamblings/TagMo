@@ -31,7 +31,6 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -96,7 +95,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private AppCompatButton writeSlots;
     private RelativeLayout writeSlotsLayout;
     private RecyclerView amiiboFilesView;
-    private ProgressBar progressBar;
     private Snackbar statusBar;
 
     private KeyManager keyManager;
@@ -244,7 +242,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                             adapter.setAmiibos(amiibo);
                             runOnUiThread(() -> {
                                 flaskDetails.setAdapter(adapter);
-                                progressBar.setVisibility(View.INVISIBLE);
                             });
                             flaskService.delayedWriteTagCharacteristic("get()");
                         }
@@ -252,9 +249,13 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onFlaskActiveLocated(JSONObject jsonObject) {
                             try {
-                                getActiveAmiibo(getAmiiboByName(
+                                Amiibo amiibo = getAmiiboByName(
                                         jsonObject.getString("name")
-                                ), amiiboTile);
+                                );
+                                getActiveAmiibo(amiibo, amiiboTile);
+                                if (bottomSheetBehavior.getState() ==
+                                        BottomSheetBehavior.STATE_COLLAPSED)
+                                    getActiveAmiibo(amiibo, amiiboCard);
                                 String index = jsonObject.getString("index");
                                 runOnUiThread(() -> {
                                     flaskStats.setText(getString(
@@ -271,7 +272,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
                         @Override
                         public void onFlaskFilesUploaded() {
-                            runOnUiThread(() -> progressBar.setVisibility(View.INVISIBLE));
+
                         }
                     });
                 } else {
@@ -303,7 +304,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         amiiboTile = findViewById(R.id.active_tile_layout);
         amiiboTile.setVisibility(View.INVISIBLE);
-        progressBar = findViewById(R.id.scanner_progress);
 
         amiiboCard = findViewById(R.id.active_card_layout);
         amiiboCard.findViewById(R.id.txtError).setVisibility(View.GONE);
@@ -384,7 +384,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         }
                     }
                     if (null != amiibo) {
-                        progressBar.setVisibility(View.VISIBLE);
                         flaskService.uploadAmiiboFile(amiiboFile, amiibo);
                     }
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -407,7 +406,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         }
                     }
                     if (null != amiibo) {
-                        progressBar.setVisibility(View.VISIBLE);
                         flaskService.uploadAmiiboFile(amiiboFile, amiibo);
                     }
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -645,7 +643,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     }
 
     private void scanBluetoothServices() {
-        progressBar.setVisibility(View.VISIBLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
             ParcelUuid FlaskUUID = new ParcelUuid(BluetoothLeService.FlaskNUS);

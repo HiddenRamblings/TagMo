@@ -32,17 +32,6 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/scanner_progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:visibility="invisible"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:paddingBottom="@dimen/button_height_min"
-        android:indeterminate="true"
-        android:max="100" />
-
     <LinearLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"

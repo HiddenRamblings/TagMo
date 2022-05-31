@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -91,7 +92,9 @@ public class BluetoothLeService extends Service {
                 } else if (output.startsWith("tag.") || output.startsWith("{") || response.length() > 0) {
                     response.append(output);
                 }
-                String progress = response.length() > 0 ? response.toString().trim() : "";
+                String progress = response.length() > 0 ? response.toString().trim().replaceAll(
+                        Objects.requireNonNull(System.getProperty("line.separator")), ""
+                ) : "";
                 if (progress.startsWith("tag.get()")) {
                     if (progress.endsWith(">")) {
                         String getAmiibo = progress.substring(progress.indexOf("{"),

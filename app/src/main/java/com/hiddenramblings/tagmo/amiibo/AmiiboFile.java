@@ -71,8 +71,7 @@ public class AmiiboFile implements Parcelable {
         this.id = in.readLong();
     }
 
-    public static final Parcelable.Creator<AmiiboFile> CREATOR
-            = new Parcelable.Creator<AmiiboFile>() {
+    public static final Parcelable.Creator<AmiiboFile> CREATOR = new Parcelable.Creator<>() {
         @Override
         public AmiiboFile createFromParcel(Parcel source) {
             return new AmiiboFile(source);

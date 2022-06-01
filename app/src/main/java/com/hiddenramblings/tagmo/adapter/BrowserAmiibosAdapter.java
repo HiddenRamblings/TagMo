@@ -10,11 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.request.target.CustomTarget;
@@ -134,14 +136,14 @@ public class BrowserAmiibosAdapter
     public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.listener) {
-                holder.listener.onAmiiboClicked(holder.amiiboFile);
+                holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile);
             }
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.listener) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                        holder.listener.onAmiiboClicked(holder.amiiboFile);
+                        holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile);
                     else
                         holder.listener.onAmiiboImageClicked(holder.amiiboFile);
                 }
@@ -442,7 +444,7 @@ public class BrowserAmiibosAdapter
     }
 
     public interface OnAmiiboClickListener {
-        void onAmiiboClicked(AmiiboFile amiiboFile);
+        void onAmiiboClicked(View itemView, AmiiboFile amiiboFile);
 
         void onAmiiboImageClicked(AmiiboFile amiiboFile);
     }

@@ -895,7 +895,46 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    private void getGameCompatibility(TextView txtUsage, byte[] tagData) {
+        try {
+            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+
+            GamesManager gamesManager = GamesManager.getGamesManager(this);
+
+            StringBuilder usage = new StringBuilder();
+            usage.append("\n3DS:");
+            for (String game : gamesManager.get3DSGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            usage.append("\n\nWiiU:");
+            for (String game : gamesManager.getWiiUGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            usage.append("\n\nSwitch:");
+            for (String game : gamesManager.getSwitchGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            txtUsage.setText(usage);
+        } catch (Exception ex) {
+            Debug.Log(ex);
+        }
+    }
+
     private void getToolbarOptions(Toolbar toolbar, byte[] tagData, AmiiboFile amiiboFile) {
+        if (!toolbar.getMenu().hasVisibleItems())
+            toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.setOnMenuItemClickListener(item -> {
             Bundle args = new Bundle();
             Intent scan = new Intent(this, NfcActivity.class);
@@ -1157,9 +1196,15 @@ public class BrowserActivity extends AppCompatActivity implements
                     menuOptions.setVisibility(View.GONE);
                 } else {
                     menuOptions.setVisibility(View.VISIBLE);
-                    toolbar.inflateMenu(R.menu.amiibo_menu);
+                    getToolbarOptions(toolbar, tagData, amiiboFile);
                 }
-                getToolbarOptions(toolbar, tagData, amiiboFile);
+                TextView txtUsage = itemView.findViewById(R.id.txtUsage);
+                if (txtUsage.getVisibility() == View.VISIBLE) {
+                    txtUsage.setVisibility(View.GONE);
+                } else {
+                    txtUsage.setVisibility(View.VISIBLE);
+                    getGameCompatibility(txtUsage, tagData);
+                }
             } else {
                 updateAmiiboView(tagData, amiiboFile);
             }
@@ -1656,8 +1701,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void updateAmiiboView(byte[] tagData, AmiiboFile amiiboFile) {
         amiiboContainer.setVisibility(View.VISIBLE);
-        if (!toolbar.getMenu().hasVisibleItems())
-            toolbar.inflateMenu(R.menu.amiibo_menu);
         getToolbarOptions(toolbar, tagData, amiiboFile);
 
         long amiiboId = -1;
@@ -1736,36 +1779,8 @@ public class BrowserActivity extends AppCompatActivity implements
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
         try {
-            GamesManager gamesManager = GamesManager.getGamesManager(this);
-
             TextView txtUsage = findViewById(R.id.txtUsage);
-
-            StringBuilder usage = new StringBuilder();
-            usage.append("\n3DS:");
-            for (String game : gamesManager.get3DSGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
-            usage.append("\n\nWiiU:");
-            for (String game : gamesManager.getWiiUGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
-            usage.append("\n\nSwitch:");
-            for (String game : gamesManager.getSwitchGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
-            txtUsage.setText(usage);
+            getGameCompatibility(txtUsage, tagData);
             txtUsage.setVisibility(View.GONE);
             TextView label = findViewById(R.id.txtUsageLabel);
             label.setOnClickListener(view -> {

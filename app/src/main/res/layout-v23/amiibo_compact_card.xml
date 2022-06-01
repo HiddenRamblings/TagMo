@@ -143,6 +143,17 @@
                 android:singleLine="true"
                 android:ellipsize="start"
                 android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/txtUsage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_below="@id/txtPath"
+                android:textColor="@color/tag_text"
+                android:textSize="10sp"
+                tools:ignore="SmallSp"
+                android:visibility="gone"/>
         </RelativeLayout>
     </LinearLayout>
 

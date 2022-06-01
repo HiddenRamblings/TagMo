@@ -874,4 +874,12 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             startActivity(intent);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState())
+            onBottomSheetChanged(false);
+        else
+            super.onBackPressed();
+    }
 }

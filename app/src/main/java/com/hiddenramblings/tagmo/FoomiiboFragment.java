@@ -205,11 +205,19 @@ public class FoomiiboFragment extends Fragment implements
             handler.post(() -> dialog = ProgressDialog.show(requireActivity(),
                     "", "", true));
 
-            deleteDir(null, directory);
-            //noinspection ResultOfMethodCallIgnored
-            directory.mkdirs();
+            FoomiiboAdapter foomiiboAdapter = (FoomiiboAdapter) amiibosView.getAdapter();
+            ArrayList<Amiibo> foomiibo = new ArrayList<>();
+            if (null != foomiiboAdapter)
+                foomiibo = foomiiboAdapter.getFoomiiboQueue();
+            if (foomiibo.isEmpty()) {
+                foomiibo.addAll(amiiboManager.amiibos.values());
+            } else {
+                deleteDir(null, directory);
+                //noinspection ResultOfMethodCallIgnored
+                directory.mkdirs();
+            }
 
-            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+            for (Amiibo amiibo : foomiibo) {
                 buildFoomiiboFile(amiibo);
                 handler.post(() -> dialog.setMessage(getString(
                         R.string.foomiibo_progress, amiibo.getCharacter().name)));
@@ -221,13 +229,6 @@ public class FoomiiboFragment extends Fragment implements
             });
 
         });
-    }
-
-    private void onBuildFoomiibo(Amiibo amiibo) {
-        AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (null == amiiboManager) return;
-
-        buildFoomiiboFile(amiibo);
     }
 
     @Override
@@ -266,11 +267,6 @@ public class FoomiiboFragment extends Fragment implements
             amiibosView.getAdapter().notifyDataSetChanged();
         }
         swipeRefreshLayout.setRefreshing(false);
-    }
-
-    @Override
-    public void onFoomiiboClicked(Amiibo foomiibo) {
-        onBuildFoomiibo(foomiibo);
     }
 
     @Override

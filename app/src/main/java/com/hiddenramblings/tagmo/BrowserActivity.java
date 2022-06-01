@@ -895,6 +895,78 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    private void getToolbarOptions(Toolbar toolbar, byte[] tagData, AmiiboFile amiiboFile) {
+        toolbar.setOnMenuItemClickListener(item -> {
+            Bundle args = new Bundle();
+            Intent scan = new Intent(this, NfcActivity.class);
+            if (item.getItemId() == R.id.mnu_scan) {
+                scan.setAction(NFCIntent.ACTION_SCAN_TAG);
+                onUpdateTagResult.launch(scan);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_write) {
+                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
+                scan.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
+                onUpdateTagResult.launch(scan.putExtras(args));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_update) {
+                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
+                scan.setAction(NFCIntent.ACTION_WRITE_TAG_DATA);
+                scan.putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
+                onUpdateTagResult.launch(scan.putExtras(args));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_save) {
+                View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                final EditText input = view.findViewById(R.id.backup_entry);
+                input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
+                Dialog backupDialog = dialog.setView(view).create();
+                view.findViewById(R.id.save_backup).setOnClickListener(v -> {
+                    try {
+                        String fileName = TagUtils.writeBytesToFile(
+                                Storage.getDownloadDir("TagMo", "Backups"),
+                                input.getText().toString(), tagData);
+                        new Toasty(this).Long(getString(R.string.wrote_file, fileName));
+                    } catch (IOException e) {
+                        new Toasty(this).Short(e.getMessage());
+                    }
+                    backupDialog.dismiss();
+                });
+                view.findViewById(R.id.cancel_backup).setOnClickListener(v ->
+                        backupDialog.dismiss());
+                backupDialog.show();
+                return true;
+            } else if (item.getItemId() == R.id.mnu_edit) {
+                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
+                Intent tagEdit = new Intent(this, TagDataActivity.class);
+                onUpdateTagResult.launch(tagEdit.putExtras(args));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_view_hex) {
+                Intent hexView = new Intent(this, HexViewerActivity.class);
+                hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData);
+                startActivity(hexView);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_validate) {
+                try {
+                    TagUtils.validateData(tagData);
+                    new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                            R.string.validation_success, Snackbar.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    new IconifiedSnackbar(this, mainLayout).buildSnackbar(e.getMessage(),
+                            R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG).show();
+                }
+                return true;
+            } else if (item.getItemId() == R.id.mnu_delete) {
+                deleteAmiiboFile(amiiboFile);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_ignore_tag_id) {
+                ignoreTagTd = !item.isChecked();
+                item.setChecked(ignoreTagTd);
+                return true;
+            }
+            return false;
+        });
+    }
+
     public void onRefresh() {
         this.loadAmiiboManager();
         this.onRootFolderChanged(true);
@@ -1068,15 +1140,29 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onAmiiboClicked(AmiiboFile amiiboFile) {
+    public void onAmiiboClicked(View itemView, AmiiboFile amiiboFile) {
         if (amiiboFile.getFilePath() == null)
             return;
 
         clickedAmiibo = amiiboFile;
+
         try {
-            byte[] data = null != amiiboFile.getData() ? amiiboFile.getData()
+            byte[] tagData = null != amiiboFile.getData() ? amiiboFile.getData()
                     : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
-            updateAmiiboView(data, amiiboFile);
+
+            if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
+                LinearLayout menuOptions = itemView.findViewById(R.id.menu_options);
+                Toolbar toolbar = menuOptions.findViewById(R.id.toolbar);
+                if (menuOptions.getVisibility() == View.VISIBLE) {
+                    menuOptions.setVisibility(View.GONE);
+                } else {
+                    menuOptions.setVisibility(View.VISIBLE);
+                    toolbar.inflateMenu(R.menu.amiibo_menu);
+                }
+                getToolbarOptions(toolbar, tagData, amiiboFile);
+            } else {
+                updateAmiiboView(tagData, amiiboFile);
+            }
         } catch (Exception e) {
             Debug.Log(e);
         }
@@ -1572,75 +1658,7 @@ public class BrowserActivity extends AppCompatActivity implements
         amiiboContainer.setVisibility(View.VISIBLE);
         if (!toolbar.getMenu().hasVisibleItems())
             toolbar.inflateMenu(R.menu.amiibo_menu);
-        toolbar.setOnMenuItemClickListener(item -> {
-            Bundle args = new Bundle();
-            Intent scan = new Intent(this, NfcActivity.class);
-            if (item.getItemId() == R.id.mnu_scan) {
-                scan.setAction(NFCIntent.ACTION_SCAN_TAG);
-                onUpdateTagResult.launch(scan);
-                return true;
-            } else if (item.getItemId() == R.id.mnu_write) {
-                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
-                scan.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
-                onUpdateTagResult.launch(scan.putExtras(args));
-                return true;
-            } else if (item.getItemId() == R.id.mnu_update) {
-                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
-                scan.setAction(NFCIntent.ACTION_WRITE_TAG_DATA);
-                scan.putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
-                onUpdateTagResult.launch(scan.putExtras(args));
-                return true;
-            } else if (item.getItemId() == R.id.mnu_save) {
-                View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
-                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                final EditText input = view.findViewById(R.id.backup_entry);
-                input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
-                Dialog backupDialog = dialog.setView(view).create();
-                view.findViewById(R.id.save_backup).setOnClickListener(v -> {
-                    try {
-                        String fileName = TagUtils.writeBytesToFile(
-                                Storage.getDownloadDir("TagMo", "Backups"),
-                                input.getText().toString(), tagData);
-                        new Toasty(this).Long(getString(R.string.wrote_file, fileName));
-                    } catch (IOException e) {
-                        new Toasty(this).Short(e.getMessage());
-                    }
-                    backupDialog.dismiss();
-                });
-                view.findViewById(R.id.cancel_backup).setOnClickListener(v ->
-                        backupDialog.dismiss());
-                backupDialog.show();
-                return true;
-            } else if (item.getItemId() == R.id.mnu_edit) {
-                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
-                Intent tagEdit = new Intent(this, TagDataActivity.class);
-                onUpdateTagResult.launch(tagEdit.putExtras(args));
-                return true;
-            } else if (item.getItemId() == R.id.mnu_view_hex) {
-                Intent hexView = new Intent(this, HexViewerActivity.class);
-                hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData);
-                startActivity(hexView);
-                return true;
-            } else if (item.getItemId() == R.id.mnu_validate) {
-                try {
-                    TagUtils.validateData(tagData);
-                    new IconifiedSnackbar(this, mainLayout).buildSnackbar(
-                            R.string.validation_success, Snackbar.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    new IconifiedSnackbar(this, mainLayout).buildSnackbar(e.getMessage(),
-                            R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG).show();
-                }
-                return true;
-            } else if (item.getItemId() == R.id.mnu_delete) {
-                deleteAmiiboFile(amiiboFile);
-                return true;
-            } else if (item.getItemId() == R.id.mnu_ignore_tag_id) {
-                ignoreTagTd = !item.isChecked();
-                item.setChecked(ignoreTagTd);
-                return true;
-            }
-            return false;
-        });
+        getToolbarOptions(toolbar, tagData, amiiboFile);
 
         long amiiboId = -1;
         String tagInfo = null;

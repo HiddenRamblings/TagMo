@@ -13,6 +13,11 @@
     android:foreground="@drawable/card_foreground"
     app:cardCornerRadius="@dimen/card_radius">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
     <FrameLayout
         android:id="@+id/highlight"
         android:layout_width="match_parent"
@@ -159,4 +164,25 @@
         </RelativeLayout>
     </LinearLayout>
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/menu_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/PopupThemeOverlay"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            app:contentInsetLeft="2dp"
+            app:contentInsetStart="2dp"
+            android:layout_gravity="center"
+            android:theme="@style/PopupThemeOverlay"
+            app:popupTheme="@style/PopupTheme" />
+    </LinearLayout>
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

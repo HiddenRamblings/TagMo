@@ -17,6 +17,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.FlaskAmiibo;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
@@ -30,15 +31,15 @@ public class BluupFlaskAdapter
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
-    private ArrayList<Amiibo> amiibos = new ArrayList<>();
+    private ArrayList<FlaskAmiibo> flaskAmiibos = new ArrayList<>();
 
     public BluupFlaskAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
     }
 
-    public void setAmiibos(ArrayList<Amiibo> amiibos) {
-        this.amiibos = amiibos;
+    public void setFlaskAmiibos(ArrayList<FlaskAmiibo> flaskAmiibos) {
+        this.flaskAmiibos = flaskAmiibos;
     }
 
     @Override
@@ -47,16 +48,16 @@ public class BluupFlaskAdapter
 
     @Override
     public int getItemCount() {
-        return null != amiibos ? amiibos.size() : 0;
+        return null != flaskAmiibos ? flaskAmiibos.size() : 0;
     }
 
     @Override
     public long getItemId(int i) {
-        return amiibos.get(i).id;
+        return Long.parseLong(flaskAmiibos.get(i).getFlaskID());
     }
 
-    public Amiibo getItem(int i) {
-        return amiibos.get(i);
+    public FlaskAmiibo getItem(int i) {
+        return flaskAmiibos.get(i);
     }
 
     @Override
@@ -91,16 +92,16 @@ public class BluupFlaskAdapter
         holder.itemView.findViewById(R.id.highlight).setBackground(null);
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.listener && !holder.isHighlighted) {
-                holder.listener.onAmiiboClicked(holder.amiibo);
+                holder.listener.onAmiiboClicked(holder.flaskAmiibo);
             }
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.listener && !holder.isHighlighted) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
-                        holder.listener.onAmiiboClicked(holder.amiibo);
+                        holder.listener.onAmiiboClicked(holder.flaskAmiibo);
                     } else {
-                        holder.listener.onAmiiboImageClicked(holder.amiibo);
+                        holder.listener.onAmiiboImageClicked(holder.flaskAmiibo);
                     }
                 }
             });
@@ -122,7 +123,7 @@ public class BluupFlaskAdapter
         public final TextView txtPath;
         public final AppCompatImageView imageAmiibo;
 
-        Amiibo amiibo = null;
+        FlaskAmiibo flaskAmiibo = null;
         boolean isHighlighted = false;
 
         CustomTarget<Bitmap> target = new CustomTarget<>() {
@@ -165,8 +166,8 @@ public class BluupFlaskAdapter
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
         }
 
-        void bind(final Amiibo item) {
-            this.amiibo = item;
+        void bind(final FlaskAmiibo item) {
+            this.flaskAmiibo = item;
 
             String amiiboHexId;
             String amiiboName = "";
@@ -176,7 +177,8 @@ public class BluupFlaskAdapter
             // String character = "";
             String amiiboImageUrl;
 
-            if (null != amiibo) {
+            if (null != flaskAmiibo) {
+                Amiibo amiibo = flaskAmiibo.getAmiibo();
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboName = amiibo.name;
                 amiiboImageUrl = amiibo.getImageUrl();
@@ -264,8 +266,8 @@ public class BluupFlaskAdapter
     }
 
     public interface OnAmiiboClickListener {
-        void onAmiiboClicked(Amiibo amiibo);
+        void onAmiiboClicked(FlaskAmiibo flaskAmiibo);
 
-        void onAmiiboImageClicked(Amiibo amiibo);
+        void onAmiiboImageClicked(FlaskAmiibo flaskAmiibo);
     }
 }

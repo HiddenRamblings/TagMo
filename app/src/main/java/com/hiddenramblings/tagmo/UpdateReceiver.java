@@ -11,16 +11,16 @@ public class UpdateReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (Intent.ACTION_PACKAGE_REPLACED.equals(intent.getAction())) {
+        if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction())) {
+            context.startActivity(context.getPackageManager()
+                    .getLaunchIntentForPackage(BuildConfig.APPLICATION_ID)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } else if (Intent.ACTION_PACKAGE_REPLACED.equals(intent.getAction())) {
             if (intent.getData().getSchemeSpecificPart().equals(context.getPackageName())) {
                 context.startActivity(context.getPackageManager()
                         .getLaunchIntentForPackage(BuildConfig.APPLICATION_ID)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             }
-        } else if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction())) {
-            context.startActivity(context.getPackageManager()
-                    .getLaunchIntentForPackage(BuildConfig.APPLICATION_ID)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             switch(intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 case PackageInstaller.STATUS_PENDING_USER_ACTION:

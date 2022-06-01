@@ -149,7 +149,7 @@ public class BrowserAmiibosAdapter
                 }
             });
         }
-        holder.bind(getItem(position));
+        holder.bind(getItem(holder.getAbsoluteAdapterPosition()));
     }
 
     public void refresh() {
@@ -293,6 +293,9 @@ public class BrowserAmiibosAdapter
 
         void bind(final AmiiboFile item) {
             this.amiiboFile = item;
+
+            itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
+            itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
 
             String tagInfo = null;
             String amiiboHexId;

@@ -46,6 +46,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -61,6 +62,7 @@ import com.hiddenramblings.tagmo.adapter.WriteBanksAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.amiibo.FlaskAmiibo;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
@@ -91,10 +93,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
     private CardView amiiboTile;
     private CardView amiiboCard;
+    private Toolbar toolbar;
     private RecyclerView flaskDetails;
     private TextView flaskStats;
     private NumberPicker writeCount;
-    private AppCompatButton writeFile;
     private AppCompatButton writeSlots;
     private RelativeLayout writeSlotsLayout;
     private RecyclerView amiiboFilesView;
@@ -233,17 +235,20 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onFlaskListRetrieved(JSONArray jsonArray) {
                             currentCount = jsonArray.length();
-                            ArrayList<Amiibo> amiibo = new ArrayList<>();
+                            ArrayList<FlaskAmiibo> flaskAmiibos = new ArrayList<>();
                             for (int i = 0; i < currentCount; i++) {
                                 try {
-                                    amiibo.add(getAmiiboByName(jsonArray.getString(i)));
+                                    FlaskAmiibo flaskAmiibo = new FlaskAmiibo();
+                                    flaskAmiibo.setAmiibo(getAmiiboByName(jsonArray.getString(i)));
+                                    flaskAmiibo.setFlaskID(jsonArray.getString(i).split("\\|")[1]);
+                                    flaskAmiibos.add(flaskAmiibo);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                             }
                             BluupFlaskAdapter adapter = new BluupFlaskAdapter(
                                     settings, BluupFlaskActivity.this);
-                            adapter.setAmiibos(amiibo);
+                            adapter.setFlaskAmiibos(flaskAmiibos);
                             runOnUiThread(() -> {
                                 dismissSnackbarNotice();
                                 flaskDetails.setAdapter(adapter);
@@ -316,12 +321,13 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         amiiboCard = findViewById(R.id.active_card_layout);
         amiiboCard.findViewById(R.id.txtError).setVisibility(View.GONE);
         amiiboCard.findViewById(R.id.txtPath).setVisibility(View.GONE);
+        toolbar = findViewById(R.id.toolbar);
 
         flaskDetails = findViewById(R.id.flask_details);
         flaskDetails.setLayoutManager(new LinearLayoutManager(this));
 
         flaskStats = findViewById(R.id.flask_stats);
-        writeFile = findViewById(R.id.write_slot_file);
+        AppCompatButton writeFile = findViewById(R.id.write_slot_file);
         writeCount = findViewById(R.id.bank_number_picker);
         writeCount.setMaxValue(85);
         writeSlots = findViewById(R.id.write_slot_count);
@@ -366,6 +372,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+
+        toolbar.inflateMenu(R.menu.flask_menu);
 
         this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
 
@@ -838,18 +846,27 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onAmiiboClicked(Amiibo amiibo) {
-        if (null != amiibo) {
-            getActiveAmiibo(amiibo, amiiboCard);
+    public void onAmiiboClicked(FlaskAmiibo flaskAmiibo) {
+        if (null != flaskAmiibo) {
+            getActiveAmiibo(flaskAmiibo.getAmiibo(), amiiboCard);
+            toolbar.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.mnu_activate) {
+                    flaskService.setActiveAmiibo(
+                            flaskAmiibo.getAmiibo().name, flaskAmiibo.getFlaskID()
+                    );
+                    return true;
+                }
+                return false;
+            });
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
     }
 
     @Override
-    public void onAmiiboImageClicked(Amiibo amiibo) {
-        if (null != amiibo) {
+    public void onAmiiboImageClicked(FlaskAmiibo flaskAmiibo) {
+        if (null != flaskAmiibo) {
             Bundle bundle = new Bundle();
-            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id);
+            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, flaskAmiibo.getAmiibo().id);
 
             Intent intent = new Intent(this, ImageActivity.class);
             intent.putExtras(bundle);

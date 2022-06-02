@@ -294,9 +294,6 @@ public class BrowserAmiibosAdapter
         void bind(final AmiiboFile item) {
             this.amiiboFile = item;
 
-            itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
-            itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
-
             String tagInfo = null;
             String amiiboHexId;
             String amiiboName = "";
@@ -336,6 +333,9 @@ public class BrowserAmiibosAdapter
             String query = settings.getQuery().toLowerCase();
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
+                itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
+                itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
+                
                 boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {
                     setAmiiboInfoText(this.txtError, tagInfo, false);

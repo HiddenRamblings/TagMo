@@ -517,6 +517,13 @@ public class NfcActivity extends AppCompatActivity {
                         mifare.close();
                     } catch (IOException ignored) { }
                     return;
+                } else if (e instanceof NullPointerException
+                        && error.contains("nfctech.NTAG215.connect()")) {
+                    runOnUiThread(() -> txtMessage.setText(R.string.active_blank));
+                    try {
+                        mifare.close();
+                    } catch (IOException ignored) { }
+                    return;
                 } else if (getString(R.string.error_tag_rewrite).equals(error)) {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update);
                     setResult(Activity.RESULT_OK, new Intent(NFCIntent.ACTION_UPDATE_TAG).putExtras(args));

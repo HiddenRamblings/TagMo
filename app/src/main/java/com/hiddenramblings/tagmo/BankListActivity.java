@@ -304,7 +304,9 @@ public class BankListActivity extends AppCompatActivity implements
             onBottomSheetChanged(true, false);
         });
 
-        if (null != amiibos.get(active_bank)) {
+        if (null == amiibos.get(active_bank)) {
+            onBottomSheetChanged(true, false);
+        } else {
             updateAmiiboView(null, amiibos.get(active_bank).id, active_bank);
             onBottomSheetChanged(true, true);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -621,13 +623,9 @@ public class BankListActivity extends AppCompatActivity implements
                 }
                 return true;
             } else if (item.getItemId() == R.id.mnu_erase_bank) {
-                if (prefs.eliteActiveBank().get() == current_bank) {
-                    notice.Short(R.string.erase_active);
-                } else {
-                    scan.setAction(NFCIntent.ACTION_ERASE_BANK);
-                    onUpdateTagResult.launch(scan);
-                    status = CLICKED.ERASE_BANK;
-                }
+                scan.setAction(NFCIntent.ACTION_ERASE_BANK);
+                onUpdateTagResult.launch(scan);
+                status = CLICKED.ERASE_BANK;
                 return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 if (null != tagData && tagData.length > 0) {

@@ -298,9 +298,7 @@ public class BankBrowserAdapter
 
     public interface OnAmiiboClickListener {
         void onAmiiboClicked(Amiibo amiibo, int position);
-
         void onAmiiboImageClicked(Amiibo amiibo, int position);
-
         boolean onAmiiboLongClicked(Amiibo amiibo, int position);
     }
 }

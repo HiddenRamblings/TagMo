@@ -115,6 +115,7 @@ public class NfcActivity extends AppCompatActivity {
             case NFCIntent.ACTION_ERASE_BANK:
             case NFCIntent.ACTION_LOCK_AMIIBO:
             case NFCIntent.ACTION_UNLOCK_UNIT:
+            case NFCIntent.ACTION_BLIND_SCAN:
                 startNfcMonitor();
                 break;
         }
@@ -164,6 +165,7 @@ public class NfcActivity extends AppCompatActivity {
             case NFCIntent.ACTION_SET_BANK_COUNT:
             case NFCIntent.ACTION_LOCK_AMIIBO:
             case NFCIntent.ACTION_UNLOCK_UNIT:
+            case NFCIntent.ACTION_BLIND_SCAN:
                 bankPicker.setVisibility(View.GONE);
                 bankPicker.setEnabled(false);
                 bankTextView.setVisibility(View.GONE);
@@ -196,6 +198,7 @@ public class NfcActivity extends AppCompatActivity {
             case NFCIntent.ACTION_BACKUP_AMIIBO:
                 setTitle(R.string.amiibo_backup);
                 break;
+            case NFCIntent.ACTION_BLIND_SCAN:
             case NFCIntent.ACTION_SCAN_TAG:
                 if (commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
                     setTitle(getString(R.string.scan_bank_no, bankPicker.getValue()));
@@ -280,7 +283,8 @@ public class NfcActivity extends AppCompatActivity {
         byte[] update = new byte[0];
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            mifare = NTAG215.get(tag);
+            mifare = NFCIntent.ACTION_BLIND_SCAN.equals(mode)
+                    ? NTAG215.getBlind(tag) : NTAG215.get(tag);
             tagTech = TagUtils.getTagTechnology(tag);
             showMessage(R.string.tag_scanning, tagTech);
             mifare.connect();
@@ -428,6 +432,7 @@ public class NfcActivity extends AppCompatActivity {
                         setResult(Activity.RESULT_OK, backup.putExtras(args));
                         break;
 
+                    case NFCIntent.ACTION_BLIND_SCAN:
                     case NFCIntent.ACTION_SCAN_TAG:
                         Intent result = new Intent(NFCIntent.ACTION_NFC_SCANNED);
                         if (isEliteDevice) {
@@ -519,10 +524,23 @@ public class NfcActivity extends AppCompatActivity {
                     return;
                 } else if (e instanceof NullPointerException
                         && error.contains("nfctech.NTAG215.connect()")) {
-                    runOnUiThread(() -> txtMessage.setText(R.string.active_blank));
-                    try {
-                        mifare.close();
-                    } catch (IOException ignored) { }
+                    runOnUiThread(() ->  new AlertDialog.Builder(NfcActivity.this)
+                            .setTitle(R.string.possible_blank)
+                            .setMessage(R.string.prepare_blank)
+                            .setPositiveButton(R.string.scan, (dialog, which) -> {
+                                dialog.dismiss();
+                                getIntent().setAction(NFCIntent.ACTION_BLIND_SCAN);
+                                recreate();
+//                                finish();
+//                                Intent blind = new Intent(this, NfcActivity.class);
+//                                blind.setAction(NFCIntent.ACTION_BLIND_SCAN);
+//                                startActivity(blind);
+                            })
+                            .setNegativeButton(R.string.cancel,  (dialog, which) -> {
+                                dialog.dismiss();
+                                finish();
+                            }).show());
+
                     return;
                 } else if (getString(R.string.error_tag_rewrite).equals(error)) {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update);
@@ -548,10 +566,12 @@ public class NfcActivity extends AppCompatActivity {
                                     mifare.close();
                                 } catch (IOException ignored) { }
                                 dialog.dismiss();
-                                finish();
-                                Intent unlock = new Intent(this, NfcActivity.class);
-                                unlock.setAction(NFCIntent.ACTION_UNLOCK_UNIT);
-                                startActivity(unlock);
+                                getIntent().setAction(NFCIntent.ACTION_UNLOCK_UNIT);
+                                recreate();
+//                                finish();
+//                                Intent unlock = new Intent(this, NfcActivity.class);
+//                                unlock.setAction(NFCIntent.ACTION_UNLOCK_UNIT);
+//                                startActivity(unlock);
                             })
                             .setNegativeButton(R.string.cancel,  (dialog, which) -> {
                                 try {

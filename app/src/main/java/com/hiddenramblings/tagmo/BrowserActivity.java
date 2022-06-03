@@ -179,7 +179,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private int filteredCount;
     private AmiiboFile clickedAmiibo = null;
 
-    private boolean ignoreTagTd;
+    private boolean ignoreTagId;
     private BrowserSettings settings;
     private String updateUrl;
 
@@ -895,46 +895,24 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private void getGameCompatibility(TextView txtUsage, byte[] tagData) {
-        try {
-            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-
-            GamesManager gamesManager = GamesManager.getGamesManager(this);
-
-            StringBuilder usage = new StringBuilder();
-            usage.append("\n3DS:");
-            for (String game : gamesManager.get3DSGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
-            usage.append("\n\nWiiU:");
-            for (String game : gamesManager.getWiiUGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
-            usage.append("\n\nSwitch:");
-            for (String game : gamesManager.getSwitchGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
-            txtUsage.setText(usage);
-        } catch (Exception ex) {
-            Debug.Log(ex);
-        }
-    }
-
     private void getToolbarOptions(Toolbar toolbar, byte[] tagData, AmiiboFile amiiboFile) {
+        boolean available = null != tagData  && tagData.length > 0;
+        if (available) {
+            try {
+                TagUtils.amiiboIdFromTag(tagData);
+            } catch (Exception e) {
+                available = false;
+                Debug.Log(e);
+            }
+        }
         if (!toolbar.getMenu().hasVisibleItems())
             toolbar.inflateMenu(R.menu.amiibo_menu);
+        toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(available);
+        toolbar.getMenu().findItem(R.id.mnu_update).setEnabled(available);
+        toolbar.getMenu().findItem(R.id.mnu_save).setEnabled(available);
+        toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(available);
+        toolbar.getMenu().findItem(R.id.mnu_view_hex).setEnabled(available);
+        toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(available);
         toolbar.setOnMenuItemClickListener(item -> {
             Bundle args = new Bundle();
             Intent scan = new Intent(this, NfcActivity.class);
@@ -950,7 +928,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else if (item.getItemId() == R.id.mnu_update) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
                 scan.setAction(NFCIntent.ACTION_WRITE_TAG_DATA);
-                scan.putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagTd);
+                scan.putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId);
                 onUpdateTagResult.launch(scan.putExtras(args));
                 return true;
             } else if (item.getItemId() == R.id.mnu_save) {
@@ -998,12 +976,49 @@ public class BrowserActivity extends AppCompatActivity implements
                 deleteAmiiboFile(amiiboFile);
                 return true;
             } else if (item.getItemId() == R.id.mnu_ignore_tag_id) {
-                ignoreTagTd = !item.isChecked();
-                item.setChecked(ignoreTagTd);
+                ignoreTagId = !item.isChecked();
+                item.setChecked(ignoreTagId);
                 return true;
             }
             return false;
         });
+    }
+
+    private void getGameCompatibility(TextView txtUsage, byte[] tagData) {
+        try {
+            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+
+            GamesManager gamesManager = GamesManager.getGamesManager(this);
+
+            StringBuilder usage = new StringBuilder();
+            usage.append("\n3DS:");
+            for (String game : gamesManager.get3DSGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            usage.append("\n\nWiiU:");
+            for (String game : gamesManager.getWiiUGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            usage.append("\n\nSwitch:");
+            for (String game : gamesManager.getSwitchGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            txtUsage.setText(usage);
+        } catch (Exception ex) {
+            Debug.Log(ex);
+        }
     }
 
     public void onRefresh() {
@@ -1641,7 +1656,7 @@ public class BrowserActivity extends AppCompatActivity implements
             launchEliteActivity(result.getData());
         } else {
             updateAmiiboView(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
-            toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
+            // toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
         }
     });
 
@@ -1722,12 +1737,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 Debug.Log(e);
             }
         }
-        toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(available);
-        toolbar.getMenu().findItem(R.id.mnu_update).setEnabled(available);
-        toolbar.getMenu().findItem(R.id.mnu_save).setEnabled(available);
-        toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(available);
-        toolbar.getMenu().findItem(R.id.mnu_view_hex).setEnabled(available);
-        toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(available);
 
         if (amiiboId == -1) {
             tagInfo = getString(R.string.read_error);
@@ -1815,11 +1824,11 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
             txtTagId.setEnabled(false);
-            toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
-            toolbar.getMenu().findItem(R.id.mnu_update).setEnabled(false);
-            toolbar.getMenu().findItem(R.id.mnu_save).setEnabled(false);
-            toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(false);
-            toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(false);
+//            toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
+//            toolbar.getMenu().findItem(R.id.mnu_update).setEnabled(false);
+//            toolbar.getMenu().findItem(R.id.mnu_save).setEnabled(false);
+//            toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(false);
+//            toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(false);
         }
     }
 

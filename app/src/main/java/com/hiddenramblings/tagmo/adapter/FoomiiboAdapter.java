@@ -42,7 +42,7 @@ public class FoomiiboAdapter
     private FoomiiboFilter filter;
     boolean firstRun = true;
     private ArrayList<Long> missingIds;
-    private final ArrayList<Amiibo> foomiiboQueue = new ArrayList<>();
+//    private final ArrayList<Amiibo> foomiiboQueue = new ArrayList<>();
 
     public FoomiiboAdapter(BrowserSettings settings, ArrayList<Long> missingIds,
                            OnFoomiiboClickListener listener) {
@@ -58,9 +58,9 @@ public class FoomiiboAdapter
         this.missingIds = missingIds;
     }
 
-    public ArrayList<Amiibo> getFoomiiboQueue() {
-        return foomiiboQueue;
-    }
+//    public ArrayList<Amiibo> getFoomiiboQueue() {
+//        return foomiiboQueue;
+//    }
 
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,
@@ -141,30 +141,32 @@ public class FoomiiboAdapter
         holder.isHighlighted = false;
         holder.itemView.findViewById(R.id.highlight).setBackground(null);
         holder.itemView.setOnClickListener(view -> {
-            if (holder.isHighlighted) {
-                foomiiboQueue.remove(holder.foomiibo);
-                setIsHighlighted(holder, false);
-            } else {
-                foomiiboQueue.add(holder.foomiibo);
-                setIsHighlighted(holder, true);
-            }
+//            if (holder.isHighlighted) {
+//                foomiiboQueue.remove(holder.foomiibo);
+//                setIsHighlighted(holder, false);
+//            } else {
+//                foomiiboQueue.add(holder.foomiibo);
+//                setIsHighlighted(holder, true);
+//            }
+            holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
-                    if (holder.isHighlighted) {
-                        foomiiboQueue.remove(holder.foomiibo);
-                        setIsHighlighted(holder, false);
-                    } else {
-                        foomiiboQueue.add(holder.foomiibo);
-                        setIsHighlighted(holder, true);
-                    }
+                if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
+//                    if (holder.isHighlighted) {
+//                        foomiiboQueue.remove(holder.foomiibo);
+//                        setIsHighlighted(holder, false);
+//                    } else {
+//                        foomiiboQueue.add(holder.foomiibo);
+//                        setIsHighlighted(holder, true);
+//                    }
+                    holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
                 } else {
                     holder.listener.onFoomiiboImageClicked(holder.foomiibo);
                 }
             });
         }
-        holder.bind(getItem(position));
+        holder.bind(getItem(holder.getAbsoluteAdapterPosition()));
     }
 
     public void refresh() {
@@ -339,6 +341,9 @@ public class FoomiiboAdapter
             String query = settings.getQuery().toLowerCase();
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
+                itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
+                itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
+
                 boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {
                     setFoomiiboInfoText(this.txtError, tagInfo, false);
@@ -429,6 +434,7 @@ public class FoomiiboAdapter
     }
 
     public interface OnFoomiiboClickListener {
-        void onFoomiiboImageClicked(Amiibo foomiibo);
+        void onFoomiiboClicked(View itemView, Amiibo amiibo);
+        void onFoomiiboImageClicked(Amiibo amiibo);
     }
 }

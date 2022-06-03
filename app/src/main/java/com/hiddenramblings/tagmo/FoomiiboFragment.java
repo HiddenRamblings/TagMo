@@ -211,7 +211,6 @@ public class FoomiiboFragment extends Fragment implements
                 foomiibo = foomiiboAdapter.getFoomiiboQueue();
             if (foomiibo.isEmpty()) {
                 foomiibo.addAll(amiiboManager.amiibos.values());
-            } else {
                 deleteDir(null, directory);
                 //noinspection ResultOfMethodCallIgnored
                 directory.mkdirs();
@@ -227,7 +226,6 @@ public class FoomiiboFragment extends Fragment implements
                 dialog.dismiss();
                 onRefresh();
             });
-
         });
     }
 

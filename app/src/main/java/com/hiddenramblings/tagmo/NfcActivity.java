@@ -283,7 +283,7 @@ public class NfcActivity extends AppCompatActivity {
         byte[] update = new byte[0];
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            mifare = NFCIntent.ACTION_BLIND_SCAN.equals(mode)
+            mifare = NFCIntent.ACTION_BLIND_SCAN.equals(mode) || isEliteIntent
                     ? NTAG215.getBlind(tag) : NTAG215.get(tag);
             tagTech = TagUtils.getTagTechnology(tag);
             showMessage(R.string.tag_scanning, tagTech);
@@ -531,10 +531,6 @@ public class NfcActivity extends AppCompatActivity {
                                 dialog.dismiss();
                                 getIntent().setAction(NFCIntent.ACTION_BLIND_SCAN);
                                 recreate();
-//                                finish();
-//                                Intent blind = new Intent(this, NfcActivity.class);
-//                                blind.setAction(NFCIntent.ACTION_BLIND_SCAN);
-//                                startActivity(blind);
                             })
                             .setNegativeButton(R.string.cancel,  (dialog, which) -> {
                                 dialog.dismiss();
@@ -568,10 +564,6 @@ public class NfcActivity extends AppCompatActivity {
                                 dialog.dismiss();
                                 getIntent().setAction(NFCIntent.ACTION_UNLOCK_UNIT);
                                 recreate();
-//                                finish();
-//                                Intent unlock = new Intent(this, NfcActivity.class);
-//                                unlock.setAction(NFCIntent.ACTION_UNLOCK_UNIT);
-//                                startActivity(unlock);
                             })
                             .setNegativeButton(R.string.cancel,  (dialog, which) -> {
                                 try {

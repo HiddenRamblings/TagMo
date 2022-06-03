@@ -43,6 +43,14 @@ public class NTAG215 implements TagTechnology {
         return null;
     }
 
+    public static NTAG215 getBlind(Tag tag) {
+        NfcA nfcA = NfcA.get(tag);
+        if (null != nfcA) {
+            return new NTAG215(nfcA);
+        }
+        return null;
+    }
+
     @SuppressWarnings("unused")
     public int getTimeout() {
         if (null != m_mifare)

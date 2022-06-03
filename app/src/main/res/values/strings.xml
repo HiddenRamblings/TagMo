@@ -230,7 +230,9 @@
 
     <string name="prepare_unlock">Once the N2 is scanned, it cannot be removed from the NFC field until the operation is complete.</string>
     <string name="progress_unlock">Press and hold the N2 button without disconnecting from NFC.</string>
+    <string name="prepare_blank">An N2 Elite with a blank active bank will fail verification. Please confirm hardware.</string>
     <string name="possible_lock">Is this N2 Elite locked?</string>
+    <string name="possible_blank">Scanning an N2 Elite?</string>
     <string name="tag_update_only">Previously written tags require \"Update\"</string>
 
     <string name="custom_tab_back">Back to TagMo</string>
@@ -345,7 +347,6 @@
     <string name="firmware_failed">Firmware update failed. Please try again! (%1$d)</string>
 
     <string name="speed_scan">Lift tag slightly to complete scan</string>
-    <string name="active_blank">Active N2 bank must not be empty</string>
     <string name="unzip_item">Unzipping %1$s&#8230;</string>
     <string name="mkdir_failed">Mkdir "%1$s" failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>

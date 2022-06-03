@@ -223,14 +223,13 @@
     <string name="write_confirm">Write selections to N2 Elite?</string>
     <string name="warn_delete_file">Deleting %1$s. Are you sure?</string>
     <string name="delete_misisng">Cannot delete a scanned tag!</string>
-    <string name="erase_active">Cannot erase the active bank!</string>
     <string name="backup_filename">Set amiibo&#8482; Bin Name</string>
     <string name="emulated_storage_root">Browse Emulated Storage</string>
     <string name="physical_storage_root">Browse Physical Storage</string>
 
     <string name="prepare_unlock">Once the N2 is scanned, it cannot be removed from the NFC field until the operation is complete.</string>
     <string name="progress_unlock">Press and hold the N2 button without disconnecting from NFC.</string>
-    <string name="prepare_blank">An N2 Elite with a blank active bank will fail verification. Please confirm hardware.</string>
+    <string name="prepare_blank">N2 Elite fails verification with an empty active bank.</string>
     <string name="possible_lock">Is this N2 Elite locked?</string>
     <string name="possible_blank">Scanning an N2 Elite?</string>
     <string name="tag_update_only">Previously written tags require \"Update\"</string>

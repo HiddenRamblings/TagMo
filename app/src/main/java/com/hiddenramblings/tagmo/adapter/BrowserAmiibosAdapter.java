@@ -33,6 +33,7 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListene
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -46,6 +47,7 @@ public class BrowserAmiibosAdapter
     private ArrayList<AmiiboFile> filteredData;
     private AmiiboFilter filter;
     boolean firstRun = true;
+    private static final ArrayList<File> amiiboPath = new ArrayList<>();
 
     public BrowserAmiibosAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
@@ -134,16 +136,27 @@ public class BrowserAmiibosAdapter
     public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.listener) {
+                if (amiiboPath.contains(holder.amiiboFile.getFilePath())) {
+                    amiiboPath.remove(holder.amiiboFile.getFilePath());
+                } else {
+                    amiiboPath.add(holder.amiiboFile.getFilePath());
+                }
                 holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile);
             }
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.listener) {
-                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
+                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
+                        if (amiiboPath.contains(holder.amiiboFile.getFilePath())) {
+                            amiiboPath.remove(holder.amiiboFile.getFilePath());
+                        } else {
+                            amiiboPath.add(holder.amiiboFile.getFilePath());
+                        }
                         holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile);
-                    else
+                    } else {
                         holder.listener.onAmiiboImageClicked(holder.amiiboFile);
+                    }
                 }
             });
         }
@@ -333,7 +346,10 @@ public class BrowserAmiibosAdapter
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
                 itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
-                
+                if (null != amiiboFile && amiiboPath.contains(amiiboFile.getFilePath())) {
+                    listener.onAmiiboClicked(itemView, amiiboFile);
+                }
+
                 boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {
                     setAmiiboInfoText(this.txtError, tagInfo, false);

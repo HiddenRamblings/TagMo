@@ -124,6 +124,7 @@ public class BankListActivity extends AppCompatActivity implements
                 ViewGroup.LayoutParams.MATCH_PARENT);
 
         amiibosView = findViewById(R.id.amiibos_list);
+        amiibosView.setHasFixedSize(true);
 
         switchMenuOptions = findViewById(R.id.switch_menu_options);
         bankOptionsMenu = findViewById(R.id.bank_options_menu);

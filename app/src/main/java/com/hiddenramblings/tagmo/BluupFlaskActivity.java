@@ -287,6 +287,12 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                     uploadDialog.dismiss();
                             });
                         }
+
+                        @Override
+                        public void onGattConnectionLost() {
+                            runOnUiThread(BluupFlaskActivity.this::showDisconnectNotice);
+                            stopFlaskService();
+                        }
                     });
                 } else {
                     stopFlaskService();
@@ -782,6 +788,18 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 R.string.flask_located, R.drawable.ic_bluup_flask_24dp,
                 Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
         );
+        statusBar.show();
+    }
+
+    private void showDisconnectNotice() {
+        dismissSnackbarNotice();
+        statusBar = new IconifiedSnackbar(this).buildSnackbar(
+                R.string.flask_disconnect, R.drawable.ic_baseline_bluetooth_searching_24dp,
+                Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
+        );
+        statusBar.setAction(R.string.scan, v -> {
+            selectBluetoothDevice();
+        });
         statusBar.show();
     }
 

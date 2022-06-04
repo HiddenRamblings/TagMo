@@ -324,6 +324,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         toolbar = findViewById(R.id.toolbar);
 
         flaskDetails = findViewById(R.id.flask_details);
+        flaskDetails.setHasFixedSize(true);
         flaskDetails.setLayoutManager(new LinearLayoutManager(this));
 
         flaskStats = findViewById(R.id.flask_stats);

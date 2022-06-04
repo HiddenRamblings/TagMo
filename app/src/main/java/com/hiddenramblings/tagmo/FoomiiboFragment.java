@@ -112,6 +112,7 @@ public class FoomiiboFragment extends Fragment implements
         this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
 
         amiibosView = view.findViewById(R.id.amiibos_list);
+        amiibosView.setHasFixedSize(true);
         ArrayList<Long> missingIds = ((BrowserActivity) requireActivity()).getMissingIds();
         if (this.settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
             amiibosView.setLayoutManager(new GridLayoutManager(requireActivity(), getColumnCount()));

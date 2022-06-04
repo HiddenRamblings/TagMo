@@ -42,7 +42,7 @@ public class FoomiiboAdapter
     private FoomiiboFilter filter;
     boolean firstRun = true;
     private ArrayList<Long> missingIds;
-//    private final ArrayList<Amiibo> foomiiboQueue = new ArrayList<>();
+    private static final ArrayList<Long> foomiiboId = new ArrayList<>();
 
     public FoomiiboAdapter(BrowserSettings settings, ArrayList<Long> missingIds,
                            OnFoomiiboClickListener listener) {
@@ -141,25 +141,21 @@ public class FoomiiboAdapter
         holder.isHighlighted = false;
         holder.itemView.findViewById(R.id.highlight).setBackground(null);
         holder.itemView.setOnClickListener(view -> {
-//            if (holder.isHighlighted) {
-//                foomiiboQueue.remove(holder.foomiibo);
-//                setIsHighlighted(holder, false);
-//            } else {
-//                foomiiboQueue.add(holder.foomiibo);
-//                setIsHighlighted(holder, true);
-//            }
+            if (foomiiboId.contains(holder.foomiibo.id)) {
+                foomiiboId.remove(holder.foomiibo.id);
+            } else {
+                foomiiboId.add(holder.foomiibo.id);
+            }
             holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
-//                    if (holder.isHighlighted) {
-//                        foomiiboQueue.remove(holder.foomiibo);
-//                        setIsHighlighted(holder, false);
-//                    } else {
-//                        foomiiboQueue.add(holder.foomiibo);
-//                        setIsHighlighted(holder, true);
-//                    }
+                    if (foomiiboId.contains(holder.foomiibo.id)) {
+                        foomiiboId.remove(holder.foomiibo.id);
+                    } else {
+                        foomiiboId.add(holder.foomiibo.id);
+                    }
                     holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
                 } else {
                     holder.listener.onFoomiiboImageClicked(holder.foomiibo);
@@ -343,6 +339,9 @@ public class FoomiiboAdapter
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
                 itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
+                if (null != foomiibo && foomiiboId.contains(foomiibo.id)) {
+                    listener.onFoomiiboClicked(itemView, foomiibo);
+                }
 
                 boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {

@@ -43,6 +43,7 @@ public class BrowserFragment extends Fragment implements
 
         chipList = view.findViewById(R.id.chip_list);
         amiibosView = view.findViewById(R.id.amiibos_list);
+        amiibosView.setHasFixedSize(true);
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
 
         chipList.setVisibility(View.GONE);

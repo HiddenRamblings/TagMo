@@ -1772,7 +1772,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }
 
-        boolean hasTagInfo = null != tagInfo ;
+        boolean hasTagInfo = null != tagInfo;
         if (hasTagInfo) {
             setAmiiboInfoText(txtError, tagInfo, false);
             amiiboInfo.setVisibility(View.GONE);

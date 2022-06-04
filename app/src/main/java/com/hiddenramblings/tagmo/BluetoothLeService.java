@@ -74,6 +74,7 @@ public class BluetoothLeService extends Service {
         void onFlaskListRetrieved(JSONArray jsonArray);
         void onFlaskActiveLocated(JSONObject jsonObject);
         void onFlaskFilesUploaded();
+        void onGattConnectionLost();
     }
 
     StringBuilder response = new StringBuilder();
@@ -150,7 +151,7 @@ public class BluetoothLeService extends Service {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt.discoverServices();
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-
+                if (null != listener) listener.onGattConnectionLost();
             }
         }
 

@@ -239,6 +239,7 @@
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="flask_scanning">Scanning for Bluup Flask&#8230;</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
+    <string name="flask_disconnect">Bluup Flask ᴮᴸᴱ connection lost!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="flask_permissions">Required permission denied!</string>
     <string name="flask_paired">Unpair Flask to continue.</string>

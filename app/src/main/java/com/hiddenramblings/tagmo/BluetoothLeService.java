@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Base64;
 
 import androidx.annotation.RequiresApi;
 
@@ -113,7 +114,9 @@ public class BluetoothLeService extends Service {
                         String getList = progress.substring(progress.indexOf("["),
                                 progress.lastIndexOf("]") + 1);
                         try {
-                            JSONArray jsonArray = new JSONArray(getList);
+                            String escapedList = getList.replace("'", "'")
+                                    .replace("-", "\\-");
+                            JSONArray jsonArray = new JSONArray(escapedList);
                             if (null != listener) listener.onFlaskListRetrieved(jsonArray);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -431,6 +434,7 @@ public class BluetoothLeService extends Service {
     }
 
     private int commandQueue = 0;
+
     private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = byteToPortions(value, 20);
         int currentQueue = commandQueue;
@@ -443,10 +447,10 @@ public class BluetoothLeService extends Service {
                     mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
                     mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
                     commandQueue -= 1;
-                }, (i + 1) * 50L);
+                }, (i + 1) * 20L);
             }
             commandQueue -= 1;
-        }, currentQueue * 50L);
+        }, currentQueue * 20L);
     }
 
     public void delayedWriteTagCharacteristic(String value) {
@@ -462,11 +466,13 @@ public class BluetoothLeService extends Service {
 
     public void uploadAmiiboFile(AmiiboFile amiiboFile, Amiibo amiibo) {
         delayedWriteTagCharacteristic("startTagUpload(" + amiiboFile.getData().length + ")");
-        List<byte[]> chunks = byteToPortions(amiiboFile.getData(), 128);
+        List<String> chunks = stringToPortions(Base64.encodeToString(
+                amiiboFile.getData(), Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
+        ), 128);
         for(int i = 0; i < chunks.size(); i+=1) {
-            final byte[] chunk = chunks.get(i);
+            final String chunk = chunks.get(i);
             delayedWriteTagCharacteristic(
-                    "tagUploadChunk(" + Arrays.toString(chunk) + ")"
+                    "tagUploadChunk(\"" + chunk + "\")"
             );
         }
         String flaskTail = Integer.toString(Integer.parseInt(
@@ -475,13 +481,13 @@ public class BluetoothLeService extends Service {
         String name = amiibo.name.length() > 28
                 ? amiibo.name.substring(0, 28) : amiibo.name;
         delayedWriteTagCharacteristic("saveUploadedTag(\""
-                + name + "|" + flaskTail + "\")");
+                + name + "|" + flaskTail + "|0\")");
         delayedWriteTagCharacteristic("uploadsComplete()");
         delayedWriteTagCharacteristic("getList()");
     }
 
     public void setActiveAmiibo(String name, String tail) {
-        delayedWriteTagCharacteristic("setTag(\""+ name + "|" + tail + "\")");
+        delayedWriteTagCharacteristic("setTag(\"" + name + "|" + tail + "|0\")");
     }
 
     public void getActiveAmiibo() {

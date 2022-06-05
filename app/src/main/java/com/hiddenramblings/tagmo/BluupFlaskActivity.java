@@ -671,7 +671,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 dismissFlaskDiscovery();
                 showPurchaseNotice();
             }
-        }, 15000);
+        }, 20000);
     }
 
     ActivityResultLauncher<Intent> onRequestPairing = registerForActivityResult(

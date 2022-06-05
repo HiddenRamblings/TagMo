@@ -17,4 +17,8 @@
         android:id="@+id/mnu_validate"
         android:icon="@drawable/ic_baseline_compare_24dp"
         android:title="@string/validate_data"/>
+<!--    <item-->
+<!--        android:id="@+id/mnu_lego"-->
+<!--        android:icon="@drawable/ic_lego_face_24dp"-->
+<!--        android:title="@string/lego_dimensions"/>-->
 </menu>

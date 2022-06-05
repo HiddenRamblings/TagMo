@@ -162,7 +162,7 @@ public class FoomiiboAdapter
                 }
             });
         }
-        holder.bind(getItem(holder.getAbsoluteAdapterPosition()));
+        holder.bind(getItem(holder.getBindingAdapterPosition()));
     }
 
     public void refresh() {

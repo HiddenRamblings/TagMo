@@ -19,7 +19,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.view.View;
 
 import androidx.annotation.RequiresApi;
 
@@ -444,10 +443,10 @@ public class BluetoothLeService extends Service {
                     mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
                     mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
                     commandQueue -= 1;
-                }, (i + 1) * 20L);
+                }, (i + 1) * 50L);
             }
             commandQueue -= 1;
-        }, currentQueue * 20L);
+        }, currentQueue * 50L);
     }
 
     public void delayedWriteTagCharacteristic(String value) {
@@ -503,6 +502,22 @@ public class BluetoothLeService extends Service {
             byteArrayPortions.add(portion);
         }
         return byteArrayPortions;
+    }
+
+    public static List<String> stringToPortions(String largeString, int sizePerPortion) {
+        List<String> stringPortions = new ArrayList<>();
+        int size = largeString.length();
+        if (size <= sizePerPortion) {
+            stringPortions.add(largeString);
+        } else {
+            int index = 0;
+            while (index < size) {
+                stringPortions.add(largeString.substring(index,
+                        Math.min(index + sizePerPortion, largeString.length())));
+                index += sizePerPortion;
+            }
+        }
+        return stringPortions;
     }
 
     private String getLogTag(UUID uuid) {

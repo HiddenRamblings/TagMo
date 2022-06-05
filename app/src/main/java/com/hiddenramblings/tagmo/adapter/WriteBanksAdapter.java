@@ -149,14 +149,15 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
     }
 
     @Override
-    public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final AmiiboViewHolder holder, int position) {
+        final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.collector) {
                 if (amiiboList.contains(holder.amiiboFile)) {
-                    amiiboList.remove(filteredData.get(position));
+                    amiiboList.remove(filteredData.get(clickPosition));
                     setIsHighlighted(holder, false);
                 } else {
-                    amiiboList.add(filteredData.get(position));
+                    amiiboList.add(filteredData.get(clickPosition));
                     setIsHighlighted(holder, true);
                 }
                 holder.collector.onAmiiboClicked(amiiboList);
@@ -168,10 +169,10 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.collector) {
                     if (amiiboList.contains(holder.amiiboFile)) {
-                        amiiboList.remove(filteredData.get(position));
+                        amiiboList.remove(filteredData.get(clickPosition));
                         setIsHighlighted(holder, false);
                     } else {
-                        amiiboList.add(filteredData.get(position));
+                        amiiboList.add(filteredData.get(clickPosition));
                         setIsHighlighted(holder, true);
                     }
                     holder.collector.onAmiiboClicked(amiiboList);
@@ -183,7 +184,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                 }
             });
         }
-        holder.bind(getItem(position));
+        holder.bind(getItem(clickPosition));
         setIsHighlighted(holder, amiiboList.contains(holder.amiiboFile));
     }
 

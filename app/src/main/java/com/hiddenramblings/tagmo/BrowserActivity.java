@@ -914,6 +914,7 @@ public class BrowserActivity extends AppCompatActivity implements
         toolbar.getMenu().findItem(R.id.mnu_view_hex).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(available);
         toolbar.setOnMenuItemClickListener(item -> {
+            clickedAmiibo = amiiboFile;
             Bundle args = new Bundle();
             Intent scan = new Intent(this, NfcActivity.class);
             if (item.getItemId() == R.id.mnu_scan) {
@@ -1198,8 +1199,6 @@ public class BrowserActivity extends AppCompatActivity implements
         if (amiiboFile.getFilePath() == null)
             return;
 
-        clickedAmiibo = amiiboFile;
-
         try {
             byte[] tagData = null != amiiboFile.getData() ? amiiboFile.getData()
                     : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
@@ -1474,8 +1473,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 public void onAnimationEnd(AnimatedLinearLayout layout) {
                     layout.setAnimationListener(null);
                     fakeSnackbar.setVisibility(View.GONE);
-                    if (null != browserFragment.getAmiibosView())
-                        browserFragment.getAmiibosView().smoothScrollToPosition(0);
                 }
             });
             fakeSnackbar.startAnimation(animate);
@@ -1728,12 +1725,10 @@ public class BrowserActivity extends AppCompatActivity implements
         // String character = "";
         String amiiboImageUrl;
 
-        boolean available = null != tagData  && tagData.length > 0;
-        if (available) {
+        if (null != tagData  && tagData.length > 0) {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
-                available = false;
                 Debug.Log(e);
             }
         }
@@ -1824,11 +1819,6 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
             txtTagId.setEnabled(false);
-//            toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
-//            toolbar.getMenu().findItem(R.id.mnu_update).setEnabled(false);
-//            toolbar.getMenu().findItem(R.id.mnu_save).setEnabled(false);
-//            toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(false);
-//            toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(false);
         }
     }
 

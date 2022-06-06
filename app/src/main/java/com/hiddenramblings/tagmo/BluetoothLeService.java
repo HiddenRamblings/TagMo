@@ -59,6 +59,9 @@ public class BluetoothLeService extends Service {
     BluetoothGattCharacteristic mCharacteristicRX = null;
     BluetoothGattCharacteristic mCharacteristicTX = null;
 
+    private String nameCompat = null;
+    private String tailCompat = null;
+
     public final static UUID FlaskNUS = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
@@ -95,7 +98,13 @@ public class BluetoothLeService extends Service {
                 String progress = response.length() > 0 ? response.toString().trim().replaceAll(
                         Objects.requireNonNull(System.getProperty("line.separator")), ""
                 ) : "";
-                if (progress.startsWith("tag.get()")) {
+                if (progress.contains("Uncaught no such element")) {
+                    response = new StringBuilder();
+                    delayedWriteTagCharacteristic("setTag(\""
+                            + nameCompat + "|" + tailCompat + "\")");
+                    nameCompat = null;
+                    tailCompat = null;
+                } else if (progress.startsWith("tag.get()") || progress.startsWith("tag.setTag")) {
                     if (progress.endsWith(">")) {
                         String getAmiibo = progress.substring(progress.indexOf("{"),
                                 progress.lastIndexOf("}") + 1);
@@ -134,7 +143,11 @@ public class BluetoothLeService extends Service {
                             if (event.equals("delete"))
                                 listener.onFlaskActiveDeleted(jsonObject);
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            if (null != e.getMessage() && e.getMessage().contains("tag.setTag")) {
+                                getActiveAmiibo();
+                            } else {
+                                e.printStackTrace();
+                            }
                         }
                     }
                     response = new StringBuilder();
@@ -487,6 +500,8 @@ public class BluetoothLeService extends Service {
     }
 
     public void setActiveAmiibo(String name, String tail) {
+        nameCompat = name;
+        tailCompat = tail;
         delayedWriteTagCharacteristic("setTag(\"" + name + "|" + tail + "|0\")");
     }
 

@@ -67,7 +67,7 @@ public class FoomiiboFragment extends Fragment implements
     private BrowserSettings settings;
     private boolean ignoreTagId;
 
-    private ArrayList<byte[]> resultData = new ArrayList<>();
+    private final ArrayList<byte[]> resultData = new ArrayList<>();
 
     private final ActivityResultLauncher<Intent> onUpdateTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {

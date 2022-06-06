@@ -253,9 +253,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 dismissSnackbarNotice();
                                 flaskDetails.setAdapter(adapter);
                             });
-                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                                flaskService.getActiveAmiibo();
-                            }, 50L);
+                            new Handler(Looper.getMainLooper()).postDelayed(() ->
+                                    flaskService.getActiveAmiibo(), 50L);
                         }
 
                         @Override
@@ -438,9 +437,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        writeCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) -> {
-            writeSlots.setText(getString(R.string.write_slots, valueNew));
-        });
+        writeCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) ->
+                writeSlots.setText(getString(R.string.write_slots, valueNew)));
 
         writeSlots.setOnClickListener(view -> {
             onBottomSheetChanged(false);
@@ -503,7 +501,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         runOnUiThread(() -> {
             String amiiboHexId;
-            String amiiboName = "";
+            String amiiboName;
             String amiiboSeries = "";
             String amiiboType = "";
             String gameSeries = "";
@@ -705,7 +703,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
-                amiiboManager = null;
                 new Toasty(this).Short(R.string.amiibo_info_parse_error);
             }
 
@@ -764,7 +761,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 }
             }
             if (null != amiibo) {
-                flaskService.uploadAmiiboFile(amiiboFile, amiibo);
+                flaskService.uploadAmiiboFile(amiiboFile.getData(), amiibo);
             }
         }
     }
@@ -797,9 +794,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 R.string.flask_disconnect, R.drawable.ic_baseline_bluetooth_searching_24dp,
                 Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
         );
-        statusBar.setAction(R.string.scan, v -> {
-            selectBluetoothDevice();
-        });
+        statusBar.setAction(R.string.scan, v -> selectBluetoothDevice());
         statusBar.show();
     }
 
@@ -816,11 +811,9 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 R.string.flask_missing, R.drawable.ic_bluup_flask_24dp,
                 Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
         );
-        statusBar.setAction(R.string.purchase, v -> {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                    "https://www.bluuplabs.com/flask/"
-            )));
-        });
+        statusBar.setAction(R.string.purchase, v -> startActivity(
+                new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/flask/"))
+        ));
         statusBar.show();
     }
 

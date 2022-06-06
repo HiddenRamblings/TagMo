@@ -12,11 +12,19 @@
     <androidx.appcompat.widget.SearchView
         android:id="@+id/amiibo_search"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/button_height_min"
         android:layout_marginRight="2dp"
         android:layout_marginEnd="2dp"
         android:lineSpacingExtra="0dp"
         android:lineSpacingMultiplier="0" />
+
+    <ToggleButton
+        android:id="@+id/switch_source_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textOff="@string/write_src_storage"
+        android:textOn="@string/write_src_foomiibo"
+        android:layout_below="@+id/amiibo_search"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/amiibo_files_list"
@@ -26,6 +34,6 @@
         android:paddingBottom="40dp"
         android:scrollbars="vertical"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/amiibo_search"/>
+        android:layout_below="@+id/switch_source_options"/>
 </RelativeLayout>
 </merge>

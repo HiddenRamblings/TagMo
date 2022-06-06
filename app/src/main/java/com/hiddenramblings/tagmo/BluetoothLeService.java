@@ -133,7 +133,7 @@ public class BluetoothLeService extends Service {
                         String getList = progress.substring(progress.indexOf("["),
                                 progress.lastIndexOf("]") + 1);
                         try {
-                            String escapedList = getList.replace("'", "'")
+                            String escapedList = getList.replace("'", "\\'")
                                     .replace("-", "\\-");
                             JSONArray jsonArray = new JSONArray(escapedList);
                             if (null != listener) listener.onFlaskListRetrieved(jsonArray);

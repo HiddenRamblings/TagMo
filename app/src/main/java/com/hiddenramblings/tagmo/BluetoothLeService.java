@@ -47,14 +47,15 @@ import java.util.UUID;
 @SuppressLint("MissingPermission")
 public class BluetoothLeService extends Service {
 
-    private Class<?> TAG = BluetoothLeService.class;
+    private final Class<?> TAG = BluetoothLeService.class;
 
     public enum Process {
         IDLING, // Nothing
         GATHER, // getList()
         ACTIVE, // get()
         SELECT, // setActive()
-        DELETE  // Delete
+        DELETE, // Delete
+        UPLOAD  // Upload
     }
 
     private Process currentProcess = Process.IDLING;
@@ -190,6 +191,7 @@ public class BluetoothLeService extends Service {
                 } else if (progress.endsWith(">")) {
                     response = new StringBuilder();
                 }
+                if (response.length() <= 0) currentProcess = Process.IDLING;
             }
         }
     }
@@ -337,20 +339,6 @@ public class BluetoothLeService extends Service {
             return;
         }
         mBluetoothGatt.disconnect();
-    }
-
-    /**
-     * Request a read on a given {@code BluetoothGattCharacteristic}. The read result is reported
-     * asynchronously through the {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}
-     * callback.
-     *
-     * @param characteristic The characteristic to read from.
-     */
-    public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            return;
-        }
-        mBluetoothGatt.readCharacteristic(characteristic);
     }
 
     private void setResponseDescriptors(BluetoothGattCharacteristic characteristic) {
@@ -520,6 +508,7 @@ public class BluetoothLeService extends Service {
     }
 
     public void uploadAmiiboFile(AmiiboFile amiiboFile, Amiibo amiibo) {
+        currentProcess = Process.UPLOAD;
         delayedWriteTagCharacteristic("startTagUpload(" + amiiboFile.getData().length + ")");
         List<String> chunks = stringToPortions(Base64.encodeToString(
                 amiiboFile.getData(), Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
@@ -544,21 +533,18 @@ public class BluetoothLeService extends Service {
     public void setActiveAmiibo(String name, String tail) {
         nameCompat = name;
         tailCompat = tail;
+        currentProcess = Process.SELECT;
         delayedWriteTagCharacteristic("setTag(\"" + name + "|" + tail + "|0\")");
     }
 
     public void getActiveAmiibo() {
+        currentProcess = Process.ACTIVE;
         delayedWriteTagCharacteristic("get()");
     }
 
     public void getDeviceAmiibo() {
-        new android.os.Handler(Looper.getMainLooper()).postDelayed(
-                new Runnable() {
-                    public void run() {
-                        delayedWriteTagCharacteristic("getList()");
-                    }
-                },
-                50L);
+        currentProcess = Process.GATHER;
+        delayedWriteTagCharacteristic("getList()");
     }
 
     // https://stackoverflow.com/a/50022158/461982

@@ -218,9 +218,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onFlaskActiveChanged(JSONObject jsonObject) {
                             try {
-                                getActiveAmiibo(getAmiiboByName(
-                                        jsonObject.getString("name")
-                                ), amiiboTile);
+                                String[] hash =  jsonObject.getString("name").split("\\|");
+                                getActiveAmiibo(getAmiiboByName(hash[0]), amiiboTile);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -238,9 +237,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                             ArrayList<FlaskAmiibo> flaskAmiibos = new ArrayList<>();
                             for (int i = 0; i < currentCount; i++) {
                                 try {
+                                    String[] hash = jsonArray.getString(i).split("\\|");
                                     FlaskAmiibo flaskAmiibo = new FlaskAmiibo();
-                                    flaskAmiibo.setAmiibo(getAmiiboByName(jsonArray.getString(i)));
-                                    flaskAmiibo.setFlaskID(jsonArray.getString(i).split("\\|")[1]);
+                                    flaskAmiibo.setAmiibo(getAmiiboByName(hash[0]));
+                                    flaskAmiibo.setFlaskID(hash[1]);
                                     flaskAmiibos.add(flaskAmiibo);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -261,9 +261,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onFlaskActiveLocated(JSONObject jsonObject) {
                             try {
-                                Amiibo amiibo = getAmiiboByName(
-                                        jsonObject.getString("name")
-                                );
+                                String[] hash = jsonObject.getString("name").split("\\|");
+                                Amiibo amiibo = getAmiiboByName(hash[0]);
                                 getActiveAmiibo(amiibo, amiiboTile);
                                 if (bottomSheetBehavior.getState() ==
                                         BottomSheetBehavior.STATE_COLLAPSED)
@@ -541,7 +540,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         });
     }
 
-    private Amiibo getAmiiboByName(String name) {
+    private Amiibo getAmiiboByName(String amiiboName) {
             AmiiboManager amiiboManager;
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
@@ -555,7 +554,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
             Amiibo selectedAmiibo = null;
             if (null != amiiboManager) {
-                String amiiboName = name.split("\\|")[0];
                 for (Amiibo amiibo : amiiboManager.amiibos.values()) {
                     if (amiibo.name.equals(amiiboName)) {
                         selectedAmiibo = amiibo;

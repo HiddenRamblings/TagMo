@@ -91,7 +91,6 @@ public class BankListActivity extends AppCompatActivity implements
     private NumberPicker eliteBankCount;
     private AppCompatButton writeOpenBanks;
     private AppCompatButton eraseOpenBanks;
-    private AppCompatButton writeBankCount;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private KeyManager keyManager;
@@ -148,7 +147,6 @@ public class BankListActivity extends AppCompatActivity implements
         eliteBankCount = findViewById(R.id.bank_number_picker);
         writeOpenBanks = findViewById(R.id.write_open_banks);
         eraseOpenBanks = findViewById(R.id.erase_open_banks);
-        writeBankCount = findViewById(R.id.write_bank_count);
 
         this.settings = new BrowserSettings().initialize();
 
@@ -291,7 +289,7 @@ public class BankListActivity extends AppCompatActivity implements
             onOpenBanksActivity.launch(collection);
         });
 
-        writeBankCount.setOnClickListener(view -> {
+        findViewById(R.id.write_bank_count).setOnClickListener(view -> {
             if (prefs.eliteActiveBank().get() >= eliteBankCount.getValue()) {
                 new Toasty(this).Short(R.string.fail_active_oob);
                 onBottomSheetChanged(true, false);
@@ -321,7 +319,6 @@ public class BankListActivity extends AppCompatActivity implements
                 amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
-                amiiboManager = null;
                 new Toasty(this).Short(R.string.amiibo_info_parse_error);
             }
 
@@ -330,6 +327,10 @@ public class BankListActivity extends AppCompatActivity implements
                 settings.setAmiiboManager(uiAmiiboManager);
                 settings.notifyChanges();
             });
+        }
+
+        if (null == amiiboManager) {
+            return;
         }
 
         if (amiibos.isEmpty()) {

@@ -507,11 +507,11 @@ public class BluetoothLeService extends Service {
         Callbacks.add(() -> delayedWriteCharacteristic(("tag." + value + "\n").getBytes(CharsetCompat.UTF_8)));
     }
 
-    public void uploadAmiiboFile(AmiiboFile amiiboFile, Amiibo amiibo) {
+    public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo) {
         currentProcess = Process.UPLOAD;
-        delayedWriteTagCharacteristic("startTagUpload(" + amiiboFile.getData().length + ")");
+        delayedWriteTagCharacteristic("startTagUpload(" + amiiboData.length + ")");
         List<String> chunks = stringToPortions(Base64.encodeToString(
-                amiiboFile.getData(), Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
+                amiiboData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
         ), 128);
         for(int i = 0; i < chunks.size(); i+=1) {
             final String chunk = chunks.get(i);

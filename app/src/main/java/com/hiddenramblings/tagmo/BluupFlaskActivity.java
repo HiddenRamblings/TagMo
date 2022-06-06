@@ -58,7 +58,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.adapter.BluupFlaskAdapter;
-import com.hiddenramblings.tagmo.adapter.WriteBanksAdapter;
+import com.hiddenramblings.tagmo.adapter.WriteAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -107,8 +107,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private BrowserSettings settings;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
-    private WriteBanksAdapter writeFileAdapter;
-    private WriteBanksAdapter writeListAdapter;
+    private WriteAmiiboAdapter writeFileAdapter;
+    private WriteAmiiboAdapter writeListAdapter;
 
     private BluetoothAdapter mBluetoothAdapter;
     private ScanCallback scanCallbackLP;
@@ -389,8 +389,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
 
-        writeFileAdapter = new WriteBanksAdapter(settings,
-                new WriteBanksAdapter.OnAmiiboClickListener() {
+        writeFileAdapter = new WriteAmiiboAdapter(settings,
+                new WriteAmiiboAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -407,7 +407,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         });
         this.settings.addChangeListener(writeFileAdapter);
 
-        writeListAdapter = new WriteBanksAdapter(settings, this::writeAmiiboCollection);
+        writeListAdapter = new WriteAmiiboAdapter(settings, this::writeAmiiboCollection);
         this.settings.addChangeListener(writeListAdapter);
 
         SearchView searchView = findViewById(R.id.amiibo_search);

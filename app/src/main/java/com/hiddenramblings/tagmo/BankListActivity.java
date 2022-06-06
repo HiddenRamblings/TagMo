@@ -39,7 +39,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.BankBrowserAdapter;
-import com.hiddenramblings.tagmo.adapter.WriteBanksAdapter;
+import com.hiddenramblings.tagmo.adapter.WriteAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -96,8 +96,8 @@ public class BankListActivity extends AppCompatActivity implements
     private KeyManager keyManager;
 
     private final ArrayList<Amiibo> amiibos = new ArrayList<>();
-    private WriteBanksAdapter writeFileAdapter;
-    private WriteBanksAdapter writeListAdapter;
+    private WriteAmiiboAdapter writeFileAdapter;
+    private WriteAmiiboAdapter writeListAdapter;
 
     private int clickedPosition;
     private enum CLICKED {
@@ -223,8 +223,8 @@ public class BankListActivity extends AppCompatActivity implements
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
 
-        writeFileAdapter = new WriteBanksAdapter(settings,
-                new WriteBanksAdapter.OnAmiiboClickListener() {
+        writeFileAdapter = new WriteAmiiboAdapter(settings,
+                new WriteAmiiboAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 if (null != amiiboFile) {
@@ -252,7 +252,7 @@ public class BankListActivity extends AppCompatActivity implements
             amiibosView.requestLayout();
         });
 
-        writeListAdapter = new WriteBanksAdapter(settings, this::writeAmiiboCollection);
+        writeListAdapter = new WriteAmiiboAdapter(settings, this::writeAmiiboCollection);
         this.settings.addChangeListener(writeListAdapter);
 
         SearchView searchView = findViewById(R.id.amiibo_search);
@@ -544,7 +544,7 @@ public class BankListActivity extends AppCompatActivity implements
 
     private void displayWriteDialog(int position) {
         onBottomSheetChanged(false, false);
-        writeFileAdapter.setListener(new WriteBanksAdapter.OnAmiiboClickListener() {
+        writeFileAdapter.setListener(new WriteAmiiboAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 if (null != amiiboFile) {

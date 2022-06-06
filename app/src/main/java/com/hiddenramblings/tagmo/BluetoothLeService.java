@@ -458,10 +458,10 @@ public class BluetoothLeService extends Service {
                     mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
                     mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
                     commandQueue -= 1;
-                }, (i + 1) * 20L);
+                }, (i + 1) * 30L);
             }
             commandQueue -= 1;
-        }, currentQueue * 20L);
+        }, currentQueue * 30L);
     }
 
     public void delayedWriteTagCharacteristic(String value) {

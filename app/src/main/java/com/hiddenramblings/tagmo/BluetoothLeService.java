@@ -49,6 +49,16 @@ public class BluetoothLeService extends Service {
 
     private Class<?> TAG = BluetoothLeService.class;
 
+    public enum Process {
+        IDLING, // Nothing
+        GATHER, // getList()
+        ACTIVE, // get()
+        SELECT, // setActive()
+        DELETE  // Delete
+    }
+
+    private Process currentProcess = Process.IDLING;
+
     private BluetoothGattListener listener;
 
     private BluetoothManager mBluetoothManager;

@@ -69,6 +69,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.FlaskAmiibo;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
@@ -131,6 +132,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private String flaskAddress;
 
     private int currentCount;
+
+    private final Foomiibo foomiibo = new Foomiibo();
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     ActivityResultLauncher<String[]> onRequestLocationQ = registerForActivityResult(
@@ -427,14 +430,14 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 showUploadingNotice();
-                uploadAmiiboData(amiibo);
+                uploadFoomiiboData(amiibo);
             }
 
             @Override
             public void onFoomiiboImageClicked(Amiibo amiibo) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 showUploadingNotice();
-                uploadAmiiboData(amiibo);
+                uploadFoomiiboData(amiibo);
             }
         });
         this.settings.addChangeListener(writeDataAdapter);
@@ -794,7 +797,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             showUploadingNotice();
             for (Amiibo amiibo : amiiboList) {
-                uploadAmiiboData(amiibo);
+                uploadFoomiiboData(amiibo);
             }
         }
     }
@@ -819,9 +822,15 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         }
     }
 
-    private void uploadAmiiboData(Amiibo amiibo) {
+    private void uploadFoomiiboData(Amiibo amiibo) {
         if (null != amiibo) {
-            flaskService.uploadAmiiboFile(amiibo.data, amiibo);
+            try {
+                byte[] data = foomiibo.generateData(amiibo.id);
+                byte[] tagData = TagUtils.getValidatedData(keyManager, data);
+                flaskService.uploadAmiiboFile(tagData, amiibo);
+            } catch (Exception e) {
+                Debug.Log(e);
+            }
         }
     }
 

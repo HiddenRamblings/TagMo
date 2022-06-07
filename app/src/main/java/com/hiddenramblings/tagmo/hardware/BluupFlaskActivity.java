@@ -61,6 +61,7 @@ import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.adapter.BluupFlaskAdapter;
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.adapter.WriteAmiiboAdapter;
@@ -75,6 +76,7 @@ import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
+import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.shawnlin.numberpicker.NumberPicker;
 
@@ -96,6 +98,8 @@ import java.util.concurrent.Executors;
 @SuppressLint("MissingPermission")
 public class BluupFlaskActivity extends AppCompatActivity implements
         BluupFlaskAdapter.OnAmiiboClickListener {
+
+    private final Preferences_ prefs = TagMo.getPrefs();
 
     private CardView amiiboTile;
     private CardView amiiboCard;
@@ -232,6 +236,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                             }
                         }
 
+                        @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onFlaskActiveChanged(JSONObject jsonObject) {
                             try {
@@ -241,6 +246,12 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 if (amiiboCard.findViewById(R.id.txtError)
                                         .getVisibility() == View.VISIBLE)
                                     getActiveAmiibo(amiibo, amiiboCard);
+                                String index = jsonObject.getString("index");
+                                prefs.flaskActiveSlot().put(Integer.parseInt(index));
+                                runOnUiThread(() -> {
+                                    if (null != flaskDetails.getAdapter())
+                                        flaskDetails.getAdapter().notifyDataSetChanged();
+                                });
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -254,29 +265,34 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
                         @Override
                         public void onFlaskListRetrieved(JSONArray jsonArray) {
-                            currentCount = jsonArray.length();
-                            ArrayList<FlaskAmiibo> flaskAmiibos = new ArrayList<>();
-                            for (int i = 0; i < currentCount; i++) {
-                                try {
-                                    String[] name = jsonArray.getString(i).split("\\|");
-                                    FlaskAmiibo flaskAmiibo = new FlaskAmiibo();
-                                    flaskAmiibo.setAmiibo(getAmiiboByName(name[0]));
-                                    flaskAmiibo.setTail(name[1]);
-                                    flaskAmiibos.add(flaskAmiibo);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                            Executors.newSingleThreadExecutor().execute(() -> {
+                                currentCount = jsonArray.length();
+                                ArrayList<FlaskAmiibo> flaskAmiibos = new ArrayList<>();
+                                for (int i = 0; i < currentCount; i++) {
+                                    try {
+                                        String[] name = jsonArray.getString(i).split("\\|");
+                                        FlaskAmiibo flaskAmiibo = new FlaskAmiibo();
+                                        Amiibo amiibo = getAmiiboByName(name[0]);
+                                        if (null != amiibo) amiibo.bank = i;
+                                        flaskAmiibo.setAmiibo(amiibo);
+                                        flaskAmiibo.setTail(name[1]);
+                                        flaskAmiibos.add(flaskAmiibo);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            }
-                            BluupFlaskAdapter adapter = new BluupFlaskAdapter(
-                                    settings, BluupFlaskActivity.this);
-                            adapter.setFlaskAmiibos(flaskAmiibos);
-                            runOnUiThread(() -> {
-                                dismissSnackbarNotice();
-                                flaskDetails.setAdapter(adapter);
+                                BluupFlaskAdapter adapter = new BluupFlaskAdapter(
+                                        settings, BluupFlaskActivity.this);
+                                adapter.setFlaskAmiibos(flaskAmiibos);
+                                runOnUiThread(() -> {
+                                    dismissSnackbarNotice();
+                                    flaskDetails.setAdapter(adapter);
+                                });
+                                flaskService.getActiveAmiibo();
                             });
-                            flaskService.getActiveAmiibo();
                         }
 
+                        @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onFlaskActiveLocated(JSONObject jsonObject) {
                             try {
@@ -287,7 +303,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                         BottomSheetBehavior.STATE_COLLAPSED)
                                     getActiveAmiibo(amiibo, amiiboCard);
                                 String index = jsonObject.getString("index");
+                                prefs.flaskActiveSlot().put(Integer.parseInt(index));
                                 runOnUiThread(() -> {
+                                    if (null != flaskDetails.getAdapter())
+                                        flaskDetails.getAdapter().notifyDataSetChanged();
                                     flaskStats.setText(getString(
                                             R.string.flask_count, index, currentCount));
                                     int maxSlots = 85 - currentCount;

@@ -102,6 +102,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private Toolbar toolbar;
     private RecyclerView flaskDetails;
     private TextView flaskStats;
+    private AppCompatButton writeFile;
     private NumberPicker writeCount;
     private AppCompatButton writeSlots;
     private RelativeLayout writeSlotsLayout;
@@ -349,7 +350,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         flaskDetails.setLayoutManager(new LinearLayoutManager(this));
 
         flaskStats = findViewById(R.id.flask_stats);
-        AppCompatButton writeFile = findViewById(R.id.write_slot_file);
+        writeFile = findViewById(R.id.write_slot_file);
         writeCount = findViewById(R.id.bank_number_picker);
         writeCount.setMaxValue(85);
         writeSlots = findViewById(R.id.write_slot_count);
@@ -473,7 +474,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        findViewById(R.id.switch_source_options).setOnClickListener(view -> {
+        findViewById(R.id.switch_source_btn).setOnClickListener(view -> {
             if (writeSlotsLayout.getVisibility() == View.VISIBLE) {
                 switch(writeAdapter) {
                     case FILE:
@@ -498,6 +499,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private void onBottomSheetChanged(boolean hasAmiibo) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         amiiboCard.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
+        writeFile.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
         writeCount.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
         writeSlots.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
         writeSlotsLayout.setVisibility(hasAmiibo ? View.GONE : View.VISIBLE);

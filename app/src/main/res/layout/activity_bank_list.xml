@@ -95,7 +95,7 @@
             android:id="@+id/bank_options_menu" />
 
         <ToggleButton
-            android:id="@+id/switch_menu_options"
+            android:id="@+id/switch_menu_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"

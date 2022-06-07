@@ -5,13 +5,26 @@
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundBlack"
     android:layout_margin="6dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/backgroundBlack">
+        android:layout_marginTop="6dp"
+        android:paddingBottom="@dimen/button_height_min"
+        android:orientation="vertical" >
+
+        <include
+            layout="@layout/active_tile_layout"
+            android:id="@+id/active_tile_layout" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="0dp"
+            android:background="?colorPrimary" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/amiibos_list"
@@ -19,9 +32,16 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:layout_marginTop="6dp"
-            android:paddingBottom="@dimen/button_height_min"
-            android:scrollbars="vertical"
-            android:layout_alignParentBottom="true" />
+            android:scrollbars="vertical" />
+    </LinearLayout>
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/backgroundBlack">
+
+
     </RelativeLayout>
 
     <LinearLayout

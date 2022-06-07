@@ -51,7 +51,6 @@ public class WebActivity extends AppCompatActivity {
     public static String WEBSITE = "WEBSITE";
 
     private WebView mWebView;
-
     private ProgressDialog dialog;
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})

@@ -39,7 +39,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.adapter.BankBrowserAdapter;
-import com.hiddenramblings.tagmo.adapter.WriteBanksAdapter;
+import com.hiddenramblings.tagmo.adapter.WriteAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -91,14 +91,13 @@ public class BankListActivity extends AppCompatActivity implements
     private NumberPicker eliteBankCount;
     private AppCompatButton writeOpenBanks;
     private AppCompatButton eraseOpenBanks;
-    private AppCompatButton writeBankCount;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private KeyManager keyManager;
 
     private final ArrayList<Amiibo> amiibos = new ArrayList<>();
-    private WriteBanksAdapter writeFileAdapter;
-    private WriteBanksAdapter writeListAdapter;
+    private WriteAmiiboAdapter writeFileAdapter;
+    private WriteAmiiboAdapter writeListAdapter;
 
     private int clickedPosition;
     private enum CLICKED {
@@ -148,7 +147,6 @@ public class BankListActivity extends AppCompatActivity implements
         eliteBankCount = findViewById(R.id.bank_number_picker);
         writeOpenBanks = findViewById(R.id.write_open_banks);
         eraseOpenBanks = findViewById(R.id.erase_open_banks);
-        writeBankCount = findViewById(R.id.write_bank_count);
 
         this.settings = new BrowserSettings().initialize();
 
@@ -225,8 +223,8 @@ public class BankListActivity extends AppCompatActivity implements
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
 
-        writeFileAdapter = new WriteBanksAdapter(settings,
-                new WriteBanksAdapter.OnAmiiboClickListener() {
+        writeFileAdapter = new WriteAmiiboAdapter(settings,
+                new WriteAmiiboAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 if (null != amiiboFile) {
@@ -254,7 +252,7 @@ public class BankListActivity extends AppCompatActivity implements
             amiibosView.requestLayout();
         });
 
-        writeListAdapter = new WriteBanksAdapter(settings, this::writeAmiiboCollection);
+        writeListAdapter = new WriteAmiiboAdapter(settings, this::writeAmiiboCollection);
         this.settings.addChangeListener(writeListAdapter);
 
         SearchView searchView = findViewById(R.id.amiibo_search);
@@ -291,7 +289,7 @@ public class BankListActivity extends AppCompatActivity implements
             onOpenBanksActivity.launch(collection);
         });
 
-        writeBankCount.setOnClickListener(view -> {
+        findViewById(R.id.write_bank_count).setOnClickListener(view -> {
             if (prefs.eliteActiveBank().get() >= eliteBankCount.getValue()) {
                 new Toasty(this).Short(R.string.fail_active_oob);
                 onBottomSheetChanged(true, false);
@@ -321,7 +319,6 @@ public class BankListActivity extends AppCompatActivity implements
                 amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
-                amiiboManager = null;
                 new Toasty(this).Short(R.string.amiibo_info_parse_error);
             }
 
@@ -330,6 +327,10 @@ public class BankListActivity extends AppCompatActivity implements
                 settings.setAmiiboManager(uiAmiiboManager);
                 settings.notifyChanges();
             });
+        }
+
+        if (null == amiiboManager) {
+            return;
         }
 
         if (amiibos.isEmpty()) {
@@ -543,7 +544,7 @@ public class BankListActivity extends AppCompatActivity implements
 
     private void displayWriteDialog(int position) {
         onBottomSheetChanged(false, false);
-        writeFileAdapter.setListener(new WriteBanksAdapter.OnAmiiboClickListener() {
+        writeFileAdapter.setListener(new WriteAmiiboAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 if (null != amiiboFile) {

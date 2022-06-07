@@ -26,10 +26,6 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
-import com.hiddenramblings.tagmo.amiibo.AmiiboType;
-import com.hiddenramblings.tagmo.amiibo.Character;
-import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -40,7 +36,7 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.AmiiboViewHolder>
+public class WriteAmiiboAdapter extends RecyclerView.Adapter<WriteAmiiboAdapter.AmiiboViewHolder>
         implements Filterable, BrowserSettingsListener {
     private final BrowserSettings settings;
     private OnAmiiboClickListener listener = null;
@@ -51,7 +47,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
     boolean firstRun;
     private final ArrayList<AmiiboFile> amiiboList = new ArrayList<>();
 
-    public WriteBanksAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
+    public WriteAmiiboAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
 
@@ -60,7 +56,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
         this.setHasStableIds(true);
     }
 
-    public WriteBanksAdapter(BrowserSettings settings, OnHighlightListener collector) {
+    public WriteAmiiboAdapter(BrowserSettings settings, OnHighlightListener collector) {
         this.settings = settings;
         this.collector = collector;
 
@@ -149,14 +145,15 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
     }
 
     @Override
-    public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final AmiiboViewHolder holder, int position) {
+        final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.collector) {
                 if (amiiboList.contains(holder.amiiboFile)) {
-                    amiiboList.remove(filteredData.get(position));
+                    amiiboList.remove(filteredData.get(clickPosition));
                     setIsHighlighted(holder, false);
                 } else {
-                    amiiboList.add(filteredData.get(position));
+                    amiiboList.add(filteredData.get(clickPosition));
                     setIsHighlighted(holder, true);
                 }
                 holder.collector.onAmiiboClicked(amiiboList);
@@ -168,10 +165,10 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.collector) {
                     if (amiiboList.contains(holder.amiiboFile)) {
-                        amiiboList.remove(filteredData.get(position));
+                        amiiboList.remove(filteredData.get(clickPosition));
                         setIsHighlighted(holder, false);
                     } else {
-                        amiiboList.add(filteredData.get(position));
+                        amiiboList.add(filteredData.get(clickPosition));
                         setIsHighlighted(holder, true);
                     }
                     holder.collector.onAmiiboClicked(amiiboList);
@@ -183,7 +180,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                 }
             });
         }
-        holder.bind(getItem(position));
+        holder.bind(getItem(clickPosition));
         setIsHighlighted(holder, amiiboList.contains(holder.amiiboFile));
     }
 
@@ -213,7 +210,7 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                     if (null == amiibo)
                         amiibo = new Amiibo(settings.getAmiiboManager(),
                                 amiiboFile.getId(), null, null);
-                    add = amiiboContainsQuery(amiibo, queryText);
+                    add = settings.amiiboContainsQuery(amiibo, queryText);
                 } else {
                     add = queryText.isEmpty();
                 }
@@ -235,39 +232,6 @@ public class WriteBanksAdapter extends RecyclerView.Adapter<WriteBanksAdapter.Am
                     settings.getAmiiboSeriesFilter().isEmpty() &&
                     settings.getAmiiboTypeFilter().isEmpty() &&
                     path.toLowerCase().contains(query);
-        }
-
-        public boolean amiiboContainsQuery(Amiibo amiibo, String query) {
-            GameSeries gameSeries = amiibo.getGameSeries();
-            if (!Amiibo.matchesGameSeriesFilter(gameSeries, settings.getGameSeriesFilter()))
-                return false;
-
-            Character character = amiibo.getCharacter();
-            if (!Amiibo.matchesCharacterFilter(character, settings.getCharacterFilter()))
-                return false;
-
-            AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
-            if (!Amiibo.matchesAmiiboSeriesFilter(amiiboSeries, settings.getAmiiboSeriesFilter()))
-                return false;
-
-            AmiiboType amiiboType = amiibo.getAmiiboType();
-            if (!Amiibo.matchesAmiiboTypeFilter(amiiboType, settings.getAmiiboTypeFilter()))
-                return false;
-
-            if (!query.isEmpty()) {
-                if (TagUtils.amiiboIdToHex(amiibo.id).toLowerCase().startsWith(query))
-                    return true;
-                else if (null != amiibo.name  && amiibo.name.toLowerCase().contains(query))
-                    return true;
-                else if (null != gameSeries  && gameSeries.name.toLowerCase().contains(query))
-                    return true;
-                else if (null != character  && character.name.toLowerCase().contains(query))
-                    return true;
-                else if (null != amiiboSeries  && amiiboSeries.name.toLowerCase().contains(query))
-                    return true;
-                else return null != amiiboType  && amiiboType.name.toLowerCase().contains(query);
-            }
-            return true;
         }
 
         @SuppressLint("NotifyDataSetChanged")

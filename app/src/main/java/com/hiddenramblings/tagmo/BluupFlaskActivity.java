@@ -58,7 +58,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.adapter.BluupFlaskAdapter;
-import com.hiddenramblings.tagmo.adapter.WriteBanksAdapter;
+import com.hiddenramblings.tagmo.adapter.WriteAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -107,8 +107,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private BrowserSettings settings;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
-    private WriteBanksAdapter writeFileAdapter;
-    private WriteBanksAdapter writeListAdapter;
+    private WriteAmiiboAdapter writeFileAdapter;
+    private WriteAmiiboAdapter writeListAdapter;
 
     private BluetoothAdapter mBluetoothAdapter;
     private ScanCallback scanCallbackLP;
@@ -218,9 +218,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onFlaskActiveChanged(JSONObject jsonObject) {
                             try {
-                                getActiveAmiibo(getAmiiboByName(
-                                        jsonObject.getString("name")
-                                ), amiiboTile);
+                                String[] hash =  jsonObject.getString("name").split("\\|");
+                                getActiveAmiibo(getAmiiboByName(hash[0]), amiiboTile);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -238,9 +237,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                             ArrayList<FlaskAmiibo> flaskAmiibos = new ArrayList<>();
                             for (int i = 0; i < currentCount; i++) {
                                 try {
+                                    String[] hash = jsonArray.getString(i).split("\\|");
                                     FlaskAmiibo flaskAmiibo = new FlaskAmiibo();
-                                    flaskAmiibo.setAmiibo(getAmiiboByName(jsonArray.getString(i)));
-                                    flaskAmiibo.setFlaskID(jsonArray.getString(i).split("\\|")[1]);
+                                    flaskAmiibo.setAmiibo(getAmiiboByName(hash[0]));
+                                    flaskAmiibo.setTail(hash[1]);
                                     flaskAmiibos.add(flaskAmiibo);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -253,15 +253,15 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 dismissSnackbarNotice();
                                 flaskDetails.setAdapter(adapter);
                             });
-                            flaskService.getActiveAmiibo();
+                            new Handler(Looper.getMainLooper()).postDelayed(() ->
+                                    flaskService.getActiveAmiibo(), 50L);
                         }
 
                         @Override
                         public void onFlaskActiveLocated(JSONObject jsonObject) {
                             try {
-                                Amiibo amiibo = getAmiiboByName(
-                                        jsonObject.getString("name")
-                                );
+                                String[] hash = jsonObject.getString("name").split("\\|");
+                                Amiibo amiibo = getAmiiboByName(hash[0]);
                                 getActiveAmiibo(amiibo, amiiboTile);
                                 if (bottomSheetBehavior.getState() ==
                                         BottomSheetBehavior.STATE_COLLAPSED)
@@ -389,8 +389,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
 
-        writeFileAdapter = new WriteBanksAdapter(settings,
-                new WriteBanksAdapter.OnAmiiboClickListener() {
+        writeFileAdapter = new WriteAmiiboAdapter(settings,
+                new WriteAmiiboAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -407,7 +407,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         });
         this.settings.addChangeListener(writeFileAdapter);
 
-        writeListAdapter = new WriteBanksAdapter(settings, this::writeAmiiboCollection);
+        writeListAdapter = new WriteAmiiboAdapter(settings, this::writeAmiiboCollection);
         this.settings.addChangeListener(writeListAdapter);
 
         SearchView searchView = findViewById(R.id.amiibo_search);
@@ -437,9 +437,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        writeCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) -> {
-            writeSlots.setText(getString(R.string.write_slots, valueNew));
-        });
+        writeCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) ->
+                writeSlots.setText(getString(R.string.write_slots, valueNew)));
 
         writeSlots.setOnClickListener(view -> {
             onBottomSheetChanged(false);
@@ -502,7 +501,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         runOnUiThread(() -> {
             String amiiboHexId;
-            String amiiboName = "";
+            String amiiboName;
             String amiiboSeries = "";
             String amiiboType = "";
             String gameSeries = "";
@@ -539,7 +538,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         });
     }
 
-    private Amiibo getAmiiboByName(String name) {
+    private Amiibo getAmiiboByName(String amiiboName) {
             AmiiboManager amiiboManager;
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
@@ -553,7 +552,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
             Amiibo selectedAmiibo = null;
             if (null != amiiboManager) {
-                String amiiboName = name.split("\\|")[0];
                 for (Amiibo amiibo : amiiboManager.amiibos.values()) {
                     if (amiibo.name.equals(amiiboName)) {
                         selectedAmiibo = amiibo;
@@ -671,7 +669,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 dismissFlaskDiscovery();
                 showPurchaseNotice();
             }
-        }, 15000);
+        }, 20000);
     }
 
     ActivityResultLauncher<Intent> onRequestPairing = registerForActivityResult(
@@ -705,7 +703,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
-                amiiboManager = null;
                 new Toasty(this).Short(R.string.amiibo_info_parse_error);
             }
 
@@ -764,7 +761,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 }
             }
             if (null != amiibo) {
-                flaskService.uploadAmiiboFile(amiiboFile, amiibo);
+                flaskService.uploadAmiiboFile(amiiboFile.getData(), amiibo);
             }
         }
     }
@@ -797,9 +794,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 R.string.flask_disconnect, R.drawable.ic_baseline_bluetooth_searching_24dp,
                 Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
         );
-        statusBar.setAction(R.string.scan, v -> {
-            selectBluetoothDevice();
-        });
+        statusBar.setAction(R.string.scan, v -> selectBluetoothDevice());
         statusBar.show();
     }
 
@@ -816,11 +811,9 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 R.string.flask_missing, R.drawable.ic_bluup_flask_24dp,
                 Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
         );
-        statusBar.setAction(R.string.purchase, v -> {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                    "https://www.bluuplabs.com/flask/"
-            )));
-        });
+        statusBar.setAction(R.string.purchase, v -> startActivity(
+                new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/flask/"))
+        ));
         statusBar.show();
     }
 
@@ -871,7 +864,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_activate) {
                     flaskService.setActiveAmiibo(
-                            flaskAmiibo.getAmiibo().name, flaskAmiibo.getFlaskID()
+                            flaskAmiibo.getAmiibo().name, flaskAmiibo.getTail()
                     );
                     return true;
                 }

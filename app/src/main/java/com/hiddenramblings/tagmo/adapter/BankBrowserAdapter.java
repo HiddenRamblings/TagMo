@@ -86,14 +86,13 @@ public class BankBrowserAdapter
 
     @Override
     public void onBindViewHolder(@NonNull final AmiiboViewHolder holder, int position) {
-        if (hasStableIds()) position = holder.getBindingAdapterPosition();
+        final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
         View highlight = holder.itemView.findViewById(R.id.highlight);
         if (TagMo.getPrefs().eliteActiveBank().get() == position) {
             highlight.setBackgroundResource(R.drawable.rounded_neon);
         } else {
             highlight.setBackgroundResource(0);
         }
-        final int clickPosition = position;
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.listener)
                 holder.listener.onAmiiboClicked(holder.amiiboItem, clickPosition);

@@ -56,6 +56,9 @@ public interface Preferences {
     @DefaultInt(0)
     int eliteActiveBank();
 
+    @DefaultInt(0)
+    int flaskActiveSlot();
+
     @DefaultBoolean(false)
     boolean hasAcceptedTOS();
 

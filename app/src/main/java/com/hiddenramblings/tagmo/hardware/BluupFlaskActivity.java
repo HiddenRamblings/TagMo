@@ -269,8 +269,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 dismissSnackbarNotice();
                                 flaskDetails.setAdapter(adapter);
                             });
-                            new Handler(Looper.getMainLooper()).postDelayed(() ->
-                                    flaskService.getActiveAmiibo(), 50L);
+                            flaskService.getActiveAmiibo();
                         }
 
                         @Override

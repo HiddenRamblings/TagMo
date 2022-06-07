@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.hardware;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -38,7 +38,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.hiddenramblings.tagmo.GlideApp;
+import com.hiddenramblings.tagmo.HexViewerActivity;
+import com.hiddenramblings.tagmo.ImageActivity;
+import com.hiddenramblings.tagmo.NFCIntent;
+import com.hiddenramblings.tagmo.NfcActivity;
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagDataActivity;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.adapter.BankBrowserAdapter;
+import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.adapter.WriteAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
@@ -97,7 +106,7 @@ public class BankListActivity extends AppCompatActivity implements
 
     private final ArrayList<Amiibo> amiibos = new ArrayList<>();
     private WriteAmiiboAdapter writeFileAdapter;
-    private WriteAmiiboAdapter writeListAdapter;
+    private FoomiiboAdapter writeDataAdapter;
 
     private int clickedPosition;
     private enum CLICKED {
@@ -110,6 +119,14 @@ public class BankListActivity extends AppCompatActivity implements
         ERASE_BANK
     }
     private CLICKED status = CLICKED.NOTHING;
+
+    private enum WRITE {
+        FILE,
+        DATA,
+        LIST,
+        SETS
+    }
+    private WRITE writeAdapter = WRITE.FILE;
 
     private BrowserSettings settings;
 
@@ -129,6 +146,7 @@ public class BankListActivity extends AppCompatActivity implements
         bankOptionsMenu = findViewById(R.id.bank_options_menu);
         writeBankLayout = findViewById(R.id.write_banks_layout);
         amiiboFilesView = findViewById(R.id.amiibo_files_list);
+        amiiboFilesView.setHasFixedSize(true);
 
         amiiboCard = findViewById(R.id.active_card_layout);
         toolbar = findViewById(R.id.toolbar);
@@ -241,6 +259,24 @@ public class BankListActivity extends AppCompatActivity implements
         });
         this.settings.addChangeListener(writeFileAdapter);
 
+        writeDataAdapter = new FoomiiboAdapter(settings, null,
+                new FoomiiboAdapter.OnFoomiiboClickListener() {
+            @Override
+            public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
+                if (null != amiibo) {
+                    writeAmiiboData(amiibo, clickedPosition);
+                }
+            }
+
+            @Override
+            public void onFoomiiboImageClicked(Amiibo amiibo) {
+                if (null != amiibo) {
+                    writeAmiiboData(amiibo, clickedPosition);
+                }
+            }
+        });
+        this.settings.addChangeListener(writeDataAdapter);
+
         switchMenuOptions.setOnClickListener(view -> {
             if (bankOptionsMenu.isShown()) {
                 amiiboCard.setVisibility(View.VISIBLE);
@@ -251,9 +287,6 @@ public class BankListActivity extends AppCompatActivity implements
             }
             amiibosView.requestLayout();
         });
-
-        writeListAdapter = new WriteAmiiboAdapter(settings, this::writeAmiiboCollection);
-        this.settings.addChangeListener(writeListAdapter);
 
         SearchView searchView = findViewById(R.id.amiibo_search);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -278,7 +311,7 @@ public class BankListActivity extends AppCompatActivity implements
 
         writeOpenBanks.setOnClickListener(view -> {
             onBottomSheetChanged(false, false);
-            amiiboFilesView.setAdapter(writeListAdapter);
+            setWriteAdapter(WRITE.LIST);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
@@ -301,6 +334,25 @@ public class BankListActivity extends AppCompatActivity implements
             onOpenBanksActivity.launch(configure);
 
             onBottomSheetChanged(true, false);
+        });
+
+        findViewById(R.id.switch_source_options).setOnClickListener(view -> {
+            if (writeBankLayout.getVisibility() == View.VISIBLE) {
+                switch(writeAdapter) {
+                    case FILE:
+                        setWriteAdapter(WRITE.DATA);
+                        break;
+                    case DATA:
+                        setWriteAdapter(WRITE.FILE);
+                        break;
+                    case LIST:
+                        setWriteAdapter(WRITE.SETS);
+                        break;
+                    case SETS:
+                        setWriteAdapter(WRITE.LIST);
+                        break;
+                }
+            }
         });
 
         if (null == amiibos.get(active_bank)) {
@@ -377,7 +429,6 @@ public class BankListActivity extends AppCompatActivity implements
         amiiboCard.setVisibility(isMenu && hasAmiibo ? View.VISIBLE : View.GONE);
         switchMenuOptions.setVisibility(isMenu && hasAmiibo ? View.VISIBLE : View.GONE);
         bankOptionsMenu.setVisibility(isMenu && !hasAmiibo ? View.VISIBLE : View.GONE);
-        if (isMenu) writeListAdapter.resetSelections();
         writeBankLayout.setVisibility(isMenu || hasAmiibo ? View.GONE : View.VISIBLE);
     }
 
@@ -542,6 +593,24 @@ public class BankListActivity extends AppCompatActivity implements
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
+    private void writeAmiiboData(Amiibo amiibo, int position) {
+        Bundle args = new Bundle();
+        try {
+            byte[] data = TagUtils.getValidatedData(keyManager, amiibo.data);
+            args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
+        } catch (Exception e) {
+            Debug.Log(e);
+        }
+
+        Intent intent = new Intent(this, NfcActivity.class);
+        intent.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
+        intent.putExtra(NFCIntent.EXTRA_CURRENT_BANK, position);
+        intent.putExtras(args);
+        onUpdateTagResult.launch(intent);
+        onBottomSheetChanged(true, true);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
     private void displayWriteDialog(int position) {
         onBottomSheetChanged(false, false);
         writeFileAdapter.setListener(new WriteAmiiboAdapter.OnAmiiboClickListener() {
@@ -559,7 +628,23 @@ public class BankListActivity extends AppCompatActivity implements
                 }
             }
         });
-        amiiboFilesView.setAdapter(writeFileAdapter);
+        writeDataAdapter = new FoomiiboAdapter(settings, null,
+                new FoomiiboAdapter.OnFoomiiboClickListener() {
+            @Override
+            public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
+                if (null != amiibo) {
+                    writeAmiiboData(amiibo, position);
+                }
+            }
+
+            @Override
+            public void onFoomiiboImageClicked(Amiibo amiibo) {
+                if (null != amiibo) {
+                    writeAmiiboData(amiibo, position);
+                }
+            }
+        });
+        setWriteAdapter(WRITE.FILE);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
@@ -804,6 +889,28 @@ public class BankListActivity extends AppCompatActivity implements
         }
     }
 
+    private void writeFoomiiboCollection(ArrayList<Amiibo> amiiboList) {
+        if (null != amiiboList && amiiboList.size() == eliteBankCount.getValue()) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.write_confirm)
+                    .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                        Intent collection = new Intent(this, NfcActivity.class);
+                        collection.setAction(NFCIntent.ACTION_WRITE_ALL_TAGS);
+                        collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
+                        collection.putExtra(NFCIntent.EXTRA_AMIIBO_LIST, amiiboList);
+                        onOpenBanksActivity.launch(collection);
+                        onBottomSheetChanged(true, false);
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                        amiiboList.clear();
+                        onBottomSheetChanged(true, false);
+                        dialog.dismiss();
+                    })
+                    .show();
+        }
+    }
+
     private int getColumnCount() {
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -816,6 +923,32 @@ public class BankListActivity extends AppCompatActivity implements
 
     public int getValueForPosition(NumberPicker picker, int value) {
         return value + picker.getMinValue();
+    }
+
+    private void setWriteAdapter(WRITE format) {
+        switch(format) {
+            case FILE:
+                amiiboFilesView.setAdapter(writeFileAdapter);
+                break;
+            case DATA:
+                amiiboFilesView.setAdapter(writeDataAdapter);
+                break;
+            case LIST:
+                WriteAmiiboAdapter writeListAdapter = new WriteAmiiboAdapter(
+                        settings, this::writeAmiiboCollection);
+                writeListAdapter.resetSelections();
+                this.settings.addChangeListener(writeListAdapter);
+                amiiboFilesView.setAdapter(writeListAdapter);
+                break;
+            case SETS:
+                FoomiiboAdapter writeSetsAdapter = new FoomiiboAdapter(
+                        settings, this::writeFoomiiboCollection);
+                writeSetsAdapter.resetSelections();
+                this.settings.addChangeListener(writeSetsAdapter);
+                amiiboFilesView.setAdapter(writeSetsAdapter);
+                break;
+        }
+        writeAdapter = format;
     }
 
     @Override
@@ -874,11 +1007,6 @@ public class BankListActivity extends AppCompatActivity implements
                 if (isDirectoryHidden(rootFolder, download, recursiveFiles))
                     amiiboFiles.addAll(AmiiboManager
                             .listAmiibos(keyManager, download, true));
-            } else {
-                File foomiibo = Storage.getDownloadDir("TagMo", "Foomiibo");
-                if (isDirectoryHidden(rootFolder, foomiibo, recursiveFiles))
-                    amiiboFiles.addAll(AmiiboManager
-                            .listAmiibos(keyManager, foomiibo, true));
             }
 
             if (Thread.currentThread().isInterrupted()) return;

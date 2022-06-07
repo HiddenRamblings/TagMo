@@ -85,8 +85,10 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout;
+import com.hiddenramblings.tagmo.hardware.BankListActivity;
+import com.hiddenramblings.tagmo.hardware.BluupFlaskActivity;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
-import com.hiddenramblings.tagmo.nfctech.PowerTagManager;
+import com.hiddenramblings.tagmo.hardware.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
@@ -1332,11 +1334,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 if (isDirectoryHidden(rootFolder, download, recursiveFiles))
                     amiiboFiles.addAll(AmiiboManager
                             .listAmiibos(keyManager, download, true));
-            } else {
-                File foomiibo = Storage.getDownloadDir("TagMo", "Foomiibo");
-                if (isDirectoryHidden(rootFolder, foomiibo, recursiveFiles))
-                    amiiboFiles.addAll(AmiiboManager
-                            .listAmiibos(keyManager, foomiibo, true));
             }
 
             if (Thread.currentThread().isInterrupted()) return;

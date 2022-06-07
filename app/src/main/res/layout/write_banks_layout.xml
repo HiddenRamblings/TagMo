@@ -22,6 +22,7 @@
         android:id="@+id/switch_source_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="@dimen/button_height_min"
         android:textOff="@string/write_src_storage"
         android:textOn="@string/write_src_foomiibo"
         android:layout_below="@+id/amiibo_search"/>

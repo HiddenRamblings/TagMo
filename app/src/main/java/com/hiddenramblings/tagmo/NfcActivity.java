@@ -27,10 +27,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.hardware.BankListActivity;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -387,16 +389,30 @@ public class NfcActivity extends AppCompatActivity {
                         mifare.setBankCount(write_count);
                         if (active_bank <= write_count)
                             mifare.activateBank(active_bank);
-                        ArrayList<AmiiboFile> amiiboList = commandIntent
-                                .getParcelableArrayListExtra(NFCIntent.EXTRA_AMIIBO_FILES);
-                        for (int x = 0; x < amiiboList.size(); x++) {
-                            txtMessage.setText(getString(R.string.bank_writing,
-                                    x + 1, amiiboList.size()));
-                            byte[] tagData = amiiboList.get(x).getData();
-                            if (null == tagData)
-                                tagData = TagUtils.getValidatedFile(keyManager,
-                                        amiiboList.get(x).getFilePath());
-                            TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
+                        if (commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_FILES)) {
+                            ArrayList<AmiiboFile> amiiboList = commandIntent
+                                    .getParcelableArrayListExtra(NFCIntent.EXTRA_AMIIBO_FILES);
+                            for (int x = 0; x < amiiboList.size(); x++) {
+                                txtMessage.setText(getString(R.string.bank_writing,
+                                        x + 1, amiiboList.size()));
+                                byte[] tagData = amiiboList.get(x).getData();
+                                if (null == tagData)
+                                    tagData = TagUtils.getValidatedFile(keyManager,
+                                            amiiboList.get(x).getFilePath());
+                                TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
+                            }
+                        } else if (commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
+                            ArrayList<Amiibo> amiiboList = commandIntent
+                                    .getParcelableArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST);
+                            for (int x = 0; x < amiiboList.size(); x++) {
+                                txtMessage.setText(getString(R.string.bank_writing,
+                                        x + 1, amiiboList.size()));
+                                byte[] tagData = amiiboList.get(x).data;
+                                if (null == tagData)
+                                    tagData = TagUtils.getValidatedData(keyManager,
+                                            amiiboList.get(x).data);
+                                TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
+                            }
                         }
                         Intent write = new Intent(NFCIntent.ACTION_NFC_SCANNED);
                         write.putExtra(NFCIntent.EXTRA_BANK_COUNT, write_count);

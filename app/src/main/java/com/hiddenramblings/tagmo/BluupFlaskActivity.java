@@ -240,7 +240,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                     String[] hash = jsonArray.getString(i).split("\\|");
                                     FlaskAmiibo flaskAmiibo = new FlaskAmiibo();
                                     flaskAmiibo.setAmiibo(getAmiiboByName(hash[0]));
-                                    flaskAmiibo.setFlaskID(hash[1]);
+                                    flaskAmiibo.setTail(hash[1]);
                                     flaskAmiibos.add(flaskAmiibo);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -864,7 +864,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_activate) {
                     flaskService.setActiveAmiibo(
-                            flaskAmiibo.getAmiibo().name, flaskAmiibo.getFlaskID()
+                            flaskAmiibo.getAmiibo().name, flaskAmiibo.getTail()
                     );
                     return true;
                 }

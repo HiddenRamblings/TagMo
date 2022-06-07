@@ -98,11 +98,10 @@ public class BluupFlaskAdapter
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.listener && !holder.isHighlighted) {
-                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
+                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
                         holder.listener.onAmiiboClicked(holder.flaskAmiibo);
-                    } else {
+                    else
                         holder.listener.onAmiiboImageClicked(holder.flaskAmiibo);
-                    }
                 }
             });
         }

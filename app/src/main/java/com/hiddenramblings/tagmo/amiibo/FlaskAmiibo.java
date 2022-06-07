@@ -3,7 +3,7 @@ package com.hiddenramblings.tagmo.amiibo;
 public class FlaskAmiibo {
 
     private Amiibo amiibo;
-    private String flaskID;
+    private String tail;
 
     public Amiibo getAmiibo() {
         return amiibo;
@@ -13,11 +13,11 @@ public class FlaskAmiibo {
         this.amiibo = amiibo;
     }
 
-    public String getFlaskID() {
-        return flaskID;
+    public String getTail() {
+        return tail;
     }
 
-    public void setFlaskID(String flaskID) {
-        this.flaskID = flaskID;
+    public void setTail(String tail) {
+        this.tail = tail;
     }
 }

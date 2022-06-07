@@ -53,7 +53,7 @@ public class BluupFlaskAdapter
 
     @Override
     public long getItemId(int i) {
-        return Long.parseLong(flaskAmiibos.get(i).getFlaskID());
+        return Long.parseLong(flaskAmiibos.get(i).getTail());
     }
 
     public FlaskAmiibo getItem(int i) {

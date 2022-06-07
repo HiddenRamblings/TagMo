@@ -145,7 +145,7 @@ public class BankListActivity extends AppCompatActivity implements
         amiibosView = findViewById(R.id.amiibos_list);
         amiibosView.setHasFixedSize(true);
 
-        switchMenuOptions = findViewById(R.id.switch_menu_options);
+        switchMenuOptions = findViewById(R.id.switch_menu_btn);
         bankOptionsMenu = findViewById(R.id.bank_options_menu);
         writeBankLayout = findViewById(R.id.write_banks_layout);
         amiiboFilesView = findViewById(R.id.amiibo_files_list);
@@ -339,7 +339,7 @@ public class BankListActivity extends AppCompatActivity implements
             onBottomSheetChanged(true, false);
         });
 
-        findViewById(R.id.switch_source_options).setOnClickListener(view -> {
+        findViewById(R.id.switch_source_btn).setOnClickListener(view -> {
             if (writeBankLayout.getVisibility() == View.VISIBLE) {
                 switch(writeAdapter) {
                     case FILE:

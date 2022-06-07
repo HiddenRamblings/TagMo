@@ -144,40 +144,33 @@ public class WriteAmiiboAdapter extends RecyclerView.Adapter<WriteAmiiboAdapter.
         }
     }
 
+    private void handleClickEvent(final AmiiboViewHolder holder, int position) {
+        if (null != holder.collector) {
+            if (amiiboList.contains(holder.amiiboFile)) {
+                amiiboList.remove(filteredData.get(position));
+                setIsHighlighted(holder, false);
+            } else {
+                amiiboList.add(filteredData.get(position));
+                setIsHighlighted(holder, true);
+            }
+            holder.collector.onAmiiboClicked(amiiboList);
+        } else if (null != holder.listener) {
+            holder.listener.onAmiiboClicked(holder.amiiboFile);
+        }
+    }
+
     @Override
     public void onBindViewHolder(@NonNull final AmiiboViewHolder holder, int position) {
         final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
         holder.itemView.setOnClickListener(view -> {
-            if (null != holder.collector) {
-                if (amiiboList.contains(holder.amiiboFile)) {
-                    amiiboList.remove(filteredData.get(clickPosition));
-                    setIsHighlighted(holder, false);
-                } else {
-                    amiiboList.add(filteredData.get(clickPosition));
-                    setIsHighlighted(holder, true);
-                }
-                holder.collector.onAmiiboClicked(amiiboList);
-            } else if (null != holder.listener) {
-                holder.listener.onAmiiboClicked(holder.amiiboFile);
-            }
+            handleClickEvent(holder, clickPosition);
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (null != holder.collector) {
-                    if (amiiboList.contains(holder.amiiboFile)) {
-                        amiiboList.remove(filteredData.get(clickPosition));
-                        setIsHighlighted(holder, false);
-                    } else {
-                        amiiboList.add(filteredData.get(clickPosition));
-                        setIsHighlighted(holder, true);
-                    }
-                    holder.collector.onAmiiboClicked(amiiboList);
-                } else if (null != holder.listener) {
-                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                        holder.listener.onAmiiboClicked(holder.amiiboFile);
-                    else
-                        holder.listener.onAmiiboImageClicked(holder.amiiboFile);
-                }
+                if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
+                    handleClickEvent(holder, clickPosition);
+                else if (null != holder.listener)
+                    holder.listener.onAmiiboImageClicked(holder.amiiboFile);
             });
         }
         holder.bind(getItem(clickPosition));

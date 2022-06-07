@@ -151,53 +151,40 @@ public class FoomiiboAdapter
                 selected ? R.drawable.rounded_view : 0);
     }
 
+    private void handleClickEvent(final FoomiiboViewHolder holder, int position) {
+        if (null != holder.collector) {
+            if (amiiboList.contains(holder.foomiibo)) {
+                amiiboList.remove(filteredData.get(position));
+                setIsHighlighted(holder, false);
+            } else {
+                amiiboList.add(filteredData.get(position));
+                setIsHighlighted(holder, true);
+            }
+            holder.collector.onAmiiboClicked(amiiboList);
+        } else if (null != holder.listener) {
+            if (foomiiboId.contains(holder.foomiibo.id)) {
+                foomiiboId.remove(holder.foomiibo.id);
+            } else {
+                foomiiboId.add(holder.foomiibo.id);
+            }
+            holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
+        }
+    }
+
     @Override
     public void onBindViewHolder(final FoomiiboViewHolder holder, int position) {
         final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
         holder.isHighlighted = false;
         holder.itemView.findViewById(R.id.highlight).setBackground(null);
         holder.itemView.setOnClickListener(view -> {
-            if (null != holder.collector) {
-                if (amiiboList.contains(holder.foomiibo)) {
-                    amiiboList.remove(filteredData.get(clickPosition));
-                    setIsHighlighted(holder, false);
-                } else {
-                    amiiboList.add(filteredData.get(clickPosition));
-                    setIsHighlighted(holder, true);
-                }
-                holder.collector.onAmiiboClicked(amiiboList);
-            } else {
-                if (foomiiboId.contains(holder.foomiibo.id)) {
-                    foomiiboId.remove(holder.foomiibo.id);
-                } else {
-                    foomiiboId.add(holder.foomiibo.id);
-                }
-                holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
-            }
+            handleClickEvent(holder, clickPosition);
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (null != holder.collector) {
-                    if (amiiboList.contains(holder.foomiibo)) {
-                        amiiboList.remove(filteredData.get(clickPosition));
-                        setIsHighlighted(holder, false);
-                    } else {
-                        amiiboList.add(filteredData.get(clickPosition));
-                        setIsHighlighted(holder, true);
-                    }
-                    holder.collector.onAmiiboClicked(amiiboList);
-                } else {
-                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
-                        if (foomiiboId.contains(holder.foomiibo.id)) {
-                            foomiiboId.remove(holder.foomiibo.id);
-                        } else {
-                            foomiiboId.add(holder.foomiibo.id);
-                        }
-                        holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
-                    } else {
-                        holder.listener.onFoomiiboImageClicked(holder.foomiibo);
-                    }
-                }
+                if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
+                    handleClickEvent(holder, clickPosition);
+                else if (null != holder.listener)
+                    holder.listener.onFoomiiboImageClicked(holder.foomiibo);
             });
         }
         holder.bind(getItem(holder.getBindingAdapterPosition()));

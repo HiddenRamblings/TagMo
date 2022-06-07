@@ -1,8 +1,6 @@
 package com.hiddenramblings.tagmo;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -15,7 +13,7 @@ class NavPagerAdapter extends FragmentStateAdapter {
         super(fa);
     }
 
-    @Override
+    @NonNull @Override
     public Fragment createFragment(int position) {
         if (position == 1)
             return foomiiboFragment;

@@ -70,20 +70,15 @@ public class BluupFlaskAdapter
     public FlaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (VIEW.valueOf(viewType)) {
             case COMPACT:
-                return new CompactViewHolder(parent, settings, listener);
+                return new CompactViewHolder(parent, listener);
             case LARGE:
-                return new LargeViewHolder(parent, settings, listener);
+                return new LargeViewHolder(parent, listener);
             case IMAGE:
-                return new ImageViewHolder(parent, settings, listener);
+                return new ImageViewHolder(parent, listener);
             case SIMPLE:
             default:
-                return new SimpleViewHolder(parent, settings, listener);
+                return new SimpleViewHolder(parent, listener);
         }
-    }
-
-    private void setIsHighlighted(FlaskViewHolder holder) {
-        holder.isHighlighted = true;
-        holder.itemView.findViewById(R.id.highlight).setBackgroundResource(R.drawable.rounded_view);
     }
 
     @Override
@@ -109,7 +104,6 @@ public class BluupFlaskAdapter
     }
 
     protected static abstract class FlaskViewHolder extends RecyclerView.ViewHolder {
-        private final BrowserSettings settings;
         private final OnAmiiboClickListener listener;
 
         public final TextView txtError;
@@ -148,10 +142,9 @@ public class BluupFlaskAdapter
             }
         };
 
-        public FlaskViewHolder(View itemView, BrowserSettings settings, OnAmiiboClickListener listener) {
+        public FlaskViewHolder(View itemView, OnAmiiboClickListener listener) {
             super(itemView);
 
-            this.settings = settings;
             this.listener = listener;
 
             this.txtError = itemView.findViewById(R.id.txtError);
@@ -169,7 +162,7 @@ public class BluupFlaskAdapter
             this.flaskAmiibo = item;
 
             String amiiboHexId;
-            String amiiboName = "";
+            String amiiboName;
             String amiiboSeries = "";
             String amiiboType = "";
             String gameSeries = "";
@@ -221,45 +214,41 @@ public class BluupFlaskAdapter
     }
 
     static class SimpleViewHolder extends FlaskViewHolder {
-        public SimpleViewHolder(ViewGroup parent, BrowserSettings settings,
-                                OnAmiiboClickListener listener) {
+        public SimpleViewHolder(ViewGroup parent, OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
-                    settings, listener
+                    listener
             );
         }
     }
 
     static class CompactViewHolder extends FlaskViewHolder {
-        public CompactViewHolder(ViewGroup parent, BrowserSettings settings,
-                                 OnAmiiboClickListener listener) {
+        public CompactViewHolder(ViewGroup parent, OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
-                    settings, listener
+                    listener
             );
         }
     }
 
     static class LargeViewHolder extends FlaskViewHolder {
-        public LargeViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnAmiiboClickListener listener) {
+        public LargeViewHolder(ViewGroup parent, OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
-                    settings, listener
+                    listener
             );
         }
     }
 
     static class ImageViewHolder extends FlaskViewHolder {
-        public ImageViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnAmiiboClickListener listener) {
+        public ImageViewHolder(ViewGroup parent, OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_image_card, parent, false),
-                    settings, listener
+                    listener
             );
         }
     }

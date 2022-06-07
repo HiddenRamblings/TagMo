@@ -16,6 +16,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.FlaskAmiibo;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -83,16 +84,20 @@ public class BluupFlaskAdapter
 
     @Override
     public void onBindViewHolder(final FlaskViewHolder holder, int position) {
-        holder.isHighlighted = false;
-        holder.itemView.findViewById(R.id.highlight).setBackground(null);
+        View highlight = holder.itemView.findViewById(R.id.highlight);
+        if (TagMo.getPrefs().flaskActiveSlot().get() == position) {
+            highlight.setBackgroundResource(R.drawable.rounded_neon);
+        } else {
+            highlight.setBackgroundResource(0);
+        }
         holder.itemView.setOnClickListener(view -> {
-            if (null != holder.listener && !holder.isHighlighted) {
+            if (null != holder.listener) {
                 holder.listener.onAmiiboClicked(holder.flaskAmiibo);
             }
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (null != holder.listener && !holder.isHighlighted) {
+                if (null != holder.listener) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
                         holder.listener.onAmiiboClicked(holder.flaskAmiibo);
                     else
@@ -117,7 +122,6 @@ public class BluupFlaskAdapter
         public final AppCompatImageView imageAmiibo;
 
         FlaskAmiibo flaskAmiibo = null;
-        boolean isHighlighted = false;
 
         CustomTarget<Bitmap> target = new CustomTarget<>() {
             @Override

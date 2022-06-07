@@ -30,6 +30,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.hardware.BankListActivity;
@@ -65,6 +66,8 @@ public class NfcActivity extends AppCompatActivity {
     private int write_count;
     private String tagTech;
     private boolean hasTestedElite;
+
+    private final Foomiibo foomiibo = new Foomiibo();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -407,7 +410,7 @@ public class NfcActivity extends AppCompatActivity {
                             for (int x = 0; x < amiiboList.size(); x++) {
                                 txtMessage.setText(getString(R.string.bank_writing,
                                         x + 1, amiiboList.size()));
-                                byte[] tagData = amiiboList.get(x).data;
+                                byte[] tagData = foomiibo.generateData(amiiboList.get(x).id);
                                 if (null == tagData)
                                     tagData = TagUtils.getValidatedData(keyManager,
                                             amiiboList.get(x).data);

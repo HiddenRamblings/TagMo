@@ -53,6 +53,7 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -129,6 +130,8 @@ public class BankListActivity extends AppCompatActivity implements
     private WRITE writeAdapter = WRITE.FILE;
 
     private BrowserSettings settings;
+
+    private final Foomiibo foomiibo = new Foomiibo();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -264,14 +267,14 @@ public class BankListActivity extends AppCompatActivity implements
             @Override
             public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
                 if (null != amiibo) {
-                    writeAmiiboData(amiibo, clickedPosition);
+                    writeFoomiiboData(amiibo, clickedPosition);
                 }
             }
 
             @Override
             public void onFoomiiboImageClicked(Amiibo amiibo) {
                 if (null != amiibo) {
-                    writeAmiiboData(amiibo, clickedPosition);
+                    writeFoomiiboData(amiibo, clickedPosition);
                 }
             }
         });
@@ -593,11 +596,12 @@ public class BankListActivity extends AppCompatActivity implements
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
-    private void writeAmiiboData(Amiibo amiibo, int position) {
+    private void writeFoomiiboData(Amiibo amiibo, int position) {
         Bundle args = new Bundle();
         try {
-            byte[] data = TagUtils.getValidatedData(keyManager, amiibo.data);
-            args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
+            byte[] data = foomiibo.generateData(amiibo.id);
+            byte[] tagData = TagUtils.getValidatedData(keyManager, data);
+            args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
         } catch (Exception e) {
             Debug.Log(e);
         }
@@ -633,14 +637,14 @@ public class BankListActivity extends AppCompatActivity implements
             @Override
             public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
                 if (null != amiibo) {
-                    writeAmiiboData(amiibo, position);
+                    writeFoomiiboData(amiibo, position);
                 }
             }
 
             @Override
             public void onFoomiiboImageClicked(Amiibo amiibo) {
                 if (null != amiibo) {
-                    writeAmiiboData(amiibo, position);
+                    writeFoomiiboData(amiibo, position);
                 }
             }
         });

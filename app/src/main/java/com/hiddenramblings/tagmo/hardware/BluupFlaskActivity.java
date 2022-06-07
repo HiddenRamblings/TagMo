@@ -416,9 +416,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
             @Override
             public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                showUploadingNotice();
-                uploadAmiiboFile(amiiboFile);
+                handleImageClicked(amiiboFile);
             }
         });
         this.settings.addChangeListener(writeFileAdapter);
@@ -434,9 +432,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
             @Override
             public void onFoomiiboImageClicked(Amiibo amiibo) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                showUploadingNotice();
-                uploadFoomiiboData(amiibo);
+                handleImageClicked(amiibo);
             }
         });
         this.settings.addChangeListener(writeDataAdapter);
@@ -941,6 +937,30 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 break;
         }
         writeAdapter = format;
+    }
+
+    private void handleImageClicked(Amiibo amiibo) {
+        if (null != amiibo) {
+            Bundle bundle = new Bundle();
+            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id);
+
+            Intent intent = new Intent(this, ImageActivity.class);
+            intent.putExtras(bundle);
+
+            startActivity(intent);
+        }
+    }
+
+    private void handleImageClicked(AmiiboFile amiiboFile) {
+        if (null != amiiboFile) {
+            Bundle bundle = new Bundle();
+            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile.getId());
+
+            Intent intent = new Intent(this, ImageActivity.class);
+            intent.putExtras(bundle);
+
+            startActivity(intent);
+        }
     }
 
     @Override

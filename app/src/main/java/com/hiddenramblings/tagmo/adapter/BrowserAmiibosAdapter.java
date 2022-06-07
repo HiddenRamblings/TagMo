@@ -132,32 +132,29 @@ public class BrowserAmiibosAdapter
         }
     }
 
+    private void handleClickEvent(final AmiiboViewHolder holder) {
+        if (null != holder.listener) {
+            if (amiiboPath.contains(holder.amiiboFile.getFilePath())) {
+                amiiboPath.remove(holder.amiiboFile.getFilePath());
+            } else {
+                amiiboPath.add(holder.amiiboFile.getFilePath());
+            }
+            holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile);
+        }
+    }
+
     @Override
     public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
-            if (null != holder.listener) {
-                if (amiiboPath.contains(holder.amiiboFile.getFilePath())) {
-                    amiiboPath.remove(holder.amiiboFile.getFilePath());
-                } else {
-                    amiiboPath.add(holder.amiiboFile.getFilePath());
-                }
-                holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile);
-            }
+            handleClickEvent(holder);
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (null != holder.listener) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
-                        if (amiiboPath.contains(holder.amiiboFile.getFilePath())) {
-                            amiiboPath.remove(holder.amiiboFile.getFilePath());
-                        } else {
-                            amiiboPath.add(holder.amiiboFile.getFilePath());
-                        }
-                        holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile);
-                    } else {
+                        handleClickEvent(holder);
+                    } else if (null != holder.listener) {
                         holder.listener.onAmiiboImageClicked(holder.amiiboFile);
                     }
-                }
             });
         }
         holder.bind(getItem(holder.getBindingAdapterPosition()));

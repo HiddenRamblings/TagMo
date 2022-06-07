@@ -627,9 +627,7 @@ public class BankListActivity extends AppCompatActivity implements
 
             @Override
             public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
-                if (null != amiiboFile) {
-                    writeAmiiboFile(amiiboFile, position);
-                }
+                handleImageClicked(amiiboFile);
             }
         });
         writeDataAdapter = new FoomiiboAdapter(settings, null,
@@ -643,9 +641,7 @@ public class BankListActivity extends AppCompatActivity implements
 
             @Override
             public void onFoomiiboImageClicked(Amiibo amiibo) {
-                if (null != amiibo) {
-                    writeFoomiiboData(amiibo, position);
-                }
+                handleImageClicked(amiibo);
             }
         });
         setWriteAdapter(WRITE.FILE);
@@ -955,6 +951,30 @@ public class BankListActivity extends AppCompatActivity implements
         writeAdapter = format;
     }
 
+    private void handleImageClicked(Amiibo amiibo) {
+        if (null != amiibo) {
+            Bundle bundle = new Bundle();
+            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id);
+
+            Intent intent = new Intent(this, ImageActivity.class);
+            intent.putExtras(bundle);
+
+            startActivity(intent);
+        }
+    }
+
+    private void handleImageClicked(AmiiboFile amiiboFile) {
+        if (null != amiiboFile) {
+            Bundle bundle = new Bundle();
+            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile.getId());
+
+            Intent intent = new Intent(this, ImageActivity.class);
+            intent.putExtras(bundle);
+
+            startActivity(intent);
+        }
+    }
+
     @Override
     public void onAmiiboClicked(Amiibo amiibo, int position) {
         if (null == amiibo) {
@@ -976,15 +996,7 @@ public class BankListActivity extends AppCompatActivity implements
 
     @Override
     public void onAmiiboImageClicked(Amiibo amiibo, int position) {
-        if (null != amiibo) {
-            Bundle bundle = new Bundle();
-            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id);
-
-            Intent intent = new Intent(this, ImageActivity.class);
-            intent.putExtras(bundle);
-
-            startActivity(intent);
-        }
+        handleImageClicked(amiibo);
     }
 
     @Override

@@ -236,7 +236,11 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         public void onFlaskActiveChanged(JSONObject jsonObject) {
                             try {
                                 String[] name = jsonObject.getString("name").split("\\|");
-                                getActiveAmiibo(getAmiiboByName(name[0]), amiiboTile);
+                                Amiibo amiibo = getAmiiboByName(name[0]);
+                                getActiveAmiibo(amiibo, amiiboTile);
+                                if (amiiboCard.findViewById(R.id.txtError)
+                                        .getVisibility() == View.VISIBLE)
+                                    getActiveAmiibo(amiibo, amiiboCard);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

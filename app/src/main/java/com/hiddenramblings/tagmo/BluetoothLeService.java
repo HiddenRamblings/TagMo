@@ -80,6 +80,8 @@ public class BluetoothLeService extends Service {
         this.listener = listener;
     }
 
+    private ArrayList<Runnable> Callbacks = new ArrayList<Runnable>();
+
     interface BluetoothGattListener {
         void onServicesDiscovered();
         void onFlaskActiveChanged(JSONObject jsonObject);
@@ -88,6 +90,20 @@ public class BluetoothLeService extends Service {
         void onFlaskActiveLocated(JSONObject jsonObject);
         void onFlaskFilesUploaded();
         void onGattConnectionLost();
+    }
+
+
+    public boolean isJSONValid(String test) {
+        try {
+            new JSONObject(test);
+        } catch (JSONException ex) {
+            try {
+                new JSONArray(test);
+            } catch (JSONException ex1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     StringBuilder response = new StringBuilder();
@@ -108,6 +124,16 @@ public class BluetoothLeService extends Service {
                 String progress = response.length() > 0 ? response.toString().trim().replaceAll(
                         Objects.requireNonNull(System.getProperty("line.separator")), ""
                 ) : "";
+
+
+                if (isJSONValid(progress) || progress.endsWith(">") || progress.lastIndexOf("undefined") == 0 || progress.lastIndexOf("\n") == 0) {
+                    if (Callbacks.size() > 0) {
+                        Debug.Log(TAG, "Callback Called");
+                        Callbacks.get(0).run();
+                        Callbacks.remove(0);
+                    }
+                }
+
                 if (progress.contains("Uncaught no such element")) {
                     response = new StringBuilder();
                     delayedWriteTagCharacteristic("setTag(\""
@@ -129,7 +155,7 @@ public class BluetoothLeService extends Service {
                         response = new StringBuilder();
                     }
                 } else if (progress.startsWith("tag.getList()")) {
-                    if (progress.endsWith(">")) {
+                    if (progress.endsWith(">") || progress.endsWith("\n")) {
                         String getList = progress.substring(progress.indexOf("["),
                                 progress.lastIndexOf("]") + 1);
                         try {
@@ -471,7 +497,13 @@ public class BluetoothLeService extends Service {
                 e.printStackTrace();
             }
         }
-        delayedWriteCharacteristic(("tag." + value + "\n").getBytes(CharsetCompat.UTF_8));
+
+        if (commandQueue == 0) {
+            delayedWriteCharacteristic(("tag." + value + "\n").getBytes(CharsetCompat.UTF_8));
+            return;
+        }
+
+        Callbacks.add(() -> delayedWriteCharacteristic(("tag." + value + "\n").getBytes(CharsetCompat.UTF_8)));
     }
 
     public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo) {

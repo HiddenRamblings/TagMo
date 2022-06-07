@@ -461,7 +461,6 @@ public class WriteAmiiboAdapter extends RecyclerView.Adapter<WriteAmiiboAdapter.
 
     public interface OnAmiiboClickListener {
         void onAmiiboClicked(AmiiboFile amiiboFile);
-
         void onAmiiboImageClicked(AmiiboFile amiiboFile);
     }
 

@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.hardware;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -47,17 +47,6 @@ import java.util.UUID;
 public class BluetoothLeService extends Service {
 
     private final Class<?> TAG = BluetoothLeService.class;
-
-    public enum Process {
-        IDLING, // Nothing
-        GATHER, // getList()
-        ACTIVE, // get()
-        SELECT, // setActive()
-        DELETE, // Delete
-        UPLOAD  // Upload
-    }
-
-    private Process currentProcess = Process.IDLING;
 
     private BluetoothGattListener listener;
 
@@ -126,7 +115,9 @@ public class BluetoothLeService extends Service {
                 ) : "";
 
 
-                if (isJSONValid(progress) || progress.endsWith(">") || progress.lastIndexOf("undefined") == 0 || progress.lastIndexOf("\n") == 0) {
+                if (isJSONValid(progress) || progress.endsWith(">")
+                        || progress.lastIndexOf("undefined") == 0
+                        || progress.lastIndexOf("\n") == 0) {
                     if (Callbacks.size() > 0) {
                         Debug.Log(TAG, "Callback Called");
                         Callbacks.get(0).run();
@@ -190,7 +181,6 @@ public class BluetoothLeService extends Service {
                 } else if (progress.endsWith(">")) {
                     response = new StringBuilder();
                 }
-                if (response.length() <= 0) currentProcess = Process.IDLING;
             }
         }
     }
@@ -507,7 +497,6 @@ public class BluetoothLeService extends Service {
     }
 
     public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo) {
-        currentProcess = Process.UPLOAD;
         delayedWriteTagCharacteristic("startTagUpload(" + amiiboData.length + ")");
         List<String> chunks = stringToPortions(Base64.encodeToString(
                 amiiboData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
@@ -532,17 +521,14 @@ public class BluetoothLeService extends Service {
     public void setActiveAmiibo(String name, String tail) {
         nameCompat = name;
         tailCompat = tail;
-        currentProcess = Process.SELECT;
         delayedWriteTagCharacteristic("setTag(\"" + name + "|" + tail + "|0\")");
     }
 
     public void getActiveAmiibo() {
-        currentProcess = Process.ACTIVE;
         delayedWriteTagCharacteristic("get()");
     }
 
     public void getDeviceAmiibo() {
-        currentProcess = Process.GATHER;
         delayedWriteTagCharacteristic("getList()");
     }
 

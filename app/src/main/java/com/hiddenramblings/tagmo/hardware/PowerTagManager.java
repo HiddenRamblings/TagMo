@@ -1,9 +1,11 @@
-package com.hiddenramblings.tagmo.nfctech;
+package com.hiddenramblings.tagmo.hardware;
 
 import android.util.Base64;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.nfctech.NTAG215;
+import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,7 +64,7 @@ public class PowerTagManager {
         }
     }
 
-    static byte[] getPowerTagKey(byte[] uid, String page10bytes) throws NullPointerException {
+    public static byte[] getPowerTagKey(byte[] uid, String page10bytes) throws NullPointerException {
         if (null == keys )
             throw new NullPointerException(TagMo.getContext()
                     .getString(R.string.error_powertag_key));

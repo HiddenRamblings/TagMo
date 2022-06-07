@@ -21,6 +21,7 @@ import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -36,19 +37,29 @@ public class FoomiiboAdapter
         implements Filterable, BrowserSettingsListener {
 
     private final BrowserSettings settings;
-    private final OnFoomiiboClickListener listener;
+    private OnFoomiiboClickListener listener = null;
+    private OnHighlightListener collector = null;
     private final ArrayList<Amiibo> data = new ArrayList<>();
     private ArrayList<Amiibo> filteredData;
     private FoomiiboFilter filter;
     boolean firstRun = true;
     private ArrayList<Long> missingIds;
     private static final ArrayList<Long> foomiiboId = new ArrayList<>();
+    private final ArrayList<Amiibo> amiiboList = new ArrayList<>();
 
     public FoomiiboAdapter(BrowserSettings settings, ArrayList<Long> missingIds,
                            OnFoomiiboClickListener listener) {
         this.settings = settings;
         this.missingIds = missingIds;
         this.listener = listener;
+
+        this.filteredData = this.data;
+        this.setHasStableIds(true);
+    }
+
+    public FoomiiboAdapter(BrowserSettings settings, OnHighlightListener collector) {
+        this.settings = settings;
+        this.collector = collector;
 
         this.filteredData = this.data;
         this.setHasStableIds(true);
@@ -61,6 +72,10 @@ public class FoomiiboAdapter
 //    public ArrayList<Amiibo> getFoomiiboQueue() {
 //        return foomiiboQueue;
 //    }
+
+    public void resetSelections() {
+        this.amiiboList.clear();
+    }
 
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,
@@ -119,14 +134,14 @@ public class FoomiiboAdapter
     public FoomiiboViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (VIEW.valueOf(viewType)) {
             case COMPACT:
-                return new CompactViewHolder(parent, settings, listener);
+                return new CompactViewHolder(parent, settings, listener, collector);
             case LARGE:
-                return new LargeViewHolder(parent, settings, listener);
+                return new LargeViewHolder(parent, settings, listener, collector);
             case IMAGE:
-                return new ImageViewHolder(parent, settings, listener);
+                return new ImageViewHolder(parent, settings, listener, collector);
             case SIMPLE:
             default:
-                return new SimpleViewHolder(parent, settings, listener);
+                return new SimpleViewHolder(parent, settings, listener, collector);
         }
     }
 
@@ -138,27 +153,50 @@ public class FoomiiboAdapter
 
     @Override
     public void onBindViewHolder(final FoomiiboViewHolder holder, int position) {
+        final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
         holder.isHighlighted = false;
         holder.itemView.findViewById(R.id.highlight).setBackground(null);
         holder.itemView.setOnClickListener(view -> {
-            if (foomiiboId.contains(holder.foomiibo.id)) {
-                foomiiboId.remove(holder.foomiibo.id);
+            if (null != holder.collector) {
+                if (amiiboList.contains(holder.foomiibo)) {
+                    amiiboList.remove(filteredData.get(clickPosition));
+                    setIsHighlighted(holder, false);
+                } else {
+                    amiiboList.add(filteredData.get(clickPosition));
+                    setIsHighlighted(holder, true);
+                }
+                holder.collector.onAmiiboClicked(amiiboList);
             } else {
-                foomiiboId.add(holder.foomiibo.id);
+                if (foomiiboId.contains(holder.foomiibo.id)) {
+                    foomiiboId.remove(holder.foomiibo.id);
+                } else {
+                    foomiiboId.add(holder.foomiibo.id);
+                }
+                holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
             }
-            holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
-                    if (foomiiboId.contains(holder.foomiibo.id)) {
-                        foomiiboId.remove(holder.foomiibo.id);
+                if (null != holder.collector) {
+                    if (amiiboList.contains(holder.foomiibo)) {
+                        amiiboList.remove(filteredData.get(clickPosition));
+                        setIsHighlighted(holder, false);
                     } else {
-                        foomiiboId.add(holder.foomiibo.id);
+                        amiiboList.add(filteredData.get(clickPosition));
+                        setIsHighlighted(holder, true);
                     }
-                    holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
+                    holder.collector.onAmiiboClicked(amiiboList);
                 } else {
-                    holder.listener.onFoomiiboImageClicked(holder.foomiibo);
+                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
+                        if (foomiiboId.contains(holder.foomiibo.id)) {
+                            foomiiboId.remove(holder.foomiibo.id);
+                        } else {
+                            foomiiboId.add(holder.foomiibo.id);
+                        }
+                        holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
+                    } else {
+                        holder.listener.onFoomiiboImageClicked(holder.foomiibo);
+                    }
                 }
             });
         }
@@ -228,6 +266,7 @@ public class FoomiiboAdapter
     protected static abstract class FoomiiboViewHolder extends RecyclerView.ViewHolder {
         private final BrowserSettings settings;
         private final OnFoomiiboClickListener listener;
+        private final OnHighlightListener collector;
 
         public final TextView txtError;
         public final TextView txtName;
@@ -267,11 +306,15 @@ public class FoomiiboAdapter
             }
         };
 
-        public FoomiiboViewHolder(View itemView, BrowserSettings settings, OnFoomiiboClickListener listener) {
+        public FoomiiboViewHolder(
+                View itemView, BrowserSettings settings,
+                OnFoomiiboClickListener listener,
+                OnHighlightListener collector) {
             super(itemView);
 
             this.settings = settings;
             this.listener = listener;
+            this.collector = collector;
 
             this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
@@ -379,44 +422,48 @@ public class FoomiiboAdapter
 
     static class SimpleViewHolder extends FoomiiboViewHolder {
         public SimpleViewHolder(ViewGroup parent, BrowserSettings settings,
-                                OnFoomiiboClickListener listener) {
+                                OnFoomiiboClickListener listener,
+                                OnHighlightListener collector) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
-                    settings, listener
+                    settings, listener, collector
             );
         }
     }
 
     static class CompactViewHolder extends FoomiiboViewHolder {
         public CompactViewHolder(ViewGroup parent, BrowserSettings settings,
-                                 OnFoomiiboClickListener listener) {
+                                 OnFoomiiboClickListener listener,
+                                 OnHighlightListener collector) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
-                    settings, listener
+                    settings, listener, collector
             );
         }
     }
 
     static class LargeViewHolder extends FoomiiboViewHolder {
         public LargeViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnFoomiiboClickListener listener) {
+                               OnFoomiiboClickListener listener,
+                               OnHighlightListener collector) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
-                    settings, listener
+                    settings, listener, collector
             );
         }
     }
 
     static class ImageViewHolder extends FoomiiboViewHolder {
         public ImageViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnFoomiiboClickListener listener) {
+                               OnFoomiiboClickListener listener,
+                               OnHighlightListener collector) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_image_card, parent, false),
-                    settings, listener
+                    settings, listener, collector
             );
         }
     }
@@ -424,5 +471,9 @@ public class FoomiiboAdapter
     public interface OnFoomiiboClickListener {
         void onFoomiiboClicked(View itemView, Amiibo amiibo);
         void onFoomiiboImageClicked(Amiibo amiibo);
+    }
+
+    public interface OnHighlightListener {
+        void onAmiiboClicked(ArrayList<Amiibo> amiiboList);
     }
 }

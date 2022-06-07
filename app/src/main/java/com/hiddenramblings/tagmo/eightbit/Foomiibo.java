@@ -139,4 +139,8 @@ public class Foomiibo {
 
         return arr;
     }
+
+    public byte[] generateData(long id) {
+        return generateData(String.valueOf(id));
+    }
 }

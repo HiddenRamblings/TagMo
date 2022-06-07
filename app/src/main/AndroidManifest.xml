@@ -86,13 +86,13 @@
             </intent-filter>
         </activity-alias>
         <activity
-            android:name=".BankListActivity"
+            android:name=".hardware.BankListActivity"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop"
             android:theme="@style/DialogTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".BluupFlaskActivity"
+            android:name=".hardware.BluupFlaskActivity"
             android:label="@string/bluup_flask_ble"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop"
@@ -118,7 +118,7 @@
         <activity
             android:name=".TagDataActivity"/>
         <service
-            android:name=".BluetoothLeService" />
+            android:name=".hardware.BluetoothLeService" />
         <receiver
             android:name=".UpdateReceiver"
             android:exported="true">

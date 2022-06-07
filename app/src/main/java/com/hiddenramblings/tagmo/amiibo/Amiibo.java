@@ -1,11 +1,17 @@
 package com.hiddenramblings.tagmo.amiibo;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
-public class Amiibo implements Comparable<Amiibo> {
+import java.io.File;
+import java.io.Serializable;
+
+public class Amiibo implements Comparable<Amiibo>, Parcelable {
 
     private static final String AMIIBO_IMAGE =
             "https://raw.githubusercontent.com/8BitDream/AmiiboAPI/tagmo/images/icon_%08x-%08x.png";
@@ -222,4 +228,37 @@ public class Amiibo implements Comparable<Amiibo> {
         }
         return true;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeSerializable(this.name);
+        dest.writeLong(this.id);
+        dest.writeSerializable((Serializable) this.releaseDates);
+        dest.writeByteArray(this.data);
+    }
+
+    protected Amiibo(Parcel in) {
+        this.name = in.readString();
+        this.id = in.readLong();
+        this.releaseDates = (AmiiboReleaseDates) in.readSerializable();
+        this.data = in.createByteArray();
+        in.readByteArray(this.data);
+    }
+
+    public static final Parcelable.Creator<Amiibo> CREATOR = new Parcelable.Creator<>() {
+        @Override
+        public Amiibo createFromParcel(Parcel source) {
+            return new Amiibo(source);
+        }
+
+        @Override
+        public Amiibo[] newArray(int size) {
+            return new Amiibo[size];
+        }
+    };
 }

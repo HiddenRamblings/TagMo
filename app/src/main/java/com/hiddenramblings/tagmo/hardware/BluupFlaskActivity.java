@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.hardware;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -57,7 +57,12 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.GlideApp;
+import com.hiddenramblings.tagmo.ImageActivity;
+import com.hiddenramblings.tagmo.NFCIntent;
+import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.adapter.BluupFlaskAdapter;
+import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.adapter.WriteAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
@@ -108,7 +113,15 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private WriteAmiiboAdapter writeFileAdapter;
-    private WriteAmiiboAdapter writeListAdapter;
+    private FoomiiboAdapter writeDataAdapter;
+
+    private enum WRITE {
+        FILE,
+        DATA,
+        LIST,
+        SETS
+    }
+    private WRITE writeAdapter = WRITE.FILE;
 
     private BluetoothAdapter mBluetoothAdapter;
     private ScanCallback scanCallbackLP;
@@ -341,6 +354,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         writeSlotsLayout = findViewById(R.id.write_banks_layout);
         amiiboFilesView = findViewById(R.id.amiibo_files_list);
+        amiiboFilesView.setHasFixedSize(true);
 
         settings = new BrowserSettings().initialize();
 
@@ -407,8 +421,23 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         });
         this.settings.addChangeListener(writeFileAdapter);
 
-        writeListAdapter = new WriteAmiiboAdapter(settings, this::writeAmiiboCollection);
-        this.settings.addChangeListener(writeListAdapter);
+        writeDataAdapter = new FoomiiboAdapter(settings, null,
+                new FoomiiboAdapter.OnFoomiiboClickListener() {
+            @Override
+            public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                showUploadingNotice();
+                uploadAmiiboData(amiibo);
+            }
+
+            @Override
+            public void onFoomiiboImageClicked(Amiibo amiibo) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                showUploadingNotice();
+                uploadAmiiboData(amiibo);
+            }
+        });
+        this.settings.addChangeListener(writeDataAdapter);
 
         SearchView searchView = findViewById(R.id.amiibo_search);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -433,7 +462,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         writeFile.setOnClickListener(view -> {
             onBottomSheetChanged(false);
-            amiiboFilesView.setAdapter(writeFileAdapter);
+            setWriteAdapter(WRITE.FILE);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
@@ -442,8 +471,27 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         writeSlots.setOnClickListener(view -> {
             onBottomSheetChanged(false);
-            amiiboFilesView.setAdapter(writeListAdapter);
+            setWriteAdapter(WRITE.LIST);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        });
+
+        findViewById(R.id.switch_source_options).setOnClickListener(view -> {
+            if (writeSlotsLayout.getVisibility() == View.VISIBLE) {
+                switch(writeAdapter) {
+                    case FILE:
+                        setWriteAdapter(WRITE.DATA);
+                        break;
+                    case DATA:
+                        setWriteAdapter(WRITE.FILE);
+                        break;
+                    case LIST:
+                        setWriteAdapter(WRITE.SETS);
+                        break;
+                    case SETS:
+                        setWriteAdapter(WRITE.LIST);
+                        break;
+                }
+            }
         });
 
         verifyPermissions();
@@ -720,11 +768,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 if (isDirectoryHidden(rootFolder, download, recursiveFiles))
                     amiiboFiles.addAll(AmiiboManager
                             .listAmiibos(keyManager, download, true));
-            } else {
-                File foomiibo = Storage.getDownloadDir("TagMo", "Foomiibo");
-                if (isDirectoryHidden(rootFolder, foomiibo, recursiveFiles))
-                    amiiboFiles.addAll(AmiiboManager
-                            .listAmiibos(keyManager, foomiibo, true));
             }
 
             if (Thread.currentThread().isInterrupted()) return;
@@ -746,6 +789,16 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         }
     }
 
+    private void writeFoomiiboCollection(ArrayList<Amiibo> amiiboList) {
+        if (null != amiiboList && amiiboList.size() == writeCount.getValue()) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            showUploadingNotice();
+            for (Amiibo amiibo : amiiboList) {
+                uploadAmiiboData(amiibo);
+            }
+        }
+    }
+
     private void uploadAmiiboFile(AmiiboFile amiiboFile) {
         if (null != amiiboFile) {
             Amiibo amiibo = null;
@@ -763,6 +816,12 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             if (null != amiibo) {
                 flaskService.uploadAmiiboFile(amiiboFile.getData(), amiibo);
             }
+        }
+    }
+
+    private void uploadAmiiboData(Amiibo amiibo) {
+        if (null != amiibo) {
+            flaskService.uploadAmiiboFile(amiibo.data, amiibo);
         }
     }
 
@@ -848,6 +907,32 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                     mBluetoothAdapter.stopLeScan(scanCallback);
             }
         }
+    }
+
+    private void setWriteAdapter(WRITE format) {
+        switch(format) {
+            case FILE:
+                amiiboFilesView.setAdapter(writeFileAdapter);
+                break;
+            case DATA:
+                amiiboFilesView.setAdapter(writeDataAdapter);
+                break;
+            case LIST:
+                WriteAmiiboAdapter writeListAdapter = new WriteAmiiboAdapter(
+                        settings, this::writeAmiiboCollection);
+                writeListAdapter.resetSelections();
+                this.settings.addChangeListener(writeListAdapter);
+                amiiboFilesView.setAdapter(writeListAdapter);
+                break;
+            case SETS:
+                FoomiiboAdapter writeSetsAdapter = new FoomiiboAdapter(
+                        settings, this::writeFoomiiboCollection);
+                writeSetsAdapter.resetSelections();
+                this.settings.addChangeListener(writeSetsAdapter);
+                amiiboFilesView.setAdapter(writeSetsAdapter);
+                break;
+        }
+        writeAdapter = format;
     }
 
     @Override

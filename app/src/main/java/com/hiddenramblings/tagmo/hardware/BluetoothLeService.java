@@ -504,8 +504,7 @@ public class BluetoothLeService extends Service {
             );
         }
         String flaskTail = Integer.toString(Integer.parseInt(
-                TagUtils.amiiboIdToHex(amiibo.getTail())
-                        .substring(8, 16), 16), 32);
+                TagUtils.amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
         String name = amiibo.name.length() > 28
                 ? amiibo.name.substring(0, 28) : amiibo.name;
         delayedWriteTagCharacteristic("saveUploadedTag(\""

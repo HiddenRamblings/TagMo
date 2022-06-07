@@ -82,20 +82,12 @@ public class BankListActivity extends AppCompatActivity implements
     private LinearLayout bankOptionsMenu;
     private ToggleButton switchMenuOptions;
     private RelativeLayout writeBankLayout;
+    private BankBrowserAdapter bankAdapter;
     private RecyclerView amiiboFilesView;
 
+    private CardView amiiboTile;
     private CardView amiiboCard;
     private Toolbar toolbar;
-    private View amiiboInfo;
-    private TextView txtError;
-    private TextView txtTagId;
-    private TextView txtName;
-    private TextView txtBank;
-    private TextView txtGameSeries;
-    // private TextView txtCharacter;
-    private TextView txtAmiiboType;
-    private TextView txtAmiiboSeries;
-    private AppCompatImageView imageAmiibo;
 
     private TextView bankStats;
     private NumberPicker eliteBankCount;
@@ -151,18 +143,9 @@ public class BankListActivity extends AppCompatActivity implements
         amiiboFilesView = findViewById(R.id.amiibo_files_list);
         amiiboFilesView.setHasFixedSize(true);
 
+        amiiboTile = findViewById(R.id.active_tile_layout);
         amiiboCard = findViewById(R.id.active_card_layout);
         toolbar = findViewById(R.id.toolbar);
-        amiiboInfo = findViewById(R.id.amiiboInfo);
-        txtError = findViewById(R.id.txtError);
-        txtTagId = findViewById(R.id.txtTagId);
-        txtName = findViewById(R.id.txtName);
-        txtBank = findViewById(R.id.txtBank);
-        txtGameSeries = findViewById(R.id.txtGameSeries);
-        // txtCharacter = findViewById(R.id.txtCharacter);
-        txtAmiiboType = findViewById(R.id.txtAmiiboType);
-        txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
-        imageAmiibo = findViewById(R.id.imageAmiibo);
 
         bankStats = findViewById(R.id.bank_stats);
         eliteBankCount = findViewById(R.id.bank_number_picker);
@@ -223,9 +206,9 @@ public class BankListActivity extends AppCompatActivity implements
             amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
         else
             amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        BankBrowserAdapter adapter = new BankBrowserAdapter(settings, this);
-        amiibosView.setAdapter(adapter);
-        this.settings.addChangeListener(adapter);
+        bankAdapter = new BankBrowserAdapter(settings, this);
+        amiibosView.setAdapter(bankAdapter);
+        this.settings.addChangeListener(bankAdapter);
         updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
         bankStats.setText(getString(R.string.bank_stats,
                 getValueForPosition(eliteBankCount, active_bank), bank_count));
@@ -361,7 +344,8 @@ public class BankListActivity extends AppCompatActivity implements
         if (null == amiibos.get(active_bank)) {
             onBottomSheetChanged(true, false);
         } else {
-            updateAmiiboView(null, amiibos.get(active_bank).id, active_bank);
+            updateAmiiboView(amiiboCard, null, amiibos.get(active_bank).id, active_bank);
+            updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
             onBottomSheetChanged(true, true);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
@@ -389,25 +373,21 @@ public class BankListActivity extends AppCompatActivity implements
         }
 
         if (amiibos.isEmpty()) {
-            if (null != amiibosView.getAdapter())
-                ((BankBrowserAdapter) amiibosView.getAdapter()).setAmiibos(amiibos);
+            bankAdapter.setAmiibos(amiibos);
             for (int x = 0; x < amiiboList.size(); x++) {
                 amiibos.add(amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
-                if (null != amiibosView.getAdapter())
-                    amiibosView.getAdapter().notifyItemInserted(x);
+                bankAdapter.notifyItemInserted(x);
             }
         } else {
             for (int x = 0; x < amiiboList.size(); x++) {
                 long amiiboId = TagUtils.hexToLong(amiiboList.get(x));
                 if (x >= amiibos.size()) {
                     amiibos.add(amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
-                    if (null != amiibosView.getAdapter())
-                        amiibosView.getAdapter().notifyItemInserted(x);
+                    bankAdapter.notifyItemInserted(x);
                 } else if (null == amiibos.get(x) || amiibos.get(x).bank != x
                         || amiiboId != amiibos.get(x).id) {
                     amiibos.set(x, amiiboManager.amiibos.get(amiiboId));
-                    if (null != amiibosView.getAdapter())
-                        amiibosView.getAdapter().notifyItemChanged(x);
+                    bankAdapter.notifyItemChanged(x);
                 }
             }
             if (amiibos.size() > amiiboList.size()) {
@@ -419,10 +399,8 @@ public class BankListActivity extends AppCompatActivity implements
                 }
                 amiibos.clear();
                 amiibos.addAll(shortList);
-                if (null != amiibosView.getAdapter()) {
-                    amiibosView.getAdapter().notifyItemRangeChanged(0, size);
-                    amiibosView.getAdapter().notifyItemRangeRemoved(size, count - size);
-                }
+                bankAdapter.notifyItemRangeChanged(0, size);
+                bankAdapter.notifyItemRangeRemoved(size, count - size);
             }
         }
     }
@@ -435,27 +413,6 @@ public class BankListActivity extends AppCompatActivity implements
         writeBankLayout.setVisibility(isMenu || hasAmiibo ? View.GONE : View.VISIBLE);
     }
 
-    private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<>() {
-        @Override
-        public void onLoadStarted(@Nullable Drawable placeholder) { }
-
-        @Override
-        public void onLoadFailed(@Nullable Drawable errorDrawable) {
-            imageAmiibo.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onLoadCleared(@Nullable Drawable placeholder) { }
-
-        @Override
-        public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
-            imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 3);
-            imageAmiibo.requestLayout();
-            imageAmiibo.setImageBitmap(resource);
-            imageAmiibo.setVisibility(View.VISIBLE);
-        }
-    };
-
     private final ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
@@ -465,12 +422,11 @@ public class BankListActivity extends AppCompatActivity implements
         int active_bank = result.getData().getIntExtra(NFCIntent.EXTRA_ACTIVE_BANK,
                 prefs.eliteActiveBank().get());
 
-        if (null != amiibosView.getAdapter()) {
-            amiibosView.getAdapter().notifyItemChanged(prefs.eliteActiveBank().get());
-            amiibosView.getAdapter().notifyItemChanged(active_bank);
-        }
+        bankAdapter.notifyItemChanged(prefs.eliteActiveBank().get());
+        bankAdapter.notifyItemChanged(active_bank);
 
         prefs.eliteActiveBank().put(active_bank);
+        updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
 
         int bank_count = prefs.eliteBankCount().get();
         bankStats.setText(getString(R.string.bank_stats,
@@ -505,7 +461,9 @@ public class BankListActivity extends AppCompatActivity implements
                     NFCIntent.EXTRA_AMIIBO_LIST));
         }
 
-        updateAmiiboView(tagData, -1, clickedPosition);
+        updateAmiiboView(amiiboCard, tagData, -1, clickedPosition);
+        int active_bank = prefs.eliteActiveBank().get();
+        updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
 
         if (status == CLICKED.ERASE_BANK) {
             status = CLICKED.NOTHING;
@@ -558,9 +516,8 @@ public class BankListActivity extends AppCompatActivity implements
 
         }
         status = CLICKED.NOTHING;
-        updateAmiiboView(tagData, -1, current_bank);
-        if (null != amiibosView.getAdapter())
-            amiibosView.getAdapter().notifyItemChanged(current_bank);
+        updateAmiiboView(amiiboCard, tagData, -1, current_bank);
+        bankAdapter.notifyItemChanged(current_bank);
     });
 
     private void scanAmiiboBank(int current_bank) {
@@ -687,7 +644,7 @@ public class BankListActivity extends AppCompatActivity implements
         }
     }
 
-    private void updateAmiiboView(byte[] tagData, long amiiboId, int current_bank) {
+    private void getAmiiboToolbar( byte[] tagData, int current_bank) {
         toolbar.setOnMenuItemClickListener(item -> {
             Toasty notice = new Toasty(this);
             Intent scan = new Intent(this, NfcActivity.class);
@@ -710,9 +667,13 @@ public class BankListActivity extends AppCompatActivity implements
                 }
                 return true;
             } else if (item.getItemId() == R.id.mnu_erase_bank) {
-                scan.setAction(NFCIntent.ACTION_ERASE_BANK);
-                onUpdateTagResult.launch(scan);
-                status = CLICKED.ERASE_BANK;
+                if (prefs.eliteActiveBank().get() == current_bank) {
+                    notice.Short(R.string.erase_active);
+                } else {
+                    scan.setAction(NFCIntent.ACTION_ERASE_BANK);
+                    onUpdateTagResult.launch(scan);
+                    status = CLICKED.ERASE_BANK;
+                }
                 return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 if (null != tagData && tagData.length > 0) {
@@ -758,6 +719,20 @@ public class BankListActivity extends AppCompatActivity implements
             }
             return false;
         });
+    }
+
+    private void updateAmiiboView(View amiiboView, byte[] tagData, long amiiboId, int current_bank) {
+        View amiiboInfo = findViewById(R.id.amiiboInfo);
+        TextView txtError = findViewById(R.id.txtError);
+        TextView txtName = amiiboView.findViewById(R.id.txtName);
+        TextView txtBank = amiiboView.findViewById(R.id.txtBank);
+        TextView txtTagId = amiiboView.findViewById(R.id.txtTagId);
+        TextView txtAmiiboSeries = amiiboView.findViewById(R.id.txtAmiiboSeries);
+        TextView txtAmiiboType = amiiboView.findViewById(R.id.txtAmiiboType);
+        TextView txtGameSeries = amiiboView.findViewById(R.id.txtGameSeries);
+        AppCompatImageView imageAmiibo = amiiboView.findViewById(R.id.imageAmiibo);
+
+        if (amiiboView == amiiboCard) getAmiiboToolbar(tagData, current_bank);
 
         String tagInfo = null;
         String amiiboHexId = "";
@@ -816,7 +791,7 @@ public class BankListActivity extends AppCompatActivity implements
             txtError.setVisibility(View.GONE);
             amiiboInfo.setVisibility(View.VISIBLE);
         }
-        setAmiiboInfoText(txtBank, getString(R.string.bank_number,
+        if (null != txtBank) setAmiiboInfoText(txtBank, getString(R.string.bank_number,
                 getValueForPosition(eliteBankCount, current_bank)), hasTagInfo);
         setAmiiboInfoText(txtName, amiiboName, hasTagInfo);
         setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo);
@@ -824,6 +799,27 @@ public class BankListActivity extends AppCompatActivity implements
         setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo);
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo);
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
+
+        CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<>() {
+            @Override
+            public void onLoadStarted(@Nullable Drawable placeholder) { }
+
+            @Override
+            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                imageAmiibo.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) { }
+
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 3);
+                imageAmiibo.requestLayout();
+                imageAmiibo.setImageBitmap(resource);
+                imageAmiibo.setVisibility(View.VISIBLE);
+            }
+        };
 
         if (null != imageAmiibo) {
             imageAmiibo.setVisibility(View.GONE);
@@ -985,9 +981,9 @@ public class BankListActivity extends AppCompatActivity implements
         status = CLICKED.NOTHING;
         onBottomSheetChanged(true, true);
         if (null != amiibo.data  && amiibo.bank == position) {
-            updateAmiiboView(amiibo.data, -1, position);
+            updateAmiiboView(amiiboCard, amiibo.data, -1, position);
         } else if (amiibo.id != 0) {
-            updateAmiiboView(null, amiibo.id, position);
+            updateAmiiboView(amiiboCard, null, amiibo.id, position);
         } else {
             scanAmiiboTag(position);
         }

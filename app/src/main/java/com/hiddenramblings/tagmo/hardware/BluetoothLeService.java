@@ -69,7 +69,7 @@ public class BluetoothLeService extends Service {
         this.listener = listener;
     }
 
-    private ArrayList<Runnable> Callbacks = new ArrayList<Runnable>();
+    private final ArrayList<Runnable> Callbacks = new ArrayList<>();
 
     interface BluetoothGattListener {
         void onServicesDiscovered();
@@ -459,12 +459,9 @@ public class BluetoothLeService extends Service {
         setCharacteristicNotification(mCharacteristicTX, true);
     }
 
-    private int commandQueue = 0;
-
     private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = byteToPortions(value, 20);
-        int currentQueue = commandQueue;
-        commandQueue += 1 + chunks.size();
+        int commandQueue = Callbacks.size() + 1 + chunks.size();
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
                 final byte[] chunk = chunks.get(i);
@@ -472,11 +469,9 @@ public class BluetoothLeService extends Service {
                     mCharacteristicTX.setValue(chunk);
                     mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
                     mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
-                    commandQueue -= 1;
                 }, (i + 1) * 30L);
             }
-            commandQueue -= 1;
-        }, currentQueue * 30L);
+        }, commandQueue * 30L);
     }
 
     public void delayedWriteTagCharacteristic(String value) {
@@ -488,12 +483,13 @@ public class BluetoothLeService extends Service {
             }
         }
 
-        if (commandQueue == 0) {
-            delayedWriteCharacteristic(("tag." + value + "\n").getBytes(CharsetCompat.UTF_8));
-            return;
-        }
+        Callbacks.add(() -> delayedWriteCharacteristic(
+                ("tag." + value + "\n").getBytes(CharsetCompat.UTF_8)
+        ));
 
-        Callbacks.add(() -> delayedWriteCharacteristic(("tag." + value + "\n").getBytes(CharsetCompat.UTF_8)));
+        if (Callbacks.size() == 1) {
+            Callbacks.get(0).run();
+        }
     }
 
     public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo) {

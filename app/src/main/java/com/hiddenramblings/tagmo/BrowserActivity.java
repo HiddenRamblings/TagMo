@@ -1343,6 +1343,20 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
+    private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
+                    .listAmiiboDocuments(keyManager, rootFolder, recursiveFiles);
+            this.runOnUiThread(() -> {
+                settings.setAmiiboFiles(amiiboFiles);
+                settings.notifyChanges();
+                if (settings.getAmiiboFiles().isEmpty()) {
+                    onAmiiboFilesChanged();
+                }
+            });
+        });
+    }
+
     ActivityResultLauncher<Intent> onDocumentTree = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
@@ -1357,12 +1371,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         // List all existing files inside picked directory
         if (null != pickedDir) {
-            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
-                    .listAmiiboDocuments(keyManager, pickedDir, this.settings.isRecursiveEnabled());
-            this.runOnUiThread(() -> {
-                settings.setAmiiboFiles(amiiboFiles);
-                settings.notifyChanges();
-            });
+            this.settings.setBrowserRootDocument(pickedDir);
+            onRefresh();
         }
 
 //            // Create a new file and write into it
@@ -1537,12 +1547,20 @@ public class BrowserActivity extends AppCompatActivity implements
 
     void onRootFolderChanged(boolean indicator) {
         if (null != this.settings && fakeSnackbar.getVisibility() != View.VISIBLE) {
-            File rootFolder = this.settings.getBrowserRootFolder();
-            if (!keyManager.isKeyMissing()) {
-                if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
-                this.loadAmiiboFiles(rootFolder, this.settings.isRecursiveEnabled());
+            DocumentFile rootDocument = this.settings.getBrowserRootDocument();
+            if (null != rootDocument) {
+                if (!keyManager.isKeyMissing()) {
+                    if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
+                    loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
+                }
+            } else {
+                File rootFolder = this.settings.getBrowserRootFolder();
+                if (!keyManager.isKeyMissing()) {
+                    if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
+                    this.loadAmiiboFiles(rootFolder, this.settings.isRecursiveEnabled());
+                }
+                this.loadFolders(rootFolder);
             }
-            this.loadFolders(rootFolder);
         }
     }
 

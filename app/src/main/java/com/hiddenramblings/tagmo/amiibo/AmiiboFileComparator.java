@@ -1,5 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 
@@ -21,8 +23,15 @@ public class AmiiboFileComparator implements Comparator<AmiiboFile> {
 
         File filePath1 = amiiboFile1.getFilePath();
         File filePath2 = amiiboFile2.getFilePath();
-        if (sort == SORT.FILE_PATH.getValue() && !(null == filePath1 && null == filePath2))
-            value = compareFilePath(filePath1, filePath2);
+        DocumentFile docPath1 = amiiboFile1.getDocPath();
+        DocumentFile docPath2 = amiiboFile2.getDocPath();
+        if (null != docPath1 && null != docPath2) {
+            if (sort == SORT.FILE_PATH.getValue() && !(null == filePath1 && null == filePath2))
+                value = compareDocPath(docPath1, docPath2);
+        } else {
+            if (sort == SORT.FILE_PATH.getValue() && !(null == filePath1 && null == filePath2))
+                value = compareFilePath(filePath1, filePath2);
+        }
 
         long amiiboId1 = amiiboFile1.getId();
         long amiiboId2 = amiiboFile2.getId();
@@ -58,8 +67,13 @@ public class AmiiboFileComparator implements Comparator<AmiiboFile> {
                 value = compareAmiiboId(amiiboId1, amiiboId2);
         }
 
-        if (value == 0)
-            value = compareFilePath(filePath1, filePath2);
+        if (value == 0) {
+            if (null != docPath1 && null != docPath2) {
+                value = compareDocPath(docPath1, docPath2);
+            } else {
+                value = compareFilePath(filePath1, filePath2);
+            }
+        }
 
         return value;
     }
@@ -71,6 +85,16 @@ public class AmiiboFileComparator implements Comparator<AmiiboFile> {
             return -1;
         } else {
             return filePath1.compareTo(filePath2);
+        }
+    }
+
+    int compareDocPath(DocumentFile filePath1, DocumentFile filePath2) {
+        if (null == filePath1) {
+            return 1;
+        } else if (null == filePath2) {
+            return -1;
+        } else {
+            return filePath1.getUri().compareTo(filePath2.getUri());
         }
     }
 

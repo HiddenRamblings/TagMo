@@ -57,6 +57,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
@@ -91,6 +92,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 
@@ -684,21 +686,33 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             ) == PackageManager.PERMISSION_GRANTED) {
                 activateBluetooth();
             } else {
-                new AlertDialog.Builder(this)
-                        .setMessage(R.string.location_disclosure)
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.accept, (dialog, which) -> {
-                            dialog.dismiss();
-                            final String[] PERMISSIONS_LOCATION = {
-                                    Manifest.permission.ACCESS_FINE_LOCATION,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION
-                            };
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                onRequestLocationQ.launch(PERMISSIONS_LOCATION);
-                            } else {
-                                onRequestLocation.launch(PERMISSIONS_LOCATION);
-                            }
-                        }).setNegativeButton(R.string.deny, (dialog, which) -> finish()).show();
+                if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+                    new AlertDialog.Builder(this)
+                            .setMessage(R.string.location_disclosure)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.accept, (dialog, which) -> {
+                                dialog.dismiss();
+                                final String[] PERMISSIONS_LOCATION = {
+                                        Manifest.permission.ACCESS_FINE_LOCATION,
+                                        Manifest.permission.ACCESS_COARSE_LOCATION
+                                };
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    onRequestLocationQ.launch(PERMISSIONS_LOCATION);
+                                } else {
+                                    onRequestLocation.launch(PERMISSIONS_LOCATION);
+                                }
+                            }).setNegativeButton(R.string.deny, (dialog, which) -> finish()).show();
+                } else {
+                    final String[] PERMISSIONS_LOCATION = {
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    };
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        onRequestLocationQ.launch(PERMISSIONS_LOCATION);
+                    } else {
+                        onRequestLocation.launch(PERMISSIONS_LOCATION);
+                    }
+                }
             }
         }
     }

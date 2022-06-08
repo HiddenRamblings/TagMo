@@ -51,8 +51,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class FoomiiboFragment extends Fragment implements
@@ -247,18 +245,11 @@ public class FoomiiboFragment extends Fragment implements
 //            handler.post(() -> dialog = ProgressDialog.show(requireActivity(),
 //                    "", "", true));
 //
-//            FoomiiboAdapter foomiiboAdapter = (FoomiiboAdapter) amiibosView.getAdapter();
-//            ArrayList<Amiibo> foomiibo = new ArrayList<>();
-//            if (null != foomiiboAdapter)
-//                foomiibo = foomiiboAdapter.getFoomiiboQueue();
-//            if (foomiibo.isEmpty()) {
-//                foomiibo.addAll(amiiboManager.amiibos.values());
-//                deleteDir(null, directory);
-//                //noinspection ResultOfMethodCallIgnored
-//                directory.mkdirs();
-//            }
+//            deleteDir(null, directory);
+//            //noinspection ResultOfMethodCallIgnored
+//            directory.mkdirs();
 //
-//            for (Amiibo amiibo : foomiibo) {
+//            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
 //                buildFoomiiboFile(amiibo);
 //                handler.post(() -> dialog.setMessage(getString(
 //                        R.string.foomiibo_progress, amiibo.getCharacter().name)));
@@ -439,65 +430,6 @@ public class FoomiiboFragment extends Fragment implements
         intent.putExtras(bundle);
 
         this.startActivity(intent);
-    }
-
-    private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
-        try {
-            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-            String name = TagUtils.amiiboIdToHex(amiiboId);
-            if (null != amiiboManager) {
-                Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
-                if (null != amiibo && null != amiibo.name) {
-                    name = amiibo.name.replace(File.separatorChar, '-');
-                }
-            }
-
-            byte[] uid = Arrays.copyOfRange(tagData, 0, 9);
-            String uidHex = TagUtils.bytesToHex(uid);
-            return String.format(Locale.ROOT, "%1$s[%2$s]-Foomiibo.bin", name, uidHex);
-        } catch (Exception e) {
-            Debug.Log(TagUtils.class, e.getMessage());
-        }
-        return "";
-    }
-
-    private void buildFoomiiboFile(Amiibo amiibo) {
-        try {
-            byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
-            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
-            //noinspection ResultOfMethodCallIgnored
-            directory.mkdirs();
-            TagUtils.writeBytesToFile(directory, decipherFilename(
-                    settings.getAmiiboManager(), tagData), tagData);
-        } catch (Exception e) {
-            Debug.Log(e);
-        }
-    }
-
-    private void buildFoomiiboSet() {
-        AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (null == amiiboManager) return;
-        Handler handler = new Handler(Looper.getMainLooper());
-
-        Executors.newSingleThreadExecutor().execute(() -> {
-            handler.post(() -> dialog = ProgressDialog.show(requireActivity(),
-                    "", "", true));
-
-            deleteDir(null, directory);
-            //noinspection ResultOfMethodCallIgnored
-            directory.mkdirs();
-
-            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                buildFoomiiboFile(amiibo);
-                handler.post(() -> dialog.setMessage(getString(
-                        R.string.foomiibo_progress, amiibo.getCharacter().name)));
-            }
-
-            handler.post(() -> {
-                dialog.dismiss();
-                onRefresh();
-            });
-        });
     }
 }
 

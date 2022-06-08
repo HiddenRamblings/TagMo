@@ -188,9 +188,8 @@ public class FoomiiboFragment extends Fragment implements
         return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void deleteDir(Handler handler, File dir) {
-        if (!directory.exists()) return;
+    private boolean deleteDir(Handler handler, File dir) {
+        if (!directory.exists()) return false;
         File[] files = dir.listFiles();
         if (null != files && files.length > 0) {
             for (File file : files) {
@@ -201,11 +200,12 @@ public class FoomiiboFragment extends Fragment implements
                     }
                     deleteDir(handler, file);
                 } else {
+                    //noinspection ResultOfMethodCallIgnored
                     file.delete();
                 }
             }
         }
-        dir.delete();
+        return dir.delete();
     }
 
     private void clearFoomiiboSet(File directory) {
@@ -214,11 +214,11 @@ public class FoomiiboFragment extends Fragment implements
             handler.post(() -> dialog = ProgressDialog.show(requireActivity(),
                     "", "", true));
 
-            deleteDir(handler, directory);
+            boolean deleted = deleteDir(handler, directory);
 
             handler.post(() -> {
                 dialog.dismiss();
-                onRefresh();
+                if (deleted) onRefresh();
             });
         });
     }

@@ -370,16 +370,6 @@ public class BrowserActivity extends AppCompatActivity implements
             });
         });
 
-        findViewById(R.id.switch_storage_root).setOnClickListener(view -> {
-            boolean external = !prefs.preferEmulated().get();
-            switchStorageRoot.setText(external
-                    ? R.string.emulated_storage_root
-                    : R.string.physical_storage_root);
-            this.settings.setBrowserRootFolder(Storage.getFile(external));
-            this.settings.notifyChanges();
-            prefs.preferEmulated().put(external);
-        });
-
         findViewById(R.id.amiiboContainer).setOnClickListener(view ->
                 amiiboContainer.setVisibility(View.GONE));
 
@@ -1007,15 +997,19 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onStorageEnabled() {
-        boolean internal = prefs.preferEmulated().get();
-        if (Storage.getFile(internal).exists() && Storage.hasPhysicalStorage()) {
-            switchStorageRoot.setText(internal
-                    ? R.string.emulated_storage_root
-                    : R.string.physical_storage_root);
-        } else {
-            switchStorageRoot.setVisibility(View.GONE);
-        }
         if (null != this.settings.getBrowserRootDocument()) {
+            switchStorageRoot.setText(R.string.document_storage_root);
+            switchStorageRoot.setOnClickListener(view -> {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                        intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+                        intent.putExtra("android.content.extra.FANCY", true);
+                        onDocumentTree.launch(intent);
+                    }
+                } catch (ActivityNotFoundException ignored) { }
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            });
             if (keyManager.isKeyMissing()) {
                 verifyKeyFiles();
             } else {
@@ -1023,6 +1017,23 @@ public class BrowserActivity extends AppCompatActivity implements
                 checkForUpdates();
             }
         } else {
+            boolean internal = prefs.preferEmulated().get();
+            if (Storage.getFile(internal).exists() && Storage.hasPhysicalStorage()) {
+                switchStorageRoot.setText(internal
+                        ? R.string.emulated_storage_root
+                        : R.string.physical_storage_root);
+                switchStorageRoot.setOnClickListener(view -> {
+                    boolean external = !prefs.preferEmulated().get();
+                    switchStorageRoot.setText(external
+                            ? R.string.emulated_storage_root
+                            : R.string.physical_storage_root);
+                    this.settings.setBrowserRootFolder(Storage.getFile(external));
+                    this.settings.notifyChanges();
+                    prefs.preferEmulated().put(external);
+                });
+            } else {
+                switchStorageRoot.setVisibility(View.GONE);
+            }
             if (keyManager.isKeyMissing()) {
                 showFakeSnackbar(getString(R.string.locating_keys));
                 locateKeyFiles();

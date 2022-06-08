@@ -363,7 +363,7 @@ public class FoomiiboFragment extends Fragment implements
             try {
                 long amiiboId = TagUtils.amiiboIdFromTag(tagData);
                 GamesManager gamesManager = GamesManager.getGamesManager(requireContext());
-                String usage =gamesManager.getGamesCompatibility(amiiboId);
+                String usage = gamesManager.getGamesCompatibility(amiiboId);
                 requireActivity().runOnUiThread(() -> txtUsage.setText(usage));
             } catch (Exception ex) {
                 Debug.Log(ex);

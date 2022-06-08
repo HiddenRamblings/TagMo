@@ -273,15 +273,6 @@ public class BrowserAmiibosAdapter
             }
         };
 
-        private void setIsHighlighted(boolean isHighlighted) {
-            View highlight = this.itemView.findViewById(R.id.highlight);
-            if (isHighlighted) {
-                highlight.setBackgroundResource(R.drawable.rounded_view);
-            } else {
-                highlight.setBackgroundResource(0);
-            }
-        }
-
         public AmiiboViewHolder(View itemView, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(itemView);
 
@@ -341,15 +332,6 @@ public class BrowserAmiibosAdapter
             String query = settings.getQuery().toLowerCase();
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
-                if (null != amiiboFile && amiiboPath.contains(amiiboFile.getFilePath())) {
-                    itemView.findViewById(R.id.menu_options).setVisibility(View.VISIBLE);
-                    itemView.findViewById(R.id.txtUsage).setVisibility(View.VISIBLE);
-                    listener.onAmiiboRebind(itemView, amiiboFile);
-                } else {
-                    itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
-                    itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
-                }
-
                 boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {
                     setAmiiboInfoText(this.txtError, tagInfo, false);
@@ -366,7 +348,15 @@ public class BrowserAmiibosAdapter
                         boldSpannable.IndexOf(gameSeries, query), hasTagInfo);
                 // setAmiiboInfoText(this.txtCharacter,
                 // boldText.Matching(character, query), hasTagInfo);
+
                 if (null != item.getFilePath()) {
+                    boolean expanded = amiiboPath.contains(item.getFilePath());
+                    itemView.findViewById(R.id.menu_options)
+                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                    itemView.findViewById(R.id.txtUsage)
+                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                    if (expanded) listener.onAmiiboRebind(itemView, amiiboFile);
+
                     String relativeFile = Storage.getRelativePath(item.getFilePath(),
                             TagMo.getPrefs().preferEmulated().get()).replace(
                             TagMo.getPrefs().browserRootFolder().get(), "");
@@ -381,7 +371,6 @@ public class BrowserAmiibosAdapter
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
                         this.txtPath.setTextColor(a.data);
                     }
-                    setIsHighlighted(relativeFile.contains("Foomiibo"));
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");

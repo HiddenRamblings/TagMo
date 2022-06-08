@@ -357,15 +357,6 @@ public class FoomiiboAdapter
             String query = settings.getQuery().toLowerCase();
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
-                if (null != foomiibo && foomiiboId.contains(foomiibo.id)) {
-                    itemView.findViewById(R.id.menu_options).setVisibility(View.VISIBLE);
-                    itemView.findViewById(R.id.txtUsage).setVisibility(View.VISIBLE);
-                    listener.onFoomiiboRebind(itemView, foomiibo);
-                } else {
-                    itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
-                    itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
-                }
-
                 boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {
                     setFoomiiboInfoText(this.txtError, tagInfo, false);
@@ -383,6 +374,13 @@ public class FoomiiboAdapter
                 // setAmiiboInfoText(this.txtCharacter,
                 // boldText.Matching(character, query), hasTagInfo);
                 this.txtPath.setVisibility(View.GONE);
+
+                boolean expanded = foomiiboId.contains(foomiibo.id);
+                itemView.findViewById(R.id.menu_options)
+                        .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                itemView.findViewById(R.id.txtUsage)
+                        .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                if (expanded) listener.onFoomiiboRebind(itemView, foomiibo);
             }
             if (null != this.imageAmiibo) {
                 GlideApp.with(itemView).clear(target);

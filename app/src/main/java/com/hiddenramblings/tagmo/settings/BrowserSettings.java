@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.settings;
 
+import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -92,7 +93,7 @@ public class BrowserSettings implements Parcelable {
     protected ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
     protected ArrayList<File> folders = new ArrayList<>();
     protected File browserFolder;
-    protected DocumentFile browserDocument;
+    protected Uri browserDocument;
     protected String query;
     protected int sort;
     protected String filterGameSeries;
@@ -144,6 +145,8 @@ public class BrowserSettings implements Parcelable {
                 ? new File(Storage.getFile(prefs.preferEmulated().get()),
                 prefs.browserRootFolder().get())
                 : Storage.getDownloadDir(null));
+        this.setBrowserRootDocument(null != prefs.browserRootDocument()
+                ? Uri.parse(prefs.browserRootDocument().get()) : null);
         this.setQuery(prefs.query().get());
         this.setSort(prefs.sort().get());
         this.setAmiiboSeriesFilter(prefs.filterAmiiboSeries().get());
@@ -252,11 +255,11 @@ public class BrowserSettings implements Parcelable {
         this.browserFolder = browserRootFolder;
     }
 
-    public DocumentFile getBrowserRootDocument() {
+    public Uri getBrowserRootDocument() {
         return this.browserDocument;
     }
 
-    public void setBrowserRootDocument(DocumentFile browserRootDocument) {
+    public void setBrowserRootDocument(Uri browserRootDocument) {
         this.browserDocument = browserRootDocument;
     }
 
@@ -322,6 +325,7 @@ public class BrowserSettings implements Parcelable {
         copy.setAmiiboTypeFilter(this.getAmiiboTypeFilter());
         copy.setAmiiboView(this.getAmiiboView());
         copy.setBrowserRootFolder(this.getBrowserRootFolder());
+        copy.setBrowserRootDocument(this.getBrowserRootDocument());
         copy.setImageNetworkSettings(this.getImageNetworkSettings());
         copy.setRecursiveEnabled(this.isRecursiveEnabled());
         copy.setShowDownloads(this.isShowingDownloads());
@@ -340,6 +344,8 @@ public class BrowserSettings implements Parcelable {
         dest.writeTypedList(this.amiiboFiles);
         dest.writeList(this.folders);
         dest.writeSerializable(this.browserFolder);
+        dest.writeString(null != this.browserDocument
+                ? this.browserDocument.toString() : null);
         dest.writeString(this.query);
         dest.writeInt(this.sort);
         dest.writeString(this.filterGameSeries);
@@ -357,6 +363,7 @@ public class BrowserSettings implements Parcelable {
         this.folders = new ArrayList<>();
         in.readList(this.folders, File.class.getClassLoader());
         this.browserFolder = (File) in.readSerializable();
+        this.browserDocument = null != in.readString() ? Uri.parse(in.readString()) : null;
         this.query = in.readString();
         this.sort = in.readInt();
         this.filterGameSeries = in.readString();

@@ -33,7 +33,6 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListene
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -47,7 +46,7 @@ public class BrowserAmiibosAdapter
     private ArrayList<AmiiboFile> filteredData;
     private AmiiboFilter filter;
     boolean firstRun = true;
-    private static final ArrayList<File> amiiboPath = new ArrayList<>();
+    private static final ArrayList<String> amiiboPath = new ArrayList<>();
 
     public BrowserAmiibosAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
@@ -134,10 +133,17 @@ public class BrowserAmiibosAdapter
 
     private void handleClickEvent(final AmiiboViewHolder holder) {
         if (null != holder.listener) {
-            if (amiiboPath.contains(holder.amiiboFile.getFilePath())) {
-                amiiboPath.remove(holder.amiiboFile.getFilePath());
+            String uri = null != holder.amiiboFile.getDocUri()
+                    ? holder.amiiboFile.getDocUri().getUri().toString() : null;
+            String path = null != holder.amiiboFile.getFilePath()
+                    ? holder.amiiboFile.getFilePath().getAbsolutePath() : null;
+
+            if (amiiboPath.contains(uri) || amiiboPath.contains(path)) {
+                if (null != uri) amiiboPath.remove(uri);
+                if (null != path) amiiboPath.remove(path);
             } else {
-                amiiboPath.add(holder.amiiboFile.getFilePath());
+                if (null != uri) amiiboPath.add(uri);
+                if (null != path) amiiboPath.add(path);
             }
             holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile);
         }
@@ -348,7 +354,7 @@ public class BrowserAmiibosAdapter
                 // boldText.Matching(character, query), hasTagInfo);
 
                 if (null != item.getFilePath()) {
-                    boolean expanded = amiiboPath.contains(item.getFilePath());
+                    boolean expanded = amiiboPath.contains(item.getFilePath().getAbsolutePath());
                     itemView.findViewById(R.id.menu_options)
                             .setVisibility(expanded ? View.VISIBLE : View.GONE);
                     itemView.findViewById(R.id.txtUsage)
@@ -369,8 +375,26 @@ public class BrowserAmiibosAdapter
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
                         this.txtPath.setTextColor(a.data);
                     }
-                } else if (null != item.getDocPath()) {
+                } else if (null != item.getDocUri()) {
+                    String amiiboUri = item.getDocUri().getUri().toString();
+                    boolean expanded = amiiboPath.contains(amiiboUri);
+                    itemView.findViewById(R.id.menu_options)
+                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                    itemView.findViewById(R.id.txtUsage)
+                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                    if (expanded) listener.onAmiiboRebind(itemView, amiiboFile);
 
+                    this.itemView.setEnabled(true);
+                    this.txtPath.setText(boldSpannable.IndexOf(amiiboUri, query));
+                    TypedValue a = new TypedValue();
+                    this.txtPath.getContext().getTheme().resolveAttribute(
+                            android.R.attr.textColor, a, true);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                        this.txtPath.setTextColor(a.data);
+                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                        this.txtPath.setTextColor(a.data);
+                    }
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");

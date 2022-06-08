@@ -1003,9 +1003,42 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onRootFolderChanged(true);
     }
 
+    private boolean isDocumentStorage() {
+        if (null != this.settings.getBrowserRootDocument()) {
+            try {
+                DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
+                return true;
+            } catch (IllegalArgumentException iae) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private void onDocumentRequested() throws ActivityNotFoundException {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+            intent.putExtra("android.content.extra.FANCY", true);
+            onDocumentTree.launch(intent);
+        }
+    }
+
+    private void onDocumentEnabled() {
+        if (isDocumentStorage()) {
+            this.onStorageEnabled();
+        } else {
+            try {
+                onDocumentRequested();
+            } catch (ActivityNotFoundException anfex) {
+                new Toasty(this).Long(R.string.storage_unavailable);
+                finish();
+            }
+        }
+    }
+
     private void onStorageEnabled() {
-        try {
-            DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
+        if (isDocumentStorage()) {
             switchStorageRoot.setText(R.string.document_storage_root);
             switchStorageRoot.setOnClickListener(view -> {
                 try {
@@ -1019,8 +1052,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 this.onRefresh();
                 checkForUpdates();
             }
-
-        } catch (IllegalArgumentException iae) {
+        } else {
             boolean internal = prefs.preferEmulated().get();
             if (Storage.getFile(internal).exists() && Storage.hasPhysicalStorage()) {
                 switchStorageRoot.setText(internal
@@ -2070,29 +2102,6 @@ public class BrowserActivity extends AppCompatActivity implements
         else
             showStoragePrompt();
     });
-
-    private void onDocumentRequested() throws ActivityNotFoundException {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
-            intent.putExtra("android.content.extra.FANCY", true);
-            onDocumentTree.launch(intent);
-        }
-    }
-
-    private void onDocumentEnabled() {
-        try {
-            DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
-            this.onStorageEnabled();
-        } catch (IllegalArgumentException ignored) {
-            try {
-                onDocumentRequested();
-            } catch (ActivityNotFoundException anfex) {
-                new Toasty(this).Long(R.string.storage_unavailable);
-                finish();
-            }
-        }
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(

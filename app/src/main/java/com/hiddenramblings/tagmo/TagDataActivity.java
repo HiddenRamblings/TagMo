@@ -274,9 +274,7 @@ public class TagDataActivity extends AppCompatActivity {
         loadData();
     }
 
-    private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<>() {
-        @Override
-        public void onLoadStarted(@Nullable Drawable placeholder) { }
+    private final CustomTarget<Bitmap> imageTarget = new CustomTarget<>() {
 
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
@@ -359,9 +357,9 @@ public class TagDataActivity extends AppCompatActivity {
 
         if (null != imageAmiibo) {
             imageAmiibo.setVisibility(View.GONE);
-            GlideApp.with(this).clear(amiiboImageTarget);
+            GlideApp.with(this).clear(imageTarget);
             if (null != amiiboImageUrl) {
-                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
+                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(imageTarget);
             }
         }
     }

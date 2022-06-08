@@ -104,6 +104,9 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private CardView amiiboTile;
     private CardView amiiboCard;
     private Toolbar toolbar;
+    CustomTarget<Bitmap> amiiboTileTarget;
+    CustomTarget<Bitmap> amiiboCardTarget;
+
     private RecyclerView flaskDetails;
     private TextView flaskStats;
     private AppCompatButton writeFile;
@@ -361,12 +364,59 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         keyManager = new KeyManager(this);
 
         amiiboTile = findViewById(R.id.active_tile_layout);
-        amiiboTile.setVisibility(View.INVISIBLE);
 
         amiiboCard = findViewById(R.id.active_card_layout);
         amiiboCard.findViewById(R.id.txtError).setVisibility(View.GONE);
         amiiboCard.findViewById(R.id.txtPath).setVisibility(View.GONE);
         toolbar = findViewById(R.id.toolbar);
+
+        amiiboTileTarget = new CustomTarget<>() {
+            final AppCompatImageView imageAmiibo = amiiboTile.findViewById(R.id.imageAmiibo);
+            @Override
+            public void onLoadStarted(@Nullable Drawable placeholder) {
+                imageAmiibo.setImageResource(0);
+            }
+
+            @Override
+            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                imageAmiibo.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+                imageAmiibo.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+                imageAmiibo.setImageBitmap(resource);
+                imageAmiibo.setVisibility(View.VISIBLE);
+            }
+        };
+
+        amiiboCardTarget = new CustomTarget<>() {
+            final AppCompatImageView imageAmiibo = amiiboCard.findViewById(R.id.imageAmiibo);
+            @Override
+            public void onLoadStarted(@Nullable Drawable placeholder) {
+                imageAmiibo.setImageResource(0);
+            }
+
+            @Override
+            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                imageAmiibo.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+                imageAmiibo.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+                imageAmiibo.setImageBitmap(resource);
+                imageAmiibo.setVisibility(View.VISIBLE);
+            }
+        };
 
         flaskDetails = findViewById(R.id.flask_details);
         flaskDetails.setHasFixedSize(true);
@@ -547,29 +597,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         TextView txtGameSeries = amiiboView.findViewById(R.id.txtGameSeries);
         AppCompatImageView imageAmiibo = amiiboView.findViewById(R.id.imageAmiibo);
 
-        CustomTarget<Bitmap> target = new CustomTarget<>() {
-            @Override
-            public void onLoadStarted(@Nullable Drawable placeholder) {
-                imageAmiibo.setImageResource(0);
-            }
-
-            @Override
-            public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                imageAmiibo.setVisibility(View.INVISIBLE);
-            }
-
-            @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) {
-                imageAmiibo.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
-                imageAmiibo.setImageBitmap(resource);
-                imageAmiibo.setVisibility(View.VISIBLE);
-            }
-        };
-
         runOnUiThread(() -> {
             String amiiboHexId;
             String amiiboName;
@@ -597,9 +624,11 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 setAmiiboInfoText(txtGameSeries, gameSeries);
 
                 if (null != imageAmiibo) {
-                    GlideApp.with(this).clear(target);
+                    GlideApp.with(this).clear(amiiboView == amiiboCard
+                            ? amiiboCardTarget : amiiboTileTarget);
                     if (null != amiiboImageUrl) {
-                        GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(target);
+                        GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(
+                                amiiboView == amiiboCard ? amiiboCardTarget : amiiboTileTarget);
                     }
                 }
                 if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {

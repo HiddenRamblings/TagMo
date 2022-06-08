@@ -119,6 +119,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -259,6 +260,8 @@ public class BrowserActivity extends AppCompatActivity implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (Environment.isExternalStorageManager()) {
                 this.onStorageEnabled();
+            } else if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+                this.onDocumentTree();
             } else {
                 requestScopedStorage();
             }
@@ -2069,28 +2072,32 @@ public class BrowserActivity extends AppCompatActivity implements
             showStoragePrompt();
     });
 
+    private void onDocumentTree() {
+        if (null != this.settings.getBrowserRootDocument()) {
+            this.settings.setBrowserRootDocument(this.settings.getBrowserRootDocument());
+            this.onStorageEnabled();
+        } else {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                    intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+                    intent.putExtra("android.content.extra.FANCY", true);
+                    onDocumentTree.launch(intent);
+                }
+            } catch (ActivityNotFoundException anfex) {
+                new Toasty(this).Long(R.string.storage_unavailable);
+                finish();
+            }
+        }
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.R)
     ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (Environment.isExternalStorageManager()) {
             this.onStorageEnabled();
         } else {
-            if (null != this.settings.getBrowserRootDocument()) {
-                this.settings.setBrowserRootDocument(this.settings.getBrowserRootDocument());
-                this.onStorageEnabled();
-            } else {
-                try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                        intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
-                        intent.putExtra("android.content.extra.FANCY", true);
-                        onDocumentTree.launch(intent);
-                    }
-                } catch (ActivityNotFoundException anfex) {
-                    new Toasty(this).Long(R.string.storage_unavailable);
-                    finish();
-                }
-            }
+            this.onDocumentTree();
         }
     });
 

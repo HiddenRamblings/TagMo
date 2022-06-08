@@ -21,7 +21,6 @@ import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
-import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -68,10 +67,6 @@ public class FoomiiboAdapter
     public void setMissingIds(ArrayList<Long> missingIds) {
         this.missingIds = missingIds;
     }
-
-//    public ArrayList<Amiibo> getFoomiiboQueue() {
-//        return foomiiboQueue;
-//    }
 
     public void resetSelections() {
         this.amiiboList.clear();
@@ -177,9 +172,7 @@ public class FoomiiboAdapter
     @Override
     public void onBindViewHolder(final FoomiiboViewHolder holder, int position) {
         final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
-        holder.itemView.setOnClickListener(view -> {
-            handleClickEvent(holder, clickPosition);
-        });
+        holder.itemView.setOnClickListener(view -> handleClickEvent(holder, clickPosition));
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (settings.getAmiiboView() == VIEW.IMAGE.getValue())

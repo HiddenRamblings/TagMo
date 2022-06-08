@@ -145,9 +145,7 @@ public class BrowserAmiibosAdapter
 
     @Override
     public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
-        holder.itemView.setOnClickListener(view -> {
-            handleClickEvent(holder);
-        });
+        holder.itemView.setOnClickListener(view -> handleClickEvent(holder));
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {

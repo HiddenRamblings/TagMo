@@ -145,10 +145,13 @@ public class FoomiiboAdapter
         }
     }
 
-    private void setIsHighlighted(FoomiiboViewHolder holder, boolean selected) {
-        holder.isHighlighted = selected;
-        holder.itemView.findViewById(R.id.highlight).setBackgroundResource(
-                selected ? R.drawable.rounded_view : 0);
+    private void setIsHighlighted(FoomiiboViewHolder holder, boolean isHighlighted) {
+        View highlight = holder.itemView.findViewById(R.id.highlight);
+        if (isHighlighted) {
+            highlight.setBackgroundResource(R.drawable.rounded_neon);
+        } else {
+            highlight.setBackgroundResource(0);
+        }
     }
 
     private void handleClickEvent(final FoomiiboViewHolder holder, int position) {
@@ -174,8 +177,6 @@ public class FoomiiboAdapter
     @Override
     public void onBindViewHolder(final FoomiiboViewHolder holder, int position) {
         final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
-        holder.isHighlighted = false;
-        holder.itemView.findViewById(R.id.highlight).setBackground(null);
         holder.itemView.setOnClickListener(view -> {
             handleClickEvent(holder, clickPosition);
         });
@@ -187,7 +188,8 @@ public class FoomiiboAdapter
                     holder.listener.onFoomiiboImageClicked(holder.foomiibo);
             });
         }
-        holder.bind(getItem(holder.getBindingAdapterPosition()));
+        holder.bind(getItem(clickPosition));
+        setIsHighlighted(holder, amiiboList.contains(holder.foomiibo));
     }
 
     public void refresh() {
@@ -266,7 +268,6 @@ public class FoomiiboAdapter
         public final AppCompatImageView imageAmiibo;
 
         Amiibo foomiibo = null;
-        boolean isHighlighted = false;
 
         private final BoldSpannable boldSpannable = new BoldSpannable();
 
@@ -356,10 +357,13 @@ public class FoomiiboAdapter
             String query = settings.getQuery().toLowerCase();
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
-                itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
-                itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
                 if (null != foomiibo && foomiiboId.contains(foomiibo.id)) {
-                    listener.onFoomiiboClicked(itemView, foomiibo);
+                    itemView.findViewById(R.id.menu_options).setVisibility(View.VISIBLE);
+                    itemView.findViewById(R.id.txtUsage).setVisibility(View.VISIBLE);
+                    listener.onFoomiiboRebind(itemView, foomiibo);
+                } else {
+                    itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
+                    itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
                 }
 
                 boolean hasTagInfo = null != tagInfo;
@@ -457,6 +461,7 @@ public class FoomiiboAdapter
 
     public interface OnFoomiiboClickListener {
         void onFoomiiboClicked(View itemView, Amiibo amiibo);
+        void onFoomiiboRebind(View itemView, Amiibo amiibo);
         void onFoomiiboImageClicked(Amiibo amiibo);
     }
 

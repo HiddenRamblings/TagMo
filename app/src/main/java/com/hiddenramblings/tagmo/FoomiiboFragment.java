@@ -359,40 +359,42 @@ public class FoomiiboFragment extends Fragment implements
     }
 
     private void getGameCompatibility(TextView txtUsage, byte[] tagData) {
-        try {
-            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                long amiiboId = TagUtils.amiiboIdFromTag(tagData);
 
-            GamesManager gamesManager = GamesManager.getGamesManager(requireContext());
+                GamesManager gamesManager = GamesManager.getGamesManager(requireContext());
 
-            StringBuilder usage = new StringBuilder();
-            usage.append("\n3DS:");
-            for (String game : gamesManager.get3DSGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
+                StringBuilder usage = new StringBuilder();
+                usage.append("\n3DS:");
+                for (String game : gamesManager.get3DSGames(amiiboId)) {
+                    if (usage.toString().endsWith(":"))
+                        usage.append("  ");
+                    else
+                        usage.append(", ");
+                    usage.append(game);
+                }
+                usage.append("\n\nWiiU:");
+                for (String game : gamesManager.getWiiUGames(amiiboId)) {
+                    if (usage.toString().endsWith(":"))
+                        usage.append("  ");
+                    else
+                        usage.append(", ");
+                    usage.append(game);
+                }
+                usage.append("\n\nSwitch:");
+                for (String game : gamesManager.getSwitchGames(amiiboId)) {
+                    if (usage.toString().endsWith(":"))
+                        usage.append("  ");
+                    else
+                        usage.append(", ");
+                    usage.append(game);
+                }
+                requireActivity().runOnUiThread(() -> txtUsage.setText(usage));
+            } catch (Exception ex) {
+                Debug.Log(ex);
             }
-            usage.append("\n\nWiiU:");
-            for (String game : gamesManager.getWiiUGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
-            usage.append("\n\nSwitch:");
-            for (String game : gamesManager.getSwitchGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
-            txtUsage.setText(usage);
-        } catch (Exception ex) {
-            Debug.Log(ex);
-        }
+        });
     }
 
     public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
@@ -427,6 +429,30 @@ public class FoomiiboFragment extends Fragment implements
                 txtUsage.setVisibility(View.VISIBLE);
                 getGameCompatibility(txtUsage, tagData);
             }
+        }
+    }
+
+    @Override
+    public void onFoomiiboRebind(View itemView, Amiibo amiibo) {
+        byte[] tagData = new byte[0];
+        for (byte[] data : resultData) {
+            try {
+                if (data.length > 0 && TagUtils.amiiboIdFromTag(data) == amiibo.id) {
+                    tagData = data;
+                    break;
+                }
+            } catch (Exception ignored) { }
+        }
+        if (tagData.length == 0)
+            tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
+        try {
+            tagData = TagUtils.getValidatedData(keyManager, tagData);
+        } catch (Exception ignored) { }
+
+        if (settings.getAmiiboView() != BrowserSettings.VIEW.IMAGE.getValue()) {
+            getToolbarOptions(itemView.findViewById(R.id.menu_options)
+                    .findViewById(R.id.toolbar), tagData);
+            getGameCompatibility(itemView.findViewById(R.id.txtUsage), tagData);
         }
     }
 

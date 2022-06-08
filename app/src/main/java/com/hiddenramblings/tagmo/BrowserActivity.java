@@ -2029,7 +2029,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                     intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
                     intent.putExtra("android.content.extra.FANCY", true);
-                    onDocumentTree.launch(NFCIntent.getIntent(intent));
+                    onDocumentTree.launch(intent);
                 }
             }  catch (ActivityNotFoundException anfex) {
                 new Toasty(this).Long(R.string.storage_unavailable);

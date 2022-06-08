@@ -1672,9 +1672,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private final CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<>() {
-        @Override
-        public void onLoadStarted(@Nullable Drawable placeholder) { }
+    private final CustomTarget<Bitmap> imageTarget = new CustomTarget<>() {
 
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
@@ -1799,9 +1797,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (null != imageAmiibo) {
             imageAmiibo.setVisibility(View.GONE);
-            GlideApp.with(this).clear(amiiboImageTarget);
+            GlideApp.with(this).clear(imageTarget);
             if (null != amiiboImageUrl) {
-                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
+                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(imageTarget);
                 final long amiiboTagId = amiiboId;
                 imageAmiibo.setOnClickListener(view -> {
                     Bundle bundle = new Bundle();
@@ -2086,6 +2084,11 @@ public class BrowserActivity extends AppCompatActivity implements
         prefs.downloadUrl().remove();
     });
 
+    private boolean isBrowserObstructed() {
+        return getWindow().getDecorView().getRootView().isShown()
+                && !getWindow().getDecorView().getRootView().hasWindowFocus();
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -2162,7 +2165,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
                 if (null != error && prefs.enable_elite_support().get()) {
                     if (e instanceof android.nfc.TagLostException) {
-                        new Toasty(this).Short(R.string.speed_scan);
+                        new Toasty(BrowserActivity.this).Short(R.string.speed_scan);
                         try {
                             if (null != mifare) mifare.close();
                         } catch (IOException ex) {

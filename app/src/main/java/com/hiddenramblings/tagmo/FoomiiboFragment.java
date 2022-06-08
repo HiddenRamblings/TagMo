@@ -362,34 +362,8 @@ public class FoomiiboFragment extends Fragment implements
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-
                 GamesManager gamesManager = GamesManager.getGamesManager(requireContext());
-
-                StringBuilder usage = new StringBuilder();
-                usage.append("\n3DS:");
-                for (String game : gamesManager.get3DSGames(amiiboId)) {
-                    if (usage.toString().endsWith(":"))
-                        usage.append("  ");
-                    else
-                        usage.append(", ");
-                    usage.append(game);
-                }
-                usage.append("\n\nWiiU:");
-                for (String game : gamesManager.getWiiUGames(amiiboId)) {
-                    if (usage.toString().endsWith(":"))
-                        usage.append("  ");
-                    else
-                        usage.append(", ");
-                    usage.append(game);
-                }
-                usage.append("\n\nSwitch:");
-                for (String game : gamesManager.getSwitchGames(amiiboId)) {
-                    if (usage.toString().endsWith(":"))
-                        usage.append("  ");
-                    else
-                        usage.append(", ");
-                    usage.append(game);
-                }
+                String usage =gamesManager.getGamesCompatibility(amiiboId);
                 requireActivity().runOnUiThread(() -> txtUsage.setText(usage));
             } catch (Exception ex) {
                 Debug.Log(ex);

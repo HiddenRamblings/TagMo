@@ -344,8 +344,7 @@ public class BrowserSettings implements Parcelable {
         dest.writeTypedList(this.amiiboFiles);
         dest.writeList(this.folders);
         dest.writeSerializable(this.browserFolder);
-        dest.writeString(null != this.browserDocument
-                ? this.browserDocument.toString() : null);
+        dest.writeString(null != this.browserDocument ? this.browserDocument.toString() : null);
         dest.writeString(this.query);
         dest.writeInt(this.sort);
         dest.writeString(this.filterGameSeries);
@@ -363,7 +362,8 @@ public class BrowserSettings implements Parcelable {
         this.folders = new ArrayList<>();
         in.readList(this.folders, File.class.getClassLoader());
         this.browserFolder = (File) in.readSerializable();
-        this.browserDocument = null != in.readString() ? Uri.parse(in.readString()) : null;
+        String docs = in.readString();
+        this.browserDocument = null != docs && docs.length() > 0 ? Uri.parse(docs) : null;
         this.query = in.readString();
         this.sort = in.readInt();
         this.filterGameSeries = in.readString();

@@ -988,40 +988,42 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void getGameCompatibility(TextView txtUsage, byte[] tagData) {
-        try {
-            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                long amiiboId = TagUtils.amiiboIdFromTag(tagData);
 
-            GamesManager gamesManager = GamesManager.getGamesManager(this);
+                GamesManager gamesManager = GamesManager.getGamesManager(this);
 
-            StringBuilder usage = new StringBuilder();
-            usage.append("\n3DS:");
-            for (String game : gamesManager.get3DSGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
+                StringBuilder usage = new StringBuilder();
+                usage.append("\n3DS:");
+                for (String game : gamesManager.get3DSGames(amiiboId)) {
+                    if (usage.toString().endsWith(":"))
+                        usage.append("  ");
+                    else
+                        usage.append(", ");
+                    usage.append(game);
+                }
+                usage.append("\n\nWiiU:");
+                for (String game : gamesManager.getWiiUGames(amiiboId)) {
+                    if (usage.toString().endsWith(":"))
+                        usage.append("  ");
+                    else
+                        usage.append(", ");
+                    usage.append(game);
+                }
+                usage.append("\n\nSwitch:");
+                for (String game : gamesManager.getSwitchGames(amiiboId)) {
+                    if (usage.toString().endsWith(":"))
+                        usage.append("  ");
+                    else
+                        usage.append(", ");
+                    usage.append(game);
+                }
+                runOnUiThread(() -> txtUsage.setText(usage));
+            } catch (Exception ex) {
+                Debug.Log(ex);
             }
-            usage.append("\n\nWiiU:");
-            for (String game : gamesManager.getWiiUGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
-            usage.append("\n\nSwitch:");
-            for (String game : gamesManager.getSwitchGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
-            txtUsage.setText(usage);
-        } catch (Exception ex) {
-            Debug.Log(ex);
-        }
+        });
     }
 
     public void onRefresh() {
@@ -1200,7 +1202,6 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onAmiiboClicked(View itemView, AmiiboFile amiiboFile) {
         if (amiiboFile.getFilePath() == null)
             return;
-
         try {
             byte[] tagData = null != amiiboFile.getData() ? amiiboFile.getData()
                     : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
@@ -1221,6 +1222,26 @@ public class BrowserActivity extends AppCompatActivity implements
                     txtUsage.setVisibility(View.VISIBLE);
                     getGameCompatibility(txtUsage, tagData);
                 }
+            } else {
+                updateAmiiboView(tagData, amiiboFile);
+            }
+        } catch (Exception e) {
+            Debug.Log(e);
+        }
+    }
+
+    @Override
+    public void onAmiiboRebind(View itemView, AmiiboFile amiiboFile) {
+        if (amiiboFile.getFilePath() == null)
+            return;
+        try {
+            byte[] tagData = null != amiiboFile.getData() ? amiiboFile.getData()
+                    : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
+
+            if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
+                getToolbarOptions(itemView.findViewById(R.id.menu_options)
+                        .findViewById(R.id.toolbar), tagData, amiiboFile);
+                getGameCompatibility(itemView.findViewById(R.id.txtUsage), tagData);
             } else {
                 updateAmiiboView(tagData, amiiboFile);
             }

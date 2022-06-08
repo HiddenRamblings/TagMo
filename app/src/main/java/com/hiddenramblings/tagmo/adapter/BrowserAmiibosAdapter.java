@@ -341,10 +341,13 @@ public class BrowserAmiibosAdapter
             String query = settings.getQuery().toLowerCase();
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
-                itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
-                itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
                 if (null != amiiboFile && amiiboPath.contains(amiiboFile.getFilePath())) {
-                    listener.onAmiiboClicked(itemView, amiiboFile);
+                    itemView.findViewById(R.id.menu_options).setVisibility(View.VISIBLE);
+                    itemView.findViewById(R.id.txtUsage).setVisibility(View.VISIBLE);
+                    listener.onAmiiboRebind(itemView, amiiboFile);
+                } else {
+                    itemView.findViewById(R.id.menu_options).setVisibility(View.GONE);
+                    itemView.findViewById(R.id.txtUsage).setVisibility(View.GONE);
                 }
 
                 boolean hasTagInfo = null != tagInfo;
@@ -459,6 +462,7 @@ public class BrowserAmiibosAdapter
 
     public interface OnAmiiboClickListener {
         void onAmiiboClicked(View itemView, AmiiboFile amiiboFile);
+        void onAmiiboRebind(View itemView, AmiiboFile amiiboFile);
         void onAmiiboImageClicked(AmiiboFile amiiboFile);
     }
 }

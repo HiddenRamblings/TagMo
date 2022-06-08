@@ -505,6 +505,9 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             }
 
             @Override
+            public void onFoomiiboRebind(View itemView, Amiibo amiibo) { }
+
+            @Override
             public void onFoomiiboImageClicked(Amiibo amiibo) {
                 handleImageClicked(amiibo);
             }

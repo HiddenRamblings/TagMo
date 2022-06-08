@@ -86,7 +86,7 @@ public class BluupFlaskAdapter
     public void onBindViewHolder(final FlaskViewHolder holder, int position) {
         View highlight = holder.itemView.findViewById(R.id.highlight);
         if (TagMo.getPrefs().flaskActiveSlot().get() == position) {
-            highlight.setBackgroundResource(R.drawable.rounded_neon);
+            highlight.setBackgroundResource(R.drawable.cardview_outline);
         } else {
             highlight.setBackgroundResource(0);
         }

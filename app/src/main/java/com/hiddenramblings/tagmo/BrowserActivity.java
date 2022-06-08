@@ -1004,7 +1004,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onStorageEnabled() {
-        if (null != this.settings.getBrowserRootDocument()) {
+        try {
+            DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
             switchStorageRoot.setText(R.string.document_storage_root);
             switchStorageRoot.setOnClickListener(view -> {
                 try {
@@ -1018,7 +1019,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 this.onRefresh();
                 checkForUpdates();
             }
-        } else {
+
+        } catch (IllegalArgumentException iae) {
             boolean internal = prefs.preferEmulated().get();
             if (Storage.getFile(internal).exists() && Storage.hasPhysicalStorage()) {
                 switchStorageRoot.setText(internal

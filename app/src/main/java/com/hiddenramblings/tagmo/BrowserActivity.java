@@ -270,10 +270,14 @@ public class BrowserActivity extends AppCompatActivity implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
                 this.onDocumentEnabled();
-            } else if (Environment.isExternalStorageManager()) {
-                this.onStorageEnabled();
             } else {
-                requestScopedStorage();
+                if (Environment.isExternalStorageManager()) {
+                    prefs.browserRootDocument().remove();
+                    // this.settings.setBrowserRootDocument(null);
+                    this.onStorageEnabled();
+                } else {
+                    requestScopedStorage();
+                }
             }
         } else {
             onRequestStorage.launch(PERMISSIONS_STORAGE);
@@ -1572,18 +1576,14 @@ public class BrowserActivity extends AppCompatActivity implements
 
     void onRootFolderChanged(boolean indicator) {
         if (null != this.settings && fakeSnackbar.getVisibility() != View.VISIBLE) {
-            if (null != this.settings.getBrowserRootDocument()) {
-                try {
-                    DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
-                            this.settings.getBrowserRootDocument());
-                    if (!keyManager.isKeyMissing()) {
-                        if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
-                        loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
-                    }
-                } catch (IllegalArgumentException iae) {
-                    Debug.Log(iae);
+            try {
+                DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
+                        this.settings.getBrowserRootDocument());
+                if (!keyManager.isKeyMissing()) {
+                    if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
+                    loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
                 }
-            } else {
+            } catch (IllegalArgumentException iae) {
                 File rootFolder = this.settings.getBrowserRootFolder();
                 if (!keyManager.isKeyMissing()) {
                     if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
@@ -2079,19 +2079,10 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onDocumentEnabled() {
-        if (null != this.settings.getBrowserRootDocument()) {
-            try {
-                DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
-                this.onStorageEnabled();
-            } catch (IllegalArgumentException ignored) {
-                try {
-                    onDocumentRequested();
-                } catch (ActivityNotFoundException anfex) {
-                    new Toasty(this).Long(R.string.storage_unavailable);
-                    finish();
-                }
-            }
-        } else {
+        try {
+            DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
+            this.onStorageEnabled();
+        } catch (IllegalArgumentException ignored) {
             try {
                 onDocumentRequested();
             } catch (ActivityNotFoundException anfex) {
@@ -2105,6 +2096,8 @@ public class BrowserActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (Environment.isExternalStorageManager()) {
+            prefs.browserRootDocument().remove();
+            // this.settings.setBrowserRootDocument(null);
             this.onStorageEnabled();
         } else {
             this.onDocumentEnabled();

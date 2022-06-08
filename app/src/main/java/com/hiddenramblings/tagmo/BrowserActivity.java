@@ -992,7 +992,7 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 long amiiboId = TagUtils.amiiboIdFromTag(tagData);
                 GamesManager gamesManager = GamesManager.getGamesManager(this);
-                String usage =gamesManager.getGamesCompatibility(amiiboId);
+                String usage = gamesManager.getGamesCompatibility(amiiboId);
                 runOnUiThread(() -> txtUsage.setText(usage));
             } catch (Exception ex) {
                 Debug.Log(ex);

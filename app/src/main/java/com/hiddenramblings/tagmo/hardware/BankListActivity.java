@@ -88,6 +88,8 @@ public class BankListActivity extends AppCompatActivity implements
     private CardView amiiboTile;
     private CardView amiiboCard;
     private Toolbar toolbar;
+    CustomTarget<Bitmap> amiiboTileTarget;
+    CustomTarget<Bitmap> amiiboCardTarget;
 
     private TextView bankStats;
     private NumberPicker eliteBankCount;
@@ -146,6 +148,46 @@ public class BankListActivity extends AppCompatActivity implements
         amiiboTile = findViewById(R.id.active_tile_layout);
         amiiboCard = findViewById(R.id.active_card_layout);
         toolbar = findViewById(R.id.toolbar);
+
+        amiiboTileTarget = new CustomTarget<>() {
+            final AppCompatImageView imageAmiibo = amiiboTile.findViewById(R.id.imageAmiibo);
+
+            @Override
+            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                imageAmiibo.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) { }
+
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 3);
+                imageAmiibo.requestLayout();
+                imageAmiibo.setImageBitmap(resource);
+                imageAmiibo.setVisibility(View.VISIBLE);
+            }
+        };
+
+        amiiboCardTarget = new CustomTarget<>() {
+            final AppCompatImageView imageAmiibo = amiiboCard.findViewById(R.id.imageAmiibo);
+
+            @Override
+            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                imageAmiibo.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) { }
+
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 3);
+                imageAmiibo.requestLayout();
+                imageAmiibo.setImageBitmap(resource);
+                imageAmiibo.setVisibility(View.VISIBLE);
+            }
+        };
 
         bankStats = findViewById(R.id.bank_stats);
         eliteBankCount = findViewById(R.id.bank_number_picker);
@@ -765,6 +807,7 @@ public class BankListActivity extends AppCompatActivity implements
         }
 
         if (null != amiibo) {
+            amiiboView.setVisibility(View.VISIBLE);
             amiiboImageUrl = amiibo.getImageUrl();
             amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
             if (null != amiibo.name)
@@ -800,32 +843,14 @@ public class BankListActivity extends AppCompatActivity implements
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo);
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
-        CustomTarget<Bitmap> amiiboImageTarget = new CustomTarget<>() {
-            @Override
-            public void onLoadStarted(@Nullable Drawable placeholder) { }
-
-            @Override
-            public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                imageAmiibo.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) { }
-
-            @Override
-            public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
-                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 3);
-                imageAmiibo.requestLayout();
-                imageAmiibo.setImageBitmap(resource);
-                imageAmiibo.setVisibility(View.VISIBLE);
-            }
-        };
-
         if (null != imageAmiibo) {
+
             imageAmiibo.setVisibility(View.GONE);
-            GlideApp.with(this).clear(amiiboImageTarget);
+            GlideApp.with(this).clear(amiiboView == amiiboCard
+                    ? amiiboCardTarget : amiiboTileTarget);
             if (null != amiiboImageUrl) {
-                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(amiiboImageTarget);
+                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(
+                        amiiboView == amiiboCard ? amiiboCardTarget : amiiboTileTarget);
                 final long amiiboTagId = amiiboId;
                 imageAmiibo.setOnClickListener(view -> {
                     if (amiiboTagId == -1) {

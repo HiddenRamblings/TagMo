@@ -297,6 +297,9 @@ public class BankListActivity extends AppCompatActivity implements
             }
 
             @Override
+            public void onFoomiiboRebind(View itemView, Amiibo amiibo) { }
+
+            @Override
             public void onFoomiiboImageClicked(Amiibo amiibo) {
                 if (null != amiibo) {
                     writeFoomiiboData(amiibo, clickedPosition);
@@ -637,6 +640,9 @@ public class BankListActivity extends AppCompatActivity implements
                     writeFoomiiboData(amiibo, position);
                 }
             }
+
+            @Override
+            public void onFoomiiboRebind(View itemView, Amiibo amiibo) { }
 
             @Override
             public void onFoomiiboImageClicked(Amiibo amiibo) {

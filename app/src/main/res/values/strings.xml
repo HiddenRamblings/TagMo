@@ -229,6 +229,7 @@
     <string name="delete_misisng">Cannot delete a scanned tag!</string>
     <string name="erase_active">Cannot erase the active bank!</string>
     <string name="backup_filename">Set amiibo&#8482; Bin Name</string>
+    <string name="document_storage_root">Update Document Storage</string>
     <string name="emulated_storage_root">Browse Emulated Storage</string>
     <string name="physical_storage_root">Browse Physical Storage</string>
 

@@ -124,4 +124,42 @@ public class GamesManager {
     public ArrayList<String> getSwitchGames(long id) {
         return gamesSwitch.get(id);
     }
+
+    public String getGamesCompatibility(long amiiboId) {
+        StringBuilder usage = new StringBuilder();
+        if (!get3DSGames(amiiboId).isEmpty()) {
+            usage.append("\n3DS:");
+            for (String game : get3DSGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            usage.append("\n");
+        }
+        if (!getWiiUGames(amiiboId).isEmpty()) {
+            usage.append("\nWiiU:");
+            for (String game : getWiiUGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            usage.append("\n");
+        }
+        if (!getSwitchGames(amiiboId).isEmpty()) {
+            usage.append("\nSwitch:");
+            for (String game : getSwitchGames(amiiboId)) {
+                if (usage.toString().endsWith(":"))
+                    usage.append("  ");
+                else
+                    usage.append(", ");
+                usage.append(game);
+            }
+            usage.append("\n");
+        }
+        return usage.toString();
+    }
 }

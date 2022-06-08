@@ -42,9 +42,18 @@ public class AmiiboFile implements Parcelable {
         return filePath;
     }
 
+    public DocumentFile getDocPath() {
+        return docPath;
+    }
+
     @SuppressWarnings("unused")
     public void setFilePath(File filePath) {
         this.filePath = filePath;
+    }
+
+    @SuppressWarnings("unused")
+    public void setDocPath(DocumentFile docPath) {
+        this.docPath = docPath;
     }
 
     public long getId() {

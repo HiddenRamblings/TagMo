@@ -4,6 +4,8 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
@@ -90,6 +92,7 @@ public class BrowserSettings implements Parcelable {
     protected ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
     protected ArrayList<File> folders = new ArrayList<>();
     protected File browserFolder;
+    protected DocumentFile browserDocument;
     protected String query;
     protected int sort;
     protected String filterGameSeries;
@@ -247,6 +250,14 @@ public class BrowserSettings implements Parcelable {
 
     public void setBrowserRootFolder(File browserRootFolder) {
         this.browserFolder = browserRootFolder;
+    }
+
+    public DocumentFile getBrowserRootDocument() {
+        return this.browserDocument;
+    }
+
+    public void setBrowserRootDocument(DocumentFile browserRootDocument) {
+        this.browserDocument = browserRootDocument;
     }
 
     public String getImageNetworkSettings() {

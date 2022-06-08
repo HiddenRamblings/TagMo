@@ -257,18 +257,6 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
-                this.onStorageEnabled();
-            } else if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
-                this.onDocumentTree();
-            } else {
-                requestScopedStorage();
-            }
-        } else {
-            onRequestStorage.launch(PERMISSIONS_STORAGE);
-        }
-
         if (null == this.settings) {
             this.settings = new BrowserSettings().initialize();
         } else {
@@ -278,6 +266,18 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onFilterAmiiboTypeChanged();
         }
         this.settings.addChangeListener(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+                this.onDocumentEnabled();
+            } else if (Environment.isExternalStorageManager()) {
+                this.onStorageEnabled();
+            } else {
+                requestScopedStorage();
+            }
+        } else {
+            onRequestStorage.launch(PERMISSIONS_STORAGE);
+        }
 
         AppCompatImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
@@ -1004,12 +1004,7 @@ public class BrowserActivity extends AppCompatActivity implements
             switchStorageRoot.setText(R.string.document_storage_root);
             switchStorageRoot.setOnClickListener(view -> {
                 try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                        intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
-                        intent.putExtra("android.content.extra.FANCY", true);
-                        onDocumentTree.launch(intent);
-                    }
+                    onDocumentRequested();
                 } catch (ActivityNotFoundException ignored) { }
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             });
@@ -1585,7 +1580,9 @@ public class BrowserActivity extends AppCompatActivity implements
                         if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
                         loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
                     }
-                } catch (IllegalArgumentException ignored) { }
+                } catch (IllegalArgumentException iae) {
+                    Debug.Log(iae);
+                }
             } else {
                 File rootFolder = this.settings.getBrowserRootFolder();
                 if (!keyManager.isKeyMissing()) {
@@ -2072,18 +2069,31 @@ public class BrowserActivity extends AppCompatActivity implements
             showStoragePrompt();
     });
 
-    private void onDocumentTree() {
+    private void onDocumentRequested() throws ActivityNotFoundException {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+            intent.putExtra("android.content.extra.FANCY", true);
+            onDocumentTree.launch(intent);
+        }
+    }
+
+    private void onDocumentEnabled() {
         if (null != this.settings.getBrowserRootDocument()) {
-            this.settings.setBrowserRootDocument(this.settings.getBrowserRootDocument());
-            this.onStorageEnabled();
+            try {
+                DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
+                this.onStorageEnabled();
+            } catch (IllegalArgumentException ignored) {
+                try {
+                    onDocumentRequested();
+                } catch (ActivityNotFoundException anfex) {
+                    new Toasty(this).Long(R.string.storage_unavailable);
+                    finish();
+                }
+            }
         } else {
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                    intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
-                    intent.putExtra("android.content.extra.FANCY", true);
-                    onDocumentTree.launch(intent);
-                }
+                onDocumentRequested();
             } catch (ActivityNotFoundException anfex) {
                 new Toasty(this).Long(R.string.storage_unavailable);
                 finish();
@@ -2097,7 +2107,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (Environment.isExternalStorageManager()) {
             this.onStorageEnabled();
         } else {
-            this.onDocumentTree();
+            this.onDocumentEnabled();
         }
     });
 

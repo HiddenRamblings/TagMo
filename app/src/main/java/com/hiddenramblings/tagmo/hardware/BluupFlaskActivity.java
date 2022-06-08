@@ -642,61 +642,64 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     }
 
     private Amiibo getAmiiboByName(String amiiboName) {
-            AmiiboManager amiiboManager;
-            try {
-                amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
-            } catch (IOException | JSONException | ParseException e) {
-                Debug.Log(e);
-                amiiboManager = null;
-                new Toasty(this).Short(R.string.amiibo_info_parse_error);
+        AmiiboManager amiiboManager;
+        try {
+            amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
+        } catch (IOException | JSONException | ParseException e) {
+            Debug.Log(e);
+            amiiboManager = null;
+            new Toasty(this).Short(R.string.amiibo_info_parse_error);
+        }
+
+        if (Thread.currentThread().isInterrupted()) return null;
+
+        Amiibo selectedAmiibo = null;
+        if (null != amiiboManager) {
+            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                if (amiibo.name.equals(amiiboName)) {
+                    selectedAmiibo = amiibo;
+                }
             }
-
-            if (Thread.currentThread().isInterrupted()) return null;
-
-            Amiibo selectedAmiibo = null;
-            if (null != amiiboManager) {
+            if (null == selectedAmiibo) {
                 for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                    if (amiibo.name.equals(amiiboName)) {
+                    if (amiibo.name.startsWith(amiiboName)) {
                         selectedAmiibo = amiibo;
                     }
                 }
-                if (null == selectedAmiibo) {
-                    for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                        if (amiibo.name.startsWith(amiiboName)) {
-                            selectedAmiibo = amiibo;
-                        }
-                    }
-                }
             }
-            return selectedAmiibo;
-
+        }
+        return selectedAmiibo;
     }
 
     private void verifyPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED) {
-                activateBluetooth();
-            } else {
-                final String[] PERMISSIONS_LOCATION = {
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                };
-                onRequestLocationQ.launch(PERMISSIONS_LOCATION);
-            }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            final String[] PERMISSIONS_LOCATION = {
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            };
-            onRequestLocation.launch(PERMISSIONS_LOCATION);
-        } else {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             mBluetoothAdapter = getBluetoothAdapter();
             if (null != mBluetoothAdapter)
                 selectBluetoothDevice();
             else
                 onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+        } else {
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED) {
+                activateBluetooth();
+            } else {
+                new AlertDialog.Builder(this)
+                        .setMessage(R.string.location_disclosure)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.accept, (dialog, which) -> {
+                            dialog.dismiss();
+                            final String[] PERMISSIONS_LOCATION = {
+                                    Manifest.permission.ACCESS_FINE_LOCATION,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION
+                            };
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                onRequestLocationQ.launch(PERMISSIONS_LOCATION);
+                            } else {
+                                onRequestLocation.launch(PERMISSIONS_LOCATION);
+                            }
+                        }).setNegativeButton(R.string.deny, (dialog, which) -> finish()).show();
+            }
         }
     }
 

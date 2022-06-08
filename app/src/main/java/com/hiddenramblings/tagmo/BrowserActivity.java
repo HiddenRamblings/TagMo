@@ -397,7 +397,8 @@ public class BrowserActivity extends AppCompatActivity implements
                         .setPositiveButton(R.string.accept, (dialog, which) -> {
                             prefs.hasAcceptedTOS().put(true);
                             dialog.dismiss();
-                        }).show().getWindow()
+                        })
+                        .show().getWindow()
                         .setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
                                 LinearLayout.LayoutParams.WRAP_CONTENT);
             } catch (Exception e) {
@@ -1014,12 +1015,21 @@ public class BrowserActivity extends AppCompatActivity implements
         } else {
             switchStorageRoot.setVisibility(View.GONE);
         }
-        if (keyManager.isKeyMissing()) {
-            showFakeSnackbar(getString(R.string.locating_keys));
-            locateKeyFiles();
+        if (null != this.settings.getBrowserRootDocument()) {
+            if (keyManager.isKeyMissing()) {
+                verifyKeyFiles();
+            } else {
+                this.onRefresh();
+                checkForUpdates();
+            }
         } else {
-            this.onRefresh();
-            checkForUpdates();
+            if (keyManager.isKeyMissing()) {
+                showFakeSnackbar(getString(R.string.locating_keys));
+                locateKeyFiles();
+            } else {
+                this.onRefresh();
+                checkForUpdates();
+            }
         }
     }
 
@@ -1174,10 +1184,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onAmiiboClicked(View itemView, AmiiboFile amiiboFile) {
-        if (amiiboFile.getFilePath() == null)
+        if (null == amiiboFile.getDocUri() && null == amiiboFile.getFilePath())
             return;
         try {
             byte[] tagData = null != amiiboFile.getData() ? amiiboFile.getData()
+                    : null != amiiboFile.getDocUri()
+                    ? TagUtils.getValidatedDocument(keyManager, amiiboFile.getDocUri())
                     : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
@@ -1371,8 +1383,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         // List all existing files inside picked directory
         if (null != pickedDir) {
-            this.settings.setBrowserRootDocument(pickedDir);
-            onRefresh();
+            this.settings.setBrowserRootDocument(treeUri);
+            this.onStorageEnabled();
         }
 
 //            // Create a new file and write into it
@@ -1396,7 +1408,9 @@ public class BrowserActivity extends AppCompatActivity implements
             BrowserSettings newBrowserSettings,
             BrowserSettings oldBrowserSettings) {
         if (newBrowserSettings == null || oldBrowserSettings == null) return;
-        boolean folderChanged = !BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(),
+        boolean folderChanged = !BrowserSettings.equals(newBrowserSettings.getBrowserRootDocument(),
+                oldBrowserSettings.getBrowserRootDocument())
+                && !BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(),
                 oldBrowserSettings.getBrowserRootFolder());
         if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
             settings.getAmiiboFiles().clear();
@@ -1440,6 +1454,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         prefs.edit().browserRootFolder().put(Storage.getRelativePath(
                 newBrowserSettings.getBrowserRootFolder(), prefs.preferEmulated().get()))
+                .browserRootDocument().put(newBrowserSettings
+                        .getBrowserRootDocument().toString())
                 .query().put(newBrowserSettings.getQuery())
                 .sort().put(newBrowserSettings.getSort())
                 .filterGameSeries().put(newBrowserSettings.getGameSeriesFilter())
@@ -1547,12 +1563,15 @@ public class BrowserActivity extends AppCompatActivity implements
 
     void onRootFolderChanged(boolean indicator) {
         if (null != this.settings && fakeSnackbar.getVisibility() != View.VISIBLE) {
-            DocumentFile rootDocument = this.settings.getBrowserRootDocument();
-            if (null != rootDocument) {
-                if (!keyManager.isKeyMissing()) {
-                    if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
-                    loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
-                }
+            if (null != this.settings.getBrowserRootDocument()) {
+                try {
+                    DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
+                            this.settings.getBrowserRootDocument());
+                    if (!keyManager.isKeyMissing()) {
+                        if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
+                        loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
+                    }
+                } catch (IllegalArgumentException ignored) { }
             } else {
                 File rootFolder = this.settings.getBrowserRootFolder();
                 if (!keyManager.isKeyMissing()) {
@@ -1966,6 +1985,36 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    public void verifyKeyFiles() {
+        if (keyManager.isKeyMissing()) {
+            this.runOnUiThread(() -> {
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    try {
+                        Scanner scanner = new Scanner(new URL(
+                                "https://pastebin.com/raw/aV23ha3X").openStream());
+                        for (int i = 0; i < 4; i++) {
+                            if (scanner.hasNextLine()) scanner.nextLine();
+                        }
+                        this.keyManager.evaluateKey(new ByteArrayInputStream(
+                                TagUtils.hexToByteArray(scanner.nextLine()
+                                        .replace(" ", ""))));
+                        scanner.close();
+                    } catch (IOException e) {
+                        Debug.Log(e);
+                    }
+                    if (Thread.currentThread().isInterrupted()) return;
+                    onRefresh();
+                });
+                mainLayout.setPadding(0, 0, 0, 0);
+                fakeSnackbar.setVisibility(View.GONE);
+            });
+        } else {
+            if (null != fooSnackbar && fooSnackbar.isShown())
+                this.runOnUiThread(() -> fooSnackbar.dismiss());
+            this.onRefresh();
+        }
+    }
+
     public void locateKeyFiles() {
         Executors.newSingleThreadExecutor().execute(() -> {
             File[] files = Storage.getDownloadDir(null)
@@ -1981,34 +2030,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else {
                 locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated().get()));
             }
-
-            if (keyManager.isKeyMissing()) {
-                this.runOnUiThread(() -> {
-                    Executors.newSingleThreadExecutor().execute(() -> {
-                        try {
-                            Scanner scanner = new Scanner(new URL(
-                                    "https://pastebin.com/raw/aV23ha3X").openStream());
-                            for (int i = 0; i < 4; i++) {
-                                if (scanner.hasNextLine()) scanner.nextLine();
-                            }
-                            this.keyManager.evaluateKey(new ByteArrayInputStream(
-                                    TagUtils.hexToByteArray(scanner.nextLine()
-                                            .replace(" ", ""))));
-                            scanner.close();
-                        } catch (IOException e) {
-                            Debug.Log(e);
-                        }
-                        if (Thread.currentThread().isInterrupted()) return;
-                        onRefresh();
-                    });
-                    mainLayout.setPadding(0, 0, 0, 0);
-                    fakeSnackbar.setVisibility(View.GONE);
-                });
-            } else {
-                if (null != fooSnackbar && fooSnackbar.isShown())
-                    this.runOnUiThread(() -> fooSnackbar.dismiss());
-                this.onRefresh();
-            }
+            verifyKeyFiles();
         });
     }
 
@@ -2042,16 +2064,21 @@ public class BrowserActivity extends AppCompatActivity implements
         if (Environment.isExternalStorageManager()) {
             this.onStorageEnabled();
         } else {
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                    intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
-                    intent.putExtra("android.content.extra.FANCY", true);
-                    onDocumentTree.launch(intent);
+            if (null != this.settings.getBrowserRootDocument()) {
+                this.settings.setBrowserRootDocument(this.settings.getBrowserRootDocument());
+                this.onStorageEnabled();
+            } else {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                        intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+                        intent.putExtra("android.content.extra.FANCY", true);
+                        onDocumentTree.launch(intent);
+                    }
+                } catch (ActivityNotFoundException anfex) {
+                    new Toasty(this).Long(R.string.storage_unavailable);
+                    finish();
                 }
-            }  catch (ActivityNotFoundException anfex) {
-                new Toasty(this).Long(R.string.storage_unavailable);
-                finish();
             }
         }
     });

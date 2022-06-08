@@ -50,6 +50,8 @@ public interface Preferences {
 
     String browserRootFolder();
 
+    String browserRootDocument();
+
     @DefaultInt(200)
     int eliteBankCount();
 

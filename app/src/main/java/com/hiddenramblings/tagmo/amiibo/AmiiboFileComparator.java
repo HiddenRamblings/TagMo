@@ -23,8 +23,8 @@ public class AmiiboFileComparator implements Comparator<AmiiboFile> {
 
         File filePath1 = amiiboFile1.getFilePath();
         File filePath2 = amiiboFile2.getFilePath();
-        DocumentFile docPath1 = amiiboFile1.getDocPath();
-        DocumentFile docPath2 = amiiboFile2.getDocPath();
+        DocumentFile docPath1 = amiiboFile1.getDocUri();
+        DocumentFile docPath2 = amiiboFile2.getDocUri();
         if (null != docPath1 && null != docPath2) {
             if (sort == SORT.FILE_PATH.getValue() && !(null == filePath1 && null == filePath2))
                 value = compareDocPath(docPath1, docPath2);

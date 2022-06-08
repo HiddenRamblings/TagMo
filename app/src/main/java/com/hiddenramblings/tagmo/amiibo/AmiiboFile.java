@@ -42,7 +42,7 @@ public class AmiiboFile implements Parcelable {
         return filePath;
     }
 
-    public DocumentFile getDocPath() {
+    public DocumentFile getDocUri() {
         return docPath;
     }
 
@@ -52,7 +52,7 @@ public class AmiiboFile implements Parcelable {
     }
 
     @SuppressWarnings("unused")
-    public void setDocPath(DocumentFile docPath) {
+    public void setDocUri(DocumentFile docPath) {
         this.docPath = docPath;
     }
 

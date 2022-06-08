@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageInstaller;
 import android.net.Uri;
 import android.os.Build;
@@ -12,6 +13,12 @@ import android.provider.Settings;
 
 import androidx.documentfile.provider.DocumentFile;
 
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.tasks.Task;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.settings.JSONExecutor;
@@ -31,6 +38,7 @@ import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 
 public class CheckUpdatesTask {
@@ -38,11 +46,28 @@ public class CheckUpdatesTask {
     private static final String TAGMO_GIT_API =
             "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/";
     private CheckUpdateListener listener;
+    private CheckPlayUpdateListener listenerPlay;
+    private AppUpdateManager appUpdateManager;
     private final SoftReference<BrowserActivity> activity;
     private boolean isUpdateAvailable = false;
 
     CheckUpdatesTask(BrowserActivity activity) {
         this.activity = new SoftReference<>(activity);
+        if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+            appUpdateManager = AppUpdateManagerFactory.create(activity);
+            Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+            appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+                isUpdateAvailable = appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                        && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE);
+                if (isUpdateAvailable && null != listenerPlay)
+                    listenerPlay.onPlayUpdateFound(appUpdateInfo);
+            });
+        } else {
+            configureUpdates(activity);
+        }
+    }
+
+    void configureUpdates(BrowserActivity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             PackageInstaller installer = activity.getApplicationContext()
                     .getPackageManager().getPackageInstaller();
@@ -197,6 +222,22 @@ public class CheckUpdatesTask {
         }
     }
 
+    void downloadPlayUpdate(AppUpdateInfo appUpdateInfo) {
+        try {
+            appUpdateManager.startUpdateFlowForResult(
+                    // Pass the intent that is returned by 'getAppUpdateInfo()'.
+                    appUpdateInfo,
+                    // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
+                    AppUpdateType.IMMEDIATE,
+                    // The current activity making the update request.
+                    activity.get(),
+                    // Include a request code to later monitor this update request.
+                    8675309);
+        } catch (IntentSender.SendIntentException ex) {
+            Debug.Log(ex);
+        }
+    }
+
     Boolean hasPendingUpdate() {
         return isUpdateAvailable;
     }
@@ -207,5 +248,13 @@ public class CheckUpdatesTask {
 
     interface CheckUpdateListener {
         void onUpdateFound(String downloadUrl);
+    }
+
+    void setPlayUpdateListener(CheckPlayUpdateListener listenerPlay) {
+        this.listenerPlay = listenerPlay;
+    }
+
+    interface CheckPlayUpdateListener {
+        void onPlayUpdateFound(AppUpdateInfo appUpdateInfo);
     }
 }

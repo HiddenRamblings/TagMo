@@ -70,6 +70,7 @@ import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
 import com.hiddenramblings.tagmo.adapter.BrowserFoldersAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -185,6 +186,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private boolean ignoreTagId;
     private BrowserSettings settings;
     private String updateUrl;
+    private AppUpdateInfo appUpdate;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -449,6 +451,12 @@ public class BrowserActivity extends AppCompatActivity implements
                             "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
                     )));
                 });
+                if (null != appUpdate) {
+                    findViewById(R.id.build_layout).setOnClickListener(view -> {
+                        closePrefsDrawer();
+                        updates.downloadPlayUpdate(appUpdate);
+                    });
+                }
                 if (null != updateUrl) {
                     findViewById(R.id.build_layout).setOnClickListener(view -> {
                         closePrefsDrawer();
@@ -557,7 +565,11 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onCaptureLogcatClicked() {
-        if (updates.hasPendingUpdate()) {
+        if (updates.hasPendingUpdate() && null != appUpdate) {
+            updates.downloadPlayUpdate(appUpdate);
+            return;
+        }
+        if (updates.hasPendingUpdate() && null != updateUrl) {
             updates.installUpdateCompat(updateUrl);
             return;
         }
@@ -863,10 +875,17 @@ public class BrowserActivity extends AppCompatActivity implements
     void checkForUpdates() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             updates = new CheckUpdatesTask(this);
-            updates.setUpdateListener(downloadUrl -> {
-                updateUrl = downloadUrl;
-                invalidateOptionsMenu();
-            });
+            if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+                updates.setPlayUpdateListener(appUpdateInfo -> {
+                    appUpdate = appUpdateInfo;
+                    invalidateOptionsMenu();
+                });
+            } else {
+                updates.setUpdateListener(downloadUrl -> {
+                    updateUrl = downloadUrl;
+                    invalidateOptionsMenu();
+                });
+            }
 
         } else {
             this.runOnUiThread(() -> ProviderInstaller.installIfNeededAsync(this,
@@ -874,10 +893,17 @@ public class BrowserActivity extends AppCompatActivity implements
                 @Override
                 public void onProviderInstalled() {
                     updates = new CheckUpdatesTask(BrowserActivity.this);
-                    updates.setUpdateListener(downloadUrl -> {
-                        updateUrl = downloadUrl;
-                        invalidateOptionsMenu();
-                    });
+                    if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+                        updates.setPlayUpdateListener(appUpdateInfo -> {
+                            appUpdate = appUpdateInfo;
+                            invalidateOptionsMenu();
+                        });
+                    } else {
+                        updates.setUpdateListener(downloadUrl -> {
+                            updateUrl = downloadUrl;
+                            invalidateOptionsMenu();
+                        });
+                    }
                 }
 
                 @Override
@@ -1150,7 +1176,7 @@ public class BrowserActivity extends AppCompatActivity implements
             menuSearch.setVisible(false);
         }
 
-        menuUpdate.setVisible(null != updateUrl);
+        menuUpdate.setVisible(null != appUpdate && null != updateUrl);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -1159,7 +1185,8 @@ public class BrowserActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         RecyclerView amiibosView = browserFragment.getAmiibosView();
         if (item.getItemId() == R.id.install_update) {
-            updates.installUpdateCompat(updateUrl);
+            if (null != appUpdate) updates.downloadPlayUpdate(appUpdate);
+            if (null != updateUrl) updates.installUpdateCompat(updateUrl);
         } else if (item.getItemId() == R.id.sort_id) {
             settings.setSort(SORT.ID.getValue());
             settings.notifyChanges();

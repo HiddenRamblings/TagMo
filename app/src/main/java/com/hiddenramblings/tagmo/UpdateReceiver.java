@@ -8,6 +8,7 @@ import android.os.Build;
 import android.widget.Toast;
 
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 public class UpdateReceiver extends BroadcastReceiver {
 
@@ -28,6 +29,7 @@ public class UpdateReceiver extends BroadcastReceiver {
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) return;
             switch(intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 case PackageInstaller.STATUS_PENDING_USER_ACTION:
                     Intent activityIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);

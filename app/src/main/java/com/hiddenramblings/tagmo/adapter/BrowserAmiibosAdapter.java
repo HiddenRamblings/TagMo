@@ -369,6 +369,8 @@ public class BrowserAmiibosAdapter
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
                         this.txtPath.setTextColor(a.data);
                     }
+                } else if (null != item.getDocPath()) {
+
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");

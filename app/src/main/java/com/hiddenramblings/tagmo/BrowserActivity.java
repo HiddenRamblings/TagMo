@@ -136,6 +136,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private AnimatedLinearLayout fakeSnackbar;
     private AppCompatImageView fakeSnackbarIcon;
     private TextView fakeSnackbarText;
+    private AppCompatButton fakeSnackbarItem;
     private ViewPager2 mainLayout;
     private FloatingActionButton nfcFab;
     private BrowserFragment browserFragment;
@@ -199,6 +200,7 @@ public class BrowserActivity extends AppCompatActivity implements
         fakeSnackbar = findViewById(R.id.fake_snackbar);
         fakeSnackbarIcon = findViewById(R.id.snackbar_icon);
         fakeSnackbarText = findViewById(R.id.snackbar_text);
+        fakeSnackbarItem = findViewById(R.id.snackbar_item);
         mainLayout = findViewById(R.id.amiibo_pager);
         nfcFab = findViewById(R.id.nfc_fab);
         currentFolderView = findViewById(R.id.current_folder);
@@ -1144,7 +1146,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (isSearchVisible) {
             menuSearch.setVisible(true);
-            // setOnQueryTextListener will clear this, so make a copy
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             SearchView searchView = (SearchView) menuSearch.getActionView();
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -1169,7 +1170,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             });
 
-            //focus the SearchView
             String query = settings.getQuery();
             if (!query.isEmpty()) {
                 menuSearch.expandActionView();
@@ -1580,12 +1580,13 @@ public class BrowserActivity extends AppCompatActivity implements
             fakeSnackbar.setAnimationListener(null);
             fakeSnackbar.setVisibility(View.GONE);
             handler.postDelayed(() -> {
-                fooSnackbar = new IconifiedSnackbar(this, mainLayout)
-                        .buildSnackbar(R.string.amiibo_not_found, Snackbar.LENGTH_INDEFINITE);
-                fooSnackbar.setAction(R.string.search, v -> {
+                showFakeSnackbar(getString(R.string.amiibo_not_found));
+                fakeSnackbarItem.setVisibility(View.VISIBLE);
+                fakeSnackbarItem.setText(R.string.search);
+                fakeSnackbarItem.setOnClickListener(view -> {
                     mainLayout.setCurrentItem(1, true);
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                }).show();
+                });
             }, 200);
         } else if (null != fooSnackbar && fooSnackbar.isShown()) {
             fooSnackbar.dismiss();
@@ -2001,6 +2002,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void showFakeSnackbar(String msg) {
         this.runOnUiThread(() -> {
+            fakeSnackbarItem.setVisibility(View.GONE);
             mainLayout.setPadding(0, fakeSnackbarIcon.getHeight(), 0, 0);
             fakeSnackbarText.setText(msg);
             fakeSnackbar.setVisibility(View.VISIBLE);

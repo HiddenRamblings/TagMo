@@ -127,8 +127,8 @@ public class FoomiiboFragment extends Fragment implements
         searchView.setSubmitButtonEnabled(false);
         searchView.setIconifiedByDefault(false);
         LinearLayout searchBar = searchView.findViewById(R.id.search_bar);
-        searchBar.getLayoutParams().height = (int)
-                getResources().getDimension(R.dimen.button_height_min);
+        searchBar.getLayoutParams().height = (int) getResources()
+                .getDimension(R.dimen.button_height_min);
         searchBar.setGravity(Gravity.CENTER_VERTICAL);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

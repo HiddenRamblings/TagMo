@@ -9,7 +9,7 @@
     android:layout_marginBottom="16dp"
     android:visibility="gone">
 
-    <ToggleButton
+    <androidx.appcompat.widget.AppCompatToggleButton
         android:id="@+id/switch_source_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

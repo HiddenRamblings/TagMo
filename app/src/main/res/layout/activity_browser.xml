@@ -1,45 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/coordinator"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/coordinator" >
+        android:layout_height="match_parent">
 
         <com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
             android:id="@+id/fake_snackbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/colorAccent"
+            android:orientation="horizontal"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
-            android:orientation="horizontal"
-            android:background="?attr/colorAccent"
             android:visibility="gone">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/snackbar_icon"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginRight="4dp"
-                android:layout_marginEnd="4dp"
-                app:srcCompat="@drawable/ic_stat_notice_24dp"
-                android:contentDescription="@string/imageview_icon" />
-
-            <TextView
-                android:id="@+id/snackbar_text"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"
-                android:singleLine="true"
-                android:textSize="16sp"
-                android:textColor="@android:color/white" />
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/snackbar_icon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:contentDescription="@string/imageview_icon"
+                    app:srcCompat="@drawable/ic_stat_notice_24dp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/snackbar_item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/snackbar_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_toStartOf="@id/snackbar_item"
+                    android:layout_toEndOf="@id/snackbar_icon"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+            </RelativeLayout>
         </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
 
         <androidx.viewpager2.widget.ViewPager2
@@ -51,37 +66,37 @@
             android:id="@+id/amiiboContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:blurOverlayColor="@color/bottomSheetTint"
+            android:paddingLeft="16dp"
             android:paddingTop="16dp"
             android:paddingRight="16dp"
-            android:paddingLeft="16dp"
             android:paddingBottom="92dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            app:blurOverlayColor="@color/bottomSheetTint">
 
             <include
-                layout="@layout/active_card_layout"
-                android:id="@+id/active_card_layout" />
+                android:id="@+id/active_card_layout"
+                layout="@layout/active_card_layout" />
         </com.eightbitlab.blurview.BlurView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/nfc_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginBottom="48dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="12dp"
+            android:layout_marginBottom="48dp"
             android:clickable="true"
-            android:focusable="true"
-            app:srcCompat="@mipmap/ic_nfc_icon"
-            app:maxImageSize="80dp"
-            app:fabSize="normal"
             android:contentDescription="@string/nfcIconDescription"
-            tools:ignore="RelativeOverlap"
+            android:focusable="true"
+            app:fabSize="normal"
             app:layout_anchor="@+id/bottom_sheet"
-            app:layout_anchorGravity="bottom|end"/>
+            app:layout_anchorGravity="bottom|end"
+            app:maxImageSize="80dp"
+            app:srcCompat="@mipmap/ic_nfc_icon"
+            tools:ignore="RelativeOverlap" />
 
         <LinearLayout
             android:id="@+id/bottom_sheet"
@@ -97,10 +112,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
                 android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -108,10 +123,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginRight="4dp"
                     android:layout_marginEnd="4dp"
-                    app:srcCompat="@drawable/ic_folder_open_white_24dp"
-                    android:contentDescription="@string/imageview_folder" />
+                    android:layout_marginRight="4dp"
+                    android:contentDescription="@string/imageview_folder"
+                    app:srcCompat="@drawable/ic_folder_open_white_24dp" />
 
                 <TextView
                     android:id="@+id/current_folder"
@@ -119,18 +134,18 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:singleLine="true"
                     android:ellipsize="marquee"
+                    android:singleLine="true"
                     android:textColor="@android:color/white"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/toggle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_expand_less_white_24dp"
-                    android:contentDescription="@string/imageview_toggle" />
+                    android:contentDescription="@string/imageview_toggle"
+                    app:srcCompat="@drawable/ic_expand_less_white_24dp" />
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatButton
@@ -144,7 +159,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/folders_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
@@ -165,9 +180,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="12dp"
                 android:layout_marginTop="12dp"
+                android:baselineAligned="false"
                 android:gravity="center_horizontal"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/build_layout"
@@ -176,20 +191,22 @@
                     android:layout_weight="1"
                     android:gravity="start|center_vertical"
                     android:orientation="horizontal">
+
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_github_octocat_24dp"
-                        android:contentDescription="@string/imageview_icon"/>
+                        android:contentDescription="@string/imageview_icon"
+                        app:srcCompat="@drawable/ic_github_octocat_24dp" />
+
                     <TextView
                         android:id="@+id/build_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
                         android:layout_marginStart="8dp"
-                        android:textColor="?android:textColorPrimary"
                         android:gravity="center_vertical"
-                        android:text="@string/build_hash" />
+                        android:text="@string/build_hash"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -199,50 +216,54 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="horizontal">
+
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_gitlab_icon_rgb_24dp"
-                        android:contentDescription="@string/imageview_icon"/>
+                        android:contentDescription="@string/imageview_icon"
+                        app:srcCompat="@drawable/ic_gitlab_icon_rgb_24dp" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
                         android:layout_marginStart="8dp"
-                        android:textColor="?android:textColorPrimary"
                         android:gravity="center_vertical"
-                        android:text="@string/pref_guides"/>
+                        android:text="@string/pref_guides"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/donate_layout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.85"
                     android:layout_marginEnd="2dp"
+                    android:layout_weight="0.85"
                     android:gravity="end|center_vertical"
                     android:orientation="horizontal">
+
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_paypal_donation_24dp"
-                        android:contentDescription="@string/imageview_icon"/>
+                        android:contentDescription="@string/imageview_icon"
+                        app:srcCompat="@drawable/ic_paypal_donation_24dp" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
                         android:layout_marginStart="8dp"
-                        android:textColor="?android:textColorPrimary"
                         android:gravity="center_vertical"
-                        android:text="@string/pref_donate" />
+                        android:text="@string/pref_donate"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/preferences"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?android:attr/colorBackground" />
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/preferences"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?android:attr/colorBackground" />
         </LinearLayout>
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -254,7 +254,7 @@
     <string name="write_slot_file">Upload amiibo&#8482; to Bluup Flask</string>
     <string name="write_slots">Write %1$d slots to Bluup Flask</string>
     <string name="flask_upload">Uploading amiibo&#8482;&#8230;</string>
-    <string name="location_disclosure">Location permission is required for Bluetooth scan. While TagMo does not read, store, or share location information, Google requires that we notify you that they may exploit this request to collect your location in the background.</string>
+    <string name="location_disclosure">Location permission is required for Bluetooth LE scan. In accordance with Google Play policy, TagMo is required to notify you that location data may be collected in the background.\n\nTagMo does not read, store, or share location data. As such, this notice is strictly a formality.</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>

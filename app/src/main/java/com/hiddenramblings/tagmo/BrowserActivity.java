@@ -2002,7 +2002,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void showFakeSnackbar(String msg) {
         this.runOnUiThread(() -> {
-            fakeSnackbarItem.setVisibility(View.GONE);
+            fakeSnackbarItem.setVisibility(View.INVISIBLE);
             mainLayout.setPadding(0, fakeSnackbarIcon.getHeight(), 0, 0);
             fakeSnackbarText.setText(msg);
             fakeSnackbar.setVisibility(View.VISIBLE);

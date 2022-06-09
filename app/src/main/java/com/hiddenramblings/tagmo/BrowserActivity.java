@@ -1065,6 +1065,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onStorageEnabled() {
+        checkForUpdates();
         if (isDocumentStorage()) {
             switchStorageRoot.setText(R.string.document_storage_root);
             switchStorageRoot.setOnClickListener(view -> {
@@ -1077,7 +1078,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 verifyKeyFiles();
             } else {
                 this.onRefresh();
-                checkForUpdates();
             }
         } else {
             boolean internal = prefs.preferEmulated().get();
@@ -1102,7 +1102,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 locateKeyFiles();
             } else {
                 this.onRefresh();
-                checkForUpdates();
             }
         }
     }
@@ -2121,10 +2120,7 @@ public class BrowserActivity extends AppCompatActivity implements
         for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
             if (!entry.getValue()) isStorageEnabled = false;
         }
-        if (isStorageEnabled)
-            this.onStorageEnabled();
-        else
-            showStoragePrompt();
+        if (isStorageEnabled) this.onStorageEnabled(); else showStoragePrompt();
     });
 
     @RequiresApi(api = Build.VERSION_CODES.R)
@@ -2132,7 +2128,6 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (Environment.isExternalStorageManager()) {
             prefs.browserRootDocument().remove();
-            // this.settings.setBrowserRootDocument(null);
             this.onStorageEnabled();
         } else {
             this.onDocumentEnabled();

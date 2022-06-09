@@ -30,9 +30,11 @@ import android.os.Looper;
 import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -45,6 +47,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -125,6 +128,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private WriteAmiiboAdapter writeFileAdapter;
     private FoomiiboAdapter writeDataAdapter;
+    private AppCompatToggleButton sourceToggle;
 
     private enum WRITE {
         FILE,
@@ -431,6 +435,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         writeSlots = findViewById(R.id.write_slot_count);
 
         writeSlotsLayout = findViewById(R.id.write_banks_layout);
+        sourceToggle = findViewById(R.id.switch_source_btn);
         amiiboFilesView = findViewById(R.id.amiibo_files_list);
         amiiboFilesView.setHasFixedSize(true);
 
@@ -521,6 +526,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setSubmitButtonEnabled(false);
         searchView.setIconifiedByDefault(false);
+        LinearLayout searchBar = searchView.findViewById(R.id.search_bar);
+        searchBar.getLayoutParams().height = (int) getResources()
+                .getDimension(R.dimen.button_height_min);
+        searchBar.setGravity(Gravity.CENTER_VERTICAL);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -552,7 +561,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        findViewById(R.id.switch_source_btn).setOnClickListener(view -> {
+        sourceToggle.setOnClickListener(view -> {
             if (writeSlotsLayout.getVisibility() == View.VISIBLE) {
                 switch(writeAdapter) {
                     case FILE:
@@ -991,9 +1000,11 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         switch(format) {
             case FILE:
                 amiiboFilesView.setAdapter(writeFileAdapter);
+                sourceToggle.setChecked(false);
                 break;
             case DATA:
                 amiiboFilesView.setAdapter(writeDataAdapter);
+                sourceToggle.setChecked(true);
                 break;
             case LIST:
                 WriteAmiiboAdapter writeListAdapter = new WriteAmiiboAdapter(
@@ -1001,6 +1012,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 writeListAdapter.resetSelections();
                 this.settings.addChangeListener(writeListAdapter);
                 amiiboFilesView.setAdapter(writeListAdapter);
+                sourceToggle.setChecked(false);
                 break;
             case SETS:
                 FoomiiboAdapter writeSetsAdapter = new FoomiiboAdapter(
@@ -1008,6 +1020,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 writeSetsAdapter.resetSelections();
                 this.settings.addChangeListener(writeSetsAdapter);
                 amiiboFilesView.setAdapter(writeSetsAdapter);
+                sourceToggle.setChecked(true);
                 break;
         }
         writeAdapter = format;

@@ -163,8 +163,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuShowDownloads;
     private boolean isSearchVisible;
 
-    private Snackbar fooSnackbar;
-
     private BlurView amiiboContainer;
     private Toolbar toolbar;
     private View amiiboInfo;
@@ -233,9 +231,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 super.onPageSelected(position);
                 if (position != 0) {
                     isSearchVisible = false;
-                    if (null != fooSnackbar && fooSnackbar.isShown()) {
-                        fooSnackbar.dismiss();
-                    }
                 }
                 switch (position) {
                     case 0:
@@ -1553,32 +1548,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onAmiiboFilesChanged() {
-        if (fakeSnackbar.getVisibility() == View.VISIBLE) {
-            AutoTransition autoTransition = new AutoTransition();
-            autoTransition.setDuration(200);
-
-            TranslateAnimation animate = new TranslateAnimation(
-                    0, 0, 0, -fakeSnackbar.getHeight());
-            animate.setDuration(150);
-            animate.setFillAfter(false);
-            fakeSnackbar.setAnimationListener(new AnimatedLinearLayout.AnimationListener() {
-                @Override
-                public void onAnimationStart(AnimatedLinearLayout layout) { }
-
-                @Override
-                public void onAnimationEnd(AnimatedLinearLayout layout) {
-                    layout.setAnimationListener(null);
-                    fakeSnackbar.setVisibility(View.GONE);
-                }
-            });
-            fakeSnackbar.startAnimation(animate);
-
-            TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
-            mainLayout.setPadding(0, 0, 0, 0);
-        }
+        hideFakeSnackbar();
         if (settings.getAmiiboFiles().isEmpty()) {
-            fakeSnackbar.setAnimationListener(null);
-            fakeSnackbar.setVisibility(View.GONE);
             handler.postDelayed(() -> {
                 showFakeSnackbar(getString(R.string.amiibo_not_found));
                 fakeSnackbarItem.setVisibility(View.VISIBLE);
@@ -1588,8 +1559,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 });
             }, 200);
-        } else if (null != fooSnackbar && fooSnackbar.isShown()) {
-            fooSnackbar.dismiss();
         }
     }
 
@@ -2009,6 +1978,32 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
+    private void hideFakeSnackbar() {
+        if (fakeSnackbar.getVisibility() == View.VISIBLE) {
+            AutoTransition autoTransition = new AutoTransition();
+            autoTransition.setDuration(200);
+
+            TranslateAnimation animate = new TranslateAnimation(
+                    0, 0, 0, -fakeSnackbar.getHeight());
+            animate.setDuration(150);
+            animate.setFillAfter(false);
+            fakeSnackbar.setAnimationListener(new AnimatedLinearLayout.AnimationListener() {
+                @Override
+                public void onAnimationStart(AnimatedLinearLayout layout) { }
+
+                @Override
+                public void onAnimationEnd(AnimatedLinearLayout layout) {
+                    layout.setAnimationListener(null);
+                    fakeSnackbar.setVisibility(View.GONE);
+                }
+            });
+            fakeSnackbar.startAnimation(animate);
+
+            TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
+            mainLayout.setPadding(0, 0, 0, 0);
+        }
+    }
+
     void showBrowserPage() {
         mainLayout.setCurrentItem(0, true);
     }
@@ -2065,30 +2060,26 @@ public class BrowserActivity extends AppCompatActivity implements
 
     public void verifyKeyFiles() {
         if (keyManager.isKeyMissing()) {
-            this.runOnUiThread(() -> {
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    try {
-                        Scanner scanner = new Scanner(new URL(
-                                "https://pastebin.com/raw/aV23ha3X").openStream());
-                        for (int i = 0; i < 4; i++) {
-                            if (scanner.hasNextLine()) scanner.nextLine();
-                        }
-                        this.keyManager.evaluateKey(new ByteArrayInputStream(
-                                TagUtils.hexToByteArray(scanner.nextLine()
-                                        .replace(" ", ""))));
-                        scanner.close();
-                    } catch (IOException e) {
-                        Debug.Log(e);
+            this.runOnUiThread(() -> Executors.newSingleThreadExecutor().execute(() -> {
+                try {
+                    Scanner scanner = new Scanner(new URL(
+                            "https://pastebin.com/raw/aV23ha3X").openStream());
+                    for (int i = 0; i < 4; i++) {
+                        if (scanner.hasNextLine()) scanner.nextLine();
                     }
-                    if (Thread.currentThread().isInterrupted()) return;
-                    onRefresh();
-                });
-                mainLayout.setPadding(0, 0, 0, 0);
-                fakeSnackbar.setVisibility(View.GONE);
-            });
+                    this.keyManager.evaluateKey(new ByteArrayInputStream(
+                            TagUtils.hexToByteArray(scanner.nextLine()
+                                    .replace(" ", ""))));
+                    scanner.close();
+                } catch (IOException e) {
+                    Debug.Log(e);
+                }
+                if (Thread.currentThread().isInterrupted()) return;
+                hideFakeSnackbar();
+                this.onRefresh();
+            }));
         } else {
-            if (null != fooSnackbar && fooSnackbar.isShown())
-                this.runOnUiThread(() -> fooSnackbar.dismiss());
+            hideFakeSnackbar();
             this.onRefresh();
         }
     }

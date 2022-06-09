@@ -114,7 +114,7 @@
             layout="@layout/bank_options_menu"
             android:id="@+id/bank_options_menu" />
 
-        <ToggleButton
+        <androidx.appcompat.widget.AppCompatToggleButton
             android:id="@+id/switch_menu_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

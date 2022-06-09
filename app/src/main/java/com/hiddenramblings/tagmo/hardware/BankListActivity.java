@@ -18,7 +18,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -28,6 +27,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -80,7 +80,7 @@ public class BankListActivity extends AppCompatActivity implements
     private RecyclerView amiibosView;
 
     private LinearLayout bankOptionsMenu;
-    private ToggleButton switchMenuOptions;
+    private AppCompatToggleButton switchMenuOptions;
     private RelativeLayout writeBankLayout;
     private BankBrowserAdapter bankAdapter;
     private RecyclerView amiiboFilesView;

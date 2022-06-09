@@ -54,6 +54,7 @@ android {
         publish {
             initWith release
             getIsDefault().set(false)
+            buildTypes.publish.signingConfig signingConfigs.debug
             applicationIdSuffix ".eightbit"
         }
     }

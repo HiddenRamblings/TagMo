@@ -269,22 +269,6 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         this.settings.addChangeListener(this);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
-                this.onDocumentEnabled();
-            } else {
-                if (Environment.isExternalStorageManager()) {
-                    prefs.browserRootDocument().remove();
-                    // this.settings.setBrowserRootDocument(null);
-                    this.onStorageEnabled();
-                } else {
-                    requestScopedStorage();
-                }
-            }
-        } else {
-            onRequestStorage.launch(PERMISSIONS_STORAGE);
-        }
-
         AppCompatImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -320,6 +304,32 @@ public class BrowserActivity extends AppCompatActivity implements
             blurView.setBlurAlgorithm(new RenderScriptBlur(this));
         else
             blurView.setBlurAlgorithm(new SupportRenderScriptBlur(this));
+
+        if (prefs.hasAcceptedTOS().get()) {
+            requestStoragePermission();
+        } else {
+            try (InputStream in = getResources().openRawResource(R.raw.disclaimer);
+                 BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
+                StringBuilder total = new StringBuilder();
+                String line;
+                while (null != (line = r.readLine())) {
+                    total.append(line).append("\n");
+                }
+                new AlertDialog.Builder(this)
+                        .setMessage(total.toString())
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.accept, (dialog, which) -> {
+                            prefs.hasAcceptedTOS().put(true);
+                            dialog.dismiss();
+                            requestStoragePermission();
+                        })
+                        .show().getWindow()
+                        .setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT);
+            } catch (Exception e) {
+                Debug.Log(e);
+            }
+        }
 
         RecyclerView foldersView = findViewById(R.id.folders_list);
         foldersView.setLayoutManager(new LinearLayoutManager(this));
@@ -382,29 +392,6 @@ public class BrowserActivity extends AppCompatActivity implements
         findViewById(R.id.amiiboContainer).setOnClickListener(view ->
                 amiiboContainer.setVisibility(View.GONE));
 
-        if (!prefs.hasAcceptedTOS().get()) {
-            try (InputStream in = getResources().openRawResource(R.raw.disclaimer);
-                 BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
-                StringBuilder total = new StringBuilder();
-                String line;
-                while (null != (line = r.readLine())) {
-                    total.append(line).append("\n");
-                }
-                new AlertDialog.Builder(this)
-                        .setMessage(total.toString())
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.accept, (dialog, which) -> {
-                            prefs.hasAcceptedTOS().put(true);
-                            dialog.dismiss();
-                        })
-                        .show().getWindow()
-                        .setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT);
-            } catch (Exception e) {
-                Debug.Log(e);
-            }
-        }
-
         if (null != intent && null != intent.getAction()
                 && Intent.ACTION_VIEW.equals(intent.getAction())) {
             try {
@@ -465,6 +452,23 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         });
+    }
+
+    private void requestStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+                this.onDocumentEnabled();
+            } else {
+                if (Environment.isExternalStorageManager()) {
+                    prefs.browserRootDocument().remove();
+                    this.onStorageEnabled();
+                } else {
+                    requestScopedStorage();
+                }
+            }
+        } else {
+            onRequestStorage.launch(PERMISSIONS_STORAGE);
+        }
     }
 
     private void onProviderInstallerNotAvailable() {

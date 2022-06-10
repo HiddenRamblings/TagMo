@@ -31,6 +31,7 @@ import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -262,7 +263,13 @@ public class BankListActivity extends AppCompatActivity implements
             eraseOpenBanks.setText(getString(R.string.erase_open_banks, valueNew));
         });
 
-        this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
+        try {
+            DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
+                    this.settings.getBrowserRootDocument());
+            this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
+        } catch (IllegalArgumentException iae) {
+            this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
+        }
 
         if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
             amiiboFilesView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
@@ -665,8 +672,14 @@ public class BankListActivity extends AppCompatActivity implements
                         Storage.getDownloadDir("TagMo", "Backups"),
                         input.getText().toString(), tagData);
                 new Toasty(this).Long(getString(R.string.wrote_file, fileName));
-                this.loadAmiiboFiles(settings.getBrowserRootFolder(),
-                        settings.isRecursiveEnabled());
+                try {
+                    DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
+                            this.settings.getBrowserRootDocument());
+                    this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
+                } catch (IllegalArgumentException iae) {
+                    this.loadAmiiboFiles(settings.getBrowserRootFolder(),
+                            settings.isRecursiveEnabled());
+                }
             } catch (IOException e) {
                 new Toasty(this).Short(e.getMessage());
             }
@@ -1051,9 +1064,26 @@ public class BankListActivity extends AppCompatActivity implements
                     amiiboFiles.addAll(AmiiboManager
                             .listAmiibos(keyManager, download, true));
             }
+            File foomiibo = new File(getFilesDir(), "Foomiibo");
+            amiiboFiles.addAll(AmiiboManager
+                    .listAmiibos(keyManager, foomiibo, true));
 
             if (Thread.currentThread().isInterrupted()) return;
 
+            this.runOnUiThread(() -> {
+                settings.setAmiiboFiles(amiiboFiles);
+                settings.notifyChanges();
+            });
+        });
+    }
+
+    private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
+                    .listAmiiboDocuments(keyManager, rootFolder, recursiveFiles);
+            File foomiibo = new File(getFilesDir(), "Foomiibo");
+            amiiboFiles.addAll(AmiiboManager
+                    .listAmiibos(keyManager, foomiibo, true));
             this.runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();

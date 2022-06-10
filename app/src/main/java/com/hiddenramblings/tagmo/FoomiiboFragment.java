@@ -23,6 +23,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -40,7 +41,6 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -51,6 +51,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class FoomiiboFragment extends Fragment implements
@@ -58,7 +60,7 @@ public class FoomiiboFragment extends Fragment implements
         FoomiiboAdapter.OnFoomiiboClickListener{
 
     private final Foomiibo foomiibo = new Foomiibo();
-    private final File directory = Storage.getDownloadDir("TagMo", "Foomiibo");
+    private File directory;
     private RecyclerView amiibosView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressDialog dialog;
@@ -104,6 +106,10 @@ public class FoomiiboFragment extends Fragment implements
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        directory = new File(requireActivity().getFilesDir(), "Foomiibo");
+        //noinspection ResultOfMethodCallIgnored
+        directory.mkdirs();
+
         keyManager = new KeyManager(requireContext());
         this.settings = new BrowserSettings().initialize();
 
@@ -146,36 +152,34 @@ public class FoomiiboFragment extends Fragment implements
             }
         });
 
-//        view.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
-//                clickView -> clearFoomiiboSet(directory)
-//        );
-//
-//        view.findViewById(R.id.build_foomiibo_set).setOnClickListener(
-//                clickView -> buildFoomiiboSet()
-//        );
+        view.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
+                clickView -> clearFoomiiboSet(directory)
+        );
 
-        clearFoomiiboSet(directory);
+        view.findViewById(R.id.build_foomiibo_set).setOnClickListener(
+                clickView -> buildFoomiiboSet()
+        );
     }
 
-//    private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
-//        try {
-//            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-//            String name = TagUtils.amiiboIdToHex(amiiboId);
-//            if (null != amiiboManager) {
-//                Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
-//                if (null != amiibo && null != amiibo.name) {
-//                    name = amiibo.name.replace(File.separatorChar, '-');
-//                }
-//            }
-//
-//            byte[] uid = Arrays.copyOfRange(tagData, 0, 9);
-//            String uidHex = TagUtils.bytesToHex(uid);
-//            return String.format(Locale.ROOT, "%1$s[%2$s]-Foomiibo.bin", name, uidHex);
-//        } catch (Exception e) {
-//            Debug.Log(TagUtils.class, e.getMessage());
-//        }
-//        return "";
-//    }
+    private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
+        try {
+            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+            String name = TagUtils.amiiboIdToHex(amiiboId);
+            if (null != amiiboManager) {
+                Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
+                if (null != amiibo && null != amiibo.name) {
+                    name = amiibo.name.replace(File.separatorChar, '-');
+                }
+            }
+
+            byte[] uid = Arrays.copyOfRange(tagData, 0, 9);
+            String uidHex = TagUtils.bytesToHex(uid);
+            return String.format(Locale.ROOT, "%1$s[%2$s].bin", name, uidHex);
+        } catch (Exception e) {
+            Debug.Log(TagUtils.class, e.getMessage());
+        }
+        return "";
+    }
 
     private int getColumnCount() {
         DisplayMetrics metrics = new DisplayMetrics();
@@ -223,44 +227,80 @@ public class FoomiiboFragment extends Fragment implements
         });
     }
 
-//    private void buildFoomiiboFile(Amiibo amiibo) {
-//        try {
-//            byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
-//            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
-//            //noinspection ResultOfMethodCallIgnored
-//            directory.mkdirs();
-//            TagUtils.writeBytesToFile(directory, decipherFilename(
-//                    settings.getAmiiboManager(), tagData), tagData);
-//        } catch (Exception e) {
-//            Debug.Log(e);
-//        }
-//    }
+    private void buildFoomiiboFile(Amiibo amiibo) {
+        try {
+            byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
+            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            //noinspection ResultOfMethodCallIgnored
+            directory.mkdirs();
+            TagUtils.writeBytesToFile(directory, decipherFilename(
+                    settings.getAmiiboManager(), tagData), tagData);
+        } catch (Exception e) {
+            Debug.Log(e);
+        }
+    }
 
-//    private void buildFoomiiboSet() {
-//        AmiiboManager amiiboManager = settings.getAmiiboManager();
-//        if (null == amiiboManager) return;
-//        Handler handler = new Handler(Looper.getMainLooper());
-//
-//        Executors.newSingleThreadExecutor().execute(() -> {
-//            handler.post(() -> dialog = ProgressDialog.show(requireActivity(),
-//                    "", "", true));
-//
-//            deleteDir(null, directory);
-//            //noinspection ResultOfMethodCallIgnored
-//            directory.mkdirs();
-//
-//            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-//                buildFoomiiboFile(amiibo);
-//                handler.post(() -> dialog.setMessage(getString(
-//                        R.string.foomiibo_progress, amiibo.getCharacter().name)));
-//            }
-//
-//            handler.post(() -> {
-//                dialog.dismiss();
-//                onRefresh();
-//            });
-//        });
-//    }
+    private void buildFoomiiboFile(byte[] tagData) {
+        try {
+            Amiibo amiibo = settings.getAmiiboManager().amiibos
+                    .get(TagUtils.amiiboIdFromTag(tagData));
+            if (null == amiibo) return;
+            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            //noinspection ResultOfMethodCallIgnored
+            directory.mkdirs();
+            TagUtils.writeBytesToFile(directory, decipherFilename(
+                    settings.getAmiiboManager(), tagData), tagData);
+        } catch (Exception e) {
+            Debug.Log(e);
+        }
+    }
+
+    private void deleteFoomiiboFile(byte[] tagData) {
+        try {
+            Amiibo amiibo = settings.getAmiiboManager().amiibos
+                    .get(TagUtils.amiiboIdFromTag(tagData));
+            if (amiibo == null) throw new Exception();
+            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            File amiiboFile = new File(directory,
+                    decipherFilename(settings.getAmiiboManager(), tagData));
+            new AlertDialog.Builder(requireContext())
+                    .setMessage(getString(R.string.warn_delete_file, amiiboFile.getName()))
+                    .setPositiveButton(R.string.delete, (dialog, which) -> {
+                        if (!amiiboFile.delete())
+                            new Toasty(requireActivity()).Short(R.string.delete_virtual);
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
+        } catch (Exception e) {
+            new Toasty(requireActivity()).Short(R.string.delete_virtual);
+        }
+    }
+
+    private void buildFoomiiboSet() {
+        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        if (null == amiiboManager) return;
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            handler.post(() -> dialog = ProgressDialog.show(requireActivity(),
+                    "", "", true));
+
+            if (deleteDir(null, directory))
+                //noinspection ResultOfMethodCallIgnored
+                directory.mkdirs();
+
+            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                buildFoomiiboFile(amiibo);
+                handler.post(() -> dialog.setMessage(getString(
+                        R.string.foomiibo_progress, amiibo.getCharacter().name)));
+            }
+
+            handler.post(() -> {
+                dialog.dismiss();
+                onRefresh();
+            });
+        });
+    }
 
     @Override
     public void onResume() {
@@ -304,8 +344,6 @@ public class FoomiiboFragment extends Fragment implements
         if (!toolbar.getMenu().hasVisibleItems())
             toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.getMenu().findItem(R.id.mnu_scan).setVisible(false);
-        toolbar.getMenu().findItem(R.id.mnu_save).setVisible(false);
-        toolbar.getMenu().findItem(R.id.mnu_delete).setVisible(false);
         toolbar.setOnMenuItemClickListener(item -> {
             Bundle args = new Bundle();
             Intent scan = new Intent(requireContext(), NfcActivity.class);
@@ -319,6 +357,9 @@ public class FoomiiboFragment extends Fragment implements
                 scan.setAction(NFCIntent.ACTION_WRITE_TAG_DATA);
                 scan.putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId);
                 onUpdateTagResult.launch(scan.putExtras(args));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_save) {
+                buildFoomiiboFile(tagData);
                 return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
@@ -339,6 +380,9 @@ public class FoomiiboFragment extends Fragment implements
                     new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(e.getMessage(),
                             R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG).show();
                 }
+                return true;
+            } else if (item.getItemId() == R.id.mnu_delete) {
+                deleteFoomiiboFile(tagData);
                 return true;
             } else if (item.getItemId() == R.id.mnu_ignore_tag_id) {
                 ignoreTagId = !item.isChecked();

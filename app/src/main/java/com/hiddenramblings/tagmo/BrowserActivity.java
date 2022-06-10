@@ -1174,7 +1174,7 @@ public class BrowserActivity extends AppCompatActivity implements
             menuSearch.setVisible(false);
         }
 
-        menuUpdate.setVisible(null != appUpdate && null != updateUrl);
+        menuUpdate.setVisible(null != appUpdate || null != updateUrl);
 
         return super.onCreateOptionsMenu(menu);
     }

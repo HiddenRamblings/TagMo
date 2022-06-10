@@ -277,6 +277,15 @@ public class BrowserAmiibosAdapter
             }
         };
 
+        private void setIsHighlighted(boolean isHighlighted) {
+            View highlight = this.itemView.findViewById(R.id.highlight);
+            if (isHighlighted) {
+                highlight.setBackgroundResource(R.drawable.rounded_view);
+            } else {
+                highlight.setBackgroundResource(0);
+            }
+        }
+
         public AmiiboViewHolder(View itemView, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(itemView);
 
@@ -375,6 +384,7 @@ public class BrowserAmiibosAdapter
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
                         this.txtPath.setTextColor(a.data);
                     }
+                    setIsHighlighted(relativeFile.contains("/Foomiibo/"));
                 } else if (null != item.getDocUri()) {
                     String amiiboUri = item.getDocUri().getUri().toString();
                     boolean expanded = amiiboPath.contains(amiiboUri);

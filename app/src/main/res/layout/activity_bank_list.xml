@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="6dp"
-        android:paddingBottom="@dimen/button_height_min"
         android:orientation="vertical" >
 
         <include
@@ -31,18 +30,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:layout_marginTop="6dp"
-            android:scrollbars="vertical" />
+            android:paddingTop="2dp"
+            android:paddingHorizontal="4dp"
+            android:paddingBottom="@dimen/button_height_min"/>
     </LinearLayout>
-
-    <RelativeLayout
-
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/backgroundBlack">
-
-
-    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/bottom_sheet"

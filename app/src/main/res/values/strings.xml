@@ -226,8 +226,9 @@
 
     <string name="bank_select_details">Set Bank Number</string>
     <string name="write_confirm">Write selections to N2 Elite?</string>
-    <string name="warn_delete_file">Deleting %1$s. Are you sure?</string>
+    <string name="warn_delete_file">Deleting %1$s.\nAre you sure?</string>
     <string name="delete_misisng">Cannot delete a scanned tag!</string>
+    <string name="delete_virtual">Cannot delete a virtual tag!</string>
     <string name="erase_active">Cannot erase the active bank!</string>
     <string name="backup_filename">Set amiibo&#8482; Bin Name</string>
     <string name="document_storage_root">Update Document Storage</string>

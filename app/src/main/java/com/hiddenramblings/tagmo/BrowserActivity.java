@@ -1414,6 +1414,9 @@ public class BrowserActivity extends AppCompatActivity implements
                     amiiboFiles.addAll(AmiiboManager
                             .listAmiibos(keyManager, download, true));
             }
+            File foomiibo = new File(getFilesDir(), "Foomiibo");
+            amiiboFiles.addAll(AmiiboManager
+                    .listAmiibos(keyManager, foomiibo, true));
 
             if (Thread.currentThread().isInterrupted()) return;
 
@@ -1431,6 +1434,9 @@ public class BrowserActivity extends AppCompatActivity implements
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiiboDocuments(keyManager, rootFolder, recursiveFiles);
+            File foomiibo = new File(getFilesDir(), "Foomiibo");
+            amiiboFiles.addAll(AmiiboManager
+                    .listAmiibos(keyManager, foomiibo, true));
             this.runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();

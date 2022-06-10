@@ -18,6 +18,32 @@
         android:layout_marginBottom="4dp"
         android:layout_alignParentTop="true">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimaryDark"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/clear_foomiibo_set"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="-2dp"
+                android:layout_marginEnd="-2dp"
+                android:layout_weight="1"
+                android:text="@string/clear_foomiibo_set" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/build_foomiibo_set"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-2dp"
+                android:layout_marginStart="-2dp"
+                android:layout_weight="1"
+                android:text="@string/build_foomiibo_set" />
+        </LinearLayout>
+
         <androidx.appcompat.widget.SearchView
             android:id="@+id/amiibo_search"
             android:layout_width="match_parent"
@@ -26,32 +52,6 @@
             android:layout_marginEnd="2dp"
             android:lineSpacingExtra="0dp"
             android:lineSpacingMultiplier="0" />
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:background="?attr/colorPrimaryDark"-->
-<!--            android:layout_gravity="bottom"-->
-<!--            android:orientation="horizontal">-->
-
-<!--            <androidx.appcompat.widget.AppCompatButton-->
-<!--                android:id="@+id/clear_foomiibo_set"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginRight="-2dp"-->
-<!--                android:layout_marginEnd="-2dp"-->
-<!--                android:layout_weight="1"-->
-<!--                android:text="@string/clear_foomiibo_set" />-->
-
-<!--            <androidx.appcompat.widget.AppCompatButton-->
-<!--                android:id="@+id/build_foomiibo_set"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginLeft="-2dp"-->
-<!--                android:layout_marginStart="-2dp"-->
-<!--                android:layout_weight="1"-->
-<!--                android:text="@string/build_foomiibo_set" />-->
-<!--        </LinearLayout>-->
     </LinearLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

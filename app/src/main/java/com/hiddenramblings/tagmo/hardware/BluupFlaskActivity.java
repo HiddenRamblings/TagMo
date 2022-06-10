@@ -52,6 +52,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -479,7 +480,13 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         toolbar.inflateMenu(R.menu.flask_menu);
 
-        this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
+        try {
+            DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
+                    this.settings.getBrowserRootDocument());
+            this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
+        } catch (IllegalArgumentException iae) {
+            this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
+        }
 
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
             amiiboFilesView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
@@ -850,9 +857,26 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                     amiiboFiles.addAll(AmiiboManager
                             .listAmiibos(keyManager, download, true));
             }
+            File foomiibo = new File(getFilesDir(), "Foomiibo");
+            amiiboFiles.addAll(AmiiboManager
+                    .listAmiibos(keyManager, foomiibo, true));
 
             if (Thread.currentThread().isInterrupted()) return;
 
+            this.runOnUiThread(() -> {
+                settings.setAmiiboFiles(amiiboFiles);
+                settings.notifyChanges();
+            });
+        });
+    }
+
+    private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
+                    .listAmiiboDocuments(keyManager, rootFolder, recursiveFiles);
+            File foomiibo = new File(getFilesDir(), "Foomiibo");
+            amiiboFiles.addAll(AmiiboManager
+                    .listAmiibos(keyManager, foomiibo, true));
             this.runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();

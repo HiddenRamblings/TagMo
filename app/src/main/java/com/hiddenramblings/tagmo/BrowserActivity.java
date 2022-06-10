@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
@@ -126,7 +127,6 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 
 public class BrowserActivity extends AppCompatActivity implements
-        SearchView.OnQueryTextListener,
         BrowserSettingsListener,
         BrowserAmiibosAdapter.OnAmiiboClickListener {
 
@@ -161,7 +161,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuViewImage;
     private MenuItem menuRecursiveFiles;
     private MenuItem menuShowDownloads;
-    private boolean isSearchVisible;
 
     private BlurView amiiboContainer;
     private Toolbar toolbar;
@@ -224,21 +223,28 @@ public class BrowserActivity extends AppCompatActivity implements
         NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
         mainLayout.setAdapter(pagerAdapter);
         browserFragment = pagerAdapter.getBrowser();
+        FoomiiboFragment foomiiboFragment = pagerAdapter.getFoomiibo();
 
+        LinearLayout foomiibo = findViewById(R.id.foomiibo_options);
+        foomiibo.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
+                clickView -> foomiiboFragment.clearFoomiiboSet()
+        );
+
+        foomiibo.findViewById(R.id.build_foomiibo_set).setOnClickListener(
+                clickView -> foomiiboFragment.buildFoomiiboSet()
+        );
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                if (position != 0) {
-                    isSearchVisible = false;
-                }
                 switch (position) {
                     case 0:
-                        isSearchVisible = true;
                         setTitle(R.string.tagmo_browser);
+                        foomiibo.setVisibility(View.GONE);
                         break;
                     case 1:
                         setTitle(R.string.foomiibo);
+                        foomiibo.setVisibility(View.VISIBLE);
                         break;
                 }
                 invalidateOptionsMenu();
@@ -1138,40 +1144,53 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onRecursiveFilesChanged();
         this.onShowDownloadsChanged();
 
-        if (isSearchVisible) {
-            menuSearch.setVisible(true);
-            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            SearchView searchView = (SearchView) menuSearch.getActionView();
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-            searchView.setSubmitButtonEnabled(false);
-            searchView.setOnQueryTextListener(this);
-            menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-                @Override
-                public boolean onMenuItemActionExpand(MenuItem menuItem) {
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menuSearch.getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(false);
+        menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState()
+                        || View.VISIBLE == amiiboContainer.getVisibility()
+                        || getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    onBackPressed();
+                    return false;
+                } else {
                     return true;
                 }
-
-                @Override
-                public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                    if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState()
-                            || View.VISIBLE == amiiboContainer.getVisibility()
-                            || getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                        onBackPressed();
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }
-            });
-
-            String query = settings.getQuery();
-            if (!query.isEmpty()) {
-                menuSearch.expandActionView();
-                searchView.setQuery(query, true);
-                searchView.clearFocus();
             }
-        } else {
-            menuSearch.setVisible(false);
+        });
+        boolean browser = mainLayout.getCurrentItem() == 0;
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                settings.setQuery(query);
+                settings.notifyChanges();
+                if (browser) setAmiiboStats();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                settings.setQuery(query);
+                settings.notifyChanges();
+                if (browser && query.length() == 0)
+                    setAmiiboStats();
+                return true;
+            }
+        });
+
+        String query = settings.getQuery();
+        if (!query.isEmpty()) {
+            menuSearch.expandActionView();
+            searchView.setQuery(query, true);
+            searchView.clearFocus();
         }
 
         menuUpdate.setVisible(null != appUpdate || null != updateUrl);
@@ -1317,23 +1336,6 @@ public class BrowserActivity extends AppCompatActivity implements
         intent.putExtras(bundle);
 
         this.startActivity(intent);
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        settings.setQuery(query);
-        settings.notifyChanges();
-        setAmiiboStats();
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        settings.setQuery(newText);
-        settings.notifyChanges();
-        if (newText.length() == 0)
-            setAmiiboStats();
-        return true;
     }
 
     public void loadPTagKeyManager() {
@@ -1615,7 +1617,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     void onRootFolderChanged(boolean indicator) {
-        if (null != this.settings && fakeSnackbar.getVisibility() != View.VISIBLE) {
+        if (null != this.settings) {
             try {
                 DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
                         this.settings.getBrowserRootDocument());
@@ -1969,7 +1971,7 @@ public class BrowserActivity extends AppCompatActivity implements
         handler.postDelayed(this::setAmiiboStatsText, delay);
     }
 
-    private void setAmiiboStats() {
+    void setAmiiboStats() {
         handler.removeCallbacksAndMessages(null);
         this.runOnUiThread(this::setAmiiboStatsText);
     }

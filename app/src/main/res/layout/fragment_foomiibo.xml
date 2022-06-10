@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
@@ -7,72 +7,21 @@
     android:layout_margin="10dp"
     android:background="@color/backgroundBlack">
 
-    <LinearLayout
-        android:id="@+id/control_panel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimaryDark"
-        android:clickable="true"
-        android:focusable="true"
-        android:orientation="vertical"
-        android:layout_marginBottom="4dp"
-        android:layout_alignParentTop="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimaryDark"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/clear_foomiibo_set"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="@dimen/button_height_min"
-                android:layout_marginRight="-2dp"
-                android:layout_marginEnd="-2dp"
-                android:layout_weight="1"
-                android:text="@string/clear_foomiibo_set" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/build_foomiibo_set"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="@dimen/button_height_min"
-                android:layout_marginLeft="-2dp"
-                android:layout_marginStart="-2dp"
-                android:layout_weight="1"
-                android:text="@string/build_foomiibo_set" />
-        </LinearLayout>
-
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/amiibo_search"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height_min"
-            android:layout_marginRight="2dp"
-            android:layout_marginEnd="2dp"
-            android:lineSpacingExtra="0dp"
-            android:lineSpacingMultiplier="0" />
-    </LinearLayout>
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_below="@+id/control_panel"
-        android:layout_alignParentBottom="true">
+        android:layout_height="match_parent" >
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/amiibos_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:layout_marginTop="6dp"
+            android:paddingTop="4dp"
             android:paddingBottom="@dimen/button_height_min"
             android:scrollbars="vertical"
             android:scrollbarSize="8dp"
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/control_panel"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</RelativeLayout>
+</LinearLayout>

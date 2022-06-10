@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +22,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -63,7 +60,6 @@ public class FoomiiboFragment extends Fragment implements
     private File directory;
     private RecyclerView amiibosView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private ProgressDialog dialog;
 
     private KeyManager keyManager;
     private BrowserSettings settings;
@@ -110,8 +106,9 @@ public class FoomiiboFragment extends Fragment implements
         //noinspection ResultOfMethodCallIgnored
         directory.mkdirs();
 
-        keyManager = new KeyManager(requireContext());
-        this.settings = new BrowserSettings().initialize();
+        BrowserActivity activity = (BrowserActivity) requireActivity();
+        keyManager = new KeyManager(activity);
+        this.settings = activity.getSettings();
 
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
         this.swipeRefreshLayout.setOnRefreshListener(this);
@@ -119,46 +116,13 @@ public class FoomiiboFragment extends Fragment implements
 
         amiibosView = view.findViewById(R.id.amiibos_list);
         amiibosView.setHasFixedSize(true);
-        ArrayList<Long> missingIds = ((BrowserActivity) requireActivity()).getMissingIds();
+        ArrayList<Long> missingIds = activity.getMissingIds();
         if (this.settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            amiibosView.setLayoutManager(new GridLayoutManager(requireActivity(), getColumnCount()));
+            amiibosView.setLayoutManager(new GridLayoutManager(activity, getColumnCount()));
         else
-            amiibosView.setLayoutManager(new LinearLayoutManager(requireActivity()));
+            amiibosView.setLayoutManager(new LinearLayoutManager(activity));
         amiibosView.setAdapter(new FoomiiboAdapter(settings, missingIds, this));
         this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) amiibosView.getAdapter());
-
-        SearchView searchView = view.findViewById(R.id.amiibo_search);
-        SearchManager searchManager = (SearchManager) requireContext().getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().getComponentName()));
-        searchView.setSubmitButtonEnabled(false);
-        searchView.setIconifiedByDefault(false);
-        LinearLayout searchBar = searchView.findViewById(R.id.search_bar);
-        searchBar.getLayoutParams().height = (int) getResources()
-                .getDimension(R.dimen.button_height_min);
-        searchBar.setGravity(Gravity.CENTER_VERTICAL);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                settings.setQuery(query);
-                settings.notifyChanges();
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String query) {
-                settings.setQuery(query);
-                settings.notifyChanges();
-                return true;
-            }
-        });
-
-        view.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
-                clickView -> clearFoomiiboSet(directory)
-        );
-
-        view.findViewById(R.id.build_foomiibo_set).setOnClickListener(
-                clickView -> buildFoomiiboSet()
-        );
     }
 
     private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
@@ -192,8 +156,8 @@ public class FoomiiboFragment extends Fragment implements
         return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
-    private boolean deleteDir(Handler handler, File dir) {
-        if (!directory.exists()) return false;
+    private void deleteDir(Handler handler, ProgressDialog dialog, File dir) {
+        if (!directory.exists()) return;
         File[] files = dir.listFiles();
         if (null != files && files.length > 0) {
             for (File file : files) {
@@ -202,28 +166,26 @@ public class FoomiiboFragment extends Fragment implements
                         handler.post(() -> dialog.setMessage(getString(
                                 R.string.foomiibo_removing, file.getName())));
                     }
-                    deleteDir(handler, file);
+                    deleteDir(handler, dialog, file);
                 } else {
                     //noinspection ResultOfMethodCallIgnored
                     file.delete();
                 }
             }
         }
-        return dir.delete();
+        //noinspection ResultOfMethodCallIgnored
+        dir.delete();
     }
 
-    private void clearFoomiiboSet(File directory) {
+    void clearFoomiiboSet() {
+        ProgressDialog dialog = ProgressDialog.show(requireActivity(),
+                "", "", true);
         Handler handler = new Handler(Looper.getMainLooper());
         Executors.newSingleThreadExecutor().execute(() -> {
-            handler.post(() -> dialog = ProgressDialog.show(requireActivity(),
-                    "", "", true));
+            deleteDir(handler, dialog, directory);
 
-            boolean deleted = deleteDir(handler, directory);
-
-            handler.post(() -> {
-                dialog.dismiss();
-                if (deleted) onRefresh();
-            });
+            handler.post(dialog::dismiss);
+            onRefresh();
         });
     }
 
@@ -276,18 +238,17 @@ public class FoomiiboFragment extends Fragment implements
         }
     }
 
-    private void buildFoomiiboSet() {
+    void buildFoomiiboSet() {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         if (null == amiiboManager) return;
+        ProgressDialog dialog = ProgressDialog.show(requireActivity(),
+                "", "", true);
         Handler handler = new Handler(Looper.getMainLooper());
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            handler.post(() -> dialog = ProgressDialog.show(requireActivity(),
-                    "", "", true));
-
-            if (deleteDir(null, directory))
-                //noinspection ResultOfMethodCallIgnored
-                directory.mkdirs();
+            deleteDir(null, null, directory);
+            //noinspection ResultOfMethodCallIgnored
+            directory.mkdirs();
 
             for (Amiibo amiibo : amiiboManager.amiibos.values()) {
                 buildFoomiiboFile(amiibo);
@@ -295,10 +256,8 @@ public class FoomiiboFragment extends Fragment implements
                         R.string.foomiibo_progress, amiibo.getCharacter().name)));
             }
 
-            handler.post(() -> {
-                dialog.dismiss();
-                onRefresh();
-            });
+            handler.post(dialog::dismiss);
+            onRefresh();
         });
     }
 
@@ -311,33 +270,16 @@ public class FoomiiboFragment extends Fragment implements
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onRefresh() {
-        ((BrowserActivity) requireActivity()).onRootFolderChanged(false);
-        Executors.newSingleThreadExecutor().execute(() -> {
-            AmiiboManager amiiboManager;
-            try {
-                amiiboManager = AmiiboManager.getAmiiboManager(
-                        requireContext().getApplicationContext()
-                );
-            } catch (IOException | JSONException | ParseException e) {
-                Debug.Log(e);
-                amiiboManager = null;
-                new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
-            }
-
-            if (Thread.currentThread().isInterrupted()) return;
-
-            final AmiiboManager uiAmiiboManager = amiiboManager;
-            requireActivity().runOnUiThread(() -> {
-                settings.setAmiiboManager(uiAmiiboManager);
-                settings.notifyChanges();
-            });
-        });
+        BrowserActivity activity = (BrowserActivity) requireActivity();
+        activity.onRootFolderChanged(false);
         ArrayList<Long> missingIds = ((BrowserActivity) requireActivity()).getMissingIds();
-        if (null != amiibosView.getAdapter()) {
-            ((FoomiiboAdapter) amiibosView.getAdapter()).setMissingIds(missingIds);
-            amiibosView.getAdapter().notifyDataSetChanged();
-        }
-        swipeRefreshLayout.setRefreshing(false);
+        activity.runOnUiThread(() -> {
+            if (null != amiibosView.getAdapter()) {
+                ((FoomiiboAdapter) amiibosView.getAdapter()).setMissingIds(missingIds);
+                amiibosView.getAdapter().notifyDataSetChanged();
+            }
+            swipeRefreshLayout.setRefreshing(false);
+        });
     }
 
     private void getToolbarOptions(Toolbar toolbar, byte[] tagData) {

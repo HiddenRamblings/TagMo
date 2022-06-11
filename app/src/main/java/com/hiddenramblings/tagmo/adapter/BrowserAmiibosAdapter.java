@@ -138,12 +138,16 @@ public class BrowserAmiibosAdapter
             String path = null != holder.amiiboFile.getFilePath()
                     ? holder.amiiboFile.getFilePath().getAbsolutePath() : null;
 
-            if (amiiboPath.contains(uri) || amiiboPath.contains(path)) {
-                if (null != uri) amiiboPath.remove(uri);
-                if (null != path) amiiboPath.remove(path);
+            if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
+                if (amiiboPath.contains(uri) || amiiboPath.contains(path)) {
+                    if (null != uri) amiiboPath.remove(uri);
+                    if (null != path) amiiboPath.remove(path);
+                } else {
+                    if (null != uri) amiiboPath.add(uri);
+                    if (null != path) amiiboPath.add(path);
+                }
             } else {
-                if (null != uri) amiiboPath.add(uri);
-                if (null != path) amiiboPath.add(path);
+                amiiboPath.clear();
             }
             holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile);
         }
@@ -154,11 +158,11 @@ public class BrowserAmiibosAdapter
         holder.itemView.setOnClickListener(view -> handleClickEvent(holder));
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                    if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
-                        handleClickEvent(holder);
-                    } else if (null != holder.listener) {
-                        holder.listener.onAmiiboImageClicked(holder.amiiboFile);
-                    }
+                if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
+                    handleClickEvent(holder);
+                } else if (null != holder.listener) {
+                    holder.listener.onAmiiboImageClicked(holder.amiiboFile);
+                }
             });
         }
         holder.bind(getItem(holder.getBindingAdapterPosition()));

@@ -51,11 +51,10 @@ public class BrowserFragment extends Fragment implements
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
 
-        if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            this.amiibosView.setLayoutManager(new GridLayoutManager(requireActivity(),
-                    activity.getColumnCount()));
-        else
-            this.amiibosView.setLayoutManager(new LinearLayoutManager(requireActivity()));
+        amiibosView.setLayoutManager(settings.getAmiiboView()
+                == BrowserSettings.VIEW.IMAGE.getValue()
+                ? new GridLayoutManager(activity, activity.getColumnCount())
+                : new LinearLayoutManager(activity));
         this.amiibosView.setAdapter(new BrowserAmiibosAdapter(settings, activity));
         settings.addChangeListener((BrowserSettings.BrowserSettingsListener)
                 this.amiibosView.getAdapter());

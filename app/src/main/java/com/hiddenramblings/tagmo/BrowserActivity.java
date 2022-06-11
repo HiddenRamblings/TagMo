@@ -248,6 +248,12 @@ public class BrowserActivity extends AppCompatActivity implements
                         break;
                 }
                 invalidateOptionsMenu();
+                RecyclerView amiibosView = mainLayout.getCurrentItem() == 0
+                        ? browserFragment.getAmiibosView() : foomiiboFragment.getAmiibosView();
+                amiibosView.setLayoutManager(settings.getAmiiboView()
+                        == BrowserSettings.VIEW.IMAGE.getValue()
+                        ? new GridLayoutManager(BrowserActivity.this, getColumnCount())
+                        : new LinearLayoutManager(BrowserActivity.this));
             }
         });
 

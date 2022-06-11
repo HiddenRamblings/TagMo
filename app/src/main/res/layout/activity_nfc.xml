@@ -61,14 +61,14 @@
             app:srcCompat="@drawable/ic_signal_bar_24dp" />
 
         <include
-            layout="@layout/bank_picker"
-            android:id="@+id/bank_number_picker" />
+            layout="@layout/number_picker"
+            android:id="@+id/number_picker" />
 
         <TextView
             android:id="@+id/bank_number_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/bank_number_picker"
+            android:layout_above="@+id/number_picker"
             android:layout_marginBottom="6dp"
             android:layout_centerHorizontal="true"
             android:gravity="center"

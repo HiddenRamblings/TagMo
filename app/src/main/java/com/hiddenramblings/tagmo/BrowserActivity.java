@@ -28,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
@@ -140,6 +139,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private ViewPager2 mainLayout;
     private FloatingActionButton nfcFab;
     private BrowserFragment browserFragment;
+    private FoomiiboFragment foomiiboFragment;
     private TextView currentFolderView;
     private DrawerLayout prefsDrawer;
     private AppCompatButton switchStorageRoot;
@@ -223,7 +223,7 @@ public class BrowserActivity extends AppCompatActivity implements
         NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
         mainLayout.setAdapter(pagerAdapter);
         browserFragment = pagerAdapter.getBrowser();
-        FoomiiboFragment foomiiboFragment = pagerAdapter.getFoomiibo();
+        foomiiboFragment = pagerAdapter.getFoomiibo();
 
         LinearLayout foomiibo = findViewById(R.id.foomiibo_options);
         foomiibo.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
@@ -1200,7 +1200,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        RecyclerView amiibosView = browserFragment.getAmiibosView();
+        RecyclerView amiibosView = mainLayout.getCurrentItem() == 0
+                ? browserFragment.getAmiibosView() : foomiiboFragment.getAmiibosView();
         if (item.getItemId() == R.id.install_update) {
             if (null != appUpdate) updates.downloadPlayUpdate(appUpdate);
             if (null != updateUrl) updates.installUpdateCompat(updateUrl);
@@ -1757,7 +1758,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private final CustomTarget<Bitmap> imageTarget = new CustomTarget<>() {
+    final CustomTarget<Bitmap> imageTarget = new CustomTarget<>() {
 
         @Override
         public void onLoadFailed(@Nullable Drawable errorDrawable) {
@@ -1776,7 +1777,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    private void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+    void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
         if (hasTagInfo) {
             textView.setVisibility(View.GONE);
         } else {
@@ -1791,9 +1792,12 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private void updateAmiiboView(byte[] tagData, AmiiboFile amiiboFile) {
+    void updateAmiiboView(byte[] tagData, AmiiboFile amiiboFile) {
         amiiboContainer.setVisibility(View.VISIBLE);
-        getToolbarOptions(toolbar, tagData, amiiboFile);
+        if (mainLayout.getCurrentItem() == 0)
+            getToolbarOptions(toolbar, tagData, amiiboFile);
+        else
+            foomiiboFragment.getToolbarOptions(toolbar, tagData);
 
         long amiiboId = -1;
         String tagInfo = null;
@@ -2159,10 +2163,10 @@ public class BrowserActivity extends AppCompatActivity implements
             prefsDrawer.closeDrawer(GravityCompat.START);
         else if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState())
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        else if (mainLayout.getCurrentItem() != 0)
-            mainLayout.setCurrentItem(0, true);
         else if (View.VISIBLE == amiiboContainer.getVisibility())
             amiiboContainer.setVisibility(View.GONE);
+        else if (mainLayout.getCurrentItem() != 0)
+            mainLayout.setCurrentItem(0, true);
         else
             super.onBackPressed();
     }

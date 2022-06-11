@@ -142,7 +142,7 @@ public class BankListActivity extends AppCompatActivity implements
 
         switchMenuOptions = findViewById(R.id.switch_menu_btn);
         bankOptionsMenu = findViewById(R.id.bank_options_menu);
-        writeBankLayout = findViewById(R.id.write_banks_layout);
+        writeBankLayout = findViewById(R.id.write_list_layout);
         amiiboFilesView = findViewById(R.id.amiibo_files_list);
         amiiboFilesView.setHasFixedSize(true);
 
@@ -191,7 +191,7 @@ public class BankListActivity extends AppCompatActivity implements
         };
 
         bankStats = findViewById(R.id.bank_stats);
-        eliteBankCount = findViewById(R.id.bank_number_picker);
+        eliteBankCount = findViewById(R.id.number_picker);
         writeOpenBanks = findViewById(R.id.write_open_banks);
         eraseOpenBanks = findViewById(R.id.erase_open_banks);
 

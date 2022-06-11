@@ -42,11 +42,7 @@ import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
-import org.json.JSONException;
-
 import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
@@ -123,6 +119,10 @@ public class FoomiiboFragment extends Fragment implements
             amiibosView.setLayoutManager(new LinearLayoutManager(activity));
         amiibosView.setAdapter(new FoomiiboAdapter(settings, missingIds, this));
         this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) amiibosView.getAdapter());
+    }
+
+    public RecyclerView getAmiibosView() {
+        return amiibosView;
     }
 
     private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
@@ -282,7 +282,7 @@ public class FoomiiboFragment extends Fragment implements
         });
     }
 
-    private void getToolbarOptions(Toolbar toolbar, byte[] tagData) {
+    void getToolbarOptions(Toolbar toolbar, byte[] tagData) {
         if (!toolbar.getMenu().hasVisibleItems())
             toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.getMenu().findItem(R.id.mnu_scan).setVisible(false);
@@ -380,6 +380,8 @@ public class FoomiiboFragment extends Fragment implements
                 txtUsage.setVisibility(View.VISIBLE);
                 getGameCompatibility(txtUsage, tagData);
             }
+        } else {
+            ((BrowserActivity) requireActivity()).updateAmiiboView(tagData, null);
         }
     }
 

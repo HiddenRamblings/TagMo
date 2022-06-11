@@ -431,11 +431,11 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         flaskStats = findViewById(R.id.flask_stats);
         writeFile = findViewById(R.id.write_slot_file);
-        writeCount = findViewById(R.id.bank_number_picker);
+        writeCount = findViewById(R.id.number_picker);
         writeCount.setMaxValue(85);
         writeSlots = findViewById(R.id.write_slot_count);
 
-        writeSlotsLayout = findViewById(R.id.write_banks_layout);
+        writeSlotsLayout = findViewById(R.id.write_list_layout);
         sourceToggle = findViewById(R.id.switch_source_btn);
         amiiboFilesView = findViewById(R.id.amiibo_files_list);
         amiiboFilesView.setHasFixedSize(true);

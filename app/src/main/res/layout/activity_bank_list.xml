@@ -101,9 +101,38 @@
             layout="@layout/active_card_layout"
             android:id="@+id/active_card_layout" />
 
-        <include
-            layout="@layout/bank_options_menu"
-            android:id="@+id/bank_options_menu" />
+        <LinearLayout
+            android:id="@+id/bank_options_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/write_open_banks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/write_open_banks" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/erase_open_banks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:text="@string/erase_open_banks" />
+
+            <include
+                layout="@layout/number_picker"
+                android:id="@+id/number_picker" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/write_bank_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="4dp"
+                android:text="@string/write_bank_count" />
+        </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatToggleButton
             android:id="@+id/switch_menu_btn"
@@ -115,7 +144,7 @@
             android:textOn="@string/view_amiibo_details"/>
 
         <include
-            layout="@layout/write_banks_layout"
-            android:id="@+id/write_banks_layout" />
+            layout="@layout/write_list_layout"
+            android:id="@+id/write_list_layout" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

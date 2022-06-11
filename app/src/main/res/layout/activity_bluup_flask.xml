@@ -109,8 +109,8 @@
             android:text="@string/write_slot_file" />
 
         <include
-            layout="@layout/bank_picker"
-            android:id="@+id/bank_number_picker" />
+            layout="@layout/number_picker"
+            android:id="@+id/number_picker" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/write_slot_count"
@@ -121,7 +121,7 @@
             android:text="@string/write_slots" />
 
         <include
-            layout="@layout/write_banks_layout"
-            android:id="@+id/write_banks_layout" />
+            layout="@layout/write_list_layout"
+            android:id="@+id/write_list_layout" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

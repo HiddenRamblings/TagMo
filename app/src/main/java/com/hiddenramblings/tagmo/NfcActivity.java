@@ -85,7 +85,7 @@ public class NfcActivity extends AppCompatActivity {
         txtError = findViewById(R.id.txtError);
         imgNfcBar = findViewById(R.id.imgNfcBar);
         imgNfcCircle = findViewById(R.id.imgNfcCircle);
-        bankPicker = findViewById(R.id.bank_number_picker);
+        bankPicker = findViewById(R.id.number_picker);
         bankTextView = findViewById(R.id.bank_number_details);
 
         this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);

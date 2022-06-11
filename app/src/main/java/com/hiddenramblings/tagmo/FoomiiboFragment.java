@@ -3,17 +3,13 @@ package com.hiddenramblings.tagmo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -113,10 +109,10 @@ public class FoomiiboFragment extends Fragment implements
         amiibosView = view.findViewById(R.id.amiibos_list);
         amiibosView.setHasFixedSize(true);
         ArrayList<Long> missingIds = activity.getMissingIds();
-        if (this.settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            amiibosView.setLayoutManager(new GridLayoutManager(activity, getColumnCount()));
-        else
-            amiibosView.setLayoutManager(new LinearLayoutManager(activity));
+        amiibosView.setLayoutManager(settings.getAmiiboView()
+                == BrowserSettings.VIEW.IMAGE.getValue()
+                ? new GridLayoutManager(activity, activity.getColumnCount())
+                : new LinearLayoutManager(activity));
         amiibosView.setAdapter(new FoomiiboAdapter(settings, missingIds, this));
         this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) amiibosView.getAdapter());
     }
@@ -143,17 +139,6 @@ public class FoomiiboFragment extends Fragment implements
             Debug.Log(TagUtils.class, e.getMessage());
         }
         return "";
-    }
-
-    private int getColumnCount() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager mWindowManager = (WindowManager)
-                requireContext().getSystemService(Context.WINDOW_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-            mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
-        else
-            mWindowManager.getDefaultDisplay().getMetrics(metrics);
-        return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
     private void deleteDir(Handler handler, ProgressDialog dialog, File dir) {

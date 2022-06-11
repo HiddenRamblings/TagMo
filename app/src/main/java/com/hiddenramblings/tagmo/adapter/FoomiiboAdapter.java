@@ -160,10 +160,14 @@ public class FoomiiboAdapter
             }
             holder.collector.onAmiiboClicked(amiiboList);
         } else if (null != holder.listener) {
-            if (foomiiboId.contains(holder.foomiibo.id)) {
-                foomiiboId.remove(holder.foomiibo.id);
+            if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
+                if (foomiiboId.contains(holder.foomiibo.id)) {
+                    foomiiboId.remove(holder.foomiibo.id);
+                } else {
+                    foomiiboId.add(holder.foomiibo.id);
+                }
             } else {
-                foomiiboId.add(holder.foomiibo.id);
+                foomiiboId.clear();
             }
             holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
         }

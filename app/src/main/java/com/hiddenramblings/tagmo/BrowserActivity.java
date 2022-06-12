@@ -542,7 +542,9 @@ public class BrowserActivity extends AppCompatActivity implements
                 String fileName = TagUtils.writeBytesToFile(
                         Storage.getDownloadDir("TagMo", "Backups"),
                         input.getText().toString() + ".bin", tagData);
-                new Toasty(this).Long(getString(R.string.wrote_file, fileName));
+                new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                        getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
+                ).show();
                 this.onRootFolderChanged(false);
             } catch (IOException e) {
                 new Toasty(this).Short(e.getMessage());
@@ -982,7 +984,9 @@ public class BrowserActivity extends AppCompatActivity implements
                         String fileName = TagUtils.writeBytesToFile(
                                 Storage.getDownloadDir("TagMo", "Backups"),
                                 input.getText().toString(), tagData);
-                        new Toasty(this).Long(getString(R.string.wrote_file, fileName));
+                        new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                                getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
+                        ).show();
                     } catch (IOException e) {
                         new Toasty(this).Short(e.getMessage());
                     }
@@ -1748,13 +1752,18 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void deleteAmiiboFile(AmiiboFile amiiboFile) {
         if (null != amiiboFile && null != amiiboFile.getFilePath()) {
+            String relativeFile = Storage.getRelativePath(
+                    amiiboFile.getFilePath(), prefs.preferEmulated().get());
             new AlertDialog.Builder(this)
-                    .setMessage(getString(R.string.warn_delete_file, Storage.getRelativePath(
-                            amiiboFile.getFilePath(), prefs.preferEmulated().get())))
+                    .setMessage(getString(R.string.warn_delete_file, relativeFile))
                     .setPositiveButton(R.string.delete, (dialog, which) -> {
                         amiiboContainer.setVisibility(View.GONE);
                         //noinspection ResultOfMethodCallIgnored
                         amiiboFile.getFilePath().delete();
+                        new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                                getString(R.string.delete_file, relativeFile),
+                                Snackbar.LENGTH_SHORT
+                        ).show();
                         this.onRootFolderChanged(true);
                         dialog.dismiss();
                     })

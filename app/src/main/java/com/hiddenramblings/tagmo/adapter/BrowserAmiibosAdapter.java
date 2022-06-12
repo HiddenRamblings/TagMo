@@ -388,7 +388,7 @@ public class BrowserAmiibosAdapter
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
                         this.txtPath.setTextColor(a.data);
                     }
-                    setIsHighlighted(relativeFile.contains("/Foomiibo/"));
+                    setIsHighlighted(relativeFile.startsWith("/Foomiibo/"));
                 } else if (null != item.getDocUri()) {
                     String amiiboUri = item.getDocUri().getUri().toString();
                     boolean expanded = amiiboPath.contains(amiiboUri);

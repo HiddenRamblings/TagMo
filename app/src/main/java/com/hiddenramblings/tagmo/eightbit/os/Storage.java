@@ -229,7 +229,8 @@ public class Storage extends Environment {
 
     public static String getRelativePath(File file, boolean internal) {
         String filePath = file.getAbsolutePath();
-        String storagePath = getPath(internal);
+        String storagePath = filePath.contains("/Foomiibo/")
+                ? TagMo.getContext().getFilesDir().getAbsolutePath() : getPath(internal);
         return filePath.startsWith(storagePath)
                 ? filePath.substring(storagePath.length()) : filePath;
     }

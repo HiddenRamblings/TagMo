@@ -22,12 +22,6 @@ public class UpdateReceiver extends BroadcastReceiver {
             startLauncherActivity(context, context.getPackageManager()
                     .getLaunchIntentForPackage(BuildConfig.APPLICATION_ID)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-        } else if (Intent.ACTION_PACKAGE_REPLACED.equals(action)) {
-            if (intent.getData().getSchemeSpecificPart().equals(context.getPackageName())) {
-                startLauncherActivity(context, context.getPackageManager()
-                        .getLaunchIntentForPackage(BuildConfig.APPLICATION_ID)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) return;
             switch(intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {

@@ -1497,7 +1497,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (newBrowserSettings == null || oldBrowserSettings == null) return;
         boolean folderChanged = !BrowserSettings.equals(newBrowserSettings.getBrowserRootDocument(),
                 oldBrowserSettings.getBrowserRootDocument())
-                && !BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(),
+                || !BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(),
                 oldBrowserSettings.getBrowserRootFolder());
         if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
             settings.getAmiiboFiles().clear();

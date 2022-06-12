@@ -197,6 +197,9 @@ public class FoomiiboFragment extends Fragment implements
             directory.mkdirs();
             TagUtils.writeBytesToFile(directory, decipherFilename(
                     settings.getAmiiboManager(), tagData), tagData);
+            new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
+                    getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT
+            ).show();
         } catch (Exception e) {
             Debug.Log(e);
         }
@@ -215,6 +218,11 @@ public class FoomiiboFragment extends Fragment implements
                     .setPositiveButton(R.string.delete, (dialog, which) -> {
                         if (!amiiboFile.delete())
                             new Toasty(requireActivity()).Short(R.string.delete_virtual);
+                        else
+                            new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
+                                    getString(R.string.delete_foomiibo, amiibo.name),
+                                    Snackbar.LENGTH_SHORT
+                            ).show();
                         dialog.dismiss();
                     })
                     .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();

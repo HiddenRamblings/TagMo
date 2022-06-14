@@ -248,12 +248,14 @@ public class BrowserActivity extends AppCompatActivity implements
                         break;
                 }
                 invalidateOptionsMenu();
-                RecyclerView amiibosView = mainLayout.getCurrentItem() == 0
-                        ? browserFragment.getAmiibosView() : foomiiboFragment.getAmiibosView();
-                amiibosView.setLayoutManager(settings.getAmiiboView()
-                        == BrowserSettings.VIEW.IMAGE.getValue()
-                        ? new GridLayoutManager(BrowserActivity.this, getColumnCount())
-                        : new LinearLayoutManager(BrowserActivity.this));
+                RecyclerView amiibosView = position == 0
+                        ? browserFragment.getAmiibosView()
+                        : foomiiboFragment.getAmiibosView();
+                if (null != amiibosView)
+                    amiibosView.setLayoutManager(settings.getAmiiboView()
+                            == BrowserSettings.VIEW.IMAGE.getValue()
+                            ? new GridLayoutManager(BrowserActivity.this, getColumnCount())
+                            : new LinearLayoutManager(BrowserActivity.this));
             }
         });
 
@@ -1211,7 +1213,8 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         RecyclerView amiibosView = mainLayout.getCurrentItem() == 0
-                ? browserFragment.getAmiibosView() : foomiiboFragment.getAmiibosView();
+                ? browserFragment.getAmiibosView()
+                : foomiiboFragment.getAmiibosView();
         if (item.getItemId() == R.id.install_update) {
             if (null != appUpdate) updates.downloadPlayUpdate(appUpdate);
             if (null != updateUrl) updates.installUpdateCompat(updateUrl);

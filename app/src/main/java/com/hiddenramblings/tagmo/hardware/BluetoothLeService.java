@@ -126,7 +126,7 @@ public class BluetoothLeService extends Service {
 
                 if (progress.contains("Uncaught no such element")) {
                     response = new StringBuilder();
-                    promptWriteTagCharacteristic("setTag(\""
+                    promptTagCharacteristic("setTag(\""
                             + nameCompat + "|" + tailCompat + "\")");
                     nameCompat = null;
                     tailCompat = null;
@@ -473,7 +473,7 @@ public class BluetoothLeService extends Service {
         }, commandQueue * 30L);
     }
 
-    public void delayedWriteTagCharacteristic(String value) {
+    public void queueTagCharacteristic(String value, int index) {
         if (null == mCharacteristicTX) {
             try {
                 setFlaskCharacteristicTX();
@@ -482,7 +482,7 @@ public class BluetoothLeService extends Service {
             }
         }
 
-        Callbacks.add(() -> delayedWriteCharacteristic(
+        Callbacks.add(index, () -> delayedWriteCharacteristic(
                 ("tag." + value + "\n").getBytes(CharsetCompat.UTF_8)
         ));
 
@@ -491,32 +491,22 @@ public class BluetoothLeService extends Service {
         }
     }
 
-    public void promptWriteTagCharacteristic(String value) {
-        if (null == mCharacteristicTX) {
-            try {
-                setFlaskCharacteristicTX();
-            } catch (TagLostException e) {
-                e.printStackTrace();
-            }
-        }
+    public void delayedTagCharacteristic(String value) {
+        queueTagCharacteristic(value, Callbacks.size());
+    }
 
-        Callbacks.add(0, () -> delayedWriteCharacteristic(
-                ("tag." + value + "\n").getBytes(CharsetCompat.UTF_8)
-        ));
-
-        if (Callbacks.size() == 1) {
-            Callbacks.get(0).run();
-        }
+    public void promptTagCharacteristic(String value) {
+        queueTagCharacteristic(value, 0);
     }
     
     public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo) {
-        delayedWriteTagCharacteristic("startTagUpload(" + amiiboData.length + ")");
+        delayedTagCharacteristic("startTagUpload(" + amiiboData.length + ")");
         List<String> chunks = stringToPortions(Base64.encodeToString(
                 amiiboData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
         ), 128);
         for (int i = 0; i < chunks.size(); i+=1) {
             final String chunk = chunks.get(i);
-            delayedWriteTagCharacteristic(
+            delayedTagCharacteristic(
                     "tagUploadChunk(\"" + chunk + "\")"
             );
         }
@@ -524,24 +514,24 @@ public class BluetoothLeService extends Service {
                 .amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
         String name = amiibo.name.length() > 28
                 ? amiibo.name.substring(0, 28) : amiibo.name;
-        delayedWriteTagCharacteristic("saveUploadedTag(\""
+        delayedTagCharacteristic("saveUploadedTag(\""
                 + name + "|" + flaskTail + "|0\")");
-        delayedWriteTagCharacteristic("uploadsComplete()");
-        delayedWriteTagCharacteristic("getList()");
+        delayedTagCharacteristic("uploadsComplete()");
+        delayedTagCharacteristic("getList()");
     }
 
     public void setActiveAmiibo(String name, String tail) {
         nameCompat = name;
         tailCompat = tail;
-        delayedWriteTagCharacteristic("setTag(\"" + name + "|" + tail + "|0\")");
+        delayedTagCharacteristic("setTag(\"" + name + "|" + tail + "|0\")");
     }
 
     public void getActiveAmiibo() {
-        delayedWriteTagCharacteristic("get()");
+        delayedTagCharacteristic("get()");
     }
 
     public void getDeviceAmiibo() {
-        delayedWriteTagCharacteristic("getList()");
+        delayedTagCharacteristic("getList()");
     }
 
     // https://stackoverflow.com/a/50022158/461982

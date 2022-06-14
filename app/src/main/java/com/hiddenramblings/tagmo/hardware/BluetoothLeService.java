@@ -114,7 +114,6 @@ public class BluetoothLeService extends Service {
                         Objects.requireNonNull(System.getProperty("line.separator")), ""
                 ) : "";
 
-
                 if (isJSONValid(progress) || progress.endsWith(">")
                         || progress.lastIndexOf("undefined") == 0
                         || progress.lastIndexOf("\n") == 0) {
@@ -127,10 +126,11 @@ public class BluetoothLeService extends Service {
 
                 if (progress.contains("Uncaught no such element")) {
                     response = new StringBuilder();
-                    delayedWriteTagCharacteristic("setTag(\""
+                    promptWriteTagCharacteristic("setTag(\""
                             + nameCompat + "|" + tailCompat + "\")");
                     nameCompat = null;
                     tailCompat = null;
+                    return;
                 } else if (progress.startsWith("tag.get()") || progress.startsWith("tag.setTag")) {
                     if (progress.endsWith(">")) {
                         String getAmiibo = progress.substring(progress.indexOf("{"),
@@ -492,19 +492,37 @@ public class BluetoothLeService extends Service {
         }
     }
 
+    public void promptWriteTagCharacteristic(String value) {
+        if (null == mCharacteristicTX) {
+            try {
+                setFlaskCharacteristicTX();
+            } catch (TagLostException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Callbacks.add(0, () -> delayedWriteCharacteristic(
+                ("tag." + value + "\n").getBytes(CharsetCompat.UTF_8)
+        ));
+
+        if (Callbacks.size() == 1) {
+            Callbacks.get(0).run();
+        }
+    }
+    
     public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo) {
         delayedWriteTagCharacteristic("startTagUpload(" + amiiboData.length + ")");
         List<String> chunks = stringToPortions(Base64.encodeToString(
                 amiiboData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
         ), 128);
-        for(int i = 0; i < chunks.size(); i+=1) {
+        for (int i = 0; i < chunks.size(); i+=1) {
             final String chunk = chunks.get(i);
             delayedWriteTagCharacteristic(
                     "tagUploadChunk(\"" + chunk + "\")"
             );
         }
-        String flaskTail = Integer.toString(Integer.parseInt(
-                TagUtils.amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
+        String flaskTail = Integer.toString(Integer.parseInt(TagUtils
+                .amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
         String name = amiibo.name.length() > 28
                 ? amiibo.name.substring(0, 28) : amiibo.name;
         delayedWriteTagCharacteristic("saveUploadedTag(\""

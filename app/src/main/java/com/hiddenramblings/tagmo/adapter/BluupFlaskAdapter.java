@@ -18,7 +18,6 @@ import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.amiibo.FlaskAmiibo;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
@@ -32,15 +31,15 @@ public class BluupFlaskAdapter
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
-    private ArrayList<FlaskAmiibo> flaskAmiibos = new ArrayList<>();
+    private ArrayList<Amiibo> flaskAmiibo = new ArrayList<>();
 
     public BluupFlaskAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
     }
 
-    public void setFlaskAmiibos(ArrayList<FlaskAmiibo> flaskAmiibos) {
-        this.flaskAmiibos = flaskAmiibos;
+    public void setFlaskAmiibo(ArrayList<Amiibo> amiibo) {
+        this.flaskAmiibo = amiibo;
     }
 
     @Override
@@ -49,16 +48,16 @@ public class BluupFlaskAdapter
 
     @Override
     public int getItemCount() {
-        return null != flaskAmiibos ? flaskAmiibos.size() : 0;
+        return null != flaskAmiibo ? flaskAmiibo.size() : 0;
     }
 
     @Override
     public long getItemId(int i) {
-        return Long.parseLong(flaskAmiibos.get(i).getTail());
+        return Long.parseLong(flaskAmiibo.get(i).getFlaskTail());
     }
 
-    public FlaskAmiibo getItem(int i) {
-        return flaskAmiibos.get(i);
+    public Amiibo getItem(int i) {
+        return flaskAmiibo.get(i);
     }
 
     @Override
@@ -92,16 +91,16 @@ public class BluupFlaskAdapter
         }
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.listener) {
-                holder.listener.onAmiiboClicked(holder.flaskAmiibo);
+                holder.listener.onAmiiboClicked(holder.amiibo);
             }
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.listener) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                        holder.listener.onAmiiboClicked(holder.flaskAmiibo);
+                        holder.listener.onAmiiboClicked(holder.amiibo);
                     else
-                        holder.listener.onAmiiboImageClicked(holder.flaskAmiibo);
+                        holder.listener.onAmiiboImageClicked(holder.amiibo);
                 }
             });
         }
@@ -121,7 +120,7 @@ public class BluupFlaskAdapter
         public final TextView txtPath;
         public final AppCompatImageView imageAmiibo;
 
-        FlaskAmiibo flaskAmiibo = null;
+        Amiibo amiibo = null;
 
         CustomTarget<Bitmap> target = new CustomTarget<>() {
             @Override
@@ -162,8 +161,8 @@ public class BluupFlaskAdapter
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
         }
 
-        void bind(final FlaskAmiibo item) {
-            this.flaskAmiibo = item;
+        void bind(final Amiibo item) {
+            this.amiibo = item;
 
             String amiiboHexId;
             String amiiboName;
@@ -173,7 +172,6 @@ public class BluupFlaskAdapter
             // String character = "";
             String amiiboImageUrl;
 
-            Amiibo amiibo = null != flaskAmiibo ? flaskAmiibo.getAmiibo() : null;
             if (null != amiibo) {
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboName = amiibo.name;
@@ -258,8 +256,8 @@ public class BluupFlaskAdapter
     }
 
     public interface OnAmiiboClickListener {
-        void onAmiiboClicked(FlaskAmiibo flaskAmiibo);
+        void onAmiiboClicked(Amiibo amiibo);
 
-        void onAmiiboImageClicked(FlaskAmiibo flaskAmiibo);
+        void onAmiiboImageClicked(Amiibo amiibo);
     }
 }

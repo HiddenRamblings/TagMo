@@ -659,7 +659,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         });
     }
 
-    private Amiibo getAmiiboByName(String amiiboName) {
+    private Amiibo getAmiiboByName(String name, String tail) {
         AmiiboManager amiiboManager;
         try {
             amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
@@ -674,15 +674,13 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         Amiibo selectedAmiibo = null;
         if (null != amiiboManager) {
             for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                if (amiibo.name.equals(amiiboName)) {
+              if (amiibo.name.startsWith(name)) {
+            String flaskTail = Integer.toString(Integer.parseInt(
+                TagUtils.amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
+if (tail.equals(flasktail) {
                     selectedAmiibo = amiibo;
-                }
-            }
-            if (null == selectedAmiibo) {
-                for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                    if (amiibo.name.startsWith(amiiboName)) {
-                        selectedAmiibo = amiibo;
-                    }
+break;
+}
                 }
             }
         }

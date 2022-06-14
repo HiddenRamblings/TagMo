@@ -173,8 +173,8 @@ public class BluupFlaskAdapter
             // String character = "";
             String amiiboImageUrl;
 
-            if (null != flaskAmiibo) {
-                Amiibo amiibo = flaskAmiibo.getAmiibo();
+            Amiibo amiibo = null != flaskAmiibo ? flaskAmiibo.getAmiibo() : null;
+            if (null != amiibo) {
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboName = amiibo.name;
                 amiiboImageUrl = amiibo.getImageUrl();

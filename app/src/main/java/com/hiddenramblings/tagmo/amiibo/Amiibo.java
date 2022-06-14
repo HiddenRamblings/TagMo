@@ -125,6 +125,11 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
         return String.format(AMIIBO_IMAGE, head, tail);
     }
 
+    public String getFlaskTail() {
+        return Integer.toString(Integer.parseInt(TagUtils
+                .amiiboIdToHex(this.id).substring(8, 16), 16), 36);
+    }
+
     @Override
     public int compareTo(@NonNull Amiibo amiibo) {
         if (this.id == amiibo.id)

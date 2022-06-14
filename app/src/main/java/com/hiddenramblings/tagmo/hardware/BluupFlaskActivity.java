@@ -73,7 +73,6 @@ import com.hiddenramblings.tagmo.adapter.WriteAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.amiibo.FlaskAmiibo;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -242,7 +241,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 flaskService.getDeviceAmiibo();
                             } catch (TagLostException tle) {
                                 stopFlaskService();
-                                new Toasty(BluupFlaskActivity.this).Short(R.string.flask_invalid);
+                                new Toasty(BluupFlaskActivity.this)
+                                        .Short(R.string.flask_invalid);
                             }
                         }
 
@@ -277,17 +277,14 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         public void onFlaskListRetrieved(JSONArray jsonArray) {
                             Executors.newSingleThreadExecutor().execute(() -> {
                                 currentCount = jsonArray.length();
-                                ArrayList<FlaskAmiibo> flaskAmiibos = new ArrayList<>();
+                                ArrayList<Amiibo> flaskAmiibos = new ArrayList<>();
                                 for (int i = 0; i < currentCount; i++) {
                                     try {
                                         String[] name = jsonArray.getString(i).split("\\|");
-                                        FlaskAmiibo flaskAmiibo = new FlaskAmiibo();
                                         Amiibo amiibo = getAmiiboByName(name);
                                         if (null != amiibo) {
                                             amiibo.bank = i;
-                                            flaskAmiibo.setAmiibo(amiibo);
-                                            flaskAmiibo.setTail(name[1]);
-                                            flaskAmiibos.add(flaskAmiibo);
+                                            flaskAmiibos.add(amiibo);
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -295,7 +292,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 }
                                 BluupFlaskAdapter adapter = new BluupFlaskAdapter(
                                         settings, BluupFlaskActivity.this);
-                                adapter.setFlaskAmiibos(flaskAmiibos);
+                                adapter.setFlaskAmiibo(flaskAmiibos);
                                 runOnUiThread(() -> {
                                     dismissSnackbarNotice();
                                     flaskDetails.setAdapter(adapter);
@@ -1085,13 +1082,13 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onAmiiboClicked(FlaskAmiibo flaskAmiibo) {
-        if (null != flaskAmiibo) {
-            getActiveAmiibo(flaskAmiibo.getAmiibo(), amiiboCard);
+    public void onAmiiboClicked(Amiibo amiibo) {
+        if (null != amiibo) {
+            getActiveAmiibo(amiibo, amiiboCard);
             toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_activate) {
                     flaskService.setActiveAmiibo(
-                            flaskAmiibo.getAmiibo().name, flaskAmiibo.getTail()
+                            amiibo.name, amiibo.getFlaskTail()
                     );
                     return true;
                 }
@@ -1102,10 +1099,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onAmiiboImageClicked(FlaskAmiibo flaskAmiibo) {
-        if (null != flaskAmiibo) {
+    public void onAmiiboImageClicked(Amiibo amiibo) {
+        if (null != amiibo) {
             Bundle bundle = new Bundle();
-            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, flaskAmiibo.getAmiibo().id);
+            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id);
 
             Intent intent = new Intent(this, ImageActivity.class);
             intent.putExtras(bundle);

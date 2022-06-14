@@ -130,7 +130,6 @@ public class BluetoothLeService extends Service {
                             + nameCompat + "|" + tailCompat + "\")");
                     nameCompat = null;
                     tailCompat = null;
-                    return;
                 } else if (progress.startsWith("tag.get()") || progress.startsWith("tag.setTag")) {
                     if (progress.endsWith(">")) {
                         String getAmiibo = progress.substring(progress.indexOf("{"),

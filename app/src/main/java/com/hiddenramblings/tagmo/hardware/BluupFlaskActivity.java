@@ -341,7 +341,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
                         @Override
                         public void onGattConnectionLost() {
-                            runOnUiThread(BluupFlaskActivity.this::showDisconnectNotice);
+                            runOnUiThread(() -> {
+                                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                                showDisconnectNotice();
+                            });
                             stopFlaskService();
                         }
                     });

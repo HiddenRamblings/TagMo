@@ -332,8 +332,6 @@ public class WriteAmiiboAdapter extends RecyclerView.Adapter<WriteAmiiboAdapter.
                     amiiboType = amiibo.getAmiiboType().name;
                 if (null != amiibo.getGameSeries() )
                     gameSeries = amiibo.getGameSeries().name;
-                // if (null != amiibo.getCharacter() )
-                //     gameSeries = amiibo.getCharacter().name;
             } else {
                 tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId);

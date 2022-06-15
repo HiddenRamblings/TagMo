@@ -349,56 +349,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.loadPTagKeyManager();
 
-        nfcFab.setOnClickListener(view -> {
-            PopupMenu popup;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
-                popup = new PopupMenu(this, nfcFab,
-                        Gravity.END, 0, R.style.PopupMenu);
-            else
-                popup = new PopupMenu(this, nfcFab);
-            try {
-                for (Field field : popup.getClass().getDeclaredFields()) {
-                    if ("mPopup".equals(field.getName())) {
-                        field.setAccessible(true);
-                        Object menuPopupHelper = field.get(popup);
-                        if (null != menuPopupHelper) {
-                            Method setForceIcons = Class.forName(menuPopupHelper.getClass().getName())
-                                    .getMethod("setForceShowIcon", boolean.class);
-                            setForceIcons.invoke(menuPopupHelper, true);
-                        }
-                        break;
-                    }
-                }
-            } catch (Exception e) {
-                Debug.Log(e);
-            }
-            popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
-                popup.getMenu().findItem(R.id.mnu_flask).setTitle(R.string.bluup_flask_ble);
-            else
-                popup.getMenu().findItem(R.id.mnu_flask).setTitle(R.string.bluup_flask_web);
-            popup.show();
-            popup.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == R.id.mnu_scan) {
-                    onNFCActivity.launch(new Intent(this,
-                            NfcActivity.class).setAction(NFCIntent.ACTION_SCAN_TAG));
-                    return true;
-                } else if (item.getItemId() == R.id.mnu_flask) {
-                    launchFlaskEditor();
-                    return true;
-                } else if (item.getItemId() == R.id.mnu_backup) {
-                    Intent backup = new Intent(this, NfcActivity.class);
-                    backup.setAction(NFCIntent.ACTION_BACKUP_AMIIBO);
-                    onBackupActivity.launch(backup);
-                    return true;
-                } else if (item.getItemId() == R.id.mnu_validate) {
-                    onValidateActivity.launch(new Intent(this,
-                            NfcActivity.class).setAction(NFCIntent.ACTION_SCAN_TAG));
-                    return true;
-                }
-                return false;
-            });
-        });
+        nfcFab.setOnClickListener(this::showPopupMenu);
 
         findViewById(R.id.amiiboContainer).setOnClickListener(view ->
                 amiiboContainer.setVisibility(View.GONE));
@@ -572,6 +523,70 @@ public class BrowserActivity extends AppCompatActivity implements
                     R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG).show();
         }
     });
+
+    private void showPopupMenu(View anchor) {
+        PopupMenu popup;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
+            popup = new PopupMenu(this, anchor,
+                    Gravity.END, 0, R.style.PopupMenu);
+        else
+            popup = new PopupMenu(this, anchor);
+        try {
+            for (Field field : popup.getClass().getDeclaredFields()) {
+                if ("mPopup".equals(field.getName())) {
+                    field.setAccessible(true);
+                    Object menuPopupHelper = field.get(popup);
+                    if (null != menuPopupHelper) {
+                        Method setForceIcons = Class.forName(menuPopupHelper.getClass().getName())
+                                .getMethod("setForceShowIcon", boolean.class);
+                        setForceIcons.invoke(menuPopupHelper, true);
+                    }
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Debug.Log(e);
+        }
+        popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
+        MenuItem scanItem = popup.getMenu().findItem(R.id.mnu_scan);
+        MenuItem flaskItem = popup.getMenu().findItem(R.id.mnu_flask);
+        MenuItem backupItem = popup.getMenu().findItem(R.id.mnu_backup);
+        MenuItem validateItem = popup.getMenu().findItem(R.id.mnu_validate);
+        flaskItem.setTitle(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+                ? R.string.bluup_flask_ble : R.string.bluup_flask_web);
+
+        scanItem.setEnabled(false);
+        flaskItem.setEnabled(false);
+        backupItem.setEnabled(false);
+        validateItem.setEnabled(false);
+        popup.show();
+        Handler popupHandler = new Handler(Looper.getMainLooper());
+        popupHandler.postDelayed(() -> validateItem.setEnabled(true), 200);
+        popupHandler.postDelayed(() -> backupItem.setEnabled(true), 300);
+        popupHandler.postDelayed(() -> flaskItem.setEnabled(true), 400);
+        popupHandler.postDelayed(() -> scanItem.setEnabled(true), 500);
+
+        popup.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.mnu_scan) {
+                onNFCActivity.launch(new Intent(this,
+                        NfcActivity.class).setAction(NFCIntent.ACTION_SCAN_TAG));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_flask) {
+                launchFlaskEditor();
+                return true;
+            } else if (item.getItemId() == R.id.mnu_backup) {
+                Intent backup = new Intent(this, NfcActivity.class);
+                backup.setAction(NFCIntent.ACTION_BACKUP_AMIIBO);
+                onBackupActivity.launch(backup);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_validate) {
+                onValidateActivity.launch(new Intent(this,
+                        NfcActivity.class).setAction(NFCIntent.ACTION_SCAN_TAG));
+                return true;
+            }
+            return false;
+        });
+    }
 
     private void onRebuildDatabaseClicked() {
         showBrowserPage();

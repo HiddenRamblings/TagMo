@@ -240,7 +240,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 flaskService.setFlaskCharacteristicRX();
                                 flaskService.getDeviceAmiibo();
                             } catch (TagLostException tle) {
-                                stopFlaskService();
+                                disconnectFlask();
                                 new Toasty(BluupFlaskActivity.this)
                                         .Short(R.string.flask_invalid);
                             }
@@ -343,7 +343,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                             );
                             runOnUiThread(() -> bottomSheetBehavior
                                     .setState(BottomSheetBehavior.STATE_COLLAPSED));
-                            flaskProfile = null;
                             flaskAddress = null;
                             stopFlaskService();
                         }
@@ -357,8 +356,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            unbindService(mServerConn);
-            stopService(new Intent(BluupFlaskActivity.this, BluetoothLeService.class));
+            stopFlaskService();
             if (!isServiceDiscovered) {
                 showPurchaseNotice();
             }
@@ -1022,9 +1020,19 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
     }
 
-    public void stopFlaskService() {
+    public void disconnectFlask() {
         dismissSnackbarNotice();
-        if (null != flaskService) flaskService.disconnect();
+        if (null != flaskService)
+            flaskService.disconnect();
+        else
+            stopFlaskService();
+    }
+
+    public void stopFlaskService() {
+        unbindService(mServerConn);
+        stopService(new Intent(
+                BluupFlaskActivity.this, BluetoothLeService.class
+        ));
     }
 
     private void dismissFlaskDiscovery() {
@@ -1097,7 +1105,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     public void onDestroy() {
         super.onDestroy();
         dismissFlaskDiscovery();
-        stopFlaskService();
+        disconnectFlask();
     }
 
     @Override

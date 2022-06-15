@@ -77,8 +77,6 @@ public class SettingsAmiiboAdapter extends BaseAdapter {
             amiiboType = amiibo.getAmiiboType().name;
         if (null != amiibo.getGameSeries())
             gameSeries = amiibo.getGameSeries().name;
-        // if (null != amiibo.getCharacter())
-        //     character = amiibo.getCharacter().name;
 
         holder.txtError.setVisibility(android.view.View.GONE);
         setAmiiboInfoText(holder.txtName, amiiboName);

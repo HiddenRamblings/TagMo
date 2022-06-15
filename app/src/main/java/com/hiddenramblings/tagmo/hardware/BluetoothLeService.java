@@ -520,8 +520,11 @@ public class BluetoothLeService extends Service {
         }
         String flaskTail = Integer.toString(Integer.parseInt(TagUtils
                 .amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
-        String name = amiibo.name.length() > 28
-                ? amiibo.name.substring(0, 28) : amiibo.name;
+        int reserved = flaskTail.length() + 3; // Two pipes and set number
+        String name = amiibo.name.length() + reserved > 28
+                ? amiibo.name.substring(0, amiibo.name.length()
+                - ((amiibo.name.length() + reserved) - 28))
+                : amiibo.name;
         delayedTagCharacteristic("saveUploadedTag(\""
                 + name + "|" + flaskTail + "|0\")");
         delayedTagCharacteristic("uploadsComplete()");

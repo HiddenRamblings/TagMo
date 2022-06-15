@@ -572,9 +572,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        findViewById(R.id.create_blank).setOnClickListener(view -> {
-            flaskService.createBlankTag();
-        });
+        findViewById(R.id.create_blank).setOnClickListener(view -> flaskService.createBlankTag());
 
         sourceToggle.setOnClickListener(view -> {
             if (writeSlotsLayout.getVisibility() == View.VISIBLE) {
@@ -1031,10 +1029,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
     public void stopFlaskService() {
         try {
-        unbindService(mServerConn);
-        stopService(new Intent(
-                BluupFlaskActivity.this, BluetoothLeService.class
-        ));
+            unbindService(mServerConn);
+            stopService(new Intent(BluupFlaskActivity.this, BluetoothLeService.class));
         } catch (IllegalArgumentException ignored) { }
     }
 

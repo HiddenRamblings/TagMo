@@ -198,7 +198,6 @@
 
     <string name="write_open_banks">Write %1$d Banks to N2 Elite</string>
     <string name="erase_open_banks">Erase %1$d Banks on N2 Elite</string>
-    <string name="write_bank_count">Write Bank Count to N2 Elite</string>
     <string name="bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
     <string name="bank_number">Bank %1$d</string>
 

@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
-import java.io.File;
 import java.io.Serializable;
 
 public class Amiibo implements Comparable<Amiibo>, Parcelable {

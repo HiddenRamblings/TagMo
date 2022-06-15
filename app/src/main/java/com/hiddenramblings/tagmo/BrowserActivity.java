@@ -537,7 +537,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 browserFragment.getAmiibosView(), false);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
+        input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData, true));
         Dialog backupDialog = dialog.setView(view).create();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
@@ -979,7 +979,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
                 AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                 final EditText input = view.findViewById(R.id.backup_entry);
-                input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData));
+                input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData, true));
                 Dialog backupDialog = dialog.setView(view).create();
                 view.findViewById(R.id.save_backup).setOnClickListener(v -> {
                     try {

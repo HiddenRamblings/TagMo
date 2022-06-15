@@ -605,7 +605,6 @@ public class BluetoothLeService extends Service {
         delayedTagCharacteristic("createBlank()");
     }
 
-    // https://stackoverflow.com/a/50022158/461982
     public static List<byte[]> byteToPortions(byte[] largeByteArray, int sizePerPortion) {
         List<byte[]> byteArrayPortions = new ArrayList<>();
         int offset = 0;
@@ -638,8 +637,10 @@ public class BluetoothLeService extends Service {
             return "FlaskTX";
         } else if (uuid.compareTo(FlaskRX) == 0) {
             return "FlaskRX";
-        } else {
+        } else if (uuid.compareTo(FlaskNUS) == 0) {
             return "FlaskNUS";
+        } else {
+            return uuid.toString();
         }
     }
 }

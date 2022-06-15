@@ -86,9 +86,11 @@ public class BluetoothLeService extends Service {
         try {
             new JSONObject(test);
         } catch (JSONException ex) {
+            Debug.Log(ex);
             try {
                 new JSONArray(test);
-            } catch (JSONException ex1) {
+            } catch (JSONException jex) {
+                Debug.Log(jex);
                 return false;
             }
         }
@@ -118,13 +120,13 @@ public class BluetoothLeService extends Service {
                         || progress.lastIndexOf("undefined") == 0
                         || progress.lastIndexOf("\n") == 0) {
                     if (Callbacks.size() > 0) {
-                        Debug.Log(TAG, "Callback Called");
                         Callbacks.get(0).run();
                         Callbacks.remove(0);
                     }
                 }
 
-                if (progress.contains("Uncaught no such element")) {
+                if (progress.contains("Uncaught no such element")
+                        && null != nameCompat && null != tailCompat) {
                     response = new StringBuilder();
                     promptTagCharacteristic("setTag(\""
                             + nameCompat + "|" + tailCompat + "\")");
@@ -132,15 +134,21 @@ public class BluetoothLeService extends Service {
                     tailCompat = null;
                 } else if (progress.startsWith("tag.get()") || progress.startsWith("tag.setTag")) {
                     if (progress.endsWith(">")) {
-                        String getAmiibo = progress.substring(progress.indexOf("{"),
-                                progress.lastIndexOf("}") + 1);
-                        if (null != listener) {
-                            try {
-                                JSONObject jsonObject = new JSONObject(getAmiibo);
-                                listener.onFlaskActiveLocated(jsonObject);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                        nameCompat = null;
+                        tailCompat = null;
+                        try {
+                            String getAmiibo = progress.substring(progress.indexOf("{"),
+                                    progress.lastIndexOf("}") + 1);
+                            if (null != listener) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(getAmiibo);
+                                    listener.onFlaskActiveLocated(jsonObject);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
+                        } catch (StringIndexOutOfBoundsException ex) {
+                            Debug.Log(ex);
                         }
                         response = new StringBuilder();
                     }
@@ -532,6 +540,10 @@ public class BluetoothLeService extends Service {
 
     public void getDeviceAmiibo() {
         delayedTagCharacteristic("getList()");
+    }
+
+    public void createBlankTag() {
+        delayedTagCharacteristic("createBlank()");
     }
 
     // https://stackoverflow.com/a/50022158/461982

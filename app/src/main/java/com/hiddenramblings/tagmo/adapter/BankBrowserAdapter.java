@@ -215,8 +215,6 @@ public class BankBrowserAdapter
                             boldSpannable.IndexOf(amiiboType, query));
                     setAmiiboInfoText(this.txtGameSeries,
                             boldSpannable.IndexOf(gameSeries, query));
-                    // setAmiiboInfoText(this.txtCharacter,
-                    // boldText.Matching(character, query));
                 } else {
                     this.txtName.setVisibility(View.VISIBLE);
                     this.txtName.setText(TagMo.getContext().getString(R.string.blank_bank, value));
@@ -224,7 +222,6 @@ public class BankBrowserAdapter
                     this.txtAmiiboSeries.setVisibility(View.GONE);
                     this.txtAmiiboType.setVisibility(View.GONE);
                     this.txtGameSeries.setVisibility(View.GONE);
-                    // this.txtCharacter.setVisibility(View.GONE);
                 }
             }
 

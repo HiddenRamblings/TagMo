@@ -338,8 +338,6 @@ public class BrowserAmiibosAdapter
                     amiiboType = amiibo.getAmiiboType().name;
                 if (null != amiibo.getGameSeries())
                     gameSeries = amiibo.getGameSeries().name;
-                // if (null != amiibo.getCharacter())
-                //     gameSeries = amiibo.getCharacter().name;
             } else {
                 amiiboHexId = TagUtils.amiiboIdToHex(amiiboId);
                 tagInfo = "ID: " + amiiboHexId;

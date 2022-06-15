@@ -360,7 +360,7 @@ public class BankListActivity extends AppCompatActivity implements
             onOpenBanksActivity.launch(collection);
         });
 
-        findViewById(R.id.write_bank_count).setOnClickListener(view -> {
+        findViewById(R.id.edit_bank_count).setOnClickListener(view -> {
             if (prefs.eliteActiveBank().get() >= eliteBankCount.getValue()) {
                 new Toasty(this).Short(R.string.fail_active_oob);
                 onBottomSheetChanged(true, false);
@@ -837,8 +837,6 @@ public class BankListActivity extends AppCompatActivity implements
                 amiiboType = amiibo.getAmiiboType().name;
             if (null != amiibo.getGameSeries())
                 gameSeries = amiibo.getGameSeries().name;
-            // if (null != amiibo.getCharacter())
-            //     character = amiibo.getCharacter().name;
         } else {
             tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
             amiiboImageUrl = Amiibo.getImageUrl(amiiboId);

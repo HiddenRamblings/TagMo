@@ -349,7 +349,27 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.loadPTagKeyManager();
 
-        nfcFab.setOnClickListener(this::showPopupMenu);
+        PopupMenu popup = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1
+                    ? new PopupMenu(this, nfcFab, Gravity.END, 0, R.style.PopupMenu)
+                    : new PopupMenu(this, nfcFab);
+        try {
+            for (Field field : popup.getClass().getDeclaredFields()) {
+                if ("mPopup".equals(field.getName())) {
+                    field.setAccessible(true);
+                    Object menuPopupHelper = field.get(popup);
+                    if (null != menuPopupHelper) {
+                        Method setForceIcons = Class.forName(menuPopupHelper.getClass().getName())
+                                .getMethod("setForceShowIcon", boolean.class);
+                        setForceIcons.invoke(menuPopupHelper, true);
+                    }
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Debug.Log(e);
+        }
+        popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
+        nfcFab.setOnClickListener(view -> showPopupMenu(popup));
 
         findViewById(R.id.amiiboContainer).setOnClickListener(view ->
                 amiiboContainer.setVisibility(View.GONE));
@@ -373,15 +393,17 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
+        if (null == settingsFragment)
+            settingsFragment = new SettingsFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences, settingsFragment)
+                .commit();
+
         prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                if (null == settingsFragment) settingsFragment = new SettingsFragment();
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.preferences, settingsFragment)
-                        .commit();
                 ((TextView) findViewById(R.id.build_text)).setText(
                         getString(R.string.build_hash, BuildConfig.COMMIT));
                 findViewById(R.id.build_layout).setOnClickListener(view -> {
@@ -524,30 +546,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     });
 
-    private void showPopupMenu(View anchor) {
-        PopupMenu popup;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
-            popup = new PopupMenu(this, anchor,
-                    Gravity.END, 0, R.style.PopupMenu);
-        else
-            popup = new PopupMenu(this, anchor);
-        try {
-            for (Field field : popup.getClass().getDeclaredFields()) {
-                if ("mPopup".equals(field.getName())) {
-                    field.setAccessible(true);
-                    Object menuPopupHelper = field.get(popup);
-                    if (null != menuPopupHelper) {
-                        Method setForceIcons = Class.forName(menuPopupHelper.getClass().getName())
-                                .getMethod("setForceShowIcon", boolean.class);
-                        setForceIcons.invoke(menuPopupHelper, true);
-                    }
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Debug.Log(e);
-        }
-        popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
+    private void showPopupMenu(PopupMenu popup) {
         MenuItem scanItem = popup.getMenu().findItem(R.id.mnu_scan);
         MenuItem flaskItem = popup.getMenu().findItem(R.id.mnu_flask);
         MenuItem backupItem = popup.getMenu().findItem(R.id.mnu_backup);

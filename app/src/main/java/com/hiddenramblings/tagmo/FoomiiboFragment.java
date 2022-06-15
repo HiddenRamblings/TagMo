@@ -40,8 +40,6 @@ import com.hiddenramblings.tagmo.widget.Toasty;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class FoomiiboFragment extends Fragment implements
@@ -121,26 +119,6 @@ public class FoomiiboFragment extends Fragment implements
         return amiibosView;
     }
 
-    private String decipherFilename(AmiiboManager amiiboManager, byte[] tagData) {
-        try {
-            long amiiboId = TagUtils.amiiboIdFromTag(tagData);
-            String name = TagUtils.amiiboIdToHex(amiiboId);
-            if (null != amiiboManager) {
-                Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
-                if (null != amiibo && null != amiibo.name) {
-                    name = amiibo.name.replace(File.separatorChar, '-');
-                }
-            }
-
-            byte[] uid = Arrays.copyOfRange(tagData, 0, 9);
-            String uidHex = TagUtils.bytesToHex(uid);
-            return String.format(Locale.ROOT, "%1$s[%2$s].bin", name, uidHex);
-        } catch (Exception e) {
-            Debug.Log(TagUtils.class, e.getMessage());
-        }
-        return "";
-    }
-
     private void deleteDir(Handler handler, ProgressDialog dialog, File dir) {
         if (!directory.exists()) return;
         File[] files = dir.listFiles();
@@ -180,8 +158,8 @@ public class FoomiiboFragment extends Fragment implements
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
-            TagUtils.writeBytesToFile(directory, decipherFilename(
-                    settings.getAmiiboManager(), tagData), tagData);
+            TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
+                    settings.getAmiiboManager(), tagData, false), tagData);
         } catch (Exception e) {
             Debug.Log(e);
         }
@@ -195,8 +173,8 @@ public class FoomiiboFragment extends Fragment implements
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
-            TagUtils.writeBytesToFile(directory, decipherFilename(
-                    settings.getAmiiboManager(), tagData), tagData);
+            TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
+                    settings.getAmiiboManager(), tagData, false), tagData);
             new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
                     getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT
             ).show();
@@ -212,7 +190,7 @@ public class FoomiiboFragment extends Fragment implements
             if (amiibo == null) throw new Exception();
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
             File amiiboFile = new File(directory,
-                    decipherFilename(settings.getAmiiboManager(), tagData));
+                    TagUtils.decipherFilename(settings.getAmiiboManager(), tagData, false));
             new AlertDialog.Builder(requireContext())
                     .setMessage(getString(R.string.warn_delete_file, amiiboFile.getName()))
                     .setPositiveButton(R.string.delete, (dialog, which) -> {

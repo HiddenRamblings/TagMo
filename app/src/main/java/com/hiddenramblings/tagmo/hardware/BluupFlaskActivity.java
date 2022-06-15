@@ -90,6 +90,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.IllegalArgumentException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1029,10 +1030,12 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     }
 
     public void stopFlaskService() {
+        try {
         unbindService(mServerConn);
         stopService(new Intent(
                 BluupFlaskActivity.this, BluetoothLeService.class
         ));
+        } catch (IllegalArgumentException ignored) { }
     }
 
     private void dismissFlaskDiscovery() {

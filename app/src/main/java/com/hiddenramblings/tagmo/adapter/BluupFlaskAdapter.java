@@ -170,8 +170,10 @@ public class BluupFlaskAdapter
             String amiiboType = "";
             String gameSeries = "";
             // String character = "";
-            String amiiboImageUrl;
+            String amiiboImageUrl = null;
 
+            this.txtError.setVisibility(View.GONE);
+            this.txtPath.setVisibility(View.GONE);
             if (null != amiibo) {
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboName = amiibo.name;
@@ -183,23 +185,32 @@ public class BluupFlaskAdapter
                 if (null != amiibo.getGameSeries())
                     gameSeries = amiibo.getGameSeries().name;
 
-                this.txtError.setVisibility(View.GONE);
+                this.txtTagId.setVisibility(View.VISIBLE);
+                this.txtAmiiboSeries.setVisibility(View.VISIBLE);
+                this.txtAmiiboType.setVisibility(View.VISIBLE);
+                this.txtGameSeries.setVisibility(View.VISIBLE);
                 setAmiiboInfoText(txtName, amiiboName);
                 setAmiiboInfoText(txtTagId, amiiboHexId);
                 setAmiiboInfoText(txtAmiiboSeries, amiiboSeries);
                 setAmiiboInfoText(txtAmiiboType, amiiboType);
                 setAmiiboInfoText(txtGameSeries, gameSeries);
-                // setFoomiiboInfoText(txtCharacter, character);
-                this.txtPath.setVisibility(View.GONE);
-                if (null != this.imageAmiibo) {
-                    GlideApp.with(itemView).clear(target);
-                    if (null != amiiboImageUrl) {
-                        GlideApp.with(itemView).asBitmap().load(amiiboImageUrl).into(target);
-                    }
-                }
                 if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
                     txtTagId.setEnabled(false);
                 }
+            } else {
+                this.txtName.setText(R.string.blank_tag);
+                this.txtTagId.setVisibility(View.GONE);
+                this.txtAmiiboSeries.setVisibility(View.GONE);
+                this.txtAmiiboType.setVisibility(View.GONE);
+                this.txtGameSeries.setVisibility(View.GONE);
+            }
+
+            if (null == amiiboImageUrl) {
+                this.imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
+                this.imageAmiibo.setVisibility(View.VISIBLE);
+            } else if (null != this.imageAmiibo) {
+                GlideApp.with(itemView).clear(target);
+                GlideApp.with(itemView).asBitmap().load(amiiboImageUrl).into(target);
             }
         }
 

@@ -1,11 +1,14 @@
-package com.hiddenramblings.tagmo.eightbit.view;
-
 /* ====================================================================
  * Copyright (c) 2012-2022 AbandonedCart.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
+ *
+ * For the purpose of this license, the phrase "TagMo labels" shall
+ * be used to refer to the labels "8-Bit Dream", "TwistedUmbrella",
+ * "TagMo" and "AbandonedCart" and these labels should be considered
+ * the equivalent of any usage of the aforementioned phrase.
  *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
@@ -15,22 +18,20 @@ package com.hiddenramblings.tagmo.eightbit.view;
  *    the documentation and/or other materials provided with the
  *    distribution.
  *
- * 3. All advertising materials mentioning features or use of this
- *    software and redistributions of any form whatsoever
- *    must display the following acknowledgment:
- *    "This product includes software developed by AbandonedCart" unless
- *    otherwise displayed by tagged, public repository entries.
+ * 3. All materials mentioning features or use of this software and
+ *    redistributions of any form whatsoever must display the following
+ *    acknowledgment unless made available by tagged, public "commits":
+ *    "This product includes software developed for TagMo by AbandonedCart"
  *
- * 4. The names "8-Bit Dream", "TwistedUmbrella" and "AbandonedCart"
- *    must not be used in any form to endorse or promote products
- *    derived from this software without prior written permission. For
- *    written permission, please contact enderinexiledc@gmail.com
+ * 4. The TagMo labels must not be used in any form to endorse or promote
+ *    products derived from this software without prior written permission.
+ *    For written permission, please contact enderinexiledc@gmail.com
  *
- * 5. Products derived from this software may not be called "8-Bit Dream",
- *    "TwistedUmbrella" or "AbandonedCart" nor may these labels appear
- *    in their names without prior written permission of AbandonedCart.
+ * 5. Products derived from this software may not be called by the TagMo labels
+ *    nor may these labels appear in their names or product information without
+ *    prior written permission of AbandonedCart.
  *
- * THIS SOFTWARE IS PROVIDED BY AbandonedCart ``AS IS'' AND ANY
+ * THIS SOFTWARE IS PROVIDED BY AbandonedCart AND TagMo ``AS IS'' AND ANY
  * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
@@ -51,9 +52,10 @@ package com.hiddenramblings.tagmo.eightbit.view;
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
+package com.hiddenramblings.tagmo.eightbit.view;
+
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.LinearLayout;
 
 public final class AnimatedLinearLayout extends LinearLayout {

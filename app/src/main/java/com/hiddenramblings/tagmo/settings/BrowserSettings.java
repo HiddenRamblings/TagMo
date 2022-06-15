@@ -5,8 +5,6 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.documentfile.provider.DocumentFile;
-
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;

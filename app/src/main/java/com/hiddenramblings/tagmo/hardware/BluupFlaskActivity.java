@@ -284,8 +284,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                         Amiibo amiibo = getAmiiboByName(name);
                                         if (null != amiibo) {
                                             amiibo.bank = i;
-                                            flaskAmiibos.add(amiibo);
                                         }
+                                        flaskAmiibos.add(amiibo);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -338,10 +338,13 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
                         @Override
                         public void onGattConnectionLost() {
-                            runOnUiThread(() -> {
-                                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                                showDisconnectNotice();
-                            });
+                            new Handler(Looper.getMainLooper()).postDelayed(
+                                    BluupFlaskActivity.this::showDisconnectNotice, 250
+                            );
+                            runOnUiThread(() -> bottomSheetBehavior
+                                    .setState(BottomSheetBehavior.STATE_COLLAPSED));
+                            flaskProfile = null;
+                            flaskAddress = null;
                             stopFlaskService();
                         }
                     });
@@ -570,6 +573,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
+        findViewById(R.id.create_blank).setOnClickListener(view -> {
+            flaskService.createBlankTag();
+        });
+
         sourceToggle.setOnClickListener(view -> {
             if (writeSlotsLayout.getVisibility() == View.VISIBLE) {
                 switch(writeAdapter) {
@@ -626,10 +633,14 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             String amiiboSeries = "";
             String amiiboType = "";
             String gameSeries = "";
-            String amiiboImageUrl;
+            String amiiboImageUrl = null;
 
+            amiiboView.setVisibility(View.VISIBLE);
             if (null != active) {
-                amiiboView.setVisibility(View.VISIBLE);
+                txtTagId.setVisibility(View.VISIBLE);
+                txtAmiiboSeries.setVisibility(View.VISIBLE);
+                txtAmiiboType.setVisibility(View.VISIBLE);
+                txtGameSeries.setVisibility(View.VISIBLE);
                 amiiboHexId = TagUtils.amiiboIdToHex(active.id);
                 amiiboName = active.name;
                 amiiboImageUrl = active.getImageUrl();
@@ -646,17 +657,25 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 setAmiiboInfoText(txtAmiiboType, amiiboType);
                 setAmiiboInfoText(txtGameSeries, gameSeries);
 
-                if (null != imageAmiibo) {
-                    GlideApp.with(this).clear(amiiboView == amiiboCard
-                            ? amiiboCardTarget : amiiboTileTarget);
-                    if (null != amiiboImageUrl) {
-                        GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(
-                                amiiboView == amiiboCard ? amiiboCardTarget : amiiboTileTarget);
-                    }
-                }
                 if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
                     txtTagId.setEnabled(false);
                 }
+            } else {
+                txtName.setText(R.string.blank_tag);
+                txtTagId.setVisibility(View.INVISIBLE);
+                txtAmiiboSeries.setVisibility(View.INVISIBLE);
+                txtAmiiboType.setVisibility(View.INVISIBLE);
+                txtGameSeries.setVisibility(View.INVISIBLE);
+            }
+
+            if (null == amiiboImageUrl) {
+                imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
+                imageAmiibo.setVisibility(View.VISIBLE);
+            } else if (null != imageAmiibo) {
+                GlideApp.with(this).clear(amiiboView == amiiboCard
+                        ? amiiboCardTarget : amiiboTileTarget);
+                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(
+                        amiiboView == amiiboCard ? amiiboCardTarget : amiiboTileTarget);
             }
         });
     }

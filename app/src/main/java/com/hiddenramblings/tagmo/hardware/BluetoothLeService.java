@@ -200,7 +200,9 @@ public class BluetoothLeService extends Service {
                                     JSONObject jsonObject = new JSONObject(getAmiibo);
                                     listener.onFlaskActiveLocated(jsonObject);
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    Debug.Log(e);
+                                    if (null != listener)
+                                        listener.onFlaskActiveLocated(null);
                                 }
                             }
                         } catch (StringIndexOutOfBoundsException ex) {

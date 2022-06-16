@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -383,10 +384,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         amiiboTileTarget = new CustomTarget<>() {
             final AppCompatImageView imageAmiibo = amiiboTile.findViewById(R.id.imageAmiibo);
-            @Override
-            public void onLoadStarted(@Nullable Drawable placeholder) {
-                imageAmiibo.setImageResource(0);
-            }
 
             @Override
             public void onLoadFailed(@Nullable Drawable errorDrawable) {
@@ -395,11 +392,13 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
             @Override
             public void onLoadCleared(@Nullable Drawable placeholder) {
-                imageAmiibo.setVisibility(View.VISIBLE);
+                imageAmiibo.setImageResource(0);
             }
 
             @Override
             public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 4);
+                imageAmiibo.requestLayout();
                 imageAmiibo.setImageBitmap(resource);
                 imageAmiibo.setVisibility(View.VISIBLE);
             }
@@ -407,10 +406,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         amiiboCardTarget = new CustomTarget<>() {
             final AppCompatImageView imageAmiibo = amiiboCard.findViewById(R.id.imageAmiibo);
-            @Override
-            public void onLoadStarted(@Nullable Drawable placeholder) {
-                imageAmiibo.setImageResource(0);
-            }
 
             @Override
             public void onLoadFailed(@Nullable Drawable errorDrawable) {
@@ -419,11 +414,13 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
             @Override
             public void onLoadCleared(@Nullable Drawable placeholder) {
-                imageAmiibo.setVisibility(View.VISIBLE);
+                imageAmiibo.setImageResource(0);
             }
 
             @Override
             public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 4);
+                imageAmiibo.requestLayout();
                 imageAmiibo.setImageBitmap(resource);
                 imageAmiibo.setVisibility(View.VISIBLE);
             }
@@ -671,8 +668,19 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             } else if (null != imageAmiibo) {
                 GlideApp.with(this).clear(amiiboView == amiiboCard
                         ? amiiboCardTarget : amiiboTileTarget);
-                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(
-                        amiiboView == amiiboCard ? amiiboCardTarget : amiiboTileTarget);
+                if (null != amiiboImageUrl) {
+                    GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(
+                            amiiboView == amiiboCard ? amiiboCardTarget : amiiboTileTarget);
+                    imageAmiibo.setOnClickListener(view -> {
+                        Bundle bundle = new Bundle();
+                        bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, active.id);
+
+                        Intent intent = new Intent(this, ImageActivity.class);
+                        intent.putExtras(bundle);
+
+                        startActivity(intent);
+                    });
+                }
             }
         });
     }
@@ -1109,8 +1117,12 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
     @Override
     public void onAmiiboClicked(Amiibo amiibo) {
-        if (null != amiibo) {
-            getActiveAmiibo(amiibo, amiiboCard);
+        getActiveAmiibo(amiibo, amiiboCard);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        if (null == amiibo) {
+            toolbar.getMenu().findItem(R.id.mnu_activate).setVisible(false);
+        } else {
+            toolbar.getMenu().findItem(R.id.mnu_activate).setVisible(true);
             toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_activate) {
                     flaskService.setActiveAmiibo(
@@ -1120,7 +1132,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 }
                 return false;
             });
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
     }
 

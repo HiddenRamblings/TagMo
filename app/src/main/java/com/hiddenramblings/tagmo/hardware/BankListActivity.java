@@ -155,15 +155,17 @@ public class BankListActivity extends AppCompatActivity implements
 
             @Override
             public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                imageAmiibo.setVisibility(View.GONE);
+                imageAmiibo.setVisibility(View.INVISIBLE);
             }
 
             @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) { }
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+                imageAmiibo.setImageResource(0);
+            }
 
             @Override
             public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
-                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 3);
+                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 4);
                 imageAmiibo.requestLayout();
                 imageAmiibo.setImageBitmap(resource);
                 imageAmiibo.setVisibility(View.VISIBLE);
@@ -175,15 +177,17 @@ public class BankListActivity extends AppCompatActivity implements
 
             @Override
             public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                imageAmiibo.setVisibility(View.GONE);
+                imageAmiibo.setVisibility(View.INVISIBLE);
             }
 
             @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) { }
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+                imageAmiibo.setImageResource(0);
+            }
 
             @Override
             public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
-                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 3);
+                imageAmiibo.setMaxHeight(Resources.getSystem().getDisplayMetrics().heightPixels / 4);
                 imageAmiibo.requestLayout();
                 imageAmiibo.setImageBitmap(resource);
                 imageAmiibo.setVisibility(View.VISIBLE);
@@ -801,7 +805,6 @@ public class BankListActivity extends AppCompatActivity implements
         String amiiboSeries = "";
         String amiiboType = "";
         String gameSeries = "";
-        // String character = "";
         String amiiboImageUrl;
 
         Amiibo amiibo = amiibos.get(current_bank);
@@ -864,7 +867,6 @@ public class BankListActivity extends AppCompatActivity implements
             imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
             imageAmiibo.setVisibility(View.VISIBLE);
         } else if (null != imageAmiibo) {
-            imageAmiibo.setVisibility(View.GONE);
             GlideApp.with(this).clear(amiiboView == amiiboCard
                     ? amiiboCardTarget : amiiboTileTarget);
             if (null != amiiboImageUrl) {

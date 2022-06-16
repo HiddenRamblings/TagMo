@@ -53,11 +53,12 @@ public class CheckUpdatesTask {
 
     CheckUpdatesTask(BrowserActivity activity) {
         this.activity = new SoftReference<>(activity);
-        if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+        if (TagMo.isGooglePlay()) {
             appUpdateManager = AppUpdateManagerFactory.create(activity);
             Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
             appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
-                isUpdateAvailable = appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                isUpdateAvailable = appUpdateInfo.updateAvailability()
+                        == UpdateAvailability.UPDATE_AVAILABLE
                         && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE);
                 if (isUpdateAvailable && null != listenerPlay)
                     listenerPlay.onPlayUpdateFound(appUpdateInfo);

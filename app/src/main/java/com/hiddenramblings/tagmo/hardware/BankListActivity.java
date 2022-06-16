@@ -861,9 +861,8 @@ public class BankListActivity extends AppCompatActivity implements
         setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo);
         setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo);
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo);
-        // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
-        if (null == amiiboImageUrl && amiiboView == amiiboTile) {
+        if (amiiboView == amiiboTile && null == amiiboImageUrl) {
             imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
             imageAmiibo.setVisibility(View.VISIBLE);
         } else if (null != imageAmiibo) {

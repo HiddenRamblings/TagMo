@@ -559,7 +559,9 @@ public class NfcActivity extends AppCompatActivity {
                     return;
                 } else if (getString(R.string.error_tag_rewrite).equals(error)) {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update);
-                    setResult(Activity.RESULT_OK, new Intent(NFCIntent.ACTION_UPDATE_TAG).putExtras(args));
+                    setResult(Activity.RESULT_OK, new Intent(
+                            NFCIntent.ACTION_UPDATE_TAG
+                    ).putExtras(args));
                     runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                             .setTitle(R.string.error_tag_rewrite)
                             .setMessage(R.string.tag_update_only)

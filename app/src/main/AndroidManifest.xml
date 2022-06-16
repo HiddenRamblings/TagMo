@@ -120,7 +120,7 @@
         <receiver
             android:name=".UpdateReceiver"
             android:exported="true">
-            <intent-filter>
+            <intent-filter android:priority="999">
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>

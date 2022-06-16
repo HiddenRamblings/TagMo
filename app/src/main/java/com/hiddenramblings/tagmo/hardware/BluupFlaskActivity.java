@@ -729,7 +729,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             ) == PackageManager.PERMISSION_GRANTED) {
                 activateBluetooth();
             } else {
-                if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+                if (TagMo.isGooglePlay()) {
                     new AlertDialog.Builder(this)
                             .setMessage(R.string.location_disclosure)
                             .setCancelable(false)

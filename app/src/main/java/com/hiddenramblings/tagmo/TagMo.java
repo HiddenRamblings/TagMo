@@ -14,10 +14,12 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.ref.SoftReference;
+import java.util.Objects;
 
 @EApplication
 public class TagMo extends Application {
 
+    public static String googlePlay = "publish";
     private static SoftReference<Context> mContext;
     private static SoftReference<Preferences_> mPrefs;
     @Pref
@@ -47,5 +49,9 @@ public class TagMo extends Application {
             error.printStackTrace();
             System.exit(1);
         });
+    }
+
+    public static boolean isGooglePlay() {
+        return Objects.equals(BuildConfig.BUILD_TYPE, "publish");
     }
 }

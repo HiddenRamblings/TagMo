@@ -440,7 +440,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void requestStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+            if (TagMo.isGooglePlay()) {
                 this.onDocumentEnabled();
             } else {
                 if (Environment.isExternalStorageManager()) {
@@ -906,7 +906,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void checkForUpdates() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             updates = new CheckUpdatesTask(this);
-            if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+            if (TagMo.isGooglePlay()) {
                 updates.setPlayUpdateListener(appUpdateInfo -> {
                     appUpdate = appUpdateInfo;
                     invalidateOptionsMenu();
@@ -924,7 +924,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 @Override
                 public void onProviderInstalled() {
                     updates = new CheckUpdatesTask(BrowserActivity.this);
-                    if (Objects.equals(BuildConfig.BUILD_TYPE, "publish")) {
+                    if (TagMo.isGooglePlay()) {
                         updates.setPlayUpdateListener(appUpdateInfo -> {
                             appUpdate = appUpdateInfo;
                             invalidateOptionsMenu();

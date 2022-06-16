@@ -620,6 +620,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         TextView txtAmiiboType = amiiboView.findViewById(R.id.txtAmiiboType);
         TextView txtGameSeries = amiiboView.findViewById(R.id.txtGameSeries);
         AppCompatImageView imageAmiibo = amiiboView.findViewById(R.id.imageAmiibo);
+        TextView txtUsageLabel = amiiboView.findViewById(R.id.txtUsageLabel);
 
         runOnUiThread(() -> {
             String amiiboHexId;
@@ -635,6 +636,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 txtAmiiboSeries.setVisibility(View.VISIBLE);
                 txtAmiiboType.setVisibility(View.VISIBLE);
                 txtGameSeries.setVisibility(View.VISIBLE);
+                if (amiiboView == amiiboCard) txtUsageLabel.setVisibility(View.VISIBLE);
                 amiiboHexId = TagUtils.amiiboIdToHex(active.id);
                 amiiboName = active.name;
                 amiiboImageUrl = active.getImageUrl();
@@ -660,9 +662,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 txtAmiiboSeries.setVisibility(View.INVISIBLE);
                 txtAmiiboType.setVisibility(View.INVISIBLE);
                 txtGameSeries.setVisibility(View.INVISIBLE);
+                if (amiiboView == amiiboCard) txtUsageLabel.setVisibility(View.INVISIBLE);
             }
 
-            if (null == amiiboImageUrl && amiiboView == amiiboTile) {
+            if (amiiboView == amiiboTile && null == amiiboImageUrl) {
                 imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
                 imageAmiibo.setVisibility(View.VISIBLE);
             } else if (null != imageAmiibo) {

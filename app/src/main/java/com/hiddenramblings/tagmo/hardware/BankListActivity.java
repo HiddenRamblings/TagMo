@@ -860,8 +860,10 @@ public class BankListActivity extends AppCompatActivity implements
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo);
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
 
-        if (null != imageAmiibo) {
-
+        if (null == amiiboImageUrl && amiiboView == amiiboTile) {
+            imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
+            imageAmiibo.setVisibility(View.VISIBLE);
+        } else if (null != imageAmiibo) {
             imageAmiibo.setVisibility(View.GONE);
             GlideApp.with(this).clear(amiiboView == amiiboCard
                     ? amiiboCardTarget : amiiboTileTarget);

@@ -665,7 +665,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 txtGameSeries.setVisibility(View.INVISIBLE);
             }
 
-            if (null == amiiboImageUrl) {
+            if (null == amiiboImageUrl && amiiboView == amiiboTile) {
                 imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
                 imageAmiibo.setVisibility(View.VISIBLE);
             } else if (null != imageAmiibo) {

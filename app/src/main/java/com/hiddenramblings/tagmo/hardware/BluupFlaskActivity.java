@@ -423,6 +423,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             }
         };
 
+        this.settings = new BrowserSettings().initialize();
+
         flaskDetails = findViewById(R.id.flask_details);
         flaskDetails.setHasFixedSize(true);
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())

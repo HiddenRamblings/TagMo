@@ -157,8 +157,9 @@ public class BankBrowserAdapter
             }
         };
 
-        public AmiiboViewHolder(View itemView, BrowserSettings settings,
-                                OnAmiiboClickListener listener) {
+        public AmiiboViewHolder(
+                View itemView, BrowserSettings settings,
+                OnAmiiboClickListener listener) {
             super(itemView);
 
             this.settings = settings;
@@ -187,6 +188,9 @@ public class BankBrowserAdapter
             String amiiboImageUrl = null;
             boolean isAmiibo = null != amiibo;
 
+            String query = settings.getQuery().toLowerCase();
+            String value = String.valueOf(getAbsoluteAdapterPosition() + 1);
+
             if (isAmiibo) {
                 this.amiiboItem.bank = getAbsoluteAdapterPosition();
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
@@ -199,15 +203,15 @@ public class BankBrowserAdapter
                     amiiboType = amiibo.getAmiiboType().name;
                 if (null != amiibo.getGameSeries())
                     gameSeries = amiibo.getGameSeries().name;
+                setAmiiboInfoText(this.txtName, value + ": " + amiiboName);
+            } else {
+                setAmiiboInfoText(this.txtName, TagMo.getContext()
+                        .getString(R.string.blank_bank, value));
             }
-
-            String query = settings.getQuery().toLowerCase();
-            String value = String.valueOf(getAbsoluteAdapterPosition() + 1);
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 this.txtError.setVisibility(View.GONE);
                 if (isAmiibo) {
-                    setAmiiboInfoText(this.txtName, value + ": " + amiiboName);
                     setAmiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query));
                     setAmiiboInfoText(this.txtAmiiboSeries,
                             boldSpannable.IndexOf(amiiboSeries, query));
@@ -216,8 +220,6 @@ public class BankBrowserAdapter
                     setAmiiboInfoText(this.txtGameSeries,
                             boldSpannable.IndexOf(gameSeries, query));
                 } else {
-                    this.txtName.setVisibility(View.VISIBLE);
-                    this.txtName.setText(TagMo.getContext().getString(R.string.blank_bank, value));
                     this.txtTagId.setVisibility(View.GONE);
                     this.txtAmiiboSeries.setVisibility(View.GONE);
                     this.txtAmiiboType.setVisibility(View.GONE);

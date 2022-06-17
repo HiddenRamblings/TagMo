@@ -101,6 +101,7 @@ import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
+import com.wajahatkarim3.easyflipviewpager.CardFlipPageTransformer2;
 
 import org.json.JSONException;
 
@@ -120,7 +121,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -222,6 +222,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
         NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
         mainLayout.setAdapter(pagerAdapter);
+        CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
+        cardFlipPageTransformer.setScalable(false);
+        mainLayout.setPageTransformer(cardFlipPageTransformer);
         browserFragment = pagerAdapter.getBrowser();
         foomiiboFragment = pagerAdapter.getFoomiibo();
 
@@ -1825,7 +1828,13 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     void updateAmiiboView(byte[] tagData, AmiiboFile amiiboFile) {
+        amiiboContainer.setAlpha(0f);
         amiiboContainer.setVisibility(View.VISIBLE);
+        amiiboContainer.animate()
+                .alpha(1f)
+                .setDuration(150)
+                .setListener(null);
+
         if (mainLayout.getCurrentItem() == 0)
             getToolbarOptions(toolbar, tagData, amiiboFile);
         else

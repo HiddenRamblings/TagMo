@@ -339,6 +339,7 @@ public class WriteAmiiboAdapter extends RecyclerView.Adapter<WriteAmiiboAdapter.
 
             String query = settings.getQuery().toLowerCase();
 
+            setAmiiboInfoText(this.txtName, amiiboName, false);
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {
@@ -346,7 +347,6 @@ public class WriteAmiiboAdapter extends RecyclerView.Adapter<WriteAmiiboAdapter.
                 } else {
                     this.txtError.setVisibility(View.GONE);
                 }
-                setAmiiboInfoText(this.txtName, amiiboName, false);
                 setAmiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query), hasTagInfo);
                 setAmiiboInfoText(this.txtAmiiboSeries,
                         boldSpannable.IndexOf(amiiboSeries, query), hasTagInfo);

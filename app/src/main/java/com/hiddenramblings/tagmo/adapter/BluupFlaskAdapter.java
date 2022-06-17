@@ -70,14 +70,14 @@ public class BluupFlaskAdapter
     public FlaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (VIEW.valueOf(viewType)) {
             case COMPACT:
-                return new CompactViewHolder(parent, listener);
+                return new CompactViewHolder(parent, settings, listener);
             case LARGE:
-                return new LargeViewHolder(parent, listener);
+                return new LargeViewHolder(parent, settings, listener);
             case IMAGE:
-                return new ImageViewHolder(parent, listener);
+                return new ImageViewHolder(parent, settings, listener);
             case SIMPLE:
             default:
-                return new SimpleViewHolder(parent, listener);
+                return new SimpleViewHolder(parent, settings, listener);
         }
     }
 
@@ -108,6 +108,7 @@ public class BluupFlaskAdapter
     }
 
     protected static abstract class FlaskViewHolder extends RecyclerView.ViewHolder {
+        private final BrowserSettings settings;
         private final OnAmiiboClickListener listener;
 
         public final TextView txtError;
@@ -145,10 +146,13 @@ public class BluupFlaskAdapter
             }
         };
 
-        public FlaskViewHolder(View itemView, OnAmiiboClickListener listener) {
+        public FlaskViewHolder(
+                View itemView, BrowserSettings settings,
+                OnAmiiboClickListener listener) {
             super(itemView);
 
             this.listener = listener;
+            this.settings = settings;
 
             this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
@@ -165,44 +169,46 @@ public class BluupFlaskAdapter
             this.amiibo = item;
 
             String amiiboHexId;
-            String amiiboName;
             String amiiboSeries = "";
             String amiiboType = "";
             String gameSeries = "";
-            // String character = "";
             String amiiboImageUrl = null;
 
-            this.txtError.setVisibility(View.GONE);
-            this.txtPath.setVisibility(View.GONE);
-            if (null != amiibo) {
-                amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
-                amiiboName = amiibo.name;
+            if (null != amiibo)  {
+                setAmiiboInfoText(txtName, amiibo.name);
                 amiiboImageUrl = amiibo.getImageUrl();
-                if (null != amiibo.getAmiiboSeries())
-                    amiiboSeries = amiibo.getAmiiboSeries().name;
-                if (null != amiibo.getAmiiboType())
-                    amiiboType = amiibo.getAmiiboType().name;
-                if (null != amiibo.getGameSeries())
-                    gameSeries = amiibo.getGameSeries().name;
-
-                this.txtTagId.setVisibility(View.VISIBLE);
-                this.txtAmiiboSeries.setVisibility(View.VISIBLE);
-                this.txtAmiiboType.setVisibility(View.VISIBLE);
-                this.txtGameSeries.setVisibility(View.VISIBLE);
-                setAmiiboInfoText(txtName, amiiboName);
-                setAmiiboInfoText(txtTagId, amiiboHexId);
-                setAmiiboInfoText(txtAmiiboSeries, amiiboSeries);
-                setAmiiboInfoText(txtAmiiboType, amiiboType);
-                setAmiiboInfoText(txtGameSeries, gameSeries);
-                if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
-                    txtTagId.setEnabled(false);
-                }
             } else {
-                this.txtName.setText(R.string.blank_tag);
-                this.txtTagId.setVisibility(View.GONE);
-                this.txtAmiiboSeries.setVisibility(View.GONE);
-                this.txtAmiiboType.setVisibility(View.GONE);
-                this.txtGameSeries.setVisibility(View.GONE);
+                setAmiiboInfoText(txtName, TagMo.getContext().getString(R.string.blank_tag));
+            }
+            if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
+                this.txtError.setVisibility(View.GONE);
+                this.txtPath.setVisibility(View.GONE);
+                if (null != amiibo) {
+                    amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
+                    if (null != amiibo.getAmiiboSeries())
+                        amiiboSeries = amiibo.getAmiiboSeries().name;
+                    if (null != amiibo.getAmiiboType())
+                        amiiboType = amiibo.getAmiiboType().name;
+                    if (null != amiibo.getGameSeries())
+                        gameSeries = amiibo.getGameSeries().name;
+
+                    this.txtTagId.setVisibility(View.VISIBLE);
+                    this.txtAmiiboSeries.setVisibility(View.VISIBLE);
+                    this.txtAmiiboType.setVisibility(View.VISIBLE);
+                    this.txtGameSeries.setVisibility(View.VISIBLE);
+                    setAmiiboInfoText(txtTagId, amiiboHexId);
+                    setAmiiboInfoText(txtAmiiboSeries, amiiboSeries);
+                    setAmiiboInfoText(txtAmiiboType, amiiboType);
+                    setAmiiboInfoText(txtGameSeries, gameSeries);
+                    if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
+                        txtTagId.setEnabled(false);
+                    }
+                } else {
+                    this.txtTagId.setVisibility(View.GONE);
+                    this.txtAmiiboSeries.setVisibility(View.GONE);
+                    this.txtAmiiboType.setVisibility(View.GONE);
+                    this.txtGameSeries.setVisibility(View.GONE);
+                }
             }
 
             if (null == amiiboImageUrl) {
@@ -227,41 +233,49 @@ public class BluupFlaskAdapter
     }
 
     static class SimpleViewHolder extends FlaskViewHolder {
-        public SimpleViewHolder(ViewGroup parent, OnAmiiboClickListener listener) {
+        public SimpleViewHolder(
+                ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener
+        ) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
-                    listener
+                    settings, listener
             );
         }
     }
 
     static class CompactViewHolder extends FlaskViewHolder {
-        public CompactViewHolder(ViewGroup parent, OnAmiiboClickListener listener) {
+        public CompactViewHolder(
+                ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener
+        ) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
-                    listener
+                    settings, listener
             );
         }
     }
 
     static class LargeViewHolder extends FlaskViewHolder {
-        public LargeViewHolder(ViewGroup parent, OnAmiiboClickListener listener) {
+        public LargeViewHolder(
+                ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener
+        ) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
-                    listener
+                    settings, listener
             );
         }
     }
 
     static class ImageViewHolder extends FlaskViewHolder {
-        public ImageViewHolder(ViewGroup parent, OnAmiiboClickListener listener) {
+        public ImageViewHolder(
+                ViewGroup parent, BrowserSettings settings, OnAmiiboClickListener listener
+        ) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_image_card, parent, false),
-                    listener
+                    settings, listener
             );
         }
     }

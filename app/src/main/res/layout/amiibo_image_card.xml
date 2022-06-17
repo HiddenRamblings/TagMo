@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="@drawable/card_foreground"
     app:cardBackgroundColor="@android:color/transparent"
     app:cardCornerRadius="@dimen/card_radius"
     android:layout_gravity="center">
@@ -16,6 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:padding="16dp"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -23,7 +23,18 @@
             android:contentDescription="@string/imageview_amiibo"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_margin="16dp"
             android:layout_gravity="center" />
+
+        <TextView
+            android:id="@+id/txtName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginTop="2dp"
+            android:lines="2"
+            android:gravity="center"
+            android:text="@string/amiibo_name_caps"
+            android:textColor="@color/tag_text"
+            android:textSize="14sp"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

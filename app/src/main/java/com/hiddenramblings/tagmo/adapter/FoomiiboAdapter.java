@@ -351,6 +351,7 @@ public class FoomiiboAdapter
 
             String query = settings.getQuery().toLowerCase();
 
+            setFoomiiboInfoText(this.txtName, amiiboName, false);
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {
@@ -358,7 +359,6 @@ public class FoomiiboAdapter
                 } else {
                     this.txtError.setVisibility(View.GONE);
                 }
-                setFoomiiboInfoText(this.txtName, amiiboName, false);
                 setFoomiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query), hasTagInfo);
                 setFoomiiboInfoText(this.txtAmiiboSeries,
                         boldSpannable.IndexOf(amiiboSeries, query), hasTagInfo);

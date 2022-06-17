@@ -62,7 +62,6 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
@@ -91,13 +90,11 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.IllegalArgumentException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 
@@ -428,7 +425,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         flaskDetails = findViewById(R.id.flask_details);
         flaskDetails.setHasFixedSize(true);
-        flaskDetails.setLayoutManager(new LinearLayoutManager(this));
+        if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
+            flaskDetails.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+        else
+            flaskDetails.setLayoutManager(new LinearLayoutManager(this));
 
         flaskStats = findViewById(R.id.flask_stats);
         writeFile = findViewById(R.id.write_slot_file);

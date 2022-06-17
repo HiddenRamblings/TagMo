@@ -223,7 +223,7 @@ public class BrowserActivity extends AppCompatActivity implements
         NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
         mainLayout.setAdapter(pagerAdapter);
         CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
-        cardFlipPageTransformer.setScalable(false);
+        cardFlipPageTransformer.setScalable(true);
         mainLayout.setPageTransformer(cardFlipPageTransformer);
         browserFragment = pagerAdapter.getBrowser();
         foomiiboFragment = pagerAdapter.getFoomiibo();

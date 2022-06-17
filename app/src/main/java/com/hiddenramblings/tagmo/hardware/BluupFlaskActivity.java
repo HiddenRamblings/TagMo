@@ -249,8 +249,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onFlaskActiveChanged(JSONObject jsonObject) {
                             try {
-                                String[] name = jsonObject.getString("name").split("\\|");
-                                Amiibo amiibo = getAmiiboByName(name);
+                                Amiibo amiibo = getAmiiboByName(jsonObject
+                                        .getString("name").split("\\|"));
                                 getActiveAmiibo(amiibo, amiiboTile);
                                 if (amiiboCard.findViewById(R.id.txtError)
                                         .getVisibility() == View.VISIBLE)
@@ -278,16 +278,17 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 currentCount = jsonArray.length();
                                 ArrayList<Amiibo> flaskAmiibos = new ArrayList<>();
                                 for (int i = 0; i < currentCount; i++) {
+                                    Amiibo amiibo = null;
                                     try {
-                                        String[] name = jsonArray.getString(i).split("\\|");
-                                        Amiibo amiibo = getAmiiboByName(name);
+                                        amiibo = getAmiiboByName(jsonArray
+                                                .getString(i).split("\\|"));
                                         if (null != amiibo) {
                                             amiibo.bank = i;
                                         }
-                                        flaskAmiibos.add(amiibo);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
+                                    } catch (JSONException jex) {
+                                        Debug.Log(jex);
                                     }
+                                    flaskAmiibos.add(amiibo);
                                 }
                                 BluupFlaskAdapter adapter = new BluupFlaskAdapter(
                                         settings, BluupFlaskActivity.this);
@@ -304,8 +305,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onFlaskActiveLocated(JSONObject jsonObject) {
                             try {
-                                String[] name = jsonObject.getString("name").split("\\|");
-                                Amiibo amiibo = getAmiiboByName(name);
+                                Amiibo amiibo = getAmiiboByName(jsonObject
+                                        .getString("name").split("\\|"));
                                 getActiveAmiibo(amiibo, amiiboTile);
                                 if (bottomSheetBehavior.getState() ==
                                         BottomSheetBehavior.STATE_COLLAPSED)

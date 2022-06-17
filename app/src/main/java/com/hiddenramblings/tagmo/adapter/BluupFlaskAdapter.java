@@ -117,7 +117,6 @@ public class BluupFlaskAdapter
         public final TextView txtAmiiboSeries;
         public final TextView txtAmiiboType;
         public final TextView txtGameSeries;
-        // public final TextView txtCharacter;
         public final TextView txtPath;
         public final AppCompatImageView imageAmiibo;
 
@@ -160,7 +159,6 @@ public class BluupFlaskAdapter
             this.txtAmiiboSeries = itemView.findViewById(R.id.txtAmiiboSeries);
             this.txtAmiiboType = itemView.findViewById(R.id.txtAmiiboType);
             this.txtGameSeries = itemView.findViewById(R.id.txtGameSeries);
-            // this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
             this.txtPath = itemView.findViewById(R.id.txtPath);
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
         }

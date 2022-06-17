@@ -8,6 +8,7 @@
     android:focusable="true"
     app:cardBackgroundColor="@android:color/transparent"
     app:cardCornerRadius="@dimen/card_radius"
+    app:cardElevation="0dp"
     android:layout_gravity="center">
 
     <LinearLayout

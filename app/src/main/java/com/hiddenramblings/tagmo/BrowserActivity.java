@@ -137,7 +137,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private TextView fakeSnackbarText;
     private AppCompatButton fakeSnackbarItem;
     private ViewPager2 mainLayout;
-    private FloatingActionButton nfcFab;
     private BrowserFragment browserFragment;
     private FoomiiboFragment foomiiboFragment;
     private TextView currentFolderView;
@@ -199,7 +198,6 @@ public class BrowserActivity extends AppCompatActivity implements
         fakeSnackbarText = findViewById(R.id.snackbar_text);
         fakeSnackbarItem = findViewById(R.id.snackbar_item);
         mainLayout = findViewById(R.id.amiibo_pager);
-        nfcFab = findViewById(R.id.nfc_fab);
         currentFolderView = findViewById(R.id.current_folder);
         prefsDrawer = findViewById(R.id.drawer_layout);
         switchStorageRoot = findViewById(R.id.switch_storage_root);
@@ -352,6 +350,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.loadPTagKeyManager();
 
+        FloatingActionButton nfcFab = findViewById(R.id.nfc_fab);
         PopupMenu popup = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1
                     ? new PopupMenu(this, nfcFab, Gravity.END, 0, R.style.PopupMenu)
                     : new PopupMenu(this, nfcFab);

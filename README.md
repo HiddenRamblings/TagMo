@@ -1,7 +1,7 @@
 # What is TagMo?
 
 TagMo is an Android app for cloning amiibo™ to NTAG215 NFC tags  
-&ensp;(supports Power Tags, Amiiqo / N2 Elite and Bluup Flask devices)
+&ensp;(including Power Tags, Amiiqo / N2 Elite and Bluup Flask devices)
 
 It was created as a result of the "[DIY amiibo cards](https://gbatemp.net/threads/diy-amiibo-cards.406978/)" thread and all the collaboration that took place in it.
 

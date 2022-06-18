@@ -249,7 +249,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onFlaskActiveChanged(JSONObject jsonObject) {
                             try {
-                                Amiibo amiibo = getAmiiboByName(jsonObject
+                                Amiibo amiibo = getAmiiboByTail(jsonObject
                                         .getString("name").split("\\|"));
                                 getActiveAmiibo(amiibo, amiiboTile);
                                 if (amiiboCard.findViewById(R.id.txtError)
@@ -280,7 +280,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 for (int i = 0; i < currentCount; i++) {
                                     Amiibo amiibo = null;
                                     try {
-                                        amiibo = getAmiiboByName(jsonArray
+                                        amiibo = getAmiiboByTail(jsonArray
                                                 .getString(i).split("\\|"));
                                         if (null != amiibo) {
                                             amiibo.bank = i;
@@ -305,7 +305,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onFlaskActiveLocated(JSONObject jsonObject) {
                             try {
-                                Amiibo amiibo = getAmiiboByName(jsonObject
+                                Amiibo amiibo = getAmiiboByTail(jsonObject
                                         .getString("name").split("\\|"));
                                 getActiveAmiibo(amiibo, amiiboTile);
                                 if (bottomSheetBehavior.getState() ==
@@ -691,7 +691,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         });
     }
 
-    private Amiibo getAmiiboByName(String[] name) {
+    private Amiibo getAmiiboByTail(String[] name) {
         AmiiboManager amiiboManager;
         try {
             amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
@@ -706,13 +706,11 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         Amiibo selectedAmiibo = null;
         if (null != amiiboManager) {
             for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                if (amiibo.name.startsWith(name[0])) { // Optimize candidate list
-                    String flaskTail = Integer.toString(Integer.parseInt(TagUtils
-                            .amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
-                    if (name[1].equals(flaskTail)) {
-                        selectedAmiibo = amiibo;
-                        break;
-                    }
+                String flaskTail = Integer.toString(Integer.parseInt(TagUtils
+                        .amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
+                if (name[1].equals(flaskTail)) {
+                    selectedAmiibo = amiibo;
+                    break;
                 }
             }
         }

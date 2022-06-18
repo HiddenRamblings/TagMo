@@ -181,17 +181,17 @@ public class BluetoothLeService extends Service {
                     }
                 }
 
-                if (progress.contains("Uncaught no such element")
-                        && null != nameCompat && null != tailCompat) {
-                    response = new StringBuilder();
-                    promptTagCharacteristic("setTag(\""
-                            + nameCompat + "|" + tailCompat + "\")");
-                    nameCompat = null;
-                    tailCompat = null;
-                } else if (progress.startsWith("tag.get()") || progress.startsWith("tag.setTag")) {
+                if (progress.startsWith("tag.get()") || progress.startsWith("tag.setTag")) {
                     if (progress.endsWith(">")) {
-                        nameCompat = null;
-                        tailCompat = null;
+                        if (progress.contains("Uncaught no such element")
+                                && null != nameCompat && null != tailCompat) {
+                            response = new StringBuilder();
+                            promptTagCharacteristic("setTag(\""
+                                    + nameCompat + "|" + tailCompat + "\")");
+                            nameCompat = null;
+                            tailCompat = null;
+                            return;
+                        }
                         try {
                             String getAmiibo = progress.substring(progress.indexOf("{"),
                                     progress.lastIndexOf("}") + 1);
@@ -579,19 +579,26 @@ public class BluetoothLeService extends Service {
         String flaskTail = Integer.toString(Integer.parseInt(TagUtils
                 .amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
         int reserved = flaskTail.length() + 3; // |tail|#
-        String name = stringToUnicode(amiibo.name);
-        String jsonLabel = name.length() + reserved > 28
-                ? name.substring(0, name.length() - ((name.length() + reserved) - 28)) : name;
+        String nameUnicode = stringToUnicode(amiibo.name);
+        String amiiboName = nameUnicode.length() + reserved > 28
+                ? nameUnicode.substring(0, nameUnicode.length()
+                - ((nameUnicode.length() + reserved) - 28))
+                : nameUnicode;
         delayedTagCharacteristic("saveUploadedTag(\""
-                + jsonLabel + "|" + flaskTail + "|0\")");
+                + amiiboName + "|" + flaskTail + "|0\")");
         delayedTagCharacteristic("uploadsComplete()");
         delayedTagCharacteristic("getList()");
     }
 
     public void setActiveAmiibo(String name, String tail) {
-        nameCompat = name;
+        int reserved = tail.length() + 3; // |tail|#
+        String nameUnicode = stringToUnicode(name);
+        nameCompat = nameUnicode.length() + reserved > 28
+                ? nameUnicode.substring(0, nameUnicode.length()
+                - ((nameUnicode.length() + reserved) - 28))
+                : nameUnicode;
         tailCompat = tail;
-        delayedTagCharacteristic("setTag(\"" + name + "|" + tail + "|0\")");
+        delayedTagCharacteristic("setTag(\"" + nameCompat + "|" + tailCompat + "|0\")");
     }
 
     public void getActiveAmiibo() {
@@ -633,17 +640,14 @@ public class BluetoothLeService extends Service {
         return stringPortions;
     }
 
-    public static String stringToUnicode(String plain) {
-        StringBuilder sb = new StringBuilder(plain.length() * 3);
-        for (char c : plain.toCharArray()) {
+    public static String stringToUnicode(String s) {
+        StringBuilder sb = new StringBuilder(s.length() * 3);
+        for (char c : s.toCharArray()) {
             if (c < 256) {
                 sb.append(c);
             } else {
-                sb.append("\\u");
-                sb.append(Character.forDigit((c >>> 12) & 0xf, 16));
-                sb.append(Character.forDigit((c >>> 8) & 0xf, 16));
-                sb.append(Character.forDigit((c >>> 4) & 0xf, 16));
-                sb.append(Character.forDigit((c) & 0xf, 16));
+                String strHex = Integer.toHexString((int) c);
+                sb.append("\\u").append(strHex);
             }
         }
         return sb.toString();

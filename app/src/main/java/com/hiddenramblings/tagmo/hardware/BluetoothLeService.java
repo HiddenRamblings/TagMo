@@ -88,7 +88,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -131,12 +130,10 @@ public class BluetoothLeService extends Service {
     interface BluetoothGattListener {
         void onServicesDiscovered();
         void onFlaskActiveChanged(JSONObject jsonObject);
-        void onFlaskActiveDeleted(JSONObject jsonObject);
+        void onFlaskStatusChanged(JSONObject jsonObject);
         void onFlaskListRetrieved(JSONArray jsonArray);
-        void onFlaskActiveLocated(JSONObject jsonObject);
-        void onFlaskFilesDownload(byte[] tagData);
+        void onFlaskFilesDownload(String dataString);
         void onFlaskFilesUploaded();
-        void onFlaskBlanksCreated();
         void onGattConnectionLost();
     }
 
@@ -200,11 +197,11 @@ public class BluetoothLeService extends Service {
                             if (null != listener) {
                                 try {
                                     JSONObject jsonObject = new JSONObject(getAmiibo);
-                                    listener.onFlaskActiveLocated(jsonObject);
+                                    listener.onFlaskActiveChanged(jsonObject);
                                 } catch (JSONException e) {
                                     Debug.Log(e);
                                     if (null != listener)
-                                        listener.onFlaskActiveLocated(null);
+                                        listener.onFlaskActiveChanged(null);
                                 }
                             }
                         } catch (StringIndexOutOfBoundsException ex) {
@@ -229,17 +226,26 @@ public class BluetoothLeService extends Service {
                     }
                 } else if (progress.startsWith("tag.remove")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        if (null != listener) listener.onFlaskActiveDeleted(null);
+                        if (null != listener) listener.onFlaskStatusChanged(null);
                         response = new StringBuilder();
                     }
                 } else if (progress.startsWith("tag.download")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        response = new StringBuilder();
+                        String[] getData = progress.split("new Uint8Array");
+                        if (null != listener) {
+                            for (String dataString : getData) {
+                                if (dataString.startsWith("tag.download")
+                                        && dataString.endsWith("=")) continue;
+                                dataString = dataString.substring(1, dataString
+                                        .lastIndexOf(">") - 2);
+                                listener.onFlaskFilesDownload(dataString);
+                            }
+                        }
                     }
                 } else if (progress.startsWith("tag.createBlank()")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
                         response = new StringBuilder();
-                        if (null != listener) listener.onFlaskBlanksCreated();
+                        if (null != listener) listener.onFlaskStatusChanged(null);
                     }
                 } else if (progress.endsWith("}")) {
                     if (null != listener) {
@@ -249,7 +255,7 @@ public class BluetoothLeService extends Service {
                             if (event.equals("button"))
                                 listener.onFlaskActiveChanged(jsonObject);
                             if (event.equals("delete"))
-                                listener.onFlaskActiveDeleted(jsonObject);
+                                listener.onFlaskStatusChanged(jsonObject);
                         } catch (JSONException e) {
                             if (null != e.getMessage() && e.getMessage().contains("tag.setTag")) {
                                 getActiveAmiibo();

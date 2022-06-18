@@ -137,22 +137,6 @@ public class BluetoothLeService extends Service {
         void onGattConnectionLost();
     }
 
-
-    public boolean isJSONValid(String test) {
-        try {
-            new JSONObject(test);
-        } catch (JSONException ex) {
-            Debug.Log(ex);
-            try {
-                new JSONArray(test);
-            } catch (JSONException jex) {
-                Debug.Log(jex);
-                return false;
-            }
-        }
-        return true;
-    }
-
     StringBuilder response = new StringBuilder();
 
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
@@ -714,6 +698,20 @@ public class BluetoothLeService extends Service {
             }
         }
         return sb.toString();
+    }
+
+    public boolean isJSONValid(String test) {
+        if (test.startsWith("tag.") && test.endsWith(")")) return false;
+        try {
+            new JSONObject(test);
+        } catch (JSONException ex) {
+            try {
+                new JSONArray(test);
+            } catch (JSONException jex) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private String getLogTag(UUID uuid) {

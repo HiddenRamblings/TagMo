@@ -269,7 +269,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
                         @Override
                         public void onFlaskActiveDeleted(JSONObject jsonObject) {
-                            amiiboTile.setVisibility(View.INVISIBLE);
+                            if (null != jsonObject)
+                                amiiboTile.setVisibility(View.INVISIBLE);
                             flaskService.getDeviceAmiibo();
                         }
 
@@ -335,6 +336,11 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 if (null != uploadDialog && uploadDialog.isShowing())
                                     uploadDialog.dismiss();
                             });
+                        }
+
+                        @Override
+                        public void onFlaskFilesDownload(byte[] tagData) {
+
                         }
 
                         @Override
@@ -1126,15 +1132,30 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     public void onAmiiboClicked(Amiibo amiibo) {
         getActiveAmiibo(amiibo, amiiboCard);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        toolbar.getMenu().findItem(R.id.mnu_backup).setVisible(false);
         if (null == amiibo) {
             toolbar.getMenu().findItem(R.id.mnu_activate).setVisible(false);
+            toolbar.getMenu().findItem(R.id.mnu_delete).setVisible(false);
         } else {
             toolbar.getMenu().findItem(R.id.mnu_activate).setVisible(true);
+            toolbar.getMenu().findItem(R.id.mnu_delete).setVisible(true);
             toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_activate) {
                     flaskService.setActiveAmiibo(
                             amiibo.name, amiibo.getFlaskTail()
                     );
+                    return true;
+                } else if (item.getItemId() == R.id.mnu_delete) {
+                    flaskService.deleteAmiibo(
+                            amiibo.name, amiibo.getFlaskTail()
+                    );
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    return true;
+                } else if (item.getItemId() == R.id.mnu_backup) {
+                    flaskService.downloadAmiibo(
+                            amiibo.name, amiibo.getFlaskTail()
+                    );
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     return true;
                 }
                 return false;

@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -440,7 +439,7 @@ public class BankListActivity extends AppCompatActivity implements
                 if (x >= amiibos.size()) {
                     amiibos.add(amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
                     bankAdapter.notifyItemInserted(x);
-                } else if (null == amiibos.get(x) || amiibos.get(x).bank != x
+                } else if (null == amiibos.get(x) || amiibos.get(x).index != x
                         || amiiboId != amiibos.get(x).id) {
                     amiibos.set(x, amiiboManager.amiibos.get(amiiboId));
                     bankAdapter.notifyItemChanged(x);
@@ -1025,7 +1024,7 @@ public class BankListActivity extends AppCompatActivity implements
         clickedPosition = position;
         status = CLICKED.NOTHING;
         onBottomSheetChanged(true, true);
-        if (null != amiibo.data  && amiibo.bank == position) {
+        if (null != amiibo.data  && amiibo.index == position) {
             updateAmiiboView(amiiboCard, amiibo.data, -1, position);
         } else if (amiibo.id != 0) {
             updateAmiiboView(amiiboCard, null, amiibo.id, position);

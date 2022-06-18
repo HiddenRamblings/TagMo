@@ -36,7 +36,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -73,6 +72,7 @@ import com.hiddenramblings.tagmo.adapter.WriteAmiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.amiibo.FlaskTag;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -280,17 +280,14 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 currentCount = jsonArray.length();
                                 ArrayList<Amiibo> flaskAmiibos = new ArrayList<>();
                                 for (int i = 0; i < currentCount; i++) {
-                                    Amiibo amiibo = null;
                                     try {
-                                        amiibo = getAmiiboByTail(jsonArray
+                                        Amiibo amiibo = getAmiiboByTail(jsonArray
                                                 .getString(i).split("\\|"));
-                                        if (null != amiibo) {
-                                            amiibo.bank = i;
-                                        }
+                                        if (null != amiibo) amiibo.index = i;
+                                        flaskAmiibos.add(amiibo);
                                     } catch (JSONException jex) {
                                         Debug.Log(jex);
                                     }
-                                    flaskAmiibos.add(amiibo);
                                 }
                                 BluupFlaskAdapter adapter = new BluupFlaskAdapter(
                                         settings, BluupFlaskActivity.this);
@@ -331,6 +328,11 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         }
 
                         @Override
+                        public void onFlaskFilesDownload(byte[] tagData) {
+
+                        }
+
+                        @Override
                         public void onFlaskFilesUploaded() {
                             runOnUiThread(() -> {
                                 if (null != uploadDialog && uploadDialog.isShowing())
@@ -339,8 +341,9 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         }
 
                         @Override
-                        public void onFlaskFilesDownload(byte[] tagData) {
-
+                        public void onFlaskBlanksCreated() {
+                            flaskService.getDeviceAmiibo();
+                            createBlank.setEnabled(true);
                         }
 
                         @Override
@@ -580,7 +583,10 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        createBlank.setOnClickListener(view -> flaskService.createBlankTag());
+        createBlank.setOnClickListener(view -> {
+            createBlank.setEnabled(false);
+            flaskService.createBlankTag();
+        });
 
         sourceToggle.setOnClickListener(view -> {
             if (writeSlotsLayout.getVisibility() == View.VISIBLE) {
@@ -643,7 +649,14 @@ public class BluupFlaskActivity extends AppCompatActivity implements
             String amiiboImageUrl = null;
 
             amiiboView.setVisibility(View.VISIBLE);
-            if (null != active) {
+            if (active instanceof FlaskTag) {
+                txtName.setText(R.string.blank_tag);
+                txtTagId.setVisibility(View.INVISIBLE);
+                txtAmiiboSeries.setVisibility(View.INVISIBLE);
+                txtAmiiboType.setVisibility(View.INVISIBLE);
+                txtGameSeries.setVisibility(View.INVISIBLE);
+                if (amiiboView == amiiboCard) txtUsageLabel.setVisibility(View.INVISIBLE);
+            } else {
                 txtTagId.setVisibility(View.VISIBLE);
                 txtAmiiboSeries.setVisibility(View.VISIBLE);
                 txtAmiiboType.setVisibility(View.VISIBLE);
@@ -668,13 +681,6 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
                     txtTagId.setEnabled(false);
                 }
-            } else {
-                txtName.setText(R.string.blank_tag);
-                txtTagId.setVisibility(View.INVISIBLE);
-                txtAmiiboSeries.setVisibility(View.INVISIBLE);
-                txtAmiiboType.setVisibility(View.INVISIBLE);
-                txtGameSeries.setVisibility(View.INVISIBLE);
-                if (amiiboView == amiiboCard) txtUsageLabel.setVisibility(View.INVISIBLE);
             }
 
             if (amiiboView == amiiboTile && null == amiiboImageUrl) {
@@ -723,7 +729,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 }
             }
         }
-        return selectedAmiibo;
+        return null != selectedAmiibo ? selectedAmiibo : new FlaskTag(Long.parseLong(name[2]));
     }
 
     private void verifyPermissions() {
@@ -1133,12 +1139,23 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         getActiveAmiibo(amiibo, amiiboCard);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         toolbar.getMenu().findItem(R.id.mnu_backup).setVisible(false);
-        if (null == amiibo) {
-            toolbar.getMenu().findItem(R.id.mnu_activate).setVisible(false);
-            toolbar.getMenu().findItem(R.id.mnu_delete).setVisible(false);
+        if (amiibo instanceof FlaskTag) {
+            toolbar.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.mnu_activate) {
+                    flaskService.setActiveAmiibo(
+                            amiibo.name, String.valueOf(amiibo.id)
+                    );
+                    return true;
+                } else if (item.getItemId() == R.id.mnu_delete) {
+                    flaskService.deleteAmiibo(
+                            amiibo.name, String.valueOf(amiibo.id)
+                    );
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    return true;
+                }
+                return false;
+            });
         } else {
-            toolbar.getMenu().findItem(R.id.mnu_activate).setVisible(true);
-            toolbar.getMenu().findItem(R.id.mnu_delete).setVisible(true);
             toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_activate) {
                     flaskService.setActiveAmiibo(

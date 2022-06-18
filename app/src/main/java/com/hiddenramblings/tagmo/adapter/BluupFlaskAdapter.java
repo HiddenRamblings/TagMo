@@ -18,6 +18,7 @@ import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.FlaskTag;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
@@ -172,16 +173,21 @@ public class BluupFlaskAdapter
             String gameSeries = "";
             String amiiboImageUrl = null;
 
-            if (null != amiibo)  {
+            if (amiibo instanceof FlaskTag)  {
+                setAmiiboInfoText(txtName, TagMo.getContext().getString(R.string.blank_tag));
+            } else {
                 setAmiiboInfoText(txtName, amiibo.name);
                 amiiboImageUrl = amiibo.getImageUrl();
-            } else {
-                setAmiiboInfoText(txtName, TagMo.getContext().getString(R.string.blank_tag));
             }
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 this.txtError.setVisibility(View.GONE);
                 this.txtPath.setVisibility(View.GONE);
-                if (null != amiibo) {
+                if (amiibo instanceof FlaskTag) {
+                    this.txtTagId.setVisibility(View.GONE);
+                    this.txtAmiiboSeries.setVisibility(View.GONE);
+                    this.txtAmiiboType.setVisibility(View.GONE);
+                    this.txtGameSeries.setVisibility(View.GONE);
+                } else {
                     amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                     if (null != amiibo.getAmiiboSeries())
                         amiiboSeries = amiibo.getAmiiboSeries().name;
@@ -201,11 +207,6 @@ public class BluupFlaskAdapter
                     if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
                         txtTagId.setEnabled(false);
                     }
-                } else {
-                    this.txtTagId.setVisibility(View.GONE);
-                    this.txtAmiiboSeries.setVisibility(View.GONE);
-                    this.txtAmiiboType.setVisibility(View.GONE);
-                    this.txtGameSeries.setVisibility(View.GONE);
                 }
             }
 

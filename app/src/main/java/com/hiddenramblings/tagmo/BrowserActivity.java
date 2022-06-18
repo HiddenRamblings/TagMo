@@ -11,6 +11,8 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
@@ -23,6 +25,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +34,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -59,6 +64,23 @@ import androidx.transition.AutoTransition;
 import androidx.transition.TransitionManager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ConsumeParams;
+import com.android.billingclient.api.ConsumeResponseListener;
+import com.android.billingclient.api.ProductDetails;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchaseHistoryRecord;
+import com.android.billingclient.api.PurchaseHistoryResponseListener;
+import com.android.billingclient.api.PurchasesResponseListener;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.QueryProductDetailsParams;
+import com.android.billingclient.api.QueryPurchaseHistoryParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.eightbitlab.blurview.BlurView;
@@ -119,6 +141,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
@@ -184,6 +207,10 @@ public class BrowserActivity extends AppCompatActivity implements
     private BrowserSettings settings;
     private String updateUrl;
     private AppUpdateInfo appUpdate;
+
+    private BillingClient billingClient;
+    private final ArrayList<ProductDetails> iapSkuDetails = new ArrayList<>();
+    private final ArrayList<ProductDetails> subSkuDetails = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -418,11 +445,84 @@ public class BrowserActivity extends AppCompatActivity implements
                         startActivity(new Intent(
                                 BrowserActivity.this, WebActivity.class
                         ).setAction(NFCIntent.SITE_GITLAB_README)));
-                findViewById(R.id.donate_layout).setOnClickListener(view -> {
-                    closePrefsDrawer();
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                            "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
-                    )));
+                if (TagMo.isGooglePlay()) {
+                    findViewById(R.id.donate_layout).setVisibility(View.GONE);
+                } else {
+                    findViewById(R.id.donate_layout).setOnClickListener(view -> {
+                        closePrefsDrawer();
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
+                        )));
+                    });
+                }
+                retrieveDonationMenu();
+                findViewById(R.id.google_layout).setOnClickListener(view ->{
+                    View layout = getLayoutInflater().inflate(R.layout.donation_layout, null);
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(
+                            new ContextThemeWrapper(BrowserActivity.this, R.style.DialogTheme_NoActionBar)
+                    );
+                    LinearLayout donations = layout.findViewById(R.id.donation_layout);
+                    Collections.sort(iapSkuDetails, (obj1, obj2)
+                            -> obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
+                    for (ProductDetails skuDetail : iapSkuDetails) {
+                        if (null == skuDetail.getOneTimePurchaseOfferDetails()) continue;
+                        Button button = new Button(getApplicationContext());
+                        button.setBackgroundResource(R.drawable.rounded_view);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            button.setElevation(TypedValue.applyDimension(
+                                    TypedValue.COMPLEX_UNIT_DIP,
+                                    10f,
+                                    Resources.getSystem().getDisplayMetrics()
+                            ));
+                        }
+                        button.setText(getString(R.string.iap_button, skuDetail
+                                .getOneTimePurchaseOfferDetails().getFormattedPrice()));
+                        button.setOnClickListener(view1 -> {
+                            BillingFlowParams.ProductDetailsParams productDetailsParamsList
+                                    = BillingFlowParams.ProductDetailsParams
+                                    .newBuilder().setProductDetails(skuDetail).build();
+                            billingClient.launchBillingFlow(
+                                    BrowserActivity.this, BillingFlowParams.newBuilder()
+                                            .setProductDetailsParamsList(List.of(productDetailsParamsList)).build()
+                            );
+                        });
+                        donations.addView(button);
+                    }
+                    LinearLayout subscriptions = layout.findViewById(R.id.subscription_layout);
+                    Collections.sort(subSkuDetails, (obj1, obj2)
+                            -> obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
+                    for (ProductDetails skuDetail : subSkuDetails) {
+                        if (null == skuDetail.getSubscriptionOfferDetails()) continue;
+                        Button button = new Button(getApplicationContext());
+                        button.setBackgroundResource(R.drawable.rounded_view);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            button.setElevation(TypedValue.applyDimension(
+                                    TypedValue.COMPLEX_UNIT_DIP,
+                                    10f,
+                                    Resources.getSystem().getDisplayMetrics()
+                            ));
+                        }
+                        button.setText(getString(R.string.sub_button, skuDetail
+                                .getSubscriptionOfferDetails().get(0).getPricingPhases()
+                                .getPricingPhaseList().get(0).getFormattedPrice()));
+                        button.setOnClickListener(view1 -> {
+                            BillingFlowParams.ProductDetailsParams productDetailsParamsList
+                                    = BillingFlowParams.ProductDetailsParams.newBuilder()
+                                    .setOfferToken(skuDetail.getSubscriptionOfferDetails().get(0).getOfferToken())
+                        .setProductDetails(skuDetail).build();
+                            billingClient.launchBillingFlow(
+                                    BrowserActivity.this, BillingFlowParams.newBuilder()
+                                            .setProductDetailsParamsList(List.of(productDetailsParamsList)).build()
+                            );
+                        });
+                        subscriptions.addView(button);
+                    }
+                    dialog.setOnCancelListener(dialogInterface -> {
+                        donations.removeAllViewsInLayout();
+                        subscriptions.removeAllViewsInLayout();
+                    });
+                    Dialog donateDialog = dialog.setView(layout).show();
+                    donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 });
                 if (null != appUpdate) {
                     findViewById(R.id.build_layout).setOnClickListener(view -> {
@@ -2318,5 +2418,160 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         }
+    }
+
+    private String getIAP(int amount) {
+        return String.format(Locale.ROOT, "subscription_%02d", amount);
+    }
+
+    private String getSub(int amount) {
+        return String.format(Locale.ROOT, "monthly_%02d", amount);
+    }
+
+    private final ArrayList<String> iapList = new ArrayList<>();
+    private final ArrayList<String> subList = new ArrayList<>();
+
+    private final ConsumeResponseListener consumeResponseListener = (billingResult, s)
+            -> new IconifiedSnackbar(this, findViewById(R.id.donation_wrapper))
+            .buildTickerBar(R.string.donation_thanks).show();
+
+    private void handlePurchaseIAP(Purchase purchase) {
+        ConsumeParams.Builder consumeParams = ConsumeParams.newBuilder()
+                .setPurchaseToken(purchase.getPurchaseToken());
+        billingClient.consumeAsync(consumeParams.build(), consumeResponseListener);
+    }
+
+    private final AcknowledgePurchaseResponseListener acknowledgePurchaseResponseListener = billingResult
+            -> new IconifiedSnackbar(this).buildTickerBar(R.string.donation_thanks).show();
+
+    private void handlePurchaseSub(Purchase purchase) {
+        AcknowledgePurchaseParams.Builder acknowledgePurchaseParams = AcknowledgePurchaseParams
+                .newBuilder().setPurchaseToken(purchase.getPurchaseToken());
+        billingClient.acknowledgePurchase(acknowledgePurchaseParams.build(),
+                acknowledgePurchaseResponseListener);
+    }
+
+    private void handlePurchase(Purchase purchase) {
+        if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+            if (!purchase.isAcknowledged()) {
+                for (String iap : iapList) {
+                    if (purchase.getProducts().contains(iap))
+                        handlePurchaseIAP(purchase);
+                }
+                for (String sub : subList) {
+                    if (purchase.getProducts().contains(sub))
+                        handlePurchaseSub(purchase);
+                }
+            }
+        }
+    }
+
+    private final PurchasesUpdatedListener purchasesUpdatedListener = (billingResult, purchases) -> {
+        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && null != purchases) {
+            for (Purchase purchase : purchases) {
+                handlePurchase(purchase);
+            }
+        }
+    };
+
+    private final ArrayList<String> subsPurchased = new ArrayList<>();
+
+    private final PurchasesResponseListener iapOwnedListener = (billingResult, purchases) -> {
+        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+            for (Purchase purchase : purchases) {
+                for (String sku : purchase.getProducts()) {
+                    if (subsPurchased.contains(sku)) {
+                        break;
+                    }
+                }
+            }
+        }
+    };
+
+    private final PurchaseHistoryResponseListener subHistoryListener = (billingResult, purchases) -> {
+        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && null != purchases) {
+            for (PurchaseHistoryRecord purchase : purchases)
+                subsPurchased.addAll(purchase.getProducts());
+            billingClient.queryPurchasesAsync(QueryPurchasesParams.newBuilder()
+                    .setProductType(BillingClient.ProductType.SUBS).build(), iapOwnedListener);
+        }
+    };
+
+    private final PurchaseHistoryResponseListener iapHistoryListener = (billingResult, purchases) -> {
+        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && null != purchases) {
+            for (PurchaseHistoryRecord purchase : purchases) {
+                for (String sku : purchase.getProducts()) {
+                    if (Integer.parseInt(sku.split("_")[1]) >= 10) {
+                        break;
+                    }
+                }
+            }
+        }
+    };
+
+    private void retrieveDonationMenu() {
+        billingClient = BillingClient.newBuilder(this)
+                .setListener(purchasesUpdatedListener).enablePendingPurchases().build();
+
+        iapSkuDetails.clear();
+        subSkuDetails.clear();
+
+        billingClient.startConnection(new BillingClientStateListener() {
+            @Override
+            public void onBillingServiceDisconnected() { }
+
+            @Override
+            public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+                if (billingResult.getResponseCode() ==  BillingClient.BillingResponseCode.OK) {
+                    iapList.add(getIAP(1));
+                    iapList.add(getIAP(5));
+                    iapList.add(getIAP(10));
+                    iapList.add(getIAP(25));
+                    iapList.add(getIAP(50));
+                    iapList.add(getIAP(75));
+                    iapList.add(getIAP(99));
+                    for (String productId : iapList) {
+                        QueryProductDetailsParams.Product productList = QueryProductDetailsParams
+                                .Product.newBuilder().setProductId(productId)
+                                .setProductType(BillingClient.ProductType.INAPP).build();
+                        QueryProductDetailsParams.Builder params = QueryProductDetailsParams
+                                .newBuilder().setProductList(List.of(productList));
+                        billingClient.queryProductDetailsAsync(params.build(),
+                                (billingResult1, productDetailsList) -> {
+                            iapSkuDetails.addAll(productDetailsList);
+                            billingClient.queryPurchaseHistoryAsync(
+                                    QueryPurchaseHistoryParams.newBuilder().setProductType(
+                                            BillingClient.ProductType.INAPP
+                                    ).build(), iapHistoryListener
+                            );
+                        });
+
+                    }
+                }
+                subList.add(getSub(1));
+                subList.add(getSub(5));
+                subList.add(getSub(10));
+                subList.add(getSub(25));
+                subList.add(getSub(50));
+                subList.add(getSub(75));
+                subList.add(getSub(99));
+                for (String productId : subList) {
+                    QueryProductDetailsParams.Product productList = QueryProductDetailsParams
+                            .Product.newBuilder().setProductId(productId)
+                            .setProductType(BillingClient.ProductType.SUBS).build();
+                    QueryProductDetailsParams.Builder params = QueryProductDetailsParams
+                            .newBuilder().setProductList(List.of(productList));
+                    billingClient.queryProductDetailsAsync(params.build(),
+                            (billingResult1, productDetailsList) -> {
+                        subSkuDetails.addAll(productDetailsList);
+                        billingClient.queryPurchaseHistoryAsync(
+                                QueryPurchaseHistoryParams.newBuilder().setProductType(
+                                        BillingClient.ProductType.SUBS
+                                ).build(), subHistoryListener
+                        );
+                    });
+                }
+            }
+        });
     }
 }

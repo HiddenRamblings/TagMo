@@ -82,7 +82,7 @@ public class BankListActivity extends AppCompatActivity implements
 
     private LinearLayout bankOptionsMenu;
     private AppCompatToggleButton switchMenuOptions;
-    private RelativeLayout writeBankLayout;
+    private LinearLayout writeBankLayout;
     private BankBrowserAdapter bankAdapter;
     private RecyclerView amiiboFilesView;
 

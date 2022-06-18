@@ -40,9 +40,9 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
         this.data = null;
     }
 
-    public Amiibo(AmiiboManager manager, byte[] data, int bank) throws Exception {
+    public Amiibo(AmiiboManager manager, byte[] data, int index) throws Exception {
         this.manager = manager;
-        this.index = bank;
+        this.index = index;
         this.data = data;
         this.id = TagUtils.amiiboIdFromTag(data);
         Amiibo amiibo = manager.amiibos.get(this.id);

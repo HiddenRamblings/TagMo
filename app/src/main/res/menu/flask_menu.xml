@@ -7,4 +7,12 @@
         android:id="@+id/mnu_activate"
         android:title="@string/activate"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_delete"
+        android:title="@string/delete"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_backup"
+        android:title="@string/amiibo_backup"
+        app:showAsAction="ifRoom"/>
 </menu>

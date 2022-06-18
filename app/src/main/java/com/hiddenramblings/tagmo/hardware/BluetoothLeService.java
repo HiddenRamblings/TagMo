@@ -88,8 +88,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -581,12 +579,7 @@ public class BluetoothLeService extends Service {
         String flaskTail = Integer.toString(Integer.parseInt(TagUtils
                 .amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
         int reserved = flaskTail.length() + 3; // |tail|#
-        String name = amiibo.name;
-        try {
-            name = URLEncoder.encode(amiibo.name, String.valueOf(CharsetCompat.UTF_8));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        String name = stringToUnicode(amiibo.name);
         String jsonLabel = name.length() + reserved > 28
                 ? name.substring(0, name.length() - ((name.length() + reserved) - 28)) : name;
         delayedTagCharacteristic("saveUploadedTag(\""
@@ -638,6 +631,22 @@ public class BluetoothLeService extends Service {
             }
         }
         return stringPortions;
+    }
+
+    public static String stringToUnicode(String plain) {
+        StringBuilder sb = new StringBuilder(plain.length() * 3);
+        for (char c : plain.toCharArray()) {
+            if (c < 256) {
+                sb.append(c);
+            } else {
+                sb.append("\\u");
+                sb.append(Character.forDigit((c >>> 12) & 0xf, 16));
+                sb.append(Character.forDigit((c >>> 8) & 0xf, 16));
+                sb.append(Character.forDigit((c >>> 4) & 0xf, 16));
+                sb.append(Character.forDigit((c) & 0xf, 16));
+            }
+        }
+        return sb.toString();
     }
 
     private String getLogTag(UUID uuid) {

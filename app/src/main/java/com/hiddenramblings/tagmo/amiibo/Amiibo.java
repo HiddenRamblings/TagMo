@@ -28,7 +28,7 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
     public final long id;
     public final String name;
     public final AmiiboReleaseDates releaseDates;
-    public int bank;
+    public int index;
     public byte[] data;
 
     public Amiibo(AmiiboManager manager, long id, String name, AmiiboReleaseDates releaseDates) {
@@ -36,13 +36,13 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
         this.id = id;
         this.name = name;
         this.releaseDates = releaseDates;
-        this.bank = -1;
+        this.index = -1;
         this.data = null;
     }
 
     public Amiibo(AmiiboManager manager, byte[] data, int bank) throws Exception {
         this.manager = manager;
-        this.bank = bank;
+        this.index = bank;
         this.data = data;
         this.id = TagUtils.amiiboIdFromTag(data);
         Amiibo amiibo = manager.amiibos.get(this.id);

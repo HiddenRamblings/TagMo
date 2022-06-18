@@ -88,6 +88,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -133,6 +134,7 @@ public class BluetoothLeService extends Service {
         void onFlaskActiveDeleted(JSONObject jsonObject);
         void onFlaskListRetrieved(JSONArray jsonArray);
         void onFlaskActiveLocated(JSONObject jsonObject);
+        void onFlaskFilesDownload(byte[] tagData);
         void onFlaskFilesUploaded();
         void onGattConnectionLost();
     }
@@ -186,8 +188,7 @@ public class BluetoothLeService extends Service {
                         if (progress.contains("Uncaught no such element")
                                 && null != nameCompat && null != tailCompat) {
                             response = new StringBuilder();
-                            promptTagCharacteristic("setTag(\""
-                                    + nameCompat + "|" + tailCompat + "\")");
+                            fixAmiiboName(nameCompat, tailCompat);
                             nameCompat = null;
                             tailCompat = null;
                             return;
@@ -224,6 +225,15 @@ public class BluetoothLeService extends Service {
                         }
                         response = new StringBuilder();
                         if (null != listener) listener.onFlaskFilesUploaded();
+                    }
+                } else if (progress.startsWith("tag.remove")) {
+                    if (progress.endsWith(">") || progress.endsWith("\n")) {
+                        if (null != listener) listener.onFlaskActiveDeleted(null);
+                        response = new StringBuilder();
+                    }
+                } else if (progress.startsWith("tag.download")) {
+                    if (progress.endsWith(">") || progress.endsWith("\n")) {
+                        response = new StringBuilder();
                     }
                 } else if (progress.endsWith("}")) {
                     if (null != listener) {
@@ -599,6 +609,39 @@ public class BluetoothLeService extends Service {
                 : nameUnicode;
         tailCompat = tail;
         delayedTagCharacteristic("setTag(\"" + nameCompat + "|" + tailCompat + "|0\")");
+    }
+
+    public void fixAmiiboName(String name, String tail) {
+        int reserved = tail.length() + 3; // |tail|#
+        String nameUnicode = stringToUnicode(name);
+        String amiiboName = nameUnicode.length() + reserved > 28
+                ? nameUnicode.substring(0, nameUnicode.length()
+                - ((nameUnicode.length() + reserved) - 28))
+                : nameUnicode;
+        promptTagCharacteristic("rename(\"" + amiiboName + "|" + tail
+                + "\",\"" + amiiboName + "|" + tail + "|0\" )");
+        getDeviceAmiibo();
+    }
+
+    public void deleteAmiibo(String name, String tail) {
+        int reserved = tail.length() + 3; // |tail|#
+        String nameUnicode = stringToUnicode(name);
+        nameCompat = nameUnicode.length() + reserved > 28
+                ? nameUnicode.substring(0, nameUnicode.length()
+                - ((nameUnicode.length() + reserved) - 28))
+                : nameUnicode;
+        tailCompat = tail;
+        delayedTagCharacteristic("remove(\"" + nameCompat + "|" + tailCompat + "|0\")");
+    }
+
+    public void downloadAmiibo(String name, String tail) {
+        int reserved = tail.length() + 3; // |tail|#
+        String nameUnicode = stringToUnicode(name);
+        String amiiboName = nameUnicode.length() + reserved > 28
+                ? nameUnicode.substring(0, nameUnicode.length()
+                - ((nameUnicode.length() + reserved) - 28))
+                : nameUnicode;
+        delayedTagCharacteristic("download(\"" + amiiboName + "|" + tail + "|0\")");
     }
 
     public void getActiveAmiibo() {

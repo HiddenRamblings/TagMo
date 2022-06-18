@@ -102,18 +102,18 @@
             android:id="@+id/active_card_layout" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/create_blank"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/create_blank" />
-
-        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/write_slot_file"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
+            android:layout_marginTop="2dp"
             android:text="@string/write_slot_file" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/create_blank"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="@string/create_blank" />
 
         <include
             layout="@layout/number_picker"

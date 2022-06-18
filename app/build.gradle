@@ -7,8 +7,8 @@ android {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
         targetSdkVersion 31
-        versionCode 18
-        versionName "2.8.5"
+        versionCode 19
+        versionName "2.8.6"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -89,6 +89,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation "androidx.browser:browser:1.4.0"
+    implementation 'com.android.billingclient:billing:5.0.0'
     implementation 'com.google.android.play:core:1.10.3'
     implementation "org.androidannotations:androidannotations-api:4.6.0"
     annotationProcessor "org.androidannotations:androidannotations:4.6.0"

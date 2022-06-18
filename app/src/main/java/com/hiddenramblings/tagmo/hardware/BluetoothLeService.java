@@ -136,6 +136,7 @@ public class BluetoothLeService extends Service {
         void onFlaskActiveLocated(JSONObject jsonObject);
         void onFlaskFilesDownload(byte[] tagData);
         void onFlaskFilesUploaded();
+        void onFlaskBlanksCreated();
         void onGattConnectionLost();
     }
 
@@ -234,6 +235,11 @@ public class BluetoothLeService extends Service {
                 } else if (progress.startsWith("tag.download")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
                         response = new StringBuilder();
+                    }
+                } else if (progress.startsWith("tag.createBlank()")) {
+                    if (progress.endsWith(">") || progress.endsWith("\n")) {
+                        response = new StringBuilder();
+                        if (null != listener) listener.onFlaskBlanksCreated();
                     }
                 } else if (progress.endsWith("}")) {
                     if (null != listener) {
@@ -601,14 +607,18 @@ public class BluetoothLeService extends Service {
     }
 
     public void setActiveAmiibo(String name, String tail) {
-        int reserved = tail.length() + 3; // |tail|#
-        String nameUnicode = stringToUnicode(name);
-        nameCompat = nameUnicode.length() + reserved > 28
-                ? nameUnicode.substring(0, nameUnicode.length()
-                - ((nameUnicode.length() + reserved) - 28))
-                : nameUnicode;
-        tailCompat = tail;
-        delayedTagCharacteristic("setTag(\"" + nameCompat + "|" + tailCompat + "|0\")");
+        if (name.equals("New Tag ")) {
+            delayedTagCharacteristic("setTag(\"" + name + "||" + tail + "\")");
+        } else {
+            int reserved = tail.length() + 3; // |tail|#
+            String nameUnicode = stringToUnicode(name);
+            nameCompat = nameUnicode.length() + reserved > 28
+                    ? nameUnicode.substring(0, nameUnicode.length()
+                    - ((nameUnicode.length() + reserved) - 28))
+                    : nameUnicode;
+            tailCompat = tail;
+            delayedTagCharacteristic("setTag(\"" + nameCompat + "|" + tailCompat + "|0\")");
+        }
     }
 
     public void fixAmiiboName(String name, String tail) {
@@ -624,14 +634,18 @@ public class BluetoothLeService extends Service {
     }
 
     public void deleteAmiibo(String name, String tail) {
-        int reserved = tail.length() + 3; // |tail|#
-        String nameUnicode = stringToUnicode(name);
-        nameCompat = nameUnicode.length() + reserved > 28
-                ? nameUnicode.substring(0, nameUnicode.length()
-                - ((nameUnicode.length() + reserved) - 28))
-                : nameUnicode;
-        tailCompat = tail;
-        delayedTagCharacteristic("remove(\"" + nameCompat + "|" + tailCompat + "|0\")");
+        if (name.equals("New Tag ")) {
+            delayedTagCharacteristic("remove(\"" + name + "||" + tail + "\")");
+        } else {
+            int reserved = tail.length() + 3; // |tail|#
+            String nameUnicode = stringToUnicode(name);
+            nameCompat = nameUnicode.length() + reserved > 28
+                    ? nameUnicode.substring(0, nameUnicode.length()
+                    - ((nameUnicode.length() + reserved) - 28))
+                    : nameUnicode;
+            tailCompat = tail;
+            delayedTagCharacteristic("remove(\"" + nameCompat + "|" + tailCompat + "|0\")");
+        }
     }
 
     public void downloadAmiibo(String name, String tail) {

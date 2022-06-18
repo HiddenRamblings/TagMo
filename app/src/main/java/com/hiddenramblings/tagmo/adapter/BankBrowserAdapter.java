@@ -192,7 +192,7 @@ public class BankBrowserAdapter
             String value = String.valueOf(getAbsoluteAdapterPosition() + 1);
 
             if (isAmiibo) {
-                this.amiiboItem.bank = getAbsoluteAdapterPosition();
+                this.amiiboItem.index = getAbsoluteAdapterPosition();
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
                 if (null != amiibo.name)

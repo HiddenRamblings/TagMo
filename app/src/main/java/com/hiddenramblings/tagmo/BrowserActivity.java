@@ -53,6 +53,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuCompat;
 import androidx.documentfile.provider.DocumentFile;
@@ -429,6 +430,14 @@ public class BrowserActivity extends AppCompatActivity implements
                 .replace(R.id.preferences, settingsFragment)
                 .commit();
 
+        AppCompatImageView donate = findViewById(R.id.donate_button);
+        if (TagMo.isGooglePlay()) {
+            retrieveDonationMenu();
+            donate.setImageResource(R.drawable.ic_google_play_24dp);
+        } else {
+            donate.setImageResource(R.drawable.ic_paypal_donation_24dp);
+        }
+
         prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -446,7 +455,32 @@ public class BrowserActivity extends AppCompatActivity implements
                                 BrowserActivity.this, WebActivity.class
                         ).setAction(NFCIntent.SITE_GITLAB_README)));
                 if (TagMo.isGooglePlay()) {
-                    findViewById(R.id.donate_layout).setVisibility(View.GONE);
+                    findViewById(R.id.donate_layout).setOnClickListener(view ->{
+                        View layout = getLayoutInflater().inflate(R.layout.donation_layout, null);
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(
+                                BrowserActivity.this, R.style.DialogTheme_NoActionBar
+                        ));
+                        LinearLayout donations = layout.findViewById(R.id.donation_layout);
+                        Collections.sort(iapSkuDetails, (obj1, obj2)
+                                -> obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
+                        for (ProductDetails skuDetail : iapSkuDetails) {
+                            if (null == skuDetail.getOneTimePurchaseOfferDetails()) continue;
+                            donations.addView(getDonationButton(skuDetail));
+                        }
+                        LinearLayout subscriptions = layout.findViewById(R.id.subscription_layout);
+                        Collections.sort(subSkuDetails, (obj1, obj2)
+                                -> obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
+                        for (ProductDetails skuDetail : subSkuDetails) {
+                            if (null == skuDetail.getSubscriptionOfferDetails()) continue;
+                            subscriptions.addView(getSubscriptionButton(skuDetail));
+                        }
+                        dialog.setOnCancelListener(dialogInterface -> {
+                            donations.removeAllViewsInLayout();
+                            subscriptions.removeAllViewsInLayout();
+                        });
+                        Dialog donateDialog = dialog.setView(layout).show();
+                        donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    });
                 } else {
                     findViewById(R.id.donate_layout).setOnClickListener(view -> {
                         closePrefsDrawer();
@@ -455,75 +489,6 @@ public class BrowserActivity extends AppCompatActivity implements
                         )));
                     });
                 }
-                retrieveDonationMenu();
-                findViewById(R.id.google_layout).setOnClickListener(view ->{
-                    View layout = getLayoutInflater().inflate(R.layout.donation_layout, null);
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(
-                            new ContextThemeWrapper(BrowserActivity.this, R.style.DialogTheme_NoActionBar)
-                    );
-                    LinearLayout donations = layout.findViewById(R.id.donation_layout);
-                    Collections.sort(iapSkuDetails, (obj1, obj2)
-                            -> obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
-                    for (ProductDetails skuDetail : iapSkuDetails) {
-                        if (null == skuDetail.getOneTimePurchaseOfferDetails()) continue;
-                        Button button = new Button(getApplicationContext());
-                        button.setBackgroundResource(R.drawable.rounded_view);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            button.setElevation(TypedValue.applyDimension(
-                                    TypedValue.COMPLEX_UNIT_DIP,
-                                    10f,
-                                    Resources.getSystem().getDisplayMetrics()
-                            ));
-                        }
-                        button.setText(getString(R.string.iap_button, skuDetail
-                                .getOneTimePurchaseOfferDetails().getFormattedPrice()));
-                        button.setOnClickListener(view1 -> {
-                            BillingFlowParams.ProductDetailsParams productDetailsParamsList
-                                    = BillingFlowParams.ProductDetailsParams
-                                    .newBuilder().setProductDetails(skuDetail).build();
-                            billingClient.launchBillingFlow(
-                                    BrowserActivity.this, BillingFlowParams.newBuilder()
-                                            .setProductDetailsParamsList(List.of(productDetailsParamsList)).build()
-                            );
-                        });
-                        donations.addView(button);
-                    }
-                    LinearLayout subscriptions = layout.findViewById(R.id.subscription_layout);
-                    Collections.sort(subSkuDetails, (obj1, obj2)
-                            -> obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
-                    for (ProductDetails skuDetail : subSkuDetails) {
-                        if (null == skuDetail.getSubscriptionOfferDetails()) continue;
-                        Button button = new Button(getApplicationContext());
-                        button.setBackgroundResource(R.drawable.rounded_view);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            button.setElevation(TypedValue.applyDimension(
-                                    TypedValue.COMPLEX_UNIT_DIP,
-                                    10f,
-                                    Resources.getSystem().getDisplayMetrics()
-                            ));
-                        }
-                        button.setText(getString(R.string.sub_button, skuDetail
-                                .getSubscriptionOfferDetails().get(0).getPricingPhases()
-                                .getPricingPhaseList().get(0).getFormattedPrice()));
-                        button.setOnClickListener(view1 -> {
-                            BillingFlowParams.ProductDetailsParams productDetailsParamsList
-                                    = BillingFlowParams.ProductDetailsParams.newBuilder()
-                                    .setOfferToken(skuDetail.getSubscriptionOfferDetails().get(0).getOfferToken())
-                        .setProductDetails(skuDetail).build();
-                            billingClient.launchBillingFlow(
-                                    BrowserActivity.this, BillingFlowParams.newBuilder()
-                                            .setProductDetailsParamsList(List.of(productDetailsParamsList)).build()
-                            );
-                        });
-                        subscriptions.addView(button);
-                    }
-                    dialog.setOnCancelListener(dialogInterface -> {
-                        donations.removeAllViewsInLayout();
-                        subscriptions.removeAllViewsInLayout();
-                    });
-                    Dialog donateDialog = dialog.setView(layout).show();
-                    donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                });
                 if (null != appUpdate) {
                     findViewById(R.id.build_layout).setOnClickListener(view -> {
                         closePrefsDrawer();
@@ -2573,5 +2538,79 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         });
+    }
+
+    private Button getDonationButton(ProductDetails skuDetail) {
+        Button button = new Button(getApplicationContext());
+        button.setBackgroundResource(R.drawable.rounded_view);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            button.setElevation(TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    10f,
+                    Resources.getSystem().getDisplayMetrics()
+            ));
+        }
+        int padding = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                4f,
+                Resources.getSystem().getDisplayMetrics()
+        );
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, padding, 0, padding);
+        button.setLayoutParams(params);
+        button.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+        button.setText(getString(R.string.iap_button, skuDetail
+                .getOneTimePurchaseOfferDetails().getFormattedPrice()));
+        button.setOnClickListener(view1 -> {
+            BillingFlowParams.ProductDetailsParams productDetailsParamsList
+                    = BillingFlowParams.ProductDetailsParams
+                    .newBuilder().setProductDetails(skuDetail).build();
+            billingClient.launchBillingFlow(
+                    BrowserActivity.this, BillingFlowParams.newBuilder()
+                            .setProductDetailsParamsList(List.of(productDetailsParamsList)).build()
+            );
+        });
+        return button;
+    }
+
+    private Button getSubscriptionButton(ProductDetails skuDetail) {
+        Button button = new Button(getApplicationContext());
+        button.setBackgroundResource(R.drawable.rounded_view);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            button.setElevation(TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    10f,
+                    Resources.getSystem().getDisplayMetrics()
+            ));
+        }
+        int padding = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                4f,
+                Resources.getSystem().getDisplayMetrics()
+        );
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, padding, 0, padding);
+        button.setLayoutParams(params);
+        button.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+        button.setText(getString(R.string.sub_button, skuDetail
+                .getSubscriptionOfferDetails().get(0).getPricingPhases()
+                .getPricingPhaseList().get(0).getFormattedPrice()));
+        button.setOnClickListener(view1 -> {
+            BillingFlowParams.ProductDetailsParams productDetailsParamsList
+                    = BillingFlowParams.ProductDetailsParams.newBuilder()
+                    .setOfferToken(skuDetail.getSubscriptionOfferDetails().get(0).getOfferToken())
+                    .setProductDetails(skuDetail).build();
+            billingClient.launchBillingFlow(
+                    BrowserActivity.this, BillingFlowParams.newBuilder()
+                            .setProductDetailsParamsList(List.of(productDetailsParamsList)).build()
+            );
+        });
+        return button;
     }
 }

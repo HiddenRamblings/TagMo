@@ -6,15 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:baselineAligned="false">
 
     <LinearLayout
         android:id="@+id/donation_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
         android:layout_marginEnd="2dp"
         android:layout_marginRight="2dp"
         android:orientation="vertical" />
@@ -26,7 +25,5 @@
         android:layout_weight="1"
         android:layout_marginStart="2dp"
         android:layout_marginLeft="2dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
         android:orientation="vertical" />
 </LinearLayout>

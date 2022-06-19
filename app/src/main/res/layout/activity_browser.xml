@@ -214,7 +214,7 @@
                     android:id="@+id/build_layout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.85"
+                    android:layout_weight="0.8"
                     android:gravity="start|center_vertical"
                     android:orientation="horizontal">
 
@@ -264,40 +264,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="2dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:contentDescription="@string/imageview_icon"
-                        app:srcCompat="@drawable/ic_paypal_donation_24dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:gravity="center_vertical"
-                        android:text="@string/pref_donate"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/google_layout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="2dp"
-                    android:layout_weight="0.85"
+                    android:layout_weight="0.8"
                     android:gravity="end|center_vertical"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/donate_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:contentDescription="@string/imageview_icon"
-                        app:srcCompat="@drawable/ic_google_play_24dp" />
+                        app:srcCompat="@drawable/ic_paypal_donation_24dp" />
 
                     <TextView
                         android:layout_width="wrap_content"

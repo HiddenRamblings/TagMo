@@ -165,6 +165,7 @@ public class Debug {
         }
         reader.close();
         String logText = log.toString();
+        if (!logText.contains("AndroidRuntime")) return false;
         String issueUrl = "https://github.com/HiddenRamblings/TagMo/issues/new?"
                 + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+";
         try {

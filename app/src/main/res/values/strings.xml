@@ -128,7 +128,6 @@
     <string name="wrote_foomiibo">%1$s Foomiibo saved!</string>
     <string name="delete_file">%1$s deleted!</string>
     <string name="delete_foomiibo">%1$s Foomiibo deleted!</string>
-    <string name="logcat_failed">Logcat escaped! Try a Pokeball</string>
     <string name="nfc_tag">NFC tag</string>
     <string name="tag_detected">%1$s detected&#8230;</string>
     <string name="tag_scanning">%1$s scanning&#8230;</string>

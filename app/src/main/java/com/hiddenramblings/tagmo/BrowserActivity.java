@@ -627,10 +627,12 @@ public class BrowserActivity extends AppCompatActivity implements
         validateItem.setEnabled(false);
         popup.show();
         Handler popupHandler = new Handler(Looper.getMainLooper());
-        popupHandler.postDelayed(() -> validateItem.setEnabled(true), 200);
-        popupHandler.postDelayed(() -> backupItem.setEnabled(true), 300);
-        popupHandler.postDelayed(() -> flaskItem.setEnabled(true), 400);
-        popupHandler.postDelayed(() -> scanItem.setEnabled(true), 500);
+        popupHandler.postDelayed(() -> {
+            popupHandler.postDelayed(() -> validateItem.setEnabled(true), 100);
+            popupHandler.postDelayed(() -> backupItem.setEnabled(true), 200);
+            popupHandler.postDelayed(() -> flaskItem.setEnabled(true), 300);
+            popupHandler.postDelayed(() -> scanItem.setEnabled(true), 400);
+        }, 250);
 
         popup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.mnu_scan) {

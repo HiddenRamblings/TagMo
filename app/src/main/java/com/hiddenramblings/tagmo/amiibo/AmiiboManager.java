@@ -308,26 +308,23 @@ public class AmiiboManager {
         return amiiboFiles;
     }
 
-    public static ArrayList<AmiiboFile> listAmiiboDocuments(
+    public static ArrayList<AmiiboFile> listAmiiboDocuments(Context context,
             KeyManager keyManager, DocumentFile rootFolder, boolean recursiveFiles) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
-        DocumentFile[] files = rootFolder.listFiles();
-        if (files.length == 0) return amiiboFiles;
-        for (DocumentFile file : files) {
-            if (file.isDirectory() && recursiveFiles) {
-                amiiboFiles.addAll(listAmiiboDocuments(keyManager, file, true));
-            } else if (null != file.getName()) {
-                if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
-                    try {
-                        byte[] data = TagUtils.getValidatedDocument(keyManager, file);
-                        if (null != data) {
-                            amiiboFiles.add(new AmiiboFile(file,
-                                    TagUtils.amiiboIdFromTag(data), data));
-                        }
-                    } catch (Exception e) {
-                        Debug.Log(e);
-                    }
+        ArrayList<Uri> uris = new AmiiboDocument(context)
+                .listFiles(rootFolder.getUri(), recursiveFiles);
+        if (uris.isEmpty()) return amiiboFiles;
+        for (Uri uri : uris) {
+            DocumentFile file = DocumentFile.fromSingleUri(context, uri);
+            if (null == file) continue;
+            try {
+                byte[] data = TagUtils.getValidatedDocument(keyManager, file);
+                if (null != data) {
+                    amiiboFiles.add(new AmiiboFile(file,
+                            TagUtils.amiiboIdFromTag(data), data));
                 }
+            } catch (Exception e) {
+                Debug.Log(e);
             }
         }
         return amiiboFiles;

@@ -116,7 +116,6 @@
     <string name="foomiibo_progress">Building %1$s&#8230;</string>
 
     <string name="wrote_file">File saved to %1$s</string>
-    <string name="logcat_failed">Logcat escaped! Try a Pokeball</string>
     <string name="nfc_tag">NFC tag</string>
     <string name="tag_detected">%1$s detected&#8230;</string>
     <string name="tag_scanning">%1$s scanning&#8230;</string>
@@ -329,7 +328,6 @@
     <string name="view_amiibo_details">Switch to amiibo&#8482; Details</string>
     <string name="flask_permissions">Required permission denied!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
-    <string name="flask_connected">Bluup Flask connected!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="custom_tab_back">Back to TagMo</string>
@@ -338,5 +336,6 @@
     <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
     <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
     <string name="flask_missing">Device cannot be located!</string>
+    <string name="location_disclosure">Se requiere la ubicación para el escaneo de Bluetooth LE. De acuerdo con la política de Google Play, TagMo debe notificarle que los datos de ubicación pueden recopilarse en segundo plano. TagMo no lee, almacena ni comparte datos de ubicación. Como tal, este aviso es estrictamente una formalidad.</string>
 
 </resources>

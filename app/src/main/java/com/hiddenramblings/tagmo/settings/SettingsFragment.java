@@ -511,14 +511,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void setAmiiboManager(AmiiboManager amiiboManager) {
-        if (null != getActivity()) {
+        try {
             Executors.newSingleThreadExecutor().execute(() ->
                     Glide.get(requireActivity()).clearDiskCache());
             requireActivity().runOnUiThread(() ->
                     Glide.get(requireActivity()).clearMemory());
             this.amiiboManager = amiiboManager;
             requireActivity().runOnUiThread(this::updateAmiiboStats);
-        }
+        } catch (IllegalStateException ignored) { }
     }
 
     void updateAmiiboStats() {

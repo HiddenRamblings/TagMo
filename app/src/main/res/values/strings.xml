@@ -237,6 +237,7 @@
     <string name="emulated_storage_root">Browse Emulated Storage</string>
     <string name="physical_storage_root">Browse Physical Storage</string>
     <string name="grant_file_permission">Grant "All Files" Permission</string>
+    <string name="force_document_storage">Force Document Storage</string>
 
     <string name="prepare_unlock">Once the N2 is scanned, it cannot be removed from the NFC field until the operation is complete.</string>
     <string name="progress_unlock">Press and hold the N2 button without disconnecting from NFC.</string>

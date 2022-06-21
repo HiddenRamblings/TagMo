@@ -1160,15 +1160,6 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onDocumentEnabled() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R ||  TagMo.isGooglePlay()) {
-            switchStorageType.setVisibility(View.GONE);
-        } else {
-            switchStorageType.setVisibility(View.VISIBLE);
-            switchStorageType.setOnClickListener(view -> {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                requestScopedStorage();
-            });
-        }
         if (isDocumentStorage()) {
             this.onStorageEnabled();
         } else {
@@ -1192,6 +1183,15 @@ public class BrowserActivity extends AppCompatActivity implements
                 } catch (ActivityNotFoundException ignored) { }
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !TagMo.isGooglePlay()) {
+                switchStorageType.setVisibility(View.VISIBLE);
+                switchStorageType.setOnClickListener(view -> {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    requestScopedStorage();
+                });
+            } else {
+                switchStorageType.setVisibility(View.GONE);
+            }
             if (keyManager.isKeyMissing()) {
                 verifyKeyFiles();
             } else {
@@ -1216,6 +1216,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else {
                 switchStorageRoot.setVisibility(View.GONE);
             }
+            switchStorageType.setVisibility(View.GONE);
             if (keyManager.isKeyMissing()) {
                 showFakeSnackbar(getString(R.string.locating_keys));
                 locateKeyFiles();

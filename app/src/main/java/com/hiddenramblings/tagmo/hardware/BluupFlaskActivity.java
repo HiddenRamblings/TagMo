@@ -415,7 +415,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         this.settings = new BrowserSettings().initialize();
 
         flaskDetails = findViewById(R.id.flask_details);
-        flaskDetails.setHasFixedSize(true);
+        // flaskDetails.setHasFixedSize(true);
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
             flaskDetails.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
         else
@@ -431,7 +431,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         writeSlotsLayout = findViewById(R.id.write_list_layout);
         sourceToggle = findViewById(R.id.switch_source_btn);
         amiiboFilesView = findViewById(R.id.amiibo_files_list);
-        amiiboFilesView.setHasFixedSize(true);
+        // amiiboFilesView.setHasFixedSize(true);
 
         settings = new BrowserSettings().initialize();
 
@@ -891,7 +891,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
-                    .listAmiiboDocuments(keyManager, rootFolder, recursiveFiles);
+                    .listAmiiboDocuments(this, keyManager, rootFolder, recursiveFiles);
             File foomiibo = new File(getFilesDir(), "Foomiibo");
             amiiboFiles.addAll(AmiiboManager
                     .listAmiibos(keyManager, foomiibo, true));

@@ -1080,7 +1080,7 @@ public class BankListActivity extends AppCompatActivity implements
     private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
-                    .listAmiiboDocuments(keyManager, rootFolder, recursiveFiles);
+                    .listAmiiboDocuments(this, keyManager, rootFolder, recursiveFiles);
             File foomiibo = new File(getFilesDir(), "Foomiibo");
             amiiboFiles.addAll(AmiiboManager
                     .listAmiibos(keyManager, foomiibo, true));

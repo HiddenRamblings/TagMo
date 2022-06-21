@@ -116,7 +116,6 @@
     <string name="foomiibo_progress">Building %1$s&#8230;</string>
 
     <string name="wrote_file">File saved to %1$s</string>
-    <string name="logcat_failed">Logcat escaped! Try a Pokeball</string>
     <string name="nfc_tag">NFC tag</string>
     <string name="tag_detected">%1$s detected&#8230;</string>
     <string name="tag_scanning">%1$s scanning&#8230;</string>
@@ -330,7 +329,6 @@
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
-    <string name="flask_connected">Bluup Flask connected!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="flask_permissions">Required permission denied!</string>
     <string name="pref_guides">가이드</string>
@@ -338,5 +336,6 @@
     <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
     <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
     <string name="flask_missing">Device cannot be located!</string>
+    <string name="location_disclosure">위치는 블루투스 르 스캔이 필요합니다. 구글 플레이 정책에 따라,태그모는 위치 데이터가 백그라운드에서 수집될 수 있음을 알려야 합니다. 태그모는 위치 데이터를 읽거나 저장하거나 공유하지 않습니다. 따라서,이 통지는 엄격하게 형식입니다.</string>
 
 </resources>

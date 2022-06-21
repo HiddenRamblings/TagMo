@@ -3,23 +3,28 @@ package com.hiddenramblings.tagmo.amiibo;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.DocumentsContract;
 
+import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Queue;
 
 @SuppressLint("NewApi")
 public class AmiiboDocument {
     private final ArrayList<Uri> files = new ArrayList<>();
+    private Resources resources;
     private final ContentResolver contentResolver;
 
     public AmiiboDocument(Context context) {
+        resources = context.getResources();
         contentResolver = context.getContentResolver();
     }
 
@@ -55,6 +60,7 @@ public class AmiiboDocument {
     private void listFiles(
             Uri rootUri, String documentId, Queue<String> queue,
             MutableInteger fileCount, boolean recursiveFiles) {
+        List<String> binFiles = Arrays.asList(resources.getStringArray(R.array.mimetype_bin));
         Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(rootUri, documentId);
 
         Cursor cursor = contentResolver.query(childrenUri, new String[] {
@@ -73,7 +79,7 @@ public class AmiiboDocument {
                 String childDocumentId = cursor.getString(2);
                 if (DocumentsContract.Document.MIME_TYPE_DIR.equals(mimeType) && recursiveFiles) {
                     queue.add(childDocumentId);
-                } else if (displayName.toLowerCase(Locale.ROOT).endsWith(".bin")) {
+                } else if (binFiles.contains(mimeType)) {
                     files.add(DocumentsContract.buildDocumentUriUsingTree(rootUri, childDocumentId));
                 }
             }

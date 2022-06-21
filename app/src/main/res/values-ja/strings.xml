@@ -116,7 +116,6 @@
     <string name="foomiibo_progress">Building %1$s&#8230;</string>
 
     <string name="wrote_file">File saved to %1$s</string>
-    <string name="logcat_failed">Logcat escaped! Try a Pokeball</string>
     <string name="nfc_tag">NFC tag</string>
     <string name="tag_detected">%1$s detected&#8230;</string>
     <string name="tag_scanning">%1$s scanning&#8230;</string>
@@ -331,12 +330,12 @@
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
-    <string name="flask_connected">Bluup Flask connected!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="pref_guides">ガイド</string>
     <string name="pref_donate">寄付</string>
     <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
     <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
     <string name="flask_missing">Device cannot be located!</string>
+    <string name="location_disclosure">Bluetooth LEスキャンには場所が必要です。 Google Playのポリシーに従って、TagMoは、バックグラウンドで位置データが収集される可能性があることを通知する必要があります。 TagMoは位置データの読み取り、保存、または共有を行いません。 したがって、この通知は厳密に形式的です。</string>
 
 </resources>

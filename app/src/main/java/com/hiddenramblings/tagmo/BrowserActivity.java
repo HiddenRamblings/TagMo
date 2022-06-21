@@ -423,12 +423,13 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        if (null == settingsFragment)
+        if (null == settingsFragment) {
             settingsFragment = new SettingsFragment();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences, settingsFragment)
-                .commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.preferences, settingsFragment)
+                    .commit();
+        }
 
         AppCompatImageView donate = findViewById(R.id.donate_button);
         if (TagMo.isGooglePlay()) {
@@ -658,8 +659,13 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void onRebuildDatabaseClicked() {
         showBrowserPage();
-        if (null == settingsFragment)
+        if (null == settingsFragment) {
             settingsFragment = new SettingsFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.preferences, settingsFragment)
+                    .commit();
+        }
         settingsFragment.rebuildAmiiboDatabase();
         this.recreate();
     }

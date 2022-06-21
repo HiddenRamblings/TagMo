@@ -311,13 +311,12 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         this.settings.addChangeListener(this);
 
-        if (null == settingsFragment) {
+        if (null == settingsFragment)
             settingsFragment = new SettingsFragment();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.preferences, settingsFragment)
-                    .commit();
-        }
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences, settingsFragment)
+                .commit();
 
         AppCompatImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
@@ -516,7 +515,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 if (Environment.isExternalStorageManager()) {
                     settings.setBrowserRootDocument(null);
                     settings.notifyChanges();
-                    switchStorageType.setVisibility(View.GONE);
                     this.onStorageEnabled();
                 } else if (isDocumentStorage()) {
                     this.onDocumentEnabled();
@@ -1185,6 +1183,7 @@ public class BrowserActivity extends AppCompatActivity implements
             });
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !TagMo.isGooglePlay()) {
                 switchStorageType.setVisibility(View.VISIBLE);
+                switchStorageType.setText(R.string.grant_file_permission);
                 switchStorageType.setOnClickListener(view -> {
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     requestScopedStorage();
@@ -1216,8 +1215,23 @@ public class BrowserActivity extends AppCompatActivity implements
             } else {
                 switchStorageRoot.setVisibility(View.GONE);
             }
-            switchStorageType.setVisibility(View.GONE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                switchStorageType.setVisibility(View.VISIBLE);
+                switchStorageType.setText(R.string.force_document_storage);
+                switchStorageType.setOnClickListener(view -> {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    try {
+                        onDocumentRequested();
+                    } catch (ActivityNotFoundException anfex) {
+                        new Toasty(this).Long(R.string.storage_unavailable);
+                        finish();
+                    }
+                });
+            } else {
+                switchStorageType.setVisibility(View.GONE);
+            }
             if (keyManager.isKeyMissing()) {
+                hideFakeSnackbar();
                 showFakeSnackbar(getString(R.string.locating_keys));
                 locateKeyFiles();
             } else {
@@ -2177,6 +2191,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else if (keyNameMatcher(file.getName())) {
                 try (FileInputStream inputStream = new FileInputStream(file)) {
                     this.keyManager.evaluateKey(inputStream);
+                    hideFakeSnackbar();
                 } catch (Exception e) {
                     Debug.Log(e);
                 }
@@ -2196,16 +2211,15 @@ public class BrowserActivity extends AppCompatActivity implements
                     this.keyManager.evaluateKey(new ByteArrayInputStream(
                             TagUtils.hexToByteArray(scanner.nextLine()
                                     .replace(" ", ""))));
+                    hideFakeSnackbar();
                     scanner.close();
                 } catch (IOException e) {
                     Debug.Log(e);
                 }
                 if (Thread.currentThread().isInterrupted()) return;
-                hideFakeSnackbar();
                 this.onRefresh();
             }));
         } else {
-            hideFakeSnackbar();
             this.onRefresh();
         }
     }
@@ -2218,6 +2232,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 for (File file : files) {
                     try (FileInputStream inputStream = new FileInputStream(file)) {
                         this.keyManager.evaluateKey(inputStream);
+                        hideFakeSnackbar();
                     } catch (Exception e) {
                         Debug.Log(e);
                     }
@@ -2256,7 +2271,6 @@ public class BrowserActivity extends AppCompatActivity implements
         if (Environment.isExternalStorageManager()) {
             settings.setBrowserRootDocument(null);
             settings.notifyChanges();
-            switchStorageType.setVisibility(View.GONE);
             this.onStorageEnabled();
         } else {
             this.onDocumentEnabled();

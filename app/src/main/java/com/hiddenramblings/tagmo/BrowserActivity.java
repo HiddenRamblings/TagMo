@@ -510,13 +510,16 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void requestStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (TagMo.isGooglePlay() || isDocumentStorage()) {
+            if (TagMo.isGooglePlay()) {
                 this.onDocumentEnabled();
             } else {
                 if (Environment.isExternalStorageManager()) {
-                    prefs.browserRootDocument().remove();
+                    settings.setBrowserRootDocument(null);
+                    settings.notifyChanges();
                     switchStorageType.setVisibility(View.GONE);
                     this.onStorageEnabled();
+                } else if (isDocumentStorage()) {
+                    this.onDocumentEnabled();
                 } else {
                     requestScopedStorage();
                 }
@@ -1162,7 +1165,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } else {
             switchStorageType.setVisibility(View.VISIBLE);
             switchStorageType.setOnClickListener(view -> {
-                prefs.browserRootDocument().remove();
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 requestScopedStorage();
             });
@@ -1182,6 +1184,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onStorageEnabled() {
         checkForUpdates();
         if (isDocumentStorage()) {
+            switchStorageRoot.setVisibility(View.VISIBLE);
             switchStorageRoot.setText(R.string.document_storage_root);
             switchStorageRoot.setOnClickListener(view -> {
                 try {
@@ -1197,6 +1200,7 @@ public class BrowserActivity extends AppCompatActivity implements
         } else {
             boolean internal = prefs.preferEmulated().get();
             if (Storage.getFile(internal).exists() && Storage.hasPhysicalStorage()) {
+                switchStorageRoot.setVisibility(View.VISIBLE);
                 switchStorageRoot.setText(internal
                         ? R.string.emulated_storage_root
                         : R.string.physical_storage_root);
@@ -1577,21 +1581,6 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.setBrowserRootDocument(treeUri);
             this.onStorageEnabled();
         }
-
-//            // Create a new file and write into it
-//            DocumentFile newFile = pickedDir.createFile(getResources().getStringArray(
-//                    R.array.mimetype_bin)[0], fileName + ".bin");
-//            if (null != newFile) {
-//                try (OutputStream outputStream = getContentResolver()
-//                        .openOutputStream(newFile.getUri())) {
-//                    outputStream.write(tagData);
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-
     });
 
     @Override
@@ -1599,10 +1588,16 @@ public class BrowserActivity extends AppCompatActivity implements
             BrowserSettings newBrowserSettings,
             BrowserSettings oldBrowserSettings) {
         if (newBrowserSettings == null || oldBrowserSettings == null) return;
-        boolean folderChanged = !BrowserSettings.equals(newBrowserSettings.getBrowserRootDocument(),
-                oldBrowserSettings.getBrowserRootDocument())
-                || !BrowserSettings.equals(newBrowserSettings.getBrowserRootFolder(),
-                oldBrowserSettings.getBrowserRootFolder());
+        boolean folderChanged = !BrowserSettings.equals(
+                newBrowserSettings.getBrowserRootFolder(),
+                oldBrowserSettings.getBrowserRootFolder()
+        );
+        try {
+            folderChanged = folderChanged || !BrowserSettings.equals(
+                    newBrowserSettings.getBrowserRootDocument(),
+                    oldBrowserSettings.getBrowserRootDocument()
+            );
+        } catch (Exception ignored) { }
         if (newBrowserSettings.isRecursiveEnabled() != oldBrowserSettings.isRecursiveEnabled()) {
             settings.getAmiiboFiles().clear();
             folderChanged = true;
@@ -1645,8 +1640,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         prefs.edit().browserRootFolder().put(Storage.getRelativePath(
                 newBrowserSettings.getBrowserRootFolder(), prefs.preferEmulated().get()))
-                .browserRootDocument().put(newBrowserSettings
-                        .getBrowserRootDocument().toString())
+                .browserRootDocument().put(null != newBrowserSettings.getBrowserRootDocument()
+                        ? newBrowserSettings.getBrowserRootDocument().toString() : null)
                 .query().put(newBrowserSettings.getQuery())
                 .sort().put(newBrowserSettings.getSort())
                 .filterGameSeries().put(newBrowserSettings.getGameSeriesFilter())
@@ -1729,14 +1724,14 @@ public class BrowserActivity extends AppCompatActivity implements
 
     void onRootFolderChanged(boolean indicator) {
         if (null != this.settings) {
-            try {
+            if (isDocumentStorage()) {
                 DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
                         this.settings.getBrowserRootDocument());
                 if (!keyManager.isKeyMissing()) {
                     if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
                     loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
                 }
-            } catch (IllegalArgumentException iae) {
+            } else {
                 File rootFolder = this.settings.getBrowserRootFolder();
                 if (!keyManager.isKeyMissing()) {
                     if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
@@ -2258,7 +2253,8 @@ public class BrowserActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (Environment.isExternalStorageManager()) {
-            prefs.browserRootDocument().remove();
+            settings.setBrowserRootDocument(null);
+            settings.notifyChanges();
             switchStorageType.setVisibility(View.GONE);
             this.onStorageEnabled();
         } else {

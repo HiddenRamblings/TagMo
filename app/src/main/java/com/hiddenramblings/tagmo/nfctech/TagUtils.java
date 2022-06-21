@@ -345,4 +345,18 @@ public class TagUtils {
         }
         return binFile.getAbsolutePath();
     }
+
+    //            // Create a new file and write into it
+//            DocumentFile newFile = pickedDir.createFile(getResources().getStringArray(
+//                    R.array.mimetype_bin)[0], fileName + ".bin");
+//            if (null != newFile) {
+//                try (OutputStream outputStream = getContentResolver()
+//                        .openOutputStream(newFile.getUri())) {
+//                    outputStream.write(tagData);
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
 }

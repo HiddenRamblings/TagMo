@@ -116,7 +116,6 @@
     <string name="foomiibo_progress">%1$s 创建中&#8230;</string>
 
     <string name="wrote_file">文件保存至 %1$s</string>
-    <string name="logcat_failed">Logcat escaped! Try a Pokeball</string>
     <string name="nfc_tag">NFC tag</string>
     <string name="tag_detected">检测到 %1$s&#8230;</string>
     <string name="tag_scanning">扫描到 %1$s&#8230;</string>
@@ -330,7 +329,6 @@
     <string name="view_amiibo_details">Switch to amiibo&#8482; Details</string>
     <string name="flask_permissions">Required permission denied!</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
-    <string name="flask_connected">Bluup Flask connected!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="custom_tab_back">Back to TagMo</string>

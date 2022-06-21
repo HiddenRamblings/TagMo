@@ -308,8 +308,9 @@ public class AmiiboManager {
         return amiiboFiles;
     }
 
-    public static ArrayList<AmiiboFile> listAmiiboDocuments(Context context,
-            KeyManager keyManager, DocumentFile rootFolder, boolean recursiveFiles) {
+    public static ArrayList<AmiiboFile> listAmiiboDocuments(
+            Context context, KeyManager keyManager,
+            DocumentFile rootFolder, boolean recursiveFiles) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
         ArrayList<Uri> uris = new AmiiboDocument(context)
                 .listFiles(rootFolder.getUri(), recursiveFiles);
@@ -320,8 +321,7 @@ public class AmiiboManager {
             try {
                 byte[] data = TagUtils.getValidatedDocument(keyManager, file);
                 if (null != data) {
-                    amiiboFiles.add(new AmiiboFile(file,
-                            TagUtils.amiiboIdFromTag(data), data));
+                    amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data), data));
                 }
             } catch (Exception e) {
                 Debug.Log(e);

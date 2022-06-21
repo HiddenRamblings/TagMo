@@ -97,7 +97,6 @@ import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
 import com.hiddenramblings.tagmo.adapter.BrowserFoldersAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.amiibo.AmiiboDocument;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
@@ -167,6 +166,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private TextView currentFolderView;
     private DrawerLayout prefsDrawer;
     private AppCompatButton switchStorageRoot;
+    private AppCompatButton switchStorageType;
 
     private MenuItem menuSortId;
     private MenuItem menuSortName;
@@ -230,6 +230,7 @@ public class BrowserActivity extends AppCompatActivity implements
         currentFolderView = findViewById(R.id.current_folder);
         prefsDrawer = findViewById(R.id.drawer_layout);
         switchStorageRoot = findViewById(R.id.switch_storage_root);
+        switchStorageType = findViewById(R.id.switch_storage_type);
         amiiboContainer = findViewById(R.id.amiiboContainer);
         toolbar = findViewById(R.id.toolbar);
         amiiboInfo = findViewById(R.id.amiiboInfo);
@@ -309,6 +310,14 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onFilterAmiiboTypeChanged();
         }
         this.settings.addChangeListener(this);
+
+        if (null == settingsFragment) {
+            settingsFragment = new SettingsFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.preferences, settingsFragment)
+                    .commit();
+        }
 
         AppCompatImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
@@ -424,14 +433,6 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        if (null == settingsFragment) {
-            settingsFragment = new SettingsFragment();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.preferences, settingsFragment)
-                    .commit();
-        }
-
         AppCompatImageView donate = findViewById(R.id.donate_button);
         if (TagMo.isGooglePlay()) {
             retrieveDonationMenu();
@@ -509,11 +510,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void requestStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (TagMo.isGooglePlay()) {
+            if (TagMo.isGooglePlay() || isDocumentStorage()) {
                 this.onDocumentEnabled();
             } else {
                 if (Environment.isExternalStorageManager()) {
                     prefs.browserRootDocument().remove();
+                    switchStorageType.setVisibility(View.GONE);
                     this.onStorageEnabled();
                 } else {
                     requestScopedStorage();
@@ -660,13 +662,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void onRebuildDatabaseClicked() {
         showBrowserPage();
-        if (null == settingsFragment) {
-            settingsFragment = new SettingsFragment();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.preferences, settingsFragment)
-                    .commit();
-        }
         settingsFragment.rebuildAmiiboDatabase();
         this.recreate();
     }
@@ -1162,6 +1157,16 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onDocumentEnabled() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R ||  TagMo.isGooglePlay()) {
+            switchStorageType.setVisibility(View.GONE);
+        } else {
+            switchStorageType.setVisibility(View.VISIBLE);
+            switchStorageType.setOnClickListener(view -> {
+                prefs.browserRootDocument().remove();
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                requestScopedStorage();
+            });
+        }
         if (isDocumentStorage()) {
             this.onStorageEnabled();
         } else {
@@ -2254,6 +2259,7 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (Environment.isExternalStorageManager()) {
             prefs.browserRootDocument().remove();
+            switchStorageType.setVisibility(View.GONE);
             this.onStorageEnabled();
         } else {
             this.onDocumentEnabled();

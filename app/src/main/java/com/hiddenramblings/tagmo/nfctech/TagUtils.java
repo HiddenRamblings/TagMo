@@ -56,6 +56,7 @@ package com.hiddenramblings.tagmo.nfctech;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
@@ -324,6 +325,11 @@ public class TagUtils {
 
     public static byte[] getValidatedFile(KeyManager keyManager, File file) throws Exception {
         return getValidatedData(keyManager, TagReader.readTagFile(file));
+    }
+
+    public static byte[] getValidatedDocument(
+            KeyManager keyManager, Uri fileUri) throws Exception {
+        return getValidatedData(keyManager, TagReader.readTagDocument(fileUri));
     }
 
     public static byte[] getValidatedDocument(

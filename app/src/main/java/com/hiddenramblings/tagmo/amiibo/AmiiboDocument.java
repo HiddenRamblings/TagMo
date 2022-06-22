@@ -20,7 +20,7 @@ import java.util.Queue;
 @SuppressLint("NewApi")
 public class AmiiboDocument {
     private final ArrayList<Uri> files = new ArrayList<>();
-    private Resources resources;
+    private final Resources resources;
     private final ContentResolver contentResolver;
 
     public AmiiboDocument(Context context) {
@@ -89,11 +89,11 @@ public class AmiiboDocument {
     }
 
     public void closeQuietly(AutoCloseable closeable) {
-        if (closeable != null) {
+        if (null != closeable) {
             try {
                 closeable.close();
-            } catch (RuntimeException rethrown) {
-                throw rethrown;
+            } catch (RuntimeException runtime) {
+                throw runtime;
             } catch (Exception ignored) { }
         }
     }
@@ -105,16 +105,16 @@ public class AmiiboDocument {
             this.value = value;
         }
 
+        public int get() {
+            return value;
+        }
+
         public void set(int value) {
             this.value = value;
         }
 
         public void increment() {
             this.value++;
-        }
-
-        public int intValue() {
-            return value;
         }
     }
 }

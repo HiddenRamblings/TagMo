@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 public class AmiiboManager {
 
@@ -316,12 +317,13 @@ public class AmiiboManager {
                 .listFiles(rootFolder.getUri(), recursiveFiles);
         if (uris.isEmpty()) return amiiboFiles;
         for (Uri uri : uris) {
-            DocumentFile file = DocumentFile.fromSingleUri(context, uri);
-            if (null == file) continue;
             try {
-                byte[] data = TagUtils.getValidatedDocument(keyManager, file);
+                byte[] data = TagUtils.getValidatedDocument(keyManager, uri);
                 if (null != data) {
-                    amiiboFiles.add(new AmiiboFile(file, TagUtils.amiiboIdFromTag(data), data));
+                    amiiboFiles.add(new AmiiboFile(
+                            DocumentFile.fromSingleUri(context, uri),
+                            TagUtils.amiiboIdFromTag(data), data
+                    ));
                 }
             } catch (Exception e) {
                 Debug.Log(e);

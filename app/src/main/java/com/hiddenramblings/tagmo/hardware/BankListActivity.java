@@ -671,18 +671,22 @@ public class BankListActivity extends AppCompatActivity implements
         Dialog backupDialog = dialog.setView(view).create();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                String fileName = TagUtils.writeBytesToFile(
-                        Storage.getDownloadDir("TagMo", "Backups"),
-                        input.getText().toString(), tagData);
-                new Toasty(this).Long(getString(R.string.wrote_file, fileName));
-                try {
+                String fileName;
+                if (isDocumentStorage()) {
                     DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
                             this.settings.getBrowserRootDocument());
+                    if (null == rootDocument) throw new NullPointerException();
+                    fileName = TagUtils.writeBytesToDocument(this, rootDocument,
+                            input.getText().toString() + ".bin", tagData);
                     this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
-                } catch (IllegalArgumentException iae) {
+                } else {
+                    fileName = TagUtils.writeBytesToFile(
+                            Storage.getDownloadDir("TagMo", "Backups"),
+                            input.getText().toString(), tagData);
                     this.loadAmiiboFiles(settings.getBrowserRootFolder(),
                             settings.isRecursiveEnabled());
                 }
+                new Toasty(this).Long(getString(R.string.wrote_file, fileName));
             } catch (IOException e) {
                 new Toasty(this).Short(e.getMessage());
             }
@@ -959,6 +963,18 @@ public class BankListActivity extends AppCompatActivity implements
         else
             mWindowManager.getDefaultDisplay().getMetrics(metrics);
         return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
+    }
+
+    private boolean isDocumentStorage() {
+        if (null != this.settings.getBrowserRootDocument()) {
+            try {
+                DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
+                return true;
+            } catch (IllegalArgumentException iae) {
+                return false;
+            }
+        }
+        return false;
     }
 
     public int getValueForPosition(NumberPicker picker, int value) {

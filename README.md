@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=com.hiddenramblings.tagmo.eightbit"><img src="https://github.com/HiddenRamblings/TagMo/raw/master/assets/google-play-badge.png" /></a>
+</p>
+
 # What is TagMo?
 
 TagMo is an Android app for cloning amiibo™ to NTAG215 NFC tags  

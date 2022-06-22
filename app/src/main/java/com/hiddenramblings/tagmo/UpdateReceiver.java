@@ -8,7 +8,6 @@ import android.os.Build;
 import android.widget.Toast;
 
 import java.net.URISyntaxException;
-import java.util.Objects;
 
 public class UpdateReceiver extends BroadcastReceiver {
 

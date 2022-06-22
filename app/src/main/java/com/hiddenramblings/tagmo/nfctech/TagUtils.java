@@ -334,9 +334,7 @@ public class TagUtils {
     public static String writeBytesToFile(File destination, String name, byte[] tagData)
             throws IOException {
         File binFile = new File(destination, name);
-        try (FileOutputStream fos = new FileOutputStream(binFile)) {
-            fos.write(tagData);
-        }
+        new FileOutputStream(binFile).write(tagData);
         try {
             MediaScannerConnection.scanFile(TagMo.getContext(),
                     new String[] { binFile.getAbsolutePath() }, null, null);
@@ -346,17 +344,14 @@ public class TagUtils {
         return binFile.getAbsolutePath();
     }
 
-    //            // Create a new file and write into it
-//            DocumentFile newFile = pickedDir.createFile(getResources().getStringArray(
-//                    R.array.mimetype_bin)[0], fileName + ".bin");
-//            if (null != newFile) {
-//                try (OutputStream outputStream = getContentResolver()
-//                        .openOutputStream(newFile.getUri())) {
-//                    outputStream.write(tagData);
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+    public static String writeBytesToDocument(
+            Context context, DocumentFile destination, String name, byte[] tagData
+    ) throws IOException {
+        DocumentFile newFile = destination.createFile(context.getResources()
+                .getStringArray(R.array.mimetype_bin)[0], name + ".bin");
+        if (null != newFile) {
+            context.getContentResolver().openOutputStream(newFile.getUri()).write(tagData);
+        }
+        return null != newFile ? newFile.getName() : null;
+    }
 }

@@ -586,14 +586,23 @@ public class BrowserActivity extends AppCompatActivity implements
         Dialog backupDialog = dialog.setView(view).create();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                String fileName = TagUtils.writeBytesToFile(
-                        Storage.getDownloadDir("TagMo", "Backups"),
-                        input.getText().toString() + ".bin", tagData);
+                String fileName;
+                if (isDocumentStorage()) {
+                    DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
+                            this.settings.getBrowserRootDocument());
+                    if (null == rootDocument) throw new NullPointerException();
+                    fileName = TagUtils.writeBytesToDocument(this, rootDocument,
+                            input.getText().toString() + ".bin", tagData);
+                } else {
+                    fileName = TagUtils.writeBytesToFile(
+                            Storage.getDownloadDir("TagMo", "Backups"),
+                            input.getText().toString() + ".bin", tagData);
+                }
                 new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                         getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
                 ).show();
                 this.onRootFolderChanged(false);
-            } catch (IOException e) {
+            } catch (IOException | NullPointerException e) {
                 new Toasty(this).Short(e.getMessage());
             }
             backupDialog.dismiss();
@@ -1071,9 +1080,18 @@ public class BrowserActivity extends AppCompatActivity implements
                 Dialog backupDialog = dialog.setView(view).create();
                 view.findViewById(R.id.save_backup).setOnClickListener(v -> {
                     try {
-                        String fileName = TagUtils.writeBytesToFile(
-                                Storage.getDownloadDir("TagMo", "Backups"),
-                                input.getText().toString(), tagData);
+                        String fileName;
+                        if (isDocumentStorage()) {
+                            DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
+                                    this.settings.getBrowserRootDocument());
+                            if (null == rootDocument) throw new NullPointerException();
+                            fileName = TagUtils.writeBytesToDocument(this, rootDocument,
+                                    input.getText().toString() + ".bin", tagData);
+                        } else {
+                            fileName = TagUtils.writeBytesToFile(
+                                    Storage.getDownloadDir("TagMo", "Backups"),
+                                    input.getText().toString(), tagData);
+                        }
                         new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                                 getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
                         ).show();

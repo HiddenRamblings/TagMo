@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -106,12 +105,11 @@ public class FoomiiboFragment extends Fragment implements
 
         amiibosView = view.findViewById(R.id.amiibos_list);
         amiibosView.setHasFixedSize(true);
-        ArrayList<Long> missingIds = activity.getMissingIds();
         amiibosView.setLayoutManager(settings.getAmiiboView()
                 == BrowserSettings.VIEW.IMAGE.getValue()
                 ? new GridLayoutManager(activity, activity.getColumnCount())
                 : new LinearLayoutManager(activity));
-        amiibosView.setAdapter(new FoomiiboAdapter(settings, missingIds, this));
+        amiibosView.setAdapter(new FoomiiboAdapter(settings, this));
         this.settings.addChangeListener((BrowserSettings.BrowserSettingsListener) amiibosView.getAdapter());
     }
 
@@ -141,14 +139,17 @@ public class FoomiiboFragment extends Fragment implements
     }
 
     void clearFoomiiboSet() {
+        ((BrowserActivity) requireActivity()).hideBottomSheet();
         ProgressDialog dialog = ProgressDialog.show(requireActivity(),
                 "", "", true);
         Handler handler = new Handler(Looper.getMainLooper());
         Executors.newSingleThreadExecutor().execute(() -> {
             deleteDir(handler, dialog, directory);
 
-            handler.post(dialog::dismiss);
-            onRefresh();
+            handler.post(() -> {
+                dialog.dismiss();
+                onRefresh();
+            });
         });
     }
 
@@ -194,13 +195,14 @@ public class FoomiiboFragment extends Fragment implements
             new AlertDialog.Builder(requireContext())
                     .setMessage(getString(R.string.warn_delete_file, amiiboFile.getName()))
                     .setPositiveButton(R.string.delete, (dialog, which) -> {
-                        if (!amiiboFile.delete())
-                            new Toasty(requireActivity()).Short(R.string.delete_virtual);
-                        else
+                        if (amiiboFile.delete()) {
                             new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
                                     getString(R.string.delete_foomiibo, amiibo.name),
                                     Snackbar.LENGTH_SHORT
                             ).show();
+                        } else {
+                            new Toasty(requireActivity()).Short(R.string.delete_virtual);
+                        }
                         dialog.dismiss();
                     })
                     .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
@@ -212,6 +214,7 @@ public class FoomiiboFragment extends Fragment implements
     void buildFoomiiboSet() {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         if (null == amiiboManager) return;
+        ((BrowserActivity) requireActivity()).hideBottomSheet();
         ProgressDialog dialog = ProgressDialog.show(requireActivity(),
                 "", "", true);
         Handler handler = new Handler(Looper.getMainLooper());
@@ -227,30 +230,23 @@ public class FoomiiboFragment extends Fragment implements
                         R.string.foomiibo_progress, amiibo.getCharacter().name)));
             }
 
-            handler.post(dialog::dismiss);
-            onRefresh();
+            handler.post(() -> {
+                dialog.dismiss();
+                onRefresh();
+            });
         });
+    }
+
+    @Override
+    public void onRefresh() {
+        ((BrowserActivity) requireActivity()).onRefresh(false);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         this.onRefresh();
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    @Override
-    public void onRefresh() {
-        BrowserActivity activity = (BrowserActivity) requireActivity();
-        activity.onRootFolderChanged(false);
-        ArrayList<Long> missingIds = ((BrowserActivity) requireActivity()).getMissingIds();
-        activity.runOnUiThread(() -> {
-            if (null != amiibosView.getAdapter()) {
-                ((FoomiiboAdapter) amiibosView.getAdapter()).setMissingIds(missingIds);
-                amiibosView.getAdapter().notifyDataSetChanged();
-            }
-            swipeRefreshLayout.setRefreshing(false);
-        });
     }
 
     void getToolbarOptions(Toolbar toolbar, byte[] tagData) {

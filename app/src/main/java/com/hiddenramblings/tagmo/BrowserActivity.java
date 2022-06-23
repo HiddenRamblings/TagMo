@@ -1149,9 +1149,9 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    public void onRefresh() {
+    public void onRefresh(boolean indicator) {
         this.loadAmiiboManager();
-        this.onRootFolderChanged(true);
+        this.onRootFolderChanged(indicator);
     }
 
     private boolean isDocumentStorage() {
@@ -1212,7 +1212,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (keyManager.isKeyMissing()) {
                 verifyKeyFiles();
             } else {
-                this.onRefresh();
+                this.onRefresh(true);
             }
         } else {
             boolean internal = prefs.preferEmulated().get();
@@ -1253,7 +1253,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 showFakeSnackbar(getString(R.string.locating_keys));
                 locateKeyFiles();
             } else {
-                this.onRefresh();
+                this.onRefresh(true);
             }
         }
     }
@@ -1585,6 +1585,9 @@ public class BrowserActivity extends AppCompatActivity implements
                     .listAmiiboDocuments(this, keyManager, rootFolder, recursiveFiles);
             File foomiibo = new File(getFilesDir(), "Foomiibo");
             amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, foomiibo, true));
+
+            if (Thread.currentThread().isInterrupted()) return;
+
             this.runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
@@ -1754,22 +1757,20 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     void onRootFolderChanged(boolean indicator) {
-        if (null != this.settings) {
-            if (isDocumentStorage()) {
-                DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
-                        this.settings.getBrowserRootDocument());
-                if (!keyManager.isKeyMissing()) {
-                    if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
-                    loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
-                }
-            } else {
-                File rootFolder = this.settings.getBrowserRootFolder();
-                if (!keyManager.isKeyMissing()) {
-                    if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
-                    this.loadAmiiboFiles(rootFolder, this.settings.isRecursiveEnabled());
-                }
-                this.loadFolders(rootFolder);
+        if (isDocumentStorage()) {
+            DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
+                    this.settings.getBrowserRootDocument());
+            if (!keyManager.isKeyMissing()) {
+                if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
+                this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
             }
+        } else {
+            File rootFolder = this.settings.getBrowserRootFolder();
+            if (!keyManager.isKeyMissing()) {
+                if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
+                this.loadAmiiboFiles(rootFolder, this.settings.isRecursiveEnabled());
+            }
+            this.loadFolders(rootFolder);
         }
     }
 
@@ -2164,6 +2165,10 @@ public class BrowserActivity extends AppCompatActivity implements
         mainLayout.setCurrentItem(0, true);
     }
 
+    void hideBottomSheet() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
     public void closePrefsDrawer() {
         if (prefsDrawer.isDrawerOpen(GravityCompat.START))
             prefsDrawer.closeDrawer(GravityCompat.START);
@@ -2171,23 +2176,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
     BrowserSettings getSettings() {
         return this.settings;
-    }
-
-    ArrayList<Long> getMissingIds() {
-        ArrayList<Long> missingIds = new ArrayList<>();
-        AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (null != amiiboManager) {
-            HashSet<Long> amiiboIds = new HashSet<>();
-            for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-                amiiboIds.add(amiiboFile.getId());
-            }
-            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                if (!amiiboIds.contains(amiibo.id)) {
-                    missingIds.add(amiibo.id);
-                }
-            }
-        }
-        return missingIds;
     }
 
     private boolean keyNameMatcher(String name) {
@@ -2233,10 +2221,10 @@ public class BrowserActivity extends AppCompatActivity implements
                     Debug.Log(e);
                 }
                 if (Thread.currentThread().isInterrupted()) return;
-                this.onRefresh();
+                this.onRefresh(true);
             }));
         } else {
-            this.onRefresh();
+            this.onRefresh(true);
         }
     }
 
@@ -2323,7 +2311,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private final ActivityResultLauncher<Intent> onTagLaunchActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (settings.getAmiiboFiles().isEmpty()) this.onRefresh();
+        if (settings.getAmiiboFiles().isEmpty()) this.onRefresh(true);
     });
 
     @RequiresApi(api = Build.VERSION_CODES.O)

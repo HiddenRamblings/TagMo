@@ -297,7 +297,7 @@ public class BankListActivity extends AppCompatActivity implements
         });
         this.settings.addChangeListener(writeFileAdapter);
 
-        writeDataAdapter = new FoomiiboAdapter(settings, null,
+        writeDataAdapter = new FoomiiboAdapter(settings,
                 new FoomiiboAdapter.OnFoomiiboClickListener() {
             @Override
             public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
@@ -642,7 +642,7 @@ public class BankListActivity extends AppCompatActivity implements
                 handleImageClicked(amiiboFile);
             }
         });
-        writeDataAdapter = new FoomiiboAdapter(settings, null,
+        writeDataAdapter = new FoomiiboAdapter(settings,
                 new FoomiiboAdapter.OnFoomiiboClickListener() {
             @Override
             public void onFoomiiboClicked(View itemView, Amiibo amiibo) {

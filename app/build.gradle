@@ -7,8 +7,8 @@ android {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
         targetSdkVersion 31
-        versionCode 20
-        versionName "2.8.7"
+        versionCode 21
+        versionName "2.8.8"
 
         javaCompileOptions {
             annotationProcessorOptions {

@@ -67,6 +67,10 @@ public class FoomiiboAdapter
         this.amiiboList.clear();
     }
 
+    public static void resetVisible() {
+        foomiiboId.clear();
+    }
+
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,
                                          BrowserSettings oldBrowserSettings) {

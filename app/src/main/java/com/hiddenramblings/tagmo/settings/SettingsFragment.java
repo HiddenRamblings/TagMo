@@ -400,7 +400,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
             if (Thread.currentThread().isInterrupted()) return;
 
-            ((BrowserActivity) requireActivity()).onRefresh();
+            ((BrowserActivity) requireActivity()).onRefresh(true);
             updateKeySummary();
         });
     }

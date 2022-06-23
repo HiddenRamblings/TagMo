@@ -21,6 +21,7 @@ import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -30,6 +31,7 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 public class FoomiiboAdapter
         extends RecyclerView.Adapter<FoomiiboAdapter.FoomiiboViewHolder>
@@ -42,14 +44,11 @@ public class FoomiiboAdapter
     private ArrayList<Amiibo> filteredData;
     private FoomiiboFilter filter;
     boolean firstRun = true;
-    private ArrayList<Long> missingIds;
     private static final ArrayList<Long> foomiiboId = new ArrayList<>();
     private final ArrayList<Amiibo> amiiboList = new ArrayList<>();
 
-    public FoomiiboAdapter(BrowserSettings settings, ArrayList<Long> missingIds,
-                           OnFoomiiboClickListener listener) {
+    public FoomiiboAdapter(BrowserSettings settings, OnFoomiiboClickListener listener) {
         this.settings = settings;
-        this.missingIds = missingIds;
         this.listener = listener;
 
         this.filteredData = this.data;
@@ -62,10 +61,6 @@ public class FoomiiboAdapter
 
         this.filteredData = this.data;
         this.setHasStableIds(true);
-    }
-
-    public void setMissingIds(ArrayList<Long> missingIds) {
-        this.missingIds = missingIds;
     }
 
     public void resetSelections() {
@@ -90,6 +85,10 @@ public class FoomiiboAdapter
                 !BrowserSettings.equals(newBrowserSettings.getAmiiboTypeFilter(),
                         oldBrowserSettings.getAmiiboTypeFilter());
 
+        if (!BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
+                oldBrowserSettings.getAmiiboFiles())) {
+            refresh = true;
+        }
         if (!BrowserSettings.equals(newBrowserSettings.getAmiiboManager(),
                 oldBrowserSettings.getAmiiboManager())) {
             refresh = true;
@@ -233,18 +232,28 @@ public class FoomiiboAdapter
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             if (null != filteredData && filteredData == filterResults.values) return;
             filteredData = (ArrayList<Amiibo>) filterResults.values;
+
             if (null != filteredData && !filteredData.isEmpty())
                 Collections.sort(filteredData, new AmiiboComparator(settings));
-            if (null != missingIds && !missingIds.isEmpty()) {
-                ArrayList<Amiibo> missingFiles = new ArrayList<>();
-                for (Amiibo amiibo : filteredData) {
-                    if (missingIds.contains(amiibo.id)) {
+
+            ArrayList<Amiibo> missingFiles = new ArrayList<>();
+            if (null != settings.getAmiiboManager()) {
+                HashSet<Long> amiiboIds = new HashSet<>();
+                for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
+                    amiiboIds.add(amiiboFile.getId());
+                }
+                for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+                    if (!amiiboIds.contains(amiibo.id)) {
                         missingFiles.add(amiibo);
                     }
                 }
+                if (!missingFiles.isEmpty())
+                    Collections.sort(missingFiles, new AmiiboComparator(settings));
+
                 filteredData.removeAll(missingFiles);
                 filteredData.addAll(0, missingFiles);
             }
+
             notifyDataSetChanged();
         }
     }

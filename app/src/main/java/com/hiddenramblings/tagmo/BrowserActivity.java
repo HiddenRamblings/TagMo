@@ -96,6 +96,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
 import com.hiddenramblings.tagmo.adapter.BrowserFoldersAdapter;
+import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -268,6 +269,7 @@ public class BrowserActivity extends AppCompatActivity implements
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+                if (position != 1) FoomiiboAdapter.resetVisible();
                 switch (position) {
                     case 0:
                         setTitle(R.string.tagmo_browser);

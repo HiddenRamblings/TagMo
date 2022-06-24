@@ -17,8 +17,8 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import java.io.File;
 import java.util.ArrayList;
 
-public class BrowserFoldersAdapter
-        extends RecyclerView.Adapter<BrowserFoldersAdapter.FolderViewHolder>
+public class FoldersAdapter
+        extends RecyclerView.Adapter<FoldersAdapter.FolderViewHolder>
         implements BrowserSettings.BrowserSettingsListener {
     static final int PARENT_FOLDER_VIEW_TYPE = 0;
     static final int CHILD_FOLDER_VIEW_TYPE = 1;
@@ -29,7 +29,7 @@ public class BrowserFoldersAdapter
     boolean showUpFolder = false;
     boolean firstRun = true;
 
-    public BrowserFoldersAdapter(BrowserSettings settings) {
+    public FoldersAdapter(BrowserSettings settings) {
         this.settings = settings;
     }
 

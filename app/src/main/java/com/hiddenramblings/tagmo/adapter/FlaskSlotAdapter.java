@@ -26,15 +26,15 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 
 import java.util.ArrayList;
 
-public class BluupFlaskAdapter
-        extends RecyclerView.Adapter<BluupFlaskAdapter.FlaskViewHolder>
+public class FlaskSlotAdapter
+        extends RecyclerView.Adapter<FlaskSlotAdapter.FlaskViewHolder>
         implements BrowserSettingsListener {
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
     private ArrayList<Amiibo> flaskAmiibo = new ArrayList<>();
 
-    public BluupFlaskAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
+    public FlaskSlotAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
     }

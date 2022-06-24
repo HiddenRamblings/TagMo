@@ -23,11 +23,11 @@ import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class SettingsAmiiboAdapter extends BaseAdapter {
+public class AmiiboAPIAdapter extends BaseAdapter {
 
     ArrayList<Amiibo> items;
 
-    public SettingsAmiiboAdapter(ArrayList<Amiibo> items) {
+    public AmiiboAPIAdapter(ArrayList<Amiibo> items) {
         this.items = items;
         Collections.sort(items);
     }

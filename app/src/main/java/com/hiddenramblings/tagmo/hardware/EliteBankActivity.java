@@ -46,9 +46,9 @@ import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagDataActivity;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.adapter.BankBrowserAdapter;
+import com.hiddenramblings.tagmo.adapter.EliteBankAdapter;
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
-import com.hiddenramblings.tagmo.adapter.WriteAmiiboAdapter;
+import com.hiddenramblings.tagmo.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -72,8 +72,8 @@ import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
 
-public class BankListActivity extends AppCompatActivity implements
-        BankBrowserAdapter.OnAmiiboClickListener {
+public class EliteBankActivity extends AppCompatActivity implements
+        EliteBankAdapter.OnAmiiboClickListener {
 
     private final Preferences_ prefs = TagMo.getPrefs();
 
@@ -82,7 +82,7 @@ public class BankListActivity extends AppCompatActivity implements
     private LinearLayout bankOptionsMenu;
     private AppCompatToggleButton switchMenuOptions;
     private LinearLayout writeBankLayout;
-    private BankBrowserAdapter bankAdapter;
+    private EliteBankAdapter bankAdapter;
     private RecyclerView amiiboFilesView;
 
     private CardView amiiboTile;
@@ -100,7 +100,7 @@ public class BankListActivity extends AppCompatActivity implements
     private KeyManager keyManager;
 
     private final ArrayList<Amiibo> amiibos = new ArrayList<>();
-    private WriteAmiiboAdapter writeFileAdapter;
+    private WriteTagAdapter writeFileAdapter;
     private FoomiiboAdapter writeDataAdapter;
 
     private int clickedPosition;
@@ -252,7 +252,7 @@ public class BankListActivity extends AppCompatActivity implements
             amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
         else
             amiibosView.setLayoutManager(new LinearLayoutManager(this));
-        bankAdapter = new BankBrowserAdapter(settings, this);
+        bankAdapter = new EliteBankAdapter(settings, this);
         amiibosView.setAdapter(bankAdapter);
         this.settings.addChangeListener(bankAdapter);
         updateEliteHardwareAdapter(getIntent().getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
@@ -279,8 +279,8 @@ public class BankListActivity extends AppCompatActivity implements
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
 
-        writeFileAdapter = new WriteAmiiboAdapter(settings,
-                new WriteAmiiboAdapter.OnAmiiboClickListener() {
+        writeFileAdapter = new WriteTagAdapter(settings,
+                new WriteTagAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 if (null != amiiboFile) {
@@ -629,7 +629,7 @@ public class BankListActivity extends AppCompatActivity implements
 
     private void displayWriteDialog(int position) {
         onBottomSheetChanged(false, false);
-        writeFileAdapter.setListener(new WriteAmiiboAdapter.OnAmiiboClickListener() {
+        writeFileAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 if (null != amiiboFile) {
@@ -990,7 +990,7 @@ public class BankListActivity extends AppCompatActivity implements
                 amiiboFilesView.setAdapter(writeDataAdapter);
                 break;
             case LIST:
-                WriteAmiiboAdapter writeListAdapter = new WriteAmiiboAdapter(
+                WriteTagAdapter writeListAdapter = new WriteTagAdapter(
                         settings, this::writeAmiiboCollection);
                 writeListAdapter.resetSelections();
                 this.settings.addChangeListener(writeListAdapter);

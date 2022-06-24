@@ -27,15 +27,15 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
 
-public class BankBrowserAdapter
-        extends RecyclerView.Adapter<BankBrowserAdapter.AmiiboViewHolder>
+public class EliteBankAdapter
+        extends RecyclerView.Adapter<EliteBankAdapter.AmiiboViewHolder>
         implements BrowserSettingsListener {
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
     private ArrayList<Amiibo> amiibos = new ArrayList<>();
 
-    public BankBrowserAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
+    public EliteBankAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         // setHasStableIds(true);
         this.settings = settings;
         this.listener = listener;

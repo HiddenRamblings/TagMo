@@ -100,9 +100,9 @@ import java.util.UUID;
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
-public class BluetoothLeService extends Service {
+public class FlaskBLEService extends Service {
 
-    private final Class<?> TAG = BluetoothLeService.class;
+    private final Class<?> TAG = FlaskBLEService.class;
 
     private BluetoothGattListener listener;
 
@@ -315,8 +315,8 @@ public class BluetoothLeService extends Service {
     };
 
     public class LocalBinder extends Binder {
-        BluetoothLeService getService() {
-            return BluetoothLeService.this;
+        FlaskBLEService getService() {
+            return FlaskBLEService.this;
         }
     }
 

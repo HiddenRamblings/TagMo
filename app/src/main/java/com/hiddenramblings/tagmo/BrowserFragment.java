@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.flexbox.FlexboxLayout;
-import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
+import com.hiddenramblings.tagmo.adapter.BrowserAdapter;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
@@ -55,7 +55,7 @@ public class BrowserFragment extends Fragment implements
                 == BrowserSettings.VIEW.IMAGE.getValue()
                 ? new GridLayoutManager(activity, activity.getColumnCount())
                 : new LinearLayoutManager(activity));
-        this.amiibosView.setAdapter(new BrowserAmiibosAdapter(settings, activity));
+        this.amiibosView.setAdapter(new BrowserAdapter(settings, activity));
         settings.addChangeListener((BrowserSettings.BrowserSettingsListener)
                 this.amiibosView.getAdapter());
     }

@@ -33,7 +33,7 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.hardware.BankListActivity;
+import com.hiddenramblings.tagmo.hardware.EliteBankActivity;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -139,7 +139,7 @@ public class NfcActivity extends AppCompatActivity {
         String mode = commandIntent.getAction();
 
         if (null != getCallingActivity())
-            isEliteIntent = BankListActivity.class.getName().equals(
+            isEliteIntent = EliteBankActivity.class.getName().equals(
                     getCallingActivity().getClassName());
         if (commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
             setPosition(bankPicker, commandIntent.getIntExtra(

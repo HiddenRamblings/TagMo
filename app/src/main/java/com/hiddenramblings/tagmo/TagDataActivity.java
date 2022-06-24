@@ -35,7 +35,7 @@ import androidx.appcompat.widget.SwitchCompat;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.hiddenramblings.tagmo.adapter.NoSelectionSpinnerAdapter;
+import com.hiddenramblings.tagmo.adapter.NSSpinnerAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
@@ -93,7 +93,7 @@ public class TagDataActivity extends AppCompatActivity {
     private LinearLayout appDataViewTP;
 
     private CountryCodesAdapter countryCodeAdapter;
-    private NoSelectionSpinnerAdapter appIdAdapter;
+    private NSSpinnerAdapter appIdAdapter;
     private boolean ignoreAppNameSelected;
     private KeyManager keyManager;
     private AmiiboManager amiiboManager = null;
@@ -247,7 +247,7 @@ public class TagDataActivity extends AppCompatActivity {
         countryCodeAdapter = new CountryCodesAdapter(AmiiboData.countryCodes);
         txtCountryCode.setAdapter(countryCodeAdapter);
 
-        appIdAdapter = new NoSelectionSpinnerAdapter(
+        appIdAdapter = new NSSpinnerAdapter(
                 new AppIdAdapter(AppData.appIds), R.layout.nothing_spinner_text);
         txtAppName.setAdapter(appIdAdapter);
 

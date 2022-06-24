@@ -31,7 +31,6 @@ import android.os.Looper;
 import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,9 +66,9 @@ import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.adapter.BluupFlaskAdapter;
+import com.hiddenramblings.tagmo.adapter.FlaskSlotAdapter;
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
-import com.hiddenramblings.tagmo.adapter.WriteAmiiboAdapter;
+import com.hiddenramblings.tagmo.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -101,8 +100,8 @@ import java.util.concurrent.Executors;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
-public class BluupFlaskActivity extends AppCompatActivity implements
-        BluupFlaskAdapter.OnAmiiboClickListener {
+public class FlaskSlotActivity extends AppCompatActivity implements
+        FlaskSlotAdapter.OnAmiiboClickListener {
 
     private final Preferences_ prefs = TagMo.getPrefs();
 
@@ -127,7 +126,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private BrowserSettings settings;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
-    private WriteAmiiboAdapter writeFileAdapter;
+    private WriteTagAdapter writeFileAdapter;
     private FoomiiboAdapter writeDataAdapter;
     private AppCompatToggleButton sourceToggle;
 
@@ -142,7 +141,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     private BluetoothAdapter mBluetoothAdapter;
     private ScanCallback scanCallbackLP;
     private BluetoothAdapter.LeScanCallback scanCallback;
-    private BluetoothLeService flaskService;
+    private FlaskBLEService flaskService;
     private String flaskProfile;
     private String flaskAddress;
 
@@ -227,11 +226,11 @@ public class BluupFlaskActivity extends AppCompatActivity implements
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
-            BluetoothLeService.LocalBinder localBinder = (BluetoothLeService.LocalBinder) binder;
+            FlaskBLEService.LocalBinder localBinder = (FlaskBLEService.LocalBinder) binder;
             flaskService = localBinder.getService();
             if (flaskService.initialize()) {
                 if (flaskService.connect(flaskAddress)) {
-                    flaskService.setListener(new BluetoothLeService.BluetoothGattListener() {
+                    flaskService.setListener(new FlaskBLEService.BluetoothGattListener() {
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
@@ -242,7 +241,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                 flaskService.getDeviceAmiibo();
                             } catch (TagLostException tle) {
                                 disconnectFlask();
-                                new Toasty(BluupFlaskActivity.this)
+                                new Toasty(FlaskSlotActivity.this)
                                         .Short(R.string.flask_invalid);
                             }
                         }
@@ -267,8 +266,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                                         Debug.Log(jex);
                                     }
                                 }
-                                BluupFlaskAdapter adapter = new BluupFlaskAdapter(
-                                        settings, BluupFlaskActivity.this);
+                                FlaskSlotAdapter adapter = new FlaskSlotAdapter(
+                                        settings, FlaskSlotActivity.this);
                                 adapter.setFlaskAmiibo(flaskAmiibos);
                                 runOnUiThread(() -> {
                                     dismissSnackbarNotice();
@@ -327,7 +326,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                         @Override
                         public void onGattConnectionLost() {
                             new Handler(Looper.getMainLooper()).postDelayed(
-                                    BluupFlaskActivity.this::showDisconnectNotice, 250
+                                    FlaskSlotActivity.this::showDisconnectNotice, 250
                             );
                             runOnUiThread(() -> bottomSheetBehavior
                                     .setState(BottomSheetBehavior.STATE_COLLAPSED));
@@ -337,7 +336,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                     });
                 } else {
                     stopFlaskService();
-                    new Toasty(BluupFlaskActivity.this).Short(R.string.flask_invalid);
+                    new Toasty(FlaskSlotActivity.this).Short(R.string.flask_invalid);
                 }
             }
         }
@@ -486,8 +485,8 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
 
-        writeFileAdapter = new WriteAmiiboAdapter(settings,
-                new WriteAmiiboAdapter.OnAmiiboClickListener() {
+        writeFileAdapter = new WriteTagAdapter(settings,
+                new WriteTagAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -792,7 +791,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
         flaskProfile = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
-            ParcelUuid FlaskUUID = new ParcelUuid(BluetoothLeService.FlaskNUS);
+            ParcelUuid FlaskUUID = new ParcelUuid(FlaskBLEService.FlaskNUS);
             ScanFilter filter = new ScanFilter.Builder().setServiceUuid(FlaskUUID).build();
             ScanSettings settings = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
@@ -816,7 +815,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 showConnectionNotice();
                 startFlaskService();
             };
-            mBluetoothAdapter.startLeScan(new UUID[]{ BluetoothLeService.FlaskNUS }, scanCallback);
+            mBluetoothAdapter.startLeScan(new UUID[]{ FlaskBLEService.FlaskNUS }, scanCallback);
         }
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (null == flaskProfile) {
@@ -1016,7 +1015,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     }
 
     public void startFlaskService() {
-        Intent service = new Intent(this, BluetoothLeService.class);
+        Intent service = new Intent(this, FlaskBLEService.class);
         startService(service);
         bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
     }
@@ -1032,7 +1031,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
     public void stopFlaskService() {
         try {
             unbindService(mServerConn);
-            stopService(new Intent(BluupFlaskActivity.this, BluetoothLeService.class));
+            stopService(new Intent(FlaskSlotActivity.this, FlaskBLEService.class));
         } catch (IllegalArgumentException ignored) { }
     }
 
@@ -1059,7 +1058,7 @@ public class BluupFlaskActivity extends AppCompatActivity implements
                 sourceToggle.setChecked(true);
                 break;
             case LIST:
-                WriteAmiiboAdapter writeListAdapter = new WriteAmiiboAdapter(
+                WriteTagAdapter writeListAdapter = new WriteTagAdapter(
                         settings, this::writeAmiiboCollection);
                 writeListAdapter.resetSelections();
                 this.settings.addChangeListener(writeListAdapter);

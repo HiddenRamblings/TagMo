@@ -94,8 +94,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
-import com.hiddenramblings.tagmo.adapter.BrowserAmiibosAdapter;
-import com.hiddenramblings.tagmo.adapter.BrowserFoldersAdapter;
+import com.hiddenramblings.tagmo.adapter.BrowserAdapter;
+import com.hiddenramblings.tagmo.adapter.FoldersAdapter;
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
@@ -110,8 +110,8 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout;
-import com.hiddenramblings.tagmo.hardware.BankListActivity;
-import com.hiddenramblings.tagmo.hardware.BluupFlaskActivity;
+import com.hiddenramblings.tagmo.hardware.EliteBankActivity;
+import com.hiddenramblings.tagmo.hardware.FlaskSlotActivity;
 import com.hiddenramblings.tagmo.hardware.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
@@ -152,7 +152,7 @@ import java.util.concurrent.Executors;
 
 public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,
-        BrowserAmiibosAdapter.OnAmiiboClickListener {
+        BrowserAdapter.OnAmiiboClickListener {
 
     private final Preferences_ prefs = TagMo.getPrefs();
     private CheckUpdatesTask updates;
@@ -269,6 +269,7 @@ public class BrowserActivity extends AppCompatActivity implements
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+                if (position != 0) BrowserAdapter.resetVisible();
                 if (position != 1) FoomiiboAdapter.resetVisible();
                 switch (position) {
                     case 0:
@@ -384,7 +385,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         RecyclerView foldersView = findViewById(R.id.folders_list);
         foldersView.setLayoutManager(new LinearLayoutManager(this));
-        foldersView.setAdapter(new BrowserFoldersAdapter(settings));
+        foldersView.setAdapter(new FoldersAdapter(settings));
         this.settings.addChangeListener((BrowserSettingsListener) foldersView.getAdapter());
 
         this.loadPTagKeyManager();
@@ -536,7 +537,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void launchFlaskEditor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            Intent flaskIntent = new Intent(this, BluupFlaskActivity.class);
+            Intent flaskIntent = new Intent(this, FlaskSlotActivity.class);
             startActivity(flaskIntent);
         } else {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
@@ -563,7 +564,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
             prefs.eliteBankCount().put(bank_count);
 
-            Intent eliteIntent = new Intent(this, BankListActivity.class);
+            Intent eliteIntent = new Intent(this, EliteBankActivity.class);
             eliteIntent.putExtras(result.getData());
             startActivity(eliteIntent);
         } else {
@@ -1853,7 +1854,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void launchEliteActivity(Intent resultData) {
         if (TagMo.getPrefs().enable_elite_support().get()
                 && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
-            Intent eliteIntent = new Intent(this, BankListActivity.class);
+            Intent eliteIntent = new Intent(this, EliteBankActivity.class);
             eliteIntent.putExtras(resultData.getExtras());
             startActivity(eliteIntent);
             finish(); // Relaunch activity to bring view to front
@@ -2069,7 +2070,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private int[] getAdapterStats() {
-        BrowserAmiibosAdapter adapter = (BrowserAmiibosAdapter)
+        BrowserAdapter adapter = (BrowserAdapter)
                 browserFragment.getAmiibosView().getAdapter();
         if (adapter == null) return new int[]{0, 0};
         int size = adapter.getItemCount();
@@ -2383,7 +2384,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         prefs.eliteActiveBank().put(active_bank);
                         prefs.eliteBankCount().put(bank_count);
 
-                        Intent eliteIntent = new Intent(this, BankListActivity.class);
+                        Intent eliteIntent = new Intent(this, EliteBankActivity.class);
                         Bundle args = new Bundle();
                         ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
                         eliteIntent.putExtra(NFCIntent.EXTRA_SIGNATURE, signature);

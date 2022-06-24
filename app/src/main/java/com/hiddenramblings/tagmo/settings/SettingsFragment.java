@@ -34,7 +34,7 @@ import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.WebActivity;
-import com.hiddenramblings.tagmo.adapter.SettingsAmiiboAdapter;
+import com.hiddenramblings.tagmo.adapter.AmiiboAPIAdapter;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
@@ -258,7 +258,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         amiiboStats.setOnPreferenceClickListener(preference -> {
             new AlertDialog.Builder(this.getContext())
                     .setTitle(R.string.amiibo)
-                    .setAdapter(new SettingsAmiiboAdapter(new ArrayList<>(
+                    .setAdapter(new AmiiboAPIAdapter(new ArrayList<>(
                             amiiboManager.amiibos.values())), null)
                     .setPositiveButton(R.string.close, null)
                     .show();

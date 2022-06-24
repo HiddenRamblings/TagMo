@@ -515,12 +515,12 @@ public class BrowserActivity extends AppCompatActivity implements
             if (TagMo.isGooglePlay()) {
                 this.onDocumentEnabled();
             } else {
-                if (Environment.isExternalStorageManager()) {
+                if (null != settings.getBrowserRootDocument() && isDocumentStorage()) {
+                    this.onDocumentEnabled();
+                } else if (Environment.isExternalStorageManager()) {
                     settings.setBrowserRootDocument(null);
                     settings.notifyChanges();
                     this.onStorageEnabled();
-                } else if (isDocumentStorage()) {
-                    this.onDocumentEnabled();
                 } else {
                     requestScopedStorage();
                 }
@@ -1207,7 +1207,13 @@ public class BrowserActivity extends AppCompatActivity implements
                 switchStorageType.setText(R.string.grant_file_permission);
                 switchStorageType.setOnClickListener(view -> {
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    requestScopedStorage();
+                    if (Environment.isExternalStorageManager()) {
+                        settings.setBrowserRootDocument(null);
+                        settings.notifyChanges();
+                        this.onStorageEnabled();
+                    } else {
+                        requestScopedStorage();
+                    }
                 });
             } else {
                 switchStorageType.setVisibility(View.GONE);

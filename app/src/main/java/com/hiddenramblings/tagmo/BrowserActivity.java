@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
@@ -538,7 +539,12 @@ public class BrowserActivity extends AppCompatActivity implements
     private void launchFlaskEditor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             Intent flaskIntent = new Intent(this, FlaskSlotActivity.class);
-            startActivity(flaskIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                startActivity(flaskIntent, ActivityOptions
+                        .makeSceneTransitionAnimation(this).toBundle());
+            } else {
+                startActivity(flaskIntent);
+            }
         } else {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             CustomTabsIntent customTabsIntent = builder.build();
@@ -566,7 +572,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
             Intent eliteIntent = new Intent(this, EliteBankActivity.class);
             eliteIntent.putExtras(result.getData());
-            startActivity(eliteIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                startActivity(eliteIntent, ActivityOptions
+                        .makeSceneTransitionAnimation(this).toBundle());
+            } else {
+                startActivity(eliteIntent);
+            }
         } else {
             mainLayout.setCurrentItem(0, true);
             updateAmiiboView(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
@@ -1862,7 +1873,12 @@ public class BrowserActivity extends AppCompatActivity implements
                 && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             Intent eliteIntent = new Intent(this, EliteBankActivity.class);
             eliteIntent.putExtras(resultData.getExtras());
-            startActivity(eliteIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                startActivity(eliteIntent, ActivityOptions
+                        .makeSceneTransitionAnimation(this).toBundle());
+            } else {
+                startActivity(eliteIntent);
+            }
             finish(); // Relaunch activity to bring view to front
         }
     }

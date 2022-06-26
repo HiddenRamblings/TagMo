@@ -142,6 +142,15 @@ public class FlaskSlotFragment extends Fragment implements
     }
     private WRITE writeAdapter = WRITE.FILE;
 
+    private enum STATE {
+        NONE,
+        SCANNING,
+        CONNECT,
+        MISSING,
+        PURCHASE
+    }
+    private STATE noticeState = STATE.NONE;
+
     private BluetoothAdapter mBluetoothAdapter;
     private ScanCallback scanCallbackLP;
     private BluetoothAdapter.LeScanCallback scanCallback;
@@ -274,7 +283,7 @@ public class FlaskSlotFragment extends Fragment implements
                                         settings, FlaskSlotFragment.this);
                                 adapter.setFlaskAmiibo(flaskAmiibos);
                                 requireActivity().runOnUiThread(() -> {
-                                    dismissSnackbarNotice();
+                                    dismissSnackbarNotice(true);
                                     flaskDetails.setAdapter(adapter);
                                 });
                                 flaskService.getActiveAmiibo();
@@ -967,12 +976,18 @@ public class FlaskSlotFragment extends Fragment implements
         }
     }
 
-    private void dismissSnackbarNotice() {
+    private void dismissSnackbarNotice(boolean finite) {
+        if (finite) noticeState = STATE.NONE;
         if (null != statusBar && statusBar.isShown()) statusBar.dismiss();
+    }
+
+    private void dismissSnackbarNotice() {
+        dismissSnackbarNotice(false);
     }
 
     private void showScanningNotice() {
         dismissSnackbarNotice();
+        noticeState = STATE.SCANNING;
         statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_scanning, R.drawable.ic_baseline_bluetooth_searching_24dp,
                 Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
@@ -982,6 +997,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private void showConnectionNotice() {
         dismissSnackbarNotice();
+        noticeState = STATE.CONNECT;
         statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_located, R.drawable.ic_bluup_flask_24dp,
                 Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
@@ -991,6 +1007,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private void showDisconnectNotice() {
         dismissSnackbarNotice();
+        noticeState = STATE.MISSING;
         statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_disconnect, R.drawable.ic_baseline_bluetooth_searching_24dp,
                 Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
@@ -1008,6 +1025,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private void showPurchaseNotice() {
         dismissSnackbarNotice();
+        noticeState = STATE.PURCHASE;
         statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_missing, R.drawable.ic_bluup_flask_24dp,
                 Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
@@ -1036,7 +1054,7 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     public void disconnectFlask() {
-        dismissSnackbarNotice();
+        dismissSnackbarNotice(true);
         if (null != flaskService)
             flaskService.disconnect();
         else
@@ -1126,8 +1144,30 @@ public class FlaskSlotFragment extends Fragment implements
 
     @Override
     public void onPause() {
-        super.onPause();
         dismissSnackbarNotice();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (null != statusBar && statusBar.isShown()) return;
+        switch (noticeState) {
+            case NONE:
+                break;
+            case SCANNING:
+                showScanningNotice();
+                break;
+            case CONNECT:
+                showConnectionNotice();
+                break;
+            case MISSING:
+                showDisconnectNotice();
+                break;
+            case PURCHASE:
+                showPurchaseNotice();
+                break;
+        }
     }
 
     @Override

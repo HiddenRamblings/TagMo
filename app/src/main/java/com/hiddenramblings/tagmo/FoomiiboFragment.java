@@ -139,7 +139,7 @@ public class FoomiiboFragment extends Fragment implements
     }
 
     void clearFoomiiboSet() {
-        ((BrowserActivity) requireActivity()).hideBottomSheet();
+        ((BrowserActivity) requireActivity()).collapseBottomSheet();
         ProgressDialog dialog = ProgressDialog.show(requireActivity(),
                 "", "", true);
         Handler handler = new Handler(Looper.getMainLooper());
@@ -214,7 +214,7 @@ public class FoomiiboFragment extends Fragment implements
     void buildFoomiiboSet() {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         if (null == amiiboManager) return;
-        ((BrowserActivity) requireActivity()).hideBottomSheet();
+        ((BrowserActivity) requireActivity()).collapseBottomSheet();
         ProgressDialog dialog = ProgressDialog.show(requireActivity(),
                 "", "", true);
         Handler handler = new Handler(Looper.getMainLooper());

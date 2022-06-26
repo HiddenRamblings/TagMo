@@ -32,6 +32,7 @@ import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -44,15 +45,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -61,6 +63,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
@@ -99,12 +102,13 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-@SuppressLint("MissingPermission")
-public class FlaskSlotActivity extends AppCompatActivity implements
+public class FlaskSlotFragment extends Fragment implements
         FlaskSlotAdapter.OnAmiiboClickListener {
 
     private final Preferences_ prefs = TagMo.getPrefs();
+    BrowserActivity browser;
 
+    private CoordinatorLayout rootLayout;
     private CardView amiiboTile;
     private CardView amiiboCard;
     private Toolbar toolbar;
@@ -153,17 +157,17 @@ public class FlaskSlotActivity extends AppCompatActivity implements
     ActivityResultLauncher<String[]> onRequestLocationQ = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
             permissions -> { boolean isLocationAvailable = false;
-        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (entry.getKey().equals(Manifest.permission.ACCESS_FINE_LOCATION)
-                    && entry.getValue()) isLocationAvailable = true;
-        }
-        if (isLocationAvailable) {
-            activateBluetooth();
-        } else {
-            new Toasty(this).Long(R.string.flask_permissions);
-            finish();
-        }
-    });
+                for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
+                    if (entry.getKey().equals(Manifest.permission.ACCESS_FINE_LOCATION)
+                            && entry.getValue()) isLocationAvailable = true;
+                }
+                if (isLocationAvailable) {
+                    activateBluetooth();
+                } else {
+                    new Toasty(requireActivity()).Long(R.string.flask_permissions);
+                    browser.showBrowserPage();
+                }
+            });
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     ActivityResultLauncher<String> onRequestBackgroundQ = registerForActivityResult(
@@ -172,55 +176,55 @@ public class FlaskSlotActivity extends AppCompatActivity implements
     ActivityResultLauncher<String[]> onRequestBluetoothS = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
             permissions -> { boolean isBluetoothAvailable = false;
-        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (entry.getValue()) isBluetoothAvailable = true;
-        }
-        if (isBluetoothAvailable) {
-            mBluetoothAdapter = getBluetoothAdapter();
-            if (null != mBluetoothAdapter) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+                for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
+                    if (entry.getValue()) isBluetoothAvailable = true;
                 }
-                selectBluetoothDevice();
-            } else {
-                new Toasty(this).Long(R.string.flask_bluetooth);
-                finish();
-            }
-        } else {
-            new Toasty(this).Long(R.string.flask_bluetooth);
-            finish();
-        }
-    });
+                if (isBluetoothAvailable) {
+                    mBluetoothAdapter = getBluetoothAdapter();
+                    if (null != mBluetoothAdapter) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+                        }
+                        selectBluetoothDevice();
+                    } else {
+                        new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+                        browser.showBrowserPage();
+                    }
+                } else {
+                    new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+                    browser.showBrowserPage();
+                }
+            });
     ActivityResultLauncher<Intent> onRequestBluetooth = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-        mBluetoothAdapter = getBluetoothAdapter();
-        if (null != mBluetoothAdapter) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-            }
-            selectBluetoothDevice();
-        } else {
-            new Toasty(this).Long(R.string.flask_bluetooth);
-           finish();
-        }
-    });
+                mBluetoothAdapter = getBluetoothAdapter();
+                if (null != mBluetoothAdapter) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+                    }
+                    selectBluetoothDevice();
+                } else {
+                    new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+                    browser.showBrowserPage();
+                }
+            });
     ActivityResultLauncher<String[]> onRequestLocation = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
             permissions -> { boolean isLocationAvailable = false;
-        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (entry.getValue()) isLocationAvailable = true;
-        }
-        if (isLocationAvailable) {
-            mBluetoothAdapter = getBluetoothAdapter();
-            if (null != mBluetoothAdapter)
-                selectBluetoothDevice();
-            else
-                onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
-        } else {
-            new Toasty(this).Long(R.string.flask_permissions);
-            finish();
-        }
-    });
+                for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
+                    if (entry.getValue()) isLocationAvailable = true;
+                }
+                if (isLocationAvailable) {
+                    mBluetoothAdapter = getBluetoothAdapter();
+                    if (null != mBluetoothAdapter)
+                        selectBluetoothDevice();
+                    else
+                        onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+                } else {
+                    new Toasty(requireActivity()).Long(R.string.flask_permissions);
+                    browser.showBrowserPage();
+                }
+            });
     protected ServiceConnection mServerConn = new ServiceConnection() {
         boolean isServiceDiscovered = false;
 
@@ -234,14 +238,14 @@ public class FlaskSlotActivity extends AppCompatActivity implements
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
-                            runOnUiThread(() -> ((TextView) findViewById(
-                                    R.id.hardware_info)).setText(flaskProfile));
+                            requireActivity().runOnUiThread(() -> ((TextView) rootLayout
+                                    .findViewById(R.id.hardware_info)).setText(flaskProfile));
                             try {
                                 flaskService.setFlaskCharacteristicRX();
                                 flaskService.getDeviceAmiibo();
                             } catch (TagLostException tle) {
                                 disconnectFlask();
-                                new Toasty(FlaskSlotActivity.this)
+                                new Toasty(requireActivity())
                                         .Short(R.string.flask_invalid);
                             }
                         }
@@ -267,9 +271,9 @@ public class FlaskSlotActivity extends AppCompatActivity implements
                                     }
                                 }
                                 FlaskSlotAdapter adapter = new FlaskSlotAdapter(
-                                        settings, FlaskSlotActivity.this);
+                                        settings, FlaskSlotFragment.this);
                                 adapter.setFlaskAmiibo(flaskAmiibos);
-                                runOnUiThread(() -> {
+                                requireActivity().runOnUiThread(() -> {
                                     dismissSnackbarNotice();
                                     flaskDetails.setAdapter(adapter);
                                 });
@@ -289,7 +293,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
                                     getActiveAmiibo(amiibo, amiiboCard);
                                 String index = jsonObject.getString("index");
                                 prefs.flaskActiveSlot().put(Integer.parseInt(index));
-                                runOnUiThread(() -> {
+                                requireActivity().runOnUiThread(() -> {
                                     if (null != flaskDetails.getAdapter())
                                         flaskDetails.getAdapter().notifyDataSetChanged();
                                     flaskStats.setText(getString(
@@ -317,7 +321,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
 
                         @Override
                         public void onFlaskFilesUploaded() {
-                            runOnUiThread(() -> {
+                            requireActivity().runOnUiThread(() -> {
                                 if (null != uploadDialog && uploadDialog.isShowing())
                                     uploadDialog.dismiss();
                             });
@@ -326,9 +330,9 @@ public class FlaskSlotActivity extends AppCompatActivity implements
                         @Override
                         public void onGattConnectionLost() {
                             new Handler(Looper.getMainLooper()).postDelayed(
-                                    FlaskSlotActivity.this::showDisconnectNotice, 250
+                                    FlaskSlotFragment.this::showDisconnectNotice, 250
                             );
-                            runOnUiThread(() -> bottomSheetBehavior
+                            requireActivity().runOnUiThread(() -> bottomSheetBehavior
                                     .setState(BottomSheetBehavior.STATE_COLLAPSED));
                             flaskAddress = null;
                             stopFlaskService();
@@ -336,7 +340,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
                     });
                 } else {
                     stopFlaskService();
-                    new Toasty(FlaskSlotActivity.this).Short(R.string.flask_invalid);
+                    new Toasty(requireActivity()).Short(R.string.flask_invalid);
                 }
             }
         }
@@ -351,21 +355,25 @@ public class FlaskSlotActivity extends AppCompatActivity implements
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_bluup_flask, container, false);
+    }
 
-        setContentView(R.layout.activity_bluup_flask);
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        keyManager = new KeyManager(this);
+        rootLayout = (CoordinatorLayout) view;
 
-        amiiboTile = findViewById(R.id.active_tile_layout);
+        keyManager = new KeyManager(requireActivity());
 
-        amiiboCard = findViewById(R.id.active_card_layout);
+        amiiboTile = rootLayout.findViewById(R.id.active_tile_layout);
+
+        amiiboCard = rootLayout.findViewById(R.id.active_card_layout);
         amiiboCard.findViewById(R.id.txtError).setVisibility(View.GONE);
         amiiboCard.findViewById(R.id.txtPath).setVisibility(View.GONE);
-        toolbar = findViewById(R.id.toolbar);
+        toolbar = rootLayout.findViewById(R.id.toolbar);
 
         amiiboTileTarget = new CustomTarget<>() {
             final AppCompatImageView imageAmiibo = amiiboTile.findViewById(R.id.imageAmiibo);
@@ -413,29 +421,29 @@ public class FlaskSlotActivity extends AppCompatActivity implements
 
         this.settings = new BrowserSettings().initialize();
 
-        flaskDetails = findViewById(R.id.flask_details);
+        flaskDetails = rootLayout.findViewById(R.id.flask_details);
         // flaskDetails.setHasFixedSize(true);
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            flaskDetails.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+            flaskDetails.setLayoutManager(new GridLayoutManager(requireContext(), getColumnCount()));
         else
-            flaskDetails.setLayoutManager(new LinearLayoutManager(this));
+            flaskDetails.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        flaskStats = findViewById(R.id.flask_stats);
-        writeFile = findViewById(R.id.write_slot_file);
-        createBlank = findViewById(R.id.create_blank);
-        writeCount = findViewById(R.id.number_picker);
+        flaskStats = rootLayout.findViewById(R.id.flask_stats);
+        writeFile = rootLayout.findViewById(R.id.write_slot_file);
+        createBlank = rootLayout.findViewById(R.id.create_blank);
+        writeCount = rootLayout.findViewById(R.id.number_picker);
         writeCount.setMaxValue(85);
-        writeSlots = findViewById(R.id.write_slot_count);
+        writeSlots = rootLayout.findViewById(R.id.write_slot_count);
 
-        writeSlotsLayout = findViewById(R.id.write_list_layout);
-        sourceToggle = findViewById(R.id.switch_source_btn);
-        amiiboFilesView = findViewById(R.id.amiibo_files_list);
+        writeSlotsLayout = rootLayout.findViewById(R.id.write_list_layout);
+        sourceToggle = rootLayout.findViewById(R.id.switch_source_btn);
+        amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list);
         // amiiboFilesView.setHasFixedSize(true);
 
         settings = new BrowserSettings().initialize();
 
-        AppCompatImageView toggle = findViewById(R.id.toggle);
-        this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
+        AppCompatImageView toggle = rootLayout.findViewById(R.id.toggle);
+        this.bottomSheetBehavior = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet));
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(
                 new BottomSheetBehavior.BottomSheetCallback() {
@@ -452,7 +460,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
 
                     @Override
                     public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                        ViewGroup mainLayout = findViewById(R.id.flask_details);
+                        ViewGroup mainLayout = rootLayout.findViewById(R.id.flask_details);
                         if (mainLayout.getBottom() >= bottomSheet.getTop()) {
                             int bottomHeight = bottomSheet.getMeasuredHeight()
                                     - bottomSheetBehavior.getPeekHeight();
@@ -462,7 +470,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
                     }
                 });
 
-        toggle.setOnClickListener(view -> {
+        toggle.setOnClickListener(view1 -> {
             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             } else {
@@ -473,7 +481,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
         toolbar.inflateMenu(R.menu.flask_menu);
 
         try {
-            DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
+            DocumentFile rootDocument = DocumentFile.fromTreeUri(requireContext(),
                     this.settings.getBrowserRootDocument());
             this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
         } catch (IllegalArgumentException iae) {
@@ -481,48 +489,50 @@ public class FlaskSlotActivity extends AppCompatActivity implements
         }
 
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            amiiboFilesView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+            amiiboFilesView.setLayoutManager(new GridLayoutManager(requireContext(), getColumnCount()));
         else
-            amiiboFilesView.setLayoutManager(new LinearLayoutManager(this));
+            amiiboFilesView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         writeFileAdapter = new WriteTagAdapter(settings,
                 new WriteTagAdapter.OnAmiiboClickListener() {
-            @Override
-            public void onAmiiboClicked(AmiiboFile amiiboFile) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                showUploadingNotice();
-                uploadAmiiboFile(amiiboFile);
-            }
+                    @Override
+                    public void onAmiiboClicked(AmiiboFile amiiboFile) {
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        showUploadingNotice();
+                        uploadAmiiboFile(amiiboFile);
+                    }
 
-            @Override
-            public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
-                handleImageClicked(amiiboFile);
-            }
-        });
+                    @Override
+                    public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
+                        handleImageClicked(amiiboFile);
+                    }
+                });
         this.settings.addChangeListener(writeFileAdapter);
 
         writeDataAdapter = new FoomiiboAdapter(settings,
                 new FoomiiboAdapter.OnFoomiiboClickListener() {
-            @Override
-            public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                showUploadingNotice();
-                uploadFoomiiboData(amiibo);
-            }
+                    @Override
+                    public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        showUploadingNotice();
+                        uploadFoomiiboData(amiibo);
+                    }
 
-            @Override
-            public void onFoomiiboRebind(View itemView, Amiibo amiibo) { }
+                    @Override
+                    public void onFoomiiboRebind(View itemView, Amiibo amiibo) { }
 
-            @Override
-            public void onFoomiiboImageClicked(Amiibo amiibo) {
-                handleImageClicked(amiibo);
-            }
-        });
+                    @Override
+                    public void onFoomiiboImageClicked(Amiibo amiibo) {
+                        handleImageClicked(amiibo);
+                    }
+                });
         this.settings.addChangeListener(writeDataAdapter);
 
-        SearchView searchView = findViewById(R.id.amiibo_search);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        SearchView searchView = rootLayout.findViewById(R.id.amiibo_search);
+        SearchManager searchManager = (SearchManager) requireContext()
+                .getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager
+                .getSearchableInfo(requireActivity().getComponentName()));
         searchView.setSubmitButtonEnabled(false);
         searchView.setIconifiedByDefault(false);
         LinearLayout searchBar = searchView.findViewById(R.id.search_bar);
@@ -545,7 +555,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
             }
         });
 
-        writeFile.setOnClickListener(view -> {
+        writeFile.setOnClickListener(view1 -> {
             onBottomSheetChanged(false);
             setWriteAdapter(WRITE.FILE);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -554,15 +564,15 @@ public class FlaskSlotActivity extends AppCompatActivity implements
         writeCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) ->
                 writeSlots.setText(getString(R.string.write_slots, valueNew)));
 
-        writeSlots.setOnClickListener(view -> {
+        writeSlots.setOnClickListener(view1 -> {
             onBottomSheetChanged(false);
             setWriteAdapter(WRITE.LIST);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        createBlank.setOnClickListener(view -> flaskService.createBlankTag());
+        createBlank.setOnClickListener(view1 -> flaskService.createBlankTag());
 
-        sourceToggle.setOnClickListener(view -> {
+        sourceToggle.setOnClickListener(view1 -> {
             if (writeSlotsLayout.getVisibility() == View.VISIBLE) {
                 switch(writeAdapter) {
                     case FILE:
@@ -595,14 +605,14 @@ public class FlaskSlotActivity extends AppCompatActivity implements
     }
 
     void setAmiiboInfoText(TextView textView, CharSequence text) {
-            textView.setVisibility(View.VISIBLE);
-            if (text.length() == 0) {
-                textView.setText(R.string.unknown);
-                textView.setEnabled(false);
-            } else {
-                textView.setText(text);
-                textView.setEnabled(true);
-            }
+        textView.setVisibility(View.VISIBLE);
+        if (text.length() == 0) {
+            textView.setText(R.string.unknown);
+            textView.setEnabled(false);
+        } else {
+            textView.setText(text);
+            textView.setEnabled(true);
+        }
     }
 
     private void getActiveAmiibo(Amiibo active, View amiiboView) {
@@ -614,7 +624,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
         AppCompatImageView imageAmiibo = amiiboView.findViewById(R.id.imageAmiibo);
         TextView txtUsageLabel = amiiboView.findViewById(R.id.txtUsageLabel);
 
-        runOnUiThread(() -> {
+        requireActivity().runOnUiThread(() -> {
             String amiiboHexId;
             String amiiboName;
             String amiiboSeries = "";
@@ -670,7 +680,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
                         Bundle bundle = new Bundle();
                         bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, active.id);
 
-                        Intent intent = new Intent(this, ImageActivity.class);
+                        Intent intent = new Intent(requireContext(), ImageActivity.class);
                         intent.putExtras(bundle);
 
                         startActivity(intent);
@@ -683,11 +693,11 @@ public class FlaskSlotActivity extends AppCompatActivity implements
     private Amiibo getAmiiboByTail(String[] name) {
         AmiiboManager amiiboManager;
         try {
-            amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
+            amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
         } catch (IOException | JSONException | ParseException e) {
             Debug.Log(e);
             amiiboManager = null;
-            new Toasty(this).Short(R.string.amiibo_info_parse_error);
+            new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
         }
 
         if (Thread.currentThread().isInterrupted()) return null;
@@ -715,12 +725,12 @@ public class FlaskSlotActivity extends AppCompatActivity implements
                 onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
         } else {
             if (ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.ACCESS_FINE_LOCATION
+                    requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED) {
                 activateBluetooth();
             } else {
                 if (TagMo.isGooglePlay()) {
-                    new AlertDialog.Builder(this)
+                    new AlertDialog.Builder(requireContext())
                             .setMessage(R.string.location_disclosure)
                             .setCancelable(false)
                             .setPositiveButton(R.string.accept, (dialog, which) -> {
@@ -734,7 +744,8 @@ public class FlaskSlotActivity extends AppCompatActivity implements
                                 } else {
                                     onRequestLocation.launch(PERMISSIONS_LOCATION);
                                 }
-                            }).setNegativeButton(R.string.deny, (dialog, which) -> finish()).show();
+                            }).setNegativeButton(R.string.deny, (dialog, which)
+                                    -> browser.showBrowserPage()).show();
                 } else {
                     final String[] PERMISSIONS_LOCATION = {
                             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -770,11 +781,12 @@ public class FlaskSlotActivity extends AppCompatActivity implements
         }
     }
 
+    @SuppressLint("MissingPermission")
     private BluetoothAdapter getBluetoothAdapter() {
         BluetoothAdapter mBluetoothAdapter;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            mBluetoothAdapter = ((BluetoothManager)
-                    getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+            mBluetoothAdapter = ((BluetoothManager) requireContext()
+                    .getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
             if (null != mBluetoothAdapter) {
                 if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
                 return mBluetoothAdapter;
@@ -786,6 +798,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
         return null;
     }
 
+    @SuppressLint("MissingPermission")
     private void scanBluetoothServices() {
         showScanningNotice();
         flaskProfile = null;
@@ -828,10 +841,11 @@ public class FlaskSlotActivity extends AppCompatActivity implements
     ActivityResultLauncher<Intent> onRequestPairing = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> scanBluetoothServices());
 
+    @SuppressLint("MissingPermission")
     private void selectBluetoothDevice() {
         for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
             if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-                new Toasty(this).Long(R.string.flask_paired);
+                new Toasty(requireActivity()).Long(R.string.flask_paired);
                 dismissFlaskDiscovery();
                 try {
                     onRequestPairing.launch(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
@@ -853,14 +867,14 @@ public class FlaskSlotActivity extends AppCompatActivity implements
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         if (null == amiiboManager) {
             try {
-                amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
+                amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Log(e);
-                new Toasty(this).Short(R.string.amiibo_info_parse_error);
+                new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
             }
 
             final AmiiboManager uiAmiiboManager = amiiboManager;
-            this.runOnUiThread(() -> {
+            requireActivity().runOnUiThread(() -> {
                 settings.setAmiiboManager(uiAmiiboManager);
                 settings.notifyChanges();
             });
@@ -874,13 +888,13 @@ public class FlaskSlotActivity extends AppCompatActivity implements
                     amiiboFiles.addAll(AmiiboManager
                             .listAmiibos(keyManager, download, true));
             }
-            File foomiibo = new File(getFilesDir(), "Foomiibo");
+            File foomiibo = new File(requireContext().getFilesDir(), "Foomiibo");
             amiiboFiles.addAll(AmiiboManager
                     .listAmiibos(keyManager, foomiibo, true));
 
             if (Thread.currentThread().isInterrupted()) return;
 
-            this.runOnUiThread(() -> {
+            requireActivity().runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
             });
@@ -890,11 +904,11 @@ public class FlaskSlotActivity extends AppCompatActivity implements
     private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
-                    .listAmiiboDocuments(this, keyManager, rootFolder, recursiveFiles);
-            File foomiibo = new File(getFilesDir(), "Foomiibo");
+                    .listAmiiboDocuments(requireContext(), keyManager, rootFolder, recursiveFiles);
+            File foomiibo = new File(requireContext().getFilesDir(), "Foomiibo");
             amiiboFiles.addAll(AmiiboManager
                     .listAmiibos(keyManager, foomiibo, true));
-            this.runOnUiThread(() -> {
+            requireActivity().runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
             });
@@ -959,34 +973,34 @@ public class FlaskSlotActivity extends AppCompatActivity implements
 
     private void showScanningNotice() {
         dismissSnackbarNotice();
-        statusBar = new IconifiedSnackbar(this).buildSnackbar(
+        statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_scanning, R.drawable.ic_baseline_bluetooth_searching_24dp,
-                Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
+                Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
         );
         statusBar.show();
     }
 
     private void showConnectionNotice() {
         dismissSnackbarNotice();
-        statusBar = new IconifiedSnackbar(this).buildSnackbar(
+        statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_located, R.drawable.ic_bluup_flask_24dp,
-                Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
+                Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
         );
         statusBar.show();
     }
 
     private void showDisconnectNotice() {
         dismissSnackbarNotice();
-        statusBar = new IconifiedSnackbar(this).buildSnackbar(
+        statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_disconnect, R.drawable.ic_baseline_bluetooth_searching_24dp,
-                Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
+                Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
         );
         statusBar.setAction(R.string.scan, v -> selectBluetoothDevice());
         statusBar.show();
     }
 
     private void showUploadingNotice() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(R.layout.upload_dialog);
         uploadDialog = builder.create();
         uploadDialog.show();
@@ -994,9 +1008,9 @@ public class FlaskSlotActivity extends AppCompatActivity implements
 
     private void showPurchaseNotice() {
         dismissSnackbarNotice();
-        statusBar = new IconifiedSnackbar(this).buildSnackbar(
+        statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_missing, R.drawable.ic_bluup_flask_24dp,
-                Snackbar.LENGTH_INDEFINITE, findViewById(R.id.bottom_sheet)
+                Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
         );
         statusBar.setAction(R.string.purchase, v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/flask/"))
@@ -1006,7 +1020,8 @@ public class FlaskSlotActivity extends AppCompatActivity implements
 
     private int getColumnCount() {
         DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        WindowManager mWindowManager = (WindowManager) requireContext()
+                .getSystemService(Context.WINDOW_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
             mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
         else
@@ -1015,9 +1030,9 @@ public class FlaskSlotActivity extends AppCompatActivity implements
     }
 
     public void startFlaskService() {
-        Intent service = new Intent(this, FlaskBLEService.class);
-        startService(service);
-        bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
+        Intent service = new Intent(requireContext(), FlaskBLEService.class);
+        requireContext().startService(service);
+        requireContext().bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
     }
 
     public void disconnectFlask() {
@@ -1030,11 +1045,12 @@ public class FlaskSlotActivity extends AppCompatActivity implements
 
     public void stopFlaskService() {
         try {
-            unbindService(mServerConn);
-            stopService(new Intent(FlaskSlotActivity.this, FlaskBLEService.class));
+            requireContext().unbindService(mServerConn);
+            requireContext().stopService(new Intent(requireContext(), FlaskBLEService.class));
         } catch (IllegalArgumentException ignored) { }
     }
 
+    @SuppressLint("MissingPermission")
     private void dismissFlaskDiscovery() {
         if (null != mBluetoothAdapter) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -1082,7 +1098,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
             Bundle bundle = new Bundle();
             bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id);
 
-            Intent intent = new Intent(this, ImageActivity.class);
+            Intent intent = new Intent(requireContext(), ImageActivity.class);
             intent.putExtras(bundle);
 
             startActivity(intent);
@@ -1094,7 +1110,7 @@ public class FlaskSlotActivity extends AppCompatActivity implements
             Bundle bundle = new Bundle();
             bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile.getId());
 
-            Intent intent = new Intent(this, ImageActivity.class);
+            Intent intent = new Intent(requireContext(), ImageActivity.class);
             intent.putExtras(bundle);
 
             startActivity(intent);
@@ -1106,6 +1122,12 @@ public class FlaskSlotActivity extends AppCompatActivity implements
         super.onDestroy();
         dismissFlaskDiscovery();
         disconnectFlask();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dismissSnackbarNotice();
     }
 
     @Override
@@ -1161,18 +1183,11 @@ public class FlaskSlotActivity extends AppCompatActivity implements
             Bundle bundle = new Bundle();
             bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id);
 
-            Intent intent = new Intent(this, ImageActivity.class);
+            Intent intent = new Intent(requireContext(), ImageActivity.class);
             intent.putExtras(bundle);
 
             startActivity(intent);
         }
     }
-
-    @Override
-    public void onBackPressed() {
-        if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState())
-            onBottomSheetChanged(false);
-        else
-            super.onBackPressed();
-    }
 }
+

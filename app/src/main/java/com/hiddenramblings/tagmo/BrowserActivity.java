@@ -110,8 +110,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout;
-import com.hiddenramblings.tagmo.hardware.EliteBankActivity;
-import com.hiddenramblings.tagmo.hardware.FlaskSlotActivity;
+import com.hiddenramblings.tagmo.hardware.EliteBankFragment;
 import com.hiddenramblings.tagmo.hardware.PowerTagManager;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
@@ -162,8 +161,10 @@ public class BrowserActivity extends AppCompatActivity implements
     private TextView fakeSnackbarText;
     private AppCompatButton fakeSnackbarItem;
     private ViewPager2 mainLayout;
+    private FloatingActionButton nfcFab;
     private BrowserFragment browserFragment;
     private FoomiiboFragment foomiiboFragment;
+    private EliteBankFragment eliteFragment;
     private TextView currentFolderView;
     private DrawerLayout prefsDrawer;
     private AppCompatButton switchStorageRoot;
@@ -228,6 +229,7 @@ public class BrowserActivity extends AppCompatActivity implements
         fakeSnackbarText = findViewById(R.id.snackbar_text);
         fakeSnackbarItem = findViewById(R.id.snackbar_item);
         mainLayout = findViewById(R.id.amiibo_pager);
+        nfcFab = findViewById(R.id.nfc_fab);
         currentFolderView = findViewById(R.id.current_folder);
         prefsDrawer = findViewById(R.id.drawer_layout);
         switchStorageRoot = findViewById(R.id.switch_storage_root);
@@ -256,6 +258,7 @@ public class BrowserActivity extends AppCompatActivity implements
         mainLayout.setPageTransformer(cardFlipPageTransformer);
         browserFragment = pagerAdapter.getBrowser();
         foomiiboFragment = pagerAdapter.getFoomiibo();
+        eliteFragment = pagerAdapter.getEliteBanks();
 
         LinearLayout foomiibo = findViewById(R.id.foomiibo_options);
         foomiibo.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
@@ -275,10 +278,26 @@ public class BrowserActivity extends AppCompatActivity implements
                     case 0:
                         setTitle(R.string.tagmo_browser);
                         foomiibo.setVisibility(View.GONE);
+                        showBrowserInterface();
                         break;
                     case 1:
                         setTitle(R.string.foomiibo);
                         foomiibo.setVisibility(View.VISIBLE);
+                        showBrowserInterface();
+                        break;
+                    case 2:
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                            setTitle(R.string.bluup_flask_ble);
+                        } else {
+                            setTitle(R.string.elite_device);
+                        }
+                        foomiibo.setVisibility(View.GONE);
+                        hideBrowserInterface();
+                        break;
+                    case 3:
+                        setTitle(R.string.elite_device);
+                        foomiibo.setVisibility(View.GONE);
+                        hideBrowserInterface();
                         break;
                 }
                 invalidateOptionsMenu();
@@ -390,7 +409,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.loadPTagKeyManager();
 
-        FloatingActionButton nfcFab = findViewById(R.id.nfc_fab);
         PopupMenu popup = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1
                     ? new PopupMenu(this, nfcFab, Gravity.END, 0, R.style.PopupMenu)
                     : new PopupMenu(this, nfcFab);
@@ -537,8 +555,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void launchFlaskEditor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            Intent flaskIntent = new Intent(this, FlaskSlotActivity.class);
-            startActivity(flaskIntent);
+            mainLayout.setCurrentItem(2, true);
         } else {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             CustomTabsIntent customTabsIntent = builder.build();
@@ -563,10 +580,8 @@ public class BrowserActivity extends AppCompatActivity implements
             int bank_count = result.getData().getIntExtra(
                     NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
             prefs.eliteBankCount().put(bank_count);
-
-            Intent eliteIntent = new Intent(this, EliteBankActivity.class);
-            eliteIntent.putExtras(result.getData());
-            startActivity(eliteIntent);
+            eliteFragment.setArguments(result.getData().getExtras());
+            mainLayout.setCurrentItem(3, true);
         } else {
             mainLayout.setCurrentItem(0, true);
             updateAmiiboView(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
@@ -1860,10 +1875,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private void launchEliteActivity(Intent resultData) {
         if (TagMo.getPrefs().enable_elite_support().get()
                 && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
-            Intent eliteIntent = new Intent(this, EliteBankActivity.class);
-            eliteIntent.putExtras(resultData.getExtras());
-            startActivity(eliteIntent);
-            finish(); // Relaunch activity to bring view to front
+            eliteFragment.setArguments(resultData.getExtras());
+            mainLayout.setCurrentItem(3, true);
         }
     }
 
@@ -2170,12 +2183,36 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    void showBrowserPage() {
+    public void showBrowserPage() {
         mainLayout.setCurrentItem(0, true);
     }
 
-    void hideBottomSheet() {
+    void collapseBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    private void hideBrowserInterface() {
+        CoordinatorLayout.LayoutParams params =
+                (CoordinatorLayout.LayoutParams) nfcFab.getLayoutParams();
+        FloatingActionButton.Behavior behavior =
+                (FloatingActionButton.Behavior) params.getBehavior();
+        if (null != behavior) behavior.setAutoHideEnabled(false);
+        nfcFab.hide();
+        bottomSheetBehavior.setHideable(true);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
+    private void showBrowserInterface() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            bottomSheetBehavior.setHideable(false);
+        }, 250);
+        nfcFab.show();
+        CoordinatorLayout.LayoutParams params =
+                (CoordinatorLayout.LayoutParams) nfcFab.getLayoutParams();
+        FloatingActionButton.Behavior behavior =
+                (FloatingActionButton.Behavior) params.getBehavior();
+        if (null != behavior) behavior.setAutoHideEnabled(true);
     }
 
     public void closePrefsDrawer() {
@@ -2390,14 +2427,15 @@ public class BrowserActivity extends AppCompatActivity implements
                         prefs.eliteActiveBank().put(active_bank);
                         prefs.eliteBankCount().put(bank_count);
 
-                        Intent eliteIntent = new Intent(this, EliteBankActivity.class);
                         Bundle args = new Bundle();
                         ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
-                        eliteIntent.putExtra(NFCIntent.EXTRA_SIGNATURE, signature);
-                        eliteIntent.putExtra(NFCIntent.EXTRA_BANK_COUNT, bank_count);
-                        eliteIntent.putExtra(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
+                        args.putString(NFCIntent.EXTRA_SIGNATURE, signature);
+                        args.putInt(NFCIntent.EXTRA_BANK_COUNT, bank_count);
+                        args.putInt(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
                         args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles);
-                        onTagLaunchActivity.launch(eliteIntent.putExtras(args));
+                        eliteFragment.setArguments(args);
+                        mainLayout.setCurrentItem(3, true);
+
                     } else {
                         updateAmiiboView(TagReader.readFromTag(mifare));
                     }

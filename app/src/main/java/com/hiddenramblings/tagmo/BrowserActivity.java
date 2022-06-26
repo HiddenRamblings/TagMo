@@ -2198,15 +2198,17 @@ public class BrowserActivity extends AppCompatActivity implements
                 (FloatingActionButton.Behavior) params.getBehavior();
         if (null != behavior) behavior.setAutoHideEnabled(false);
         nfcFab.hide();
-        bottomSheetBehavior.setHideable(true);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            bottomSheetBehavior.setHideable(true);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        }, 100);
     }
 
     private void showBrowserInterface() {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            bottomSheetBehavior.setHideable(false);
-        }, 250);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        new Handler(Looper.getMainLooper()).postDelayed(()
+                -> bottomSheetBehavior.setHideable(false), 100);
         nfcFab.show();
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) nfcFab.getLayoutParams();

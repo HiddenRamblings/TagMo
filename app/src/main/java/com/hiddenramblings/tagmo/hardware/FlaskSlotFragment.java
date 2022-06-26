@@ -600,7 +600,7 @@ public class FlaskSlotFragment extends Fragment implements
             }
         });
 
-        verifyPermissions();
+        new Handler(Looper.getMainLooper()).postDelayed(this::verifyPermissions, 250);
     }
 
     private void onBottomSheetChanged(boolean hasAmiibo) {
@@ -1152,22 +1152,24 @@ public class FlaskSlotFragment extends Fragment implements
     public void onResume() {
         super.onResume();
         if (null != statusBar && statusBar.isShown()) return;
-        switch (noticeState) {
-            case NONE:
-                break;
-            case SCANNING:
-                showScanningNotice();
-                break;
-            case CONNECT:
-                showConnectionNotice();
-                break;
-            case MISSING:
-                showDisconnectNotice();
-                break;
-            case PURCHASE:
-                showPurchaseNotice();
-                break;
-        }
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            switch (noticeState) {
+                case NONE:
+                    break;
+                case SCANNING:
+                    showScanningNotice();
+                    break;
+                case CONNECT:
+                    showConnectionNotice();
+                    break;
+                case MISSING:
+                    showDisconnectNotice();
+                    break;
+                case PURCHASE:
+                    showPurchaseNotice();
+                    break;
+            }
+        }, 250);
     }
 
     @Override

@@ -1018,23 +1018,19 @@ public class EliteBankFragment extends Fragment implements
 
     @Override
     public void onResume() {
-        if (null != requireActivity().getCallingActivity())
-            if (NfcActivity.class.getName().equals(requireActivity()
-                    .getCallingActivity().getClassName())) return;
         super.onResume();
         try {
-            int bank_count = getArguments().getInt(NFCIntent.EXTRA_BANK_COUNT,
+            int bank_count = requireArguments().getInt(NFCIntent.EXTRA_BANK_COUNT,
                     prefs.eliteBankCount().get());
-            int active_bank = getArguments().getInt(NFCIntent.EXTRA_ACTIVE_BANK,
+            int active_bank = requireArguments().getInt(NFCIntent.EXTRA_ACTIVE_BANK,
                     prefs.eliteActiveBank().get());
 
-            ((TextView) rootLayout.findViewById(R.id.hardware_info)).setText(
-                    getString(R.string.elite_signature,
-                    getArguments().getString(NFCIntent.EXTRA_SIGNATURE))
-            );
+            ((TextView) rootLayout.findViewById(R.id.hardware_info)).setText(getString(
+                    R.string.elite_signature, requireArguments().getString(NFCIntent.EXTRA_SIGNATURE)
+            ));
             eliteBankCount.setValue(bank_count);
 
-            updateEliteHardwareAdapter(getArguments()
+            updateEliteHardwareAdapter(requireArguments()
                     .getStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST));
             bankStats.setText(getString(R.string.bank_stats,
                     getValueForPosition(eliteBankCount, active_bank), bank_count));
@@ -1049,6 +1045,8 @@ public class EliteBankFragment extends Fragment implements
                 onBottomSheetChanged(true, true);
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
+
+            setArguments(null);
         } catch (Exception ignored) { }
     }
 

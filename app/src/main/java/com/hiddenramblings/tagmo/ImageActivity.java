@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -14,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -57,6 +59,8 @@ public class ImageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_image);
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
 
         imageView = findViewById(R.id.imageAmiibo);
         bottomSheet = findViewById(R.id.bottom_sheet);
@@ -69,6 +73,19 @@ public class ImageActivity extends AppCompatActivity {
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
 
         amiiboId = getIntent().getLongExtra(NFCIntent.EXTRA_AMIIBO_ID, -1);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.imageview_amiibo);
+        toolbar.inflateMenu(R.menu.save_menu);
+        toolbar.setNavigationIcon(android.R.drawable.ic_menu_revert);
+        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.mnu_save) {
+                onSaveClicked(amiiboId);
+                return true;
+            }
+            return false;
+        });
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -214,21 +231,5 @@ public class ImageActivity extends AppCompatActivity {
         } catch (IOException e) {
             Debug.Log(e);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.save_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.mnu_save) {
-            onSaveClicked(amiiboId);
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-        return true;
     }
 }

@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -140,6 +141,8 @@ public class TagDataActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_tag_data);
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
 
         txtError = findViewById(R.id.txtError);
         txtTagId = findViewById(R.id.txtTagId);
@@ -186,6 +189,19 @@ public class TagDataActivity extends AppCompatActivity {
                 return;
             }
         }
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.edit_props);
+        toolbar.inflateMenu(R.menu.save_menu);
+        toolbar.setNavigationIcon(android.R.drawable.ic_menu_revert);
+        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.mnu_save) {
+                onSaveClicked();
+                return true;
+            }
+            return false;
+        });
 
         userDataSwitch.setOnCheckedChangeListener((compoundButton, checked) ->
                 onUserDataSwitchClicked(checked));
@@ -1437,21 +1453,5 @@ public class TagDataActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.close, (dialog, which) -> finish())
                 .show();
         setResult(Activity.RESULT_OK, new Intent(NFCIntent.ACTION_FIX_BANK_DATA));
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.save_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.mnu_save) {
-            onSaveClicked();
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-        return true;
     }
 }

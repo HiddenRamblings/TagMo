@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.adapter;
+package com.hiddenramblings.tagmo.browser.adapter;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;

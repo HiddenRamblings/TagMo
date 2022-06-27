@@ -46,7 +46,7 @@
         android:theme="@style/AppTheme"
         android:largeHeap="true" >
         <activity
-            android:name=".BrowserActivity"
+            android:name=".browser.BrowserActivity"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
             android:exported="true">
@@ -68,7 +68,7 @@
         </activity>
         <activity-alias
             android:name=".NFCIntentFilter"
-            android:targetActivity=".BrowserActivity"
+            android:targetActivity=".browser.BrowserActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
@@ -99,16 +99,16 @@
             android:launchMode="singleTop">
         </activity>
         <activity
-            android:name=".HexViewerActivity"
+            android:name=".hexcode.HexCodeViewer"
             android:theme="@style/DialogTheme.NoActionBar" />
         <activity
             android:name=".ImageActivity"
             android:theme="@style/DialogTheme.NoActionBar" />
         <activity
-            android:name=".TagDataActivity"
+            android:name=".amiibo.tagdata.TagDataEditor"
             android:theme="@style/DialogTheme.NoActionBar" />
         <service
-            android:name=".hardware.FlaskBLEService" />
+            android:name=".browser.FlaskBLEService" />
         <receiver
             android:name=".UpdateReceiver"
             android:exported="true">

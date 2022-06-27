@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.hardware;
+package com.hiddenramblings.tagmo.amiibo;
 
 import android.util.Base64;
 

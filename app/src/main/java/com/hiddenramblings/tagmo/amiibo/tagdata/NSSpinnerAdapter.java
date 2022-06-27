@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.adapter;
+package com.hiddenramblings.tagmo.amiibo.tagdata;
 
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;

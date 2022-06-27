@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.adapter;
+package com.hiddenramblings.tagmo.hexcode;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
@@ -12,16 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.hexcode.HexHeader;
-import com.hiddenramblings.tagmo.hexcode.HexItem;
-import com.hiddenramblings.tagmo.hexcode.TagMap;
 
-public class HexCodeAdapter extends RecyclerView.Adapter<HexCodeAdapter.ViewHolder> {
+public class HexAdapter extends RecyclerView.Adapter<HexAdapter.ViewHolder> {
 
     private static final int HEX = 16;
     private final HexItem[][] data;
 
-    public HexCodeAdapter(byte[] tagData) {
+    public HexAdapter(byte[] tagData) {
         this.setHasStableIds(true);
         int rowCount = ((tagData.length - 1) / HEX) + 2;
 
@@ -76,15 +73,15 @@ public class HexCodeAdapter extends RecyclerView.Adapter<HexCodeAdapter.ViewHold
 
     @NonNull
     @Override
-    public HexCodeAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new HexCodeAdapter.ViewHolder(LayoutInflater
+    public HexAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new HexAdapter.ViewHolder(LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.hexcode_line, parent, false));
     }
 
     @SuppressLint("WrongConstant")
     @Override
-    public void onBindViewHolder(HexCodeAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(HexAdapter.ViewHolder holder, int position) {
         HexItem[] row = getItem(position);
         for (int i = 0; i < holder.textView.length; i++) {
             HexItem hexItem = row[i];

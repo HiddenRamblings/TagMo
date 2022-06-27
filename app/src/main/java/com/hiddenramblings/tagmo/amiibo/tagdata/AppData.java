@@ -1,7 +1,6 @@
-package com.hiddenramblings.tagmo.amiibo.data;
+package com.hiddenramblings.tagmo.amiibo.tagdata;
 
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagDataActivity;
 import com.hiddenramblings.tagmo.TagMo;
 
 import java.io.IOException;
@@ -28,9 +27,9 @@ public class AppData {
     public static final HashMap<Integer, String> appIds = new HashMap<>();
 
     static {
-        appIds.put(TagDataActivity.APP_ID_TP,
+        appIds.put(TagDataEditor.APP_ID_TP,
                 TagMo.getContext().getString(R.string.zelda_twilight));
-        appIds.put(TagDataActivity.APP_ID_SSB,
+        appIds.put(TagDataEditor.APP_ID_SSB,
                 TagMo.getContext().getString(R.string.super_smash));
         appIds.put(-1, TagMo.getContext().getString(R.string.unspecified));
     }

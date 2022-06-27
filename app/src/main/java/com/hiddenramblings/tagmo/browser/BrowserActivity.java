@@ -265,6 +265,7 @@ public class BrowserActivity extends AppCompatActivity implements
         CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
         cardFlipPageTransformer.setScalable(true);
         mainLayout.setPageTransformer(cardFlipPageTransformer);
+        setViewPagerSensitivity(mainLayout, 4);
         browserFragment = pagerAdapter.getBrowser();
         foomiiboFragment = pagerAdapter.getFoomiibo();
         eliteFragment = pagerAdapter.getEliteBanks();
@@ -2109,6 +2110,22 @@ public class BrowserActivity extends AppCompatActivity implements
         else
             mWindowManager.getDefaultDisplay().getMetrics(metrics);
         return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
+    }
+
+    private void setViewPagerSensitivity(ViewPager2 viewPager, int sensitivity) {
+        try {
+            Field ff = ViewPager2.class.getDeclaredField("mRecyclerView") ;
+            ff.setAccessible(true);
+            RecyclerView recyclerView =  (RecyclerView) ff.get(viewPager);
+            Field touchSlopField = RecyclerView.class.getDeclaredField("mTouchSlop") ;
+            touchSlopField.setAccessible(true);
+            int touchSlop = (int) touchSlopField.get(recyclerView);
+            touchSlopField.set(recyclerView,touchSlop * sensitivity);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private int[] getAdapterStats() {

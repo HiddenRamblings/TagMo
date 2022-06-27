@@ -108,7 +108,7 @@
             android:name=".amiibo.tagdata.TagDataEditor"
             android:theme="@style/DialogTheme.NoActionBar" />
         <service
-            android:name=".browser.FlaskBLEService" />
+            android:name=".browser.FlaskGattService" />
         <receiver
             android:name=".UpdateReceiver"
             android:exported="true">

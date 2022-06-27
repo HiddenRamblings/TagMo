@@ -153,7 +153,7 @@ public class FlaskSlotFragment extends Fragment implements
     private BluetoothAdapter mBluetoothAdapter;
     private ScanCallback scanCallbackLP;
     private BluetoothAdapter.LeScanCallback scanCallback;
-    private FlaskBLEService flaskService;
+    private FlaskGattService flaskService;
     private String flaskProfile;
     private String flaskAddress;
 
@@ -238,11 +238,11 @@ public class FlaskSlotFragment extends Fragment implements
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
-            FlaskBLEService.LocalBinder localBinder = (FlaskBLEService.LocalBinder) binder;
+            FlaskGattService.LocalBinder localBinder = (FlaskGattService.LocalBinder) binder;
             flaskService = localBinder.getService();
             if (flaskService.initialize()) {
                 if (flaskService.connect(flaskAddress)) {
-                    flaskService.setListener(new FlaskBLEService.BluetoothGattListener() {
+                    flaskService.setListener(new FlaskGattService.BluetoothGattListener() {
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
@@ -599,7 +599,7 @@ public class FlaskSlotFragment extends Fragment implements
             }
         });
 
-        new Handler(Looper.getMainLooper()).postDelayed(this::verifyPermissions, 150);
+        new Handler(Looper.getMainLooper()).postDelayed(this::verifyPermissions, 200);
     }
 
     private void onBottomSheetChanged(boolean hasAmiibo) {
@@ -812,7 +812,7 @@ public class FlaskSlotFragment extends Fragment implements
         flaskProfile = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
-            ParcelUuid FlaskUUID = new ParcelUuid(FlaskBLEService.FlaskNUS);
+            ParcelUuid FlaskUUID = new ParcelUuid(FlaskGattService.FlaskNUS);
             ScanFilter filter = new ScanFilter.Builder().setServiceUuid(FlaskUUID).build();
             ScanSettings settings = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
@@ -836,7 +836,7 @@ public class FlaskSlotFragment extends Fragment implements
                 showConnectionNotice();
                 startFlaskService();
             };
-            mBluetoothAdapter.startLeScan(new UUID[]{ FlaskBLEService.FlaskNUS }, scanCallback);
+            mBluetoothAdapter.startLeScan(new UUID[]{ FlaskGattService.FlaskNUS }, scanCallback);
         }
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (null == flaskProfile) {
@@ -1047,7 +1047,7 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     public void startFlaskService() {
-        Intent service = new Intent(requireContext(), FlaskBLEService.class);
+        Intent service = new Intent(requireContext(), FlaskGattService.class);
         requireContext().startService(service);
         requireContext().bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
     }
@@ -1063,7 +1063,7 @@ public class FlaskSlotFragment extends Fragment implements
     public void stopFlaskService() {
         try {
             requireContext().unbindService(mServerConn);
-            requireContext().stopService(new Intent(requireContext(), FlaskBLEService.class));
+            requireContext().stopService(new Intent(requireContext(), FlaskGattService.class));
         } catch (IllegalArgumentException ignored) { }
     }
 
@@ -1168,7 +1168,7 @@ public class FlaskSlotFragment extends Fragment implements
                     showPurchaseNotice();
                     break;
             }
-        }, 150);
+        }, 100);
     }
 
     @Override

@@ -1,9 +1,8 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.hexcode;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.appcompat.app.AlertDialog;
@@ -12,12 +11,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hiddenramblings.tagmo.adapter.HexCodeAdapter;
+import com.hiddenramblings.tagmo.NFCIntent;
+import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
-public class HexViewerActivity extends AppCompatActivity {
+public class HexCodeViewer extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,14 +35,14 @@ public class HexViewerActivity extends AppCompatActivity {
         }
 
         RecyclerView listView = findViewById(R.id.gridView);
-        HexCodeAdapter adapter;
+        HexAdapter adapter;
         try {
-            adapter = new HexCodeAdapter(keyManager.decrypt(tagData));
+            adapter = new HexAdapter(keyManager.decrypt(tagData));
             listView.setLayoutManager(new LinearLayoutManager(this));
             listView.setAdapter(adapter);
         } catch (Exception e) {
             try {
-                adapter = new HexCodeAdapter(TagUtils.getValidatedData(keyManager, tagData));
+                adapter = new HexAdapter(TagUtils.getValidatedData(keyManager, tagData));
                 listView.setLayoutManager(new LinearLayoutManager(this));
                 listView.setAdapter(adapter);
             } catch (Exception ex) {

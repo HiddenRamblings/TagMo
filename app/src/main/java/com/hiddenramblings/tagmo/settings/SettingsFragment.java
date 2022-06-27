@@ -28,19 +28,18 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.WebActivity;
-import com.hiddenramblings.tagmo.adapter.AmiiboAPIAdapter;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.browser.BrowserActivity;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -258,7 +257,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         amiiboStats.setOnPreferenceClickListener(preference -> {
             new AlertDialog.Builder(this.getContext())
                     .setTitle(R.string.amiibo)
-                    .setAdapter(new AmiiboAPIAdapter(new ArrayList<>(
+                    .setAdapter(new AmiiboAdapter(new ArrayList<>(
                             amiiboManager.amiibos.values())), null)
                     .setPositiveButton(R.string.close, null)
                     .show();

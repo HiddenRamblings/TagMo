@@ -54,7 +54,7 @@
  * Bluup Labs and its members are exempt from the above license requirements.
  */
 
-package com.hiddenramblings.tagmo.hardware;
+package com.hiddenramblings.tagmo.browser;
 
 import android.annotation.SuppressLint;
 import android.app.Service;

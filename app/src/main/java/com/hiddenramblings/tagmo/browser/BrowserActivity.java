@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.browser;
 
 import android.Manifest;
 import android.app.Activity;
@@ -94,9 +94,14 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
-import com.hiddenramblings.tagmo.adapter.BrowserAdapter;
-import com.hiddenramblings.tagmo.adapter.FoldersAdapter;
-import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
+import com.hiddenramblings.tagmo.BuildConfig;
+import com.hiddenramblings.tagmo.GlideApp;
+import com.hiddenramblings.tagmo.ImageActivity;
+import com.hiddenramblings.tagmo.NFCIntent;
+import com.hiddenramblings.tagmo.NfcActivity;
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.WebActivity;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -106,12 +111,16 @@ import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.GamesManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.amiibo.PowerTagManager;
+import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
+import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter;
+import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter;
+import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout;
-import com.hiddenramblings.tagmo.hardware.EliteBankFragment;
-import com.hiddenramblings.tagmo.hardware.PowerTagManager;
+import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -1138,11 +1147,11 @@ public class BrowserActivity extends AppCompatActivity implements
                 return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
-                Intent tagEdit = new Intent(this, TagDataActivity.class);
+                Intent tagEdit = new Intent(this, TagDataEditor.class);
                 onUpdateTagResult.launch(tagEdit.putExtras(args));
                 return true;
             } else if (item.getItemId() == R.id.mnu_view_hex) {
-                Intent hexView = new Intent(this, HexViewerActivity.class);
+                Intent hexView = new Intent(this, HexCodeViewer.class);
                 hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData);
                 startActivity(hexView);
                 return true;
@@ -1970,7 +1979,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    void updateAmiiboView(byte[] tagData, AmiiboFile amiiboFile) {
+    public void updateAmiiboView(byte[] tagData, AmiiboFile amiiboFile) {
         amiiboContainer.setAlpha(0f);
         amiiboContainer.setVisibility(View.VISIBLE);
         amiiboContainer.animate()
@@ -2092,7 +2101,7 @@ public class BrowserActivity extends AppCompatActivity implements
         updateAmiiboView(tagData, clickedAmiibo);
     }
 
-    int getColumnCount() {
+    public int getColumnCount() {
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -2201,7 +2210,7 @@ public class BrowserActivity extends AppCompatActivity implements
         mainLayout.setCurrentItem(0, true);
     }
 
-    void collapseBottomSheet() {
+    public void collapseBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
@@ -2236,7 +2245,7 @@ public class BrowserActivity extends AppCompatActivity implements
             prefsDrawer.closeDrawer(GravityCompat.START);
     }
 
-    BrowserSettings getSettings() {
+    public BrowserSettings getSettings() {
         return this.settings;
     }
 
@@ -2370,11 +2379,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private boolean hasTestedElite;
     private boolean isEliteDevice;
-
-    private final ActivityResultLauncher<Intent> onTagLaunchActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (settings.getAmiiboFiles().isEmpty()) this.onRefresh(true);
-    });
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     final ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(

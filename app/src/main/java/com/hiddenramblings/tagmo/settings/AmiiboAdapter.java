@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.adapter;
+package com.hiddenramblings.tagmo.settings;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -23,11 +23,11 @@ import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class AmiiboAPIAdapter extends BaseAdapter {
+public class AmiiboAdapter extends BaseAdapter {
 
     ArrayList<Amiibo> items;
 
-    public AmiiboAPIAdapter(ArrayList<Amiibo> items) {
+    public AmiiboAdapter(ArrayList<Amiibo> items) {
         this.items = items;
         Collections.sort(items);
     }

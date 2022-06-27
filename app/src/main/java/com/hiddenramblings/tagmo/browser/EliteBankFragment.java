@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.hardware;
+package com.hiddenramblings.tagmo.browser;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -41,23 +41,23 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.GlideApp;
-import com.hiddenramblings.tagmo.HexViewerActivity;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagDataActivity;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.adapter.EliteBankAdapter;
-import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
-import com.hiddenramblings.tagmo.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
+import com.hiddenramblings.tagmo.browser.adapter.EliteBankAdapter;
+import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
+import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.Preferences_;
@@ -543,11 +543,11 @@ public class EliteBankFragment extends Fragment implements
                         break;
                     case EDIT_DATA:
                         onUpdateTagResult.launch(new Intent(requireContext(),
-                                TagDataActivity.class).putExtras(args));
+                                TagDataEditor.class).putExtras(args));
                         break;
                     case HEX_CODE:
                         onUpdateTagResult.launch(new Intent(requireContext(),
-                                HexViewerActivity.class).putExtras(args));
+                                HexCodeViewer.class).putExtras(args));
                         break;
                     case BANK_BACKUP:
                         displayBackupDialog(tagData);
@@ -747,7 +747,7 @@ public class EliteBankFragment extends Fragment implements
                 return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 if (null != tagData && tagData.length > 0) {
-                    Intent editor = new Intent(requireContext(), TagDataActivity.class);
+                    Intent editor = new Intent(requireContext(), TagDataEditor.class);
                     editor.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData);
                     onUpdateTagResult.launch(editor);
                 } else {
@@ -757,7 +757,7 @@ public class EliteBankFragment extends Fragment implements
                 return true;
             } else if (item.getItemId() == R.id.mnu_view_hex) {
                 if (null != tagData && tagData.length > 0) {
-                    Intent viewhex = new Intent(requireContext(), HexViewerActivity.class);
+                    Intent viewhex = new Intent(requireContext(), HexCodeViewer.class);
                     viewhex.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData);
                     startActivity(viewhex);
                 } else {

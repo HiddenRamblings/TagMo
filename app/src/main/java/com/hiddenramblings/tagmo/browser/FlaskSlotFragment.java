@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.hardware;
+package com.hiddenramblings.tagmo.browser;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -63,20 +63,19 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.BrowserActivity;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.adapter.FlaskSlotAdapter;
-import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
-import com.hiddenramblings.tagmo.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.FlaskTag;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter;
+import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
+import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
@@ -600,7 +599,7 @@ public class FlaskSlotFragment extends Fragment implements
             }
         });
 
-        new Handler(Looper.getMainLooper()).postDelayed(this::verifyPermissions, 100);
+        new Handler(Looper.getMainLooper()).postDelayed(this::verifyPermissions, 150);
     }
 
     private void onBottomSheetChanged(boolean hasAmiibo) {
@@ -1169,7 +1168,7 @@ public class FlaskSlotFragment extends Fragment implements
                     showPurchaseNotice();
                     break;
             }
-        }, 100);
+        }, 150);
     }
 
     @Override

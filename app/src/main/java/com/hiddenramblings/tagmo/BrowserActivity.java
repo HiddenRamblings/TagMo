@@ -1054,6 +1054,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void getToolbarOptions(Toolbar toolbar, byte[] tagData, AmiiboFile amiiboFile) {
+        if (!toolbar.getMenu().hasVisibleItems())
+            toolbar.inflateMenu(R.menu.amiibo_menu);
         boolean available = null != tagData  && tagData.length > 0;
         if (available) {
             try {
@@ -1063,14 +1065,26 @@ public class BrowserActivity extends AppCompatActivity implements
                 Debug.Log(e);
             }
         }
-        if (!toolbar.getMenu().hasVisibleItems())
-            toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_update).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_save).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_edit).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_view_hex).setEnabled(available);
         toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(available);
+
+        MenuItem backup = toolbar.getMenu().findItem(R.id.mnu_save);
+        if (null != amiiboFile) {
+            if (null != amiiboFile.getFilePath()) {
+                String relativeFile = Storage.getRelativePath(amiiboFile.getFilePath(),
+                        TagMo.getPrefs().preferEmulated().get()).replace(
+                        TagMo.getPrefs().browserRootFolder().get(), "");
+                backup.setVisible(!relativeFile.startsWith("/Foomiibo/"));
+            } else if (null != amiiboFile.getDocUri()) {
+                String amiiboUri = amiiboFile.getDocUri().getUri().toString();
+                backup.setVisible(!amiiboUri.contains("Foomiibo"));
+            }
+        }
+
         toolbar.setOnMenuItemClickListener(item -> {
             clickedAmiibo = amiiboFile;
             Bundle args = new Bundle();

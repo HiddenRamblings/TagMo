@@ -411,6 +411,7 @@ public class BrowserAdapter
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
                         this.txtPath.setTextColor(a.data);
                     }
+                    setIsHighlighted(amiiboUri.contains("Foomiibo"));
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");

@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.amiibo.data;
+package com.hiddenramblings.tagmo.amiibo.tagdata;
 
 import java.io.IOException;
 

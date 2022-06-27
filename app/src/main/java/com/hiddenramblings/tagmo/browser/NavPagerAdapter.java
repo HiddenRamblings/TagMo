@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.browser;
 
 import android.os.Build;
 
@@ -8,10 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.hiddenramblings.tagmo.hardware.EliteBankFragment;
-import com.hiddenramblings.tagmo.hardware.FlaskSlotFragment;
-
-class NavPagerAdapter extends FragmentStateAdapter {
+public class NavPagerAdapter extends FragmentStateAdapter {
     private final BrowserFragment browserFragment = new BrowserFragment();
     private final FoomiiboFragment foomiiboFragment = new FoomiiboFragment();
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)

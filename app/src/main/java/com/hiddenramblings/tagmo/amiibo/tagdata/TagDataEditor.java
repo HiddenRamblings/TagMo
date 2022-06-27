@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.amiibo.tagdata;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -36,14 +34,12 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.hiddenramblings.tagmo.adapter.NSSpinnerAdapter;
+import com.hiddenramblings.tagmo.GlideApp;
+import com.hiddenramblings.tagmo.NFCIntent;
+import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
-import com.hiddenramblings.tagmo.amiibo.data.AmiiboData;
-import com.hiddenramblings.tagmo.amiibo.data.AppData;
-import com.hiddenramblings.tagmo.amiibo.data.AppDataSSB;
-import com.hiddenramblings.tagmo.amiibo.data.AppDataTP;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -65,7 +61,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-public class TagDataActivity extends AppCompatActivity {
+public class TagDataEditor extends AppCompatActivity {
 
     private TextView txtError;
     private TextView txtTagId;
@@ -217,7 +213,7 @@ public class TagDataActivity extends AppCompatActivity {
             c.setTime(initializedDate);
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    TagDataActivity.this,
+                    TagDataEditor.this,
                     onInitDateSet,
                     c.get(Calendar.YEAR),
                     c.get(Calendar.MONTH),
@@ -231,7 +227,7 @@ public class TagDataActivity extends AppCompatActivity {
             c.setTime(modifiedDate);
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    TagDataActivity.this,
+                    TagDataEditor.this,
                     onModifiedDateSet,
                     c.get(Calendar.YEAR),
                     c.get(Calendar.MONTH),

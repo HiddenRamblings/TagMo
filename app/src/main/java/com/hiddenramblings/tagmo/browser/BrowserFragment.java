@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.browser;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -16,7 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.flexbox.FlexboxLayout;
-import com.hiddenramblings.tagmo.adapter.BrowserAdapter;
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;

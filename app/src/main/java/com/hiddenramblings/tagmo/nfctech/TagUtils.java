@@ -72,7 +72,7 @@ import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
-import com.hiddenramblings.tagmo.amiibo.data.AmiiboData;
+import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import java.io.File;

@@ -1,8 +1,10 @@
-package com.hiddenramblings.tagmo.adapter;
+package com.hiddenramblings.tagmo.browser.adapter;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +21,12 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.amiibo.AmiiboComparator;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
@@ -31,23 +35,20 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 
-public class FoomiiboAdapter
-        extends RecyclerView.Adapter<FoomiiboAdapter.FoomiiboViewHolder>
+public class BrowserAdapter
+        extends RecyclerView.Adapter<BrowserAdapter.AmiiboViewHolder>
         implements Filterable, BrowserSettingsListener {
 
     private final BrowserSettings settings;
-    private OnFoomiiboClickListener listener = null;
-    private OnHighlightListener collector = null;
-    private final ArrayList<Amiibo> data = new ArrayList<>();
-    private ArrayList<Amiibo> filteredData;
-    private FoomiiboFilter filter;
+    private final OnAmiiboClickListener listener;
+    private final ArrayList<AmiiboFile> data = new ArrayList<>();
+    private ArrayList<AmiiboFile> filteredData;
+    private AmiiboFilter filter;
     boolean firstRun = true;
-    private static final ArrayList<Long> foomiiboId = new ArrayList<>();
-    private final ArrayList<Amiibo> amiiboList = new ArrayList<>();
+    private static final ArrayList<String> amiiboPath = new ArrayList<>();
 
-    public FoomiiboAdapter(BrowserSettings settings, OnFoomiiboClickListener listener) {
+    public BrowserAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         this.settings = settings;
         this.listener = listener;
 
@@ -55,20 +56,8 @@ public class FoomiiboAdapter
         this.setHasStableIds(true);
     }
 
-    public FoomiiboAdapter(BrowserSettings settings, OnHighlightListener collector) {
-        this.settings = settings;
-        this.collector = collector;
-
-        this.filteredData = this.data;
-        this.setHasStableIds(true);
-    }
-
-    public void resetSelections() {
-        this.amiiboList.clear();
-    }
-
     public static void resetVisible() {
-        foomiiboId.clear();
+        amiiboPath.clear();
     }
 
     @Override
@@ -89,8 +78,11 @@ public class FoomiiboAdapter
                 !BrowserSettings.equals(newBrowserSettings.getAmiiboTypeFilter(),
                         oldBrowserSettings.getAmiiboTypeFilter());
 
-        if (!BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
+        if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
+            this.data.clear();
+            if (null != newBrowserSettings.getAmiiboFiles())
+                this.data.addAll(newBrowserSettings.getAmiiboFiles());
             refresh = true;
         }
         if (!BrowserSettings.equals(newBrowserSettings.getAmiiboManager(),
@@ -115,10 +107,10 @@ public class FoomiiboAdapter
 
     @Override
     public long getItemId(int i) {
-        return filteredData.get(i).id;
+        return filteredData.get(i).getId();
     }
 
-    public Amiibo getItem(int i) {
+    public AmiiboFile getItem(int i) {
         return filteredData.get(i);
     }
 
@@ -129,67 +121,55 @@ public class FoomiiboAdapter
 
     @NonNull
     @Override
-    public FoomiiboViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AmiiboViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (VIEW.valueOf(viewType)) {
             case COMPACT:
-                return new CompactViewHolder(parent, settings, listener, collector);
+                return new CompactViewHolder(parent, settings, listener);
             case LARGE:
-                return new LargeViewHolder(parent, settings, listener, collector);
+                return new LargeViewHolder(parent, settings, listener);
             case IMAGE:
-                return new ImageViewHolder(parent, settings, listener, collector);
+                return new ImageViewHolder(parent, settings, listener);
             case SIMPLE:
             default:
-                return new SimpleViewHolder(parent, settings, listener, collector);
+                return new SimpleViewHolder(parent, settings, listener);
         }
     }
 
-    private void setIsHighlighted(FoomiiboViewHolder holder, boolean isHighlighted) {
-        View highlight = holder.itemView.findViewById(R.id.highlight);
-        if (isHighlighted) {
-            highlight.setBackgroundResource(R.drawable.rounded_neon);
-        } else {
-            highlight.setBackgroundResource(0);
-        }
-    }
+    private void handleClickEvent(final AmiiboViewHolder holder) {
+        if (null != holder.listener) {
+            String uri = null != holder.amiiboFile.getDocUri()
+                    ? holder.amiiboFile.getDocUri().getUri().toString() : null;
+            String path = null != holder.amiiboFile.getFilePath()
+                    ? holder.amiiboFile.getFilePath().getAbsolutePath() : null;
 
-    private void handleClickEvent(final FoomiiboViewHolder holder, int position) {
-        if (null != holder.collector) {
-            if (amiiboList.contains(holder.foomiibo)) {
-                amiiboList.remove(filteredData.get(position));
-                setIsHighlighted(holder, false);
-            } else {
-                amiiboList.add(filteredData.get(position));
-                setIsHighlighted(holder, true);
-            }
-            holder.collector.onAmiiboClicked(amiiboList);
-        } else if (null != holder.listener) {
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
-                if (foomiiboId.contains(holder.foomiibo.id)) {
-                    foomiiboId.remove(holder.foomiibo.id);
+                if (amiiboPath.contains(uri) || amiiboPath.contains(path)) {
+                    if (null != uri) amiiboPath.remove(uri);
+                    if (null != path) amiiboPath.remove(path);
                 } else {
-                    foomiiboId.add(holder.foomiibo.id);
+                    if (null != uri) amiiboPath.add(uri);
+                    if (null != path) amiiboPath.add(path);
                 }
             } else {
-                foomiiboId.clear();
+                amiiboPath.clear();
             }
-            holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo);
+            holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile);
         }
     }
 
     @Override
-    public void onBindViewHolder(final FoomiiboViewHolder holder, int position) {
-        final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
-        holder.itemView.setOnClickListener(view -> handleClickEvent(holder, clickPosition));
+    public void onBindViewHolder(final AmiiboViewHolder holder, int position) {
+        holder.itemView.setOnClickListener(view -> handleClickEvent(holder));
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
-                if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                    handleClickEvent(holder, clickPosition);
-                else if (null != holder.listener)
-                    holder.listener.onFoomiiboImageClicked(holder.foomiibo);
+                if (settings.getAmiiboView() == VIEW.IMAGE.getValue()) {
+                    handleClickEvent(holder);
+                } else if (null != holder.listener) {
+                    holder.listener.onAmiiboImageClicked(holder.amiiboFile);
+                }
             });
         }
-        holder.bind(getItem(clickPosition));
-        setIsHighlighted(holder, amiiboList.contains(holder.foomiibo));
+        holder.bind(getItem(holder.getBindingAdapterPosition()));
     }
 
     public void refresh() {
@@ -197,14 +177,14 @@ public class FoomiiboAdapter
     }
 
     @Override
-    public FoomiiboFilter getFilter() {
+    public AmiiboFilter getFilter() {
         if (null == this.filter) {
-            this.filter = new FoomiiboFilter();
+            this.filter = new AmiiboFilter();
         }
         return this.filter;
     }
 
-    class FoomiiboFilter extends Filter {
+    class AmiiboFilter extends Filter {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             String query = null != constraint ? constraint.toString() : "";
@@ -216,13 +196,26 @@ public class FoomiiboAdapter
             settings.setQuery(query);
 
             data.clear();
-            settings.getAmiiboManager().amiibos.values();
-            data.addAll(settings.getAmiiboManager().amiibos.values());
+            if (null != settings.getAmiiboFiles()) {
+                data.addAll(settings.getAmiiboFiles());
+            }
 
-            ArrayList<Amiibo> tempList = new ArrayList<>();
+            ArrayList<AmiiboFile> tempList = new ArrayList<>();
             String queryText = query.trim().toLowerCase();
-            for (Amiibo amiibo : data) {
-                if (settings.amiiboContainsQuery(amiibo, queryText)) tempList.add(amiibo);
+            for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
+                boolean add = false;
+                AmiiboManager amiiboManager = settings.getAmiiboManager();
+                if (null != amiiboManager) {
+                    Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
+                    if (null == amiibo)
+                        amiibo = new Amiibo(amiiboManager, amiiboFile.getId(),
+                                null, null);
+                    add = settings.amiiboContainsQuery(amiibo, queryText);
+                }
+                if (!add && null != amiiboFile.getFilePath())
+                    add = pathContainsQuery(amiiboFile.getFilePath().getAbsolutePath(), queryText);
+                if (add)
+                    tempList.add(amiiboFile);
             }
             filterResults.count = tempList.size();
             filterResults.values = tempList;
@@ -230,42 +223,30 @@ public class FoomiiboAdapter
             return filterResults;
         }
 
+        public boolean pathContainsQuery(String path, String query) {
+            return !query.isEmpty() &&
+                    settings.getGameSeriesFilter().isEmpty() &&
+                    settings.getCharacterFilter().isEmpty() &&
+                    settings.getAmiiboSeriesFilter().isEmpty() &&
+                    settings.getAmiiboTypeFilter().isEmpty() &&
+                    path.toLowerCase().contains(query);
+        }
+
         @SuppressWarnings("unchecked")
         @SuppressLint("NotifyDataSetChanged")
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             if (null != filteredData && filteredData == filterResults.values) return;
-            filteredData = (ArrayList<Amiibo>) filterResults.values;
-
+            filteredData = (ArrayList<AmiiboFile>) filterResults.values;
             if (null != filteredData && !filteredData.isEmpty())
-                Collections.sort(filteredData, new AmiiboComparator(settings));
-
-            ArrayList<Amiibo> missingFiles = new ArrayList<>();
-            if (null != settings.getAmiiboManager()) {
-                HashSet<Long> amiiboIds = new HashSet<>();
-                for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-                    amiiboIds.add(amiiboFile.getId());
-                }
-                for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
-                    if (!amiiboIds.contains(amiibo.id)) {
-                        missingFiles.add(amiibo);
-                    }
-                }
-                if (!missingFiles.isEmpty())
-                    Collections.sort(missingFiles, new AmiiboComparator(settings));
-
-                filteredData.removeAll(missingFiles);
-                filteredData.addAll(0, missingFiles);
-            }
-
+                Collections.sort(filteredData, new AmiiboFileComparator(settings));
             notifyDataSetChanged();
         }
     }
 
-    protected static abstract class FoomiiboViewHolder extends RecyclerView.ViewHolder {
+    protected static abstract class AmiiboViewHolder extends RecyclerView.ViewHolder {
         private final BrowserSettings settings;
-        private final OnFoomiiboClickListener listener;
-        private final OnHighlightListener collector;
+        private final OnAmiiboClickListener listener;
 
         public final TextView txtError;
         public final TextView txtName;
@@ -277,7 +258,7 @@ public class FoomiiboAdapter
         public final TextView txtPath;
         public final AppCompatImageView imageAmiibo;
 
-        Amiibo foomiibo = null;
+        AmiiboFile amiiboFile = null;
 
         private final BoldSpannable boldSpannable = new BoldSpannable();
 
@@ -304,15 +285,20 @@ public class FoomiiboAdapter
             }
         };
 
-        public FoomiiboViewHolder(
-                View itemView, BrowserSettings settings,
-                OnFoomiiboClickListener listener,
-                OnHighlightListener collector) {
+        private void setIsHighlighted(boolean isHighlighted) {
+            View highlight = this.itemView.findViewById(R.id.highlight);
+            if (isHighlighted) {
+                highlight.setBackgroundResource(R.drawable.rounded_view);
+            } else {
+                highlight.setBackgroundResource(0);
+            }
+        }
+
+        public AmiiboViewHolder(View itemView, BrowserSettings settings, OnAmiiboClickListener listener) {
             super(itemView);
 
             this.settings = settings;
             this.listener = listener;
-            this.collector = collector;
 
             this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
@@ -325,8 +311,8 @@ public class FoomiiboAdapter
             this.imageAmiibo = itemView.findViewById(R.id.imageAmiibo);
         }
 
-        void bind(final Amiibo item) {
-            this.foomiibo = item;
+        void bind(final AmiiboFile item) {
+            this.amiiboFile = item;
 
             String tagInfo = null;
             String amiiboHexId;
@@ -337,7 +323,7 @@ public class FoomiiboAdapter
             // String character = "";
             String amiiboImageUrl;
 
-            long amiiboId = item.id;
+            long amiiboId = item.getId();
             Amiibo amiibo = null;
             AmiiboManager amiiboManager = settings.getAmiiboManager();
             if (null != amiiboManager) {
@@ -364,31 +350,74 @@ public class FoomiiboAdapter
 
             String query = settings.getQuery().toLowerCase();
 
-            setFoomiiboInfoText(this.txtName, amiiboName, false);
+            setAmiiboInfoText(this.txtName, amiiboName, false);
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 boolean hasTagInfo = null != tagInfo;
                 if (hasTagInfo) {
-                    setFoomiiboInfoText(this.txtError, tagInfo, false);
+                    setAmiiboInfoText(this.txtError, tagInfo, false);
                 } else {
                     this.txtError.setVisibility(View.GONE);
                 }
-                setFoomiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query), hasTagInfo);
-                setFoomiiboInfoText(this.txtAmiiboSeries,
+                setAmiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query), hasTagInfo);
+                setAmiiboInfoText(this.txtAmiiboSeries,
                         boldSpannable.IndexOf(amiiboSeries, query), hasTagInfo);
-                setFoomiiboInfoText(this.txtAmiiboType,
+                setAmiiboInfoText(this.txtAmiiboType,
                         boldSpannable.IndexOf(amiiboType, query), hasTagInfo);
-                setFoomiiboInfoText(this.txtGameSeries,
+                setAmiiboInfoText(this.txtGameSeries,
                         boldSpannable.IndexOf(gameSeries, query), hasTagInfo);
                 // setAmiiboInfoText(this.txtCharacter,
                 // boldText.Matching(character, query), hasTagInfo);
-                this.txtPath.setVisibility(View.GONE);
 
-                boolean expanded = foomiiboId.contains(foomiibo.id);
-                itemView.findViewById(R.id.menu_options)
-                        .setVisibility(expanded ? View.VISIBLE : View.GONE);
-                itemView.findViewById(R.id.txtUsage)
-                        .setVisibility(expanded ? View.VISIBLE : View.GONE);
-                if (expanded) listener.onFoomiiboRebind(itemView, foomiibo);
+                if (null != item.getFilePath()) {
+                    boolean expanded = amiiboPath.contains(item.getFilePath().getAbsolutePath());
+                    itemView.findViewById(R.id.menu_options)
+                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                    itemView.findViewById(R.id.txtUsage)
+                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                    if (expanded) listener.onAmiiboRebind(itemView, amiiboFile);
+
+                    String relativeFile = Storage.getRelativePath(item.getFilePath(),
+                            TagMo.getPrefs().preferEmulated().get()).replace(
+                            TagMo.getPrefs().browserRootFolder().get(), "");
+                    this.itemView.setEnabled(true);
+                    this.txtPath.setText(boldSpannable.IndexOf(relativeFile, query));
+                    TypedValue a = new TypedValue();
+                    this.txtPath.getContext().getTheme().resolveAttribute(
+                            android.R.attr.textColor, a, true);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                        this.txtPath.setTextColor(a.data);
+                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                        this.txtPath.setTextColor(a.data);
+                    }
+                    setIsHighlighted(relativeFile.startsWith("/Foomiibo/"));
+                } else if (null != item.getDocUri()) {
+                    String amiiboUri = item.getDocUri().getUri().toString();
+                    boolean expanded = amiiboPath.contains(amiiboUri);
+                    itemView.findViewById(R.id.menu_options)
+                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                    itemView.findViewById(R.id.txtUsage)
+                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                    if (expanded) listener.onAmiiboRebind(itemView, amiiboFile);
+
+                    this.itemView.setEnabled(true);
+                    this.txtPath.setText(boldSpannable.IndexOf(amiiboUri, query));
+                    TypedValue a = new TypedValue();
+                    this.txtPath.getContext().getTheme().resolveAttribute(
+                            android.R.attr.textColor, a, true);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                        this.txtPath.setTextColor(a.data);
+                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                        this.txtPath.setTextColor(a.data);
+                    }
+                    setIsHighlighted(amiiboUri.contains("Foomiibo"));
+                } else {
+                    this.itemView.setEnabled(false);
+                    this.txtPath.setText("");
+                    this.txtPath.setTextColor(this.txtPath.getResources().getColor(R.color.tag_text));
+                }
+                this.txtPath.setVisibility(View.VISIBLE);
             }
             if (null != this.imageAmiibo) {
                 GlideApp.with(itemView).clear(target);
@@ -401,7 +430,7 @@ public class FoomiiboAdapter
             }
         }
 
-        void setFoomiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
+        void setAmiiboInfoText(TextView textView, CharSequence text, boolean hasTagInfo) {
             if (hasTagInfo) {
                 textView.setVisibility(View.GONE);
             } else {
@@ -417,61 +446,53 @@ public class FoomiiboAdapter
         }
     }
 
-    static class SimpleViewHolder extends FoomiiboViewHolder {
+    static class SimpleViewHolder extends AmiiboViewHolder {
         public SimpleViewHolder(ViewGroup parent, BrowserSettings settings,
-                                OnFoomiiboClickListener listener,
-                                OnHighlightListener collector) {
+                                OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
-                    settings, listener, collector
+                    settings, listener
             );
         }
     }
 
-    static class CompactViewHolder extends FoomiiboViewHolder {
+    static class CompactViewHolder extends AmiiboViewHolder {
         public CompactViewHolder(ViewGroup parent, BrowserSettings settings,
-                                 OnFoomiiboClickListener listener,
-                                 OnHighlightListener collector) {
+                                 OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
-                    settings, listener, collector
+                    settings, listener
             );
         }
     }
 
-    static class LargeViewHolder extends FoomiiboViewHolder {
+    static class LargeViewHolder extends AmiiboViewHolder {
         public LargeViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnFoomiiboClickListener listener,
-                               OnHighlightListener collector) {
+                               OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
-                    settings, listener, collector
+                    settings, listener
             );
         }
     }
 
-    static class ImageViewHolder extends FoomiiboViewHolder {
+    static class ImageViewHolder extends AmiiboViewHolder {
         public ImageViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnFoomiiboClickListener listener,
-                               OnHighlightListener collector) {
+                               OnAmiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_image_card, parent, false),
-                    settings, listener, collector
+                    settings, listener
             );
         }
     }
 
-    public interface OnFoomiiboClickListener {
-        void onFoomiiboClicked(View itemView, Amiibo amiibo);
-        void onFoomiiboRebind(View itemView, Amiibo amiibo);
-        void onFoomiiboImageClicked(Amiibo amiibo);
-    }
-
-    public interface OnHighlightListener {
-        void onAmiiboClicked(ArrayList<Amiibo> amiiboList);
+    public interface OnAmiiboClickListener {
+        void onAmiiboClicked(View itemView, AmiiboFile amiiboFile);
+        void onAmiiboRebind(View itemView, AmiiboFile amiiboFile);
+        void onAmiiboImageClicked(AmiiboFile amiiboFile);
     }
 }

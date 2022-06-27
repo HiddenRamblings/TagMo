@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.browser;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -25,14 +25,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter;
+import com.hiddenramblings.tagmo.ImageActivity;
+import com.hiddenramblings.tagmo.NFCIntent;
+import com.hiddenramblings.tagmo.NfcActivity;
+import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.GamesManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
+import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -272,11 +278,11 @@ public class FoomiiboFragment extends Fragment implements
                 return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
-                Intent tagEdit = new Intent(requireContext(), TagDataActivity.class);
+                Intent tagEdit = new Intent(requireContext(), TagDataEditor.class);
                 onUpdateTagResult.launch(tagEdit.putExtras(args));
                 return true;
             } else if (item.getItemId() == R.id.mnu_view_hex) {
-                Intent hexView = new Intent(requireContext(), HexViewerActivity.class);
+                Intent hexView = new Intent(requireContext(), HexCodeViewer.class);
                 hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData);
                 startActivity(hexView);
                 return true;

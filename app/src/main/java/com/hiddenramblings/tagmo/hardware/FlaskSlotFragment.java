@@ -1169,7 +1169,7 @@ public class FlaskSlotFragment extends Fragment implements
                     showPurchaseNotice();
                     break;
             }
-        }, 250);
+        }, 100);
     }
 
     @Override

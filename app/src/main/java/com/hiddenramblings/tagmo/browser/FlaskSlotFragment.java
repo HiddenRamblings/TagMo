@@ -599,7 +599,7 @@ public class FlaskSlotFragment extends Fragment implements
             }
         });
 
-        new Handler(Looper.getMainLooper()).postDelayed(this::verifyPermissions, 200);
+        new Handler(Looper.getMainLooper()).postDelayed(this::verifyPermissions, 250);
     }
 
     private void onBottomSheetChanged(boolean hasAmiibo) {

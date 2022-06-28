@@ -265,7 +265,7 @@ public class BrowserActivity extends AppCompatActivity implements
         CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
         cardFlipPageTransformer.setScalable(true);
         mainLayout.setPageTransformer(cardFlipPageTransformer);
-        setViewPagerSensitivity(mainLayout, 4);
+        setViewPagerSensitivity(mainLayout, 3);
         browserFragment = pagerAdapter.getBrowser();
         foomiiboFragment = pagerAdapter.getFoomiibo();
         eliteFragment = pagerAdapter.getEliteBanks();
@@ -2204,7 +2204,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
             TranslateAnimation animate = new TranslateAnimation(
                     0, 0, 0, -fakeSnackbar.getHeight());
-            animate.setDuration(150);
+            animate.setDuration(100);
             animate.setFillAfter(false);
             fakeSnackbar.setAnimationListener(new AnimatedLinearLayout.AnimationListener() {
                 @Override

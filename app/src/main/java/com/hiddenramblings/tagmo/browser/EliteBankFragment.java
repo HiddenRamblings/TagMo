@@ -140,7 +140,8 @@ public class EliteBankFragment extends Fragment implements
 
         rootLayout = (CoordinatorLayout) view;
 
-        keyManager = new KeyManager(requireActivity());
+        BrowserActivity activity = (BrowserActivity) requireActivity();
+        keyManager = new KeyManager(activity);
 
         amiibosView = rootLayout.findViewById(R.id.amiibos_list);
         amiibosView.setHasFixedSize(true);
@@ -247,9 +248,9 @@ public class EliteBankFragment extends Fragment implements
         toolbar.inflateMenu(R.menu.bank_menu);
 
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            amiibosView.setLayoutManager(new GridLayoutManager(requireContext(), getColumnCount()));
+            amiibosView.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
         else
-            amiibosView.setLayoutManager(new LinearLayoutManager(requireContext()));
+            amiibosView.setLayoutManager(new LinearLayoutManager(activity));
         bankAdapter = new EliteBankAdapter(settings, this);
         amiibosView.setAdapter(bankAdapter);
         this.settings.addChangeListener(bankAdapter);
@@ -260,7 +261,7 @@ public class EliteBankFragment extends Fragment implements
         });
 
         try {
-            DocumentFile rootDocument = DocumentFile.fromTreeUri(requireContext(),
+            DocumentFile rootDocument = DocumentFile.fromTreeUri(activity,
                     this.settings.getBrowserRootDocument());
             this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
         } catch (IllegalArgumentException iae) {
@@ -268,9 +269,9 @@ public class EliteBankFragment extends Fragment implements
         }
 
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            amiiboFilesView.setLayoutManager(new GridLayoutManager(requireContext(), getColumnCount()));
+            amiiboFilesView.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
         else
-            amiiboFilesView.setLayoutManager(new LinearLayoutManager(requireContext()));
+            amiiboFilesView.setLayoutManager(new LinearLayoutManager(activity));
 
         writeFileAdapter = new WriteTagAdapter(settings,
                 new WriteTagAdapter.OnAmiiboClickListener() {
@@ -323,10 +324,10 @@ public class EliteBankFragment extends Fragment implements
         });
 
         SearchView searchView = rootLayout.findViewById(R.id.amiibo_search);
-        SearchManager searchManager = (SearchManager) requireContext()
+        SearchManager searchManager = (SearchManager) activity
                 .getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager
-                .getSearchableInfo(requireActivity().getComponentName()));
+                .getSearchableInfo(activity.getComponentName()));
         searchView.setSubmitButtonEnabled(false);
         searchView.setIconifiedByDefault(false);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -352,7 +353,7 @@ public class EliteBankFragment extends Fragment implements
         });
 
         eraseOpenBanks.setOnClickListener(view1 -> {
-            Intent collection = new Intent(requireContext(), NfcActivity.class);
+            Intent collection = new Intent(activity, NfcActivity.class);
             collection.putExtra(NFCIntent.EXTRA_SIGNATURE,
                     prefs.settings_elite_signature().get());
             collection.setAction(NFCIntent.ACTION_ERASE_ALL_TAGS);
@@ -362,11 +363,11 @@ public class EliteBankFragment extends Fragment implements
 
         rootLayout.findViewById(R.id.edit_bank_count).setOnClickListener(view1 -> {
             if (prefs.eliteActiveBank().get() >= eliteBankCount.getValue()) {
-                new Toasty(requireActivity()).Short(R.string.fail_active_oob);
+                new Toasty(activity).Short(R.string.fail_active_oob);
                 onBottomSheetChanged(true, false);
                 return;
             }
-            Intent configure = new Intent(requireContext(), NfcActivity.class);
+            Intent configure = new Intent(activity, NfcActivity.class);
             configure.putExtra(NFCIntent.EXTRA_SIGNATURE,
                     prefs.settings_elite_signature().get());
             configure.setAction(NFCIntent.ACTION_SET_BANK_COUNT);
@@ -394,6 +395,10 @@ public class EliteBankFragment extends Fragment implements
                 }
             }
         });
+    }
+
+    public RecyclerView getAmiibosView() {
+        return amiibosView;
     }
 
     private void updateEliteHardwareAdapter(ArrayList<String> amiiboList) {
@@ -961,17 +966,6 @@ public class EliteBankFragment extends Fragment implements
                     })
                     .show();
         }
-    }
-
-    private int getColumnCount() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager mWindowManager = (WindowManager) requireContext()
-                .getSystemService(Context.WINDOW_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-            mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
-        else
-            mWindowManager.getDefaultDisplay().getMetrics(metrics);
-        return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
     private boolean isDocumentStorage() {

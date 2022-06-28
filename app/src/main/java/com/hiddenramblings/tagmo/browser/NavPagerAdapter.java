@@ -14,6 +14,8 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private final FlaskSlotFragment flaskFragment = new FlaskSlotFragment();
     private final EliteBankFragment eliteFragment = new EliteBankFragment();
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private final SwitchProFragment switchFragment = new SwitchProFragment();
 
     public NavPagerAdapter(FragmentActivity fa) {
         super(fa);
@@ -21,20 +23,26 @@ public class NavPagerAdapter extends FragmentStateAdapter {
 
     @NonNull @Override
     public Fragment createFragment(int position) {
-        if (position == 1)
+        if (position == 1) {
             return foomiiboFragment;
-        else if (position == 2)
+        } else if (position == 2) {
             return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-                    ? flaskFragment :eliteFragment;
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && position == 3)
-            return eliteFragment;
-        else
+                    ? flaskFragment : eliteFragment;
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            if (position == 3)
+                return eliteFragment;
+            else if (position == 4)
+                return switchFragment;
+            else
+                return browserFragment;
+        } else {
             return browserFragment;
+        }
     }
 
     @Override
     public int getItemCount() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 ? 4 : 3;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 ? 5 : 3;
     }
 
     public BrowserFragment getBrowser() {
@@ -52,6 +60,10 @@ public class NavPagerAdapter extends FragmentStateAdapter {
 
     public EliteBankFragment getEliteBanks() {
         return eliteFragment;
+    }
+
+    public SwitchProFragment getSwitchPro() {
+        return switchFragment;
     }
 }
 

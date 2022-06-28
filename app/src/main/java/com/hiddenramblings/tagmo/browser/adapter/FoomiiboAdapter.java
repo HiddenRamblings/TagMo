@@ -216,8 +216,8 @@ public class FoomiiboAdapter
             settings.setQuery(query);
 
             data.clear();
-            settings.getAmiiboManager().amiibos.values();
-            data.addAll(settings.getAmiiboManager().amiibos.values());
+            if (null != settings.getAmiiboManager())
+                data.addAll(settings.getAmiiboManager().amiibos.values());
 
             ArrayList<Amiibo> tempList = new ArrayList<>();
             String queryText = query.trim().toLowerCase();

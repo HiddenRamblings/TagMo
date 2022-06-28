@@ -284,22 +284,27 @@ public class BrowserActivity extends AppCompatActivity implements
                 super.onPageSelected(position);
                 if (position != 0) BrowserAdapter.resetVisible();
                 if (position != 1) FoomiiboAdapter.resetVisible();
+                RecyclerView amiibosView = browserFragment.getAmiibosView();
                 switch (position) {
                     case 0:
                         setTitle(R.string.tagmo_browser);
                         foomiibo.setVisibility(View.GONE);
                         showBrowserInterface();
+                        amiibosView = browserFragment.getAmiibosView();
                         break;
                     case 1:
                         setTitle(R.string.foomiibo);
                         foomiibo.setVisibility(View.VISIBLE);
                         showBrowserInterface();
+                        amiibosView = foomiiboFragment.getAmiibosView();
                         break;
                     case 2:
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                             setTitle(R.string.bluup_flask_ble);
+                            amiibosView = pagerAdapter.getFlaskSlots().getAmiibosView();
                         } else {
                             setTitle(R.string.elite_device);
+                            amiibosView = eliteFragment.getAmiibosView();
                         }
                         foomiibo.setVisibility(View.GONE);
                         hideBrowserInterface();
@@ -308,12 +313,16 @@ public class BrowserActivity extends AppCompatActivity implements
                         setTitle(R.string.elite_device);
                         foomiibo.setVisibility(View.GONE);
                         hideBrowserInterface();
+                        amiibosView = eliteFragment.getAmiibosView();
+                        break;
+                    case 4:
+                        setTitle(R.string.pro_controller);
+                        foomiibo.setVisibility(View.GONE);
+                        hideBrowserInterface();
                         break;
                 }
                 invalidateOptionsMenu();
-                RecyclerView amiibosView = position == 0
-                        ? browserFragment.getAmiibosView()
-                        : foomiiboFragment.getAmiibosView();
+
                 if (null != amiibosView)
                     amiibosView.setLayoutManager(settings.getAmiiboView()
                             == BrowserSettings.VIEW.IMAGE.getValue()

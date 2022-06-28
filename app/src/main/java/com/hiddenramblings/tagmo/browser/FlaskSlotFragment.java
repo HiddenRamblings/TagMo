@@ -374,7 +374,8 @@ public class FlaskSlotFragment extends Fragment implements
 
         rootLayout = (CoordinatorLayout) view;
 
-        keyManager = new KeyManager(requireActivity());
+        BrowserActivity activity = (BrowserActivity) requireActivity();
+        keyManager = new KeyManager(activity);
 
         amiiboTile = rootLayout.findViewById(R.id.active_tile_layout);
 
@@ -432,9 +433,9 @@ public class FlaskSlotFragment extends Fragment implements
         flaskDetails = rootLayout.findViewById(R.id.flask_details);
         // flaskDetails.setHasFixedSize(true);
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            flaskDetails.setLayoutManager(new GridLayoutManager(requireContext(), getColumnCount()));
+            flaskDetails.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
         else
-            flaskDetails.setLayoutManager(new LinearLayoutManager(requireContext()));
+            flaskDetails.setLayoutManager(new LinearLayoutManager(activity));
 
         flaskStats = rootLayout.findViewById(R.id.flask_stats);
         writeFile = rootLayout.findViewById(R.id.write_slot_file);
@@ -489,7 +490,7 @@ public class FlaskSlotFragment extends Fragment implements
         toolbar.inflateMenu(R.menu.flask_menu);
 
         try {
-            DocumentFile rootDocument = DocumentFile.fromTreeUri(requireContext(),
+            DocumentFile rootDocument = DocumentFile.fromTreeUri(activity,
                     this.settings.getBrowserRootDocument());
             this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
         } catch (IllegalArgumentException iae) {
@@ -497,9 +498,9 @@ public class FlaskSlotFragment extends Fragment implements
         }
 
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            amiiboFilesView.setLayoutManager(new GridLayoutManager(requireContext(), getColumnCount()));
+            amiiboFilesView.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
         else
-            amiiboFilesView.setLayoutManager(new LinearLayoutManager(requireContext()));
+            amiiboFilesView.setLayoutManager(new LinearLayoutManager(activity));
 
         writeFileAdapter = new WriteTagAdapter(settings,
                 new WriteTagAdapter.OnAmiiboClickListener() {
@@ -537,10 +538,10 @@ public class FlaskSlotFragment extends Fragment implements
         this.settings.addChangeListener(writeDataAdapter);
 
         SearchView searchView = rootLayout.findViewById(R.id.amiibo_search);
-        SearchManager searchManager = (SearchManager) requireContext()
+        SearchManager searchManager = (SearchManager) activity
                 .getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager
-                .getSearchableInfo(requireActivity().getComponentName()));
+                .getSearchableInfo(activity.getComponentName()));
         searchView.setSubmitButtonEnabled(false);
         searchView.setIconifiedByDefault(false);
         LinearLayout searchBar = searchView.findViewById(R.id.search_bar);
@@ -600,6 +601,10 @@ public class FlaskSlotFragment extends Fragment implements
         });
 
         new Handler(Looper.getMainLooper()).postDelayed(this::verifyPermissions, 250);
+    }
+
+    public RecyclerView getAmiibosView() {
+        return flaskDetails;
     }
 
     private void onBottomSheetChanged(boolean hasAmiibo) {
@@ -1033,17 +1038,6 @@ public class FlaskSlotFragment extends Fragment implements
                 new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/flask/"))
         ));
         statusBar.show();
-    }
-
-    private int getColumnCount() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager mWindowManager = (WindowManager) requireContext()
-                .getSystemService(Context.WINDOW_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-            mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
-        else
-            mWindowManager.getDefaultDisplay().getMetrics(metrics);
-        return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
     public void startFlaskService() {

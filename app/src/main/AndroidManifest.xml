@@ -109,6 +109,8 @@
             android:theme="@style/DialogTheme.NoActionBar" />
         <service
             android:name=".browser.FlaskGattService" />
+        <service
+            android:name=".browser.SwitchGattService" />
         <receiver
             android:name=".UpdateReceiver"
             android:exported="true">

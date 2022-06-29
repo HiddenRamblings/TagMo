@@ -178,51 +178,51 @@ public class FlaskSlotFragment extends Fragment implements
     ActivityResultLauncher<String[]> onRequestBluetoothS = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
             permissions -> { boolean isBluetoothAvailable = false;
-                for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-                    if (entry.getValue()) isBluetoothAvailable = true;
+        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
+            if (entry.getValue()) isBluetoothAvailable = true;
+        }
+        if (isBluetoothAvailable) {
+            mBluetoothAdapter = getBluetoothAdapter();
+            if (null != mBluetoothAdapter) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
                 }
-                if (isBluetoothAvailable) {
-                    mBluetoothAdapter = getBluetoothAdapter();
-                    if (null != mBluetoothAdapter) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-                        }
-                        selectBluetoothDevice();
-                    } else {
-                        new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-                    }
-                } else {
-                    new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-                }
-            });
+                selectBluetoothDevice();
+            } else {
+                new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+            }
+        } else {
+            new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+        }
+    });
     ActivityResultLauncher<Intent> onRequestBluetooth = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-                mBluetoothAdapter = getBluetoothAdapter();
-                if (null != mBluetoothAdapter) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-                    }
-                    selectBluetoothDevice();
-                } else {
-                    new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-                }
-            });
+        mBluetoothAdapter = getBluetoothAdapter();
+        if (null != mBluetoothAdapter) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+            }
+            selectBluetoothDevice();
+        } else {
+            new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+        }
+    });
     ActivityResultLauncher<String[]> onRequestLocation = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
             permissions -> { boolean isLocationAvailable = false;
-                for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-                    if (entry.getValue()) isLocationAvailable = true;
-                }
-                if (isLocationAvailable) {
-                    mBluetoothAdapter = getBluetoothAdapter();
-                    if (null != mBluetoothAdapter)
-                        selectBluetoothDevice();
-                    else
-                        onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
-                } else {
-                    new Toasty(requireActivity()).Long(R.string.flask_permissions);
-                }
-            });
+        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
+            if (entry.getValue()) isLocationAvailable = true;
+        }
+        if (isLocationAvailable) {
+            mBluetoothAdapter = getBluetoothAdapter();
+            if (null != mBluetoothAdapter)
+                selectBluetoothDevice();
+            else
+                onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+        } else {
+            new Toasty(requireActivity()).Long(R.string.flask_permissions);
+        }
+    });
     protected ServiceConnection mServerConn = new ServiceConnection() {
         boolean isServiceDiscovered = false;
 
@@ -418,7 +418,7 @@ public class FlaskSlotFragment extends Fragment implements
             }
         };
 
-        this.settings = new BrowserSettings().initialize();
+        this.settings = activity.getSettings();
 
         flaskDetails = rootLayout.findViewById(R.id.flask_details);
         // flaskDetails.setHasFixedSize(true);
@@ -439,35 +439,33 @@ public class FlaskSlotFragment extends Fragment implements
         amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list);
         // amiiboFilesView.setHasFixedSize(true);
 
-        settings = new BrowserSettings().initialize();
-
         AppCompatImageView toggle = rootLayout.findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet));
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(
                 new BottomSheetBehavior.BottomSheetCallback() {
-                    @Override
-                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                        if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                            if (writeSlotsLayout.getVisibility() == View.VISIBLE)
-                                onBottomSheetChanged(true);
-                            toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
-                        } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                            toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
-                        }
-                    }
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    if (writeSlotsLayout.getVisibility() == View.VISIBLE)
+                        onBottomSheetChanged(true);
+                    toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
+                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
+                }
+            }
 
-                    @Override
-                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                        ViewGroup mainLayout = rootLayout.findViewById(R.id.flask_details);
-                        if (mainLayout.getBottom() >= bottomSheet.getTop()) {
-                            int bottomHeight = bottomSheet.getMeasuredHeight()
-                                    - bottomSheetBehavior.getPeekHeight();
-                            mainLayout.setPadding(0, 0, 0, slideOffset > 0
-                                    ? (int) (bottomHeight * slideOffset) : 0);
-                        }
-                    }
-                });
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                ViewGroup mainLayout = rootLayout.findViewById(R.id.flask_details);
+                if (mainLayout.getBottom() >= bottomSheet.getTop()) {
+                    int bottomHeight = bottomSheet.getMeasuredHeight()
+                            - bottomSheetBehavior.getPeekHeight();
+                    mainLayout.setPadding(0, 0, 0, slideOffset > 0
+                            ? (int) (bottomHeight * slideOffset) : 0);
+                }
+            }
+        });
 
         toggle.setOnClickListener(view1 -> {
             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -479,11 +477,11 @@ public class FlaskSlotFragment extends Fragment implements
 
         toolbar.inflateMenu(R.menu.flask_menu);
 
-        try {
+        if (activity.isDocumentStorage()) {
             DocumentFile rootDocument = DocumentFile.fromTreeUri(activity,
                     this.settings.getBrowserRootDocument());
             this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
-        } catch (IllegalArgumentException iae) {
+        } else {
             this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
         }
 
@@ -494,37 +492,37 @@ public class FlaskSlotFragment extends Fragment implements
 
         writeFileAdapter = new WriteTagAdapter(settings,
                 new WriteTagAdapter.OnAmiiboClickListener() {
-                    @Override
-                    public void onAmiiboClicked(AmiiboFile amiiboFile) {
-                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                        showUploadingNotice();
-                        uploadAmiiboFile(amiiboFile);
-                    }
+            @Override
+            public void onAmiiboClicked(AmiiboFile amiiboFile) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                showUploadingNotice();
+                uploadAmiiboFile(amiiboFile);
+            }
 
-                    @Override
-                    public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
-                        handleImageClicked(amiiboFile);
-                    }
-                });
+            @Override
+            public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
+                handleImageClicked(amiiboFile);
+            }
+        });
         this.settings.addChangeListener(writeFileAdapter);
 
         writeDataAdapter = new FoomiiboAdapter(settings,
                 new FoomiiboAdapter.OnFoomiiboClickListener() {
-                    @Override
-                    public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
-                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                        showUploadingNotice();
-                        uploadFoomiiboData(amiibo);
-                    }
+            @Override
+            public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                showUploadingNotice();
+                uploadFoomiiboData(amiibo);
+            }
 
-                    @Override
-                    public void onFoomiiboRebind(View itemView, Amiibo amiibo) { }
+            @Override
+            public void onFoomiiboRebind(View itemView, Amiibo amiibo) { }
 
-                    @Override
-                    public void onFoomiiboImageClicked(Amiibo amiibo) {
-                        handleImageClicked(amiibo);
-                    }
-                });
+            @Override
+            public void onFoomiiboImageClicked(Amiibo amiibo) {
+                handleImageClicked(amiibo);
+            }
+        });
         this.settings.addChangeListener(writeDataAdapter);
 
         SearchView searchView = rootLayout.findViewById(R.id.amiibo_search);

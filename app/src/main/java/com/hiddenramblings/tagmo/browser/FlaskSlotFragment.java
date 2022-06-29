@@ -1,12 +1,10 @@
 package com.hiddenramblings.tagmo.browser;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
@@ -16,7 +14,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -34,8 +31,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -46,7 +41,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -69,6 +63,7 @@ import com.hiddenramblings.tagmo.amiibo.FlaskTag;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
+import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothEnabler;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
@@ -88,13 +83,13 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class FlaskSlotFragment extends Fragment implements
-        FlaskSlotAdapter.OnAmiiboClickListener {
+        FlaskSlotAdapter.OnAmiiboClickListener,
+        BluetoothEnabler.BluetoothListener {
 
     private final Preferences_ prefs = TagMo.getPrefs();
     private boolean isFragmentVisible = false;
@@ -141,77 +136,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private int currentCount;
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    ActivityResultLauncher<String[]> onRequestLocationQ = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(),
-            permissions -> { boolean isLocationAvailable = false;
-        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (entry.getKey().equals(Manifest.permission.ACCESS_FINE_LOCATION)
-                    && entry.getValue()) isLocationAvailable = true;
-        }
-        if (isLocationAvailable) {
-            activateBluetooth();
-        } else {
-            setBottomSheetHidden(true);
-            new Toasty(requireActivity()).Long(R.string.flask_permissions);
-        }
-    });
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    ActivityResultLauncher<String> onRequestBackgroundQ = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(), permission -> {});
-
-    ActivityResultLauncher<String[]> onRequestBluetoothS = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(),
-            permissions -> { boolean isBluetoothAvailable = false;
-        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (entry.getValue()) isBluetoothAvailable = true;
-        }
-        if (isBluetoothAvailable) {
-            mBluetoothAdapter = getBluetoothAdapter();
-            if (null != mBluetoothAdapter) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-                }
-                selectBluetoothDevice();
-            } else {
-                setBottomSheetHidden(true);
-                new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-            }
-        } else {
-            setBottomSheetHidden(true);
-            new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-        }
-    });
-    ActivityResultLauncher<Intent> onRequestBluetooth = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        mBluetoothAdapter = getBluetoothAdapter();
-        if (null != mBluetoothAdapter) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-            }
-            selectBluetoothDevice();
-        } else {
-            new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-        }
-    });
-    ActivityResultLauncher<String[]> onRequestLocation = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(),
-            permissions -> { boolean isLocationAvailable = false;
-        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (entry.getValue()) isLocationAvailable = true;
-        }
-        if (isLocationAvailable) {
-            mBluetoothAdapter = getBluetoothAdapter();
-            if (null != mBluetoothAdapter)
-                selectBluetoothDevice();
-            else
-                onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
-        } else {
-            setBottomSheetHidden(true);
-            new Toasty(requireActivity()).Long(R.string.flask_permissions);
-        }
-    });
     protected ServiceConnection mServerConn = new ServiceConnection() {
         boolean isServiceDiscovered = false;
 
@@ -341,8 +266,7 @@ public class FlaskSlotFragment extends Fragment implements
     };
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_flask_slot, container, false);
     }
 
@@ -547,7 +471,10 @@ public class FlaskSlotFragment extends Fragment implements
 
         createBlank.setOnClickListener(view1 -> serviceFlask.createBlankTag());
 
-        new Handler(Looper.getMainLooper()).postDelayed(this::verifyPermissions, 250);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            new BluetoothEnabler(requireContext(), requireActivity()
+                    .getActivityResultRegistry(), this);
+        }, 250);
     }
 
     public RecyclerView getAmiibosView() {
@@ -676,89 +603,7 @@ public class FlaskSlotFragment extends Fragment implements
         return null != selectedAmiibo ? selectedAmiibo : new FlaskTag(Long.parseLong(name[2]));
     }
 
-    private void verifyPermissions() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            mBluetoothAdapter = getBluetoothAdapter();
-            if (null != mBluetoothAdapter)
-                selectBluetoothDevice();
-            else
-                onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
-        } else {
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED) {
-                activateBluetooth();
-            } else {
-                if (TagMo.isGooglePlay()) {
-                    new AlertDialog.Builder(requireContext())
-                            .setMessage(R.string.location_disclosure)
-                            .setCancelable(false)
-                            .setPositiveButton(R.string.accept, (dialog, which) -> {
-                                dialog.dismiss();
-                                final String[] PERMISSIONS_LOCATION = {
-                                        Manifest.permission.ACCESS_FINE_LOCATION,
-                                        Manifest.permission.ACCESS_COARSE_LOCATION
-                                };
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                    onRequestLocationQ.launch(PERMISSIONS_LOCATION);
-                                } else {
-                                    onRequestLocation.launch(PERMISSIONS_LOCATION);
-                                }
-                            }).setNegativeButton(R.string.deny, (dialog, which) -> {
-                                setBottomSheetHidden(true);
-                                new Toasty(requireActivity()).Long(R.string.flask_permissions);
-                            }).show();
-                } else {
-                    final String[] PERMISSIONS_LOCATION = {
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                    };
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        onRequestLocationQ.launch(PERMISSIONS_LOCATION);
-                    } else {
-                        onRequestLocation.launch(PERMISSIONS_LOCATION);
-                    }
-                }
-            }
-        }
-    }
 
-    private void activateBluetooth() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            final String[] PERMISSIONS_BLUETOOTH = {
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.BLUETOOTH_SCAN
-            };
-            onRequestBluetoothS.launch(PERMISSIONS_BLUETOOTH);
-        } else {
-            mBluetoothAdapter = getBluetoothAdapter();
-            if (null != mBluetoothAdapter) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-                }
-                selectBluetoothDevice();
-            } else {
-                onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private BluetoothAdapter getBluetoothAdapter() {
-        BluetoothAdapter mBluetoothAdapter;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            mBluetoothAdapter = ((BluetoothManager) requireContext()
-                    .getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
-            if (null != mBluetoothAdapter) {
-                if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
-                return mBluetoothAdapter;
-            }
-        } else {
-            //noinspection deprecation
-            return BluetoothAdapter.getDefaultAdapter();
-        }
-        return null;
-    }
 
     @SuppressLint("MissingPermission")
     private void scanBluetoothServices() {
@@ -1124,6 +969,24 @@ public class FlaskSlotFragment extends Fragment implements
 
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void onPermissionsFailed() {
+        setBottomSheetHidden(true);
+        new Toasty(requireActivity()).Long(R.string.flask_permissions);
+    }
+
+    @Override
+    public void onAdapterUnavailable() {
+        setBottomSheetHidden(true);
+        new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+    }
+
+    @Override
+    public void onAdapterEnabled(BluetoothAdapter mBluetoothAdapter) {
+        this.mBluetoothAdapter = mBluetoothAdapter;
+        selectBluetoothDevice();
     }
 }
 

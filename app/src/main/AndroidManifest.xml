@@ -110,7 +110,7 @@
         <service
             android:name=".browser.FlaskGattService" />
         <service
-            android:name=".browser.SwitchGattService" />
+            android:name=".browser.JoyConGattService" />
         <receiver
             android:name=".UpdateReceiver"
             android:exported="true">

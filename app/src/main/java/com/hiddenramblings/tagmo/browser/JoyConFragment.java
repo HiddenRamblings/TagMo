@@ -27,26 +27,28 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class SwitchProFragment extends Fragment {
+public class JoyConFragment extends Fragment {
 
-    private SwitchGattService switchService;
-    private String switchAddress;
+    private JoyConGattService serviceJoyCon;
+    private String addressJoyCon;
 
     protected ServiceConnection mServerConn = new ServiceConnection() {
         boolean isServiceDiscovered = false;
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
-            SwitchGattService.LocalBinder localBinder = (SwitchGattService.LocalBinder) binder;
-            switchService = localBinder.getService();
-            if (switchService.initialize()) {
-                if (switchService.connect(switchAddress)) {
-                    switchService.setListener(new SwitchGattService.BluetoothGattListener() {
+            JoyConGattService.LocalBinder localBinder = (JoyConGattService.LocalBinder) binder;
+            serviceJoyCon = localBinder.getService();
+            if (serviceJoyCon.initialize()) {
+                if (serviceJoyCon.connect(addressJoyCon)) {
+                    serviceJoyCon.setListener(new JoyConGattService.BluetoothGattListener() {
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
+                            new Toasty(requireActivity())
+                                    .Short("SERVICES");
                             try {
-                                switchService.setFlaskCharacteristicRX();
+                                serviceJoyCon.setFlaskCharacteristicRX();
                             } catch (TagLostException tle) {
                                 new Toasty(requireActivity())
                                         .Short(R.string.flask_invalid);
@@ -55,12 +57,12 @@ public class SwitchProFragment extends Fragment {
 
                         @Override
                         public void onGattConnectionLost() {
-                            switchAddress = null;
-                            stopSwitchService();
+                            addressJoyCon = null;
+                            stopJoyConService();
                         }
                     });
                 } else {
-                    stopSwitchService();
+                    stopJoyConService();
                     new Toasty(requireActivity()).Short(R.string.flask_invalid);
                 }
             }
@@ -68,14 +70,14 @@ public class SwitchProFragment extends Fragment {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            disconnectSwitch();
+            disconnectJoyCon();
         }
     };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_switch_pro, container, false);
+        return inflater.inflate(R.layout.fragment_joy_con, container, false);
     }
 
     @SuppressLint("MissingPermission")
@@ -86,7 +88,6 @@ public class SwitchProFragment extends Fragment {
         boolean hasProController = false;
         int[] gamepads = InputDevice.getDeviceIds();
         for (int gamepad: gamepads) {
-            // Nintendo Switch Pro Controller
             Log.d("InputDevice", "ID: " + gamepad + ", Name: "
                     + InputDevice.getDevice(gamepad).getName() + ", Descriptor: "
                     + InputDevice.getDevice(gamepad).getDescriptor());
@@ -100,8 +101,8 @@ public class SwitchProFragment extends Fragment {
         if (hasProController) {
             for (BluetoothDevice device : getBluetoothAdapter().getBondedDevices()) {
                 if (device.getName().equals("Pro Controller")) {
-                    switchAddress = device.getAddress();
-                    Intent service = new Intent(requireContext(), SwitchGattService.class);
+                    addressJoyCon = device.getAddress();
+                    Intent service = new Intent(requireContext(), JoyConGattService.class);
                     requireContext().startService(service);
                     requireContext().bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
                 }
@@ -126,23 +127,23 @@ public class SwitchProFragment extends Fragment {
         return null;
     }
 
-    public void disconnectSwitch() {
-        if (null != switchService)
-            switchService.disconnect();
+    public void disconnectJoyCon() {
+        if (null != serviceJoyCon)
+            serviceJoyCon.disconnect();
         else
-            stopSwitchService();
+            stopJoyConService();
     }
 
-    public void stopSwitchService() {
+    public void stopJoyConService() {
         try {
             requireContext().unbindService(mServerConn);
-            requireContext().stopService(new Intent(requireContext(), SwitchGattService.class));
+            requireContext().stopService(new Intent(requireContext(), JoyConGattService.class));
         } catch (IllegalArgumentException ignored) { }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        disconnectSwitch();
+        disconnectJoyCon();
     }
 }

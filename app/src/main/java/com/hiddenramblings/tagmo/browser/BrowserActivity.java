@@ -93,6 +93,8 @@ import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.GlideApp;
@@ -300,7 +302,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         break;
                     case 2:
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                            setTitle(R.string.bluup_flask_ble);
+                            setTitle(R.string.bluup_flask);
                             amiibosView = pagerAdapter.getFlaskSlots().getAmiibosView();
                         } else {
                             setTitle(R.string.elite_device);
@@ -316,7 +318,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         amiibosView = eliteFragment.getAmiibosView();
                         break;
                     case 4:
-                        setTitle(R.string.pro_controller);
+                        setTitle(R.string.joy_con);
                         foomiibo.setVisibility(View.GONE);
                         hideBrowserInterface();
                         break;
@@ -330,6 +332,30 @@ public class BrowserActivity extends AppCompatActivity implements
                             : new LinearLayoutManager(BrowserActivity.this));
             }
         });
+
+        new TabLayoutMediator(findViewById(R.id.page_tabs), mainLayout, (tab, position) -> {
+            switch (position) {
+                case 0:
+                    tab.setText(R.string.tagmo_browser);
+                    break;
+                case 1:
+                    tab.setText(R.string.foomiibo);
+                    break;
+                case 2:
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        tab.setText(R.string.bluup_flask);
+                    } else {
+                        tab.setText(R.string.elite_device);
+                    }
+                    break;
+                case 3:
+                    tab.setText(R.string.elite_device);
+                    break;
+                case 4:
+                    tab.setText(R.string.joy_con);
+                    break;
+            }
+        }).attach();
 
         Intent intent = getIntent();
         if (null != intent) {

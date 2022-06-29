@@ -43,8 +43,10 @@
     </string-array>
     <string name="mimetype_zip" translatable="false">application/zip</string>
 
+    <string name="joy_con">Joy-Con</string>
     <string name="power_tag" translatable="false">Power Tag</string>
     <string name="elite_device" translatable="false">N2 Elite</string>
+    <string name="bluup_flask" translatable="false">Bluup Flask</string>
     <string name="mifare_classic" translatable="false">Mifare Classic</string>
     <string name="mifare_plus" translatable="false">Mifare Plus</string>
     <string name="mifare_pro" translatable="false">Mifare Pro</string>

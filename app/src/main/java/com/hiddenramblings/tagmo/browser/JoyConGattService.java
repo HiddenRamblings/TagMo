@@ -81,10 +81,6 @@ import androidx.annotation.RequiresApi;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -96,9 +92,9 @@ import java.util.UUID;
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
-public class SwitchGattService extends Service {
+public class JoyConGattService extends Service {
 
-    private final Class<?> TAG = SwitchGattService.class;
+    private final Class<?> TAG = JoyConGattService.class;
 
     private BluetoothGattListener listener;
 
@@ -110,7 +106,7 @@ public class SwitchGattService extends Service {
     BluetoothGattCharacteristic mCharacteristicRX = null;
     BluetoothGattCharacteristic mCharacteristicTX = null;
 
-    public final static UUID FlaskNUS = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+    public final static UUID FlaskNUS = UUID.fromString("00001112-0000-1000-8000-00805f9b34fb");
     private final static UUID FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
 
@@ -194,8 +190,8 @@ public class SwitchGattService extends Service {
     };
 
     public class LocalBinder extends Binder {
-        SwitchGattService getService() {
-            return SwitchGattService.this;
+        JoyConGattService getService() {
+            return JoyConGattService.this;
         }
     }
 

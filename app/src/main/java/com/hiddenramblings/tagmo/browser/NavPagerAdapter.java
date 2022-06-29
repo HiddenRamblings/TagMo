@@ -15,7 +15,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     private final FlaskSlotFragment flaskFragment = new FlaskSlotFragment();
     private final EliteBankFragment eliteFragment = new EliteBankFragment();
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private final SwitchProFragment switchFragment = new SwitchProFragment();
+    private final JoyConFragment switchFragment = new JoyConFragment();
 
     public NavPagerAdapter(FragmentActivity fa) {
         super(fa);
@@ -62,7 +62,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
         return eliteFragment;
     }
 
-    public SwitchProFragment getSwitchPro() {
+    public JoyConFragment getSwitchPro() {
         return switchFragment;
     }
 }

@@ -38,14 +38,12 @@ public class FoomiiboAdapter
         implements Filterable, BrowserSettingsListener {
 
     private final BrowserSettings settings;
-    private OnFoomiiboClickListener listener = null;
-    private OnHighlightListener collector = null;
+    private final OnFoomiiboClickListener listener;
     private final ArrayList<Amiibo> data = new ArrayList<>();
     private ArrayList<Amiibo> filteredData;
     private FoomiiboFilter filter;
     boolean firstRun = true;
     private static final ArrayList<Long> foomiiboId = new ArrayList<>();
-    private final ArrayList<Amiibo> amiiboList = new ArrayList<>();
 
     public FoomiiboAdapter(BrowserSettings settings, OnFoomiiboClickListener listener) {
         this.settings = settings;
@@ -53,18 +51,6 @@ public class FoomiiboAdapter
 
         this.filteredData = this.data;
         this.setHasStableIds(true);
-    }
-
-    public FoomiiboAdapter(BrowserSettings settings, OnHighlightListener collector) {
-        this.settings = settings;
-        this.collector = collector;
-
-        this.filteredData = this.data;
-        this.setHasStableIds(true);
-    }
-
-    public void resetSelections() {
-        this.amiiboList.clear();
     }
 
     public static void resetVisible() {
@@ -132,37 +118,19 @@ public class FoomiiboAdapter
     public FoomiiboViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (VIEW.valueOf(viewType)) {
             case COMPACT:
-                return new CompactViewHolder(parent, settings, listener, collector);
+                return new CompactViewHolder(parent, settings, listener);
             case LARGE:
-                return new LargeViewHolder(parent, settings, listener, collector);
+                return new LargeViewHolder(parent, settings, listener);
             case IMAGE:
-                return new ImageViewHolder(parent, settings, listener, collector);
+                return new ImageViewHolder(parent, settings, listener);
             case SIMPLE:
             default:
-                return new SimpleViewHolder(parent, settings, listener, collector);
+                return new SimpleViewHolder(parent, settings, listener);
         }
     }
 
-    private void setIsHighlighted(FoomiiboViewHolder holder, boolean isHighlighted) {
-        View highlight = holder.itemView.findViewById(R.id.highlight);
-        if (isHighlighted) {
-            highlight.setBackgroundResource(R.drawable.rounded_neon);
-        } else {
-            highlight.setBackgroundResource(0);
-        }
-    }
-
-    private void handleClickEvent(final FoomiiboViewHolder holder, int position) {
-        if (null != holder.collector) {
-            if (amiiboList.contains(holder.foomiibo)) {
-                amiiboList.remove(filteredData.get(position));
-                setIsHighlighted(holder, false);
-            } else {
-                amiiboList.add(filteredData.get(position));
-                setIsHighlighted(holder, true);
-            }
-            holder.collector.onAmiiboClicked(amiiboList);
-        } else if (null != holder.listener) {
+    private void handleClickEvent(final FoomiiboViewHolder holder) {
+        if (null != holder.listener) {
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 if (foomiiboId.contains(holder.foomiibo.id)) {
                     foomiiboId.remove(holder.foomiibo.id);
@@ -179,17 +147,16 @@ public class FoomiiboAdapter
     @Override
     public void onBindViewHolder(final FoomiiboViewHolder holder, int position) {
         final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
-        holder.itemView.setOnClickListener(view -> handleClickEvent(holder, clickPosition));
+        holder.itemView.setOnClickListener(view -> handleClickEvent(holder));
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                    handleClickEvent(holder, clickPosition);
+                    handleClickEvent(holder);
                 else if (null != holder.listener)
                     holder.listener.onFoomiiboImageClicked(holder.foomiibo);
             });
         }
         holder.bind(getItem(clickPosition));
-        setIsHighlighted(holder, amiiboList.contains(holder.foomiibo));
     }
 
     public void refresh() {
@@ -265,7 +232,6 @@ public class FoomiiboAdapter
     protected static abstract class FoomiiboViewHolder extends RecyclerView.ViewHolder {
         private final BrowserSettings settings;
         private final OnFoomiiboClickListener listener;
-        private final OnHighlightListener collector;
 
         public final TextView txtError;
         public final TextView txtName;
@@ -306,13 +272,11 @@ public class FoomiiboAdapter
 
         public FoomiiboViewHolder(
                 View itemView, BrowserSettings settings,
-                OnFoomiiboClickListener listener,
-                OnHighlightListener collector) {
+                OnFoomiiboClickListener listener) {
             super(itemView);
 
             this.settings = settings;
             this.listener = listener;
-            this.collector = collector;
 
             this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
@@ -419,48 +383,44 @@ public class FoomiiboAdapter
 
     static class SimpleViewHolder extends FoomiiboViewHolder {
         public SimpleViewHolder(ViewGroup parent, BrowserSettings settings,
-                                OnFoomiiboClickListener listener,
-                                OnHighlightListener collector) {
+                                OnFoomiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
-                    settings, listener, collector
+                    settings, listener
             );
         }
     }
 
     static class CompactViewHolder extends FoomiiboViewHolder {
         public CompactViewHolder(ViewGroup parent, BrowserSettings settings,
-                                 OnFoomiiboClickListener listener,
-                                 OnHighlightListener collector) {
+                                 OnFoomiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
-                    settings, listener, collector
+                    settings, listener
             );
         }
     }
 
     static class LargeViewHolder extends FoomiiboViewHolder {
         public LargeViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnFoomiiboClickListener listener,
-                               OnHighlightListener collector) {
+                               OnFoomiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
-                    settings, listener, collector
+                    settings, listener
             );
         }
     }
 
     static class ImageViewHolder extends FoomiiboViewHolder {
         public ImageViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnFoomiiboClickListener listener,
-                               OnHighlightListener collector) {
+                               OnFoomiiboClickListener listener) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_image_card, parent, false),
-                    settings, listener, collector
+                    settings, listener
             );
         }
     }
@@ -469,9 +429,5 @@ public class FoomiiboAdapter
         void onFoomiiboClicked(View itemView, Amiibo amiibo);
         void onFoomiiboRebind(View itemView, Amiibo amiibo);
         void onFoomiiboImageClicked(Amiibo amiibo);
-    }
-
-    public interface OnHighlightListener {
-        void onAmiiboClicked(ArrayList<Amiibo> amiiboList);
     }
 }

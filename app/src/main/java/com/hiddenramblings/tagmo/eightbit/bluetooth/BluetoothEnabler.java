@@ -99,7 +99,7 @@ public class BluetoothEnabler {
                 listener.onPermissionsFailed();
             }
         });
-        
+
         onRequestBackgroundQ = registry.register("BackgroundQ",
                 new ActivityResultContracts.RequestPermission(), permission -> {});
         
@@ -112,9 +112,9 @@ public class BluetoothEnabler {
             if (isBluetoothAvailable) {
                 mBluetoothAdapter = getBluetoothAdapter(context);
                 if (null != mBluetoothAdapter) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-                    }
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                        onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+//                    }
                     listener.onAdapterEnabled(mBluetoothAdapter);
                 } else {
                     listener.onAdapterUnavailable();
@@ -128,15 +128,14 @@ public class BluetoothEnabler {
                 new ActivityResultContracts.StartActivityForResult(), result -> {
             mBluetoothAdapter = getBluetoothAdapter(context);
             if (null != mBluetoothAdapter) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-                }
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+//                }
                 listener.onAdapterEnabled(mBluetoothAdapter);
             } else {
                 listener.onAdapterUnavailable();
             }
         });
-
         
         onRequestLocation = registry.register("Location", 
                 new ActivityResultContracts.RequestMultiplePermissions(), 
@@ -162,7 +161,7 @@ public class BluetoothEnabler {
             if (null != mBluetoothAdapter)
                 listener.onAdapterEnabled(mBluetoothAdapter);
             else
-                onRequestBluetooth.launch(new Intent(android.bluetooth.BluetoothAdapter.ACTION_REQUEST_ENABLE));
+                onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
         } else {
             if (ContextCompat.checkSelfPermission(
                     context, Manifest.permission.ACCESS_FINE_LOCATION
@@ -184,9 +183,8 @@ public class BluetoothEnabler {
                                 } else {
                                     onRequestLocation.launch(PERMISSIONS_LOCATION);
                                 }
-                            }).setNegativeButton(R.string.deny, (dialog, which) -> {
-                                listener.onPermissionsFailed();
-                            }).show();
+                            }).setNegativeButton(R.string.deny, (dialog, which)
+                                    -> listener.onPermissionsFailed()).show();
                 } else {
                     final String[] PERMISSIONS_LOCATION = {
                             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -212,9 +210,9 @@ public class BluetoothEnabler {
         } else {
             mBluetoothAdapter = getBluetoothAdapter(context);
             if (null != mBluetoothAdapter) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-                }
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+//                }
                 listener.onAdapterEnabled(mBluetoothAdapter);
             } else {
                 onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));

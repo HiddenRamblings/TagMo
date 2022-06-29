@@ -231,7 +231,8 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
             if (null != filteredData && filteredData == filterResults.values) return;
             //noinspection unchecked
             filteredData = (ArrayList<AmiiboFile>) filterResults.values;
-            Collections.sort(filteredData, new AmiiboFileComparator(settings));
+            if (null != settings)
+                Collections.sort(filteredData, new AmiiboFileComparator(settings));
             notifyDataSetChanged();
         }
     }

@@ -2414,8 +2414,10 @@ public class BrowserActivity extends AppCompatActivity implements
             amiiboContainer.setVisibility(View.GONE);
         else if (mainLayout.getCurrentItem() != 0)
             mainLayout.setCurrentItem(0, true);
-        else
+        else {
             super.onBackPressed();
+            finishAffinity();
+        }
     }
 
     private boolean hasTestedElite;

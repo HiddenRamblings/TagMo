@@ -1384,13 +1384,12 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         });
-        boolean browser = mainLayout.getCurrentItem() == 0;
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 settings.setQuery(query);
                 settings.notifyChanges();
-                if (browser) setAmiiboStats();
+                if (mainLayout.getCurrentItem() == 0) setAmiiboStats();
                 return false;
             }
 
@@ -1398,7 +1397,8 @@ public class BrowserActivity extends AppCompatActivity implements
             public boolean onQueryTextChange(String query) {
                 settings.setQuery(query);
                 settings.notifyChanges();
-                if (browser && query.length() == 0)
+                if (mainLayout.getCurrentItem() == 0 
+                    && query.length() == 0)
                     setAmiiboStats();
                 return true;
             }

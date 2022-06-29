@@ -1,6 +1,7 @@
 package com.hiddenramblings.tagmo.browser;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -281,6 +282,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 clickView -> foomiiboFragment.buildFoomiiboSet()
         );
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @SuppressLint("NewApi")
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
@@ -288,12 +290,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 if (position != 1) FoomiiboAdapter.resetVisible();
                 RecyclerView amiibosView = browserFragment.getAmiibosView();
                 switch (position) {
-                    case 0:
-                        setTitle(R.string.tagmo_browser);
-                        foomiibo.setVisibility(View.GONE);
-                        showBrowserInterface();
-                        amiibosView = browserFragment.getAmiibosView();
-                        break;
                     case 1:
                         setTitle(R.string.foomiibo);
                         foomiibo.setVisibility(View.VISIBLE);
@@ -301,26 +297,27 @@ public class BrowserActivity extends AppCompatActivity implements
                         amiibosView = foomiiboFragment.getAmiibosView();
                         break;
                     case 2:
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                            setTitle(R.string.bluup_flask);
-                            amiibosView = pagerAdapter.getFlaskSlots().getAmiibosView();
-                        } else {
-                            setTitle(R.string.elite_device);
-                            amiibosView = eliteFragment.getAmiibosView();
-                        }
+                        setTitle(R.string.elite_device);
+                        amiibosView = eliteFragment.getAmiibosView();
                         foomiibo.setVisibility(View.GONE);
                         hideBrowserInterface();
                         break;
                     case 3:
-                        setTitle(R.string.elite_device);
+                        setTitle(R.string.bluup_flask);
                         foomiibo.setVisibility(View.GONE);
                         hideBrowserInterface();
-                        amiibosView = eliteFragment.getAmiibosView();
+                        amiibosView = pagerAdapter.getFlaskSlots().getAmiibosView();
                         break;
                     case 4:
                         setTitle(R.string.joy_con);
                         foomiibo.setVisibility(View.GONE);
                         hideBrowserInterface();
+                        break;
+                    default:
+                        setTitle(R.string.tagmo_browser);
+                        foomiibo.setVisibility(View.GONE);
+                        showBrowserInterface();
+                        amiibosView = browserFragment.getAmiibosView();
                         break;
                 }
                 invalidateOptionsMenu();
@@ -335,24 +332,20 @@ public class BrowserActivity extends AppCompatActivity implements
 
         new TabLayoutMediator(findViewById(R.id.page_tabs), mainLayout, (tab, position) -> {
             switch (position) {
-                case 0:
-                    tab.setText(R.string.tagmo_browser);
-                    break;
                 case 1:
                     tab.setText(R.string.foomiibo);
                     break;
                 case 2:
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        tab.setText(R.string.bluup_flask);
-                    } else {
-                        tab.setText(R.string.elite_device);
-                    }
+                    tab.setText(R.string.elite_device);
                     break;
                 case 3:
-                    tab.setText(R.string.elite_device);
+                    tab.setText(R.string.bluup_flask);
                     break;
                 case 4:
                     tab.setText(R.string.joy_con);
+                    break;
+                default:
+                    tab.setText(R.string.tagmo_browser);
                     break;
             }
         }).attach();
@@ -598,18 +591,6 @@ public class BrowserActivity extends AppCompatActivity implements
         finish();
     }
 
-    private void launchFlaskEditor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            mainLayout.setCurrentItem(2, true);
-        } else {
-            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-            CustomTabsIntent customTabsIntent = builder.build();
-            builder.setCloseButtonIcon(BitmapFactory.decodeResource(getResources(),
-                    R.drawable.ic_stat_notice_24dp));
-            customTabsIntent.launchUrl(this, Uri.parse("https://flask.run/"));
-        }
-    }
-
     private final ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
@@ -626,7 +607,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
             prefs.eliteBankCount().put(bank_count);
             eliteFragment.setArguments(result.getData().getExtras());
-            mainLayout.setCurrentItem(3, true);
+            mainLayout.setCurrentItem(2, true);
         } else {
             mainLayout.setCurrentItem(0, true);
             updateAmiiboView(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
@@ -695,20 +676,25 @@ public class BrowserActivity extends AppCompatActivity implements
         MenuItem flaskItem = popup.getMenu().findItem(R.id.mnu_flask);
         MenuItem backupItem = popup.getMenu().findItem(R.id.mnu_backup);
         MenuItem validateItem = popup.getMenu().findItem(R.id.mnu_validate);
-        flaskItem.setTitle(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-                ? R.string.bluup_flask_ble : R.string.bluup_flask_web);
 
         scanItem.setEnabled(false);
         flaskItem.setEnabled(false);
+        flaskItem.setVisible(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2);
         backupItem.setEnabled(false);
         validateItem.setEnabled(false);
+
         popup.show();
         Handler popupHandler = new Handler(Looper.getMainLooper());
         popupHandler.postDelayed(() -> {
             popupHandler.postDelayed(() -> validateItem.setEnabled(true), 100);
             popupHandler.postDelayed(() -> backupItem.setEnabled(true), 200);
-            popupHandler.postDelayed(() -> flaskItem.setEnabled(true), 300);
-            popupHandler.postDelayed(() -> scanItem.setEnabled(true), 400);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                popupHandler.postDelayed(() -> scanItem.setEnabled(true), 300);
+            } else {
+                popupHandler.postDelayed(() -> flaskItem.setEnabled(true), 300);
+                popupHandler.postDelayed(() -> scanItem.setEnabled(true), 400);
+            }
+
         }, 250);
 
         popup.setOnMenuItemClickListener(item -> {
@@ -717,7 +703,11 @@ public class BrowserActivity extends AppCompatActivity implements
                         NfcActivity.class).setAction(NFCIntent.ACTION_SCAN_TAG));
                 return true;
             } else if (item.getItemId() == R.id.mnu_flask) {
-                launchFlaskEditor();
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                CustomTabsIntent customTabsIntent = builder.build();
+                builder.setCloseButtonIcon(BitmapFactory.decodeResource(getResources(),
+                        R.drawable.ic_stat_notice_24dp));
+                customTabsIntent.launchUrl(this, Uri.parse("https://flask.run/"));
                 return true;
             } else if (item.getItemId() == R.id.mnu_backup) {
                 Intent backup = new Intent(this, NfcActivity.class);
@@ -1935,7 +1925,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (TagMo.getPrefs().enable_elite_support().get()
                 && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             eliteFragment.setArguments(resultData.getExtras());
-            mainLayout.setCurrentItem(3, true);
+            mainLayout.setCurrentItem(2, true);
         }
     }
 
@@ -2506,7 +2496,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         args.putInt(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
                         args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles);
                         eliteFragment.setArguments(args);
-                        mainLayout.setCurrentItem(3, true);
+                        mainLayout.setCurrentItem(2, true);
 
                     } else {
                         updateAmiiboView(TagReader.readFromTag(mifare));

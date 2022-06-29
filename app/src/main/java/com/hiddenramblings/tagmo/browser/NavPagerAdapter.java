@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.browser;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -7,6 +8,8 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import com.hiddenramblings.tagmo.R;
 
 public class NavPagerAdapter extends FragmentStateAdapter {
     private final BrowserFragment browserFragment = new BrowserFragment();
@@ -21,22 +24,20 @@ public class NavPagerAdapter extends FragmentStateAdapter {
         super(fa);
     }
 
+    @SuppressLint("NewApi")
     @NonNull @Override
     public Fragment createFragment(int position) {
-        if (position == 1) {
-            return foomiiboFragment;
-        } else if (position == 2) {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-                    ? flaskFragment : eliteFragment;
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if (position == 3)
+        switch (position) {
+            case 1:
+                return foomiiboFragment;
+            case 2:
                 return eliteFragment;
-            else if (position == 4)
+            case 3:
+                return flaskFragment;
+            case 4:
                 return switchFragment;
-            else
+            default:
                 return browserFragment;
-        } else {
-            return browserFragment;
         }
     }
 
@@ -62,6 +63,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
         return eliteFragment;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public JoyConFragment getSwitchPro() {
         return switchFragment;
     }

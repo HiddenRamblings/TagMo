@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.nfc.TagLostException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -46,8 +45,8 @@ public class JoyConFragment extends Fragment {
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
                             try {
-                                serviceJoyCon.setFlaskCharacteristicRX();
-                            } catch (TagLostException tle) {
+                                serviceJoyCon.setJoyConCharacteristicRX();
+                            } catch (UnsupportedOperationException uoe) {
                                 new Toasty(requireActivity())
                                         .Short(R.string.flask_joy_con);
                             }

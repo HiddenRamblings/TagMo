@@ -69,7 +69,6 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.TagLostException;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
@@ -464,9 +463,9 @@ public class FlaskGattService extends Service {
         return mReadCharacteristic;
     }
 
-    public void setFlaskCharacteristicRX() throws TagLostException {
+    public void setFlaskCharacteristicRX() throws UnsupportedOperationException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            throw new TagLostException();
+            throw new UnsupportedOperationException();
         }
 
         BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskNUS);
@@ -474,7 +473,7 @@ public class FlaskGattService extends Service {
         if (null == mCustomService) {
             List<BluetoothGattService> services = getSupportedGattServices();
             if (null == services || services.isEmpty()) {
-                throw new TagLostException();
+                throw new UnsupportedOperationException();
             }
 
             for (BluetoothGattService customService : services) {
@@ -506,9 +505,9 @@ public class FlaskGattService extends Service {
         return mWriteCharacteristic;
     }
 
-    public void setFlaskCharacteristicTX() throws TagLostException {
+    public void setFlaskCharacteristicTX() throws UnsupportedOperationException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            throw new TagLostException();
+            throw new UnsupportedOperationException();
         }
 
         BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskNUS);
@@ -516,7 +515,7 @@ public class FlaskGattService extends Service {
         if (null == mCustomService) {
             List<BluetoothGattService> services = getSupportedGattServices();
             if (null == services || services.isEmpty()) {
-                throw new TagLostException();
+                throw new UnsupportedOperationException();
             }
 
             for (BluetoothGattService customService : services) {
@@ -549,7 +548,7 @@ public class FlaskGattService extends Service {
         if (null == mCharacteristicTX) {
             try {
                 setFlaskCharacteristicTX();
-            } catch (TagLostException e) {
+            } catch (UnsupportedOperationException e) {
                 e.printStackTrace();
             }
         }

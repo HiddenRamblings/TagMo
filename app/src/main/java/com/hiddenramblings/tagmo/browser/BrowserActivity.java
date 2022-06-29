@@ -1220,7 +1220,7 @@ public class BrowserActivity extends AppCompatActivity implements
         this.onRootFolderChanged(indicator);
     }
 
-    private boolean isDocumentStorage() {
+    public boolean isDocumentStorage() {
         if (null != this.settings.getBrowserRootDocument()) {
             try {
                 DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());

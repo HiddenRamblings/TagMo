@@ -19,14 +19,6 @@
         android:lineSpacingExtra="0dp"
         android:lineSpacingMultiplier="0" />
 
-    <androidx.appcompat.widget.AppCompatToggleButton
-        android:id="@+id/switch_source_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="@dimen/button_height_min"
-        android:textOff="@string/write_src_storage"
-        android:textOn="@string/write_src_foomiibo" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/amiibo_files_list"
         android:layout_width="match_parent"

@@ -230,12 +230,11 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
         @SuppressLint("NotifyDataSetChanged")
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            if (filteredData.isEmpty() || filteredData != filterResults.values) {
-                //noinspection unchecked
-                filteredData = (ArrayList<AmiiboFile>) filterResults.values;
-                Collections.sort(filteredData, new AmiiboFileComparator(settings));
-                notifyDataSetChanged();
-            }
+            if (null != filteredData && filteredData == filterResults.values) return;
+            //noinspection unchecked
+            filteredData = (ArrayList<AmiiboFile>) filterResults.values;
+            Collections.sort(filteredData, new AmiiboFileComparator(settings));
+            notifyDataSetChanged();
         }
     }
 
@@ -362,6 +361,19 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                             TagMo.getPrefs().preferEmulated().get()).replace(
                                     TagMo.getPrefs().browserRootFolder().get(), "");
                     this.txtPath.setText(boldSpannable.IndexOf(relativeFile, query));
+                    TypedValue a = new TypedValue();
+                    this.txtPath.getContext().getTheme().resolveAttribute(
+                            android.R.attr.textColor, a, true);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                        this.txtPath.setTextColor(a.data);
+                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                        this.txtPath.setTextColor(a.data);
+                    }
+                } else if (null != item.getDocUri()) {
+                    this.itemView.setEnabled(true);
+                    String amiiboUri = item.getDocUri().getUri().toString();
+                    this.txtPath.setText(boldSpannable.IndexOf(amiiboUri, query));
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(
                             android.R.attr.textColor, a, true);

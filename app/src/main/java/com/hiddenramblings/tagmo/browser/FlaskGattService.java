@@ -692,7 +692,7 @@ public class FlaskGattService extends Service {
             if (c < 256) {
                 sb.append(c);
             } else {
-                String strHex = Integer.toHexString((int) c);
+                String strHex = Integer.toHexString(c);
                 sb.append("\\u").append(strHex);
             }
         }

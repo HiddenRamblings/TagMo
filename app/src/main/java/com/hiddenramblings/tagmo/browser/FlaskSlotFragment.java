@@ -854,18 +854,18 @@ public class FlaskSlotFragment extends Fragment implements
 
     @SuppressLint("MissingPermission")
     private void selectBluetoothDevice() {
+        boolean isDevicePaired = false;
         for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
             if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-                new Toasty(requireActivity()).Long(R.string.flask_paired);
-                dismissFlaskDiscovery();
-                try {
-                    onRequestPairing.launch(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
-                } catch (ActivityNotFoundException anf) {
-                    scanBluetoothServices();
-                }
+                isDevicePaired = true;
+                profileFlask = device.getName();
+                addressFlask = device.getAddress();
+                showConnectionNotice();
+                startFlaskService();
+                break;
             }
         }
-        scanBluetoothServices();
+        if (!isDevicePaired) scanBluetoothServices();
     }
 
     private boolean isDirectoryHidden(File rootFolder, File directory, boolean recursive) {

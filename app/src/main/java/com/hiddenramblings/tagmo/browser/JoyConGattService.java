@@ -106,7 +106,7 @@ public class JoyConGattService extends Service {
     BluetoothGattCharacteristic mCharacteristicRX = null;
     BluetoothGattCharacteristic mCharacteristicTX = null;
 
-    public final static UUID FlaskNUS = UUID.fromString("00001112-0000-1000-8000-00805f9b34fb");
+    public final static UUID FlaskNUS = UUID.fromString("2bc5f224-e9b4-470c-aae1-1c03554e64a1");
     private final static UUID FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
 

@@ -118,6 +118,7 @@ import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
+import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;

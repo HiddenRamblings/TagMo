@@ -99,7 +99,6 @@ public class EliteBankFragment extends Fragment implements
 
     private final ArrayList<Amiibo> amiibos = new ArrayList<>();
     private WriteTagAdapter writeFileAdapter;
-    private FoomiiboAdapter writeDataAdapter;
 
     private int clickedPosition;
     private enum CLICKED {
@@ -112,14 +111,6 @@ public class EliteBankFragment extends Fragment implements
         ERASE_BANK
     }
     private CLICKED status = CLICKED.NOTHING;
-
-    private enum WRITE {
-        FILE,
-        DATA,
-        LIST,
-        SETS
-    }
-    private WRITE writeAdapter = WRITE.FILE;
 
     private BrowserSettings settings;
 
@@ -270,44 +261,14 @@ public class EliteBankFragment extends Fragment implements
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(activity));
 
-        writeFileAdapter = new WriteTagAdapter(settings,
-                new WriteTagAdapter.OnAmiiboClickListener() {
-                    @Override
-                    public void onAmiiboClicked(AmiiboFile amiiboFile) {
-                        if (null != amiiboFile) {
-                            writeAmiiboFile(amiiboFile, clickedPosition);
-                        }
-                    }
+        writeFileAdapter = new WriteTagAdapter(settings, new WriteTagAdapter.OnAmiiboClickListener() {
+            @Override
+            public void onAmiiboClicked(AmiiboFile amiiboFile) { }
 
-                    @Override
-                    public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
-                        if (null != amiiboFile) {
-                            writeAmiiboFile(amiiboFile, clickedPosition);
-                        }
-                    }
-                });
+            @Override
+            public void onAmiiboImageClicked(AmiiboFile amiiboFile) { }
+        });
         this.settings.addChangeListener(writeFileAdapter);
-
-        writeDataAdapter = new FoomiiboAdapter(settings,
-                new FoomiiboAdapter.OnFoomiiboClickListener() {
-                    @Override
-                    public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
-                        if (null != amiibo) {
-                            writeFoomiiboData(amiibo, clickedPosition);
-                        }
-                    }
-
-                    @Override
-                    public void onFoomiiboRebind(View itemView, Amiibo amiibo) { }
-
-                    @Override
-                    public void onFoomiiboImageClicked(Amiibo amiibo) {
-                        if (null != amiibo) {
-                            writeFoomiiboData(amiibo, clickedPosition);
-                        }
-                    }
-                });
-        this.settings.addChangeListener(writeDataAdapter);
 
         switchMenuOptions.setOnClickListener(view1 -> {
             if (bankOptionsMenu.isShown()) {
@@ -345,7 +306,11 @@ public class EliteBankFragment extends Fragment implements
 
         writeOpenBanks.setOnClickListener(view1 -> {
             onBottomSheetChanged(false, false);
-            setWriteAdapter(WRITE.LIST);
+            WriteTagAdapter writeListAdapter = new WriteTagAdapter(
+                    settings, this::writeAmiiboCollection);
+            writeListAdapter.resetSelections();
+            this.settings.addChangeListener(writeListAdapter);
+            amiiboFilesView.setAdapter(writeListAdapter);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
@@ -372,25 +337,6 @@ public class EliteBankFragment extends Fragment implements
             onOpenBanksActivity.launch(configure);
 
             onBottomSheetChanged(true, false);
-        });
-
-        rootLayout.findViewById(R.id.switch_source_btn).setOnClickListener(view1 -> {
-            if (writeBankLayout.getVisibility() == View.VISIBLE) {
-                switch(writeAdapter) {
-                    case FILE:
-                        setWriteAdapter(WRITE.DATA);
-                        break;
-                    case DATA:
-                        setWriteAdapter(WRITE.FILE);
-                        break;
-                    case LIST:
-                        setWriteAdapter(WRITE.SETS);
-                        break;
-                    case SETS:
-                        setWriteAdapter(WRITE.LIST);
-                        break;
-                }
-            }
         });
     }
 
@@ -462,112 +408,112 @@ public class EliteBankFragment extends Fragment implements
 
     private final ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
+        if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
 
-                if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+        if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
-                int active_bank = result.getData().getIntExtra(NFCIntent.EXTRA_ACTIVE_BANK,
-                        prefs.eliteActiveBank().get());
+        int active_bank = result.getData().getIntExtra(NFCIntent.EXTRA_ACTIVE_BANK,
+                prefs.eliteActiveBank().get());
 
-                bankAdapter.notifyItemChanged(prefs.eliteActiveBank().get());
-                bankAdapter.notifyItemChanged(active_bank);
+        bankAdapter.notifyItemChanged(prefs.eliteActiveBank().get());
+        bankAdapter.notifyItemChanged(active_bank);
 
-                prefs.eliteActiveBank().put(active_bank);
-                updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
+        prefs.eliteActiveBank().put(active_bank);
+        updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
 
-                int bank_count = prefs.eliteBankCount().get();
-                bankStats.setText(getString(R.string.bank_stats,
-                        getValueForPosition(eliteBankCount, active_bank), bank_count));
-                writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
-                eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
-            });
+        int bank_count = prefs.eliteBankCount().get();
+        bankStats.setText(getString(R.string.bank_stats,
+                getValueForPosition(eliteBankCount, active_bank), bank_count));
+        writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
+        eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
+    });
 
     private final ActivityResultLauncher<Intent> onUpdateTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
+        if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
 
-                if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())
-                        && !NFCIntent.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
+        if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())
+                && !NFCIntent.ACTION_EDIT_COMPLETE.equals(result.getData().getAction())) return;
 
-                if (result.getData().hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
-                    clickedPosition = result.getData().getIntExtra(
-                            NFCIntent.EXTRA_CURRENT_BANK, clickedPosition);
-                }
+        if (result.getData().hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
+            clickedPosition = result.getData().getIntExtra(
+                    NFCIntent.EXTRA_CURRENT_BANK, clickedPosition);
+        }
 
-                byte[] tagData = null != amiibos.get(clickedPosition)
-                        ? amiibos.get(clickedPosition).data : null;
+        byte[] tagData = null != amiibos.get(clickedPosition)
+                ? amiibos.get(clickedPosition).data : null;
 
-                if (result.getData().hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
-                    tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
-                    if (null != amiibos.get(clickedPosition))
-                        amiibos.get(clickedPosition).data = tagData;
-                }
+        if (result.getData().hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
+            tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
+            if (null != amiibos.get(clickedPosition))
+                amiibos.get(clickedPosition).data = tagData;
+        }
 
-                if (result.getData().hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
-                    updateEliteHardwareAdapter(result.getData()
-                            .getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
-                }
+        if (result.getData().hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
+            updateEliteHardwareAdapter(result.getData()
+                    .getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
+        }
 
-                updateAmiiboView(amiiboCard, tagData, -1, clickedPosition);
-                int active_bank = prefs.eliteActiveBank().get();
-                updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
+        updateAmiiboView(amiiboCard, tagData, -1, clickedPosition);
+        int active_bank = prefs.eliteActiveBank().get();
+        updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
 
-                if (status == CLICKED.ERASE_BANK) {
-                    status = CLICKED.NOTHING;
-                    onBottomSheetChanged(true, false);
-                    amiibos.set(clickedPosition, null);
-                }
-            });
+        if (status == CLICKED.ERASE_BANK) {
+            status = CLICKED.NOTHING;
+            onBottomSheetChanged(true, false);
+            amiibos.set(clickedPosition, null);
+        }
+    });
 
     private final ActivityResultLauncher<Intent> onScanTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
+        if (result.getResultCode() != Activity.RESULT_OK || null == result.getData()) return;
 
-                if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
+        if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
-                byte[] tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
-                int current_bank = result.getData().getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition);
+        byte[] tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
+        int current_bank = result.getData().getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition);
 
-                Bundle args = new Bundle();
-                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
-                if (null != amiibos.get(current_bank))
-                    amiibos.get(current_bank).data = tagData;
-                switch (status) {
-                    case NOTHING:
-                        break;
-                    case WRITE_DATA:
-                        Intent modify = new Intent(requireContext(), NfcActivity.class);
-                        modify.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                                prefs.settings_elite_signature().get());
-                        modify.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
-                        modify.putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank);
-                        onUpdateTagResult.launch(modify.putExtras(args));
-                        break;
-                    case EDIT_DATA:
-                        onUpdateTagResult.launch(new Intent(requireContext(),
-                                TagDataEditor.class).putExtras(args));
-                        break;
-                    case HEX_CODE:
-                        onUpdateTagResult.launch(new Intent(requireContext(),
-                                HexCodeViewer.class).putExtras(args));
-                        break;
-                    case BANK_BACKUP:
-                        displayBackupDialog(tagData);
-                        break;
-                    case VERIFY_TAG:
-                        try {
-                            TagUtils.validateData(tagData);
-                            new Toasty(requireActivity()).Dialog(R.string.validation_success);
-                        } catch (Exception e) {
-                            new Toasty(requireActivity()).Dialog(e.getMessage());
-                        }
-                        break;
-
+        Bundle args = new Bundle();
+        args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
+        if (null != amiibos.get(current_bank))
+            amiibos.get(current_bank).data = tagData;
+        switch (status) {
+            case NOTHING:
+                break;
+            case WRITE_DATA:
+                Intent modify = new Intent(requireContext(), NfcActivity.class);
+                modify.putExtra(NFCIntent.EXTRA_SIGNATURE,
+                        prefs.settings_elite_signature().get());
+                modify.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
+                modify.putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank);
+                onUpdateTagResult.launch(modify.putExtras(args));
+                break;
+            case EDIT_DATA:
+                onUpdateTagResult.launch(new Intent(requireContext(),
+                        TagDataEditor.class).putExtras(args));
+                break;
+            case HEX_CODE:
+                onUpdateTagResult.launch(new Intent(requireContext(),
+                        HexCodeViewer.class).putExtras(args));
+                break;
+            case BANK_BACKUP:
+                displayBackupDialog(tagData);
+                break;
+            case VERIFY_TAG:
+                try {
+                    TagUtils.validateData(tagData);
+                    new Toasty(requireActivity()).Dialog(R.string.validation_success);
+                } catch (Exception e) {
+                    new Toasty(requireActivity()).Dialog(e.getMessage());
                 }
-                status = CLICKED.NOTHING;
-                updateAmiiboView(amiiboCard, tagData, -1, current_bank);
-                bankAdapter.notifyItemChanged(current_bank);
-            });
+                break;
+
+        }
+        status = CLICKED.NOTHING;
+        updateAmiiboView(amiiboCard, tagData, -1, current_bank);
+        bankAdapter.notifyItemChanged(current_bank);
+    });
 
     private void scanAmiiboBank(int current_bank) {
         Intent scan = new Intent(requireContext(), NfcActivity.class);
@@ -589,12 +535,22 @@ public class EliteBankFragment extends Fragment implements
 
     private void writeAmiiboFile(AmiiboFile amiiboFile, int position) {
         Bundle args = new Bundle();
-        try {
-            byte[] data = null != amiiboFile.getData() ? amiiboFile.getData()
-                    : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
-            args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
-        } catch (Exception e) {
-            Debug.Log(e);
+        if (((BrowserActivity) requireActivity()).isDocumentStorage()) {
+            try {
+                byte[] data = null != amiiboFile.getData() ? amiiboFile.getData()
+                        : TagUtils.getValidatedDocument(keyManager, amiiboFile.getDocUri());
+                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
+            } catch (Exception e) {
+                Debug.Log(e);
+            }
+        } else {
+            try {
+                byte[] data = null != amiiboFile.getData() ? amiiboFile.getData()
+                        : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
+                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
+            } catch (Exception e) {
+                Debug.Log(e);
+            }
         }
 
         Intent intent = new Intent(requireContext(), NfcActivity.class);
@@ -644,24 +600,7 @@ public class EliteBankFragment extends Fragment implements
                 handleImageClicked(amiiboFile);
             }
         });
-        writeDataAdapter = new FoomiiboAdapter(settings,
-                new FoomiiboAdapter.OnFoomiiboClickListener() {
-                    @Override
-                    public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
-                        if (null != amiibo) {
-                            writeFoomiiboData(amiibo, position);
-                        }
-                    }
-
-                    @Override
-                    public void onFoomiiboRebind(View itemView, Amiibo amiibo) { }
-
-                    @Override
-                    public void onFoomiiboImageClicked(Amiibo amiibo) {
-                        handleImageClicked(amiibo);
-                    }
-                });
-        setWriteAdapter(WRITE.FILE);
+        amiiboFilesView.setAdapter(writeFileAdapter);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
@@ -979,32 +918,6 @@ public class EliteBankFragment extends Fragment implements
 
     public int getValueForPosition(NumberPicker picker, int value) {
         return value + picker.getMinValue();
-    }
-
-    private void setWriteAdapter(WRITE format) {
-        switch(format) {
-            case FILE:
-                amiiboFilesView.setAdapter(writeFileAdapter);
-                break;
-            case DATA:
-                amiiboFilesView.setAdapter(writeDataAdapter);
-                break;
-            case LIST:
-                WriteTagAdapter writeListAdapter = new WriteTagAdapter(
-                        settings, this::writeAmiiboCollection);
-                writeListAdapter.resetSelections();
-                this.settings.addChangeListener(writeListAdapter);
-                amiiboFilesView.setAdapter(writeListAdapter);
-                break;
-            case SETS:
-                FoomiiboAdapter writeSetsAdapter = new FoomiiboAdapter(
-                        settings, this::writeFoomiiboCollection);
-                writeSetsAdapter.resetSelections();
-                this.settings.addChangeListener(writeSetsAdapter);
-                amiiboFilesView.setAdapter(writeSetsAdapter);
-                break;
-        }
-        writeAdapter = format;
     }
 
     @Override

@@ -162,9 +162,7 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
     @Override
     public void onBindViewHolder(@NonNull final AmiiboViewHolder holder, int position) {
         final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
-        holder.itemView.setOnClickListener(view -> {
-            handleClickEvent(holder, clickPosition);
-        });
+        holder.itemView.setOnClickListener(view -> handleClickEvent(holder, clickPosition));
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
@@ -353,8 +351,6 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                         boldSpannable.IndexOf(amiiboType, query), hasTagInfo);
                 setAmiiboInfoText(this.txtGameSeries,
                         boldSpannable.IndexOf(gameSeries, query), hasTagInfo);
-                // setAmiiboInfoText(this.txtCharacter,
-                // boldText.Matching(character, query), hasTagInfo);
                 if (null != item.getFilePath()) {
                     this.itemView.setEnabled(true);
                     String relativeFile = Storage.getRelativePath(item.getFilePath(),

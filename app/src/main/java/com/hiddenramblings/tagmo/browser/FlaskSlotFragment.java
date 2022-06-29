@@ -69,7 +69,6 @@ import com.hiddenramblings.tagmo.amiibo.FlaskTag;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
-import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
@@ -142,22 +141,21 @@ public class FlaskSlotFragment extends Fragment implements
 
     private int currentCount;
 
-    private final Foomiibo foomiibo = new Foomiibo();
-
     @RequiresApi(api = Build.VERSION_CODES.Q)
     ActivityResultLauncher<String[]> onRequestLocationQ = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
             permissions -> { boolean isLocationAvailable = false;
-                for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-                    if (entry.getKey().equals(Manifest.permission.ACCESS_FINE_LOCATION)
-                            && entry.getValue()) isLocationAvailable = true;
-                }
-                if (isLocationAvailable) {
-                    activateBluetooth();
-                } else {
-                    new Toasty(requireActivity()).Long(R.string.flask_permissions);
-                }
-            });
+        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
+            if (entry.getKey().equals(Manifest.permission.ACCESS_FINE_LOCATION)
+                    && entry.getValue()) isLocationAvailable = true;
+        }
+        if (isLocationAvailable) {
+            activateBluetooth();
+        } else {
+            setBottomSheetHidden(true);
+            new Toasty(requireActivity()).Long(R.string.flask_permissions);
+        }
+    });
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     ActivityResultLauncher<String> onRequestBackgroundQ = registerForActivityResult(
@@ -177,9 +175,11 @@ public class FlaskSlotFragment extends Fragment implements
                 }
                 selectBluetoothDevice();
             } else {
+                setBottomSheetHidden(true);
                 new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
             }
         } else {
+            setBottomSheetHidden(true);
             new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
         }
     });
@@ -208,6 +208,7 @@ public class FlaskSlotFragment extends Fragment implements
             else
                 onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
         } else {
+            setBottomSheetHidden(true);
             new Toasty(requireActivity()).Long(R.string.flask_permissions);
         }
     });
@@ -231,8 +232,7 @@ public class FlaskSlotFragment extends Fragment implements
                                 serviceFlask.getDeviceAmiibo();
                             } catch (UnsupportedOperationException uoe) {
                                 disconnectFlask();
-                                new Toasty(requireActivity())
-                                        .Short(R.string.flask_invalid);
+                                new Toasty(requireActivity()).Short(R.string.flask_invalid);
                             }
                         }
 
@@ -428,9 +428,8 @@ public class FlaskSlotFragment extends Fragment implements
 
         AppCompatImageView toggle = rootLayout.findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet));
-        this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        this.bottomSheetBehavior.addBottomSheetCallback(
-                new BottomSheetBehavior.BottomSheetCallback() {
+        setBottomSheetHidden(false);
+        this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -705,9 +704,10 @@ public class FlaskSlotFragment extends Fragment implements
                                 } else {
                                     onRequestLocation.launch(PERMISSIONS_LOCATION);
                                 }
-                            }).setNegativeButton(R.string.deny, (dialog, which) -> new Toasty(
-                                    requireActivity()).Long(R.string.flask_permissions)
-                            ).show();
+                            }).setNegativeButton(R.string.deny, (dialog, which) -> {
+                                setBottomSheetHidden(true);
+                                new Toasty(requireActivity()).Long(R.string.flask_permissions);
+                            }).show();
                 } else {
                     final String[] PERMISSIONS_LOCATION = {
                             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -902,6 +902,11 @@ public class FlaskSlotFragment extends Fragment implements
                 serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo);
             }
         }
+    }
+
+    private void setBottomSheetHidden(boolean hidden) {
+        bottomSheetBehavior.setHideable(hidden);
+        if (hidden) bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
     private void dismissSnackbarNotice(boolean finite) {

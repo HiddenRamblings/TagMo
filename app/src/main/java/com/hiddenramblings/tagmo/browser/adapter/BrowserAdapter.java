@@ -365,8 +365,6 @@ public class BrowserAdapter
                         boldSpannable.IndexOf(amiiboType, query), hasTagInfo);
                 setAmiiboInfoText(this.txtGameSeries,
                         boldSpannable.IndexOf(gameSeries, query), hasTagInfo);
-                // setAmiiboInfoText(this.txtCharacter,
-                // boldText.Matching(character, query), hasTagInfo);
 
                 if (null != item.getFilePath()) {
                     boolean expanded = amiiboPath.contains(item.getFilePath().getAbsolutePath());

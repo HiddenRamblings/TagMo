@@ -265,6 +265,8 @@
     <string name="flask_upload">Uploading amiibo&#8482;&#8230;</string>
     <string name="location_disclosure">Location is required for Bluetooth LE scan. In accordance with Google Play policy, TagMo is required to notify you that location data may be collected in the background.  TagMo does not read, store, or share location data. As such, this notice is strictly a formality.</string>
 
+    <string name="flask_joy_con">Not a valid Joy-Con device!</string>
+
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>
     <string name="lock_write">Wrote lock info</string>

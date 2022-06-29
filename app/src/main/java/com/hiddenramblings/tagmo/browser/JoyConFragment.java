@@ -45,13 +45,11 @@ public class JoyConFragment extends Fragment {
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
-                            new Toasty(requireActivity())
-                                    .Short("SERVICES");
                             try {
                                 serviceJoyCon.setFlaskCharacteristicRX();
                             } catch (TagLostException tle) {
                                 new Toasty(requireActivity())
-                                        .Short(R.string.flask_invalid);
+                                        .Short(R.string.flask_joy_con);
                             }
                         }
 
@@ -63,7 +61,7 @@ public class JoyConFragment extends Fragment {
                     });
                 } else {
                     stopJoyConService();
-                    new Toasty(requireActivity()).Short(R.string.flask_invalid);
+                    new Toasty(requireActivity()).Short(R.string.flask_joy_con);
                 }
             }
         }

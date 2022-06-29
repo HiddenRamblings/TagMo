@@ -202,7 +202,7 @@ public class EliteBankFragment extends Fragment implements
         writeOpenBanks = rootLayout.findViewById(R.id.write_open_banks);
         eraseOpenBanks = rootLayout.findViewById(R.id.erase_open_banks);
 
-        this.settings = new BrowserSettings().initialize();
+        this.settings = activity.getSettings();
 
         AppCompatImageView toggle = rootLayout.findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet));
@@ -257,11 +257,11 @@ public class EliteBankFragment extends Fragment implements
             eraseOpenBanks.setText(getString(R.string.erase_open_banks, valueNew));
         });
 
-        try {
+        if (activity.isDocumentStorage()) {
             DocumentFile rootDocument = DocumentFile.fromTreeUri(activity,
                     this.settings.getBrowserRootDocument());
             this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
-        } catch (IllegalArgumentException iae) {
+        } else {
             this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
         }
 

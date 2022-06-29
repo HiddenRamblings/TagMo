@@ -268,7 +268,7 @@ public class BrowserActivity extends AppCompatActivity implements
         CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
         cardFlipPageTransformer.setScalable(true);
         mainLayout.setPageTransformer(cardFlipPageTransformer);
-        setViewPagerSensitivity(mainLayout, 3);
+        setViewPagerSensitivity(mainLayout, 4);
         fragmentBrowser = pagerAdapter.getBrowser();
         fragmentFoomiibo = pagerAdapter.getFoomiibo();
         fragmentElite = pagerAdapter.getEliteBanks();
@@ -381,8 +381,7 @@ public class BrowserActivity extends AppCompatActivity implements
         AppCompatImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        this.bottomSheetBehavior.addBottomSheetCallback(
-                new BottomSheetBehavior.BottomSheetCallback() {
+        this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {

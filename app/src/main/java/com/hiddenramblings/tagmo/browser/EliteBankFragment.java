@@ -49,9 +49,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
 import com.hiddenramblings.tagmo.browser.adapter.EliteBankAdapter;
-import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
-import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
@@ -113,8 +111,6 @@ public class EliteBankFragment extends Fragment implements
     private CLICKED status = CLICKED.NOTHING;
 
     private BrowserSettings settings;
-
-    private final Foomiibo foomiibo = new Foomiibo();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -197,33 +193,31 @@ public class EliteBankFragment extends Fragment implements
 
         AppCompatImageView toggle = rootLayout.findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet));
-        this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        this.bottomSheetBehavior.addBottomSheetCallback(
-                new BottomSheetBehavior.BottomSheetCallback() {
-                    @Override
-                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                        if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                            if (writeBankLayout.getVisibility() == View.VISIBLE)
-                                onBottomSheetChanged(true, false);
-                            toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
-                        } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                            toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
-                        }
-                    }
+        this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    if (writeBankLayout.getVisibility() == View.VISIBLE)
+                        onBottomSheetChanged(true, false);
+                    toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
+                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
+                }
+            }
 
-                    @Override
-                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                        ViewGroup mainLayout = rootLayout.findViewById(R.id.main_layout);
-                        if (mainLayout.getBottom() >= bottomSheet.getTop()) {
-                            int bottomHeight = bottomSheet.getMeasuredHeight()
-                                    - bottomSheetBehavior.getPeekHeight();
-                            mainLayout.setPadding(0, 0, 0, slideOffset > 0
-                                    ? (int) (bottomHeight * slideOffset) : 0);
-                        }
-                        if (slideOffset > 0)
-                            amiibosView.smoothScrollToPosition(clickedPosition);
-                    }
-                });
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                ViewGroup mainLayout = rootLayout.findViewById(R.id.main_layout);
+                if (mainLayout.getBottom() >= bottomSheet.getTop()) {
+                    int bottomHeight = bottomSheet.getMeasuredHeight()
+                            - bottomSheetBehavior.getPeekHeight();
+                    mainLayout.setPadding(0, 0, 0, slideOffset > 0
+                            ? (int) (bottomHeight * slideOffset) : 0);
+                }
+                if (slideOffset > 0)
+                    amiibosView.smoothScrollToPosition(clickedPosition);
+            }
+        });
 
         toggle.setOnClickListener(view1 -> {
             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -564,27 +558,6 @@ public class EliteBankFragment extends Fragment implements
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
-    private void writeFoomiiboData(Amiibo amiibo, int position) {
-        Bundle args = new Bundle();
-        try {
-            byte[] data = foomiibo.generateData(amiibo.id);
-            byte[] tagData = TagUtils.getValidatedData(keyManager, data);
-            args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
-        } catch (Exception e) {
-            Debug.Log(e);
-        }
-
-        Intent intent = new Intent(requireContext(), NfcActivity.class);
-        intent.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                prefs.settings_elite_signature().get());
-        intent.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
-        intent.putExtra(NFCIntent.EXTRA_CURRENT_BANK, position);
-        intent.putExtras(args);
-        onUpdateTagResult.launch(intent);
-        onBottomSheetChanged(true, true);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-    }
-
     private void displayWriteDialog(int position) {
         onBottomSheetChanged(false, false);
         writeFileAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
@@ -613,7 +586,7 @@ public class EliteBankFragment extends Fragment implements
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
                 String fileName;
-                if (isDocumentStorage()) {
+                if (((BrowserActivity) requireActivity()).isDocumentStorage()) {
                     DocumentFile rootDocument = DocumentFile.fromTreeUri(requireContext(),
                             this.settings.getBrowserRootDocument());
                     if (null == rootDocument) throw new NullPointerException();
@@ -880,42 +853,6 @@ public class EliteBankFragment extends Fragment implements
         }
     }
 
-    private void writeFoomiiboCollection(ArrayList<Amiibo> amiiboList) {
-        if (null != amiiboList && amiiboList.size() == eliteBankCount.getValue()) {
-            new AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.write_confirm)
-                    .setPositiveButton(R.string.proceed, (dialog, which) -> {
-                        Intent collection = new Intent(requireContext(), NfcActivity.class);
-                        collection.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                                prefs.settings_elite_signature().get());
-                        collection.setAction(NFCIntent.ACTION_WRITE_ALL_TAGS);
-                        collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
-                        collection.putExtra(NFCIntent.EXTRA_AMIIBO_LIST, amiiboList);
-                        onOpenBanksActivity.launch(collection);
-                        onBottomSheetChanged(true, false);
-                        dialog.dismiss();
-                    })
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                        amiiboList.clear();
-                        onBottomSheetChanged(true, false);
-                        dialog.dismiss();
-                    })
-                    .show();
-        }
-    }
-
-    private boolean isDocumentStorage() {
-        if (null != this.settings.getBrowserRootDocument()) {
-            try {
-                DocumentFile.fromTreeUri(requireContext(), this.settings.getBrowserRootDocument());
-                return true;
-            } catch (IllegalArgumentException iae) {
-                return false;
-            }
-        }
-        return false;
-    }
-
     public int getValueForPosition(NumberPicker picker, int value) {
         return value + picker.getMinValue();
     }
@@ -941,6 +878,8 @@ public class EliteBankFragment extends Fragment implements
             writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
             eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
 
+            setBottomSheetHidden(false);
+
             if (null == amiibos.get(active_bank)) {
                 onBottomSheetChanged(true, false);
             } else {
@@ -951,7 +890,9 @@ public class EliteBankFragment extends Fragment implements
             }
 
             setArguments(null);
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+            setBottomSheetHidden(true);
+        }
     }
 
     private void handleImageClicked(Amiibo amiibo) {
@@ -1052,6 +993,11 @@ public class EliteBankFragment extends Fragment implements
                 settings.notifyChanges();
             });
         });
+    }
+
+    private void setBottomSheetHidden(boolean hidden) {
+        bottomSheetBehavior.setHideable(hidden);
+        if (hidden) bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 }
 

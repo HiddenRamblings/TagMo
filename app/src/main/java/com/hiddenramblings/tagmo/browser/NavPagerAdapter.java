@@ -9,16 +9,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.hiddenramblings.tagmo.R;
-
 public class NavPagerAdapter extends FragmentStateAdapter {
-    private final BrowserFragment browserFragment = new BrowserFragment();
-    private final FoomiiboFragment foomiiboFragment = new FoomiiboFragment();
+    private final BrowserFragment fragmentBrowser = new BrowserFragment();
+    private final FoomiiboFragment fragmentFoomiibo = new FoomiiboFragment();
+    private final EliteBankFragment fragmentElite = new EliteBankFragment();
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private final FlaskSlotFragment flaskFragment = new FlaskSlotFragment();
-    private final EliteBankFragment eliteFragment = new EliteBankFragment();
+    private final FlaskSlotFragment fragmentFlask = new FlaskSlotFragment();
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private final JoyConFragment switchFragment = new JoyConFragment();
+    private final JoyConFragment fragmentJoyCon = new JoyConFragment();
 
     public NavPagerAdapter(FragmentActivity fa) {
         super(fa);
@@ -29,15 +27,15 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 1:
-                return foomiiboFragment;
+                return fragmentFoomiibo;
             case 2:
-                return eliteFragment;
+                return fragmentElite;
             case 3:
-                return flaskFragment;
+                return fragmentFlask;
             case 4:
-                return switchFragment;
+                return fragmentJoyCon;
             default:
-                return browserFragment;
+                return fragmentBrowser;
         }
     }
 
@@ -47,25 +45,25 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     }
 
     public BrowserFragment getBrowser() {
-        return browserFragment;
+        return fragmentBrowser;
     }
 
     public FoomiiboFragment getFoomiibo() {
-        return foomiiboFragment;
+        return fragmentFoomiibo;
+    }
+
+    public EliteBankFragment getEliteBanks() {
+        return fragmentElite;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public FlaskSlotFragment getFlaskSlots() {
-        return flaskFragment;
-    }
-
-    public EliteBankFragment getEliteBanks() {
-        return eliteFragment;
+        return fragmentFlask;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public JoyConFragment getSwitchPro() {
-        return switchFragment;
+    public JoyConFragment getJoyCons() {
+        return fragmentJoyCon;
     }
 }
 

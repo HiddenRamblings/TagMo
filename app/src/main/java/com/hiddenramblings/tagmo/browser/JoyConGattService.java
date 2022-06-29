@@ -69,7 +69,6 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.TagLostException;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
@@ -120,8 +119,6 @@ public class JoyConGattService extends Service {
         void onServicesDiscovered();
         void onGattConnectionLost();
     }
-
-    StringBuilder response = new StringBuilder();
 
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         final byte[] data = characteristic.getValue();
@@ -340,9 +337,9 @@ public class JoyConGattService extends Service {
         return mReadCharacteristic;
     }
 
-    public void setFlaskCharacteristicRX() throws TagLostException {
+    public void setJoyConCharacteristicRX() throws UnsupportedOperationException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            throw new TagLostException();
+            throw new UnsupportedOperationException();
         }
 
         for (BluetoothGattService customService : getSupportedGattServices()) {
@@ -354,7 +351,7 @@ public class JoyConGattService extends Service {
         if (null == mCustomService) {
             List<BluetoothGattService> services = getSupportedGattServices();
             if (null == services || services.isEmpty()) {
-                throw new TagLostException();
+                throw new UnsupportedOperationException();
             }
 
             for (BluetoothGattService customService : services) {
@@ -387,9 +384,9 @@ public class JoyConGattService extends Service {
         return mWriteCharacteristic;
     }
 
-    public void setFlaskCharacteristicTX() throws TagLostException {
+    public void setJoyConCharacteristicTX() throws UnsupportedOperationException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            throw new TagLostException();
+            throw new UnsupportedOperationException();
         }
 
         BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskNUS);
@@ -397,7 +394,7 @@ public class JoyConGattService extends Service {
         if (null == mCustomService) {
             List<BluetoothGattService> services = getSupportedGattServices();
             if (null == services || services.isEmpty()) {
-                throw new TagLostException();
+                throw new UnsupportedOperationException();
             }
 
             for (BluetoothGattService customService : services) {
@@ -429,8 +426,8 @@ public class JoyConGattService extends Service {
     public void queueTagCharacteristic(String value, int index) {
         if (null == mCharacteristicTX) {
             try {
-                setFlaskCharacteristicTX();
-            } catch (TagLostException e) {
+                setJoyConCharacteristicTX();
+            } catch (UnsupportedOperationException e) {
                 e.printStackTrace();
             }
         }

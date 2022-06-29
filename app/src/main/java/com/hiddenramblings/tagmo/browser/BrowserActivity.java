@@ -94,7 +94,6 @@ import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.hiddenramblings.tagmo.BuildConfig;
@@ -166,7 +165,23 @@ public class BrowserActivity extends AppCompatActivity implements
         BrowserAdapter.OnAmiiboClickListener {
 
     private final Preferences_ prefs = TagMo.getPrefs();
+    private KeyManager keyManager;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private int filteredCount;
+    private AmiiboFile clickedAmiibo = null;
+
+    private BrowserSettings settings;
+    private boolean ignoreTagId;
     private CheckUpdatesTask updates;
+    private String updateUrl;
+    private AppUpdateInfo appUpdate;
+
+    private SettingsFragment fragmentSettings;
+    private BottomSheetBehavior<View> bottomSheetBehavior;
+    private TextView currentFolderView;
+    private DrawerLayout prefsDrawer;
+    private AppCompatButton switchStorageRoot;
+    private AppCompatButton switchStorageType;
 
     private AnimatedLinearLayout fakeSnackbar;
     private AppCompatImageView fakeSnackbarIcon;
@@ -174,13 +189,9 @@ public class BrowserActivity extends AppCompatActivity implements
     private AppCompatButton fakeSnackbarItem;
     private ViewPager2 mainLayout;
     private FloatingActionButton nfcFab;
-    private BrowserFragment browserFragment;
-    private FoomiiboFragment foomiiboFragment;
-    private EliteBankFragment eliteFragment;
-    private TextView currentFolderView;
-    private DrawerLayout prefsDrawer;
-    private AppCompatButton switchStorageRoot;
-    private AppCompatButton switchStorageType;
+    private BrowserFragment fragmentBrowser;
+    private FoomiiboFragment fragmentFoomiibo;
+    private EliteBankFragment fragmentElite;
 
     private MenuItem menuSortId;
     private MenuItem menuSortName;
@@ -211,18 +222,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private TextView txtAmiiboType;
     private TextView txtAmiiboSeries;
     private AppCompatImageView imageAmiibo;
-
-    private BottomSheetBehavior<View> bottomSheetBehavior;
-    private SettingsFragment settingsFragment;
-    private KeyManager keyManager;
-    private final Handler handler = new Handler(Looper.getMainLooper());
-    private int filteredCount;
-    private AmiiboFile clickedAmiibo = null;
-
-    private boolean ignoreTagId;
-    private BrowserSettings settings;
-    private String updateUrl;
-    private AppUpdateInfo appUpdate;
 
     private BillingClient billingClient;
     private final ArrayList<ProductDetails> iapSkuDetails = new ArrayList<>();
@@ -269,17 +268,17 @@ public class BrowserActivity extends AppCompatActivity implements
         cardFlipPageTransformer.setScalable(true);
         mainLayout.setPageTransformer(cardFlipPageTransformer);
         setViewPagerSensitivity(mainLayout, 3);
-        browserFragment = pagerAdapter.getBrowser();
-        foomiiboFragment = pagerAdapter.getFoomiibo();
-        eliteFragment = pagerAdapter.getEliteBanks();
+        fragmentBrowser = pagerAdapter.getBrowser();
+        fragmentFoomiibo = pagerAdapter.getFoomiibo();
+        fragmentElite = pagerAdapter.getEliteBanks();
 
         LinearLayout foomiibo = findViewById(R.id.foomiibo_options);
         foomiibo.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
-                clickView -> foomiiboFragment.clearFoomiiboSet()
+                clickView -> fragmentFoomiibo.clearFoomiiboSet()
         );
 
         foomiibo.findViewById(R.id.build_foomiibo_set).setOnClickListener(
-                clickView -> foomiiboFragment.buildFoomiiboSet()
+                clickView -> fragmentFoomiibo.buildFoomiiboSet()
         );
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @SuppressLint("NewApi")
@@ -288,17 +287,17 @@ public class BrowserActivity extends AppCompatActivity implements
                 super.onPageSelected(position);
                 if (position != 0) BrowserAdapter.resetVisible();
                 if (position != 1) FoomiiboAdapter.resetVisible();
-                RecyclerView amiibosView = browserFragment.getAmiibosView();
+                RecyclerView amiibosView = fragmentBrowser.getAmiibosView();
                 switch (position) {
                     case 1:
                         setTitle(R.string.foomiibo);
                         foomiibo.setVisibility(View.VISIBLE);
                         showBrowserInterface();
-                        amiibosView = foomiiboFragment.getAmiibosView();
+                        amiibosView = fragmentFoomiibo.getAmiibosView();
                         break;
                     case 2:
                         setTitle(R.string.elite_device);
-                        amiibosView = eliteFragment.getAmiibosView();
+                        amiibosView = fragmentElite.getAmiibosView();
                         foomiibo.setVisibility(View.GONE);
                         hideBrowserInterface();
                         break;
@@ -317,7 +316,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         setTitle(R.string.tagmo_browser);
                         foomiibo.setVisibility(View.GONE);
                         showBrowserInterface();
-                        amiibosView = browserFragment.getAmiibosView();
+                        amiibosView = fragmentBrowser.getAmiibosView();
                         break;
                 }
                 invalidateOptionsMenu();
@@ -371,11 +370,11 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         this.settings.addChangeListener(this);
 
-        if (null == settingsFragment)
-            settingsFragment = new SettingsFragment();
+        if (null == fragmentSettings)
+            fragmentSettings = new SettingsFragment();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.preferences, settingsFragment)
+                .replace(R.id.preferences, fragmentSettings)
                 .commit();
 
         AppCompatImageView toggle = findViewById(R.id.toggle);
@@ -606,7 +605,7 @@ public class BrowserActivity extends AppCompatActivity implements
             int bank_count = result.getData().getIntExtra(
                     NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
             prefs.eliteBankCount().put(bank_count);
-            eliteFragment.setArguments(result.getData().getExtras());
+            fragmentElite.setArguments(result.getData().getExtras());
             mainLayout.setCurrentItem(2, true);
         } else {
             mainLayout.setCurrentItem(0, true);
@@ -623,7 +622,7 @@ public class BrowserActivity extends AppCompatActivity implements
         byte[] tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
 
         View view = getLayoutInflater().inflate(R.layout.dialog_backup,
-                browserFragment.getAmiibosView(), false);
+                fragmentBrowser.getAmiibosView(), false);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData, true));
@@ -725,7 +724,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void onRebuildDatabaseClicked() {
         showBrowserPage();
-        settingsFragment.rebuildAmiiboDatabase();
+        fragmentSettings.rebuildAmiiboDatabase();
         this.recreate();
     }
 
@@ -1420,8 +1419,8 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         RecyclerView amiibosView = mainLayout.getCurrentItem() == 0
-                ? browserFragment.getAmiibosView()
-                : foomiiboFragment.getAmiibosView();
+                ? fragmentBrowser.getAmiibosView()
+                : fragmentFoomiibo.getAmiibosView();
         if (item.getItemId() == R.id.install_update) {
             if (null != appUpdate) updates.downloadPlayUpdate(appUpdate);
             if (null != updateUrl) updates.installUpdateCompat(updateUrl);
@@ -1848,7 +1847,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onFilterGameSeriesChanged() {
-        browserFragment.addFilterItemView(settings.getGameSeriesFilter(),
+        fragmentBrowser.addFilterItemView(settings.getGameSeriesFilter(),
                 "filter_game_series", onFilterGameSeriesChipCloseClick);
     }
 
@@ -1863,7 +1862,7 @@ public class BrowserActivity extends AppCompatActivity implements
             };
 
     private void onFilterCharacterChanged() {
-        browserFragment.addFilterItemView(settings.getCharacterFilter(), "filter_character",
+        fragmentBrowser.addFilterItemView(settings.getCharacterFilter(), "filter_character",
                 onFilterCharacterChipCloseClick);
     }
 
@@ -1878,7 +1877,7 @@ public class BrowserActivity extends AppCompatActivity implements
             };
 
     private void onFilterAmiiboSeriesChanged() {
-        browserFragment.addFilterItemView(settings.getAmiiboSeriesFilter(), "filter_amiibo_series",
+        fragmentBrowser.addFilterItemView(settings.getAmiiboSeriesFilter(), "filter_amiibo_series",
                 onFilterAmiiboSeriesChipCloseClick);
     }
 
@@ -1893,7 +1892,7 @@ public class BrowserActivity extends AppCompatActivity implements
             };
 
     private void onFilterAmiiboTypeChanged() {
-        browserFragment.addFilterItemView(settings.getAmiiboTypeFilter(),
+        fragmentBrowser.addFilterItemView(settings.getAmiiboTypeFilter(),
                 "filter_amiibo_type", onAmiiboTypeChipCloseClick);
     }
 
@@ -1924,7 +1923,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void launchEliteActivity(Intent resultData) {
         if (TagMo.getPrefs().enable_elite_support().get()
                 && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
-            eliteFragment.setArguments(resultData.getExtras());
+            fragmentElite.setArguments(resultData.getExtras());
             mainLayout.setCurrentItem(2, true);
         }
     }
@@ -2016,7 +2015,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (mainLayout.getCurrentItem() == 0)
             getToolbarOptions(toolbar, tagData, amiiboFile);
         else
-            foomiiboFragment.getToolbarOptions(toolbar, tagData);
+            fragmentFoomiibo.getToolbarOptions(toolbar, tagData);
 
         long amiiboId = -1;
         String tagInfo = null;
@@ -2155,7 +2154,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private int[] getAdapterStats() {
         BrowserAdapter adapter = (BrowserAdapter)
-                browserFragment.getAmiibosView().getAdapter();
+                fragmentBrowser.getAmiibosView().getAdapter();
         if (adapter == null) return new int[]{0, 0};
         int size = adapter.getItemCount();
         int count = 0;
@@ -2430,11 +2429,6 @@ public class BrowserActivity extends AppCompatActivity implements
         prefs.downloadUrl().remove();
     });
 
-    private boolean isBrowserObstructed() {
-        return getWindow().getDecorView().getRootView().isShown()
-                && !getWindow().getDecorView().getRootView().hasWindowFocus();
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -2495,7 +2489,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         args.putInt(NFCIntent.EXTRA_BANK_COUNT, bank_count);
                         args.putInt(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
                         args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles);
-                        eliteFragment.setArguments(args);
+                        fragmentElite.setArguments(args);
                         mainLayout.setCurrentItem(2, true);
 
                     } else {

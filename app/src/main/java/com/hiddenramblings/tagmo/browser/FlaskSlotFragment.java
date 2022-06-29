@@ -21,7 +21,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.nfc.TagLostException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -242,7 +241,7 @@ public class FlaskSlotFragment extends Fragment implements
                             try {
                                 serviceFlask.setFlaskCharacteristicRX();
                                 serviceFlask.getDeviceAmiibo();
-                            } catch (TagLostException tle) {
+                            } catch (UnsupportedOperationException uoe) {
                                 disconnectFlask();
                                 new Toasty(requireActivity())
                                         .Short(R.string.flask_invalid);
@@ -842,9 +841,6 @@ public class FlaskSlotFragment extends Fragment implements
             }
         }, 20000);
     }
-
-    ActivityResultLauncher<Intent> onRequestPairing = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> scanBluetoothServices());
 
     @SuppressLint("MissingPermission")
     private void selectBluetoothDevice() {

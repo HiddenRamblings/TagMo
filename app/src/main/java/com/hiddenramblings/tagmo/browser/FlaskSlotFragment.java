@@ -471,10 +471,9 @@ public class FlaskSlotFragment extends Fragment implements
 
         createBlank.setOnClickListener(view1 -> serviceFlask.createBlankTag());
 
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            new BluetoothEnabler(requireContext(), requireActivity()
-                    .getActivityResultRegistry(), this);
-        }, 250);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> new BluetoothEnabler(
+                requireContext(), requireActivity().getActivityResultRegistry(), this
+        ), 250);
     }
 
     public RecyclerView getAmiibosView() {

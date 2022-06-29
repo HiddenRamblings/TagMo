@@ -108,11 +108,17 @@ public class IconifiedSnackbar {
     }
 
     public Snackbar buildSnackbar(int msgRes, int drawable, int length, View anchor) {
-        return buildSnackbar(null, mActivity.get().getString(msgRes), drawable, length, anchor);
+        return buildSnackbar(null, mActivity.get()
+                .getString(msgRes), drawable, length, anchor);
     }
 
     public Snackbar buildSnackbar(String msg, int drawable, int length) {
         return buildSnackbar(null, msg, drawable, length, null);
+    }
+
+    public Snackbar buildSnackbar(int msgRes, int drawable, int length) {
+        return buildSnackbar(null, mActivity.get()
+                .getString(msgRes), drawable, length, null);
     }
 
     public Snackbar buildSnackbar(ViewGroup parent, String msg, int length) {

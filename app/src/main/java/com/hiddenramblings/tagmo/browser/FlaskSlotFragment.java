@@ -12,7 +12,6 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
-import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +28,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.ParcelUuid;
-import android.provider.Settings;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -103,7 +101,7 @@ public class FlaskSlotFragment extends Fragment implements
         FlaskSlotAdapter.OnAmiiboClickListener {
 
     private final Preferences_ prefs = TagMo.getPrefs();
-    BrowserActivity browser;
+    private boolean isFragmentVisible = false;
 
     private CoordinatorLayout rootLayout;
     private CardView amiiboTile;
@@ -171,7 +169,6 @@ public class FlaskSlotFragment extends Fragment implements
                     activateBluetooth();
                 } else {
                     new Toasty(requireActivity()).Long(R.string.flask_permissions);
-                    browser.showBrowserPage();
                 }
             });
 
@@ -194,11 +191,9 @@ public class FlaskSlotFragment extends Fragment implements
                         selectBluetoothDevice();
                     } else {
                         new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-                        browser.showBrowserPage();
                     }
                 } else {
                     new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-                    browser.showBrowserPage();
                 }
             });
     ActivityResultLauncher<Intent> onRequestBluetooth = registerForActivityResult(
@@ -211,7 +206,6 @@ public class FlaskSlotFragment extends Fragment implements
                     selectBluetoothDevice();
                 } else {
                     new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
-                    browser.showBrowserPage();
                 }
             });
     ActivityResultLauncher<String[]> onRequestLocation = registerForActivityResult(
@@ -228,7 +222,6 @@ public class FlaskSlotFragment extends Fragment implements
                         onRequestBluetooth.launch(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
                 } else {
                     new Toasty(requireActivity()).Long(R.string.flask_permissions);
-                    browser.showBrowserPage();
                 }
             });
     protected ServiceConnection mServerConn = new ServiceConnection() {
@@ -755,8 +748,9 @@ public class FlaskSlotFragment extends Fragment implements
                                 } else {
                                     onRequestLocation.launch(PERMISSIONS_LOCATION);
                                 }
-                            }).setNegativeButton(R.string.deny, (dialog, which)
-                                    -> browser.showBrowserPage()).show();
+                            }).setNegativeButton(R.string.deny, (dialog, which) -> new Toasty(
+                                    requireActivity()).Long(R.string.flask_permissions)
+                            ).show();
                 } else {
                     final String[] PERMISSIONS_LOCATION = {
                             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -990,32 +984,41 @@ public class FlaskSlotFragment extends Fragment implements
     private void showScanningNotice() {
         dismissSnackbarNotice();
         noticeState = STATE.SCANNING;
-        statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
-                R.string.flask_scanning, R.drawable.ic_baseline_bluetooth_searching_24dp,
-                Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
-        );
-        statusBar.show();
+        if (isFragmentVisible) {
+            statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
+                    R.string.flask_scanning,
+                    R.drawable.ic_baseline_bluetooth_searching_24dp,
+                    Snackbar.LENGTH_INDEFINITE
+            );
+            statusBar.show();
+        }
     }
 
     private void showConnectionNotice() {
         dismissSnackbarNotice();
         noticeState = STATE.CONNECT;
-        statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
-                R.string.flask_located, R.drawable.ic_bluup_flask_24dp,
-                Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
-        );
-        statusBar.show();
+        if (isFragmentVisible) {
+            statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
+                    R.string.flask_located,
+                    R.drawable.ic_bluup_flask_24dp,
+                    Snackbar.LENGTH_INDEFINITE
+            );
+            statusBar.show();
+        }
     }
 
     private void showDisconnectNotice() {
         dismissSnackbarNotice();
         noticeState = STATE.MISSING;
-        statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
-                R.string.flask_disconnect, R.drawable.ic_baseline_bluetooth_searching_24dp,
-                Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
-        );
-        statusBar.setAction(R.string.scan, v -> selectBluetoothDevice());
-        statusBar.show();
+        if (isFragmentVisible) {
+            statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
+                    R.string.flask_disconnect,
+                    R.drawable.ic_baseline_bluetooth_searching_24dp,
+                    Snackbar.LENGTH_INDEFINITE
+            );
+            statusBar.setAction(R.string.scan, v -> selectBluetoothDevice());
+            statusBar.show();
+        }
     }
 
     private void showUploadingNotice() {
@@ -1028,14 +1031,17 @@ public class FlaskSlotFragment extends Fragment implements
     private void showPurchaseNotice() {
         dismissSnackbarNotice();
         noticeState = STATE.PURCHASE;
-        statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
-                R.string.flask_missing, R.drawable.ic_bluup_flask_24dp,
-                Snackbar.LENGTH_INDEFINITE, rootLayout.findViewById(R.id.bottom_sheet)
-        );
-        statusBar.setAction(R.string.purchase, v -> startActivity(
-                new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/flask/"))
-        ));
-        statusBar.show();
+        if (isFragmentVisible) {
+            statusBar = new IconifiedSnackbar(requireActivity()).buildSnackbar(
+                    R.string.flask_missing,
+                    R.drawable.ic_bluup_flask_24dp,
+                    Snackbar.LENGTH_INDEFINITE
+            );
+            statusBar.setAction(R.string.purchase, v -> startActivity(
+                    new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/flask/"))
+            ));
+            statusBar.show();
+        }
     }
 
     public void startFlaskService() {
@@ -1135,12 +1141,14 @@ public class FlaskSlotFragment extends Fragment implements
 
     @Override
     public void onPause() {
+        isFragmentVisible = false;
         dismissSnackbarNotice();
         super.onPause();
     }
 
     @Override
     public void onResume() {
+        isFragmentVisible = true;
         super.onResume();
         if (null != statusBar && statusBar.isShown()) return;
         new Handler(Looper.getMainLooper()).postDelayed(() -> {

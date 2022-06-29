@@ -30,12 +30,10 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.ParcelUuid;
 import android.provider.Settings;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -153,9 +151,9 @@ public class FlaskSlotFragment extends Fragment implements
     private BluetoothAdapter mBluetoothAdapter;
     private ScanCallback scanCallbackLP;
     private BluetoothAdapter.LeScanCallback scanCallback;
-    private FlaskGattService flaskService;
-    private String flaskProfile;
-    private String flaskAddress;
+    private FlaskGattService serviceFlask;
+    private String profileFlask;
+    private String addressFlask;
 
     private int currentCount;
 
@@ -239,18 +237,18 @@ public class FlaskSlotFragment extends Fragment implements
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             FlaskGattService.LocalBinder localBinder = (FlaskGattService.LocalBinder) binder;
-            flaskService = localBinder.getService();
-            if (flaskService.initialize()) {
-                if (flaskService.connect(flaskAddress)) {
-                    flaskService.setListener(new FlaskGattService.BluetoothGattListener() {
+            serviceFlask = localBinder.getService();
+            if (serviceFlask.initialize()) {
+                if (serviceFlask.connect(addressFlask)) {
+                    serviceFlask.setListener(new FlaskGattService.BluetoothGattListener() {
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
                             requireActivity().runOnUiThread(() -> ((TextView) rootLayout
-                                    .findViewById(R.id.hardware_info)).setText(flaskProfile));
+                                    .findViewById(R.id.hardware_info)).setText(profileFlask));
                             try {
-                                flaskService.setFlaskCharacteristicRX();
-                                flaskService.getDeviceAmiibo();
+                                serviceFlask.setFlaskCharacteristicRX();
+                                serviceFlask.getDeviceAmiibo();
                             } catch (TagLostException tle) {
                                 disconnectFlask();
                                 new Toasty(requireActivity())
@@ -260,7 +258,7 @@ public class FlaskSlotFragment extends Fragment implements
 
                         @Override
                         public void onFlaskStatusChanged(JSONObject jsonObject) {
-                            flaskService.getDeviceAmiibo();
+                            serviceFlask.getDeviceAmiibo();
                         }
 
                         @Override
@@ -285,7 +283,7 @@ public class FlaskSlotFragment extends Fragment implements
                                     dismissSnackbarNotice(true);
                                     flaskDetails.setAdapter(adapter);
                                 });
-                                flaskService.getActiveAmiibo();
+                                serviceFlask.getActiveAmiibo();
                             });
                         }
 
@@ -342,7 +340,7 @@ public class FlaskSlotFragment extends Fragment implements
                             );
                             requireActivity().runOnUiThread(() -> bottomSheetBehavior
                                     .setState(BottomSheetBehavior.STATE_COLLAPSED));
-                            flaskAddress = null;
+                            addressFlask = null;
                             stopFlaskService();
                         }
                     });
@@ -579,7 +577,7 @@ public class FlaskSlotFragment extends Fragment implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        createBlank.setOnClickListener(view1 -> flaskService.createBlankTag());
+        createBlank.setOnClickListener(view1 -> serviceFlask.createBlankTag());
 
         sourceToggle.setOnClickListener(view1 -> {
             if (writeSlotsLayout.getVisibility() == View.VISIBLE) {
@@ -814,7 +812,7 @@ public class FlaskSlotFragment extends Fragment implements
     @SuppressLint("MissingPermission")
     private void scanBluetoothServices() {
         showScanningNotice();
-        flaskProfile = null;
+        profileFlask = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
             ParcelUuid FlaskUUID = new ParcelUuid(FlaskGattService.FlaskNUS);
@@ -825,8 +823,8 @@ public class FlaskSlotFragment extends Fragment implements
                 @Override
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
-                    flaskProfile = result.getDevice().getName();
-                    flaskAddress = result.getDevice().getAddress();
+                    profileFlask = result.getDevice().getName();
+                    addressFlask = result.getDevice().getAddress();
                     dismissFlaskDiscovery();
                     showConnectionNotice();
                     startFlaskService();
@@ -835,8 +833,8 @@ public class FlaskSlotFragment extends Fragment implements
             scanner.startScan(Collections.singletonList(filter), settings, scanCallbackLP);
         } else {
             scanCallback = (bluetoothDevice, i, bytes) -> {
-                flaskProfile = bluetoothDevice.getName();
-                flaskAddress = bluetoothDevice.getAddress();
+                profileFlask = bluetoothDevice.getName();
+                addressFlask = bluetoothDevice.getAddress();
                 dismissFlaskDiscovery();
                 showConnectionNotice();
                 startFlaskService();
@@ -844,7 +842,7 @@ public class FlaskSlotFragment extends Fragment implements
             mBluetoothAdapter.startLeScan(new UUID[]{ FlaskGattService.FlaskNUS }, scanCallback);
         }
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            if (null == flaskProfile) {
+            if (null == profileFlask) {
                 dismissFlaskDiscovery();
                 showPurchaseNotice();
             }
@@ -963,7 +961,7 @@ public class FlaskSlotFragment extends Fragment implements
                 }
             }
             if (null != amiibo) {
-                flaskService.uploadAmiiboFile(amiiboFile.getData(), amiibo);
+                serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo);
             }
         }
     }
@@ -973,7 +971,7 @@ public class FlaskSlotFragment extends Fragment implements
             try {
                 byte[] data = foomiibo.generateData(amiibo.id);
                 byte[] tagData = TagUtils.getValidatedData(keyManager, data);
-                flaskService.uploadAmiiboFile(tagData, amiibo);
+                serviceFlask.uploadAmiiboFile(tagData, amiibo);
             } catch (Exception e) {
                 Debug.Log(e);
             }
@@ -1048,8 +1046,8 @@ public class FlaskSlotFragment extends Fragment implements
 
     public void disconnectFlask() {
         dismissSnackbarNotice(true);
-        if (null != flaskService)
-            flaskService.disconnect();
+        if (null != serviceFlask)
+            serviceFlask.disconnect();
         else
             stopFlaskService();
     }
@@ -1173,12 +1171,12 @@ public class FlaskSlotFragment extends Fragment implements
             toolbar.getMenu().findItem(R.id.mnu_backup).setVisible(false);
             toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_activate) {
-                    flaskService.setActiveAmiibo(
+                    serviceFlask.setActiveAmiibo(
                             amiibo.name, String.valueOf(amiibo.id)
                     );
                     return true;
                 } else if (item.getItemId() == R.id.mnu_delete) {
-                    flaskService.deleteAmiibo(
+                    serviceFlask.deleteAmiibo(
                             amiibo.name, String.valueOf(amiibo.id)
                     );
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -1190,18 +1188,18 @@ public class FlaskSlotFragment extends Fragment implements
             toolbar.getMenu().findItem(R.id.mnu_backup).setVisible(true);
             toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_activate) {
-                    flaskService.setActiveAmiibo(
+                    serviceFlask.setActiveAmiibo(
                             amiibo.name, amiibo.getFlaskTail()
                     );
                     return true;
                 } else if (item.getItemId() == R.id.mnu_delete) {
-                    flaskService.deleteAmiibo(
+                    serviceFlask.deleteAmiibo(
                             amiibo.name, amiibo.getFlaskTail()
                     );
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     return true;
                 } else if (item.getItemId() == R.id.mnu_backup) {
-                    flaskService.downloadAmiibo(
+                    serviceFlask.downloadAmiibo(
                             amiibo.name, amiibo.getFlaskTail()
                     );
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);

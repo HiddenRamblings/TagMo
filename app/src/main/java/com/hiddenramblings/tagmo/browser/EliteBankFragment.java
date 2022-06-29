@@ -193,6 +193,7 @@ public class EliteBankFragment extends Fragment implements
 
         AppCompatImageView toggle = rootLayout.findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet));
+        this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -866,6 +867,8 @@ public class EliteBankFragment extends Fragment implements
             int active_bank = requireArguments().getInt(NFCIntent.EXTRA_ACTIVE_BANK,
                     prefs.eliteActiveBank().get());
 
+            setBottomSheetHidden(false);
+
             ((TextView) rootLayout.findViewById(R.id.hardware_info)).setText(getString(
                     R.string.elite_signature, requireArguments().getString(NFCIntent.EXTRA_SIGNATURE)
             ));
@@ -877,8 +880,6 @@ public class EliteBankFragment extends Fragment implements
                     getValueForPosition(eliteBankCount, active_bank), bank_count));
             writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
             eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
-
-            setBottomSheetHidden(false);
 
             if (null == amiibos.get(active_bank)) {
                 onBottomSheetChanged(true, false);

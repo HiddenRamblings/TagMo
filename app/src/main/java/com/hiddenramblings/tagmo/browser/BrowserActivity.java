@@ -673,29 +673,29 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void showPopupMenu(PopupMenu popup) {
         MenuItem scanItem = popup.getMenu().findItem(R.id.mnu_scan);
-        MenuItem flaskItem = popup.getMenu().findItem(R.id.mnu_flask);
         MenuItem backupItem = popup.getMenu().findItem(R.id.mnu_backup);
         MenuItem validateItem = popup.getMenu().findItem(R.id.mnu_validate);
+        MenuItem flaskItem = popup.getMenu().findItem(R.id.mnu_flask);
 
         scanItem.setEnabled(false);
-        flaskItem.setEnabled(false);
-        flaskItem.setVisible(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2);
         backupItem.setEnabled(false);
         validateItem.setEnabled(false);
+        flaskItem.setEnabled(false);
+        flaskItem.setVisible(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2);
 
         popup.show();
         Handler popupHandler = new Handler(Looper.getMainLooper());
         popupHandler.postDelayed(() -> {
-            popupHandler.postDelayed(() -> validateItem.setEnabled(true), 100);
-            popupHandler.postDelayed(() -> backupItem.setEnabled(true), 200);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                popupHandler.postDelayed(() -> scanItem.setEnabled(true), 300);
-            } else {
-                popupHandler.postDelayed(() -> flaskItem.setEnabled(true), 300);
-                popupHandler.postDelayed(() -> scanItem.setEnabled(true), 400);
+            int baseDelay = 0;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                baseDelay = 100;
+                popupHandler.postDelayed(() -> flaskItem.setEnabled(true), baseDelay);
             }
+            popupHandler.postDelayed(() -> validateItem.setEnabled(true), 100 + baseDelay);
+            popupHandler.postDelayed(() -> backupItem.setEnabled(true), 200 + baseDelay);
+            popupHandler.postDelayed(() -> scanItem.setEnabled(true), 300 + baseDelay);
 
-        }, 250);
+        }, 300);
 
         popup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.mnu_scan) {
@@ -724,9 +724,14 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onRebuildDatabaseClicked() {
-        showBrowserPage();
+        if (null == fragmentSettings)
+            fragmentSettings = new SettingsFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences, fragmentSettings)
+                .commit();
         fragmentSettings.rebuildAmiiboDatabase();
-        this.recreate();
+        settings.notifyChanges();
     }
 
     private void onCaptureLogcatClicked() {

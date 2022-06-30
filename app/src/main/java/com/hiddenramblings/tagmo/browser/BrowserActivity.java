@@ -118,7 +118,6 @@ import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
-import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
@@ -223,6 +222,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private TextView txtAmiiboType;
     private TextView txtAmiiboSeries;
     private AppCompatImageView imageAmiibo;
+
+    private boolean isFullRebuild = true;
 
     private BillingClient billingClient;
     private final ArrayList<ProductDetails> iapSkuDetails = new ArrayList<>();
@@ -1767,7 +1768,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onAmiiboFilesChanged() {
-        hideFakeSnackbar();
+        hideFakeSnackbar(isFullRebuild && !settings.getAmiiboFiles().isEmpty() ? 250 : 200);
         if (settings.getAmiiboFiles().isEmpty()) {
             handler.postDelayed(() -> {
                 showFakeSnackbar(getString(R.string.amiibo_not_found));
@@ -1778,6 +1779,9 @@ public class BrowserActivity extends AppCompatActivity implements
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 });
             }, 200);
+            isFullRebuild = true;
+        } else {
+            isFullRebuild = false;
         }
     }
 
@@ -2221,10 +2225,10 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    private void hideFakeSnackbar() {
+    private void hideFakeSnackbar(int duration) {
         if (fakeSnackbar.getVisibility() == View.VISIBLE) {
             AutoTransition autoTransition = new AutoTransition();
-            autoTransition.setDuration(200);
+            autoTransition.setDuration(duration);
 
             TranslateAnimation animate = new TranslateAnimation(
                     0, 0, 0, -fakeSnackbar.getHeight());
@@ -2245,6 +2249,10 @@ public class BrowserActivity extends AppCompatActivity implements
             TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
             mainLayout.setPadding(0, 0, 0, 0);
         }
+    }
+
+    private void hideFakeSnackbar() {
+        hideFakeSnackbar(200);
     }
 
     public void showBrowserPage() {

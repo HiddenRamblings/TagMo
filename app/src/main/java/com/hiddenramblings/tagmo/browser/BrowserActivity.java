@@ -1768,7 +1768,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onAmiiboFilesChanged() {
-        hideFakeSnackbar(isFullRebuild && !settings.getAmiiboFiles().isEmpty() ? 250 : 200);
+        hideFakeSnackbar(isFullRebuild && !settings.getAmiiboFiles().isEmpty() ? 300 : 200);
         if (settings.getAmiiboFiles().isEmpty()) {
             handler.postDelayed(() -> {
                 showFakeSnackbar(getString(R.string.amiibo_not_found));

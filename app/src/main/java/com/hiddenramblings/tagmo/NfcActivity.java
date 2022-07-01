@@ -298,7 +298,7 @@ public class NfcActivity extends AppCompatActivity {
                     isEliteDevice = TagUtils.isElite(mifare)
                             || NFCIntent.ACTION_UNLOCK_UNIT.equals(mode);
                     if (isEliteDevice)
-                        showMessage(R.string.tag_scanning, getString(R.string.elite_device));
+                        showMessage(R.string.tag_scanning, getString(R.string.elite_n2));
                 }
             }
             int selection;

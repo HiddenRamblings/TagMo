@@ -91,6 +91,7 @@ public class EliteBankFragment extends Fragment implements
     private NumberPicker eliteBankCount;
     private AppCompatButton writeOpenBanks;
     private AppCompatButton eraseOpenBanks;
+    private LinearLayout securityOptions;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private KeyManager keyManager;
@@ -135,6 +136,8 @@ public class EliteBankFragment extends Fragment implements
         writeBankLayout = rootLayout.findViewById(R.id.write_list_layout);
         amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list);
         amiiboFilesView.setHasFixedSize(true);
+
+        securityOptions = rootLayout.findViewById(R.id.security_options);
 
         amiiboTile = rootLayout.findViewById(R.id.active_tile_layout);
         amiiboCard = rootLayout.findViewById(R.id.active_card_layout);
@@ -333,6 +336,28 @@ public class EliteBankFragment extends Fragment implements
 
             onBottomSheetChanged(true, false);
         });
+
+        view.findViewById(R.id.lock_elite).setOnClickListener(view1 ->
+                new android.app.AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.lock_elite_warning)
+                        .setMessage(R.string.lock_elite_details)
+                        .setPositiveButton(R.string.accept, (dialog, which) -> {
+                            Intent lock = new Intent(requireContext(), NfcActivity.class);
+                            lock.setAction(NFCIntent.ACTION_LOCK_AMIIBO);
+                            startActivity(lock);
+                            dialog.dismiss();
+                        })
+                        .setNegativeButton(R.string.cancel, null).show());
+
+        view.findViewById(R.id.unlock_elite).setOnClickListener(view1 ->
+                new android.app.AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.unlock_elite_warning)
+                        .setMessage(R.string.prepare_unlock)
+                        .setPositiveButton(R.string.start, (dialog, which) -> {
+                            startActivity(new Intent(requireContext(), NfcActivity.class)
+                                    .setAction(NFCIntent.ACTION_UNLOCK_UNIT));
+                            dialog.dismiss();
+                        }).show());
     }
 
     public RecyclerView getAmiibosView() {
@@ -398,6 +423,7 @@ public class EliteBankFragment extends Fragment implements
         amiiboCard.setVisibility(isMenu && hasAmiibo ? View.VISIBLE : View.GONE);
         switchMenuOptions.setVisibility(isMenu && hasAmiibo ? View.VISIBLE : View.GONE);
         bankOptionsMenu.setVisibility(isMenu && !hasAmiibo ? View.VISIBLE : View.GONE);
+        securityOptions.setVisibility(isMenu || hasAmiibo ? View.VISIBLE : View.GONE);
         writeBankLayout.setVisibility(isMenu || hasAmiibo ? View.GONE : View.VISIBLE);
     }
 
@@ -867,7 +893,7 @@ public class EliteBankFragment extends Fragment implements
             int active_bank = requireArguments().getInt(NFCIntent.EXTRA_ACTIVE_BANK,
                     prefs.eliteActiveBank().get());
 
-            setBottomSheetHidden(false);
+            setBottomSheetSecure(false);
 
             ((TextView) rootLayout.findViewById(R.id.hardware_info)).setText(getString(
                     R.string.elite_signature, requireArguments().getString(NFCIntent.EXTRA_SIGNATURE)
@@ -892,7 +918,7 @@ public class EliteBankFragment extends Fragment implements
 
             setArguments(null);
         } catch (Exception ignored) {
-            setBottomSheetHidden(true);
+            setBottomSheetSecure(true);
         }
     }
 
@@ -996,9 +1022,11 @@ public class EliteBankFragment extends Fragment implements
         });
     }
 
-    private void setBottomSheetHidden(boolean hidden) {
-        bottomSheetBehavior.setHideable(hidden);
-        if (hidden) bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    private void setBottomSheetSecure(boolean hidden) {
+        bankStats.setVisibility(hidden ? View.GONE : View.VISIBLE);
+        amiiboCard.setVisibility(hidden ? View.GONE : View.VISIBLE);
+        bankOptionsMenu.setVisibility(hidden ? View.GONE : View.VISIBLE);
+        switchMenuOptions.setVisibility(hidden ? View.GONE : View.VISIBLE);
     }
 }
 

@@ -21,11 +21,6 @@
     <string name="settings_import_info" translatable="false">import_info</string>
     <string name="settings_reset_info" translatable="false">reset_info</string>
     <string name="settings_export_info" translatable="false">settings_export_info</string>
-    <string name="settings_info_amiibo" translatable="false">settings_info_amiibo</string>
-    <string name="settings_info_game_series" translatable="false">settings_info_game_series</string>
-    <string name="settings_info_characters" translatable="false">settings_info_characters</string>
-    <string name="settings_info_amiibo_series" translatable="false">settings_info_amiibo_series</string>
-    <string name="settings_info_amiibo_types" translatable="false">settings_info_amiibo_types</string>
     <string name="settings_import_info_amiiboapi" translatable="false">settings_sync_info_amiiboapi</string>
     <string name="settings_disable_debug" translatable="false">settings_disable_debug</string>
     <string name="settings_stable_channel" translatable="false">settings_stable_channel</string>
@@ -46,7 +41,7 @@
     <string name="joy_con" translatable="false">Joy-Con</string>
     <string name="amiibo_api" translatable="false">AmiiboAPI.com</string>
     <string name="power_tag" translatable="false">Power Tag</string>
-    <string name="elite_device" translatable="false">N2 Elite</string>
+    <string name="elite_n2" translatable="false">N2 Elite</string>
     <string name="bluup_flask" translatable="false">Bluup Flask</string>
     <string name="mifare_classic" translatable="false">Mifare Classic</string>
     <string name="mifare_plus" translatable="false">Mifare Plus</string>

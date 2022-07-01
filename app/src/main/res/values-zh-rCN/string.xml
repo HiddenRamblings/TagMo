@@ -191,7 +191,7 @@
     <string name="bank_select_details">设置 Bank 号</string>
     <string name="write_confirm">是否将选定内容写入 N2 Elite ？</string>
     <string name="warn_delete_file">删除 %1$s。你确定吗？</string>
-    <string name="delete_misisng">不能删除扫描的标签！</string>
+    <string name="delete_missing">不能删除扫描的标签！</string>
     <string name="erase_active">不能擦除激活的 bank ！</string>
     <string name="backup_filename">设置 amiibo™ 文件名</string>
     <string name="emulated_storage_root">浏览模拟存储</string>

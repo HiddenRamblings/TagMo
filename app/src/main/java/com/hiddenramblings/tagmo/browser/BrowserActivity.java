@@ -176,6 +176,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private String updateUrl;
     private AppUpdateInfo appUpdate;
 
+    NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
     private SettingsFragment fragmentSettings;
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private TextView currentFolderView;
@@ -264,7 +265,6 @@ public class BrowserActivity extends AppCompatActivity implements
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
-        NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
         mainLayout.setAdapter(pagerAdapter);
         CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
         cardFlipPageTransformer.setScalable(true);
@@ -1099,8 +1099,10 @@ public class BrowserActivity extends AppCompatActivity implements
                         TagMo.getPrefs().browserRootFolder().get(), "");
                 backup.setVisible(!relativeFile.startsWith("/Foomiibo/"));
             } else if (null != amiiboFile.getDocUri()) {
-                String amiiboUri = amiiboFile.getDocUri().getUri().toString();
-                backup.setVisible(!amiiboUri.contains("Foomiibo"));
+                String relativeDocument = Storage.getRelativeDocument(
+                        amiiboFile.getDocUri().getUri()
+                );
+                backup.setVisible(!relativeDocument.contains("Foomiibo"));
             }
         }
 
@@ -1743,10 +1745,17 @@ public class BrowserActivity extends AppCompatActivity implements
                 .showDownloads().put(newBrowserSettings.isShowingDownloads())
                 .apply();
 
-        File rootFolder = newBrowserSettings.getBrowserRootFolder();
-        String relativeRoot = Storage.getRelativePath(rootFolder, prefs.preferEmulated().get());
-        setFolderText(relativeRoot.length() > 1 ? relativeRoot : rootFolder.getAbsolutePath(),
-                folderChanged ? 3000 : 1500);
+        if (isDocumentStorage()) {
+            String relativeRoot = Storage.getRelativeDocument(
+                    newBrowserSettings.getBrowserRootDocument()
+            );
+            setFolderText(relativeRoot, folderChanged ? 3000 : 1500);
+        } else {
+            File rootFolder = newBrowserSettings.getBrowserRootFolder();
+            String relativeRoot = Storage.getRelativePath(rootFolder, prefs.preferEmulated().get());
+            setFolderText(relativeRoot.length() > 1 ? relativeRoot : rootFolder.getAbsolutePath(),
+                    folderChanged ? 3000 : 1500);
+        }
     }
 
     private void onAmiiboFilesChanged() {
@@ -1952,7 +1961,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     })
                     .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
         } else {
-            new Toasty(this).Short(R.string.delete_misisng);
+            new Toasty(this).Short(R.string.delete_missing);
         }
     }
 

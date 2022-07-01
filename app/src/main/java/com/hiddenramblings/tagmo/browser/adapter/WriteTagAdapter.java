@@ -369,8 +369,10 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                     }
                 } else if (null != item.getDocUri()) {
                     this.itemView.setEnabled(true);
-                    String amiiboUri = item.getDocUri().getUri().toString();
-                    this.txtPath.setText(boldSpannable.IndexOf(amiiboUri, query));
+                    String relativeDocument = Storage.getRelativeDocument(
+                            item.getDocUri().getUri()
+                    );
+                    this.txtPath.setText(boldSpannable.IndexOf(relativeDocument, query));
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(
                             android.R.attr.textColor, a, true);

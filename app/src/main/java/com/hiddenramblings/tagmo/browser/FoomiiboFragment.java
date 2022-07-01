@@ -158,8 +158,8 @@ public class FoomiiboFragment extends Fragment implements
         TextView amiiboTypeStats = view.findViewById(R.id.stats_amiibo_type);
 
         boolean hasAmiibo = null != settings.getAmiiboManager();
-        foomiiboTitle.setText(getString(R.string.number_amiibo, hasAmiibo
-                ? settings.getAmiiboManager().amiibos.size() : 0, getString(R.string.amiibo_api)));
+        foomiiboTitle.setText(getString(R.string.number_amiibo, getString(R.string.amiibo_api),
+                hasAmiibo ? settings.getAmiiboManager().amiibos.size() : 0));
         gameSeriesStats.setText(getString(R.string.number_game, hasAmiibo
                 ? settings.getAmiiboManager().gameSeries.size() : 0));
         characterStats.setText(getString(R.string.number_character, hasAmiibo

@@ -3,10 +3,11 @@
     <string name="app_name" translatable="false">TagMo</string>
 
     <string name="tagmo" translatable="false">TagMo</string>
+    <string name="foomiibo" translatable="false">Foomiibo</string>
+
     <string name="build_hash" translatable="false">#%1$s</string>
     <string name="build_hash_full" translatable="false"> TagMo - #%1$s</string>
     <string name="git_issue_title" translatable="false">Logcat - TagMo #%1$s</string>
-    <string name="foomiibo" translatable="false">Foomiibo</string>
 
     <string name="tag_data" translatable="false">tagData</string>
     <string name="hex_ff" translatable="false">FF</string>
@@ -38,11 +39,15 @@
     </string-array>
     <string name="mimetype_zip" translatable="false">application/zip</string>
 
+    <string name="amiibo" translatable="false">amiibo&#8482;</string>
     <string name="joy_con" translatable="false">Joy-Con</string>
+
     <string name="amiibo_api" translatable="false">AmiiboAPI.com</string>
+
     <string name="power_tag" translatable="false">Power Tag</string>
     <string name="elite_n2" translatable="false">N2 Elite</string>
     <string name="bluup_flask" translatable="false">Bluup Flask</string>
+
     <string name="mifare_classic" translatable="false">Mifare Classic</string>
     <string name="mifare_plus" translatable="false">Mifare Plus</string>
     <string name="mifare_pro" translatable="false">Mifare Pro</string>

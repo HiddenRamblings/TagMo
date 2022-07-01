@@ -23,7 +23,6 @@
     <string name="unlock">Odblokuj</string>
     <string name="scan">Skanuj</string>
 
-    <string name="amiibo">amiibo™</string>
     <string name="amiibo_id">ID</string>
     <string name="amiibo_name">Nazwa</string>
     <string name="amiibo_game">Seria gier</string>
@@ -139,7 +138,6 @@
     <string name="scan_elite">Skanuj N2 Elite</string>
     <string name="erase_bank">Wymaż Bank</string>
     <string name="activate_bank">Aktywuj Bank</string>
-    <string name="amiibo_backup">Backup amiibo™</string>
     <string name="validate_data">Walidacja danych</string>
     <string name="set_bank_count">Ustaw l. banków</string>
     <string name="lock_amiibo">Zablokuj N2 Elite</string>
@@ -157,10 +155,10 @@
     <string name="power_tag_details">Szczegóły ograniczeń i użycia na Github-ie.</string>
     <string name="enable_elite">Włącz obsługę N2 Elite</string>
     <string name="elite_details">Szczegóły ograniczeń i użycia na Github-ie.</string>
-    <string name="lock_elite_hardware">Sprzętowa blokada N2 Elite</string>
-    <string name="lock_elite_hardware_details">Aktywny bank będzie emulował rynkowe amiibo™.\nInne funkcje będą wyłączone do odblokowania.</string>
+    <string name="lock_elite">Sprzętowa blokada N2 Elite</string>
+    <string name="lock_elite_details">Aktywny bank będzie emulował rynkowe amiibo™.\nInne funkcje będą wyłączone do odblokowania.</string>
     <string name="lock_elite_warning">Blokada sprzętowa N2 Elite?</string>
-    <string name="unlock_elite_hardware">Odblokuj sprzętowo N2 Elite</string>
+    <string name="unlock_elite_warning">Odblokuj sprzętowo N2 Elite</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="amiibo_info">Baza danych amiibo™</string>
     <string name="sync_amiibo_info">Synchronizuj bazę danych z AmiiboAPI</string>

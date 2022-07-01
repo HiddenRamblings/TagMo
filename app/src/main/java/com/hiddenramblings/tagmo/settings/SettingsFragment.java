@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.settings;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,15 +11,10 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -29,15 +23,10 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.NFCIntent;
-import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.WebActivity;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
-import com.hiddenramblings.tagmo.amiibo.AmiiboType;
-import com.hiddenramblings.tagmo.amiibo.Character;
-import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.browser.BrowserActivity;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -55,8 +44,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.concurrent.Executors;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -98,7 +85,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         importKeys = findPreference(getString(R.string.settings_import_keys));
 
-        loadAmiiboManager();
         updateKeySummary();
 
         ListPreference imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
@@ -198,7 +184,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Preference resetInfo = findPreference(getString(R.string.settings_reset_info));
         if (null != resetInfo) {
             resetInfo.setOnPreferenceClickListener(preference -> {
-                resetAmiiboManager();
+                resetAmiiboDatabase();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
@@ -289,29 +275,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         requireActivity().runOnUiThread(() -> importKeys.setSummary(keySummary));
     }
 
-    private void loadAmiiboManager() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            AmiiboManager amiiboManager;
-            try {
-                amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
-            } catch (IOException | JSONException | ParseException e) {
-                Debug.Log(e);
-                new Toasty(requireActivity()).Short(R.string.amiibo_failure_load);
-                return;
-            }
-            if (Thread.currentThread().isInterrupted()) return;
-
-            setAmiiboManager(amiiboManager);
-        });
-    }
-
     public void rebuildAmiiboDatabase() {
+        resetAmiiboDatabase();
         new JSONExecutor(API_LAST_UPDATED).setResultListener(result -> {
             if (null != result) parseUpdateJSON(result, true);
         });
     }
 
-    private void updateAmiiboManager(Uri data) {
+    private void updateAmiiboDatabase(Uri data) {
+        resetAmiiboDatabase();
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {
@@ -335,39 +307,23 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 new Toasty(requireActivity()).Short(R.string.amiibo_failure_update);
                 return;
             }
-
-            setAmiiboManager(amiiboManager);
             requireActivity().runOnUiThread(() -> showSnackbar(
                     R.string.amiibo_info_updated, Snackbar.LENGTH_SHORT));
         });
     }
 
-    private void resetAmiiboManager() {
+    private void resetAmiiboDatabase() {
         Executors.newSingleThreadExecutor().execute(() -> {
             requireContext().deleteFile(AmiiboManager.AMIIBO_DATABASE_FILE);
-
-            AmiiboManager amiiboManager = null;
             try {
-                amiiboManager = AmiiboManager.getDefaultAmiiboManager(requireContext().getApplicationContext());
-            } catch (IOException | JSONException | ParseException e) {
-                Debug.Log(e);
-                new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse_default);
-            }
-            if (Thread.currentThread().isInterrupted()) return;
-
-            setAmiiboManager(amiiboManager);
+                Executors.newSingleThreadExecutor().execute(() ->
+                        Glide.get(requireActivity()).clearDiskCache());
+                requireActivity().runOnUiThread(() ->
+                        Glide.get(requireActivity()).clearMemory());
+            } catch (IllegalStateException ignored) { }
             requireActivity().runOnUiThread(() -> showSnackbar(
                     R.string.removing_amiibo_info, Snackbar.LENGTH_SHORT));
         });
-    }
-
-    private void setAmiiboManager(AmiiboManager amiiboManager) {
-        try {
-            Executors.newSingleThreadExecutor().execute(() ->
-                    Glide.get(requireActivity()).clearDiskCache());
-            requireActivity().runOnUiThread(() ->
-                    Glide.get(requireActivity()).clearMemory());
-        } catch (IllegalStateException ignored) { }
     }
 
     private void downloadAmiiboAPIData(String lastUpdated) {
@@ -407,7 +363,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     if (Thread.currentThread().isInterrupted()) return;
 
                     AmiiboManager.saveDatabase(amiiboManager, requireContext().getApplicationContext());
-                    setAmiiboManager(amiiboManager);
                     requireActivity().runOnUiThread(() -> showSnackbar(
                             R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT));
                 } else {
@@ -441,7 +396,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
 
-        updateAmiiboManager(result.getData().getData());
+        updateAmiiboDatabase(result.getData().getData());
     });
 
     private void showFileChooser(String title, int resultCode) {

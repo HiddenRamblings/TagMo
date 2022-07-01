@@ -158,16 +158,16 @@ public class FoomiiboFragment extends Fragment implements
         TextView amiiboTypeStats = view.findViewById(R.id.stats_amiibo_type);
 
         boolean hasAmiibo = null != settings.getAmiiboManager();
-        foomiiboTitle.setText(getString(R.string.number_amiibo, getString(R.string.amiibo_api),
-                hasAmiibo ? settings.getAmiiboManager().amiibos.size() : 0));
-        gameSeriesStats.setText(getString(R.string.number_game,
-                hasAmiibo ? settings.getAmiiboManager().gameSeries.size() : 0));
-        characterStats.setText(getString(R.string.number_character,
-                hasAmiibo ? settings.getAmiiboManager().characters.size() : 0));
-        amiiboSeriesStats.setText(getString(R.string.number_series,
-                hasAmiibo ? settings.getAmiiboManager().amiiboSeries.size() : 0));
-        amiiboTypeStats.setText(getString(R.string.number_type,
-                hasAmiibo ? settings.getAmiiboManager().amiiboTypes.size() : 0));
+        foomiiboTitle.setText(getString(R.string.number_amiibo, hasAmiibo
+                ? settings.getAmiiboManager().amiibos.size() : 0, getString(R.string.amiibo_api)));
+        gameSeriesStats.setText(getString(R.string.number_game, hasAmiibo
+                ? settings.getAmiiboManager().gameSeries.size() : 0));
+        characterStats.setText(getString(R.string.number_character, hasAmiibo
+                ? settings.getAmiiboManager().characters.size() : 0));
+        amiiboSeriesStats.setText(getString(R.string.number_series, hasAmiibo
+                ? settings.getAmiiboManager().amiiboSeries.size() : 0));
+        amiiboTypeStats.setText(getString(R.string.number_type, hasAmiibo
+                ? settings.getAmiiboManager().amiiboTypes.size() : 0));
 
         if (hasAmiibo) {
             gameSeriesStats.setOnClickListener(view1 -> {

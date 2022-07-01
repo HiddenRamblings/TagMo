@@ -158,36 +158,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
-        Preference lockEliteHardware = findPreference(getString(R.string.lock_elite_hardware));
-        if (null != lockEliteHardware) {
-            lockEliteHardware.setOnPreferenceClickListener(preference -> {
-                new AlertDialog.Builder(requireContext())
-                        .setMessage(R.string.lock_elite_warning)
-                        .setPositiveButton(R.string.accept, (dialog, which) -> {
-                            Intent lock = new Intent(requireContext(), NfcActivity.class);
-                            lock.setAction(NFCIntent.ACTION_LOCK_AMIIBO);
-                            startActivity(lock);
-                            dialog.dismiss();
-                        })
-                        .setNegativeButton(R.string.cancel, null).show();
-                return SettingsFragment.super.onPreferenceTreeClick(preference);
-            });
-        }
-
-        Preference unlockEliteHardware = findPreference(getString(R.string.unlock_elite_hardware));
-        if (null != unlockEliteHardware) {
-            unlockEliteHardware.setOnPreferenceClickListener(preference -> {
-                new AlertDialog.Builder(requireContext())
-                        .setMessage(R.string.prepare_unlock)
-                        .setPositiveButton(R.string.start, (dialog, which) -> {
-                            startActivity(new Intent(requireContext(), NfcActivity.class)
-                                    .setAction(NFCIntent.ACTION_UNLOCK_UNIT));
-                            dialog.dismiss();
-                        }).show();
-                return SettingsFragment.super.onPreferenceTreeClick(preference);
-            });
-        }
-
         CheckBoxPreference enableEliteSupport = findPreference(getString(R.string.settings_enable_elite_support));
         if (null != enableEliteSupport) {
             boolean isElite = prefs.enable_elite_support().get();
@@ -196,10 +166,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 enableEliteSupport.setSummary(getString(
                         R.string.elite_signature, prefs.settings_elite_signature().get()));
             }
-            if (null != lockEliteHardware)
-                lockEliteHardware.setVisible(isElite);
-            if (null != unlockEliteHardware)
-                unlockEliteHardware.setVisible(isElite);
             enableEliteSupport.setOnPreferenceClickListener(preference -> {
                 boolean isEnabled = enableEliteSupport.isChecked();
                 prefs.enable_elite_support().put(enableEliteSupport.isChecked());
@@ -208,10 +174,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             prefs.settings_elite_signature().get()));
                 else
                     enableEliteSupport.setSummary(getString(R.string.elite_details));
-                if (null != lockEliteHardware)
-                    lockEliteHardware.setVisible(isEnabled);
-                if (null != unlockEliteHardware)
-                    unlockEliteHardware.setVisible(isEnabled);
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }

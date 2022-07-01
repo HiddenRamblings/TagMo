@@ -713,17 +713,6 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    private void onRebuildDatabaseClicked() {
-        if (null == fragmentSettings)
-            fragmentSettings = new SettingsFragment();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences, fragmentSettings)
-                .commit();
-        fragmentSettings.rebuildAmiiboDatabase();
-        settings.notifyChanges();
-    }
-
     private void onCaptureLogcatClicked() {
         if (updates.hasPendingUpdate() && null != appUpdate) {
             updates.downloadPlayUpdate(appUpdate);
@@ -1471,8 +1460,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 prefsDrawer.closeDrawer(GravityCompat.START);
             else
                 prefsDrawer.openDrawer(GravityCompat.START);
-        } else if (item.getItemId() == R.id.rebuild_database) {
-            onRebuildDatabaseClicked();
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
         } else if (item.getItemId() == R.id.filter_game_series) {

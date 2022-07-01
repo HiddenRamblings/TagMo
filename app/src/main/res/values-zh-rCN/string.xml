@@ -62,7 +62,7 @@
     <string name="start">开始</string>
     <string name="delete">删除</string>
     <string name="erase">擦除</string>
-    <string name="activate">Activate</string>
+    <string name="activate">激活</string>
     <string name="parent">上层目录</string>
     <string name="unknown">未知</string>
     <string name="invalid">无效</string>
@@ -91,7 +91,7 @@
     <string name="properties">属性</string>
     <string name="mii">Mii</string>
     <string name="mii_name">Mii Name</string>
-    <string name="app">Application</string>
+    <string name="app">申请表格</string>
     <string name="app_id">App ID</string>
     <string name="app_data">App Data</string>
 
@@ -149,9 +149,6 @@
     <string name="allow">允许</string>
 
     <string name="crypto_keys">加密密钥</string>
-    <string name="pref_import_keys">导入二进制密钥</string>
-    <string name="pref_restrictions">限制</string>
-    <string name="image_loading_details">图片加载</string>
     <string name="enable_tag_validation">仅限 NTag215</string>
     <string name="tag_validation_details">并非所有的 NFC 芯片组都能正确验证 NFC 标签。\n关闭此选项以允许可能不兼容的标签。</string>
     <string name="enable_automatic_scan">自动扫描 NFC</string>
@@ -335,4 +332,6 @@
     <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
     <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
     <string name="flask_missing">Device cannot be located!</string>
+    <string name="prefs_browser_options">浏览器选项</string>
+    <string name="pref_import_keys">导入加密密钥</string>
 </resources>

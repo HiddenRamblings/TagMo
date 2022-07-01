@@ -42,10 +42,12 @@
     <string name="amiibo" translatable="false">amiibo&#8482;</string>
     <string name="joy_con" translatable="false">Joy-Con</string>
 
-    <string name="amiibo_api" translatable="false">AmiiboAPI.com</string>
+    <string name="amiibo_api" translatable="false">AmiiboAPI</string>
+    <string name="amiibo_api_url" translatable="false">AmiiboAPI.com</string>
 
     <string name="power_tag" translatable="false">Power Tag</string>
     <string name="elite_n2" translatable="false">N2 Elite</string>
+    <string name="elite_amiiqo" translatable="false">N2 Elite / Amiiqo</string>
     <string name="bluup_flask" translatable="false">Bluup Flask</string>
 
     <string name="mifare_classic" translatable="false">Mifare Classic</string>

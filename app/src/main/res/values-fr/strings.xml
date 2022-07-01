@@ -17,7 +17,7 @@
     <string name="pref_donate">Don</string>
 
     <string name="location_disclosure">L\'emplacement est requis pour l\'analyse Bluetooth LE. Conformément à la politique de Google Play, TagMo est tenu de vous informer que des données de localisation peuvent être collectées en arrière-plan. TagMo ne lit, ne stocke ni ne partage les données de localisation. En tant que tel, cet avis est strictement une formalité.</string>
-    <string name="prefs_browser_options">Options du Navigateur</string>
+    <string name="prefs_configuration">Options du Navigateur</string>
     <string name="pref_import_keys">Clés d\'importation</string>
     <string name="allow">Permettre</string>
     <string name="yes">Oui</string>

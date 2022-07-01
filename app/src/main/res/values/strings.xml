@@ -118,7 +118,6 @@
     <string name="tagmo_settings">TagMo Settings</string>
     <string name="rebuild_database">Sync AmiiboAPI</string>
     <string name="logcat_support">Logcat Support</string>
-    <string name="foomiibo_builder">Foomiibo Builder</string>
     <string name="clear_foomiibo_set">Clear Foomiibo</string>
     <string name="build_foomiibo_set">Build Foomiibo</string>
     <string name="foomiibo_progress">Building %1$s&#8230;</string>
@@ -145,6 +144,7 @@
     <string name="write_auto">Write to Tag (Auto)</string>
     <string name="update_tag">Update Tag</string>
     <string name="scan_tag">Scan an NFC Tag</string>
+    <string name="lock_elite">Lock N2 Elite</string>
     <string name="unlock_elite">Unlock N2 Elite</string>
     <string name="scan_bank_no">Scan Bank %1$d</string>
     <string name="scan_bank">Scan Bank %1$s</string>
@@ -157,7 +157,7 @@
     <string name="lock_amiibo">Lock N2 Elite</string>
     <string name="write_collection">Write Collection</string>
     <string name="erase_collection">Erase Collection</string>
-    <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
+    <string name="bluup_flask_ble">Bluup Flask &#8211; BLE</string>
     <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
     <string name="lego_dimensions">ᴸᴱᴳᴼ Dimensions</string>
 
@@ -168,7 +168,7 @@
     <string name="pref_guides">Guides</string>
     <string name="pref_donate">Donation</string>
 
-    <string name="prefs_browser_options">Browser Options</string>
+    <string name="prefs_configuration">Configuration</string>
     <string name="pref_import_keys">Import crypto keys</string>
     <string name="image_loading_details">Image data access</string>
     <string name="enable_tag_validation">NTAG215 validation</string>
@@ -180,15 +180,15 @@
     <string name="power_tag_details">See Github for limitations and use.</string>
     <string name="enable_elite">Enable N2 Elite support</string>
     <string name="elite_details">See Github for limitations and use.</string>
-    <string name="lock_elite">Lock N2 Elite</string>
     <string name="lock_elite_details">The active bank will emulate a retail amiibo&#8482;.\nOther features will be disabled until unlocked.</string>
     <string name="lock_elite_warning">Lock N2 Elite Hardware?</string>
+    <string name="unlock_elite_warning">Unlock N2 Elite Hardware</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="amiibo_info">amiibo&#8482; Database</string>
     <string name="sync_amiibo_info">Sync database with AmiiboAPI</string>
     <string name="import_json_details">Load amiibo&#8482; database (JSON)</string>
     <string name="reset_amiibo_info">Reset stored amiibo&#8482; database</string>
-    <string name="number_amiibo">%1$d amiibo&#8482; - %2$s</string>
+    <string name="number_amiibo">%1$d amiibo&#8482; &#8211; %2$s</string>
     <string name="number_game">%1$d Game Series</string>
     <string name="number_character">%1$d Character(s)</string>
     <string name="number_series">%1$d amiibo&#8482; Series</string>
@@ -234,7 +234,6 @@
     <string name="grant_file_permission">Enable "All Files" Manager</string>
     <string name="force_document_storage">Enable Document Storage</string>
 
-    <string name="unlock_elite_warning">Unlock N2 Elite Hardware</string>
     <string name="prepare_unlock">Once the N2 is scanned, it cannot be removed from the NFC field until the operation is complete.</string>
     <string name="progress_unlock">Press and hold the N2 button without disconnecting from NFC.</string>
     <string name="prepare_blank">N2 Elite fails verification with an empty active bank.</string>

@@ -72,7 +72,7 @@
                 android:layout_weight="1"
                 android:ellipsize="marquee"
                 android:singleLine="true"
-                android:text="@string/amiibo_not_found"
+                android:text="@string/elite_amiiqo"
                 android:textColor="@android:color/white"
                 android:textSize="14sp" />
 

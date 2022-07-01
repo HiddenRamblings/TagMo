@@ -130,6 +130,7 @@
     <string name="write_auto">写入 Tag (自动)</string>
     <string name="update_tag">更新 Tag</string>
     <string name="scan_tag">读取 NFC Tag</string>
+    <string name="lock_elite">锁定 N2 Elite</string>
     <string name="unlock_elite">解锁 N2 Elite</string>
     <string name="scan_bank_no">Scan Bank %1$d</string>
     <string name="scan_bank">Scan Bank %1$s</string>
@@ -144,7 +145,6 @@
     <string name="permission_required">需要存储权限！</string>
     <string name="allow">允许</string>
 
-    <string name="crypto_keys">加密密钥</string>
     <string name="enable_tag_validation">仅限 NTag215</string>
     <string name="tag_validation_details">并非所有的 NFC 芯片组都能正确验证 NFC 标签。\n关闭此选项以允许可能不兼容的标签。</string>
     <string name="enable_automatic_scan">自动扫描 NFC</string>
@@ -153,12 +153,10 @@
     <string name="power_tag_details">请到 github 查阅限制与用法。</string>
     <string name="enable_elite">支持 N2 Elite</string>
     <string name="elite_details">请到 github 查阅限制与用法。</string>
-    <string name="lock_elite_hardware">锁定 N2 Elite 硬件</string>
-    <string name="lock_elite_hardware_details">活动 bank 将模拟零售Amiibo™，其他功能在解锁前都将被禁用。</string>
+    <string name="lock_elite_details">活动 bank 将模拟零售Amiibo™，其他功能在解锁前都将被禁用。</string>
     <string name="lock_elite_warning">锁定 N2 Elite 硬件吗？</string>
-    <string name="unlock_elite_hardware">解锁 N2 Elite 硬件</string>
+    <string name="unlock_elite_warning">解锁 N2 Elite 硬件</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
-    <string name="amiibo_info">amiibo™ 数据库</string>
     <string name="sync_amiibo_info">从 AmiiboAPI 更新数据库</string>
     <string name="import_json_details">从本地加载 amiibo™ 数据库 (JSON)</string>
     <string name="reset_amiibo_info">重置 amiibo™ 数据库</string>
@@ -300,10 +298,8 @@
     <string name="accept">明白</string>
     <string name="game_usage_view">View Compatible Games</string>
     <string name="game_usage_hide">Hide Compatible Games</string>
-    <string name="tagmo_browser">TagMo</string>
     <string name="rebuild_database">Sync AmiiboAPI</string>
     <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
-    <string name="foomiibo_builder">Foomiibo Builder</string>
     <string name="erase_collection">Erase Collection</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>
     <string name="flask_permissions">Required permission denied!</string>
@@ -313,9 +309,7 @@
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="pref_guides">指南</string>
     <string name="pref_donate">捐款</string>
-    <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
-    <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
-    <string name="flask_missing">Device cannot be located!</string>
-    <string name="prefs_browser_options">浏览器选项</string>
+
+    <string name="prefs_configuration">浏览器选项</string>
     <string name="pref_import_keys">导入加密密钥</string>
 </resources>

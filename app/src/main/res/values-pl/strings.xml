@@ -131,6 +131,7 @@
     <string name="write_auto">Nagraj na tagu (Auto)</string>
     <string name="update_tag">Aktualizuj tag</string>
     <string name="scan_tag">Skanuj tag NFC</string>
+    <string name="lock_elite">Sprzętowa blokada N2 Elite</string>
     <string name="unlock_elite">Odblokuj N2 Elite</string>
     <string name="scan_bank_no">Skanuj Bank %1$d</string>
     <string name="scan_bank">Skanuj Bank %1$s</string>
@@ -154,12 +155,10 @@
     <string name="power_tag_details">Szczegóły ograniczeń i użycia na Github-ie.</string>
     <string name="enable_elite">Włącz obsługę N2 Elite</string>
     <string name="elite_details">Szczegóły ograniczeń i użycia na Github-ie.</string>
-    <string name="lock_elite">Sprzętowa blokada N2 Elite</string>
     <string name="lock_elite_details">Aktywny bank będzie emulował rynkowe amiibo™.\nInne funkcje będą wyłączone do odblokowania.</string>
     <string name="lock_elite_warning">Blokada sprzętowa N2 Elite?</string>
     <string name="unlock_elite_warning">Odblokuj sprzętowo N2 Elite</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
-    <string name="amiibo_info">Baza danych amiibo™</string>
     <string name="sync_amiibo_info">Synchronizuj bazę danych z AmiiboAPI</string>
     <string name="import_json_details">Załaduj bazę danych amiibo™ (JSON)</string>
     <string name="reset_amiibo_info">Zresetuj zapisaną bazę danych amiibo™</string>
@@ -305,7 +304,6 @@
     <string name="tagmo_browser">TagMo</string>
     <string name="rebuild_database">Sync AmiiboAPI</string>
     <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
-    <string name="foomiibo_builder">Foomiibo Builder</string>
     <string name="erase_collection">Erase Collection</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>
     <string name="view_device_options">Switch to N2 Elite Options</string>
@@ -317,11 +315,9 @@
     <string name="flask_permissions">Required permission denied!</string>
     <string name="pref_guides">Przewodniki</string>
     <string name="pref_donate">Darowizna</string>
-    <string name="bluup_flask_ble">Bluup Flask &#160;ᴮᴸᴱ</string>
-    <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
-    <string name="flask_missing">Device cannot be located!</string>
+
     <string name="location_disclosure">Lokalizacja jest wymagana do skanowania Bluetooth LE. Zgodnie z zasadami Google Play, TagMo ma obowiązek powiadomić użytkownika, że dane o lokalizacji mogą być gromadzone w tle. TagMo nie odczytuje, nie przechowuje ani nie udostępnia danych o lokalizacji. W związku z tym niniejsze zawiadomienie jest wyłącznie formalnością.</string>
-    <string name="prefs_browser_options">Opcje Przeglądarki</string>
+    <string name="prefs_configuration">Opcje Przeglądarki</string>
     <string name="pref_import_keys">Importuj klucze</string>
 
 </resources>

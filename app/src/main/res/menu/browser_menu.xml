@@ -137,6 +137,6 @@
     <item
         android:id="@+id/capture_logcat"
         android:icon="@drawable/ic_android_studio_24dp"
-        android:title="@string/capture_logcat"
+        android:title="@string/logcat_support"
         app:showAsAction="never"/>
 </menu>

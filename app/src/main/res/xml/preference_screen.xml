@@ -84,31 +84,6 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/amiibo_api_title"
-        app:iconSpaceReserved="false">
-        <androidx.preference.Preference
-            android:key="@string/settings_info_amiibo"
-            android:title="@string/amiibo"
-            app:iconSpaceReserved="false" />
-        <androidx.preference.Preference
-            android:key="@string/settings_info_game_series"
-            android:title="@string/amiibo_game"
-            app:iconSpaceReserved="false" />
-        <androidx.preference.Preference
-            android:key="@string/settings_info_characters"
-            android:title="@string/pref_amiibo_characters"
-            app:iconSpaceReserved="false" />
-        <androidx.preference.Preference
-            android:key="@string/settings_info_amiibo_series"
-            android:title="@string/amiibo_series"
-            app:iconSpaceReserved="false" />
-        <androidx.preference.Preference
-            android:key="@string/settings_info_amiibo_types"
-            android:title="@string/pref_amiibo_types"
-            app:iconSpaceReserved="false" />
-    </androidx.preference.PreferenceCategory>
-
-    <androidx.preference.PreferenceCategory
         android:title="@string/pref_advanced"
         app:iconSpaceReserved="false">
         <androidx.preference.CheckBoxPreference

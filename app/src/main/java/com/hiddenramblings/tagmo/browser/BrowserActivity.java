@@ -274,14 +274,7 @@ public class BrowserActivity extends AppCompatActivity implements
         fragmentFoomiibo = pagerAdapter.getFoomiibo();
         fragmentElite = pagerAdapter.getEliteBanks();
 
-        LinearLayout foomiibo = findViewById(R.id.foomiibo_options);
-        foomiibo.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
-                clickView -> fragmentFoomiibo.clearFoomiiboSet()
-        );
 
-        foomiibo.findViewById(R.id.build_foomiibo_set).setOnClickListener(
-                clickView -> fragmentFoomiibo.buildFoomiiboSet()
-        );
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @SuppressLint("NewApi")
             @Override
@@ -293,30 +286,27 @@ public class BrowserActivity extends AppCompatActivity implements
                 switch (position) {
                     case 1:
                         setTitle(R.string.foomiibo);
-                        foomiibo.setVisibility(View.VISIBLE);
-                        showBrowserInterface();
+                        showActionButton();
+                        hideBottomSheet();
                         amiibosView = fragmentFoomiibo.getAmiibosView();
                         break;
                     case 2:
                         setTitle(R.string.elite_device);
                         amiibosView = fragmentElite.getAmiibosView();
-                        foomiibo.setVisibility(View.GONE);
-                        hideBrowserInterface();
+                        showActionButton();
+                        hideBottomSheet();
                         break;
                     case 3:
                         setTitle(R.string.bluup_flask);
-                        foomiibo.setVisibility(View.GONE);
                         hideBrowserInterface();
                         amiibosView = pagerAdapter.getFlaskSlots().getAmiibosView();
                         break;
                     case 4:
                         setTitle(R.string.joy_con);
-                        foomiibo.setVisibility(View.GONE);
                         hideBrowserInterface();
                         break;
                     default:
                         setTitle(R.string.tagmo_browser);
-                        foomiibo.setVisibility(View.GONE);
                         showBrowserInterface();
                         amiibosView = fragmentBrowser.getAmiibosView();
                         break;
@@ -2260,12 +2250,16 @@ public class BrowserActivity extends AppCompatActivity implements
         hideFakeSnackbar(200);
     }
 
-    public void showBrowserPage() {
-        mainLayout.setCurrentItem(0, true);
-    }
-
     public void collapseBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    private void hideBottomSheet() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            bottomSheetBehavior.setHideable(true);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        }, 100);
     }
 
     private void hideBrowserInterface() {
@@ -2275,23 +2269,23 @@ public class BrowserActivity extends AppCompatActivity implements
                 (FloatingActionButton.Behavior) params.getBehavior();
         if (null != behavior) behavior.setAutoHideEnabled(false);
         nfcFab.hide();
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            bottomSheetBehavior.setHideable(true);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }, 100);
+        hideBottomSheet();
     }
 
-    private void showBrowserInterface() {
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        new Handler(Looper.getMainLooper()).postDelayed(()
-                -> bottomSheetBehavior.setHideable(false), 100);
+    private void showActionButton() {
         nfcFab.show();
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) nfcFab.getLayoutParams();
         FloatingActionButton.Behavior behavior =
                 (FloatingActionButton.Behavior) params.getBehavior();
         if (null != behavior) behavior.setAutoHideEnabled(true);
+    }
+
+    private void showBrowserInterface() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        new Handler(Looper.getMainLooper()).postDelayed(()
+                -> bottomSheetBehavior.setHideable(false), 100);
+        showActionButton();
     }
 
     public void closePrefsDrawer() {

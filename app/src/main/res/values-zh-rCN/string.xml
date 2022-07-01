@@ -169,8 +169,6 @@
     <string name="sync_amiibo_info">从 AmiiboAPI 更新数据库</string>
     <string name="import_json_details">从本地加载 amiibo™ 数据库 (JSON)</string>
     <string name="reset_amiibo_info">重置 amiibo™ 数据库</string>
-    <string name="amiibo_api_title">AmiiboAPI.com</string>
-    <string name="number_amiibo">%1$d 个 amiibo™</string>
     <string name="number_game">%1$d 个游戏系列</string>
     <string name="number_character">%1$d 个角色</string>
     <string name="number_series">%1$d 个 amiibo™ 系列</string>

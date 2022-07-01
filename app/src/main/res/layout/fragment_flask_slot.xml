@@ -69,11 +69,11 @@
                 android:layout_gravity="center_vertical"
                 android:gravity="center"
                 android:layout_weight="1"
+                android:ellipsize="marquee"
                 android:singleLine="true"
-                android:ellipsize="start"
                 android:text="@string/bluup_flask_ble"
                 android:textColor="@android:color/white"
-                android:textSize="16sp"/>
+                android:textSize="14sp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/toggle"

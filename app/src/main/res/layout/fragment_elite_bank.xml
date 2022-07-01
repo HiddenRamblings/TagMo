@@ -85,6 +85,32 @@
                 android:contentDescription="@string/imageview_toggle" />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/security_options"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp" >
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/lock_elite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="-2dp"
+                android:layout_marginEnd="-2dp"
+                android:layout_weight="1"
+                android:text="@string/lock_elite" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/unlock_elite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-2dp"
+                android:layout_marginStart="-2dp"
+                android:layout_weight="1"
+                android:text="@string/unlock_elite" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/bank_stats"
             android:layout_width="match_parent"
@@ -96,7 +122,7 @@
             android:ellipsize="marquee"
             android:text="@string/amiibo_not_found"
             android:textColor="@android:color/white"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
 
         <include
             layout="@layout/active_card_layout"

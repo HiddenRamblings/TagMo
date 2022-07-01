@@ -183,8 +183,8 @@ public class BluetoothEnabler {
                                 } else {
                                     onRequestLocation.launch(PERMISSIONS_LOCATION);
                                 }
-                            }).setNegativeButton(R.string.deny, (dialog, which)
-                                    -> listener.onPermissionsFailed()).show();
+                            }).setNegativeButton(R.string.deny, (dialog, which) ->
+                                    listener.onPermissionsFailed()).show();
                 } else {
                     final String[] PERMISSIONS_LOCATION = {
                             Manifest.permission.ACCESS_FINE_LOCATION,

@@ -291,7 +291,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         amiibosView = fragmentFoomiibo.getAmiibosView();
                         break;
                     case 2:
-                        setTitle(R.string.elite_device);
+                        setTitle(R.string.elite_n2);
                         amiibosView = fragmentElite.getAmiibosView();
                         showActionButton();
                         hideBottomSheet();
@@ -327,7 +327,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     tab.setText(R.string.foomiibo);
                     break;
                 case 2:
-                    tab.setText(R.string.elite_device);
+                    tab.setText(R.string.elite_n2);
                     break;
                 case 3:
                     tab.setText(R.string.bluup_flask);
@@ -512,15 +512,15 @@ public class BrowserActivity extends AppCompatActivity implements
                                 BrowserActivity.this, R.style.DialogTheme_NoActionBar
                         ));
                         LinearLayout donations = layout.findViewById(R.id.donation_layout);
-                        Collections.sort(iapSkuDetails, (obj1, obj2)
-                                -> obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
+                        Collections.sort(iapSkuDetails, (obj1, obj2) ->
+                                obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
                         for (ProductDetails skuDetail : iapSkuDetails) {
                             if (null == skuDetail.getOneTimePurchaseOfferDetails()) continue;
                             donations.addView(getDonationButton(skuDetail));
                         }
                         LinearLayout subscriptions = layout.findViewById(R.id.subscription_layout);
-                        Collections.sort(subSkuDetails, (obj1, obj2)
-                                -> obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
+                        Collections.sort(subSkuDetails, (obj1, obj2) ->
+                                obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
                         for (ProductDetails skuDetail : subSkuDetails) {
                             if (null == skuDetail.getSubscriptionOfferDetails()) continue;
                             subscriptions.addView(getSubscriptionButton(skuDetail));

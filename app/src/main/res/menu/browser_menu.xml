@@ -130,11 +130,6 @@
         </menu>
     </item>
     <item
-        android:id="@+id/rebuild_database"
-        android:icon="@drawable/ic_android_studio_24dp"
-        android:title="@string/rebuild_database"
-        app:showAsAction="never"/>
-    <item
         android:id="@+id/capture_logcat"
         android:icon="@drawable/ic_android_studio_24dp"
         android:title="@string/logcat_support"

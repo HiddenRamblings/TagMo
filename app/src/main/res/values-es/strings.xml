@@ -21,5 +21,7 @@
     <string name="pref_import_keys">Claves de importación</string>
     <string name="update">Actualizar</string>
     <string name="topCenterTextMessage">Coloca la etiqueta debajo del teléfono</string>
+    <string name="allow">Permitir</string>
+    <string name="yes">Sí</string>
 
 </resources>

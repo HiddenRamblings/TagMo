@@ -53,7 +53,7 @@
 
     <string name="decryption_keys">加密密钥</string>
 
-    <string name="yes">Yes</string>
+    <string name="yes">是的</string>
     <string name="no">No</string>
     <string name="save">保存</string>
     <string name="write">写入</string>
@@ -277,10 +277,6 @@
     <string name="invalid_file_size">%1$s 大小：%2$d，正常的：%3$d</string>
     <string name="invalid_data_size">Tag 大小：%1$d，正常的：%2$d</string>
     <string name="invalid_app_data">无效的 app 数据</string>
-
-    <string name="old_uid">Old UID %1$s</string>
-    <string name="page_ten">page 10 %1$s</string>
-    <string name="ptag_key">ptag key %1$s</string>
 
     <string name="uid_key_missing">没有可用的 UID 密钥</string>
     <string name="p10_key_missing">没有可用的 P10_ID 密钥</string>

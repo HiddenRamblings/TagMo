@@ -59,4 +59,12 @@
 
     <string name="nfc_null_array" translatable="false">Attempt to read from null array</string>
 
+    <string name="write_pack" translatable="false">Writing PACK</string>
+    <string name="write_pwd" translatable="false">Writing PWD</string>
+    <string name="write_page" translatable="false">Wrote to page</string>
+
+    <string name="old_uid" translatable="false">Old UID %1$s</string>
+    <string name="page_ten" translatable="false">page 10 %1$s</string>
+    <string name="ptag_key" translatable="false">ptag key %1$s</string>
+
 </resources>

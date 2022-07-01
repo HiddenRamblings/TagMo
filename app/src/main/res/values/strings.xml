@@ -4,7 +4,7 @@
 
     <string name="fixed_key_found">Locked Key cached / loaded.</string>
     <string name="fixed_key_missing">No Locked Key!</string>
-    <string name="unfixed_key_found">Unfixed Key  cached / loaded.</string>
+    <string name="unfixed_key_found">Unfixed Key cached / loaded.</string>
     <string name="unfixed_key_missing">No Unfixed Key!</string>
 
     <string name="nfc_unsupported">NFC Not Supported!</string>
@@ -13,16 +13,9 @@
 
     <string name="no_decrypt_key">Decryption keys not imported</string>
 
-    <string name="search">Search</string>
     <string name="filter">amiibo&#8482; Filters</string>
     <string name="sorting">Sorting Options</string>
     <string name="display_options">Display Options</string>
-    <string name="refresh">Refresh</string>
-    <string name="close">Close</string>
-    <string name="view">View</string>
-    <string name="proceed">Continue</string>
-    <string name="unlock">Unlock</string>
-    <string name="scan">Scan</string>
 
     <string name="amiibo_id">ID</string>
     <string name="amiibo_name">Name</string>
@@ -55,6 +48,13 @@
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="search">Search</string>
+    <string name="refresh">Refresh</string>
+    <string name="close">Close</string>
+    <string name="view">View</string>
+    <string name="proceed">Continue</string>
+    <string name="unlock">Unlock</string>
+    <string name="scan">Scan</string>
     <string name="browser">Browser</string>
     <string name="purchase">Purchase</string>
     <string name="save">Save</string>
@@ -264,10 +264,6 @@
     <string name="password_write">Wrote password</string>
     <string name="lock_write">Wrote lock info</string>
 
-    <string name="write_pack">Writing PACK</string>
-    <string name="write_pwd">Writing PWD</string>
-    <string name="write_page">Wrote to page</string>
-
     <string name="auth_response">Auth response %1$s</string>
     <string name="password">Password: %1$s</string>
 
@@ -338,10 +334,6 @@
     <string name="invalid_file_size">%1$s size: %2$d, Expected: %3$d</string>
     <string name="invalid_data_size">Tag size: %1$d, Expected: %2$d</string>
     <string name="invalid_app_data">Invalid app data</string>
-
-    <string name="old_uid">Old UID %1$s</string>
-    <string name="page_ten">page 10 %1$s</string>
-    <string name="ptag_key">ptag key %1$s</string>
 
     <string name="uid_key_missing">No available key for UID</string>
     <string name="p10_key_missing">No available key for P10_ID</string>

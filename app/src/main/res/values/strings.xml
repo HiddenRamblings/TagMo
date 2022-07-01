@@ -117,7 +117,7 @@
 
     <string name="tagmo_settings">TagMo Settings</string>
     <string name="rebuild_database">Sync AmiiboAPI</string>
-    <string name="capture_logcat">Capture Logcat</string>
+    <string name="logcat_support">Logcat Support</string>
     <string name="foomiibo_builder">Foomiibo Builder</string>
     <string name="clear_foomiibo_set">Clear Foomiibo</string>
     <string name="build_foomiibo_set">Build Foomiibo</string>

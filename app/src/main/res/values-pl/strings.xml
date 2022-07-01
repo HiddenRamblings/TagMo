@@ -122,7 +122,6 @@
     <string name="bank_erasing">Wymazywanie banku %1$d z %2$d&#8230;</string>
     <string name="bank_select">Wybór banku docelowego&#8230;</string>
 
-    <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
     <string name="super_smash">Super Smash Bros. for Nintendo 3DS and Wii U</string>
 
     <string name="save_image">Zapisz obraz</string>
@@ -211,10 +210,6 @@
     <string name="password_write">Nagrano hasło</string>
     <string name="lock_write">Nagrano informację o blokadzie</string>
 
-    <string name="write_pack">Nagrywanie PACK</string>
-    <string name="write_pwd">Nagrywanie PWD</string>
-    <string name="write_page">Nagrano do strony</string>
-
     <string name="auth_response">Odpowiedź autoryzacji %1$s</string>
     <string name="password">Hasło: %1$s</string>
 
@@ -285,10 +280,6 @@
     <string name="invalid_file_size">%1$s rozmiar: %2$d, oczekiwany: %3$d</string>
     <string name="invalid_data_size">Rozmiar tagu: %1$d, oczekiwany: %2$d</string>
     <string name="invalid_app_data">Niewłaściwe dane apl.</string>
-
-    <string name="old_uid">Stary UID %1$s</string>
-    <string name="page_ten">strona 10 %1$s</string>
-    <string name="ptag_key">klucz ptag %1$s</string>
 
     <string name="uid_key_missing">Brak dostępnych kluczy dla UID</string>
     <string name="p10_key_missing">Brak dostępnych kluczy dla P10_ID</string>

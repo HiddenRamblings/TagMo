@@ -26,5 +26,8 @@
     <string name="location_disclosure">위치는 블루투스 르 스캔이 필요합니다. 구글 플레이 정책에 따라,태그모는 위치 데이터가 백그라운드에서 수집될 수 있음을 알려야 합니다. 태그모는 위치 데이터를 읽거나 저장하거나 공유하지 않습니다. 따라서,이 통지는 엄격하게 형식입니다.</string>
     <string name="prefs_browser_options">브라우저 옵션</string>
     <string name="pref_import_keys">암호화 키 가져오기</string>
+    <string name="allow">허용</string>
+    <string name="yes">예</string>
+    <string name="zelda_twilight">젤다의 전설 황혼의 공주</string>
 
 </resources>

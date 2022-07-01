@@ -24,5 +24,7 @@
     <string name="location_disclosure">Der Standort ist für den Bluetooth LE-Scan erforderlich. Gemäß den Google Play-Richtlinien muss TagMo Sie darüber informieren, dass Standortdaten im Hintergrund gesammelt werden können. TagMo liest, speichert oder teilt keine Standortdaten. Daher ist diese Mitteilung ausschließlich eine Formalität.</string>
     <string name="prefs_browser_options">Browser-Optionen</string>
     <string name="pref_import_keys">Schlüssel importieren</string>
+    <string name="allow">Erlauben</string>
+    <string name="yes">Ja</string>
 
 </resources>

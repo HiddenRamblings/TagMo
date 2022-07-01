@@ -169,8 +169,6 @@
     <string name="sync_amiibo_info">Sync database with AmiiboAPI</string>
     <string name="import_json_details">Load amiibo&#8482; database (JSON)</string>
     <string name="reset_amiibo_info">Reset stored amiibo&#8482; database</string>
-    <string name="amiibo_api_title">AmiiboAPI.com</string>
-    <string name="number_amiibo">%1$d amiibo&#8482;</string>
     <string name="number_game">%1$d Game Series</string>
     <string name="number_character">%1$d Character(s)</string>
     <string name="number_series">%1$d amiibo&#8482; Series</string>

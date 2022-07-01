@@ -73,14 +73,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     Preferences_ prefs;
 
     Preference importKeys;
-    Preference amiiboStats;
-    Preference gameSeriesStats;
-    Preference characterStats;
-    Preference amiiboSeriesStats;
-    Preference amiiboTypeStats;
 
     private KeyManager keyManager;
-    private AmiiboManager amiiboManager = null;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -104,15 +98,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         importKeys = findPreference(getString(R.string.settings_import_keys));
 
-        amiiboStats = findPreference(getString(R.string.settings_info_amiibo));
-        gameSeriesStats = findPreference(getString(R.string.settings_info_game_series));
-        characterStats = findPreference(getString(R.string.settings_info_characters));
-        amiiboSeriesStats = findPreference(getString(R.string.settings_info_amiibo_series));
-        amiiboTypeStats = findPreference(getString(R.string.settings_info_amiibo_types));
-
         loadAmiiboManager();
         updateKeySummary();
-        updateAmiiboStats();
 
         ListPreference imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
         if (null != imageNetworkSetting) {
@@ -253,103 +240,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
-
-        amiiboStats.setOnPreferenceClickListener(preference -> {
-            new AlertDialog.Builder(this.getContext())
-                    .setTitle(R.string.amiibo)
-                    .setAdapter(new AmiiboAdapter(new ArrayList<>(
-                            amiiboManager.amiibos.values())), null)
-                    .setPositiveButton(R.string.close, null)
-                    .show();
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
-
-        gameSeriesStats.setOnPreferenceClickListener(preference -> {
-            final ArrayList<String> items = new ArrayList<>();
-            for (GameSeries gameSeries : amiiboManager.gameSeries.values()) {
-                if (!items.contains(gameSeries.name))
-                    items.add(gameSeries.name);
-            }
-            Collections.sort(items);
-
-            new AlertDialog.Builder(this.getContext())
-                    .setTitle(R.string.amiibo_game)
-                    .setAdapter(new ArrayAdapter<>(this.getContext(),
-                            android.R.layout.simple_list_item_1, items), null)
-                    .setPositiveButton(R.string.close, null)
-                    .show();
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
-
-        characterStats.setOnPreferenceClickListener(preference -> {
-            final ArrayList<Character> items = new ArrayList<>();
-            for (Character character : amiiboManager.characters.values()) {
-                if (!items.contains(character))
-                    items.add(character);
-            }
-            Collections.sort(items);
-
-            new AlertDialog.Builder(this.getContext())
-                    .setTitle(R.string.pref_amiibo_characters)
-                    .setAdapter(new ArrayAdapter<>(this.getContext(),
-                            android.R.layout.simple_list_item_2, android.R.id.text1, items) {
-                        @NonNull
-                        @Override
-                        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-                            View view = super.getView(position, convertView, parent);
-                            TextView text1 = view.findViewById(android.R.id.text1);
-                            TextView text2 = view.findViewById(android.R.id.text2);
-
-                            Character character = getItem(position);
-                            text1.setText(character.name);
-
-                            GameSeries gameSeries = character.getGameSeries();
-                            text2.setText(null == gameSeries ? "" : gameSeries.name);
-
-                            return view;
-                        }
-                    }, null)
-                    .setPositiveButton(R.string.close, null)
-                    .show();
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
-
-        amiiboSeriesStats.setOnPreferenceClickListener(preference -> {
-            final ArrayList<String> items = new ArrayList<>();
-            for (AmiiboSeries amiiboSeries : amiiboManager.amiiboSeries.values()) {
-                if (!items.contains(amiiboSeries.name))
-                    items.add(amiiboSeries.name);
-            }
-            Collections.sort(items);
-
-            new AlertDialog.Builder(this.getContext())
-                    .setTitle(R.string.amiibo_series)
-                    .setAdapter(new ArrayAdapter<>(this.getContext(),
-                            android.R.layout.simple_list_item_1, items), null)
-                    .setPositiveButton(R.string.close, null)
-                    .show();
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
-
-        amiiboTypeStats.setOnPreferenceClickListener(preference -> {
-            final ArrayList<AmiiboType> amiiboTypes =
-                    new ArrayList<>(amiiboManager.amiiboTypes.values());
-            Collections.sort(amiiboTypes);
-
-            final ArrayList<String> items = new ArrayList<>();
-            for (AmiiboType amiiboType : amiiboTypes) {
-                if (!items.contains(amiiboType.name))
-                    items.add(amiiboType.name);
-            }
-
-            new AlertDialog.Builder(this.getContext())
-                    .setTitle(R.string.pref_amiibo_types)
-                    .setAdapter(new ArrayAdapter<>(this.getContext(),
-                            android.R.layout.simple_list_item_1, items), null)
-                    .setPositiveButton(R.string.close, null)
-                    .show();
-            return SettingsFragment.super.onPreferenceTreeClick(preference);
-        });
 
         CheckBoxPreference disableDebug = findPreference(getString(R.string.settings_disable_debug));
         if (null != disableDebug) {
@@ -515,23 +405,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     Glide.get(requireActivity()).clearDiskCache());
             requireActivity().runOnUiThread(() ->
                     Glide.get(requireActivity()).clearMemory());
-            this.amiiboManager = amiiboManager;
-            requireActivity().runOnUiThread(this::updateAmiiboStats);
         } catch (IllegalStateException ignored) { }
-    }
-
-    void updateAmiiboStats() {
-        boolean hasAmiibo = null != amiiboManager;
-        this.amiiboStats.setTitle(getString(R.string.number_amiibo,
-                hasAmiibo ? amiiboManager.amiibos.size() : 0));
-        this.gameSeriesStats.setTitle(getString(R.string.number_game,
-                hasAmiibo ? amiiboManager.gameSeries.size() : 0));
-        this.characterStats.setTitle(getString(R.string.number_character,
-                hasAmiibo ? amiiboManager.characters.size() : 0));
-        this.amiiboSeriesStats.setTitle(getString(R.string.number_series,
-                hasAmiibo ? amiiboManager.amiiboSeries.size() : 0));
-        this.amiiboTypeStats.setTitle(getString(R.string.number_type,
-                hasAmiibo ? amiiboManager.amiiboTypes.size() : 0));
     }
 
     private void downloadAmiiboAPIData(String lastUpdated) {

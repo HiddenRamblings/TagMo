@@ -306,7 +306,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         hideBrowserInterface();
                         break;
                     default:
-                        setTitle(R.string.tagmo_browser);
+                        setTitle(R.string.tagmo);
                         showBrowserInterface();
                         amiibosView = fragmentBrowser.getAmiibosView();
                         break;
@@ -336,7 +336,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     tab.setText(R.string.joy_con);
                     break;
                 default:
-                    tab.setText(R.string.tagmo_browser);
+                    tab.setText(R.string.browser);
                     break;
             }
         }).attach();

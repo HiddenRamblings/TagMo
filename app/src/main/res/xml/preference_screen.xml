@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/prefs_browser_options"
+        android:title="@string/prefs_configuration"
         app:iconSpaceReserved="false">
         <androidx.preference.Preference
             android:key="@string/settings_import_keys"
@@ -49,7 +49,7 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/amiibo_info"
+        android:title="@string/amiibo_api_url"
         app:iconSpaceReserved="false">
         <androidx.preference.Preference
             android:key="@string/settings_import_info_amiiboapi"

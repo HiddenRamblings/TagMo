@@ -20,7 +20,7 @@
     <string name="pref_donate">Пожертвование</string>
 
     <string name="location_disclosure">Местоположение требуется для сканирования файла Bluetooth. В соответствии с политикой Google Play, TagMo обязана уведомить вас о том, что данные о местоположении могут собираться в фоновом режиме. TagMo не считывает, не хранит и не передает данные о местоположении. Таким образом, это уведомление является строго формальностью.</string>
-    <string name="prefs_browser_options">Параметры браузера</string>
+    <string name="prefs_configuration">Параметры браузера</string>
     <string name="pref_import_keys">Импорт ключей</string>
     <string name="allow">Позволять</string>
     <string name="yes">Да</string>

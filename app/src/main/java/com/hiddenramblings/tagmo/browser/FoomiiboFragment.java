@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -24,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
@@ -31,6 +34,10 @@ import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
+import com.hiddenramblings.tagmo.amiibo.AmiiboType;
+import com.hiddenramblings.tagmo.amiibo.Character;
+import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.GamesManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
@@ -40,11 +47,14 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
+import com.hiddenramblings.tagmo.settings.AmiiboAdapter;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
+import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.Executors;
 
 public class FoomiiboFragment extends Fragment implements
@@ -54,6 +64,7 @@ public class FoomiiboFragment extends Fragment implements
     private final Foomiibo foomiibo = new Foomiibo();
     private File directory;
     private RecyclerView amiibosView;
+    private BottomSheetBehavior<View> bottomSheetBehavior;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private KeyManager keyManager;
@@ -104,6 +115,144 @@ public class FoomiiboFragment extends Fragment implements
         BrowserActivity activity = (BrowserActivity) requireActivity();
         keyManager = new KeyManager(activity);
         this.settings = activity.getSettings();
+
+        AppCompatImageView toggle = view.findViewById(R.id.toggle);
+        this.bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
+        this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        this.bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
+                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
+        });
+
+        toggle.setOnClickListener(view1 -> {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
+        TextView foomiiboTitle = view.findViewById(R.id.foomiibo_title);
+
+        LinearLayout foomiibo = view.findViewById(R.id.foomiibo_options);
+        foomiibo.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
+                clickView -> clearFoomiiboSet()
+        );
+
+        foomiibo.findViewById(R.id.build_foomiibo_set).setOnClickListener(
+                clickView -> buildFoomiiboSet()
+        );
+
+        TextView gameSeriesStats = view.findViewById(R.id.stats_game_series);
+        TextView characterStats = view.findViewById(R.id.stats_character);
+        TextView amiiboSeriesStats = view.findViewById(R.id.stats_amiibo_series);
+        TextView amiiboTypeStats = view.findViewById(R.id.stats_amiibo_type);
+
+        boolean hasAmiibo = null != settings.getAmiiboManager();
+        foomiiboTitle.setText(getString(R.string.number_amiibo, getString(R.string.amiibo_api),
+                hasAmiibo ? settings.getAmiiboManager().amiibos.size() : 0));
+        gameSeriesStats.setText(getString(R.string.number_game,
+                hasAmiibo ? settings.getAmiiboManager().gameSeries.size() : 0));
+        characterStats.setText(getString(R.string.number_character,
+                hasAmiibo ? settings.getAmiiboManager().characters.size() : 0));
+        amiiboSeriesStats.setText(getString(R.string.number_series,
+                hasAmiibo ? settings.getAmiiboManager().amiiboSeries.size() : 0));
+        amiiboTypeStats.setText(getString(R.string.number_type,
+                hasAmiibo ? settings.getAmiiboManager().amiiboTypes.size() : 0));
+
+        if (hasAmiibo) {
+            gameSeriesStats.setOnClickListener(view1 -> {
+                final ArrayList<String> items = new ArrayList<>();
+                for (GameSeries gameSeries : settings.getAmiiboManager().gameSeries.values()) {
+                    if (!items.contains(gameSeries.name))
+                        items.add(gameSeries.name);
+                }
+                Collections.sort(items);
+
+                new android.app.AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.amiibo_game)
+                        .setAdapter(new ArrayAdapter<>(requireContext(),
+                                android.R.layout.simple_list_item_1, items), null)
+                        .setPositiveButton(R.string.close, null)
+                        .show();
+            });
+
+            characterStats.setOnClickListener(view1 -> {
+                final ArrayList<Character> items = new ArrayList<>();
+                for (Character character : settings.getAmiiboManager().characters.values()) {
+                    if (!items.contains(character))
+                        items.add(character);
+                }
+                Collections.sort(items);
+
+                new android.app.AlertDialog.Builder(this.getContext())
+                        .setTitle(R.string.pref_amiibo_characters)
+                        .setAdapter(new ArrayAdapter<>(requireContext(),
+                                android.R.layout.simple_list_item_2, android.R.id.text1, items) {
+                            @NonNull
+                            @Override
+                            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                                View view = super.getView(position, convertView, parent);
+                                TextView text1 = view.findViewById(android.R.id.text1);
+                                TextView text2 = view.findViewById(android.R.id.text2);
+
+                                Character character = getItem(position);
+                                text1.setText(character.name);
+
+                                GameSeries gameSeries = character.getGameSeries();
+                                text2.setText(null == gameSeries ? "" : gameSeries.name);
+
+                                return view;
+                            }
+                        }, null)
+                        .setPositiveButton(R.string.close, null)
+                        .show();
+            });
+
+            amiiboSeriesStats.setOnClickListener(view1 -> {
+                final ArrayList<String> items = new ArrayList<>();
+                for (AmiiboSeries amiiboSeries : settings.getAmiiboManager().amiiboSeries.values()) {
+                    if (!items.contains(amiiboSeries.name))
+                        items.add(amiiboSeries.name);
+                }
+                Collections.sort(items);
+
+                new android.app.AlertDialog.Builder(this.getContext())
+                        .setTitle(R.string.amiibo_series)
+                        .setAdapter(new ArrayAdapter<>(this.getContext(),
+                                android.R.layout.simple_list_item_1, items), null)
+                        .setPositiveButton(R.string.close, null)
+                        .show();
+            });
+
+            amiiboTypeStats.setOnClickListener(view1 -> {
+                final ArrayList<AmiiboType> amiiboTypes =
+                        new ArrayList<>(settings.getAmiiboManager().amiiboTypes.values());
+                Collections.sort(amiiboTypes);
+
+                final ArrayList<String> items = new ArrayList<>();
+                for (AmiiboType amiiboType : amiiboTypes) {
+                    if (!items.contains(amiiboType.name))
+                        items.add(amiiboType.name);
+                }
+
+                new android.app.AlertDialog.Builder(this.getContext())
+                        .setTitle(R.string.pref_amiibo_types)
+                        .setAdapter(new ArrayAdapter<>(this.getContext(),
+                                android.R.layout.simple_list_item_1, items), null)
+                        .setPositiveButton(R.string.close, null)
+                        .show();
+            });
+        }
 
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
         this.swipeRefreshLayout.setOnRefreshListener(this);

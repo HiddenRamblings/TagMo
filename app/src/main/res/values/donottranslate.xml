@@ -43,7 +43,8 @@
     </string-array>
     <string name="mimetype_zip" translatable="false">application/zip</string>
 
-    <string name="joy_con">Joy-Con</string>
+    <string name="joy_con" translatable="false">Joy-Con</string>
+    <string name="amiibo_api" translatable="false">AmiiboAPI.com</string>
     <string name="power_tag" translatable="false">Power Tag</string>
     <string name="elite_device" translatable="false">N2 Elite</string>
     <string name="bluup_flask" translatable="false">Bluup Flask</string>

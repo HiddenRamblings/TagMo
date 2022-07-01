@@ -260,4 +260,9 @@ public class Storage extends Environment {
     public static File getDownloadDir(String directory) {
         return getDownloadDir(directory, null);
     }
+
+    public static String getRelativeDocument(Uri uri) {
+        return uri.toString().substring(uri.toString().lastIndexOf("/tree/") + 6)
+                .replace("%3A", ":").replace("%2F", "/");
+    }
 }

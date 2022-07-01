@@ -19,7 +19,7 @@
     <string name="refresh">Refresh</string>
     <string name="close">Close</string>
     <string name="view">View</string>
-    <string name="proceed">Continue</string>
+    <string name="proceed">계속</string>
     <string name="unlock">Unlock</string>
     <string name="scan">Scan</string>
 
@@ -62,7 +62,7 @@
     <string name="start">Start</string>
     <string name="delete">Delete</string>
     <string name="erase">Erase</string>
-    <string name="activate">Activate</string>
+    <string name="activate">활성화</string>
     <string name="parent">Parent</string>
     <string name="unknown">Unknown</string>
     <string name="invalid">Invalid</string>
@@ -71,7 +71,7 @@
     <string name="sync">Sync</string>
     <string name="enable">Enable</string>
     <string name="replace">Replace</string>
-    <string name="update">Update</string>
+    <string name="update">업데이트</string>
 
     <string name="error_caps">ERROR</string>
 
@@ -91,7 +91,7 @@
     <string name="properties">Properties</string>
     <string name="mii">Mii</string>
     <string name="mii_name">Mii Name</string>
-    <string name="app">Application</string>
+    <string name="app">응용 프로그램</string>
     <string name="app_id">App ID</string>
     <string name="app_data">App Data</string>
 
@@ -149,9 +149,6 @@
     <string name="allow">Allow</string>
 
     <string name="crypto_keys">Crypto Keys</string>
-    <string name="pref_import_keys">Import binary keys</string>
-    <string name="pref_restrictions">Restrictions</string>
-    <string name="image_loading_details">Image loading</string>
     <string name="enable_tag_validation">NTAG215 validation</string>
     <string name="tag_validation_details">Not all NFC chipsets correctly verify NFC tags.\nDisable to allow tags that may be incompatible.</string>
     <string name="enable_automatic_scan">Automatic NFC Scan</string>
@@ -335,5 +332,7 @@
     <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
     <string name="flask_missing">Device cannot be located!</string>
     <string name="location_disclosure">위치는 블루투스 르 스캔이 필요합니다. 구글 플레이 정책에 따라,태그모는 위치 데이터가 백그라운드에서 수집될 수 있음을 알려야 합니다. 태그모는 위치 데이터를 읽거나 저장하거나 공유하지 않습니다. 따라서,이 통지는 엄격하게 형식입니다.</string>
+    <string name="prefs_browser_options">브라우저 옵션</string>
+    <string name="pref_import_keys">암호화 키 가져오기</string>
 
 </resources>

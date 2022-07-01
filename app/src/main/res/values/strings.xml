@@ -24,7 +24,6 @@
     <string name="unlock">Unlock</string>
     <string name="scan">Scan</string>
 
-    <string name="amiibo">amiibo&#8482;</string>
     <string name="amiibo_id">ID</string>
     <string name="amiibo_name">Name</string>
     <string name="amiibo_game">Game Series</string>
@@ -56,6 +55,7 @@
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="browser">Browser</string>
     <string name="purchase">Purchase</string>
     <string name="save">Save</string>
     <string name="write">Write</string>
@@ -116,7 +116,6 @@
     <string name="bonus_three">Bonus Effect 2</string>
 
     <string name="tagmo_settings">TagMo Settings</string>
-    <string name="tagmo_browser">TagMo</string>
     <string name="rebuild_database">Sync AmiiboAPI</string>
     <string name="capture_logcat">Capture Logcat</string>
     <string name="foomiibo_builder">Foomiibo Builder</string>

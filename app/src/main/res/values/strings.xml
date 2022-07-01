@@ -169,15 +169,14 @@
     <string name="pref_guides">Guides</string>
     <string name="pref_donate">Donation</string>
 
-    <string name="crypto_keys">Crypto Keys</string>
-    <string name="pref_import_keys">Import binary keys</string>
-    <string name="pref_restrictions">Restrictions</string>
-    <string name="image_loading_details">Image loading</string>
+    <string name="prefs_browser_options">Browser Options</string>
+    <string name="pref_import_keys">Import crypto keys</string>
+    <string name="image_loading_details">Image data access</string>
     <string name="enable_tag_validation">NTAG215 validation</string>
     <string name="tag_validation_details">Not all NFC chipsets correctly verify tags.\nDisable to ignore tag compatibility checks.</string>
     <string name="enable_automatic_scan">Automatic NFC Scan</string>
     <string name="automatic_scan_details">Disable to prevent unexpected scan attempts.</string>
-    <string name="tag_devices">Tag Device Support</string>
+    <string name="tag_devices">Tag Devices</string>
     <string name="enable_power_tag">Enable Power Tag support</string>
     <string name="power_tag_details">See Github for limitations and use.</string>
     <string name="enable_elite">Enable N2 Elite support</string>

@@ -62,7 +62,7 @@
     <string name="start">Start</string>
     <string name="delete">Delete</string>
     <string name="erase">Erase</string>
-    <string name="activate">Activate</string>
+    <string name="activate">Activar</string>
     <string name="parent">Parent</string>
     <string name="unknown">Unknown</string>
     <string name="invalid">Invalid</string>
@@ -71,7 +71,7 @@
     <string name="sync">Sync</string>
     <string name="enable">Enable</string>
     <string name="replace">Replace</string>
-    <string name="update">Update</string>
+    <string name="update">Actualizar</string>
 
     <string name="error_caps">ERROR</string>
 
@@ -91,7 +91,7 @@
     <string name="properties">Properties</string>
     <string name="mii">Mii</string>
     <string name="mii_name">Mii Name</string>
-    <string name="app">Application</string>
+    <string name="app">Aplicación</string>
     <string name="app_id">App ID</string>
     <string name="app_data">App Data</string>
 
@@ -149,9 +149,6 @@
     <string name="allow">Allow</string>
 
     <string name="crypto_keys">Crypto Keys</string>
-    <string name="pref_import_keys">Import binary keys</string>
-    <string name="pref_restrictions">Restrictions</string>
-    <string name="image_loading_details">Image loading</string>
     <string name="enable_tag_validation">NTAG215 validation</string>
     <string name="tag_validation_details">Not all NFC chipsets correctly verify NFC tags.\nDisable to allow tags that may be incompatible.</string>
     <string name="enable_automatic_scan">Automatic NFC Scan</string>
@@ -335,5 +332,7 @@
     <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
     <string name="flask_missing">Device cannot be located!</string>
     <string name="location_disclosure">Se requiere la ubicación para el escaneo de Bluetooth LE. De acuerdo con la política de Google Play, TagMo debe notificarle que los datos de ubicación pueden recopilarse en segundo plano. TagMo no lee, almacena ni comparte datos de ubicación. Como tal, este aviso es estrictamente una formalidad.</string>
+    <string name="prefs_browser_options">Opciones de Navegador</string>
+    <string name="pref_import_keys">Claves de importación</string>
 
 </resources>

@@ -4,17 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/crypto_keys"
+        android:title="@string/prefs_browser_options"
         app:iconSpaceReserved="false">
         <androidx.preference.Preference
             android:key="@string/settings_import_keys"
             android:title="@string/pref_import_keys"
             app:iconSpaceReserved="false" />
-    </androidx.preference.PreferenceCategory>
-
-    <androidx.preference.PreferenceCategory
-        android:title="@string/pref_restrictions"
-        app:iconSpaceReserved="false">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settings_tag_type_validation"

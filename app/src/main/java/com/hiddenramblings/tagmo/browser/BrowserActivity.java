@@ -300,10 +300,7 @@ public class BrowserActivity extends AppCompatActivity implements
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 if (position != 0) BrowserAdapter.resetVisible();
-                if (position != 1) {
-                    FoomiiboAdapter.resetVisible();
-                    checkForUpdates();
-                }
+                if (position != 1) FoomiiboAdapter.resetVisible();
                 RecyclerView amiibosView = fragmentBrowser.getAmiibosView();
                 switch (position) {
                     case 1:

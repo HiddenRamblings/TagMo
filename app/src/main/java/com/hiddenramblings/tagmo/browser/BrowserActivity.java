@@ -285,6 +285,16 @@ public class BrowserActivity extends AppCompatActivity implements
             }));
         }
 
+        if (null == this.settings) {
+            this.settings = new BrowserSettings().initialize();
+        } else {
+            this.onFilterGameSeriesChanged();
+            this.onFilterCharacterChanged();
+            this.onFilterAmiiboSeriesChanged();
+            this.onFilterAmiiboTypeChanged();
+        }
+        this.settings.addChangeListener(this);
+
         mainLayout.setAdapter(pagerAdapter);
         CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
         cardFlipPageTransformer.setScalable(true);
@@ -371,16 +381,6 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }
 
-        if (null == this.settings) {
-            this.settings = new BrowserSettings().initialize();
-        } else {
-            this.onFilterGameSeriesChanged();
-            this.onFilterCharacterChanged();
-            this.onFilterAmiiboSeriesChanged();
-            this.onFilterAmiiboTypeChanged();
-        }
-        this.settings.addChangeListener(this);
-
         if (null == fragmentSettings)
             fragmentSettings = new SettingsFragment();
         getSupportFragmentManager()
@@ -397,6 +397,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    setFolderText(settings);
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
                 }
             }
@@ -1043,7 +1044,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     void checkForUpdates(boolean ignoreDelay) {
         if (ignoreDelay || System.currentTimeMillis()
-                > prefs.lastCheckTime().get() + 14400000)
+                > prefs.lastCheckTime().get() + 900000)
             prefs.lastCheckTime().put(System.currentTimeMillis());
         else return;
         updates = new CheckUpdatesTask(this);
@@ -1081,16 +1082,16 @@ public class BrowserActivity extends AppCompatActivity implements
 
         MenuItem backup = toolbar.getMenu().findItem(R.id.mnu_save);
         if (null != amiiboFile) {
-            if (null != amiiboFile.getFilePath()) {
+            if (null != amiiboFile.getDocUri()) {
+                String relativeDocument = Storage.getRelativeDocument(
+                        amiiboFile.getDocUri().getUri()
+                );
+                backup.setVisible(!relativeDocument.startsWith("/Foomiibo/"));
+            } else if (null != amiiboFile.getFilePath()) {
                 String relativeFile = Storage.getRelativePath(amiiboFile.getFilePath(),
                         TagMo.getPrefs().preferEmulated().get()).replace(
                         TagMo.getPrefs().browserRootFolder().get(), "");
                 backup.setVisible(!relativeFile.startsWith("/Foomiibo/"));
-            } else if (null != amiiboFile.getDocUri()) {
-                String relativeDocument = Storage.getRelativeDocument(
-                        amiiboFile.getDocUri().getUri()
-                );
-                backup.setVisible(!relativeDocument.contains("Foomiibo"));
             }
         }
 
@@ -1166,10 +1167,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
                 return true;
             } else if (item.getItemId() == R.id.mnu_delete) {
-                if (isDocumentStorage())
-                    deleteAmiiboDocument(amiiboFile);
-                else
-                    deleteAmiiboFile(amiiboFile);
+                deleteAmiiboDocument(amiiboFile);
                 return true;
             } else if (item.getItemId() == R.id.mnu_ignore_tag_id) {
                 ignoreTagId = !item.isChecked();
@@ -1374,8 +1372,7 @@ public class BrowserActivity extends AppCompatActivity implements
             public boolean onQueryTextChange(String query) {
                 settings.setQuery(query);
                 settings.notifyChanges();
-                if (mainLayout.getCurrentItem() == 0 
-                    && query.length() == 0)
+                if (mainLayout.getCurrentItem() == 0 && query.length() == 0)
                     setAmiiboStats();
                 return true;
             }
@@ -1690,17 +1687,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (folderChanged) {
             onRootFolderChanged(true);
-            String relativePath;
-            if (isDocumentStorage()) {
-                relativePath = Storage.getRelativeDocument(
-                        newBrowserSettings.getBrowserRootDocument()
-                );
-            } else {
-                File rootFolder = newBrowserSettings.getBrowserRootFolder();
-                String relativeRoot = Storage.getRelativePath(rootFolder, prefs.preferEmulated().get());
-                relativePath = relativeRoot.length() > 1 ? relativeRoot : rootFolder.getAbsolutePath();
-            }
-            setFolderText(relativePath);
+            setFolderText(newBrowserSettings);
         } else {
             setFolderText(null);
         }
@@ -1952,7 +1939,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     })
                     .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
         } else {
-            new Toasty(this).Short(R.string.delete_missing);
+            deleteAmiiboFile(amiiboFile);
         }
     }
 
@@ -2212,10 +2199,21 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    private void setFolderText(String text) {
-        if (null != text) {
+    private void setFolderText(BrowserSettings textSettings) {
+        if (null != textSettings) {
+            String relativePath;
+            if (isDocumentStorage()) {
+                relativePath = Storage.getRelativeDocument(textSettings.getBrowserRootDocument());
+            } else {
+                File rootFolder = textSettings.getBrowserRootFolder();
+                String relativeRoot = Storage.getRelativePath(
+                        rootFolder, prefs.preferEmulated().get()
+                );
+                relativePath = relativeRoot.length() > 1
+                        ? relativeRoot : rootFolder.getAbsolutePath();
+            }
             this.currentFolderView.setGravity(Gravity.CENTER_VERTICAL);
-            this.currentFolderView.setText(text);
+            this.currentFolderView.setText(relativePath);
             handler.postDelayed(this::setAmiiboStats, 3000);
         } else {
             setAmiiboStats();

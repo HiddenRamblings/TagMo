@@ -352,12 +352,12 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                         boldSpannable.IndexOf(amiiboType, query), hasTagInfo);
                 setAmiiboInfoText(this.txtGameSeries,
                         boldSpannable.IndexOf(gameSeries, query), hasTagInfo);
-                if (null != item.getFilePath()) {
+                if (null != item.getDocUri()) {
                     this.itemView.setEnabled(true);
-                    String relativeFile = Storage.getRelativePath(item.getFilePath(),
-                            TagMo.getPrefs().preferEmulated().get()).replace(
-                                    TagMo.getPrefs().browserRootFolder().get(), "");
-                    this.txtPath.setText(boldSpannable.IndexOf(relativeFile, query));
+                    String relativeDocument = Storage.getRelativeDocument(
+                            item.getDocUri().getUri()
+                    );
+                    this.txtPath.setText(boldSpannable.IndexOf(relativeDocument, query));
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(
                             android.R.attr.textColor, a, true);
@@ -367,12 +367,12 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
                         this.txtPath.setTextColor(a.data);
                     }
-                } else if (null != item.getDocUri()) {
+                } else if (null != item.getFilePath()) {
                     this.itemView.setEnabled(true);
-                    String relativeDocument = Storage.getRelativeDocument(
-                            item.getDocUri().getUri()
-                    );
-                    this.txtPath.setText(boldSpannable.IndexOf(relativeDocument, query));
+                    String relativeFile = Storage.getRelativePath(item.getFilePath(),
+                            TagMo.getPrefs().preferEmulated().get()).replace(
+                            TagMo.getPrefs().browserRootFolder().get(), "");
+                    this.txtPath.setText(boldSpannable.IndexOf(relativeFile, query));
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(
                             android.R.attr.textColor, a, true);

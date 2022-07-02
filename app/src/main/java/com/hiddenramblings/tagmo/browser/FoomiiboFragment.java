@@ -345,8 +345,9 @@ public class FoomiiboFragment extends Fragment implements
                     .get(TagUtils.amiiboIdFromTag(tagData));
             if (amiibo == null) throw new Exception();
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
-            File amiiboFile = new File(directory,
-                    TagUtils.decipherFilename(settings.getAmiiboManager(), tagData, false));
+            File amiiboFile = new File(directory, TagUtils.decipherFilename(
+                    settings.getAmiiboManager(), tagData, false
+            ));
             new AlertDialog.Builder(requireContext())
                     .setMessage(getString(R.string.warn_delete_file, amiiboFile.getName()))
                     .setPositiveButton(R.string.delete, (dialog, which) -> {
@@ -396,6 +397,7 @@ public class FoomiiboFragment extends Fragment implements
     public void onRefresh() {
         ((BrowserActivity) requireActivity()).onRefresh(false);
         swipeRefreshLayout.setRefreshing(false);
+        ((BrowserActivity) requireActivity()).checkForUpdates();
     }
 
     @Override

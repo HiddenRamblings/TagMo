@@ -299,6 +299,7 @@ public class BrowserActivity extends AppCompatActivity implements
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+                checkForUpdates(false);
                 if (position != 0) BrowserAdapter.resetVisible();
                 if (position != 1) FoomiiboAdapter.resetVisible();
                 RecyclerView amiibosView = fragmentBrowser.getAmiibosView();
@@ -1040,7 +1041,11 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    void checkForUpdates() {
+    void checkForUpdates(boolean ignoreDelay) {
+        if (ignoreDelay || System.currentTimeMillis()
+                > prefs.lastCheckTime().get() + 14400000)
+            prefs.lastCheckTime().put(System.currentTimeMillis());
+        else return;
         updates = new CheckUpdatesTask(this);
         if (TagMo.isGooglePlay()) {
             updates.setPlayUpdateListener(appUpdateInfo -> {
@@ -2427,7 +2432,6 @@ public class BrowserActivity extends AppCompatActivity implements
             amiiboContainer.setVisibility(View.GONE);
         } else if (mainLayout.getCurrentItem() != 0) {
             mainLayout.setCurrentItem(0, true);
-            checkForUpdates();
         } else {
             super.onBackPressed();
             finishAffinity();

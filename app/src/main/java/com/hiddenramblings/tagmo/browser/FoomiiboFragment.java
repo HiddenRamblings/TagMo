@@ -259,11 +259,10 @@ public class FoomiiboFragment extends Fragment implements
         }
 
         chipList = view.findViewById(R.id.chip_list);
+        chipList.setVisibility(View.GONE);
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
-
-        chipList.setVisibility(View.GONE);
 
         amiibosView = view.findViewById(R.id.amiibos_list);
         amiibosView.setHasFixedSize(true);

@@ -43,11 +43,10 @@ public class BrowserFragment extends Fragment implements
         BrowserSettings settings = activity.getSettings();
 
         chipList = view.findViewById(R.id.chip_list);
+        chipList.setVisibility(View.GONE);
         amiibosView = view.findViewById(R.id.amiibos_list);
         amiibosView.setHasFixedSize(true);
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
-
-        chipList.setVisibility(View.GONE);
 
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));

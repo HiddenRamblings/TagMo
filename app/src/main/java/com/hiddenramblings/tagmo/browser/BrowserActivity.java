@@ -851,10 +851,11 @@ public class BrowserActivity extends AppCompatActivity implements
             return false;
 
         Set<String> items = new HashSet<>();
-        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
-            if (amiibo == null)
-                continue;
+//        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
+//            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
+//            if (amiibo == null)
+//                continue;
+        for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
 
             GameSeries gameSeries = amiibo.getGameSeries();
             if (null != gameSeries &&
@@ -901,10 +902,11 @@ public class BrowserActivity extends AppCompatActivity implements
             return true;
 
         Set<String> items = new HashSet<>();
-        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
-            if (amiibo == null)
-                continue;
+//        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
+//            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
+//            if (amiibo == null)
+//                continue;
+        for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
 
             Character character = amiibo.getCharacter();
             if (null != character &&
@@ -951,10 +953,11 @@ public class BrowserActivity extends AppCompatActivity implements
             return true;
 
         Set<String> items = new HashSet<>();
-        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
-            if (amiibo == null)
-                continue;
+//        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
+//            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
+//            if (amiibo == null)
+//                continue;
+        for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
 
             AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
             if (null != amiiboSeries &&
@@ -1001,10 +1004,11 @@ public class BrowserActivity extends AppCompatActivity implements
             return true;
 
         Set<AmiiboType> items = new HashSet<>();
-        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
-            if (amiibo == null)
-                continue;
+//        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
+//            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
+//            if (amiibo == null)
+//                continue;
+        for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
 
             AmiiboType amiiboType = amiibo.getAmiiboType();
             if (null != amiiboType &&

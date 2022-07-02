@@ -265,6 +265,26 @@ public class BrowserActivity extends AppCompatActivity implements
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            this.runOnUiThread(() -> ProviderInstaller.installIfNeededAsync(this,
+                    new ProviderInstaller.ProviderInstallListener() {
+                @Override
+                public void onProviderInstalled() { }
+
+                @Override
+                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
+                    GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
+                    if (availability.isUserResolvableError(errorCode)) {
+                        availability.showErrorDialogFragment(
+                                BrowserActivity.this, errorCode, 7000,
+                                dialog -> onProviderInstallerNotAvailable());
+                    } else {
+                        onProviderInstallerNotAvailable();
+                    }
+                }
+            }));
+        }
+
         mainLayout.setAdapter(pagerAdapter);
         CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
         cardFlipPageTransformer.setScalable(true);
@@ -274,14 +294,16 @@ public class BrowserActivity extends AppCompatActivity implements
         fragmentFoomiibo = pagerAdapter.getFoomiibo();
         fragmentElite = pagerAdapter.getEliteBanks();
 
-
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @SuppressLint("NewApi")
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 if (position != 0) BrowserAdapter.resetVisible();
-                if (position != 1) FoomiiboAdapter.resetVisible();
+                if (position != 1) {
+                    FoomiiboAdapter.resetVisible();
+                    checkForUpdates();
+                }
                 RecyclerView amiibosView = fragmentBrowser.getAmiibosView();
                 switch (position) {
                     case 1:
@@ -311,13 +333,12 @@ public class BrowserActivity extends AppCompatActivity implements
                         amiibosView = fragmentBrowser.getAmiibosView();
                         break;
                 }
-                invalidateOptionsMenu();
-
                 if (null != amiibosView)
                     amiibosView.setLayoutManager(settings.getAmiiboView()
                             == BrowserSettings.VIEW.IMAGE.getValue()
                             ? new GridLayoutManager(BrowserActivity.this, getColumnCount())
                             : new LinearLayoutManager(BrowserActivity.this));
+                invalidateOptionsMenu();
             }
         });
 
@@ -488,13 +509,12 @@ public class BrowserActivity extends AppCompatActivity implements
         } else {
             donate.setImageResource(R.drawable.ic_paypal_donation_24dp);
         }
-
+        ((TextView) findViewById(R.id.build_text)).setText(
+                getString(R.string.build_hash, BuildConfig.COMMIT));
         prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                ((TextView) findViewById(R.id.build_text)).setText(
-                        getString(R.string.build_hash, BuildConfig.COMMIT));
                 findViewById(R.id.build_layout).setOnClickListener(view -> {
                     closePrefsDrawer();
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
@@ -1024,51 +1044,17 @@ public class BrowserActivity extends AppCompatActivity implements
     };
 
     void checkForUpdates() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            updates = new CheckUpdatesTask(this);
-            if (TagMo.isGooglePlay()) {
-                updates.setPlayUpdateListener(appUpdateInfo -> {
-                    appUpdate = appUpdateInfo;
-                    invalidateOptionsMenu();
-                });
-            } else {
-                updates.setUpdateListener(downloadUrl -> {
-                    updateUrl = downloadUrl;
-                    invalidateOptionsMenu();
-                });
-            }
-
+        updates = new CheckUpdatesTask(this);
+        if (TagMo.isGooglePlay()) {
+            updates.setPlayUpdateListener(appUpdateInfo -> {
+                appUpdate = appUpdateInfo;
+                invalidateOptionsMenu();
+            });
         } else {
-            this.runOnUiThread(() -> ProviderInstaller.installIfNeededAsync(this,
-                    new ProviderInstaller.ProviderInstallListener() {
-                @Override
-                public void onProviderInstalled() {
-                    updates = new CheckUpdatesTask(BrowserActivity.this);
-                    if (TagMo.isGooglePlay()) {
-                        updates.setPlayUpdateListener(appUpdateInfo -> {
-                            appUpdate = appUpdateInfo;
-                            invalidateOptionsMenu();
-                        });
-                    } else {
-                        updates.setUpdateListener(downloadUrl -> {
-                            updateUrl = downloadUrl;
-                            invalidateOptionsMenu();
-                        });
-                    }
-                }
-
-                @Override
-                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                    GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
-                    if (availability.isUserResolvableError(errorCode)) {
-                        availability.showErrorDialogFragment(
-                                BrowserActivity.this, errorCode, 7000,
-                                dialog -> onProviderInstallerNotAvailable());
-                    } else {
-                        onProviderInstallerNotAvailable();
-                    }
-                }
-            }));
+            updates.setUpdateListener(downloadUrl -> {
+                updateUrl = downloadUrl;
+                invalidateOptionsMenu();
+            });
         }
     }
 
@@ -1178,7 +1164,10 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
                 return true;
             } else if (item.getItemId() == R.id.mnu_delete) {
-                deleteAmiiboFile(amiiboFile);
+                if (isDocumentStorage())
+                    deleteAmiiboDocument(amiiboFile);
+                else
+                    deleteAmiiboFile(amiiboFile);
                 return true;
             } else if (item.getItemId() == R.id.mnu_ignore_tag_id) {
                 ignoreTagId = !item.isChecked();
@@ -1242,7 +1231,6 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onStorageEnabled() {
-        checkForUpdates();
         if (isDocumentStorage()) {
             switchStorageRoot.setVisibility(View.VISIBLE);
             switchStorageRoot.setText(R.string.document_storage_root);
@@ -1700,6 +1688,19 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (folderChanged) {
             onRootFolderChanged(true);
+            String relativePath;
+            if (isDocumentStorage()) {
+                relativePath = Storage.getRelativeDocument(
+                        newBrowserSettings.getBrowserRootDocument()
+                );
+            } else {
+                File rootFolder = newBrowserSettings.getBrowserRootFolder();
+                String relativeRoot = Storage.getRelativePath(rootFolder, prefs.preferEmulated().get());
+                relativePath = relativeRoot.length() > 1 ? relativeRoot : rootFolder.getAbsolutePath();
+            }
+            setFolderText(relativePath);
+        } else {
+            setFolderText(null);
         }
 
         if (newBrowserSettings.getSort() != oldBrowserSettings.getSort()) {
@@ -1744,18 +1745,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
                 .showDownloads().put(newBrowserSettings.isShowingDownloads())
                 .apply();
-
-        if (isDocumentStorage()) {
-            String relativeRoot = Storage.getRelativeDocument(
-                    newBrowserSettings.getBrowserRootDocument()
-            );
-            setFolderText(relativeRoot, folderChanged ? 3000 : 1500);
-        } else {
-            File rootFolder = newBrowserSettings.getBrowserRootFolder();
-            String relativeRoot = Storage.getRelativePath(rootFolder, prefs.preferEmulated().get());
-            setFolderText(relativeRoot.length() > 1 ? relativeRoot : rootFolder.getAbsolutePath(),
-                    folderChanged ? 3000 : 1500);
-        }
     }
 
     private void onAmiiboFilesChanged() {
@@ -1941,6 +1930,29 @@ public class BrowserActivity extends AppCompatActivity implements
             // toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
         }
     });
+
+    private void deleteAmiiboDocument(AmiiboFile amiiboFile) {
+        if (null != amiiboFile && null != amiiboFile.getDocUri()) {
+            String relativeDocument = Storage.getRelativeDocument(
+                    amiiboFile.getDocUri().getUri()
+            );
+            new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.warn_delete_file, relativeDocument))
+                    .setPositiveButton(R.string.delete, (dialog, which) -> {
+                        amiiboContainer.setVisibility(View.GONE);
+                        amiiboFile.getDocUri().delete();
+                        new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                                getString(R.string.delete_file, relativeDocument),
+                                Snackbar.LENGTH_SHORT
+                        ).show();
+                        this.onRootFolderChanged(true);
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
+        } else {
+            new Toasty(this).Short(R.string.delete_missing);
+        }
+    }
 
     private void deleteAmiiboFile(AmiiboFile amiiboFile) {
         if (null != amiiboFile && null != amiiboFile.getFilePath()) {
@@ -2164,47 +2176,48 @@ public class BrowserActivity extends AppCompatActivity implements
         return new int[]{size, count};
     }
 
-    private void setAmiiboStatsText() {
-        int size = settings.getAmiiboFiles().size();
-        if (size <= 0) return;
-        currentFolderView.setGravity(Gravity.CENTER);
-        if (null != settings.getAmiiboManager()) {
-            int count = 0;
-            if (!settings.getQuery().isEmpty()) {
-                int[] stats = getAdapterStats();
-                currentFolderView.setText(getString(R.string.amiibo_collected,
-                        stats[0], stats[1], getQueryCount(settings.getQuery())));
-            } else if (settings.hasFilteredData()) {
-                int[] stats = getAdapterStats();
-                currentFolderView.setText(getString(R.string.amiibo_collected,
-                        stats[0], stats[1], filteredCount));
-            } else {
-                for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
-                    for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-                        if (amiibo.id == amiiboFile.getId()) {
-                            count += 1;
-                            break;
+    private void setAmiiboStats() {
+        handler.removeCallbacksAndMessages(null);
+        this.runOnUiThread(() -> {
+            int size = settings.getAmiiboFiles().size();
+            if (size <= 0) return;
+            currentFolderView.setGravity(Gravity.CENTER);
+            if (null != settings.getAmiiboManager()) {
+                int count = 0;
+                if (!settings.getQuery().isEmpty()) {
+                    int[] stats = getAdapterStats();
+                    currentFolderView.setText(getString(R.string.amiibo_collected,
+                            stats[0], stats[1], getQueryCount(settings.getQuery())));
+                } else if (settings.hasFilteredData()) {
+                    int[] stats = getAdapterStats();
+                    currentFolderView.setText(getString(R.string.amiibo_collected,
+                            stats[0], stats[1], filteredCount));
+                } else {
+                    for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+                        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
+                            if (amiibo.id == amiiboFile.getId()) {
+                                count += 1;
+                                break;
+                            }
                         }
                     }
+                    currentFolderView.setText(getString(R.string.amiibo_collected,
+                            size, count, settings.getAmiiboManager().amiibos.size()));
                 }
-                currentFolderView.setText(getString(R.string.amiibo_collected,
-                        size, count, settings.getAmiiboManager().amiibos.size()));
+            } else {
+                currentFolderView.setText(getString(R.string.files_displayed, size));
             }
+        });
+    }
+
+    private void setFolderText(String text) {
+        if (null != text) {
+            this.currentFolderView.setGravity(Gravity.CENTER_VERTICAL);
+            this.currentFolderView.setText(text);
+            handler.postDelayed(this::setAmiiboStats, 3000);
         } else {
-            currentFolderView.setText(getString(R.string.files_displayed, size));
+            setAmiiboStats();
         }
-    }
-
-    private void setFolderText(String text, int delay) {
-        this.currentFolderView.setGravity(Gravity.CENTER_VERTICAL);
-        this.currentFolderView.setText(text);
-        handler.removeCallbacksAndMessages(null);
-        handler.postDelayed(this::setAmiiboStatsText, delay);
-    }
-
-    void setAmiiboStats() {
-        handler.removeCallbacksAndMessages(null);
-        this.runOnUiThread(this::setAmiiboStatsText);
     }
 
     private void showFakeSnackbar(String msg) {
@@ -2409,15 +2422,16 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (prefsDrawer.isDrawerOpen(GravityCompat.START))
+        if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
             prefsDrawer.closeDrawer(GravityCompat.START);
-        else if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState())
+        } else if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState()) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        else if (View.VISIBLE == amiiboContainer.getVisibility())
+        } else if (View.VISIBLE == amiiboContainer.getVisibility()) {
             amiiboContainer.setVisibility(View.GONE);
-        else if (mainLayout.getCurrentItem() != 0)
+        } else if (mainLayout.getCurrentItem() != 0) {
             mainLayout.setCurrentItem(0, true);
-        else {
+            checkForUpdates();
+        } else {
             super.onBackPressed();
             finishAffinity();
         }

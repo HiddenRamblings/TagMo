@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.browser;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,6 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.ImageActivity;
@@ -49,6 +52,8 @@ import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.widget.Toasty;
+import com.robertlevonyan.views.chip.Chip;
+import com.robertlevonyan.views.chip.OnCloseClickListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,6 +66,7 @@ public class FoomiiboFragment extends Fragment implements
 
     private final Foomiibo foomiibo = new Foomiibo();
     private File directory;
+    private FlexboxLayout chipList;
     private RecyclerView amiibosView;
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -252,9 +258,12 @@ public class FoomiiboFragment extends Fragment implements
             });
         }
 
+        chipList = view.findViewById(R.id.chip_list);
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.swipeRefreshLayout.setProgressViewOffset(false, 0, (int) getResources().getDimension(R.dimen.swipe_progress_end));
+
+        chipList.setVisibility(View.GONE);
 
         amiibosView = view.findViewById(R.id.amiibos_list);
         amiibosView.setHasFixedSize(true);
@@ -268,6 +277,25 @@ public class FoomiiboFragment extends Fragment implements
 
     public RecyclerView getAmiibosView() {
         return amiibosView;
+    }
+
+    @SuppressLint("InflateParams")
+    public void addFilterItemView(String text, String tag, OnCloseClickListener listener) {
+        if (null == chipList) return;
+        FrameLayout chipContainer = chipList.findViewWithTag(tag);
+        chipList.removeView(chipContainer);
+        if (!text.isEmpty()) {
+            chipContainer = (FrameLayout) getLayoutInflater().inflate(R.layout.chip_view, null);
+            chipContainer.setTag(tag);
+            Chip chip = chipContainer.findViewById(R.id.chip);
+            chip.setText(text);
+            chip.setClosable(true);
+            chip.setOnCloseClickListener(listener);
+            chipList.addView(chipContainer);
+            chipList.setVisibility(View.VISIBLE);
+        } else if (chipList.getChildCount() == 0) {
+            chipList.setVisibility(View.GONE);
+        }
     }
 
     private void deleteDir(Handler handler, ProgressDialog dialog, File dir) {

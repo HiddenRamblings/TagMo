@@ -204,16 +204,15 @@ public class FoomiiboAdapter
             if (null != filteredData && filteredData == filterResults.values) return;
             filteredData = (ArrayList<Amiibo>) filterResults.values;
 
-            if (null != filteredData && !filteredData.isEmpty())
+            if (null != filteredData && !filteredData.isEmpty()) {
                 Collections.sort(filteredData, new AmiiboComparator(settings));
 
-            ArrayList<Amiibo> missingFiles = new ArrayList<>();
-            if (null != settings.getAmiiboManager()) {
+                ArrayList<Amiibo> missingFiles = new ArrayList<>();
                 HashSet<Long> amiiboIds = new HashSet<>();
                 for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
                     amiiboIds.add(amiiboFile.getId());
                 }
-                for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+                for (Amiibo amiibo : filteredData) {
                     if (!amiiboIds.contains(amiibo.id)) {
                         missingFiles.add(amiibo);
                     }

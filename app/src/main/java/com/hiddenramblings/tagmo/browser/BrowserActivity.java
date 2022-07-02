@@ -1822,6 +1822,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onFilterGameSeriesChanged() {
         fragmentBrowser.addFilterItemView(settings.getGameSeriesFilter(),
                 "filter_game_series", onFilterGameSeriesChipCloseClick);
+        fragmentFoomiibo.addFilterItemView(settings.getGameSeriesFilter(),
+                "filter_game_series", onFilterGameSeriesChipCloseClick);
     }
 
     private final OnCloseClickListener onFilterGameSeriesChipCloseClick =
@@ -1836,6 +1838,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void onFilterCharacterChanged() {
         fragmentBrowser.addFilterItemView(settings.getCharacterFilter(), "filter_character",
+                onFilterCharacterChipCloseClick);
+        fragmentFoomiibo.addFilterItemView(settings.getCharacterFilter(), "filter_character",
                 onFilterCharacterChipCloseClick);
     }
 
@@ -1852,6 +1856,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onFilterAmiiboSeriesChanged() {
         fragmentBrowser.addFilterItemView(settings.getAmiiboSeriesFilter(), "filter_amiibo_series",
                 onFilterAmiiboSeriesChipCloseClick);
+        fragmentFoomiibo.addFilterItemView(settings.getAmiiboSeriesFilter(), "filter_amiibo_series",
+                onFilterAmiiboSeriesChipCloseClick);
     }
 
     private final OnCloseClickListener onFilterAmiiboSeriesChipCloseClick =
@@ -1866,6 +1872,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void onFilterAmiiboTypeChanged() {
         fragmentBrowser.addFilterItemView(settings.getAmiiboTypeFilter(),
+                "filter_amiibo_type", onAmiiboTypeChipCloseClick);
+        fragmentFoomiibo.addFilterItemView(settings.getAmiiboTypeFilter(),
                 "filter_amiibo_type", onAmiiboTypeChipCloseClick);
     }
 

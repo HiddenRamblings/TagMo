@@ -301,7 +301,7 @@ public class FoomiiboFragment extends Fragment implements
 
             handler.post(() -> {
                 dialog.dismiss();
-                onRefresh();
+                ((BrowserActivity) requireActivity()).onRefresh(false);
             });
         });
     }
@@ -386,22 +386,23 @@ public class FoomiiboFragment extends Fragment implements
 
             handler.post(() -> {
                 dialog.dismiss();
-                onRefresh();
+                ((BrowserActivity) requireActivity()).onRefresh(false);
             });
         });
     }
 
     @Override
     public void onRefresh() {
-        ((BrowserActivity) requireActivity()).onRefresh(false);
+        BrowserActivity activity = (BrowserActivity) requireActivity();
+        activity.onRefresh(true);
         swipeRefreshLayout.setRefreshing(false);
-        ((BrowserActivity) requireActivity()).checkForUpdates();
+        activity.checkForUpdates(true);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        this.onRefresh();
+        ((BrowserActivity) requireActivity()).onRefresh(false);
     }
 
     void getToolbarOptions(Toolbar toolbar, byte[] tagData) {

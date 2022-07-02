@@ -92,9 +92,10 @@ public class BrowserFragment extends Fragment implements
 
     @Override
     public void onRefresh() {
-        ((BrowserActivity) requireActivity()).onRefresh(true);
+        BrowserActivity activity = (BrowserActivity) requireActivity();
+        activity.onRefresh(true);
         swipeRefreshLayout.setRefreshing(false);
-        ((BrowserActivity) requireActivity()).checkForUpdates();
+        activity.checkForUpdates(true);
     }
 }
 

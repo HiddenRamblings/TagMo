@@ -203,7 +203,6 @@ public class FoomiiboAdapter
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             if (null != filteredData && filteredData == filterResults.values) return;
             filteredData = (ArrayList<Amiibo>) filterResults.values;
-
             if (null != filteredData && !filteredData.isEmpty()) {
                 Collections.sort(filteredData, new AmiiboComparator(settings));
 

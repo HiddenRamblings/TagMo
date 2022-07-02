@@ -366,7 +366,30 @@ public class BrowserAdapter
                 setAmiiboInfoText(this.txtGameSeries,
                         boldSpannable.IndexOf(gameSeries, query), hasTagInfo);
 
-                if (null != item.getFilePath()) {
+                if (null != item.getDocUri()) {
+                    String relativeDocument = Storage.getRelativeDocument(
+                            item.getDocUri().getUri()
+                    );
+                    boolean expanded = amiiboPath.contains(relativeDocument);
+                    itemView.findViewById(R.id.menu_options)
+                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                    itemView.findViewById(R.id.txtUsage)
+                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
+                    if (expanded) listener.onAmiiboRebind(itemView, amiiboFile);
+
+                    this.itemView.setEnabled(true);
+                    this.txtPath.setText(boldSpannable.IndexOf(relativeDocument, query));
+                    TypedValue a = new TypedValue();
+                    this.txtPath.getContext().getTheme().resolveAttribute(
+                            android.R.attr.textColor, a, true);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                        this.txtPath.setTextColor(a.data);
+                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                        this.txtPath.setTextColor(a.data);
+                    }
+                    setIsHighlighted(relativeDocument.startsWith("/Foomiibo/"));
+                } else if (null != item.getFilePath()) {
                     boolean expanded = amiiboPath.contains(item.getFilePath().getAbsolutePath());
                     itemView.findViewById(R.id.menu_options)
                             .setVisibility(expanded ? View.VISIBLE : View.GONE);
@@ -389,29 +412,6 @@ public class BrowserAdapter
                         this.txtPath.setTextColor(a.data);
                     }
                     setIsHighlighted(relativeFile.startsWith("/Foomiibo/"));
-                } else if (null != item.getDocUri()) {
-                    String relativeDocument = Storage.getRelativeDocument(
-                            item.getDocUri().getUri()
-                    );
-                    boolean expanded = amiiboPath.contains(relativeDocument);
-                    itemView.findViewById(R.id.menu_options)
-                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
-                    itemView.findViewById(R.id.txtUsage)
-                            .setVisibility(expanded ? View.VISIBLE : View.GONE);
-                    if (expanded) listener.onAmiiboRebind(itemView, amiiboFile);
-
-                    this.itemView.setEnabled(true);
-                    this.txtPath.setText(boldSpannable.IndexOf(relativeDocument, query));
-                    TypedValue a = new TypedValue();
-                    this.txtPath.getContext().getTheme().resolveAttribute(
-                            android.R.attr.textColor, a, true);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
-                        this.txtPath.setTextColor(a.data);
-                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
-                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-                        this.txtPath.setTextColor(a.data);
-                    }
-                    setIsHighlighted(relativeDocument.contains("Foomiibo"));
                 } else {
                     this.itemView.setEnabled(false);
                     this.txtPath.setText("");

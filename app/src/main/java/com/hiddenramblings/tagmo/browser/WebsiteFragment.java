@@ -30,6 +30,7 @@ import androidx.webkit.WebViewFeature;
 
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
@@ -118,17 +119,23 @@ public class WebsiteFragment extends Fragment {
     }
 
     public void loadWebsite(String address) {
-        if (null == address) address = NFCIntent.SITE_GITLAB_README;
-        WebSettings webViewSettings = mWebView.getSettings();
-        if (address.startsWith(NFCIntent.SITE_GITLAB_README)) {
-            webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
-                    "(?i)" + Pattern.quote("android"), "TagMo"));
+        if (null != mWebView) {
+            if (null == address) address = NFCIntent.SITE_GITLAB_README;
+            WebSettings webViewSettings = mWebView.getSettings();
+            if (address.startsWith(NFCIntent.SITE_GITLAB_README)) {
+                webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
+                        "(?i)" + Pattern.quote("android"), "TagMo"));
+            } else {
+                webViewSettings.setBuiltInZoomControls(true);
+                webViewSettings.setSupportZoom(true);
+                webViewSettings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+            }
+            mWebView.loadUrl(address);
         } else {
-            webViewSettings.setBuiltInZoomControls(true);
-            webViewSettings.setSupportZoom(true);
-            webViewSettings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+            final String delayedUrl = address;
+            new Handler(Looper.getMainLooper()).postDelayed((Runnable) () ->
+                    loadWebsite(delayedUrl), TagMo.uiDelay);
         }
-        mWebView.loadUrl(address);
     }
 
     private class UnZip implements Runnable {

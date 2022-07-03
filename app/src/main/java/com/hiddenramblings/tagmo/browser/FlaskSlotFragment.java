@@ -241,7 +241,7 @@ public class FlaskSlotFragment extends Fragment implements
                         @Override
                         public void onGattConnectionLost() {
                             new Handler(Looper.getMainLooper()).postDelayed(
-                                    FlaskSlotFragment.this::showDisconnectNotice, 250
+                                    FlaskSlotFragment.this::showDisconnectNotice, TagMo.uiDelay
                             );
                             requireActivity().runOnUiThread(() -> bottomSheetBehavior
                                     .setState(BottomSheetBehavior.STATE_COLLAPSED));
@@ -907,7 +907,7 @@ public class FlaskSlotFragment extends Fragment implements
                     showPurchaseNotice();
                     break;
             }
-        }, 100);
+        }, TagMo.uiDelay);
     }
 
     @Override

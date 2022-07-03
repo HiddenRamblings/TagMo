@@ -86,13 +86,6 @@
             </intent-filter>
         </activity-alias>
         <activity
-            android:name=".WebActivity"
-            android:excludeFromRecents="true"
-            android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
-            android:launchMode="singleTop"
-            android:theme="@style/DialogTheme.NoActionBar">
-        </activity>
-        <activity
             android:name=".NfcActivity"
             android:permission="android.permission.BIND_NFC_SERVICE"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"

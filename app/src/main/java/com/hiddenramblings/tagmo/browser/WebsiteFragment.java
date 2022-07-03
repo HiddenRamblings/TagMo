@@ -1,15 +1,14 @@
-package com.hiddenramblings.tagmo;
+package com.hiddenramblings.tagmo.browser;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
@@ -22,14 +21,15 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.webkit.ServiceWorkerClientCompat;
 import androidx.webkit.ServiceWorkerControllerCompat;
 import androidx.webkit.WebViewAssetLoader;
-import androidx.webkit.WebViewAssetLoader.AssetsPathHandler;
 import androidx.webkit.WebViewClientCompat;
 import androidx.webkit.WebViewFeature;
 
+import com.hiddenramblings.tagmo.NFCIntent;
+import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
@@ -46,24 +46,22 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class WebActivity extends AppCompatActivity {
-
-    public static String WEBSITE = "WEBSITE";
+public class WebsiteFragment extends Fragment {
 
     private WebView mWebView;
     private ProgressDialog dialog;
 
-    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_webview, container, false);
+    }
 
-        setContentView(R.layout.activity_webview);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        mWebView = findViewById(R.id.webview_content);
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        String action = getIntent().getAction();
+        mWebView = view.findViewById(R.id.webview_content);
         WebSettings webViewSettings = mWebView.getSettings();
 
         mWebView.setScrollbarFadingEnabled(true);
@@ -81,7 +79,7 @@ public class WebActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             final WebViewAssetLoader assetLoader =
                     new WebViewAssetLoader.Builder().addPathHandler("/assets/",
-                            new AssetsPathHandler(WebActivity.this)).build();
+                            new WebViewAssetLoader.AssetsPathHandler(requireContext())).build();
 
             mWebView.setWebViewClient(new WebViewClientCompat() {
                 @Override
@@ -93,13 +91,13 @@ public class WebActivity extends AppCompatActivity {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USAGE)) {
                 ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(
                         new ServiceWorkerClientCompat() {
-                    @Nullable
-                    @Override
-                    public WebResourceResponse shouldInterceptRequest(
-                            @NonNull WebResourceRequest request) {
-                        return assetLoader.shouldInterceptRequest(request.getUrl());
-                    }
-                });
+                            @Nullable
+                            @Override
+                            public WebResourceResponse shouldInterceptRequest(
+                                    @NonNull WebResourceRequest request) {
+                                return assetLoader.shouldInterceptRequest(request.getUrl());
+                            }
+                        });
             }
         }
         webViewSettings.setAllowFileAccessFromFileURLs(
@@ -116,17 +114,21 @@ public class WebActivity extends AppCompatActivity {
             }
         });
 
-        if (null != action && action.startsWith(NFCIntent.SITE_GITLAB_README)) {
+        loadWebsite(null);
+    }
+
+    public void loadWebsite(String address) {
+        if (null == address) address = NFCIntent.SITE_GITLAB_README;
+        WebSettings webViewSettings = mWebView.getSettings();
+        if (address.startsWith(NFCIntent.SITE_GITLAB_README)) {
             webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
                     "(?i)" + Pattern.quote("android"), "TagMo"));
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-            mWebView.loadUrl(action);
-        } else if (getIntent().hasExtra(WEBSITE)) {
+        } else {
             webViewSettings.setBuiltInZoomControls(true);
             webViewSettings.setSupportZoom(true);
             webViewSettings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-            mWebView.loadUrl(getIntent().getStringExtra(WEBSITE));
         }
+        mWebView.loadUrl(address);
     }
 
     private class UnZip implements Runnable {
@@ -175,7 +177,7 @@ public class WebActivity extends AppCompatActivity {
     }
 
     private void unzipFile(File zipFile) {
-        dialog = ProgressDialog.show(this, "", "", true);
+        dialog = ProgressDialog.show(requireContext(), "", "", true);
         new Thread(new UnZip(zipFile, Storage.getDownloadDir(
                 "TagMo", "Downloads"))).start();
     }
@@ -196,10 +198,11 @@ public class WebActivity extends AppCompatActivity {
         byte[] tagData = Base64.decode(base64File.replaceFirst(
                 "^data:" + mimeType + ";base64,", ""), 0);
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(requireContext());
         final EditText input = view.findViewById(R.id.backup_entry);
         try {
-            AmiiboManager amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
+            AmiiboManager amiiboManager = AmiiboManager
+                    .getAmiiboManager(requireContext().getApplicationContext());
             input.setText(TagUtils.decipherFilename(amiiboManager, tagData, true));
         } catch (IOException | JSONException | ParseException e) {
             Debug.Log(e);
@@ -261,3 +264,4 @@ public class WebActivity extends AppCompatActivity {
         }
     }
 }
+

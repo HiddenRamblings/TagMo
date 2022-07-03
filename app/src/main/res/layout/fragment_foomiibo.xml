@@ -33,7 +33,7 @@
             android:layout_below="@+id/divider"
             android:layout_alignParentBottom="true">
 
-        <androidx.recyclerview.widget.RecyclerView
+        <in.myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
             android:id="@+id/amiibos_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

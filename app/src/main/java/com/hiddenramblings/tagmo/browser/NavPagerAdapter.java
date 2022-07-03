@@ -9,14 +9,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.hiddenramblings.tagmo.BuildConfig;
+
+import java.util.Objects;
+
 public class NavPagerAdapter extends FragmentStateAdapter {
     private final BrowserFragment fragmentBrowser = new BrowserFragment();
     private final FoomiiboFragment fragmentFoomiibo = new FoomiiboFragment();
     private final EliteBankFragment fragmentElite = new EliteBankFragment();
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private final FlaskSlotFragment fragmentFlask = new FlaskSlotFragment();
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private final JoyConFragment fragmentJoyCon = new JoyConFragment();
 
     public NavPagerAdapter(FragmentActivity fa) {
         super(fa);
@@ -32,8 +34,6 @@ public class NavPagerAdapter extends FragmentStateAdapter {
                 return fragmentElite;
             case 3:
                 return fragmentFlask;
-            case 4:
-                return fragmentJoyCon;
             default:
                 return fragmentBrowser;
         }
@@ -41,7 +41,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 ? 5 : 3;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 ? 4 : 3;
     }
 
     public BrowserFragment getBrowser() {
@@ -59,11 +59,6 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public FlaskSlotFragment getFlaskSlots() {
         return fragmentFlask;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public JoyConFragment getJoyCons() {
-        return fragmentJoyCon;
     }
 }
 

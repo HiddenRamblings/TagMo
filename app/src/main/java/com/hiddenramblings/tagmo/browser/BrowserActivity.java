@@ -158,6 +158,9 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView;
 
 public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,
@@ -189,6 +192,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private AppCompatButton fakeSnackbarItem;
     private ViewPager2 mainLayout;
     private FloatingActionButton nfcFab;
+    private RecyclerView amiibosView;
     private BrowserFragment fragmentBrowser;
     private FoomiiboFragment fragmentFoomiibo;
     private EliteBankFragment fragmentElite;
@@ -311,7 +315,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 checkForUpdates(false);
                 if (position != 0) BrowserAdapter.resetVisible();
                 if (position != 1) FoomiiboAdapter.resetVisible();
-                RecyclerView amiibosView = fragmentBrowser.getAmiibosView();
+                amiibosView = fragmentBrowser.getAmiibosView();
                 switch (position) {
                     case 1:
                         showActionButton();
@@ -1747,26 +1751,47 @@ public class BrowserActivity extends AppCompatActivity implements
                 showFakeSnackbar(getString(R.string.amiibo_not_found));
                 fakeSnackbarItem.setVisibility(View.VISIBLE);
                 fakeSnackbarItem.setText(R.string.search);
-                fakeSnackbarItem.setOnClickListener(view -> {
-                    mainLayout.setCurrentItem(1, true);
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                });
-            }, 200);
-            isFullRebuild = true;
+                fakeSnackbarItem.setOnClickListener(view -> bottomSheetBehavior
+                        .setState(BottomSheetBehavior.STATE_EXPANDED));
+                isFullRebuild = true;
+            }, 250);
         } else {
             isFullRebuild = false;
+        }
+    }
+
+    private void setIndexScrollListener() {
+        if (amiibosView instanceof IndexFastScrollRecyclerView) {
+            IndexFastScrollRecyclerView indexView =
+                    (IndexFastScrollRecyclerView) amiibosView;
+            indexView.setIndexbarBottomMargin(getResources()
+                    .getDimension(R.dimen.swipe_progress_end));
+            amiibosView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                        indexView.setIndexBarVisibility(true);
+                    } else if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                        indexView.setIndexBarVisibility(false);
+                    }
+                }
+            });
         }
     }
 
     private void onSortChanged() {
         if (null == menuSortId)
             return;
+        if (amiibosView instanceof IndexFastScrollRecyclerView)
+            ((IndexFastScrollRecyclerView) amiibosView).setIndexBarVisibility(false);
         switch (SORT.valueOf(settings.getSort())) {
             case ID:
                 menuSortId.setChecked(true);
                 break;
             case NAME:
                 menuSortName.setChecked(true);
+                setIndexScrollListener();
                 break;
             case GAME_SERIES:
                 menuSortGameSeries.setChecked(true);

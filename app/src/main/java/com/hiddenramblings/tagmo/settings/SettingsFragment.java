@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
-import android.view.WindowManager;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -25,7 +24,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.WebActivity;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.browser.BrowserActivity;
@@ -135,8 +133,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 prefs.enable_power_tag_support().put(isEnabled);
                 if (isEnabled) {
                     ((BrowserActivity) requireActivity()).loadPTagKeyManager();
-                    startActivity(new Intent(requireActivity(), WebActivity.class)
-                            .setAction(NFCIntent.SITE_POWERTAG_HELP));
+                    ((BrowserActivity) requireActivity()).showWebsite(NFCIntent.SITE_POWERTAG_HELP);
                 }
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });

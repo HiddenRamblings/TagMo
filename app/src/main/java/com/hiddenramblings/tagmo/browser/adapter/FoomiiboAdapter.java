@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,10 +33,11 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 public class FoomiiboAdapter
         extends RecyclerView.Adapter<FoomiiboAdapter.FoomiiboViewHolder>
-        implements Filterable, BrowserSettingsListener {
+        implements Filterable, BrowserSettingsListener, SectionIndexer {
 
     private final BrowserSettings settings;
     private final OnFoomiiboClickListener listener;
@@ -111,6 +113,34 @@ public class FoomiiboAdapter
     @Override
     public int getItemViewType(int position) {
         return settings.getAmiiboView();
+    }
+
+    private ArrayList<Integer> mSectionPositions;
+
+    @Override
+    public int getSectionForPosition(int position) {
+        return 0;
+    }
+
+    @Override
+    public Object[] getSections() {
+        List<String> sections = new ArrayList<>(36);
+        if (getItemCount() > 0) {
+            mSectionPositions = new ArrayList<>(36);
+            for (int i = 0, size = filteredData.size(); i < size; i++) {
+                String section = String.valueOf(filteredData.get(i).name.charAt(0)).toUpperCase();
+                if (!sections.contains(section)) {
+                    sections.add(section);
+                    mSectionPositions.add(i);
+                }
+            }
+        }
+        return sections.toArray(new String[0]);
+    }
+
+    @Override
+    public int getPositionForSection(int sectionIndex) {
+        return mSectionPositions.get(sectionIndex);
     }
 
     @NonNull
@@ -203,7 +233,7 @@ public class FoomiiboAdapter
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             if (null != filteredData && filteredData == filterResults.values) return;
             filteredData = (ArrayList<Amiibo>) filterResults.values;
-            if (null != filteredData && !filteredData.isEmpty()) {
+            if (getItemCount() > 0) {
                 Collections.sort(filteredData, new AmiiboComparator(settings));
 
                 ArrayList<Amiibo> missingFiles = new ArrayList<>();

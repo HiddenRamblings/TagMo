@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -35,10 +36,11 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class BrowserAdapter
         extends RecyclerView.Adapter<BrowserAdapter.AmiiboViewHolder>
-        implements Filterable, BrowserSettingsListener {
+        implements Filterable, BrowserSettingsListener, SectionIndexer {
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
@@ -112,6 +114,43 @@ public class BrowserAdapter
 
     public AmiiboFile getItem(int i) {
         return filteredData.get(i);
+    }
+
+    private ArrayList<Integer> mSectionPositions;
+
+    @Override
+    public int getSectionForPosition(int position) {
+        return 0;
+    }
+
+    @Override
+    public Object[] getSections() {
+        List<String> sections = new ArrayList<>(36);
+        if (getItemCount() > 0) {
+            mSectionPositions = new ArrayList<>(36);
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
+            if (null != amiiboManager) {
+                for (int i = 0, size = filteredData.size(); i < size; i++) {
+                    long amiiboId = filteredData.get(i).getId();
+                    Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
+                    if (null == amiibo)
+                        amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
+                    if (null != amiibo.name) {
+                        String section = String.valueOf(amiibo.name.charAt(0)).toUpperCase();
+                        if (!sections.contains(section)) {
+                            sections.add(section);
+                            mSectionPositions.add(i);
+                        }
+                    }
+                }
+            }
+        }
+        return sections.toArray(new String[0]);
+    }
+
+    @Override
+    public int getPositionForSection(int sectionIndex) {
+        return mSectionPositions.get(sectionIndex);
     }
 
     @Override
@@ -238,7 +277,7 @@ public class BrowserAdapter
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             if (null != filteredData && filteredData == filterResults.values) return;
             filteredData = (ArrayList<AmiiboFile>) filterResults.values;
-            if (null != filteredData && !filteredData.isEmpty())
+            if (getItemCount() > 0)
                 Collections.sort(filteredData, new AmiiboFileComparator(settings));
             notifyDataSetChanged();
         }

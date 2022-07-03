@@ -49,6 +49,8 @@ public class TagMo extends Application {
         });
     }
 
+    public static int uiDelay = 50;
+
     public static boolean isGooglePlay() {
         return Objects.equals(BuildConfig.BUILD_TYPE, "publish");
     }

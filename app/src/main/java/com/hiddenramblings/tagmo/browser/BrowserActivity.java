@@ -103,7 +103,6 @@ import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.WebActivity;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
@@ -312,28 +311,36 @@ public class BrowserActivity extends AppCompatActivity implements
                 checkForUpdates(false);
                 if (position != 0) BrowserAdapter.resetVisible();
                 if (position != 1) FoomiiboAdapter.resetVisible();
-                RecyclerView amiibosView;
+                RecyclerView amiibosView = fragmentBrowser.getAmiibosView();
                 switch (position) {
                     case 1:
-                        setTitle(R.string.foomiibo);
                         showActionButton();
                         hideBottomSheet();
+                        setTitle(R.string.foomiibo);
                         amiibosView = fragmentFoomiibo.getAmiibosView();
                         break;
                     case 2:
-                        setTitle(R.string.elite_n2);
-                        amiibosView = fragmentElite.getAmiibosView();
                         showActionButton();
                         hideBottomSheet();
+                        setTitle(R.string.elite_n2);
+                        amiibosView = fragmentElite.getAmiibosView();
                         break;
                     case 3:
-                        setTitle(R.string.bluup_flask);
                         hideBrowserInterface();
-                        amiibosView = pagerAdapter.getFlaskSlots().getAmiibosView();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                            setTitle(R.string.bluup_flask);
+                            amiibosView = pagerAdapter.getFlaskSlots().getAmiibosView();
+                        } else {
+                            setTitle(R.string.pref_guides);
+                        }
+                        break;
+                    case 4:
+                        hideBrowserInterface();
+                        setTitle(R.string.pref_guides);
                         break;
                     default:
-                        setTitle(R.string.tagmo);
                         showBrowserInterface();
+                        setTitle(R.string.tagmo);
                         amiibosView = fragmentBrowser.getAmiibosView();
                         break;
                 }
@@ -355,7 +362,11 @@ public class BrowserActivity extends AppCompatActivity implements
                     tab.setText(R.string.elite_n2);
                     break;
                 case 3:
-                    tab.setText(R.string.bluup_flask);
+                    tab.setText(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+                            ? R.string.bluup_flask : R.string.pref_guides);
+                    break;
+                case 4:
+                    tab.setText(R.string.pref_guides);
                     break;
                 default:
                     tab.setText(R.string.browser);
@@ -509,14 +520,12 @@ public class BrowserActivity extends AppCompatActivity implements
                 super.onDrawerOpened(drawerView);
                 findViewById(R.id.build_layout).setOnClickListener(view -> {
                     closePrefsDrawer();
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                            "https://github.com/HiddenRamblings/TagMo"
-                    )));
+                    showWebsite("https://github.com/HiddenRamblings/TagMo");
                 });
-                findViewById(R.id.guide_layout).setOnClickListener(view ->
-                        startActivity(new Intent(
-                                BrowserActivity.this, WebActivity.class
-                        ).setAction(NFCIntent.SITE_GITLAB_README)));
+                findViewById(R.id.guide_layout).setOnClickListener(view -> {
+                    closePrefsDrawer();
+                    showWebsite(null);
+                });
                 if (TagMo.isGooglePlay()) {
                     findViewById(R.id.donate_layout).setOnClickListener(view ->{
                         View layout = getLayoutInflater().inflate(R.layout.donation_layout, null);
@@ -737,9 +746,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 if (!Debug.processLogcat(this )) {
-                    startActivity(new Intent(
-                            BrowserActivity.this, WebActivity.class
-                    ).setAction(NFCIntent.SITE_GITLAB_README));
+                    showWebsite(null);
                 }
             } catch (IOException e) {
                 new Toasty(this).Short(e.getMessage());
@@ -2297,14 +2304,20 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void showBrowserInterface() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        new Handler(Looper.getMainLooper()).postDelayed(()
-                -> bottomSheetBehavior.setHideable(false), 100);
+        new Handler(Looper.getMainLooper()).postDelayed(() ->
+                bottomSheetBehavior.setHideable(false), 100);
         showActionButton();
     }
 
     public void closePrefsDrawer() {
         if (prefsDrawer.isDrawerOpen(GravityCompat.START))
             prefsDrawer.closeDrawer(GravityCompat.START);
+    }
+
+    public void showWebsite(String address) {
+        mainLayout.setCurrentItem(pagerAdapter.getItemCount() - 1, true);
+        new Handler(Looper.getMainLooper()).postDelayed(() ->
+                pagerAdapter.getWebsite().loadWebsite(address), 100);
     }
 
     public BrowserSettings getSettings() {

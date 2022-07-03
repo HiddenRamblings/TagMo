@@ -706,7 +706,7 @@ public class BrowserActivity extends AppCompatActivity implements
             popupHandler.postDelayed(() -> backupItem.setEnabled(true), 200 + baseDelay);
             popupHandler.postDelayed(() -> scanItem.setEnabled(true), 300 + baseDelay);
 
-        }, 300);
+        }, 400);
 
         popup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.mnu_scan) {
@@ -2280,7 +2280,7 @@ public class BrowserActivity extends AppCompatActivity implements
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             bottomSheetBehavior.setHideable(true);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }, 100);
+        }, TagMo.uiDelay);
     }
 
     private void hideBrowserInterface() {
@@ -2305,7 +2305,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void showBrowserInterface() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         new Handler(Looper.getMainLooper()).postDelayed(() ->
-                bottomSheetBehavior.setHideable(false), 100);
+                bottomSheetBehavior.setHideable(false), TagMo.uiDelay);
         showActionButton();
     }
 
@@ -2316,8 +2316,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     public void showWebsite(String address) {
         mainLayout.setCurrentItem(pagerAdapter.getItemCount() - 1, true);
-        new Handler(Looper.getMainLooper()).postDelayed(() ->
-                pagerAdapter.getWebsite().loadWebsite(address), 100);
+        pagerAdapter.getWebsite().loadWebsite(address);
     }
 
     public BrowserSettings getSettings() {

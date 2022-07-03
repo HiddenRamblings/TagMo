@@ -312,7 +312,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 checkForUpdates(false);
                 if (position != 0) BrowserAdapter.resetVisible();
                 if (position != 1) FoomiiboAdapter.resetVisible();
-                RecyclerView amiibosView = fragmentBrowser.getAmiibosView();
+                RecyclerView amiibosView;
                 switch (position) {
                     case 1:
                         setTitle(R.string.foomiibo);
@@ -331,10 +331,6 @@ public class BrowserActivity extends AppCompatActivity implements
                         hideBrowserInterface();
                         amiibosView = pagerAdapter.getFlaskSlots().getAmiibosView();
                         break;
-                    case 4:
-                        setTitle(R.string.joy_con);
-                        hideBrowserInterface();
-                        break;
                     default:
                         setTitle(R.string.tagmo);
                         showBrowserInterface();
@@ -349,7 +345,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 invalidateOptionsMenu();
             }
         });
-
+        checkForUpdates(false);
         new TabLayoutMediator(findViewById(R.id.page_tabs), mainLayout, (tab, position) -> {
             switch (position) {
                 case 1:
@@ -360,9 +356,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     break;
                 case 3:
                     tab.setText(R.string.bluup_flask);
-                    break;
-                case 4:
-                    tab.setText(R.string.joy_con);
                     break;
                 default:
                     tab.setText(R.string.browser);

@@ -355,7 +355,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 invalidateOptionsMenu();
             }
         });
-        checkForUpdates(false);
+        checkForUpdates(true);
         new TabLayoutMediator(findViewById(R.id.page_tabs), mainLayout, (tab, position) -> {
             switch (position) {
                 case 1:
@@ -1623,9 +1623,6 @@ public class BrowserActivity extends AppCompatActivity implements
             this.runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
-                if (settings.getAmiiboFiles().isEmpty()) {
-                    onAmiiboFilesChanged();
-                }
             });
         });
     }
@@ -1642,9 +1639,6 @@ public class BrowserActivity extends AppCompatActivity implements
             this.runOnUiThread(() -> {
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
-                if (settings.getAmiiboFiles().isEmpty()) {
-                    onAmiiboFilesChanged();
-                }
             });
         });
     }
@@ -1721,10 +1715,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (newBrowserSettings.getAmiiboView() != oldBrowserSettings.getAmiiboView()) {
             onViewChanged();
         }
-        if (!BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
-                oldBrowserSettings.getAmiiboFiles())) {
-            onAmiiboFilesChanged();
-        }
+        onAmiiboFilesChecked();
 
         prefs.edit().browserRootFolder().put(Storage.getRelativePath(
                 newBrowserSettings.getBrowserRootFolder(), prefs.preferEmulated().get()))
@@ -1743,20 +1734,9 @@ public class BrowserActivity extends AppCompatActivity implements
                 .apply();
     }
 
-    private void onAmiiboFilesChanged() {
+    private void onAmiiboFilesChecked() {
         hideFakeSnackbar(isFullRebuild && !settings.getAmiiboFiles().isEmpty() ? 300 : 200);
-        if (settings.getAmiiboFiles().isEmpty()) {
-            handler.postDelayed(() -> {
-                showFakeSnackbar(getString(R.string.amiibo_not_found));
-                fakeSnackbarItem.setVisibility(View.VISIBLE);
-                fakeSnackbarItem.setText(R.string.search);
-                fakeSnackbarItem.setOnClickListener(view -> bottomSheetBehavior
-                        .setState(BottomSheetBehavior.STATE_EXPANDED));
-                isFullRebuild = true;
-            }, 250);
-        } else {
-            isFullRebuild = false;
-        }
+        isFullRebuild = settings.getAmiiboFiles().isEmpty();
     }
 
     private void setIndexScrollListener(IndexFastScrollRecyclerView indexView) {
@@ -1789,7 +1769,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 break;
             case NAME:
                 menuSortName.setChecked(true);
-
                 break;
             case GAME_SERIES:
                 menuSortGameSeries.setChecked(true);

@@ -28,10 +28,10 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
 
     public int setIndexTextSize = 12;
     public float mIndexbarWidth = 20;
-    public float mIndexbarMarginLeft = 5;
-    public float mIndexbarMarginRight = 5;
-    public float mIndexbarMarginTop = 5;
-    public float mIndexbarMarginBottom = 5;
+    public float mIndexbarMarginLeft = 0;
+    public float mIndexbarMarginRight = 0;
+    public float mIndexbarMarginTop = 0;
+    public float mIndexbarMarginBottom = 0;
     public int mPreviewPadding = 5;
     public int mIndexBarCornerRadius = 5;
     public float mIndexBarTransparentValue = (float) 0.6;
@@ -214,22 +214,15 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
     /**
      * @param value float to set the top margin of the index bar
      */
-    public void setIndexbarTopMargin(float value) {
-        mScroller.setIndexbarTopMargin(value);
+    public void setIndexbarMarginTop(float value) {
+        mScroller.setIndexbarMarginTop(value);
     }
 
     /**
      * @param value float to set the bottom margin of the index bar
      */
-    public void setIndexbarBottomMargin(float value) {
-        mScroller.setIndexbarBottomMargin(value);
-    }
-
-    /**
-     * @param value float to set the Horizontal margin of the index bar
-     */
-    public void setIndexbarHorizontalMargin(float value) {
-        mScroller.setIndexbarHorizontalMargin(value);
+    public void setIndexbarMarginBottom(float value) {
+        mScroller.setIndexbarMarginBottom(value);
     }
 
     /**
@@ -237,6 +230,21 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
      */
     public void setIndexbarVerticalMargin(float value) {
         mScroller.setIndexbarVerticalMargin(value);
+    }
+
+    public void setIndexbarMarginLeft(float value) {
+        mScroller.setIndexbarMarginLeft(value);
+    }
+
+    public void setIndexbarMarginRight(float value) {
+        mScroller.setIndexbarMarginRight(value);
+    }
+
+    /**
+     * @param value float to set the Horizontal margin of the index bar
+     */
+    public void setIndexbarHorizontalMargin(float value) {
+        mScroller.setIndexbarHorizontalMargin(value);
     }
 
     /**

@@ -102,6 +102,7 @@ public class BrowserSettings implements Parcelable {
     protected String imageNetworkSettings;
     protected boolean recursiveFolders;
     protected boolean showDownloads;
+    protected String lastUpdated;
 
     public BrowserSettings() {
         oldBrowserSettings = new BrowserSettings(false);
@@ -112,7 +113,8 @@ public class BrowserSettings implements Parcelable {
             ArrayList<AmiiboFile> amiiboFiles, ArrayList<File> folders, File browserFolder,
             String query, int sort, String filterGameSeries, String filterCharacter,
             String filterAmiiboSeries, String filterAmiiboType, int browserAmiiboView,
-            String imageNetworkSettings, boolean recursiveFolders, boolean showDownloads
+            String imageNetworkSettings, boolean recursiveFolders,
+            boolean showDownloads, String lastUpdated
     ) {
         super();
 
@@ -129,6 +131,7 @@ public class BrowserSettings implements Parcelable {
         this.imageNetworkSettings = imageNetworkSettings;
         this.recursiveFolders = recursiveFolders;
         this.showDownloads = showDownloads;
+        this.lastUpdated = lastUpdated;
     }
 
     private BrowserSettings(boolean duplicate) {
@@ -155,6 +158,7 @@ public class BrowserSettings implements Parcelable {
         this.setImageNetworkSettings(prefs.image_network_settings().get());
         this.setRecursiveEnabled(prefs.recursiveFolders().get());
         this.setShowDownloads(prefs.showDownloads().get());
+        this.setLastUpdated(prefs.lastUpdated().get());
         return this;
     }
 
@@ -285,6 +289,14 @@ public class BrowserSettings implements Parcelable {
         this.showDownloads = showDownloads;
     }
 
+    public String getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(String lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
     public void notifyChanges() {
         for (BrowserSettingsListener listener : this.listeners) {
             listener.onBrowserSettingsChanged(this, this.oldBrowserSettings);
@@ -327,6 +339,7 @@ public class BrowserSettings implements Parcelable {
         copy.setImageNetworkSettings(this.getImageNetworkSettings());
         copy.setRecursiveEnabled(this.isRecursiveEnabled());
         copy.setShowDownloads(this.isShowingDownloads());
+        copy.setLastUpdated(this.getLastUpdated());
 
         return copy;
     }
@@ -353,6 +366,7 @@ public class BrowserSettings implements Parcelable {
         dest.writeString(this.imageNetworkSettings);
         dest.writeByte(this.recursiveFolders ? (byte) 1 : (byte) 0);
         dest.writeByte(this.showDownloads ? (byte) 1 : (byte) 0);
+        dest.writeString(this.lastUpdated);
     }
 
     protected BrowserSettings(Parcel in) {
@@ -372,6 +386,7 @@ public class BrowserSettings implements Parcelable {
         this.imageNetworkSettings = in.readString();
         this.recursiveFolders = in.readByte() != 0;
         this.showDownloads = in.readByte() != 0;
+        this.lastUpdated = in.readString();
     }
 
     static final Parcelable.Creator<BrowserSettings> CREATOR = new Parcelable.Creator<>() {

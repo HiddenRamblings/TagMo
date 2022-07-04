@@ -146,7 +146,6 @@
     <string name="permission_required">Wymagany dostęp do pamięci!</string>
     <string name="allow">Zezwól</string>
 
-    <string name="crypto_keys">Klucze krypto.</string>
     <string name="enable_tag_validation">Walidacja NTAG215</string>
     <string name="tag_validation_details">Nie wszystkie układy NFC prawidłowo weryfikują tagi NFC.\nWyłącz, aby dopuścić użycie potencjalnie niekompatybilnych tagów.</string>
     <string name="enable_automatic_scan">Auto-skanowanie NFC</string>
@@ -301,7 +300,6 @@
     <string name="downloads_hidden">Pobrane są obecnie ukryte!</string>
     <string name="game_usage_view">Zobacz kompatybilne gry</string>
     <string name="game_usage_hide">Ukryj Kompatybilne Gry</string>
-    <string name="tagmo_browser">TagMo</string>
     <string name="rebuild_database">Sync AmiiboAPI</string>
     <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
     <string name="erase_collection">Erase Collection</string>

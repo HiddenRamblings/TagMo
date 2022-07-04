@@ -34,6 +34,7 @@
             android:paddingTop="4dp"
             android:paddingBottom="@dimen/button_height_min"
             android:scrollbars="vertical"
-            android:scrollbarSize="4dp" />
+            android:scrollbarSize="4dp"
+            android:scrollbarStyle="outsideOverlay"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </RelativeLayout>

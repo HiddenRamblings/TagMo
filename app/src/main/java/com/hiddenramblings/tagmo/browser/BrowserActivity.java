@@ -158,9 +158,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView;
+import in.myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView;
 
 public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,
@@ -1760,38 +1759,37 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private void setIndexScrollListener() {
-        if (amiibosView instanceof IndexFastScrollRecyclerView) {
-            IndexFastScrollRecyclerView indexView =
-                    (IndexFastScrollRecyclerView) amiibosView;
-            indexView.setIndexbarBottomMargin(getResources()
-                    .getDimension(R.dimen.swipe_progress_end));
-            amiibosView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                        indexView.setIndexBarVisibility(true);
-                    } else if (newState == RecyclerView.SCROLL_STATE_IDLE){
-                        indexView.setIndexBarVisibility(false);
-                    }
+    private void setIndexScrollListener(IndexFastScrollRecyclerView indexView) {
+        amiibosView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    indexView.setIndexBarVisibility(true);
+                } else if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                    indexView.setIndexBarVisibility(false);
                 }
-            });
-        }
+            }
+        });
     }
 
     private void onSortChanged() {
+        if (amiibosView instanceof IndexFastScrollRecyclerView) {
+            IndexFastScrollRecyclerView indexView =
+                    (IndexFastScrollRecyclerView) amiibosView;
+            indexView.setIndexBarVisibility(false);
+            if (SORT.valueOf(settings.getSort()) == SORT.NAME)
+                setIndexScrollListener(indexView);
+        }
         if (null == menuSortId)
             return;
-        if (amiibosView instanceof IndexFastScrollRecyclerView)
-            ((IndexFastScrollRecyclerView) amiibosView).setIndexBarVisibility(false);
         switch (SORT.valueOf(settings.getSort())) {
             case ID:
                 menuSortId.setChecked(true);
                 break;
             case NAME:
                 menuSortName.setChecked(true);
-                setIndexScrollListener();
+
                 break;
             case GAME_SERIES:
                 menuSortGameSeries.setChecked(true);

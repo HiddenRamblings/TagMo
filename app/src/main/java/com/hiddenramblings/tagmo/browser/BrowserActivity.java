@@ -1740,6 +1740,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void setIndexScrollListener(IndexFastScrollRecyclerView indexView) {
+        if (null == indexView) return;
         amiibosView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -1754,12 +1755,10 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onSortChanged() {
+        IndexFastScrollRecyclerView indexView = null;
         if (amiibosView instanceof IndexFastScrollRecyclerView) {
-            IndexFastScrollRecyclerView indexView =
-                    (IndexFastScrollRecyclerView) amiibosView;
+            indexView = (IndexFastScrollRecyclerView) amiibosView;
             indexView.setIndexBarVisibility(false);
-            if (SORT.valueOf(settings.getSort()) == SORT.NAME)
-                setIndexScrollListener(indexView);
         }
         if (null == menuSortId)
             return;
@@ -1769,18 +1768,23 @@ public class BrowserActivity extends AppCompatActivity implements
                 break;
             case NAME:
                 menuSortName.setChecked(true);
+                setIndexScrollListener(indexView);
                 break;
             case GAME_SERIES:
                 menuSortGameSeries.setChecked(true);
+                setIndexScrollListener(indexView);
                 break;
             case CHARACTER:
                 menuSortCharacter.setChecked(true);
+                setIndexScrollListener(indexView);
                 break;
             case AMIIBO_SERIES:
                 menuSortAmiiboSeries.setChecked(true);
+                setIndexScrollListener(indexView);
                 break;
             case AMIIBO_TYPE:
                 menuSortAmiiboType.setChecked(true);
+                setIndexScrollListener(indexView);
                 break;
             case FILE_PATH:
                 menuSortFilePath.setChecked(true);

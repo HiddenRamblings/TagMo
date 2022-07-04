@@ -762,15 +762,15 @@ public class EliteBankFragment extends Fragment implements
                     Debug.Log(e);
                 }
             }
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
             if (amiiboId == -1) {
                 tagInfo = getString(R.string.read_error);
             } else if (amiiboId == 0) {
                 tagInfo = getString(R.string.blank_tag);
-            } else if (null != settings.getAmiiboManager()) {
-                amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+            } else if (null != amiiboManager) {
+                amiibo = amiiboManager.amiibos.get(amiiboId);
                 if (null == amiibo)
-                    amiibo = new Amiibo(settings.getAmiiboManager(),
-                            amiiboId, null, null);
+                    amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
             }
         }
 

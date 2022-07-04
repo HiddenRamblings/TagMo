@@ -179,7 +179,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Preference resetInfo = findPreference(getString(R.string.settings_reset_info));
         if (null != resetInfo) {
             resetInfo.setOnPreferenceClickListener(preference -> {
-                resetAmiiboDatabase();
+                resetAmiiboDatabase(true);
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
@@ -271,14 +271,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     public void rebuildAmiiboDatabase() {
-        resetAmiiboDatabase();
+        resetAmiiboDatabase(false);
         new JSONExecutor(API_LAST_UPDATED).setResultListener(result -> {
             if (null != result) parseUpdateJSON(result, true);
         });
     }
 
     private void updateAmiiboDatabase(Uri data) {
-        resetAmiiboDatabase();
+        resetAmiiboDatabase(false);
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager;
             try {
@@ -302,14 +302,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 new Toasty(requireActivity()).Short(R.string.amiibo_failure_update);
                 return;
             }
-            requireActivity().runOnUiThread(() -> showSnackbar(
-                    R.string.amiibo_info_updated, Snackbar.LENGTH_SHORT));
+            requireActivity().runOnUiThread(() -> {
+                showSnackbar(R.string.amiibo_info_updated, Snackbar.LENGTH_SHORT);
+                ((BrowserActivity) requireActivity()).getSettings().notifyChanges();
+            });
         });
     }
 
-    private void resetAmiiboDatabase() {
+    private void resetAmiiboDatabase(boolean notify) {
         Executors.newSingleThreadExecutor().execute(() -> {
             requireContext().deleteFile(AmiiboManager.AMIIBO_DATABASE_FILE);
+            prefs.lastUpdated().remove();
+            if (notify) ((BrowserActivity) requireActivity()).getSettings().notifyChanges();
             try {
                 Executors.newSingleThreadExecutor().execute(() ->
                         Glide.get(requireActivity()).clearDiskCache());
@@ -358,12 +362,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     if (Thread.currentThread().isInterrupted()) return;
 
                     AmiiboManager.saveDatabase(amiiboManager, requireContext().getApplicationContext());
-                    requireActivity().runOnUiThread(() -> showSnackbar(
-                            R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT));
+                    requireActivity().runOnUiThread(() -> {
+                        showSnackbar(R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT);
+                        prefs.lastUpdated().put(lastUpdated);
+                        ((BrowserActivity) requireActivity()).getSettings().notifyChanges();
+                    });
                 } else {
                     throw new Exception(String.valueOf(statusCode));
                 }
-                prefs.lastUpdated().put(lastUpdated);
             } catch (Exception e) {
                 Debug.Log(e);
                 requireActivity().runOnUiThread(() -> showSnackbar(

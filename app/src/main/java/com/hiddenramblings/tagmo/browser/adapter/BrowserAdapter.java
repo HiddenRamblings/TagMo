@@ -135,12 +135,41 @@ public class BrowserAdapter
                     Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
                     if (null == amiibo)
                         amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
-                    if (null != amiibo.name) {
-                        String section = String.valueOf(amiibo.name.charAt(0)).toUpperCase();
-                        if (!sections.contains(section)) {
-                            sections.add(section);
-                            mSectionPositions.add(i);
-                        }
+                    String section = null;
+                    switch (BrowserSettings.SORT.valueOf(settings.getSort())) {
+                        case NAME:
+                            if (null != amiibo.name) {
+                                section = String.valueOf(amiibo.name.charAt(0)).toUpperCase();
+                            }
+                            break;
+                        case GAME_SERIES:
+                            if (null != amiibo.getGameSeries()) {
+                                section = String.valueOf(amiibo
+                                        .getGameSeries().name.charAt(0)).toUpperCase();
+                            }
+                            break;
+                        case CHARACTER:
+                            if (null != amiibo.getCharacter()) {
+                                section = String.valueOf(amiibo
+                                        .getCharacter().name.charAt(0)).toUpperCase();
+                            }
+                            break;
+                        case AMIIBO_SERIES:
+                            if (null != amiibo.getAmiiboSeries()) {
+                                section = String.valueOf(amiibo
+                                        .getAmiiboSeries().name.charAt(0)).toUpperCase();
+                            }
+                            break;
+                        case AMIIBO_TYPE:
+                            if (null != amiibo.getAmiiboType()) {
+                                section = String.valueOf(amiibo
+                                        .getAmiiboType().name.charAt(0)).toUpperCase();
+                            }
+                            break;
+                    }
+                    if (null != section && !sections.contains(section)) {
+                        sections.add(section);
+                        mSectionPositions.add(i);
                     }
                 }
             }

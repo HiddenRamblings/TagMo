@@ -73,9 +73,9 @@ public interface Preferences {
     @DefaultBoolean(false)
     boolean preferEmulated();
 
-    String lastUpdated();
+    String lastUpdatedAPI();
+
+    long lastUpdatedGit();
 
     String downloadUrl();
-
-    long lastCheckTime();
 }

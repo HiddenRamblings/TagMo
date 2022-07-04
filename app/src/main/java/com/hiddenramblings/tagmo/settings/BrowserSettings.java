@@ -102,7 +102,8 @@ public class BrowserSettings implements Parcelable {
     protected String imageNetworkSettings;
     protected boolean recursiveFolders;
     protected boolean showDownloads;
-    protected String lastUpdated;
+    protected String lastUpdatedAPI;
+    protected long lastUpdatedGit;
 
     public BrowserSettings() {
         oldBrowserSettings = new BrowserSettings(false);
@@ -114,7 +115,7 @@ public class BrowserSettings implements Parcelable {
             String query, int sort, String filterGameSeries, String filterCharacter,
             String filterAmiiboSeries, String filterAmiiboType, int browserAmiiboView,
             String imageNetworkSettings, boolean recursiveFolders,
-            boolean showDownloads, String lastUpdated
+            boolean showDownloads, String lastUpdatedAPI, long lastUpdatedGit
     ) {
         super();
 
@@ -131,7 +132,8 @@ public class BrowserSettings implements Parcelable {
         this.imageNetworkSettings = imageNetworkSettings;
         this.recursiveFolders = recursiveFolders;
         this.showDownloads = showDownloads;
-        this.lastUpdated = lastUpdated;
+        this.lastUpdatedAPI = lastUpdatedAPI;
+        this.lastUpdatedGit = lastUpdatedGit;
     }
 
     private BrowserSettings(boolean duplicate) {
@@ -158,7 +160,8 @@ public class BrowserSettings implements Parcelable {
         this.setImageNetworkSettings(prefs.image_network_settings().get());
         this.setRecursiveEnabled(prefs.recursiveFolders().get());
         this.setShowDownloads(prefs.showDownloads().get());
-        this.setLastUpdated(prefs.lastUpdated().get());
+        this.setLastUpdatedAPI(prefs.lastUpdatedAPI().get());
+        this.setLastUpdatedGit(prefs.lastUpdatedGit().get());
         return this;
     }
 
@@ -289,12 +292,20 @@ public class BrowserSettings implements Parcelable {
         this.showDownloads = showDownloads;
     }
 
-    public String getLastUpdated() {
-        return lastUpdated;
+    public String getLastUpdatedAPI() {
+        return lastUpdatedAPI;
     }
 
-    public void setLastUpdated(String lastUpdated) {
-        this.lastUpdated = lastUpdated;
+    public void setLastUpdatedAPI(String lastUpdatedAPI) {
+        this.lastUpdatedAPI = lastUpdatedAPI;
+    }
+
+    public long getLastUpdatedGit() {
+        return lastUpdatedGit;
+    }
+
+    public void setLastUpdatedGit(long lastUpdatedGit) {
+        this.lastUpdatedGit = lastUpdatedGit;
     }
 
     public void notifyChanges() {
@@ -339,7 +350,8 @@ public class BrowserSettings implements Parcelable {
         copy.setImageNetworkSettings(this.getImageNetworkSettings());
         copy.setRecursiveEnabled(this.isRecursiveEnabled());
         copy.setShowDownloads(this.isShowingDownloads());
-        copy.setLastUpdated(this.getLastUpdated());
+        copy.setLastUpdatedAPI(this.getLastUpdatedAPI());
+        copy.setLastUpdatedGit(this.getLastUpdatedGit());
 
         return copy;
     }
@@ -366,7 +378,8 @@ public class BrowserSettings implements Parcelable {
         dest.writeString(this.imageNetworkSettings);
         dest.writeByte(this.recursiveFolders ? (byte) 1 : (byte) 0);
         dest.writeByte(this.showDownloads ? (byte) 1 : (byte) 0);
-        dest.writeString(this.lastUpdated);
+        dest.writeString(this.lastUpdatedAPI);
+        dest.writeLong(this.lastUpdatedGit);
     }
 
     protected BrowserSettings(Parcel in) {
@@ -386,7 +399,8 @@ public class BrowserSettings implements Parcelable {
         this.imageNetworkSettings = in.readString();
         this.recursiveFolders = in.readByte() != 0;
         this.showDownloads = in.readByte() != 0;
-        this.lastUpdated = in.readString();
+        this.lastUpdatedAPI = in.readString();
+        this.lastUpdatedGit = in.readLong();
     }
 
     static final Parcelable.Creator<BrowserSettings> CREATOR = new Parcelable.Creator<>() {

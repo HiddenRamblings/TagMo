@@ -424,7 +424,6 @@ public class FoomiiboFragment extends Fragment implements
         BrowserActivity activity = (BrowserActivity) requireActivity();
         activity.onRefresh(true);
         swipeRefreshLayout.setRefreshing(false);
-        activity.checkForUpdates(true);
     }
 
     @Override

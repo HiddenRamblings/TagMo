@@ -55,6 +55,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private static final int RESULT_KEYS = 8000;
     private static final int RESULT_IMPORT_AMIIBO_DATABASE = 8001;
 
+    BrowserSettings settings;
     Preferences_ prefs;
 
     Preference importKeys;
@@ -70,6 +71,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        settings = ((BrowserActivity) requireActivity()).getSettings();
         prefs = TagMo.getPrefs();
 
         this.keyManager = new KeyManager(this.getContext());
@@ -85,7 +87,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         ListPreference imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
         if (null != imageNetworkSetting) {
-            onImageNetworkChange(imageNetworkSetting, prefs.image_network_settings().get());
+            onImageNetworkChange(imageNetworkSetting, settings.getImageNetworkSettings());
             imageNetworkSetting.setOnPreferenceChangeListener((preference, newValue) -> {
                 onImageNetworkChange((ListPreference) preference, newValue.toString());
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
@@ -212,9 +214,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (index == -1) {
             onImageNetworkChange(imageNetworkSetting, IMAGE_NETWORK_ALWAYS);
         } else {
-            prefs.image_network_settings().put(newValue);
+            settings.setImageNetworkSettings(newValue);
             imageNetworkSetting.setValue(newValue);
             imageNetworkSetting.setSummary(imageNetworkSetting.getEntry());
+            settings.notifyChanges();
         }
     }
 
@@ -304,7 +307,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
             requireActivity().runOnUiThread(() -> {
                 showSnackbar(R.string.amiibo_info_updated, Snackbar.LENGTH_SHORT);
-                ((BrowserActivity) requireActivity()).getSettings().notifyChanges();
+                settings.notifyChanges();
             });
         });
     }
@@ -312,8 +315,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void resetAmiiboDatabase(boolean notify) {
         Executors.newSingleThreadExecutor().execute(() -> {
             requireContext().deleteFile(AmiiboManager.AMIIBO_DATABASE_FILE);
-            prefs.lastUpdated().remove();
-            if (notify) ((BrowserActivity) requireActivity()).getSettings().notifyChanges();
+            BrowserActivity activity = (BrowserActivity) requireActivity();
+            activity.runOnUiThread(() -> {
+                settings.setLastUpdatedAPI(null);
+                if (notify) activity.getSettings().notifyChanges();
+            });
             try {
                 Executors.newSingleThreadExecutor().execute(() ->
                         Glide.get(requireActivity()).clearDiskCache());
@@ -362,10 +368,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     if (Thread.currentThread().isInterrupted()) return;
 
                     AmiiboManager.saveDatabase(amiiboManager, requireContext().getApplicationContext());
-                    requireActivity().runOnUiThread(() -> {
+                    BrowserActivity activity = (BrowserActivity) requireActivity();
+                    activity.runOnUiThread(() -> {
                         showSnackbar(R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT);
-                        prefs.lastUpdated().put(lastUpdated);
-                        ((BrowserActivity) requireActivity()).getSettings().notifyChanges();
+                        settings.setLastUpdatedAPI(lastUpdated);
+                        activity.getSettings().notifyChanges();
                     });
                 } else {
                     throw new Exception(String.valueOf(statusCode));
@@ -448,7 +455,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             String lastUpdated = (String) jsonObject.get("lastUpdated");
             if (isMenuClicked) {
                 downloadAmiiboAPIData(lastUpdated);
-            } else if (!prefs.lastUpdated().get().equals(lastUpdated)) {
+            } else if (null == settings.getLastUpdatedAPI()
+                    || !settings.getLastUpdatedAPI().equals(lastUpdated)) {
                 new IconifiedSnackbar(requireActivity()).buildSnackbar(
                         requireActivity().findViewById(R.id.preferences),
                         R.string.update_amiibo_api, Snackbar.LENGTH_LONG

@@ -58,7 +58,8 @@ public class CheckUpdatesTask {
     CheckUpdatesTask(BrowserActivity activity) {
         this.activity = new SoftReference<>(activity);
         if (TagMo.isGooglePlay()) {
-            appUpdateManager = AppUpdateManagerFactory.create(activity);
+            if (null == appUpdateManager)
+                appUpdateManager = AppUpdateManagerFactory.create(activity);
             Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
             appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
                 isUpdateAvailable = appUpdateInfo.updateAvailability()

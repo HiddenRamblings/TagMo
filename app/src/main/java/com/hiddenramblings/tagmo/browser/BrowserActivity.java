@@ -311,7 +311,6 @@ public class BrowserActivity extends AppCompatActivity implements
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                checkForUpdates(false);
                 if (position != 0) BrowserAdapter.resetVisible();
                 if (position != 1) FoomiiboAdapter.resetVisible();
                 amiibosView = fragmentBrowser.getAmiibosView();
@@ -355,7 +354,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 invalidateOptionsMenu();
             }
         });
-        checkForUpdates(true);
         new TabLayoutMediator(findViewById(R.id.page_tabs), mainLayout, (tab, position) -> {
             switch (position) {
                 case 1:
@@ -1043,11 +1041,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    void checkForUpdates(boolean ignoreDelay) {
-        if (ignoreDelay || System.currentTimeMillis()
-                > prefs.lastCheckTime().get() + 900000)
-            prefs.lastCheckTime().put(System.currentTimeMillis());
-        else return;
+    void checkForUpdates() {
         updates = new CheckUpdatesTask(this);
         if (TagMo.isGooglePlay()) {
             updates.setPlayUpdateListener(appUpdateInfo -> {
@@ -1680,8 +1674,8 @@ public class BrowserActivity extends AppCompatActivity implements
             folderChanged = true;
             onShowDownloadsChanged();
         }
-        if (!BrowserSettings.equals(newBrowserSettings.getLastUpdated(),
-                oldBrowserSettings.getLastUpdated())) {
+        if (!BrowserSettings.equals(newBrowserSettings.getLastUpdatedAPI(),
+                oldBrowserSettings.getLastUpdatedAPI())) {
             this.loadAmiiboManager();
             folderChanged = true;
         }
@@ -1715,6 +1709,10 @@ public class BrowserActivity extends AppCompatActivity implements
             onViewChanged();
         }
         onAmiiboFilesChecked();
+        if (System.currentTimeMillis() >= oldBrowserSettings.getLastUpdatedGit() + 900000) {
+            checkForUpdates();
+            newBrowserSettings.setLastUpdatedGit(System.currentTimeMillis());
+        }
 
         prefs.edit().browserRootFolder().put(Storage.getRelativePath(
                 newBrowserSettings.getBrowserRootFolder(), prefs.preferEmulated().get()))
@@ -1730,7 +1728,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 .image_network_settings().put(newBrowserSettings.getImageNetworkSettings())
                 .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
                 .showDownloads().put(newBrowserSettings.isShowingDownloads())
-                .lastUpdated().put(newBrowserSettings.getLastUpdated())
+                .lastUpdatedAPI().put(newBrowserSettings.getLastUpdatedAPI())
+                .lastUpdatedGit().put(newBrowserSettings.getLastUpdatedGit())
                 .apply();
     }
 
@@ -2270,7 +2269,7 @@ public class BrowserActivity extends AppCompatActivity implements
             fakeSnackbar.startAnimation(animate);
 
             TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
-            mainLayout.setPadding(0, 0, 0, 0);
+            runOnUiThread(() -> mainLayout.setPadding(0, 0, 0, 0));
         }
     }
 

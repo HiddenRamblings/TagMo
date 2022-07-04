@@ -759,8 +759,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private int getQueryCount(String queryText) {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (null == amiiboManager)
-            return 0;
+        if (null == amiiboManager) return 0;
         Set<Long> items = new HashSet<>();
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
             if (settings.amiiboContainsQuery(amiibo, queryText))
@@ -778,8 +777,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private int getFilteredCount(String filter, FILTER filterType) {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (amiiboManager == null)
-            return 0;
+        if (amiiboManager == null) return 0;
 
         Set<Long> items = new HashSet<>();
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
@@ -850,8 +848,7 @@ public class BrowserActivity extends AppCompatActivity implements
         subMenu.clear();
 
         AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (amiiboManager == null)
-            return false;
+        if (amiiboManager == null) return false;
 
         Set<String> items = new HashSet<>();
 //        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
@@ -901,8 +898,7 @@ public class BrowserActivity extends AppCompatActivity implements
         subMenu.clear();
 
         AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (amiiboManager == null)
-            return true;
+        if (amiiboManager == null) return true;
 
         Set<String> items = new HashSet<>();
 //        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
@@ -952,15 +948,14 @@ public class BrowserActivity extends AppCompatActivity implements
         subMenu.clear();
 
         AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (amiiboManager == null)
-            return true;
+        if (amiiboManager == null) return true;
 
         Set<String> items = new HashSet<>();
 //        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
 //            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
 //            if (amiibo == null)
 //                continue;
-        for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+        for (Amiibo amiibo : amiiboManager.amiibos.values()) {
 
             AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
             if (null != amiiboSeries &&
@@ -1003,15 +998,14 @@ public class BrowserActivity extends AppCompatActivity implements
         subMenu.clear();
 
         AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (amiiboManager == null)
-            return true;
+        if (amiiboManager == null) return true;
 
         Set<AmiiboType> items = new HashSet<>();
 //        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
 //            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
 //            if (amiibo == null)
 //                continue;
-        for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+        for (Amiibo amiibo : amiiboManager.amiibos.values()) {
 
             AmiiboType amiiboType = amiibo.getAmiiboType();
             if (null != amiiboType &&
@@ -1686,6 +1680,11 @@ public class BrowserActivity extends AppCompatActivity implements
             folderChanged = true;
             onShowDownloadsChanged();
         }
+        if (!BrowserSettings.equals(newBrowserSettings.getLastUpdated(),
+                oldBrowserSettings.getLastUpdated())) {
+            this.loadAmiiboManager();
+            folderChanged = true;
+        }
         if (folderChanged) {
             onRootFolderChanged(true);
             setFolderText(newBrowserSettings);
@@ -1731,6 +1730,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .image_network_settings().put(newBrowserSettings.getImageNetworkSettings())
                 .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
                 .showDownloads().put(newBrowserSettings.isShowingDownloads())
+                .lastUpdated().put(newBrowserSettings.getLastUpdated())
                 .apply();
     }
 
@@ -2057,11 +2057,11 @@ public class BrowserActivity extends AppCompatActivity implements
             amiiboImageUrl = null;
         } else {
             Amiibo amiibo = null;
-            if (null != settings.getAmiiboManager()) {
-                amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
+            if (null != amiiboManager) {
+                amiibo = amiiboManager.amiibos.get(amiiboId);
                 if (null == amiibo)
-                    amiibo = new Amiibo(settings.getAmiiboManager(),
-                            amiiboId, null, null);
+                    amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
             }
             if (null != amiibo) {
                 amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
@@ -2189,7 +2189,8 @@ public class BrowserActivity extends AppCompatActivity implements
             int size = settings.getAmiiboFiles().size();
             if (size <= 0) return;
             currentFolderView.setGravity(Gravity.CENTER);
-            if (null != settings.getAmiiboManager()) {
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
+            if (null != amiiboManager) {
                 int count = 0;
                 if (!settings.getQuery().isEmpty()) {
                     int[] stats = getAdapterStats();
@@ -2200,7 +2201,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     currentFolderView.setText(getString(R.string.amiibo_collected,
                             stats[0], stats[1], filteredCount));
                 } else {
-                    for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+                    for (Amiibo amiibo : amiiboManager.amiibos.values()) {
                         for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
                             if (amiibo.id == amiiboFile.getId()) {
                                 count += 1;
@@ -2209,7 +2210,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         }
                     }
                     currentFolderView.setText(getString(R.string.amiibo_collected,
-                            size, count, settings.getAmiiboManager().amiibos.size()));
+                            size, count, amiiboManager.amiibos.size()));
                 }
             } else {
                 currentFolderView.setText(getString(R.string.files_displayed, size));

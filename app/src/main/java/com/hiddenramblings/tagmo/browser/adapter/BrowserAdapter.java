@@ -270,9 +270,9 @@ public class BrowserAdapter
 
             ArrayList<AmiiboFile> tempList = new ArrayList<>();
             String queryText = query.trim().toLowerCase();
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
             for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
                 boolean add = false;
-                AmiiboManager amiiboManager = settings.getAmiiboManager();
                 if (null != amiiboManager) {
                     Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
                     if (null == amiibo)

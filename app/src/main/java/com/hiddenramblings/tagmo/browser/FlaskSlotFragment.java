@@ -731,13 +731,13 @@ public class FlaskSlotFragment extends Fragment implements
     private void uploadAmiiboFile(AmiiboFile amiiboFile) {
         if (null != amiiboFile) {
             Amiibo amiibo = null;
-            if (null != settings.getAmiiboManager()) {
+            AmiiboManager amiiboManager = settings.getAmiiboManager();
+            if (null != amiiboManager) {
                 try {
                     long amiiboId = TagUtils.amiiboIdFromTag(amiiboFile.getData());
-                    amiibo = settings.getAmiiboManager().amiibos.get(amiiboId);
+                    amiibo = amiiboManager.amiibos.get(amiiboId);
                     if (null == amiibo)
-                        amiibo = new Amiibo(settings.getAmiiboManager(),
-                                amiiboId, null, null);
+                        amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
                 } catch (Exception e) {
                     Debug.Log(e);
                 }

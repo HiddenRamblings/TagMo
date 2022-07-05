@@ -44,7 +44,13 @@
             android:scrollbarSize="0dp"
             android:scrollbarStyle="outsideOverlay"
             android:layout_alignParentBottom="true"
-            android:layout_below="@+id/control_panel"/>
+            android:layout_below="@+id/control_panel"
+            app:setIndexBarColor="@color/colorAccent"
+            app:setIndexBarTextColor="@android:color/white"
+            app:setIndexBarStrokeColor="@color/colorPrimary"
+            app:setPreviewColor="@color/colorPrimaryDark"
+            app:setPreviewTextColor="@android:color/white"
+            app:setIndexBarShown="false"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </RelativeLayout>
 

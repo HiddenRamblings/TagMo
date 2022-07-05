@@ -9,6 +9,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -913,12 +915,13 @@ public class EliteBankFragment extends Fragment implements
                 updateAmiiboView(amiiboCard, null, amiibos.get(active_bank).id, active_bank);
                 updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
                 onBottomSheetChanged(true, true);
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> bottomSheetBehavior
+                        .setState(BottomSheetBehavior.STATE_EXPANDED), TagMo.uiDelay);
             }
 
             setArguments(null);
         } catch (Exception ignored) {
-            setBottomSheetSecure(true);
+            if (amiibos.isEmpty()) setBottomSheetSecure(true);
         }
     }
 

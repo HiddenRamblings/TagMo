@@ -150,7 +150,7 @@ public class FlaskSlotFragment extends Fragment implements
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
-                            requireActivity().runOnUiThread(() -> ((TextView) rootLayout
+                            rootLayout.post(() -> ((TextView) rootLayout
                                     .findViewById(R.id.hardware_info)).setText(profileFlask));
                             try {
                                 serviceFlask.setFlaskCharacteristicRX();
@@ -184,7 +184,7 @@ public class FlaskSlotFragment extends Fragment implements
                                 FlaskSlotAdapter adapter = new FlaskSlotAdapter(
                                         settings, FlaskSlotFragment.this);
                                 adapter.setFlaskAmiibo(flaskAmiibos);
-                                requireActivity().runOnUiThread(() -> {
+                                flaskDetails.post(() -> {
                                     dismissSnackbarNotice(true);
                                     flaskDetails.setAdapter(adapter);
                                 });
@@ -204,7 +204,7 @@ public class FlaskSlotFragment extends Fragment implements
                                     getActiveAmiibo(amiibo, amiiboCard);
                                 String index = jsonObject.getString("index");
                                 prefs.flaskActiveSlot().put(Integer.parseInt(index));
-                                requireActivity().runOnUiThread(() -> {
+                                flaskDetails.post(() -> {
                                     if (null != flaskDetails.getAdapter())
                                         flaskDetails.getAdapter().notifyDataSetChanged();
                                     flaskStats.setText(getString(
@@ -510,7 +510,7 @@ public class FlaskSlotFragment extends Fragment implements
         AppCompatImageView imageAmiibo = amiiboView.findViewById(R.id.imageAmiibo);
         TextView txtUsageLabel = amiiboView.findViewById(R.id.txtUsageLabel);
 
-        requireActivity().runOnUiThread(() -> {
+        amiiboView.post(() -> {
             String amiiboHexId;
             String amiiboName;
             String amiiboSeries = "";

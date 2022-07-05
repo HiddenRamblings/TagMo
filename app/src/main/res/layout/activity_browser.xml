@@ -14,6 +14,7 @@
             android:id="@+id/page_tabs"
             android:layout_width="match_parent"
             android:layout_height="24dp"
+            app:tabTextColor="@android:color/white"
             android:background="?attr/colorPrimaryDark" />
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout

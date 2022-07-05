@@ -1,6 +1,6 @@
 package in.myinnos.indexfastscrollrecycler;
 
-/**
+/*
  * Created by MyInnos on 31-01-2017.
  */
 
@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.SectionIndexer;
@@ -35,7 +34,7 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
     private int mListViewHeight;
     private int mCurrentSection = -1;
     private boolean mIsIndexing = false;
-    private RecyclerView mRecyclerView = null;
+    private RecyclerView mRecyclerView;
     private SectionIndexer mIndexer = null;
     private String[] mSections = null;
     private RectF mIndexbarRect;
@@ -48,7 +47,7 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
     private Boolean setIndexBarVisibility = true;
     private Boolean setSetIndexBarHighLightTextVisibility = false;
     private Boolean setIndexBarStrokeVisibility = true;
-    public int mIndexBarStrokeWidth = 2;
+    public int mIndexBarStrokeWidth;
     private @ColorInt
     int mIndexBarStrokeColor;
     private @ColorInt
@@ -65,9 +64,6 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
     int previewTextColor;
     private int previewBackgroudAlpha;
     private int indexbarBackgroudAlpha;
-
-    private final int indexPaintPaintColor = Color.WHITE;
-    AttributeSet attrs;
 
     public IndexFastScrollRecyclerSection(Context context, IndexFastScrollRecyclerView recyclerView) {
 
@@ -96,6 +92,7 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
         mDensity = context.getResources().getDisplayMetrics().density;
         mScaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
         mRecyclerView = recyclerView;
+        //noinspection unchecked
         setAdapter(mRecyclerView.getAdapter());
 
         mIndexbarWidth = setIndexbarWidth * mDensity;
@@ -121,7 +118,8 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
                 indexbarPaint.setStyle(Paint.Style.STROKE);
                 indexbarPaint.setColor(mIndexBarStrokeColor);
                 indexbarPaint.setStrokeWidth(mIndexBarStrokeWidth); // set stroke width
-                canvas.drawRoundRect(mIndexbarRect, setIndexBarCornerRadius * mDensity, setIndexBarCornerRadius * mDensity, indexbarPaint);
+                canvas.drawRoundRect(mIndexbarRect, setIndexBarCornerRadius * mDensity,
+                        setIndexBarCornerRadius * mDensity, indexbarPaint);
             }
 
             if (mSections != null && mSections.length > 0) {
@@ -132,7 +130,8 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
                     previewPaint.setColor(previewBackgroundColor);
                     previewPaint.setAlpha(previewBackgroudAlpha);
                     previewPaint.setAntiAlias(true);
-                    previewPaint.setShadowLayer(3, 0, 0, Color.argb(64, 0, 0, 0));
+                    previewPaint.setShadowLayer(3, 0, 0,
+                            Color.argb(64, 0, 0, 0));
 
                     Paint previewTextPaint = new Paint();
                     previewTextPaint.setColor(previewTextColor);
@@ -151,7 +150,7 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
                     canvas.drawRoundRect(previewRect, 5 * mDensity, 5 * mDensity, previewPaint);
                     canvas.drawText(mSections[mCurrentSection], previewRect.left + (previewSize - previewTextWidth) / 2 - 1
                             , previewRect.top + (previewSize - (previewTextPaint.descent() - previewTextPaint.ascent())) / 2 - previewTextPaint.ascent(), previewTextPaint);
-                    fade(300);
+                    setFadeTimeout(300);
                 }
 
                 Paint indexPaint = new Paint();
@@ -232,7 +231,7 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
             RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
             if (layoutManager instanceof LinearLayoutManager) {
                 ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(position, 0);
-            } else {
+            } else if (null != layoutManager) {
                 layoutManager.scrollToPosition(position);
             }
         } catch (Exception e) {
@@ -240,7 +239,7 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
         }
     }
 
-    public void onSizeChanged(int w, int h, int oldw, int oldh) {
+    public void onSizeChanged(int w, int h) {
         mListViewWidth = w;
         mListViewHeight = h;
         mIndexbarRect = new RectF(
@@ -252,7 +251,7 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
         );
     }
 
-    public void setAdapter(RecyclerView.Adapter adapter) {
+    public void setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
         if (adapter instanceof SectionIndexer) {
             adapter.registerAdapterDataObserver(this);
             mIndexer = (SectionIndexer) adapter;
@@ -282,23 +281,17 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
             return 0;
         if (y >= mIndexbarRect.top + mIndexbarRect.height() - mIndexbarMarginTop)
             return mSections.length - 1;
-        return (int) ((y - mIndexbarRect.top - mIndexbarMarginTop) / ((mIndexbarRect.height()
-                - mIndexbarMarginBottom - mIndexbarMarginTop) / mSections.length));
+        return (int) ((y - mIndexbarRect.top - mIndexbarMarginTop) / ((mIndexbarRect.height() - mIndexbarMarginBottom - mIndexbarMarginTop) / mSections.length));
     }
 
     private Runnable mLastFadeRunnable = null;
 
-    private void fade(long delay) {
+    private void setFadeTimeout(long delay) {
         if (mRecyclerView != null) {
             if (mLastFadeRunnable != null) {
                 mRecyclerView.removeCallbacks(mLastFadeRunnable);
             }
-            mLastFadeRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    mRecyclerView.invalidate();
-                }
-            };
+            mLastFadeRunnable = () -> mRecyclerView.invalidate();
             mRecyclerView.postDelayed(mLastFadeRunnable, delay);
         }
     }
@@ -334,23 +327,15 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
     /**
      * @param value float to set the top margin of the index bar
      */
-    public void setIndexbarMarginTop(float value) {
+    public void setIndexbarTopMargin(float value) {
         mIndexbarMarginTop = value;
     }
 
     /**
      * @param value float to set the bottom margin of the index bar
      */
-    public void setIndexbarMarginBottom(float value) {
+    public void setIndexbarBottomMargin(float value) {
         mIndexbarMarginBottom = value;
-    }
-
-    public void setIndexbarMarginLeft(float value) {
-        mIndexbarMarginLeft = value;
-    }
-
-    public void setIndexbarMarginRight(float value) {
-        mIndexbarMarginRight = value;
     }
 
     /**

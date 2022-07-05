@@ -491,7 +491,7 @@ public class FoomiiboFragment extends Fragment implements
                 long amiiboId = TagUtils.amiiboIdFromTag(tagData);
                 GamesManager gamesManager = GamesManager.getGamesManager(requireContext());
                 String usage = gamesManager.getGamesCompatibility(amiiboId);
-                requireActivity().runOnUiThread(() -> txtUsage.setText(usage));
+                txtUsage.post(() -> txtUsage.setText(usage));
             } catch (Exception ex) {
                 Debug.Log(ex);
             }

@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     - name: set up JDK 11
@@ -51,7 +51,7 @@ jobs:
          echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
 
     # Example use of `signedReleaseFile` output -- not needed
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: TagMo-${{ env.GIT_HASH }}
         path: ${{steps.sign_app.outputs.signedReleaseFile}}

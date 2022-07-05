@@ -1185,7 +1185,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 long amiiboId = TagUtils.amiiboIdFromTag(tagData);
                 GamesManager gamesManager = GamesManager.getGamesManager(this);
                 String usage = gamesManager.getGamesCompatibility(amiiboId);
-                runOnUiThread(() -> txtUsage.setText(usage));
+                txtUsage.post(() -> txtUsage.setText(usage));
             } catch (Exception ex) {
                 Debug.Log(ex);
             }
@@ -2187,7 +2187,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void setAmiiboStats() {
         handler.removeCallbacksAndMessages(null);
-        this.runOnUiThread(() -> {
+        currentFolderView.post(() -> {
             int size = settings.getAmiiboFiles().size();
             if (size <= 0) return;
             currentFolderView.setGravity(Gravity.CENTER);
@@ -2242,7 +2242,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void showFakeSnackbar(String msg) {
-        this.runOnUiThread(() -> {
+        mainLayout.post(() -> {
             fakeSnackbarItem.setVisibility(View.INVISIBLE);
             mainLayout.setPadding(0, fakeSnackbarIcon.getHeight(), 0, 0);
             fakeSnackbarText.setText(msg);
@@ -2272,7 +2272,7 @@ public class BrowserActivity extends AppCompatActivity implements
             fakeSnackbar.startAnimation(animate);
 
             TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
-            runOnUiThread(() -> mainLayout.setPadding(0, 0, 0, 0));
+            mainLayout.post(() -> mainLayout.setPadding(0, 0, 0, 0));
         }
     }
 

@@ -346,11 +346,12 @@ public class BrowserActivity extends AppCompatActivity implements
                         amiibosView = fragmentBrowser.getAmiibosView();
                         break;
                 }
-                if (null != amiibosView)
+                if (null != amiibosView) {
                     amiibosView.setLayoutManager(settings.getAmiiboView()
                             == BrowserSettings.VIEW.IMAGE.getValue()
                             ? new GridLayoutManager(BrowserActivity.this, getColumnCount())
                             : new LinearLayoutManager(BrowserActivity.this));
+                }
                 invalidateOptionsMenu();
             }
         });
@@ -1738,30 +1739,24 @@ public class BrowserActivity extends AppCompatActivity implements
         isFullRebuild = settings.getAmiiboFiles().isEmpty();
     }
 
-    private void setIndexScrollListener(IndexFastScrollRecyclerView indexView) {
-        if (null == indexView) return;
-        indexView.setIndexBarColor(R.color.colorAccent);
-        indexView.setIndexBarTextColor(android.R.color.white);
-        indexView.setIndexBarStrokeColor(R.color.colorPrimary);
-        amiibosView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    indexView.setIndexBarVisibility(true);
-                } else if (newState == RecyclerView.SCROLL_STATE_IDLE){
-                    indexView.setIndexBarVisibility(false);
+    private void setIndexFastScrollRecyclerListener() {
+        if (amiibosView instanceof IndexFastScrollRecyclerView) {
+            IndexFastScrollRecyclerView indexView = (IndexFastScrollRecyclerView) amiibosView;
+            indexView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                        indexView.setIndexBarVisibility(true);
+                    } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        indexView.setIndexBarVisibility(false);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     private void onSortChanged() {
-        IndexFastScrollRecyclerView indexView = null;
-        if (amiibosView instanceof IndexFastScrollRecyclerView) {
-            indexView = (IndexFastScrollRecyclerView) amiibosView;
-            indexView.setIndexBarVisibility(false);
-        }
         if (null == menuSortId)
             return;
         switch (SORT.valueOf(settings.getSort())) {
@@ -1770,23 +1765,23 @@ public class BrowserActivity extends AppCompatActivity implements
                 break;
             case NAME:
                 menuSortName.setChecked(true);
-                setIndexScrollListener(indexView);
+                setIndexFastScrollRecyclerListener();
                 break;
             case GAME_SERIES:
                 menuSortGameSeries.setChecked(true);
-                setIndexScrollListener(indexView);
+                setIndexFastScrollRecyclerListener();
                 break;
             case CHARACTER:
                 menuSortCharacter.setChecked(true);
-                setIndexScrollListener(indexView);
+                setIndexFastScrollRecyclerListener();
                 break;
             case AMIIBO_SERIES:
                 menuSortAmiiboSeries.setChecked(true);
-                setIndexScrollListener(indexView);
+                setIndexFastScrollRecyclerListener();
                 break;
             case AMIIBO_TYPE:
                 menuSortAmiiboType.setChecked(true);
-                setIndexScrollListener(indexView);
+                setIndexFastScrollRecyclerListener();
                 break;
             case FILE_PATH:
                 menuSortFilePath.setChecked(true);

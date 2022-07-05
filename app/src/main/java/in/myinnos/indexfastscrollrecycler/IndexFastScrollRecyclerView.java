@@ -28,10 +28,10 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
 
     public int setIndexTextSize = 12;
     public float mIndexbarWidth = 20;
-    public float mIndexbarMarginLeft = 0;
-    public float mIndexbarMarginRight = 0;
-    public float mIndexbarMarginTop = 0;
-    public float mIndexbarMarginBottom = 0;
+    public float mIndexbarMarginLeft = 2;
+    public float mIndexbarMarginRight = 2;
+    public float mIndexbarMarginTop = 2;
+    public float mIndexbarMarginBottom = 2;
     public int mPreviewPadding = 5;
     public int mIndexBarCornerRadius = 5;
     public float mIndexBarTransparentValue = (float) 0.6;

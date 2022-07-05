@@ -66,7 +66,7 @@ public class IndexFastScrollRecyclerSection extends RecyclerView.AdapterDataObse
     private int previewBackgroudAlpha;
     private int indexbarBackgroudAlpha;
 
-    private int indexPaintPaintColor = Color.WHITE;
+    private final int indexPaintPaintColor = Color.WHITE;
     AttributeSet attrs;
 
     public IndexFastScrollRecyclerSection(Context context, IndexFastScrollRecyclerView recyclerView) {

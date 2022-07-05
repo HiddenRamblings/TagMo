@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -697,18 +698,22 @@ public class BrowserActivity extends AppCompatActivity implements
         flaskItem.setVisible(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2);
 
         popup.show();
-        Handler popupHandler = new Handler(Looper.getMainLooper());
+        Handler popupHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                popup.getMenu().findItem(msg.what).setEnabled(true);
+            }
+        };
         popupHandler.postDelayed(() -> {
             int baseDelay = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 baseDelay = 100;
-                popupHandler.postDelayed(() -> flaskItem.setEnabled(true), baseDelay);
+                popupHandler.sendEmptyMessageDelayed(R.id.mnu_flask,  baseDelay);
             }
-            popupHandler.postDelayed(() -> validateItem.setEnabled(true), 100 + baseDelay);
-            popupHandler.postDelayed(() -> backupItem.setEnabled(true), 200 + baseDelay);
-            popupHandler.postDelayed(() -> scanItem.setEnabled(true), 300 + baseDelay);
-
-        }, 400);
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, 100 + baseDelay);
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, 200 + baseDelay);
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, 300 + baseDelay);
+        }, 300);
 
         popup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.mnu_scan) {

@@ -1742,6 +1742,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (null == indexView) return;
         indexView.setIndexBarColor(R.color.colorAccent);
         indexView.setIndexBarTextColor(android.R.color.white);
+        indexView.setIndexBarStrokeColor(R.color.colorPrimary);
         amiibosView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {

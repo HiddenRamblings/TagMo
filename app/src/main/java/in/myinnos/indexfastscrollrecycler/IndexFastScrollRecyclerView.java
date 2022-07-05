@@ -297,6 +297,11 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
         mScroller.setIndexBarStrokeColor(Color.parseColor(color));
     }
 
+    public void setIndexBarStrokeColor(@ColorRes int color) {
+        int colorValue = getContext().getResources().getColor(color);
+        mScroller.setIndexBarStrokeColor(colorValue);
+    }
+
     /**
      * @param value int to set the text size of the preview box
      */

@@ -1715,7 +1715,7 @@ public class BrowserActivity extends AppCompatActivity implements
             onViewChanged();
         }
         onAmiiboFilesChecked();
-        if (System.currentTimeMillis() >= oldBrowserSettings.getLastUpdatedGit() + 900000) {
+        if (System.currentTimeMillis() >= oldBrowserSettings.getLastUpdatedGit() + 3600000) {
             checkForUpdates();
             newBrowserSettings.setLastUpdatedGit(System.currentTimeMillis());
         }
@@ -2168,13 +2168,12 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private int[] getAdapterStats() {
-        BrowserAdapter adapter = (BrowserAdapter)
-                fragmentBrowser.getAmiibosView().getAdapter();
-        if (adapter == null) return new int[]{0, 0};
+    private int[] getAdapterStats(AmiiboManager amiiboManager) {
+        BrowserAdapter adapter = (BrowserAdapter) fragmentBrowser.getAmiibosView().getAdapter();
+        if (null == adapter) return new int[]{0, 0};
         int size = adapter.getItemCount();
         int count = 0;
-        for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+        for (Amiibo amiibo : amiiboManager.amiibos.values()) {
             for (int x = 0; x < size; x++) {
                 if (amiibo.id == adapter.getItemId(x)) {
                     count += 1;
@@ -2195,11 +2194,11 @@ public class BrowserActivity extends AppCompatActivity implements
             if (null != amiiboManager) {
                 int count = 0;
                 if (!settings.getQuery().isEmpty()) {
-                    int[] stats = getAdapterStats();
+                    int[] stats = getAdapterStats(amiiboManager);
                     currentFolderView.setText(getString(R.string.amiibo_collected,
                             stats[0], stats[1], getQueryCount(settings.getQuery())));
                 } else if (settings.hasFilteredData()) {
-                    int[] stats = getAdapterStats();
+                    int[] stats = getAdapterStats(amiiboManager);
                     currentFolderView.setText(getString(R.string.amiibo_collected,
                             stats[0], stats[1], filteredCount));
                 } else {

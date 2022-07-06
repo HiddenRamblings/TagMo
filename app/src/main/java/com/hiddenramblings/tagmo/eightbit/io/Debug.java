@@ -126,6 +126,13 @@ public class Debug {
         return output.toString();
     }
 
+    private static void openGitHub(Context context, String issueUrl, String logText) {
+        ClipboardManager clipboard = (ClipboardManager) context
+                .getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboard.setPrimaryClip(ClipData.newPlainText("logcat", logText));
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
+    }
+
     public static boolean processLogcat(Context context) throws IOException {
         String project = context.getString(R.string.tagmo);
         String username = "HiddenRamblings";
@@ -165,9 +172,12 @@ public class Debug {
         }
         reader.close();
         String logText = log.toString();
-        if (!logText.contains("AndroidRuntime")) return false;
         String issueUrl = "https://github.com/HiddenRamblings/TagMo/issues/new?"
                 + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+";
+        if (!logText.contains("AndroidRuntime")) {
+            openGitHub(context, logText, issueUrl);
+            return false;
+        }
         try {
             IssueReporterLauncher.forTarget(username, project)
                     .theme(R.style.AppTheme_NoActionBar)
@@ -180,10 +190,7 @@ public class Debug {
                     .homeAsUpEnabled(false).launch(context);
             return true;
         } catch (Exception ignored) {
-            ClipboardManager clipboard = (ClipboardManager) context
-                    .getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboard.setPrimaryClip(ClipData.newPlainText("logcat", logText));
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
+            openGitHub(context, logText, issueUrl);
             return true;
         }
     }

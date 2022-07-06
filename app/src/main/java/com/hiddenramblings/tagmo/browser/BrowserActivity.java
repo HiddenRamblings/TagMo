@@ -733,8 +733,9 @@ public class BrowserActivity extends AppCompatActivity implements
                 onBackupActivity.launch(backup);
                 return true;
             } else if (item.getItemId() == R.id.mnu_validate) {
-                onValidateActivity.launch(new Intent(this,
-                        NfcActivity.class).setAction(NFCIntent.ACTION_SCAN_TAG));
+                onValidateActivity.launch(new Intent(
+                        this, NfcActivity.class
+                ).setAction(NFCIntent.ACTION_SCAN_TAG));
                 return true;
             }
             return false;
@@ -2472,6 +2473,14 @@ public class BrowserActivity extends AppCompatActivity implements
         prefs.downloadUrl().remove();
     });
 
+    private void closeTagSilently(NTAG215 mifare) {
+        if (null != mifare) {
+            try {
+                mifare.close();
+            } catch (Exception ignored) { }
+        }
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -2548,13 +2557,39 @@ public class BrowserActivity extends AppCompatActivity implements
                 String error = e.getMessage();
                 error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
                 if (null != error && prefs.enable_elite_support().get()) {
+                    NTAG215 finalMifare = mifare;
                     if (e instanceof android.nfc.TagLostException) {
                         new Toasty(BrowserActivity.this).Short(R.string.speed_scan);
-                        try {
-                            if (null != mifare) mifare.close();
-                        } catch (IOException ex) {
-                            Debug.Log(ex);
-                        }
+                        closeTagSilently(finalMifare);
+                    } else if (e instanceof NullPointerException
+                            && error.contains("nfctech.NTAG215.connect()")) {
+                        new AlertDialog.Builder(BrowserActivity.this)
+                                .setTitle(R.string.possible_blank)
+                                .setMessage(R.string.prepare_blank)
+                                .setPositiveButton(R.string.scan, (dialog, which) -> {
+                                    dialog.dismiss();
+                                    onNFCActivity.launch(new Intent(
+                                            this, NfcActivity.class
+                                    ).setAction(NFCIntent.ACTION_BLIND_SCAN));
+                                })
+                                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                                    dialog.dismiss();
+                                }).show();
+                    } else if (getString(R.string.nfc_null_array).equals(error)) {
+                        new AlertDialog.Builder(BrowserActivity.this)
+                                .setTitle(R.string.possible_lock)
+                                .setMessage(R.string.prepare_unlock)
+                                .setPositiveButton(R.string.unlock, (dialog, which) -> {
+                                    closeTagSilently(finalMifare);
+                                    dialog.dismiss();
+                                    onNFCActivity.launch(new Intent(
+                                            this, NfcActivity.class
+                                    ).setAction(NFCIntent.ACTION_UNLOCK_UNIT));
+                                })
+                                .setNegativeButton(R.string.cancel,  (dialog, which) -> {
+                                    closeTagSilently(finalMifare);
+                                    dialog.dismiss();
+                                }).show();
                     }
                 } else {
                     new Toasty(this).Short(error);

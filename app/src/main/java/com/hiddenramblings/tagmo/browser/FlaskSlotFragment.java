@@ -602,8 +602,6 @@ public class FlaskSlotFragment extends Fragment implements
         return null != selectedAmiibo ? selectedAmiibo : new FlaskTag(Long.parseLong(name[2]));
     }
 
-
-
     @SuppressLint("MissingPermission")
     private void scanBluetoothServices() {
         showScanningNotice();

@@ -277,6 +277,14 @@ public class NfcActivity extends AppCompatActivity {
         imgNfcBar.setAnimation(nfcAnimation);
     }
 
+    private void closeTagSilently(NTAG215 mifare) {
+        if (null != mifare) {
+            try {
+                mifare.close();
+            } catch (Exception ignored) { }
+        }
+    }
+
     private void onTagDiscovered(Intent intent) {
         Intent commandIntent = this.getIntent();
         String mode = commandIntent.getAction();
@@ -534,13 +542,11 @@ public class NfcActivity extends AppCompatActivity {
             if (null != error && prefs.enable_elite_support().get()) {
                 if (e instanceof android.nfc.TagLostException) {
                     runOnUiThread(() -> txtMessage.setText(R.string.speed_scan));
-                    try {
-                        mifare.close();
-                    } catch (IOException ignored) { }
+                    closeTagSilently(mifare);
                     return;
                 } else if (e instanceof NullPointerException
                         && error.contains("nfctech.NTAG215.connect()")) {
-                    runOnUiThread(() ->  new AlertDialog.Builder(NfcActivity.this)
+                    new AlertDialog.Builder(NfcActivity.this)
                             .setTitle(R.string.possible_blank)
                             .setMessage(R.string.prepare_blank)
                             .setPositiveButton(R.string.scan, (dialog, which) -> {
@@ -551,45 +557,38 @@ public class NfcActivity extends AppCompatActivity {
                             .setNegativeButton(R.string.cancel,  (dialog, which) -> {
                                 dialog.dismiss();
                                 finish();
-                            }).show());
-
+                            }).show();
                     return;
                 } else if (getString(R.string.error_tag_rewrite).equals(error)) {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update);
                     setResult(Activity.RESULT_OK, new Intent(
                             NFCIntent.ACTION_UPDATE_TAG
                     ).putExtras(args));
-                    runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
+                    new AlertDialog.Builder(NfcActivity.this)
                             .setTitle(R.string.error_tag_rewrite)
                             .setMessage(R.string.tag_update_only)
                             .setPositiveButton(R.string.proceed, (dialog, which) -> {
-                                try {
-                                    mifare.close();
-                                } catch (IOException ignored) { }
+                                closeTagSilently(mifare);
                                 dialog.dismiss();
                                 finish();
                             })
-                           .show());
+                           .show();
                     return;
                 } else if (getString(R.string.nfc_null_array).equals(error)) {
-                    runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
+                    new AlertDialog.Builder(NfcActivity.this)
                             .setTitle(R.string.possible_lock)
                             .setMessage(R.string.prepare_unlock)
                             .setPositiveButton(R.string.unlock, (dialog, which) -> {
-                                try {
-                                    mifare.close();
-                                } catch (IOException ignored) { }
+                                closeTagSilently(mifare);
                                 dialog.dismiss();
                                 getIntent().setAction(NFCIntent.ACTION_UNLOCK_UNIT);
                                 recreate();
                             })
                             .setNegativeButton(R.string.cancel,  (dialog, which) -> {
-                                try {
-                                    mifare.close();
-                                } catch (IOException ignored) { }
+                                closeTagSilently(mifare);
                                 dialog.dismiss();
                                 finish();
-                            }).show());
+                            }).show();
                     return;
                 }
             }
@@ -682,11 +681,7 @@ public class NfcActivity extends AppCompatActivity {
     };
 
     void cancelAction() {
-        if (null != mifare) {
-            try {
-                mifare.close();
-            } catch (Exception ignored) { }
-        }
+        closeTagSilently(mifare);
         setResult(Activity.RESULT_CANCELED);
         finish();
     }

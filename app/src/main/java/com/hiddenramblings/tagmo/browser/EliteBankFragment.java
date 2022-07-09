@@ -248,14 +248,6 @@ public class EliteBankFragment extends Fragment implements
             eraseOpenBanks.setText(getString(R.string.erase_open_banks, valueNew));
         });
 
-        if (activity.isDocumentStorage()) {
-            DocumentFile rootDocument = DocumentFile.fromTreeUri(activity,
-                    this.settings.getBrowserRootDocument());
-            this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
-        } else {
-            this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
-        }
-
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
             amiiboFilesView.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
         else
@@ -615,21 +607,20 @@ public class EliteBankFragment extends Fragment implements
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
                 String fileName;
-                if (((BrowserActivity) requireActivity()).isDocumentStorage()) {
+                BrowserActivity activity = (BrowserActivity) requireActivity();
+                if (activity.isDocumentStorage()) {
                     DocumentFile rootDocument = DocumentFile.fromTreeUri(requireContext(),
                             this.settings.getBrowserRootDocument());
                     if (null == rootDocument) throw new NullPointerException();
                     fileName = TagUtils.writeBytesToDocument(requireContext(), rootDocument,
                             input.getText().toString() + ".bin", tagData);
-                    this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
                 } else {
                     fileName = TagUtils.writeBytesToFile(
                             Storage.getDownloadDir("TagMo", "Backups"),
                             input.getText().toString(), tagData);
-                    this.loadAmiiboFiles(settings.getBrowserRootFolder(),
-                            settings.isRecursiveEnabled());
                 }
                 new Toasty(requireActivity()).Long(getString(R.string.wrote_file, fileName));
+                activity.loadStoredAmiibo();
             } catch (IOException e) {
                 new Toasty(requireActivity()).Short(e.getMessage());
             }
@@ -980,49 +971,6 @@ public class EliteBankFragment extends Fragment implements
         else
             displayWriteDialog(position);
         return true;
-    }
-
-    private boolean isDirectoryHidden(File rootFolder, File directory, boolean recursive) {
-        return !rootFolder.getPath().equals(directory.getPath()) && (!recursive
-                || (!rootFolder.getPath().startsWith(directory.getPath())
-                && !directory.getPath().startsWith(rootFolder.getPath())));
-    }
-
-    private void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
-                    .listAmiibos(keyManager, rootFolder, recursiveFiles);
-            if (this.settings.isShowingDownloads()) {
-                File download = Storage.getDownloadDir(null);
-                if (isDirectoryHidden(rootFolder, download, recursiveFiles))
-                    amiiboFiles.addAll(AmiiboManager
-                            .listAmiibos(keyManager, download, true));
-            }
-            File foomiibo = new File(requireContext().getFilesDir(), "Foomiibo");
-            amiiboFiles.addAll(AmiiboManager
-                    .listAmiibos(keyManager, foomiibo, true));
-
-            if (Thread.currentThread().isInterrupted()) return;
-
-            requireActivity().runOnUiThread(() -> {
-                settings.setAmiiboFiles(amiiboFiles);
-                settings.notifyChanges();
-            });
-        });
-    }
-
-    private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
-                    .listAmiiboDocuments(requireContext(), keyManager, rootFolder, recursiveFiles);
-            File foomiibo = new File(requireContext().getFilesDir(), "Foomiibo");
-            amiiboFiles.addAll(AmiiboManager
-                    .listAmiibos(keyManager, foomiibo, true));
-            requireActivity().runOnUiThread(() -> {
-                settings.setAmiiboFiles(amiiboFiles);
-                settings.notifyChanges();
-            });
-        });
     }
 
     private void setBottomSheetSecure(boolean hidden) {

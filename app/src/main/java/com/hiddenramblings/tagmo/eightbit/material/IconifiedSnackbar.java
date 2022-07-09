@@ -99,6 +99,7 @@ public class IconifiedSnackbar {
         textView.setGravity(Gravity.CENTER_VERTICAL);
         textView.setCompoundDrawablePadding(textView.getResources()
                 .getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
+        textView.setMaxLines(3);
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)
                 snackbarLayout.getLayoutParams();
         params.width = CoordinatorLayout.LayoutParams.MATCH_PARENT;

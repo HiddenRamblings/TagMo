@@ -126,7 +126,10 @@ public class Debug {
         return output.toString();
     }
 
-    private static void openGitHub(Context context, String issueUrl, String logText) {
+    private static final String issueUrl = "https://github.com/HiddenRamblings/TagMo/issues/new?"
+            + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+";
+
+    private static void openGitHub(Context context, String logText) {
         ClipboardManager clipboard = (ClipboardManager) context
                 .getSystemService(Context.CLIPBOARD_SERVICE);
         clipboard.setPrimaryClip(ClipData.newPlainText("logcat", logText));
@@ -172,10 +175,9 @@ public class Debug {
         }
         reader.close();
         String logText = log.toString();
-        String issueUrl = "https://github.com/HiddenRamblings/TagMo/issues/new?"
-                + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+";
+
         if (!logText.contains("AndroidRuntime")) {
-            openGitHub(context, logText, issueUrl);
+            openGitHub(context, logText);
             return false;
         }
         try {
@@ -190,7 +192,7 @@ public class Debug {
                     .homeAsUpEnabled(false).launch(context);
             return true;
         } catch (Exception ignored) {
-            openGitHub(context, logText, issueUrl);
+            openGitHub(context, logText);
             return true;
         }
     }

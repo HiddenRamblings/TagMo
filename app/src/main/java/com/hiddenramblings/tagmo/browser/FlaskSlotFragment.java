@@ -41,7 +41,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -60,13 +59,11 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.FlaskTag;
-import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothEnabler;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.Preferences_;
@@ -77,7 +74,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -112,7 +108,6 @@ public class FlaskSlotFragment extends Fragment implements
     private Snackbar statusBar;
     private Dialog uploadDialog;
 
-    private KeyManager keyManager;
     private BrowserSettings settings;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
@@ -277,7 +272,6 @@ public class FlaskSlotFragment extends Fragment implements
         rootLayout = (CoordinatorLayout) view;
 
         BrowserActivity activity = (BrowserActivity) requireActivity();
-        keyManager = new KeyManager(activity);
 
         amiiboTile = rootLayout.findViewById(R.id.active_tile_layout);
 
@@ -386,14 +380,6 @@ public class FlaskSlotFragment extends Fragment implements
         });
 
         toolbar.inflateMenu(R.menu.flask_menu);
-
-        if (activity.isDocumentStorage()) {
-            DocumentFile rootDocument = DocumentFile.fromTreeUri(activity,
-                    this.settings.getBrowserRootDocument());
-            this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
-        } else {
-            this.loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
-        }
 
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
             amiiboFilesView.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
@@ -656,64 +642,6 @@ public class FlaskSlotFragment extends Fragment implements
             }
         }
         if (!isDevicePaired) scanBluetoothServices();
-    }
-
-    private boolean isDirectoryHidden(File rootFolder, File directory, boolean recursive) {
-        return !rootFolder.getPath().equals(directory.getPath()) && (!recursive
-                || (!rootFolder.getPath().startsWith(directory.getPath())
-                && !directory.getPath().startsWith(rootFolder.getPath())));
-    }
-
-    private void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
-        AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (null == amiiboManager) {
-            try {
-                amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
-            } catch (IOException | JSONException | ParseException e) {
-                Debug.Log(e);
-                new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
-            }
-
-            final AmiiboManager uiAmiiboManager = amiiboManager;
-            requireActivity().runOnUiThread(() -> {
-                settings.setAmiiboManager(uiAmiiboManager);
-                settings.notifyChanges();
-            });
-        }
-        Executors.newSingleThreadExecutor().execute(() -> {
-            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
-                    .listAmiibos(keyManager, rootFolder, recursiveFiles);
-            if (this.settings.isShowingDownloads()) {
-                File download = Storage.getDownloadDir(null);
-                if (isDirectoryHidden(rootFolder, download, recursiveFiles))
-                    amiiboFiles.addAll(AmiiboManager
-                            .listAmiibos(keyManager, download, true));
-            }
-            File foomiibo = new File(requireContext().getFilesDir(), "Foomiibo");
-            amiiboFiles.addAll(AmiiboManager
-                    .listAmiibos(keyManager, foomiibo, true));
-
-            if (Thread.currentThread().isInterrupted()) return;
-
-            requireActivity().runOnUiThread(() -> {
-                settings.setAmiiboFiles(amiiboFiles);
-                settings.notifyChanges();
-            });
-        });
-    }
-
-    private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
-                    .listAmiiboDocuments(requireContext(), keyManager, rootFolder, recursiveFiles);
-            File foomiibo = new File(requireContext().getFilesDir(), "Foomiibo");
-            amiiboFiles.addAll(AmiiboManager
-                    .listAmiibos(keyManager, foomiibo, true));
-            requireActivity().runOnUiThread(() -> {
-                settings.setAmiiboFiles(amiiboFiles);
-                settings.notifyChanges();
-            });
-        });
     }
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {

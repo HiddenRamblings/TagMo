@@ -743,21 +743,20 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onCaptureLogcatClicked() {
-        if (updates.hasPendingUpdate() && null != appUpdate) {
-            updates.downloadPlayUpdate(appUpdate);
-            return;
-        }
-        if (updates.hasPendingUpdate() && null != updateUrl) {
-            updates.installUpdateCompat(updateUrl);
+        if (updates.hasPendingUpdate()) {
+            if (null != appUpdate) updates.downloadPlayUpdate(appUpdate);
+            if (null != updateUrl) updates.installUpdateCompat(updateUrl);
             return;
         }
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 if (!Debug.processLogcat(this )) {
-                    showWebsite(null);
+                    runOnUiThread(() -> showWebsite(null));
                 }
             } catch (IOException e) {
-                new Toasty(this).Short(e.getMessage());
+                runOnUiThread(() -> new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                        e.getMessage(), Snackbar.LENGTH_SHORT
+                ).show());
             }
         });
     }
@@ -1047,21 +1046,6 @@ public class BrowserActivity extends AppCompatActivity implements
             return false;
         }
     };
-
-    void checkForUpdates() {
-        updates = new CheckUpdatesTask(this);
-        if (TagMo.isGooglePlay()) {
-            updates.setPlayUpdateListener(appUpdateInfo -> {
-                appUpdate = appUpdateInfo;
-                invalidateOptionsMenu();
-            });
-        } else {
-            updates.setUpdateListener(downloadUrl -> {
-                updateUrl = downloadUrl;
-                invalidateOptionsMenu();
-            });
-        }
-    }
 
     private void getToolbarOptions(Toolbar toolbar, byte[] tagData, AmiiboFile amiiboFile) {
         if (!toolbar.getMenu().hasVisibleItems())
@@ -1638,6 +1622,17 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
+    void loadStoredAmiibo() {
+        if (isDocumentStorage()) {
+            DocumentFile rootDocument = DocumentFile.fromTreeUri(
+                    BrowserActivity.this, settings.getBrowserRootDocument()
+            );
+            loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
+        } else {
+            loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
+        }
+    }
+
     ActivityResultLauncher<Intent> onDocumentTree = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null)
@@ -1717,7 +1712,18 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         onAmiiboFilesChecked();
         if (System.currentTimeMillis() >= oldBrowserSettings.getLastUpdatedGit() + 3600000) {
-            checkForUpdates();
+            updates = new CheckUpdatesTask(this);
+            if (TagMo.isGooglePlay()) {
+                updates.setPlayUpdateListener(appUpdateInfo -> {
+                    appUpdate = appUpdateInfo;
+                    invalidateOptionsMenu();
+                });
+            } else {
+                updates.setUpdateListener(downloadUrl -> {
+                    updateUrl = downloadUrl;
+                    invalidateOptionsMenu();
+                });
+            }
             newBrowserSettings.setLastUpdatedGit(System.currentTimeMillis());
         }
 
@@ -1748,6 +1754,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void setIndexFastScrollRecyclerListener() {
         if (amiibosView instanceof IndexFastScrollRecyclerView) {
             IndexFastScrollRecyclerView indexView = (IndexFastScrollRecyclerView) amiibosView;
+            //noinspection deprecation
             indexView.setOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -2153,6 +2160,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return (int) ((metrics.widthPixels / metrics.density) / 112 + 0.5);
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void setViewPagerSensitivity(ViewPager2 viewPager, int sensitivity) {
         try {
             Field ff = ViewPager2.class.getDeclaredField("mRecyclerView") ;
@@ -2559,7 +2567,9 @@ public class BrowserActivity extends AppCompatActivity implements
                 if (null != error && prefs.enable_elite_support().get()) {
                     NTAG215 finalMifare = mifare;
                     if (e instanceof android.nfc.TagLostException) {
-                        new Toasty(BrowserActivity.this).Short(R.string.speed_scan);
+                        new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                                R.string.speed_scan, Snackbar.LENGTH_SHORT
+                        ).show();
                         closeTagSilently(finalMifare);
                     } else if (e instanceof NullPointerException
                             && error.contains("nfctech.NTAG215.connect()")) {
@@ -2572,9 +2582,8 @@ public class BrowserActivity extends AppCompatActivity implements
                                             this, NfcActivity.class
                                     ).setAction(NFCIntent.ACTION_BLIND_SCAN));
                                 })
-                                .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                                    dialog.dismiss();
-                                }).show();
+                                .setNegativeButton(R.string.cancel, (dialog, which) ->
+                                        dialog.dismiss()).show();
                     } else if (getString(R.string.nfc_null_array).equals(error)) {
                         new AlertDialog.Builder(BrowserActivity.this)
                                 .setTitle(R.string.possible_lock)
@@ -2753,6 +2762,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
+    @SuppressWarnings("ConstantConditions")
     private Button getDonationButton(ProductDetails skuDetail) {
         Button button = new Button(getApplicationContext());
         button.setBackgroundResource(R.drawable.rounded_view);
@@ -2789,6 +2799,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return button;
     }
 
+    @SuppressWarnings("ConstantConditions")
     private Button getSubscriptionButton(ProductDetails skuDetail) {
         Button button = new Button(getApplicationContext());
         button.setBackgroundResource(R.drawable.rounded_view);

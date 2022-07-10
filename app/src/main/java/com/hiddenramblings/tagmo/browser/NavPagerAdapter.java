@@ -11,7 +11,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class NavPagerAdapter extends FragmentStateAdapter {
     private final BrowserFragment fragmentBrowser = new BrowserFragment();
-    private final FoomiiboFragment fragmentFoomiibo = new FoomiiboFragment();
+//    private final FoomiiboFragment fragmentFoomiibo = new FoomiiboFragment();
     private final EliteBankFragment fragmentElite = new EliteBankFragment();
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private final FlaskSlotFragment fragmentFlask = new FlaskSlotFragment();
@@ -25,14 +25,14 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @NonNull @Override
     public Fragment createFragment(int position) {
         switch (position) {
+//            case 1:
+//                return fragmentFoomiibo;
             case 1:
-                return fragmentFoomiibo;
-            case 2:
                 return fragmentElite;
-            case 3:
+            case 2:
                 return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
                         ? fragmentFlask : fragmentWebsite;
-            case 4:
+            case 3:
                 return fragmentWebsite;
             default:
                 return fragmentBrowser;
@@ -41,16 +41,16 @@ public class NavPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 ? 5 : 4;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 ? 4 : 3;
     }
 
     public BrowserFragment getBrowser() {
         return fragmentBrowser;
     }
 
-    public FoomiiboFragment getFoomiibo() {
-        return fragmentFoomiibo;
-    }
+//    public FoomiiboFragment getFoomiibo() {
+//        return fragmentFoomiibo;
+//    }
 
     public EliteBankFragment getEliteBanks() {
         return fragmentElite;

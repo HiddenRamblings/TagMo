@@ -188,7 +188,7 @@
     <string name="sync_amiibo_info">Sync database with AmiiboAPI</string>
     <string name="import_json_details">Load amiibo&#8482; database (JSON)</string>
     <string name="reset_amiibo_info">Reset amiibo&#8482; database cache</string>
-    <string name="number_amiibo">%1$s: %2$d amiibo&#8482;</string>
+    <string name="number_foomiibo">Foomiibo: %1$d amiibo&#8482;</string>
     <string name="number_game">%1$d Game Series</string>
     <string name="number_character">%1$d Character(s)</string>
     <string name="number_series">%1$d amiibo&#8482; Series</string>
@@ -233,6 +233,7 @@
     <string name="physical_storage_root">Browse Physical Storage</string>
     <string name="grant_file_permission">Enable "All Files" Manager</string>
     <string name="force_document_storage">Enable Document Storage</string>
+    <string name="refresh_amiibo">Refresh amiibo&#8482;</string>
 
     <string name="prepare_unlock">Once the N2 is scanned, it cannot be removed from the NFC field until the operation is complete.</string>
     <string name="progress_unlock">Press and hold the N2 button without disconnecting from NFC.</string>

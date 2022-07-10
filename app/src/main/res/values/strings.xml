@@ -281,6 +281,7 @@
     <string name="error_tag_rewrite">Tag already an amiibo&#8482;</string>
     <string name="error_tag_format">Tag is not an NTAG215</string>
     <string name="error_tag_version">Tag version error</string>
+    <string name="error_tag_faulty">NFC tag may be corrupt.\nPlease try different tags.</string>
     <string name="error_version">Version information error</string>
     <string name="error_amiibo_parse">amiibo&#8482; info parse error</string>
     <string name="error_powertag_key">Power Tag keys not loaded</string>
@@ -288,6 +289,7 @@
     <string name="error_elite_auth">Error while authenticating N2 Elite</string>
     <string name="error_amiitool_init">Failed to initialise amiitool</string>
     <string name="error_auth_null">Auth result was null</string>
+    <string name="error_unknown">An unknown error has occurred.\nPlease submit a support logcat.</string>
 
     <string name="fail_ssl_update">OpenSSL security provider obsolete!</string>
     <string name="fail_save_data">Failed to save tag data</string>

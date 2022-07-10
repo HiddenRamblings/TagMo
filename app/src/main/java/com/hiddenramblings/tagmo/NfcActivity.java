@@ -541,23 +541,8 @@ public class NfcActivity extends AppCompatActivity {
             error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
             if (null != error && prefs.enable_elite_support().get()) {
                 if (e instanceof android.nfc.TagLostException) {
-                    runOnUiThread(() -> txtMessage.setText(R.string.speed_scan));
+                    showMessage(R.string.speed_scan);
                     closeTagSilently(mifare);
-                    return;
-                } else if (e instanceof NullPointerException
-                        && error.contains("nfctech.NTAG215.connect()")) {
-                    new AlertDialog.Builder(NfcActivity.this)
-                            .setTitle(R.string.possible_blank)
-                            .setMessage(R.string.prepare_blank)
-                            .setPositiveButton(R.string.scan, (dialog, which) -> {
-                                dialog.dismiss();
-                                getIntent().setAction(NFCIntent.ACTION_BLIND_SCAN);
-                                recreate();
-                            })
-                            .setNegativeButton(R.string.cancel,  (dialog, which) -> {
-                                dialog.dismiss();
-                                finish();
-                            }).show();
                     return;
                 } else if (getString(R.string.error_tag_rewrite).equals(error)) {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update);
@@ -590,9 +575,28 @@ public class NfcActivity extends AppCompatActivity {
                                 finish();
                             }).show();
                     return;
+                } else if (e instanceof NullPointerException
+                        && error.contains("nfctech.NTAG215.connect()")) {
+                    new AlertDialog.Builder(NfcActivity.this)
+                            .setTitle(R.string.possible_blank)
+                            .setMessage(R.string.prepare_blank)
+                            .setPositiveButton(R.string.scan, (dialog, which) -> {
+                                dialog.dismiss();
+                                getIntent().setAction(NFCIntent.ACTION_BLIND_SCAN);
+                                recreate();
+                            })
+                            .setNegativeButton(R.string.cancel,  (dialog, which) -> dialog.dismiss()).show();
                 }
             }
-            showError(error);
+            if (null != error) {
+                if (e instanceof NullPointerException
+                        && error.contains("nfctech.NTAG215.connect()")) {
+                    error = getString(R.string.error_tag_faulty);
+                }
+                showError(error);
+            } else {
+                showError(getString(R.string.error_unknown));
+            }
         }
     }
 

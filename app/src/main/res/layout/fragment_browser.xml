@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/backgroundBlack">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/chip_list"
@@ -16,18 +23,75 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@+id/chip_list"
         android:background="?android:attr/listDivider"/>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh"
+    <LinearLayout
+        android:id="@+id/list_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_below="@+id/divider"
-        android:layout_alignParentBottom="true">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <in.myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
             android:id="@+id/amiibos_list"
+            android:layout_width="match_parent"
+            android:layout_height="720dp"
+            android:clipToPadding="false"
+            android:paddingTop="4dp"
+            android:paddingBottom="2dp"
+            android:scrollbars="vertical"
+            android:scrollbarSize="0dp"
+            android:scrollbarStyle="outsideOverlay"
+            app:setIndexBarColor="@color/colorAccent"
+            app:setIndexBarTextColor="@android:color/white"
+            app:setIndexBarStrokeColor="@color/colorPrimary"
+            app:setPreviewColor="@color/colorPrimaryDark"
+            app:setPreviewTextColor="@android:color/white"
+            app:setIndexBarShown="false"/>
+
+        <LinearLayout
+            android:id="@+id/list_divider"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:contentDescription="@string/imageview_folder"
+                app:srcCompat="@mipmap/ic_foomiibo" />
+
+            <TextView
+                android:id="@+id/foomiibo_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text="@string/bluup_flask_ble"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/toggle"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/imageview_toggle"
+                app:srcCompat="@drawable/ic_baseline_expand_24" />
+        </LinearLayout>
+
+        <in.myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
+            android:id="@+id/foomiibo_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
@@ -42,5 +106,6 @@
             app:setPreviewColor="@color/colorPrimaryDark"
             app:setPreviewTextColor="@android:color/white"
             app:setIndexBarShown="false"/>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</RelativeLayout>
+    </LinearLayout>
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

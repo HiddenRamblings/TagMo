@@ -8,6 +8,11 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="collapseActionView|always"/>
     <item
+        android:id="@+id/refresh"
+        android:icon="@drawable/ic_refresh_white_24dp"
+        android:title="@string/refresh_amiibo"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/filter"
         android:icon="@drawable/ic_filter_list_24dp"
         android:title="@string/filter"
@@ -51,11 +56,6 @@
             </item>
         </menu>
     </item>
-    <item
-        android:id="@+id/tagmo_settings"
-        android:icon="@drawable/ic_settings_24dp"
-        android:title="@string/tagmo_settings"
-        app:showAsAction="always"/>
     <item
         android:id="@+id/install_update"
         android:icon="@drawable/ic_baseline_browser_updated_24dp"
@@ -129,6 +129,11 @@
             </group>
         </menu>
     </item>
+    <item
+        android:id="@+id/tagmo_settings"
+        android:icon="@drawable/ic_settings_24dp"
+        android:title="@string/tagmo_settings"
+        app:showAsAction="never"/>
     <item
         android:id="@+id/capture_logcat"
         android:icon="@drawable/ic_android_studio_24dp"

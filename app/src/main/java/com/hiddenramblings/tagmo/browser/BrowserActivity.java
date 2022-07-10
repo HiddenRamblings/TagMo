@@ -34,8 +34,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.TranslateAnimation;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -193,8 +195,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private ViewPager2 mainLayout;
     private FloatingActionButton nfcFab;
     private RecyclerView amiibosView;
+    private RecyclerView foomiiboView;
     private BrowserFragment fragmentBrowser;
-    private FoomiiboFragment fragmentFoomiibo;
     private EliteBankFragment fragmentElite;
 
     private MenuItem menuSortId;
@@ -288,14 +290,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }));
         }
 
-        if (null == this.settings) {
-            this.settings = new BrowserSettings().initialize();
-        } else {
-            this.onFilterGameSeriesChanged();
-            this.onFilterCharacterChanged();
-            this.onFilterAmiiboSeriesChanged();
-            this.onFilterAmiiboTypeChanged();
-        }
+        if (null == this.settings) this.settings = new BrowserSettings().initialize();
         this.settings.addChangeListener(this);
 
         mainLayout.setAdapter(pagerAdapter);
@@ -304,31 +299,41 @@ public class BrowserActivity extends AppCompatActivity implements
         mainLayout.setPageTransformer(cardFlipPageTransformer);
         setViewPagerSensitivity(mainLayout, 4);
         fragmentBrowser = pagerAdapter.getBrowser();
-        fragmentFoomiibo = pagerAdapter.getFoomiibo();
         fragmentElite = pagerAdapter.getEliteBanks();
 
+        this.onFilterGameSeriesChanged();
+        this.onFilterCharacterChanged();
+        this.onFilterAmiiboSeriesChanged();
+        this.onFilterAmiiboTypeChanged();
+
+        LinearLayout foomiiboOptions = findViewById(R.id.foomiibo_options);
+        foomiiboOptions.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
+                clickView -> fragmentBrowser.clearFoomiiboSet()
+        );
+
+        foomiiboOptions.findViewById(R.id.build_foomiibo_set).setOnClickListener(
+                clickView -> fragmentBrowser.buildFoomiiboSet()
+        );
+
+        amiibosView = fragmentBrowser.getAmiibosView();
+        foomiiboView = fragmentBrowser.getFoomiiboView();
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @SuppressLint("NewApi")
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                if (position != 0) BrowserAdapter.resetVisible();
-                if (position != 1) FoomiiboAdapter.resetVisible();
-                amiibosView = fragmentBrowser.getAmiibosView();
+                if (position != 0) {
+                    BrowserAdapter.resetVisible();
+                    FoomiiboAdapter.resetVisible();
+                }
                 switch (position) {
                     case 1:
-                        showActionButton();
-                        hideBottomSheet();
-                        setTitle(R.string.foomiibo);
-                        amiibosView = fragmentFoomiibo.getAmiibosView();
-                        break;
-                    case 2:
                         showActionButton();
                         hideBottomSheet();
                         setTitle(R.string.elite_n2);
                         amiibosView = fragmentElite.getAmiibosView();
                         break;
-                    case 3:
+                    case 2:
                         hideBrowserInterface();
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                             setTitle(R.string.bluup_flask);
@@ -337,7 +342,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             setTitle(R.string.pref_guides);
                         }
                         break;
-                    case 4:
+                    case 3:
                         hideBrowserInterface();
                         setTitle(R.string.pref_guides);
                         break;
@@ -345,6 +350,11 @@ public class BrowserActivity extends AppCompatActivity implements
                         showBrowserInterface();
                         setTitle(R.string.tagmo);
                         amiibosView = fragmentBrowser.getAmiibosView();
+                        foomiiboView = fragmentBrowser.getFoomiiboView();
+                        foomiiboView.setLayoutManager(settings.getAmiiboView()
+                                == BrowserSettings.VIEW.IMAGE.getValue()
+                                ? new GridLayoutManager(BrowserActivity.this, getColumnCount())
+                                : new LinearLayoutManager(BrowserActivity.this));
                         break;
                 }
                 if (null != amiibosView) {
@@ -359,16 +369,13 @@ public class BrowserActivity extends AppCompatActivity implements
         new TabLayoutMediator(findViewById(R.id.page_tabs), mainLayout, (tab, position) -> {
             switch (position) {
                 case 1:
-                    tab.setText(R.string.foomiibo);
-                    break;
-                case 2:
                     tab.setText(R.string.elite_n2);
                     break;
-                case 3:
+                case 2:
                     tab.setText(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
                             ? R.string.bluup_flask : R.string.pref_guides);
                     break;
-                case 4:
+                case 3:
                     tab.setText(R.string.pref_guides);
                     break;
                 default:
@@ -637,7 +644,7 @@ public class BrowserActivity extends AppCompatActivity implements
         byte[] tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
 
         View view = getLayoutInflater().inflate(R.layout.dialog_backup,
-                fragmentBrowser.getAmiibosView(), false);
+                mainLayout, false);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData, true));
@@ -855,10 +862,6 @@ public class BrowserActivity extends AppCompatActivity implements
         if (amiiboManager == null) return false;
 
         Set<String> items = new HashSet<>();
-//        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-//            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
-//            if (amiibo == null)
-//                continue;
         for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
 
             GameSeries gameSeries = amiibo.getGameSeries();
@@ -905,10 +908,6 @@ public class BrowserActivity extends AppCompatActivity implements
         if (amiiboManager == null) return true;
 
         Set<String> items = new HashSet<>();
-//        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-//            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
-//            if (amiibo == null)
-//                continue;
         for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
 
             Character character = amiibo.getCharacter();
@@ -955,10 +954,6 @@ public class BrowserActivity extends AppCompatActivity implements
         if (amiiboManager == null) return true;
 
         Set<String> items = new HashSet<>();
-//        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-//            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
-//            if (amiibo == null)
-//                continue;
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
 
             AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
@@ -1005,10 +1000,6 @@ public class BrowserActivity extends AppCompatActivity implements
         if (amiiboManager == null) return true;
 
         Set<AmiiboType> items = new HashSet<>();
-//        for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
-//            Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
-//            if (amiibo == null)
-//                continue;
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
 
             AmiiboType amiiboType = amiibo.getAmiiboType();
@@ -1154,6 +1145,59 @@ public class BrowserActivity extends AppCompatActivity implements
                 return true;
             } else if (item.getItemId() == R.id.mnu_delete) {
                 deleteAmiiboDocument(amiiboFile);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_ignore_tag_id) {
+                ignoreTagId = !item.isChecked();
+                item.setChecked(ignoreTagId);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    void getToolbarOptions(Toolbar toolbar, byte[] tagData) {
+        if (!toolbar.getMenu().hasVisibleItems())
+            toolbar.inflateMenu(R.menu.amiibo_menu);
+        toolbar.getMenu().findItem(R.id.mnu_scan).setVisible(false);
+        toolbar.setOnMenuItemClickListener(item -> {
+            Bundle args = new Bundle();
+            Intent scan = new Intent(this, NfcActivity.class);
+            if (item.getItemId() == R.id.mnu_write) {
+                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
+                scan.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
+                fragmentBrowser.onUpdateTagResult.launch(scan.putExtras(args));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_update) {
+                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
+                scan.setAction(NFCIntent.ACTION_WRITE_TAG_DATA);
+                scan.putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId);
+                fragmentBrowser.onUpdateTagResult.launch(scan.putExtras(args));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_save) {
+                fragmentBrowser.buildFoomiiboFile(tagData);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_edit) {
+                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
+                Intent tagEdit = new Intent(this, TagDataEditor.class);
+                fragmentBrowser.onUpdateTagResult.launch(tagEdit.putExtras(args));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_view_hex) {
+                Intent hexView = new Intent(this, HexCodeViewer.class);
+                hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData);
+                startActivity(hexView);
+                return true;
+            } else if (item.getItemId() == R.id.mnu_validate) {
+                try {
+                    TagUtils.validateData(tagData);
+                    new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                            R.string.validation_success, Snackbar.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    new IconifiedSnackbar(this, mainLayout).buildSnackbar(e.getMessage(),
+                            R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG).show();
+                }
+                return true;
+            } else if (item.getItemId() == R.id.mnu_delete) {
+                fragmentBrowser.deleteFoomiiboFile(tagData);
                 return true;
             } else if (item.getItemId() == R.id.mnu_ignore_tag_id) {
                 ignoreTagId = !item.isChecked();
@@ -1378,12 +1422,11 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        RecyclerView amiibosView = mainLayout.getCurrentItem() == 0
-                ? fragmentBrowser.getAmiibosView()
-                : fragmentFoomiibo.getAmiibosView();
         if (item.getItemId() == R.id.install_update) {
             if (null != appUpdate) updates.downloadPlayUpdate(appUpdate);
             if (null != updateUrl) updates.installUpdateCompat(updateUrl);
+        } else if (item.getItemId() == R.id.refresh) {
+            onRefresh(true);
         } else if (item.getItemId() == R.id.sort_id) {
             settings.setSort(SORT.ID.getValue());
             settings.notifyChanges();
@@ -1406,22 +1449,23 @@ public class BrowserActivity extends AppCompatActivity implements
             settings.setSort(SORT.FILE_PATH.getValue());
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.view_simple) {
-            if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            foomiiboView.setLayoutManager(new LinearLayoutManager(this));
             settings.setAmiiboView(VIEW.SIMPLE.getValue());
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.view_compact) {
-            if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            foomiiboView.setLayoutManager(new LinearLayoutManager(this));
             settings.setAmiiboView(VIEW.COMPACT.getValue());
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.view_large) {
-            if (this.settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            foomiiboView.setLayoutManager(new LinearLayoutManager(this));
             settings.setAmiiboView(VIEW.LARGE.getValue());
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.view_image) {
             amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+            foomiiboView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
             settings.setAmiiboView(VIEW.IMAGE.getValue());
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.recursive) {
@@ -1546,6 +1590,7 @@ public class BrowserActivity extends AppCompatActivity implements
             this.runOnUiThread(() -> {
                 settings.setAmiiboManager(uiAmiiboManager);
                 settings.notifyChanges();
+                getManagerStats();
             });
         });
     }
@@ -1747,11 +1792,11 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onAmiiboFilesChecked() {
-        hideFakeSnackbar(isFullRebuild && !settings.getAmiiboFiles().isEmpty() ? 300 : 200);
+        hideFakeSnackbar();
         isFullRebuild = settings.getAmiiboFiles().isEmpty();
     }
 
-    private void setIndexFastScrollRecyclerListener() {
+    private void setIndexFastScrollRecyclerListener(RecyclerView amiibosView) {
         if (amiibosView instanceof IndexFastScrollRecyclerView) {
             IndexFastScrollRecyclerView indexView = (IndexFastScrollRecyclerView) amiibosView;
             //noinspection deprecation
@@ -1778,23 +1823,28 @@ public class BrowserActivity extends AppCompatActivity implements
                 break;
             case NAME:
                 menuSortName.setChecked(true);
-                setIndexFastScrollRecyclerListener();
+                setIndexFastScrollRecyclerListener(amiibosView);
+                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case GAME_SERIES:
                 menuSortGameSeries.setChecked(true);
-                setIndexFastScrollRecyclerListener();
+                setIndexFastScrollRecyclerListener(amiibosView);
+                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case CHARACTER:
                 menuSortCharacter.setChecked(true);
-                setIndexFastScrollRecyclerListener();
+                setIndexFastScrollRecyclerListener(amiibosView);
+                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case AMIIBO_SERIES:
                 menuSortAmiiboSeries.setChecked(true);
-                setIndexFastScrollRecyclerListener();
+                setIndexFastScrollRecyclerListener(amiibosView);
+                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case AMIIBO_TYPE:
                 menuSortAmiiboType.setChecked(true);
-                setIndexFastScrollRecyclerListener();
+                setIndexFastScrollRecyclerListener(amiibosView);
+                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case FILE_PATH:
                 menuSortFilePath.setChecked(true);
@@ -1842,8 +1892,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onFilterGameSeriesChanged() {
         fragmentBrowser.addFilterItemView(settings.getGameSeriesFilter(),
                 "filter_game_series", onFilterGameSeriesChipCloseClick);
-        fragmentFoomiibo.addFilterItemView(settings.getGameSeriesFilter(),
-                "filter_game_series", onFilterGameSeriesChipCloseClick);
     }
 
     private final OnCloseClickListener onFilterGameSeriesChipCloseClick =
@@ -1857,10 +1905,8 @@ public class BrowserActivity extends AppCompatActivity implements
             };
 
     private void onFilterCharacterChanged() {
-        fragmentBrowser.addFilterItemView(settings.getCharacterFilter(), "filter_character",
-                onFilterCharacterChipCloseClick);
-        fragmentFoomiibo.addFilterItemView(settings.getCharacterFilter(), "filter_character",
-                onFilterCharacterChipCloseClick);
+        fragmentBrowser.addFilterItemView(settings.getCharacterFilter(),
+                "filter_character", onFilterCharacterChipCloseClick);
     }
 
     private final OnCloseClickListener onFilterCharacterChipCloseClick =
@@ -1874,10 +1920,8 @@ public class BrowserActivity extends AppCompatActivity implements
             };
 
     private void onFilterAmiiboSeriesChanged() {
-        fragmentBrowser.addFilterItemView(settings.getAmiiboSeriesFilter(), "filter_amiibo_series",
-                onFilterAmiiboSeriesChipCloseClick);
-        fragmentFoomiibo.addFilterItemView(settings.getAmiiboSeriesFilter(), "filter_amiibo_series",
-                onFilterAmiiboSeriesChipCloseClick);
+        fragmentBrowser.addFilterItemView(settings.getAmiiboSeriesFilter(),
+                "filter_amiibo_series", onFilterAmiiboSeriesChipCloseClick);
     }
 
     private final OnCloseClickListener onFilterAmiiboSeriesChipCloseClick =
@@ -1892,8 +1936,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void onFilterAmiiboTypeChanged() {
         fragmentBrowser.addFilterItemView(settings.getAmiiboTypeFilter(),
-                "filter_amiibo_type", onAmiiboTypeChipCloseClick);
-        fragmentFoomiibo.addFilterItemView(settings.getAmiiboTypeFilter(),
                 "filter_amiibo_type", onAmiiboTypeChipCloseClick);
     }
 
@@ -1928,6 +1970,8 @@ public class BrowserActivity extends AppCompatActivity implements
             mainLayout.setCurrentItem(2, true);
         }
     }
+
+
 
     private final ActivityResultLauncher<Intent> onUpdateTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -2036,10 +2080,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .setDuration(150)
                 .setListener(null);
 
-        if (mainLayout.getCurrentItem() == 0)
-            getToolbarOptions(toolbar, tagData, amiiboFile);
-        else
-            fragmentFoomiibo.getToolbarOptions(toolbar, tagData);
+        if (null != amiiboFile) getToolbarOptions(toolbar, tagData, amiiboFile);
 
         long amiiboId = -1;
         String tagInfo = null;
@@ -2177,6 +2218,115 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    private void getManagerStats() {
+        View foomiiboSlider = fragmentBrowser.getView();
+        TextView gameSeriesStats = findViewById(R.id.stats_game_series);
+        TextView characterStats = findViewById(R.id.stats_character);
+        TextView amiiboSeriesStats = findViewById(R.id.stats_amiibo_series);
+        TextView amiiboTypeStats = findViewById(R.id.stats_amiibo_type);
+
+        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        boolean hasAmiibo = null != amiiboManager;
+        if (null != foomiiboSlider) {
+            TextView foomiiboStats = foomiiboSlider.findViewById(R.id.foomiibo_slider);
+            foomiiboStats.setText(getString(R.string.number_foomiibo, hasAmiibo
+                    ? amiiboManager.amiibos.size() : 0));
+        }
+        gameSeriesStats.setText(getString(R.string.number_game, hasAmiibo
+                ? amiiboManager.gameSeries.size() : 0));
+        characterStats.setText(getString(R.string.number_character, hasAmiibo
+                ? amiiboManager.characters.size() : 0));
+        amiiboSeriesStats.setText(getString(R.string.number_series, hasAmiibo
+                ? amiiboManager.amiiboSeries.size() : 0));
+        amiiboTypeStats.setText(getString(R.string.number_type, hasAmiibo
+                ? amiiboManager.amiiboTypes.size() : 0));
+
+        if (hasAmiibo) {
+            gameSeriesStats.setOnClickListener(view1 -> {
+                final ArrayList<String> items = new ArrayList<>();
+                for (GameSeries gameSeries : amiiboManager.gameSeries.values()) {
+                    if (!items.contains(gameSeries.name))
+                        items.add(gameSeries.name);
+                }
+                Collections.sort(items);
+
+                new android.app.AlertDialog.Builder(this)
+                        .setTitle(R.string.amiibo_game)
+                        .setAdapter(new ArrayAdapter<>(this,
+                                android.R.layout.simple_list_item_1, items), null)
+                        .setPositiveButton(R.string.close, null)
+                        .show();
+            });
+
+            characterStats.setOnClickListener(view1 -> {
+                final ArrayList<Character> items = new ArrayList<>();
+                for (Character character : amiiboManager.characters.values()) {
+                    if (!items.contains(character))
+                        items.add(character);
+                }
+                Collections.sort(items);
+
+                new android.app.AlertDialog.Builder(this)
+                        .setTitle(R.string.pref_amiibo_characters)
+                        .setAdapter(new ArrayAdapter<>(this,
+                                android.R.layout.simple_list_item_2, android.R.id.text1, items) {
+                            @NonNull
+                            @Override
+                            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                                View view = super.getView(position, convertView, parent);
+                                TextView text1 = view.findViewById(android.R.id.text1);
+                                TextView text2 = view.findViewById(android.R.id.text2);
+
+                                Character character = getItem(position);
+                                text1.setText(character.name);
+
+                                GameSeries gameSeries = character.getGameSeries();
+                                text2.setText(null == gameSeries ? "" : gameSeries.name);
+
+                                return view;
+                            }
+                        }, null)
+                        .setPositiveButton(R.string.close, null)
+                        .show();
+            });
+
+            amiiboSeriesStats.setOnClickListener(view1 -> {
+                final ArrayList<String> items = new ArrayList<>();
+                for (AmiiboSeries amiiboSeries : amiiboManager.amiiboSeries.values()) {
+                    if (!items.contains(amiiboSeries.name))
+                        items.add(amiiboSeries.name);
+                }
+                Collections.sort(items);
+
+                new android.app.AlertDialog.Builder(this)
+                        .setTitle(R.string.amiibo_series)
+                        .setAdapter(new ArrayAdapter<>(this,
+                                android.R.layout.simple_list_item_1, items), null)
+                        .setPositiveButton(R.string.close, null)
+                        .show();
+            });
+
+            amiiboTypeStats.setOnClickListener(view1 -> {
+                final ArrayList<AmiiboType> amiiboTypes =
+                        new ArrayList<>(amiiboManager.amiiboTypes.values());
+                Collections.sort(amiiboTypes);
+
+                final ArrayList<String> items = new ArrayList<>();
+                for (AmiiboType amiiboType : amiiboTypes) {
+                    if (!items.contains(amiiboType.name))
+                        items.add(amiiboType.name);
+                }
+
+                new android.app.AlertDialog.Builder(this)
+                        .setTitle(R.string.pref_amiibo_types)
+                        .setAdapter(new ArrayAdapter<>(this,
+                                android.R.layout.simple_list_item_1, items), null)
+                        .setPositiveButton(R.string.close, null)
+                        .show();
+            });
+        }
+    }
+
     private int[] getAdapterStats(AmiiboManager amiiboManager) {
         BrowserAdapter adapter = (BrowserAdapter) fragmentBrowser.getAmiibosView().getAdapter();
         if (null == adapter) return new int[]{0, 0};
@@ -2258,10 +2408,8 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    private void hideFakeSnackbar(int duration) {
+    private void hideFakeSnackbar() {
         if (fakeSnackbar.getVisibility() == View.VISIBLE) {
-            AutoTransition autoTransition = new AutoTransition();
-            autoTransition.setDuration(duration);
 
             TranslateAnimation animate = new TranslateAnimation(
                     0, 0, 0, -fakeSnackbar.getHeight());
@@ -2275,17 +2423,14 @@ public class BrowserActivity extends AppCompatActivity implements
                 public void onAnimationEnd(AnimatedLinearLayout layout) {
                     layout.setAnimationListener(null);
                     fakeSnackbar.setVisibility(View.GONE);
+                    AutoTransition autoTransition = new AutoTransition();
+                    autoTransition.setDuration(100);
+                    TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
+                    mainLayout.post(() -> mainLayout.setPadding(0, 0, 0, 0));
                 }
             });
             fakeSnackbar.startAnimation(animate);
-
-            TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
-            mainLayout.post(() -> mainLayout.setPadding(0, 0, 0, 0));
         }
-    }
-
-    private void hideFakeSnackbar() {
-        hideFakeSnackbar(200);
     }
 
     public void collapseBottomSheet() {

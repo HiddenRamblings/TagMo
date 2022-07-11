@@ -465,6 +465,9 @@ public class FlaskSlotFragment extends Fragment implements
     public RecyclerView getAmiibosView() {
         return flaskDetails;
     }
+    public BottomSheetBehavior<View> getBottomSheet() {
+        return bottomSheetBehavior;
+    }
 
     private void onBottomSheetChanged(boolean hasAmiibo) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);

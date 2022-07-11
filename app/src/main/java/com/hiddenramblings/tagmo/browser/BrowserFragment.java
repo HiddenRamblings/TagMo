@@ -25,10 +25,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.flexbox.FlexboxLayout;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
@@ -140,7 +138,7 @@ public class BrowserFragment extends Fragment implements
                     amiibosView.requestLayout();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     float minHeight = requireContext().getResources()
-                            .getDimension(R.dimen.button_height_min) * 2;
+                            .getDimension(R.dimen.button_height_min) * 1.95f;
                     if (amiibosView.getLayoutParams().height > view.getHeight() - (int) minHeight)
                         amiibosView.getLayoutParams().height = view.getHeight() - (int) minHeight;
                     amiibosView.requestLayout();
@@ -341,7 +339,7 @@ public class BrowserFragment extends Fragment implements
                 menuOptions.setVisibility(View.GONE);
             } else {
                 menuOptions.setVisibility(View.VISIBLE);
-                activity.getToolbarOptions(toolbar, tagData);
+                activity.getToolbarOptions(toolbar, tagData, itemView);
             }
             TextView txtUsage = itemView.findViewById(R.id.txtUsage);
             if (txtUsage.getVisibility() == View.VISIBLE) {
@@ -351,7 +349,7 @@ public class BrowserFragment extends Fragment implements
                 getGameCompatibility(txtUsage, tagData);
             }
         } else {
-            activity.getToolbarOptions(toolbar, tagData);
+            activity.getToolbarOptions(toolbar, tagData, itemView);
             activity.updateAmiiboView(tagData, null);
         }
     }
@@ -374,9 +372,8 @@ public class BrowserFragment extends Fragment implements
         } catch (Exception ignored) { }
 
         if (settings.getAmiiboView() != BrowserSettings.VIEW.IMAGE.getValue()) {
-            ((BrowserActivity) requireActivity()).getToolbarOptions(
-                    itemView.findViewById(R.id.menu_options).findViewById(R.id.toolbar), tagData
-            );
+            ((BrowserActivity) requireActivity()).getToolbarOptions(itemView
+                    .findViewById(R.id.menu_options).findViewById(R.id.toolbar), tagData, itemView);
             getGameCompatibility(itemView.findViewById(R.id.txtUsage), tagData);
         }
     }

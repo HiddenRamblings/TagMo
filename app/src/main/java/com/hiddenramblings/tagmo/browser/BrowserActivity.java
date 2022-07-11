@@ -229,8 +229,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private TextView txtAmiiboSeries;
     private AppCompatImageView imageAmiibo;
 
-    private boolean isFullRebuild = true;
-
     private BillingClient billingClient;
     private final ArrayList<ProductDetails> iapSkuDetails = new ArrayList<>();
     private final ArrayList<ProductDetails> subSkuDetails = new ArrayList<>();
@@ -1155,7 +1153,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    void getToolbarOptions(Toolbar toolbar, byte[] tagData) {
+    void getToolbarOptions(Toolbar toolbar, byte[] tagData, View itemView) {
         if (!toolbar.getMenu().hasVisibleItems())
             toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.getMenu().findItem(R.id.mnu_scan).setVisible(false);
@@ -1175,6 +1173,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 return true;
             } else if (item.getItemId() == R.id.mnu_save) {
                 fragmentBrowser.buildFoomiiboFile(tagData);
+                itemView.callOnClick();
+                onRefresh(false);
                 return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
@@ -1198,6 +1198,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 return true;
             } else if (item.getItemId() == R.id.mnu_delete) {
                 fragmentBrowser.deleteFoomiiboFile(tagData);
+                itemView.callOnClick();
+                onRefresh(false);
                 return true;
             } else if (item.getItemId() == R.id.mnu_ignore_tag_id) {
                 ignoreTagId = !item.isChecked();

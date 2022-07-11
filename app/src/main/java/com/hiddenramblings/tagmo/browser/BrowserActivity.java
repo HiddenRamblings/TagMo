@@ -1647,6 +1647,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (Thread.currentThread().isInterrupted()) return;
 
             this.runOnUiThread(() -> {
+                hideFakeSnackbar();
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
             });
@@ -1663,6 +1664,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (Thread.currentThread().isInterrupted()) return;
 
             this.runOnUiThread(() -> {
+                hideFakeSnackbar();
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
             });
@@ -1757,7 +1759,6 @@ public class BrowserActivity extends AppCompatActivity implements
         if (newBrowserSettings.getAmiiboView() != oldBrowserSettings.getAmiiboView()) {
             onViewChanged();
         }
-        onAmiiboFilesChecked();
         if (System.currentTimeMillis() >= oldBrowserSettings.getLastUpdatedGit() + 3600000) {
             updates = new CheckUpdatesTask(this);
             if (TagMo.isGooglePlay()) {
@@ -1791,11 +1792,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 .lastUpdatedAPI().put(newBrowserSettings.getLastUpdatedAPI())
                 .lastUpdatedGit().put(newBrowserSettings.getLastUpdatedGit())
                 .apply();
-    }
-
-    private void onAmiiboFilesChecked() {
-        hideFakeSnackbar();
-        isFullRebuild = settings.getAmiiboFiles().isEmpty();
     }
 
     private void setIndexFastScrollRecyclerListener(RecyclerView amiibosView) {

@@ -19,18 +19,11 @@
             layout="@layout/active_tile_layout"
             android:id="@+id/active_tile_layout" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="0dp"
-            android:background="?colorPrimary" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/amiibos_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingTop="2dp"
             android:paddingHorizontal="4dp"
             android:paddingBottom="@dimen/button_height_min"/>
     </LinearLayout>

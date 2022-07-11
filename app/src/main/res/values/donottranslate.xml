@@ -23,6 +23,7 @@
     <string name="settings_reset_info" translatable="false">reset_info</string>
     <string name="settings_export_info" translatable="false">settings_export_info</string>
     <string name="settings_import_info_amiiboapi" translatable="false">settings_sync_info_amiiboapi</string>
+    <string name="settings_tagmo_theme" translatable="false">settings_tagmo_theme</string>
     <string name="settings_disable_debug" translatable="false">settings_disable_debug</string>
     <string name="settings_stable_channel" translatable="false">settings_stable_channel</string>
     <string name="image_network_settings" translatable="false">image_network_settings</string>

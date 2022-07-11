@@ -73,6 +73,9 @@ public interface Preferences {
     @DefaultBoolean(false)
     boolean preferEmulated();
 
+    @DefaultInt(0)
+    int applicationTheme();
+
     String lastUpdatedAPI();
 
     long lastUpdatedGit();

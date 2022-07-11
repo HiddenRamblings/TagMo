@@ -50,7 +50,7 @@
 
         <LinearLayout
             android:id="@+id/list_divider"
-            android:background="@drawable/primary_outline"
+            android:background="@drawable/divider_outline"
             android:layout_width="match_parent"
             android:layout_height="24dp"
             android:paddingHorizontal="10dp"
@@ -70,7 +70,7 @@
                 app:srcCompat="@mipmap/ic_foomiibo" />
 
             <TextView
-                android:id="@+id/foomiibo_slider"
+                android:id="@+id/divider_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

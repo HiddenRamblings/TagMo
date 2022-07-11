@@ -355,6 +355,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         amiibosView = fragmentBrowser.getAmiibosView();
                         foomiiboView = fragmentBrowser.getFoomiiboView();
                         bottomSheet = bottomSheetBehavior;
+                        if (null == foomiiboView) break;
                         foomiiboView.setLayoutManager(settings.getAmiiboView()
                                 == BrowserSettings.VIEW.IMAGE.getValue()
                                 ? new GridLayoutManager(BrowserActivity.this, getColumnCount())
@@ -1386,7 +1387,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState()
+                if (BottomSheetBehavior.STATE_EXPANDED == bottomSheet.getState()
                         || View.VISIBLE == amiiboContainer.getVisibility()
                         || getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     onBackPressed();
@@ -2613,7 +2614,7 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (View.VISIBLE == amiiboContainer.getVisibility()) {
             amiiboContainer.setVisibility(View.GONE);
         } else if (mainLayout.getCurrentItem() != 0) {
-            mainLayout.setCurrentItem(0, true);
+            mainLayout.setCurrentItem(0, false);
         } else {
             super.onBackPressed();
             finishAffinity();

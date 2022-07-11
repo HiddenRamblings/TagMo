@@ -31,11 +31,26 @@ public class TagMo extends Application {
         return mContext.get();
     }
 
+    public void setThemePreference() {
+        switch (prefs.applicationTheme().get()) {
+            case 0:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case 1:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            case 2:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+        }
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        setThemePreference();
 
         mPrefs = new SoftReference<>(this.prefs);
         mContext = new SoftReference<>(this);

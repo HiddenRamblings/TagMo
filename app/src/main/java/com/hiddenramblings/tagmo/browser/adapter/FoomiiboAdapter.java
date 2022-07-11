@@ -33,6 +33,7 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 public class FoomiiboAdapter
@@ -273,15 +274,18 @@ public class FoomiiboAdapter
                 for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
                     amiiboIds.add(amiiboFile.getId());
                 }
-                for (Amiibo amiibo : filteredData) {
+
+                Iterator<Amiibo> iterator = filteredData.iterator();
+                while (iterator.hasNext()) {
+                    Amiibo amiibo = iterator.next();
                     if (!amiiboIds.contains(amiibo.id)) {
+                        iterator.remove();
                         missingFiles.add(amiibo);
                     }
                 }
                 if (!missingFiles.isEmpty())
                     Collections.sort(missingFiles, new AmiiboComparator(settings));
 
-                filteredData.removeAll(missingFiles);
                 filteredData.addAll(0, missingFiles);
             }
 

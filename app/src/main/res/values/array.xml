@@ -12,6 +12,18 @@
         <item>NEVER</item>
     </string-array>
 
+    <string-array name="themeSettingNames">
+        <item>Auto</item>
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
+
+    <string-array name="themeSettingValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
     <string-array name="production_factory">
         <item>S1</item>
         <item>S2</item>

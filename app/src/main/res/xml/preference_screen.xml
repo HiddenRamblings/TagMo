@@ -53,6 +53,11 @@
 
     <androidx.preference.PreferenceCategory
         android:title="@string/pref_advanced">
+        <androidx.preference.ListPreference
+            android:entries="@array/themeSettingNames"
+            android:entryValues="@array/themeSettingValues"
+            android:key="@string/settings_tagmo_theme"
+            android:title="@string/pref_theme_details" />
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/settings_disable_debug"

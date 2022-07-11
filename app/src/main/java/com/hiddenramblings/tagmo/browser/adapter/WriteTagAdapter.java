@@ -195,17 +195,16 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
             String queryText = settings.getQuery().trim().toLowerCase();
             AmiiboManager amiiboManager = settings.getAmiiboManager();
             for (AmiiboFile amiiboFile : amiiboFiles) {
-                boolean add;
-
+                boolean add = false;
                 if (null != amiiboManager) {
                     Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
                     if (null == amiibo)
                         amiibo = new Amiibo(amiiboManager, amiiboFile.getId(), null, null);
                     add = settings.amiiboContainsQuery(amiibo, queryText);
-                } else {
-                    add = queryText.isEmpty();
                 }
-                if (!add && null != amiiboFile.getFilePath() )
+                if (!add && null != amiiboFile.getDocUri())
+                    add = pathContainsQuery(amiiboFile.getDocUri().toString(), queryText);
+                if (!add && null != amiiboFile.getFilePath())
                     add = pathContainsQuery(amiiboFile.getFilePath().getAbsolutePath(), queryText);
                 if (add)
                     tempList.add(amiiboFile);

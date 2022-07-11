@@ -357,6 +357,9 @@ public class EliteBankFragment extends Fragment implements
     public RecyclerView getAmiibosView() {
         return amiibosView;
     }
+    public BottomSheetBehavior<View> getBottomSheet() {
+        return bottomSheetBehavior;
+    }
 
     private void updateEliteHardwareAdapter(ArrayList<String> amiiboList) {
         AmiiboManager amiiboManager = settings.getAmiiboManager();

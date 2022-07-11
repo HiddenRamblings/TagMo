@@ -196,6 +196,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private FloatingActionButton nfcFab;
     private RecyclerView amiibosView;
     private RecyclerView foomiiboView;
+    private BottomSheetBehavior<View> bottomSheet;
     private BrowserFragment fragmentBrowser;
     private EliteBankFragment fragmentElite;
 
@@ -315,6 +316,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         amiibosView = fragmentBrowser.getAmiibosView();
         foomiiboView = fragmentBrowser.getFoomiiboView();
+        bottomSheet = bottomSheetBehavior;
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @SuppressLint("NewApi")
             @Override
@@ -330,12 +332,15 @@ public class BrowserActivity extends AppCompatActivity implements
                         hideBottomSheet();
                         setTitle(R.string.elite_n2);
                         amiibosView = fragmentElite.getAmiibosView();
+                        bottomSheet = fragmentElite.getBottomSheet();
                         break;
                     case 2:
                         hideBrowserInterface();
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                             setTitle(R.string.bluup_flask);
-                            amiibosView = pagerAdapter.getFlaskSlots().getAmiibosView();
+                            FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
+                            amiibosView = fragmentFlask.getAmiibosView();
+                            bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
                             setTitle(R.string.pref_guides);
                         }
@@ -349,6 +354,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         setTitle(R.string.tagmo);
                         amiibosView = fragmentBrowser.getAmiibosView();
                         foomiiboView = fragmentBrowser.getFoomiiboView();
+                        bottomSheet = bottomSheetBehavior;
                         foomiiboView.setLayoutManager(settings.getAmiiboView()
                                 == BrowserSettings.VIEW.IMAGE.getValue()
                                 ? new GridLayoutManager(BrowserActivity.this, getColumnCount())
@@ -625,8 +631,7 @@ public class BrowserActivity extends AppCompatActivity implements
             int bank_count = result.getData().getIntExtra(
                     NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
             prefs.eliteBankCount().put(bank_count);
-            fragmentElite.setArguments(result.getData().getExtras());
-            mainLayout.setCurrentItem(2, true);
+            showEliteWindow(result.getData().getExtras());
         } else {
             mainLayout.setCurrentItem(0, true);
             updateAmiiboView(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
@@ -1964,12 +1969,9 @@ public class BrowserActivity extends AppCompatActivity implements
     private void launchEliteActivity(Intent resultData) {
         if (TagMo.getPrefs().enable_elite_support().get()
                 && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
-            fragmentElite.setArguments(resultData.getExtras());
-            mainLayout.setCurrentItem(2, true);
+            showEliteWindow(resultData.getExtras());
         }
     }
-
-
 
     private final ActivityResultLauncher<Intent> onUpdateTagResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -2474,6 +2476,11 @@ public class BrowserActivity extends AppCompatActivity implements
             prefsDrawer.closeDrawer(GravityCompat.START);
     }
 
+    public void showEliteWindow(Bundle extras) {
+        fragmentElite.setArguments(extras);
+        mainLayout.setCurrentItem(1, true);
+    }
+
     public void showWebsite(String address) {
         mainLayout.setCurrentItem(pagerAdapter.getItemCount() - 1, true);
         pagerAdapter.getWebsite().loadWebsite(address);
@@ -2601,8 +2608,8 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onBackPressed() {
         if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
             prefsDrawer.closeDrawer(GravityCompat.START);
-        } else if (BottomSheetBehavior.STATE_EXPANDED == bottomSheetBehavior.getState()) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else if (BottomSheetBehavior.STATE_EXPANDED == bottomSheet.getState()) {
+            bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else if (View.VISIBLE == amiiboContainer.getVisibility()) {
             amiiboContainer.setVisibility(View.GONE);
         } else if (mainLayout.getCurrentItem() != 0) {
@@ -2692,8 +2699,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         args.putInt(NFCIntent.EXTRA_BANK_COUNT, bank_count);
                         args.putInt(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
                         args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles);
-                        fragmentElite.setArguments(args);
-                        mainLayout.setCurrentItem(2, true);
+                        showEliteWindow(args);
 
                     } else {
                         updateAmiiboView(TagReader.readFromTag(mifare));

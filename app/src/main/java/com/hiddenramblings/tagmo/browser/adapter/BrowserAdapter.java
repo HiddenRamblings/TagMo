@@ -280,6 +280,8 @@ public class BrowserAdapter
                                 null, null);
                     add = settings.amiiboContainsQuery(amiibo, queryText);
                 }
+                if (!add && null != amiiboFile.getDocUri())
+                    add = pathContainsQuery(amiiboFile.getDocUri().toString(), queryText);
                 if (!add && null != amiiboFile.getFilePath())
                     add = pathContainsQuery(amiiboFile.getFilePath().getAbsolutePath(), queryText);
                 if (add)

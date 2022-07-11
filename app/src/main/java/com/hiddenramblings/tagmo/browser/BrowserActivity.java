@@ -2228,7 +2228,7 @@ public class BrowserActivity extends AppCompatActivity implements
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         boolean hasAmiibo = null != amiiboManager;
         if (null != foomiiboSlider) {
-            TextView foomiiboStats = foomiiboSlider.findViewById(R.id.foomiibo_slider);
+            TextView foomiiboStats = foomiiboSlider.findViewById(R.id.divider_text);
             foomiiboStats.setText(getString(R.string.number_foomiibo, hasAmiibo
                     ? amiiboManager.amiibos.size() : 0));
         }

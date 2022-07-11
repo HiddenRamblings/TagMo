@@ -55,6 +55,8 @@
 package com.hiddenramblings.tagmo.eightbit.material;
 
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
@@ -62,6 +64,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import androidx.transition.TransitionManager;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -89,6 +92,22 @@ public class IconifiedSnackbar {
         View snackbarLayout = snackbar.getView();
         TextView textView = snackbarLayout.findViewById(
                 com.google.android.material.R.id.snackbar_text);
+        switch (mActivity.get().getResources().getConfiguration()
+                .uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                textView.setTextColor(ContextCompat.getColor(
+                        mActivity.get(), android.R.color.primary_text_dark
+                ));
+                break;
+            case Configuration.UI_MODE_NIGHT_NO:
+                snackbar.setBackgroundTint(ContextCompat.getColor(
+                        mActivity.get(), android.R.color.darker_gray
+                ));
+                textView.setTextColor(ContextCompat.getColor(
+                        mActivity.get(), android.R.color.primary_text_light
+                ));
+                break;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     drawable, 0, 0, 0);

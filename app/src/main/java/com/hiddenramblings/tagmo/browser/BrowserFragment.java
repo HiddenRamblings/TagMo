@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +32,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.GamesManager;
@@ -42,6 +44,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
+import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
@@ -53,6 +56,7 @@ import java.util.concurrent.Executors;
 public class BrowserFragment extends Fragment implements
         FoomiiboAdapter.OnFoomiiboClickListener{
 
+    private final Preferences_ prefs = TagMo.getPrefs();
     private FlexboxLayout chipList;
     private RecyclerView amiibosView;
     private RecyclerView foomiiboView;
@@ -130,6 +134,11 @@ public class BrowserFragment extends Fragment implements
         settings.addChangeListener((BrowserSettings.BrowserSettingsListener)
                 foomiiboView.getAdapter());
 
+        int valueY = prefs.foomiiboOffset().get();
+        amiibosView.getLayoutParams().height = valueY != -1
+                ? valueY : amiibosView.getLayoutParams().height;
+        amiibosView.requestLayout();
+
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
             int y = (int) event.getY();
             if (amiibosView.getLayoutParams().height + y >= 0) {
@@ -143,6 +152,7 @@ public class BrowserFragment extends Fragment implements
                         amiibosView.getLayoutParams().height = view.getHeight() - (int) minHeight;
                     amiibosView.requestLayout();
                 }
+                prefs.foomiiboOffset().put(amiibosView.getLayoutParams().height);
             }
             return true;
         });

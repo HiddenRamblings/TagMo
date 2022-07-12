@@ -4,8 +4,9 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="backgroundWhite">#22FFFFFF</color>
+    <color name="highlightWhite">#33FFFFFF</color>
     <color name="backgroundBlack">#22000000</color>
-    <color name="highlightCard">#33000000</color>
+    <color name="highlightBlack">#33000000</color>
     <color name="bottomSheetTint">#B3333333</color>
     <color name="tagWarningLight">#FF0000</color>
     <color name="tagWarningDark">#FF00FF</color>

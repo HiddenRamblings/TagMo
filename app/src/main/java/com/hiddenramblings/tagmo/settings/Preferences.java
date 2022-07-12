@@ -76,6 +76,9 @@ public interface Preferences {
     @DefaultInt(0)
     int applicationTheme();
 
+    @DefaultInt(-1)
+    int foomiiboOffset();
+
     String lastUpdatedAPI();
 
     long lastUpdatedGit();

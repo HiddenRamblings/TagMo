@@ -718,13 +718,13 @@ public class BrowserActivity extends AppCompatActivity implements
         popupHandler.postDelayed(() -> {
             int baseDelay = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                baseDelay = 100;
+                baseDelay = 75;
                 popupHandler.sendEmptyMessageDelayed(R.id.mnu_flask,  baseDelay);
             }
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, 100 + baseDelay);
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, 200 + baseDelay);
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, 300 + baseDelay);
-        }, 300);
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, 75 + baseDelay);
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, 175 + baseDelay);
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, 275 + baseDelay);
+        }, 325);
 
         popup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.mnu_scan) {
@@ -2411,10 +2411,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void hideFakeSnackbar() {
         if (fakeSnackbar.getVisibility() == View.VISIBLE) {
-
             TranslateAnimation animate = new TranslateAnimation(
                     0, 0, 0, -fakeSnackbar.getHeight());
-            animate.setDuration(100);
+            animate.setDuration(125);
             animate.setFillAfter(false);
             fakeSnackbar.setAnimationListener(new AnimatedLinearLayout.AnimationListener() {
                 @Override
@@ -2425,7 +2424,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     layout.setAnimationListener(null);
                     fakeSnackbar.setVisibility(View.GONE);
                     AutoTransition autoTransition = new AutoTransition();
-                    autoTransition.setDuration(100);
+                    autoTransition.setDuration(25);
                     TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
                     mainLayout.post(() -> mainLayout.setPadding(0, 0, 0, 0));
                 }

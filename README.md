@@ -55,6 +55,7 @@ This app is the result of work by many. Thanks go out to (in alphabetical order)
 * withgallantry - [Bluup Flask](https://www.bluuplabs.com/flask/) and much more
 * Others who prefer to remain anonymous and testers
 ### Translations
+* gocario - French
 * NoiRioN - Polish
 * Oosl - Chinese
 

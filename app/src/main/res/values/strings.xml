@@ -308,7 +308,7 @@
     <string name="fail_early_remove">amiibo&#8482; removed too early!</string>
     <string name="fail_amiibo_null">Please scan the amiibo&#8482; again</string>
     <string name="fail_read">Read failed</string>
-    <string name="fail_auth">Authenticaiton failed</string>
+    <string name="fail_auth">Authentication failed</string>
     <string name="fail_decrypt">Failed to decrypt tag data</string>
     <string name="fail_encrypt">Failed to encrypt tag data</string>
     <string name="fail_display">Failed to display tag data</string>

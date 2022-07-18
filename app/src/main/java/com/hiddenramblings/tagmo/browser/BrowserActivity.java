@@ -162,7 +162,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
-import in.myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView;
+import myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView;
 
 public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,

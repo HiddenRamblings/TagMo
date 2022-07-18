@@ -1,7 +1,8 @@
-package in.myinnos.indexfastscrollrecycler;
+package myinnos.indexfastscrollrecycler;
 
 /*
  * Created by MyInnos on 31-01-2017.
+ * Updated by AbandonedCart 07-2022.
  */
 
 import android.annotation.SuppressLint;
@@ -17,6 +18,7 @@ import android.view.MotionEvent;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiddenramblings.tagmo.R;
@@ -327,8 +329,7 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
      * @param color The color for the preview box
      */
     public void setIndexBarStrokeColor(@ColorRes int color) {
-        int colorValue = getContext().getResources().getColor(color);
-        mScroller.setIndexBarStrokeColor(colorValue);
+        mScroller.setIndexBarStrokeColor(ContextCompat.getColor(getContext(), color));
     }
 
     /**
@@ -357,8 +358,7 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
      * @param color The color for the preview box
      */
     public void setPreviewColor(@ColorRes int color) {
-        int colorValue = getContext().getResources().getColor(color);
-        mScroller.setPreviewColor(colorValue);
+        mScroller.setPreviewColor(ContextCompat.getColor(getContext(), color));
     }
 
     /**
@@ -372,8 +372,7 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
      * @param color The text color for the preview box
      */
     public void setPreviewTextColor(@ColorRes int color) {
-        int colorValue = getContext().getResources().getColor(color);
-        mScroller.setPreviewTextColor(colorValue);
+        mScroller.setPreviewTextColor(ContextCompat.getColor(getContext(), color));
     }
 
     /**
@@ -401,8 +400,7 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
      * @param color The color for the index bar
      */
     public void setIndexBarColor(@ColorRes int color) {
-        int colorValue = getContext().getResources().getColor(color);
-        mScroller.setIndexBarColor(colorValue);
+        mScroller.setIndexBarColor(ContextCompat.getColor(getContext(), color));
     }
 
 
@@ -417,8 +415,7 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
      * @param color The text color for the index bar
      */
     public void setIndexBarTextColor(@ColorRes int color) {
-        int colorValue = getContext().getResources().getColor(color);
-        mScroller.setIndexBarTextColor(colorValue);
+        mScroller.setIndexBarTextColor(ContextCompat.getColor(getContext(), color));
     }
 
     /**
@@ -432,8 +429,7 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
      * @param color The text color for the index bar
      */
     public void setIndexbarHighLightTextColor(@ColorRes int color) {
-        int colorValue = getContext().getResources().getColor(color);
-        mScroller.setIndexbarHighLightTextColor(colorValue);
+        mScroller.setIndexbarHighLightTextColor(ContextCompat.getColor(getContext(), color));
     }
 
     /**

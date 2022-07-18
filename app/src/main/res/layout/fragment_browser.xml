@@ -31,7 +31,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <in.myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
+        <myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
             android:id="@+id/amiibos_list"
             android:layout_width="match_parent"
             android:layout_height="640dp"
@@ -92,7 +92,7 @@
                 app:srcCompat="@drawable/ic_baseline_expand_24" />
         </LinearLayout>
 
-        <in.myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
+        <myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
             android:id="@+id/foomiibo_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

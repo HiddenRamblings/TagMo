@@ -170,7 +170,7 @@
 
     <string name="prefs_configuration">Options du navigateur</string>
     <string name="pref_import_keys">Clés d’importation</string>
-    <string name="image_loading_details">Accès aux données d\'image</string>
+    <string name="image_loading_details">Accès aux données d&#8217;image</string>
     <string name="enable_tag_validation">Validation NTAG215</string>
     <string name="tag_validation_details">Tous les Tags NFC ne se valident pas bien.\nDésactiver pour ignorer les vérifications de compatibilité.</string>
     <string name="enable_automatic_scan">Scanner automatiquement</string>

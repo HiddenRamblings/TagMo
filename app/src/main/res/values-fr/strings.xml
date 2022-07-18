@@ -1,25 +1,354 @@
 <resources>
-    <string name="topCenterTextMessage">Placez l\'étiquette sous le téléphone</string>
+    <string name="topCenterTextMessage">Placez le Tag sous le téléphone</string>
+    <string name="middleCenterError"> </string>
 
-    <string name="nfc_unsupported">NFC Non Pris En Charge!</string>
-    <string name="nfc_disabled">NFC Désactivé!</string>
-    <string name="nfc_query">NFC est actuellement désactivé. Activer NFC?</string>
+    <string name="fixed_key_found">« Locked Key » chargée.</string>
+    <string name="fixed_key_missing">« Locked Key » manquante !</string>
+    <string name="unfixed_key_found">« Unfixed Key » chargée.</string>
+    <string name="unfixed_key_missing">« Unfixed Key » manquante !</string>
 
+    <string name="nfc_unsupported">NFC non pris en charge !</string>
+    <string name="nfc_disabled">NFC désactivé !</string>
+    <string name="nfc_query">NFC actuellement désactivé. Activer le NFC ?</string>
+
+    <string name="no_decrypt_key">Clés de déchiffrage non importées</string>
+
+    <string name="filter">Filtres amiibo&#8482;</string>
+    <string name="sorting">Options de tri</string>
+    <string name="display_options">Options d’affichage</string>
+
+    <string name="amiibo_id">ID</string>
+    <string name="amiibo_name">Nom</string>
+    <string name="amiibo_game">Licence</string>
+    <string name="amiibo_character">Personnage</string>
+    <string name="amiibo_series">Série amiibo&#8482;</string>
+    <string name="amiibo_type">Type d’amiibo&#8482;</string>
+    <string name="amiibo_path">Chemin</string>
+
+    <string name="pref_amiibo_characters">Personnages</string>
+    <string name="pref_amiibo_types">Types d’Amiibo</string>
+
+    <string name="amiibo_name_caps">NOM</string>
+    <string name="amiibo_id_caps">TAGID</string>
+    <string name="amiibo_game_caps">LICENCE</string>
+    <string name="amiibo_character_caps">PERSONNAGE</string>
+    <string name="amiibo_series_caps">SERIE AMIIBO</string>
+    <string name="amiibo_type_caps">TYPE D’AMIIBO</string>
+    <string name="amiibo_path_caps">CHEMIN</string>
+
+    <string name="recursive_folders">Recherche récursive</string>
+    <string name="show_downloads">Afficher « Téléchargements »</string>
+
+    <string name="simple">Texte uniquement</string>
+    <string name="compact">Compact</string>
+    <string name="large">Large</string>
+    <string name="image">Mosaïque</string>
+
+    <string name="decryption_keys">Clés de déchiffrement</string>
+
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="search">Rechercher</string>
+    <string name="refresh">Rafraîchir</string>
+    <string name="close">Fermer</string>
+    <string name="view">Visualiser</string>
+    <string name="proceed">Continuer</string>
+    <string name="unlock">Déverrouiller</string>
+    <string name="scan">Scanner</string>
+    <string name="browser">Parcourir</string>
+    <string name="purchase">Acheter</string>
+    <string name="save">Sauvegarder</string>
+    <string name="write">Écrire</string>
+    <string name="cancel">Annuler</string>
     <string name="accept">Accepter</string>
+    <string name="deny">Refuser</string>
+    <string name="start">Commencer</string>
+    <string name="delete">Supprimer</string>
+    <string name="erase">Effacer</string>
     <string name="activate">Activer</string>
+    <string name="parent">Parent</string>
+    <string name="unknown">Inconnu</string>
+    <string name="invalid">Invalide</string>
+    <string name="unspecified">Non spécifié</string>
+    <string name="install">Installer</string>
+    <string name="sync">Synchroniser</string>
+    <string name="enable">Activer</string>
+    <string name="replace">Remplacer</string>
+    <string name="update">Actualiser</string>
 
-    <string name="update">Mettre</string>
+    <string name="error_caps">ERREUR</string>
 
+    <string name="uid">UID</string>
+    <string name="country_code">Code pays</string>
+    <string name="init_date">Date d’initialisation</string>
+    <string name="mod_date">Date de modificaiton</string>
+    <string name="nickname">Surnom</string>
+    <string name="write_count">Compteur d’écriture</string>
+    <string name="mod_serial">Numéro de série</string>
+    <string name="view_hex">Voir code hexa.</string>
+    <string name="hex_code">Code hexa.</string>
+    <string name="edit_props">Modifier propriétés</string>
+    <string name="delete_amiibo">Supprimer amiibo&#8482;</string>
+    <string name="ignore_tag_id">Ignorer Tag ID</string>
+    <string name="random_serial">Numéro de série aléatoire</string>
     <string name="game_usage_view">Afficher les jeux compatibles</string>
-    <string name="game_usage_hide">Masquer les Jeux Compatibles</string>
+    <string name="game_usage_hide">Masquer les jeux compatibles</string>
+
+    <string name="properties">Propriétés</string>
+    <string name="mii">Mii</string>
+    <string name="mii_name">Nom du Mii</string>
+    <string name="app">Application</string>
+    <string name="app_id">ID application</string>
+    <string name="app_data">Données application</string>
+
+    <string name="hearts">Cœurs</string>
+    <string name="level">Niveau</string>
+    <string name="appearance">Apparence</string>
+    <string name="special_neutral">Spéciale neutre</string>
+    <string name="special_side">Special côté</string>
+    <string name="special_up">Spécial haut</string>
+    <string name="special_down">Spécial bas</string>
+    <string name="attack">Attaque</string>
+    <string name="defense">Défense</string>
+    <string name="speed">Vitesse</string>
+    <string name="bonus_one">Effet bonus 1</string>
+    <string name="bonus_two">Effet bonus 2</string>
+    <string name="bonus_three">Effet bonus 3</string>
+
+    <string name="tagmo_settings">Paramètres de TagMo</string>
+    <string name="rebuild_database">Synchroniser avec AmiiboAPI</string>
+    <string name="logcat_support">Signaler un problème</string>
+    <string name="clear_foomiibo_set">Vider Foomiibo</string>
+    <string name="build_foomiibo_set">Déployer Foomiibo</string>
+    <string name="foomiibo_progress">Déploiement %1$s&#8230;</string>
+    <string name="foomiibo_removing">Effacement %1$s&#8230;</string>
+
+    <string name="wrote_file">%1$s sauvegardé !</string>
+    <string name="wrote_foomiibo">%1$s Foomiibo sauvegardé !</string>
+    <string name="delete_file">%1$s supprimé !</string>
+    <string name="delete_foomiibo">%1$s Foomiibo supprimé !</string>
+    <string name="nfc_tag">Tag NFC</string>
+    <string name="tag_detected">%1$s détecté&#8230;</string>
+    <string name="tag_scanning">%1$s scanné&#8230;</string>
+    <string name="bank_writing">Écriture de la banque %1$d sur %2$d&#8230;</string>
+    <string name="bank_erasing">Effacement de la banque %1$d sur %2$d&#8230;</string>
+    <string name="bank_select">Choisir une banque de destination&#8230;</string>
+
+    <string name="zelda_twilight">The Legend of Zelda : Twilight Princess HD</string>
+    <string name="super_smash">Super Smash Bros. pour Nintendo 3DS et Wii U</string>
+
+    <string name="save_image">Sauvegarder l’image</string>
+
+    <string name="unknown_type">Tag non vérifiée</string>
+    <string name="write_raw">Écrire vers Tag (Raw)</string>
+    <string name="write_auto">Écrire vers Tag (Auto)</string>
+    <string name="update_tag">Actualiser Tag</string>
+    <string name="scan_tag">Scanner un Tag NFC</string>
+    <string name="lock_elite">Verrouiller N2 Elite</string>
+    <string name="unlock_elite">Déverrouiller N2 Elite</string>
+    <string name="scan_bank_no">Scanner la banque n°%1$d</string>
+    <string name="scan_bank">Scanner la banque %1$s</string>
+    <string name="scan_elite">Scanner le N2 Elite</string>
+    <string name="erase_bank">Effacer la banque</string>
+    <string name="activate_bank">Activer la banque</string>
+    <string name="amiibo_backup">Cloner amiibo&#8482;</string>
+    <string name="validate_data">Valider les données</string>
+    <string name="set_bank_count">Fixer le nombre de banque</string>
+    <string name="lock_amiibo">Verrouiller N2 Elite</string>
+    <string name="write_collection">Écrire collection</string>
+    <string name="erase_collection">Effacer collection</string>
+    <string name="bluup_flask_ble">Bluup Flask (BLE)</string>
+    <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
+    <string name="lego_dimensions">ᴸᴱᴳᴼ Dimensions</string>
+
+    <string name="permission_required">Permissions de stockage nécessaire !</string>
+    <string name="storage_unavailable">Stockage inaccessible !</string>
+    <string name="allow">Autoriser</string>
 
     <string name="pref_guides">Guide</string>
-    <string name="pref_donate">Don</string>
+    <string name="pref_donate">Faire un don</string>
 
-    <string name="location_disclosure">L\'emplacement est requis pour l\'analyse Bluetooth LE. Conformément à la politique de Google Play, TagMo est tenu de vous informer que des données de localisation peuvent être collectées en arrière-plan. TagMo ne lit, ne stocke ni ne partage les données de localisation. En tant que tel, cet avis est strictement une formalité.</string>
-    <string name="prefs_configuration">Options du Navigateur</string>
-    <string name="pref_import_keys">Clés d\'importation</string>
-    <string name="allow">Permettre</string>
-    <string name="yes">Oui</string>
+    <string name="prefs_configuration">Options du navigateur</string>
+    <string name="pref_import_keys">Clés d’importation</string>
+    <string name="image_loading_details">Accès aux données d'image</string>
+    <string name="enable_tag_validation">Validation NTAG215</string>
+    <string name="tag_validation_details">Tous les Tags NFC ne se valident pas bien.\nDésactiver pour ignorer les vérifications de compatibilité.</string>
+    <string name="enable_automatic_scan">Scanner automatiquement</string>
+    <string name="automatic_scan_details">Désactiver pour annuler le scan automatique.</string>
+    <string name="tag_devices">Appareils Tag</string>
+    <string name="enable_power_tag">Activer le support Power Tag</string>
+    <string name="power_tag_details">Voir Github pour les usages et limitations.</string>
+    <string name="enable_elite">Activer le support N2 Elite</string>
+    <string name="elite_details">Voir Github pour les usages et limitations.</string>
+    <string name="lock_elite_details">La banque active va désormais simuler un amiibo&#8482;.\nD’autres fonctionnalités seront désactivées jusqu’au déverrouillage.</string>
+    <string name="lock_elite_warning">Verrouiller le N2 Elite ?</string>
+    <string name="unlock_elite_warning">Déverrouiller le N2 Elite ?</string>
+    <string name="elite_signature">ID du N2 Elite : %1$s</string>
+    <string name="amiibo_info">Base de données amiibo&#8482;</string>
+    <string name="sync_amiibo_info">Sync. les données avec AmiiboAPI</string>
+    <string name="import_json_details">Charger la base de données amiibo&#8482; (JSON)</string>
+    <string name="reset_amiibo_info">Réinitialiser le cache de la base de données amiibo&#8482;</string>
+    <string name="number_foomiibo">Foomiibo : %1$d amiibo&#8482;</string>
+    <string name="number_game">%1$d Licence(s)</string>
+    <string name="number_character">%1$d Personnage(s)</string>
+    <string name="number_series">%1$d Séries d’amiibo&#8482;</string>
+    <string name="number_type">%1$d Types d’amiibo&#8482;</string>
+    <string name="pref_advanced">Avancé</string>
+    <string name="pref_theme_details">Thème système pour TagMo</string>
+    <string name="pref_disable_debug">Désactiver le journal de déboguage</string>
+    <string name="disable_debug_details">Peut améliorer les performances, mais réduits les informations de diagnostic.</string>
+    <string name="pref_stable_channel">Vérification de mise à jour stable</string>
+    <string name="stable_channel_details">Utiliser seulement la branche stable lors de la vérification de mise à jour pour TagMo</string>
 
+    <string name="amiibo_info_updated">Base d’amiibo&#8482; mise à jour !</string>
+    <string name="sync_amiibo_process">Synchronisation avec AmiiboAPI&#8230;</string>
+    <string name="sync_amiibo_complete">Réussite de la synchronisation avec AmiiboAPI !</string>
+    <string name="sync_amiibo_failed">Échec de la synchronisation avec AmiiboAPI !</string>
+    <string name="removing_amiibo_info">Vidage du cache amiibo&#8482;&#8230;</string>
+    <string name="update_amiibo_api">Base de données AmiiboAPI mise à jour !</string>
+
+    <string name="locating_keys">Recherche des clés de chiffrage&#8230;</string>
+    <string name="refreshing_list">Recherche d’amiibo&#8482;&#8230;</string>
+    <string name="amiibo_not_found">Aucun fichier .bin d’amiibo&#8482; trouvé !</string>
+
+    <string name="files_displayed">%1$d Fichiers : ? / ? amiibo&#8482;</string>
+    <string name="amiibo_collected">%1$d Fichiers : %2$d / %3$d amiibo&#8482;</string>
+
+    <string name="view_device_options">Basculer vers les options du N2 Elite</string>
+    <string name="view_amiibo_details">Basculer vers les détails de l’amiibo&#8482;</string>
+    <string name="write_open_banks">Écrire %1$d banques au N2 Elite</string>
+    <string name="erase_open_banks">Effacer %1$d banques du N2 Elite</string>
+    <string name="edit_bank_count">Modifier le nombre de banques du N2 Elite</string>
+    <string name="bank_stats">Banque %1$d active, %2$d banques enregistrées</string>
+    <string name="bank_number">Banque %1$d</string>
+
+    <string name="bank_select_details">Définir le numéro de banque</string>
+    <string name="write_confirm">Envoyer la sélection au N2 Elite ?</string>
+    <string name="warn_delete_file">%1$s\nsera supprimé. Êtes-vous sûr ?</string>
+    <string name="delete_missing">Impossible de supprimé un Tag scanné !</string>
+    <string name="delete_virtual">Impossible de supprimer un Tag virtuel !</string>
+    <string name="erase_active">Impossinle d’effacer la banque active !</string>
+    <string name="backup_filename">Définir le nom du .bin de l’amiibo&#8482;</string>
+    <string name="document_storage_root">Mettre à jour le stockage « Document »</string>
+    <string name="emulated_storage_root">Parcourir stockage « Emulated »</string>
+    <string name="physical_storage_root">Parcourir stockage « Physical »</string>
+    <string name="grant_file_permission">Autoriser permission « Fichiers multimédias »</string>
+    <string name="force_document_storage">Activer le stockage « Document »</string>
+    <string name="refresh_amiibo">Actualiser amiibo&#8482;</string>
+
+    <string name="prepare_unlock">Une fois que le N2 sera scanné, il ne devra pas être retiré du capteur NFC jusqu’à la fin de l’opération.</string>
+    <string name="progress_unlock">Appuyez et maintenez le bouton N2 sans déconnecter le NFC.</string>
+    <string name="prepare_blank">La vérification du N2 Elite ne peut se faire avec une banque vide.</string>
+    <string name="possible_lock">Est-ce que le N2 Elite est verrouillé ?</string>
+    <string name="possible_blank">Scanner un N2 Elite ?</string>
+    <string name="tag_update_only">Les Tags précédemment écrits nécessitent d’être « Actualisés »</string>
+
+    <string name="custom_tab_back">Retour à TagMo</string>
+
+    <string name="create_blank">Créer un Tag NFC virtuel vide</string>
+    <string name="flask_upload">Téléversement d’amiibo&#8482;&#8230;</string>
+    <string name="location_disclosure">L’emplacement est requis pour l’analyse Bluetooth LE. Conformément à la politique de Google Play, TagMo est tenu de vous informer que des données de localisation peuvent être collectées en arrière-plan. TagMo ne lit, ne stocke ni ne partage les données de localisation. En tant que tel, cet avis est strictement une formalité.</string>
+
+    <string name="flask_joy_con">Ceci n’est pas un Joy-Con valide !</string>
+
+    <string name="data_write">Données principales écrites</string>
+    <string name="password_write">Mot de passe écrit</string>
+    <string name="lock_write">Informations de verrouillage écrites</string>
+
+    <string name="auth_response">Réponse d’authentification : %1$s</string>
+    <string name="password">Mot de passe : %1$s</string>
+
+    <string name="validation_success">Validation des données réussie !</string>
+    <string name="no_source_data">Validation impossible : Aucune donnée.</string>
+
+    <string name="error_no_data">Aucune donnée à écrire</string>
+    <string name="error_tag_protocol">NTAG215 demandé, %1$s trouvé !</string>
+    <string name="error_state">Erreur d’état. Action invalide : %1$s</string>
+    <string name="error_length">Doit contenir 8 caractères</string>
+    <string name="error_input">Entrée invalide</string>
+    <string name="error_min_max">Doit être compris entre %1$d et %2$d</string>
+    <string name="error_data_write">Erreur lors de l’écriture des données principales (stage 1)</string>
+    <string name="error_password_write">Erreur lors de la définition du mot de passe (stage 2)</string>
+    <string name="error_lock_write">Erreur lors de la définition des informations de verrouillage (stage 3)</string>
+    <string name="error_tag_rewrite">Le Tag est déjà un amiibo&#8482;</string>
+    <string name="error_tag_format">Le Tag n’est pas un NTAG215</string>
+    <string name="error_tag_version">Erreur de version de Tag</string>
+    <string name="error_tag_faulty">Le Tag NFC est peut-être corrompu.\nVeuillez essayer un autre Tag.</string>
+    <string name="error_version">Erreur dans l’information de version</string>
+    <string name="error_amiibo_parse">Erreur lors de l’analyse des informations de l’amiibo&#8482;</string>
+    <string name="error_powertag_key">Clés Power Tag non chargées</string>
+    <string name="error_elite_write">Erreur lors de l’écriture des données au N2 Elite</string>
+    <string name="error_elite_auth">Erreur lors de l’authentification au N2 Elite</string>
+    <string name="error_amiitool_init">Erreur lors de l’initialisation de amiitool</string>
+    <string name="error_auth_null">Résultat d’authentification vide</string>
+    <string name="error_unknown">Une erreur inconnue est survenue.\nVeuillez soumettre un problème au support.</string>
+
+    <string name="fail_ssl_update">Sécurité OpenSSL obsolète !</string>
+    <string name="fail_save_data">Échec de l’enregistrement des données du Tag</string>
+    <string name="fail_media_scan">Impossible de rafraîchir le scanner de médias</string>
+    <string name="fail_read_size">La lecture a échoué ! Taille des données lues inattendue.</string>
+    <string name="fail_read_uid">Impossible de lire l’ancien UID</string>
+    <string name="fail_mismatch_uid">L’UID source ne correspond pas avec la cible !</string>
+    <string name="fail_invalid_size">Taille des données lues invalide</string>
+    <string name="fail_powertag_keys">Échec du chargement des clés Power Tag</string>
+    <string name="fail_bank_oob">La banque sélectionnée dépasse la limite !</string>
+    <string name="fail_active_oob">La banque active dépasse la limite !</string>
+    <string name="fail_parse_banks">Échec de l’analyse des banques !</string>
+    <string name="fail_read_amiibo">Échec de la lecture des données amiibo&#8482; !</string>
+    <string name="fail_early_remove">L’amiibo&#8482; a été retiré trop tôt !</string>
+    <string name="fail_amiibo_null">Veuillez scanner l’amiibo&#8482; de nouveau</string>
+    <string name="fail_read">Échec de la lecture</string>
+    <string name="fail_auth">Échec de l’authentification</string>
+    <string name="fail_decrypt">Échec du déchiffrage des données du Tag</string>
+    <string name="fail_encrypt">Échec du chiffrage des données du Tag</string>
+    <string name="fail_display">Échec de l’affichage des données du Tag</string>
+    <string name="fail_unlock">Échec du déverrouillage !</string>
+    <string name="fail_logcat">Échec du logcat!</string>
+
+    <string name="no_tag_loaded">&lt; Aucun Tag chargé &gt;</string>
+    <string name="read_error">&lt; Erreur de lecture de Tag &gt;</string>
+    <string name="blank_tag">&lt; Tag vide &gt;</string>
+    <string name="blank_bank">%1$s : &lt; Banque vide &gt;</string>
+
+    <string name="key_not_present">Clés non chargées !</string>
+    <string name="key_size_error">La taille du fichier clé ne correspond pas.</string>
+    <string name="key_size_invalid">Taille du fichier clé invalide.</string>
+    <string name="key_signature_error">La signature du fichier clé ne correspond pas.</string>
+    <string name="invalid_key_error">Aucune clé valide dans le fichier.</string>
+    <string name="key_read_error">Erreur de lecture de clé depuis le stockage</string>
+
+    <string name="invalid_tag_prefix">Les données doivent commencer par 0x04.</string>
+    <string name="invalid_tag_lock">Signature du verrou invalide.</string>
+    <string name="invalid_tag_cc">Signature CC invalide.</string>
+    <string name="invalid_tag_dynamic">Signature du verrou dynamique invalide.</string>
+    <string name="invalid_tag_cfg_zero">Signature CFG0 invalide.</string>
+    <string name="invalid_tag_cfg_one">Signature CFG1 invalide.</string>
+    <string name="invalid_uid_length">Longueur de l’UID invalide</string>
+    <string name="invalid_file_size">Taille %1$s : %2$d, Attendu : %3$d</string>
+    <string name="invalid_data_size">Taille du Tag : %1$d, Attendu : %2$d</string>
+    <string name="invalid_app_data">Données d’application invalides</string>
+
+    <string name="uid_key_missing">Aucune clé disponible pour l’UID</string>
+    <string name="p10_key_missing">Aucune clé disponible pour le P10_ID</string>
+    <string name="power_tag_verify">Power Tag identifié : %1$s</string>
+
+    <string name="amiibo_info_parse_error">Erreur lors de l’analyse de la base de données amiibo&#8482;</string>
+    <string name="amiibo_info_not_loaded">Base de données amiibo&#8482; non chargée</string>
+    <string name="amiibo_failure_load">Échec du chargement de la base de données amiibo&#8482;</string>
+    <string name="amiibo_failure_parse">Échec de l’analyse de la base de données amiibo&#8482;</string>
+    <string name="amiibo_failure_read">Échec de la lecture de la base de données amiibo&#8482;</string>
+    <string name="amiibo_failure_update">Échec de l’actualisation de la base de données amiibo&#8482;</string>
+    <string name="amiibo_failure_parse_default">Échec de l’analyse de la base de données amiibo&#8482; par défaut</string>
+
+    <string name="firmware_update">Micrologiciel du N2 Elite Firmware mise à jour !</string>
+    <string name="firmware_failed">Échec de la mise à jour du micrologiciel. Veuillez réessayer ! (%1$d)</string>
+
+    <string name="speed_scan">Soulevez légèrement le Tag pour bien terminer le scan</string>
+    <string name="unzip_item">Décompression de %1$s&#8230;</string>
+    <string name="mkdir_failed">Échec de mkdir "%1$s" !</string>
+    <string name="downloads_hidden">Les téléchargements sont actuellement cachés !</string>
+
+    <string name="sub_button">Suivre %1$s</string>
+    <string name="iap_button">Donner %1$s</string>
+    <string name="donation_thanks">Merci pour votre soutien !</string>
 </resources>

@@ -43,7 +43,7 @@
     <string name="amiibo_path_caps">LOKALIZACJA</string>
 
     <string name="recursive_folders">Wyszukiwanie rekurencyjne</string>
-    <string name="show_downloads">Pokaż \'Pobrane\'</string>
+    <string name="show_downloads">Pokaż &#8217;Pobrane&#8217;</string>
 
     <string name="simple">Proste teksty</string>
     <string name="compact">Kompaktowe karty</string>
@@ -202,7 +202,7 @@
     <string name="prepare_unlock">Raz zeskanowany N2 nie może zostać usunięty z pola NFC póki operacja nie zostanie zakończona.</string>
     <string name="progress_unlock">Naciśnij i przytrzymaj przycisk N2 bez rozłączania NFC.</string>
     <string name="possible_lock">Czy ten N2 Elite jest zablokowany?</string>
-    <string name="tag_update_only">Wcześniej zapisane tagi wymagają \"Aktualizacji\"</string>
+    <string name="tag_update_only">Wcześniej zapisane tagi wymagają &quot;Aktualizacji&quot;</string>
 
     <string name="data_write">Nagrano dane główne</string>
     <string name="password_write">Nagrano hasło</string>

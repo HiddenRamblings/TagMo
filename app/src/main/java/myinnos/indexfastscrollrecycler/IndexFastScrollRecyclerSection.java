@@ -1,7 +1,8 @@
-package in.myinnos.indexfastscrollrecycler;
+package myinnos.indexfastscrollrecycler;
 
 /*
  * Created by MyInnos on 31-01-2017.
+ * Updated by AbandonedCart 07-2022.
  */
 
 import android.content.Context;

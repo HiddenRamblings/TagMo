@@ -44,7 +44,7 @@ public class BrowserAdapter
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
-    private final ArrayList<AmiiboFile> data = new ArrayList<>();
+    private ArrayList<AmiiboFile> data = new ArrayList<>();
     private ArrayList<AmiiboFile> filteredData;
     private AmiiboFilter filter;
     boolean firstRun = true;
@@ -82,7 +82,7 @@ public class BrowserAdapter
 
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
-            this.data.clear();
+            this.data = new ArrayList<>();
             if (null != newBrowserSettings.getAmiiboFiles())
                 this.data.addAll(newBrowserSettings.getAmiiboFiles());
             refresh = true;

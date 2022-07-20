@@ -60,6 +60,7 @@ public class BrowserFragment extends Fragment implements
     private FlexboxLayout chipList;
     private RecyclerView amiibosView;
     private RecyclerView foomiiboView;
+    private LinearLayout listDivider;
 
     private final Foomiibo foomiibo = new Foomiibo();
     private File directory;
@@ -117,6 +118,7 @@ public class BrowserFragment extends Fragment implements
         chipList.setVisibility(View.GONE);
         amiibosView = view.findViewById(R.id.amiibos_list);
         foomiiboView = view.findViewById(R.id.foomiibo_list);
+        listDivider = view.findViewById(R.id.list_divider);
 
         amiibosView.setLayoutManager(settings.getAmiiboView()
                 == BrowserSettings.VIEW.IMAGE.getValue()
@@ -139,7 +141,7 @@ public class BrowserFragment extends Fragment implements
                 ? valueY : amiibosView.getLayoutParams().height;
         amiibosView.requestLayout();
 
-        view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
+        listDivider.setOnTouchListener((v, event) -> {
             int y = (int) event.getY();
             if (amiibosView.getLayoutParams().height + y >= 0.5f) {
                 if (event.getAction() == MotionEvent.ACTION_MOVE) {

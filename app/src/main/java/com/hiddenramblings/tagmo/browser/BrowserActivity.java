@@ -1062,6 +1062,7 @@ public class BrowserActivity extends AppCompatActivity implements
         toolbar.getMenu().findItem(R.id.mnu_validate).setEnabled(available);
 
         MenuItem backup = toolbar.getMenu().findItem(R.id.mnu_save);
+        MenuItem delete = toolbar.getMenu().findItem(R.id.mnu_delete);
         if (null != amiiboFile) {
             if (null != amiiboFile.getDocUri()) {
                 String relativeDocument = Storage.getRelativeDocument(
@@ -1074,6 +1075,9 @@ public class BrowserActivity extends AppCompatActivity implements
                         TagMo.getPrefs().browserRootFolder().get(), "");
                 backup.setVisible(!relativeFile.startsWith("/Foomiibo/"));
             }
+            delete.setVisible(true);
+        } else {
+            delete.setVisible(false);
         }
 
         toolbar.setOnMenuItemClickListener(item -> {
@@ -2081,7 +2085,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .setDuration(150)
                 .setListener(null);
 
-        if (null != amiiboFile) getToolbarOptions(toolbar, tagData, amiiboFile);
+        getToolbarOptions(toolbar, tagData, amiiboFile);
 
         long amiiboId = -1;
         String tagInfo = null;

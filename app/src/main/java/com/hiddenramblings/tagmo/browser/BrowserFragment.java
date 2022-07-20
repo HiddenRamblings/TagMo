@@ -141,7 +141,7 @@ public class BrowserFragment extends Fragment implements
 
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
             int y = (int) event.getY();
-            if (amiibosView.getLayoutParams().height + y >= 0) {
+            if (amiibosView.getLayoutParams().height + y >= 0.5f) {
                 if (event.getAction() == MotionEvent.ACTION_MOVE) {
                     amiibosView.getLayoutParams().height += y;
                     amiibosView.requestLayout();

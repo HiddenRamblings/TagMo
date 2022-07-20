@@ -168,9 +168,8 @@ public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,
         BrowserAdapter.OnAmiiboClickListener {
 
-    private final Preferences_ prefs = TagMo.getPrefs();
+    private Preferences_ prefs;
     private KeyManager keyManager;
-    private final Handler handler = new Handler(Looper.getMainLooper());
     private int filteredCount;
     private AmiiboFile clickedAmiibo = null;
 
@@ -180,7 +179,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private String updateUrl;
     private AppUpdateInfo appUpdate;
 
-    NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
     private SettingsFragment fragmentSettings;
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private TextView currentFolderView;
@@ -230,6 +228,9 @@ public class BrowserActivity extends AppCompatActivity implements
     private TextView txtAmiiboSeries;
     private AppCompatImageView imageAmiibo;
 
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
+
     private BillingClient billingClient;
     private final ArrayList<ProductDetails> iapSkuDetails = new ArrayList<>();
     private final ArrayList<ProductDetails> subSkuDetails = new ArrayList<>();
@@ -237,6 +238,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prefs = TagMo.getPrefs();
         setTheme(R.style.AppTheme);
         keyManager = new KeyManager(this);
 

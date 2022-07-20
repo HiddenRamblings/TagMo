@@ -8,6 +8,7 @@
     <string name="build_hash" translatable="false">#%1$s</string>
     <string name="build_hash_full" translatable="false"> TagMo - #%1$s</string>
     <string name="git_issue_title" translatable="false">Logcat - TagMo #%1$s</string>
+    <string name="install_src" translatable="false">Installed by %1$s</string>
 
     <string name="tag_data" translatable="false">tagData</string>
     <string name="hex_ff" translatable="false">FF</string>

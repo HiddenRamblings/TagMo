@@ -23,14 +23,6 @@ public class TagMo extends Application {
     @Pref
     Preferences_ prefs;
 
-    public static Preferences_ getPrefs() {
-        return mPrefs.get();
-    }
-
-    public static Context getContext() {
-        return mContext.get();
-    }
-
     public void setThemePreference() {
         switch (prefs.applicationTheme().get()) {
             case 0:
@@ -43,6 +35,14 @@ public class TagMo extends Application {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
         }
+    }
+
+    public static Preferences_ getPrefs() {
+        return mPrefs.get();
+    }
+
+    public static Context getContext() {
+        return mContext.get();
     }
 
     @Override

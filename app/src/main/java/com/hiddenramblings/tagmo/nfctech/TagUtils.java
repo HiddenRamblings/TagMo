@@ -249,10 +249,10 @@ public class TagUtils {
             throw new Exception(context.getString(R.string.invalid_tag_cfg_one));
     }
 
-    public static void validateNtag(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
+    public static void validateNtag(NTAG215 mifare, byte[] tagData, boolean validateNtag)
+            throws Exception {
         final Context context = TagMo.getContext();
-        if (null == tagData )
-            throw new IOException(context.getString(R.string.no_source_data));
+        if (null == tagData) throw new IOException(context.getString(R.string.no_source_data));
 
         if (validateNtag) {
             try {

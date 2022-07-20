@@ -15,7 +15,9 @@ import java.util.Arrays;
 
 public class TagWriter {
 
-    public static void writeToTagRaw(NTAG215 mifare, byte[] tagData, boolean validateNtag) throws Exception {
+    public static void writeToTagRaw(
+            NTAG215 mifare, byte[] tagData, boolean validateNtag
+    ) throws Exception {
         final Context context = TagMo.getContext();
         TagUtils.validateNtag(mifare, tagData, validateNtag);
         TagReader.validateBlankTag(mifare);
@@ -41,7 +43,9 @@ public class TagWriter {
         }
     }
 
-    private static void writePages(NTAG215 tag, int pagestart, int pageend, byte[][] data) throws IOException {
+    private static void writePages(
+            NTAG215 tag, int pagestart, int pageend, byte[][] data
+    ) throws IOException {
         for (int i = pagestart; i <= pageend; i++) {
             tag.writePage(i, data[i]);
             Debug.Log(TagWriter.class, R.string.write_page, String.valueOf(i));
@@ -75,8 +79,9 @@ public class TagWriter {
         }
     }
 
-    public static void writeToTagAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager,
-                                      boolean validateNtag) throws Exception {
+    public static void writeToTagAuto(
+            NTAG215 mifare, byte[] tagData, KeyManager keyManager, boolean validateNtag
+    ) throws Exception {
         byte[] idPages = mifare.readPages(0);
         if (null == idPages  || idPages.length != NfcByte.PAGE_SIZE * 4)
             throw new IOException(TagMo.getContext()
@@ -149,15 +154,15 @@ public class TagWriter {
                 writePages(mifare, 3, 129, pages);
                 Debug.Log(TagWriter.class, R.string.data_write);
             } catch (Exception e) {
-                throw new Exception(TagMo.getContext()
-                        .getString(R.string.error_data_write), e);
+                throw new Exception(TagMo.getContext().getString(R.string.error_data_write), e);
             }
             writePasswordLockInfo(mifare);
         }
     }
 
-    public static void writeEliteAuto(NTAG215 mifare, byte[] tagData, KeyManager keyManager,
-                                      int active_bank) throws Exception {
+    public static void writeEliteAuto(
+            NTAG215 mifare, byte[] tagData, KeyManager keyManager, int active_bank
+    ) throws Exception {
         if (doEliteAuth(mifare, mifare.fastRead(0, 0))) {
             tagData = keyManager.decrypt(tagData);
             // tagData = patchUid(mifare.readPages(0), tagData);
@@ -172,8 +177,10 @@ public class TagWriter {
         }
     }
 
-    public static void restoreTag(NTAG215 mifare, byte[] tagData, boolean ignoreUid,
-                                  KeyManager keyManager, boolean validateNtag) throws Exception {
+    public static void restoreTag(
+            NTAG215 mifare, byte[] tagData, boolean ignoreUid,
+            KeyManager keyManager, boolean validateNtag
+    ) throws Exception {
         if (!ignoreUid)
             TagUtils.validateNtag(mifare, tagData, validateNtag);
         else {

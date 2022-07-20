@@ -161,6 +161,7 @@ public class Debug {
         log.append(" (");
         log.append(Build.VERSION.RELEASE);
         log.append(")");
+        log.append(separator).append(context.getString(R.string.install_src, BuildConfig.BUILD_TYPE));
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d", "-t", "192", BuildConfig.APPLICATION_ID,
                 "AndroidRuntime", "System.err",

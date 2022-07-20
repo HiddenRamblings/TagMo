@@ -292,6 +292,17 @@ public class BrowserActivity extends AppCompatActivity implements
         if (null == this.settings) this.settings = new BrowserSettings().initialize();
         this.settings.addChangeListener(this);
 
+        Intent intent = getIntent();
+        if (null != intent) {
+            if (getComponentName().equals(NFCIntent.FilterComponent)) {
+                Intent browser = new Intent(this, BrowserActivity.class);
+                browser.setAction(intent.getAction());
+                browser.putExtras(intent.getExtras());
+                browser.setData(intent.getData());
+                startActivity(browser);
+            }
+        }
+
         mainLayout.setAdapter(pagerAdapter);
         CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
         cardFlipPageTransformer.setScalable(true);
@@ -299,20 +310,6 @@ public class BrowserActivity extends AppCompatActivity implements
         setViewPagerSensitivity(mainLayout, 4);
         fragmentBrowser = pagerAdapter.getBrowser();
         fragmentElite = pagerAdapter.getEliteBanks();
-
-        this.onFilterGameSeriesChanged();
-        this.onFilterCharacterChanged();
-        this.onFilterAmiiboSeriesChanged();
-        this.onFilterAmiiboTypeChanged();
-
-        LinearLayout foomiiboOptions = findViewById(R.id.foomiibo_options);
-        foomiiboOptions.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
-                clickView -> fragmentBrowser.clearFoomiiboSet()
-        );
-
-        foomiiboOptions.findViewById(R.id.build_foomiibo_set).setOnClickListener(
-                clickView -> fragmentBrowser.buildFoomiiboSet()
-        );
 
         amiibosView = fragmentBrowser.getAmiibosView();
         foomiiboView = fragmentBrowser.getFoomiiboView();
@@ -389,16 +386,10 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }).attach();
 
-        Intent intent = getIntent();
-        if (null != intent) {
-            if (getComponentName().equals(NFCIntent.FilterComponent)) {
-                Intent browser = new Intent(this, BrowserActivity.class);
-                browser.setAction(intent.getAction());
-                browser.putExtras(intent.getExtras());
-                browser.setData(intent.getData());
-                startActivity(browser);
-            }
-        }
+        this.onFilterGameSeriesChanged();
+        this.onFilterCharacterChanged();
+        this.onFilterAmiiboSeriesChanged();
+        this.onFilterAmiiboTypeChanged();
 
         if (null == fragmentSettings)
             fragmentSettings = new SettingsFragment();
@@ -406,6 +397,16 @@ public class BrowserActivity extends AppCompatActivity implements
                 .beginTransaction()
                 .replace(R.id.preferences, fragmentSettings)
                 .commit();
+
+        CoordinatorLayout coordinator = findViewById(R.id.coordinator);
+        BlurViewFacade blurView = amiiboContainer.setupWith(coordinator)
+                .setFrameClearDrawable(getWindow().getDecorView().getBackground())
+                .setBlurRadius(2f).setBlurAutoUpdate(true)
+                .setHasFixedTransformationMatrix(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+            blurView.setBlurAlgorithm(new RenderScriptBlur(this));
+        else
+            blurView.setBlurAlgorithm(new SupportRenderScriptBlur(this));
 
         AppCompatImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));
@@ -433,15 +434,14 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         });
 
-        CoordinatorLayout coordinator = findViewById(R.id.coordinator);
-        BlurViewFacade blurView = amiiboContainer.setupWith(coordinator)
-                .setFrameClearDrawable(getWindow().getDecorView().getBackground())
-                .setBlurRadius(2f).setBlurAutoUpdate(true)
-                .setHasFixedTransformationMatrix(false);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-            blurView.setBlurAlgorithm(new RenderScriptBlur(this));
-        else
-            blurView.setBlurAlgorithm(new SupportRenderScriptBlur(this));
+        LinearLayout foomiiboOptions = findViewById(R.id.foomiibo_options);
+        foomiiboOptions.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
+                clickView -> fragmentBrowser.clearFoomiiboSet()
+        );
+
+        foomiiboOptions.findViewById(R.id.build_foomiibo_set).setOnClickListener(
+                clickView -> fragmentBrowser.buildFoomiiboSet()
+        );
 
         if (prefs.hasAcceptedTOS().get()) {
             requestStoragePermission();
@@ -2608,7 +2608,8 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onBackPressed() {
         if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
             prefsDrawer.closeDrawer(GravityCompat.START);
-        } else if (BottomSheetBehavior.STATE_EXPANDED == bottomSheet.getState()) {
+        } else if (null != bottomSheet && BottomSheetBehavior
+                .STATE_EXPANDED == bottomSheet.getState()) {
             bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else if (View.VISIBLE == amiiboContainer.getVisibility()) {
             amiiboContainer.setVisibility(View.GONE);

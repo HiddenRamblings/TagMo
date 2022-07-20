@@ -457,9 +457,7 @@ public class FlaskSlotFragment extends Fragment implements
 
         createBlank.setOnClickListener(view1 -> serviceFlask.createBlankTag());
 
-        new Handler(Looper.getMainLooper()).postDelayed(() -> new BluetoothEnabler(
-                requireContext(), requireActivity().getActivityResultRegistry(), this
-        ), 250);
+        delayedBluetoothEnable();
     }
 
     public RecyclerView getAmiibosView() {
@@ -593,6 +591,11 @@ public class FlaskSlotFragment extends Fragment implements
 
     @SuppressLint("MissingPermission")
     private void scanBluetoothServices() {
+        if (null == mBluetoothAdapter) {
+            setBottomSheetHidden(true);
+            new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+            return;
+        }
         showScanningNotice();
         profileFlask = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -800,6 +803,12 @@ public class FlaskSlotFragment extends Fragment implements
         }
     }
 
+    private void delayedBluetoothEnable() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> new BluetoothEnabler(
+                requireContext(), requireActivity().getActivityResultRegistry(), this
+        ), 250);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -822,6 +831,9 @@ public class FlaskSlotFragment extends Fragment implements
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             switch (noticeState) {
                 case NONE:
+                    if (null == mBluetoothAdapter) {
+                        delayedBluetoothEnable();
+                    }
                     break;
                 case SCANNING:
                     showScanningNotice();

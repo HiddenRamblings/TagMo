@@ -60,7 +60,6 @@ public class BrowserFragment extends Fragment implements
     private FlexboxLayout chipList;
     private RecyclerView amiibosView;
     private RecyclerView foomiiboView;
-    private LinearLayout listDivider;
 
     private final Foomiibo foomiibo = new Foomiibo();
     private File directory;
@@ -118,7 +117,6 @@ public class BrowserFragment extends Fragment implements
         chipList.setVisibility(View.GONE);
         amiibosView = view.findViewById(R.id.amiibos_list);
         foomiiboView = view.findViewById(R.id.foomiibo_list);
-        listDivider = view.findViewById(R.id.list_divider);
 
         amiibosView.setLayoutManager(settings.getAmiiboView()
                 == BrowserSettings.VIEW.IMAGE.getValue()
@@ -141,18 +139,19 @@ public class BrowserFragment extends Fragment implements
                 ? valueY : amiibosView.getLayoutParams().height;
         amiibosView.requestLayout();
 
-        listDivider.setOnTouchListener((v, event) -> {
+        view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
+            int srcHeight = amiibosView.getLayoutParams().height;
             int y = (int) event.getY();
             if (amiibosView.getLayoutParams().height + y >= 0.5f) {
                 if (event.getAction() == MotionEvent.ACTION_MOVE) {
                     amiibosView.getLayoutParams().height += y;
-                    amiibosView.requestLayout();
+                    if (srcHeight != amiibosView.getLayoutParams().height) amiibosView.requestLayout();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     float minHeight = requireContext().getResources()
                             .getDimension(R.dimen.button_height_min) * 1.95f;
                     if (amiibosView.getLayoutParams().height > view.getHeight() - (int) minHeight)
                         amiibosView.getLayoutParams().height = view.getHeight() - (int) minHeight;
-                    amiibosView.requestLayout();
+                    if (srcHeight != amiibosView.getLayoutParams().height) amiibosView.requestLayout();
                 }
                 prefs.foomiiboOffset().put(amiibosView.getLayoutParams().height);
             }

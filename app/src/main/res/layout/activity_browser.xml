@@ -11,13 +11,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/page_tabs"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            app:tabTextColor="@android:color/white"
-            android:background="?attr/colorPrimaryDark" />
-
         <com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
             android:id="@+id/fake_snackbar"
             android:layout_width="match_parent"
@@ -64,6 +57,13 @@
                     android:textSize="16sp" />
             </RelativeLayout>
         </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/navigation_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            app:tabTextColor="@android:color/white"
+            android:background="?attr/colorPrimaryDark" />
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             xmlns:tools="http://schemas.android.com/tools"

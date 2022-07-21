@@ -97,6 +97,7 @@ import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.hiddenramblings.tagmo.BuildConfig;
@@ -190,6 +191,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private AppCompatImageView fakeSnackbarIcon;
     private TextView fakeSnackbarText;
     private AppCompatButton fakeSnackbarItem;
+    private TabLayout navigationTabs;
     private ViewPager2 mainLayout;
     private FloatingActionButton nfcFab;
     private RecyclerView amiibosView;
@@ -305,6 +307,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }
 
+        navigationTabs = findViewById(R.id.navigation_tabs);
         mainLayout.setAdapter(pagerAdapter);
         CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
         cardFlipPageTransformer.setScalable(true);
@@ -370,7 +373,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 invalidateOptionsMenu();
             }
         });
-        new TabLayoutMediator(findViewById(R.id.page_tabs), mainLayout, (tab, position) -> {
+        new TabLayoutMediator(navigationTabs, mainLayout, (tab, position) -> {
             switch (position) {
                 case 1:
                     tab.setText(R.string.elite_n2);
@@ -2407,9 +2410,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void showFakeSnackbar(String msg) {
-        mainLayout.post(() -> {
+        navigationTabs.post(() -> {
             fakeSnackbarItem.setVisibility(View.INVISIBLE);
-            mainLayout.setPadding(0, fakeSnackbarIcon.getHeight(), 0, 0);
             fakeSnackbarText.setText(msg);
             fakeSnackbar.setVisibility(View.VISIBLE);
         });
@@ -2429,10 +2431,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 public void onAnimationEnd(AnimatedLinearLayout layout) {
                     layout.setAnimationListener(null);
                     fakeSnackbar.setVisibility(View.GONE);
-                    AutoTransition autoTransition = new AutoTransition();
-                    autoTransition.setDuration(25);
-                    TransitionManager.beginDelayedTransition(mainLayout, autoTransition);
-                    mainLayout.post(() -> mainLayout.setPadding(0, 0, 0, 0));
                 }
             });
             fakeSnackbar.startAnimation(animate);

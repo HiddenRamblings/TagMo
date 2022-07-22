@@ -65,8 +65,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.transition.AutoTransition;
-import androidx.transition.TransitionManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
@@ -188,7 +186,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private AppCompatButton switchStorageType;
 
     private AnimatedLinearLayout fakeSnackbar;
-    private AppCompatImageView fakeSnackbarIcon;
     private TextView fakeSnackbarText;
     private AppCompatButton fakeSnackbarItem;
     private TabLayout navigationTabs;
@@ -247,7 +244,6 @@ public class BrowserActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_browser);
 
         fakeSnackbar = findViewById(R.id.fake_snackbar);
-        fakeSnackbarIcon = findViewById(R.id.snackbar_icon);
         fakeSnackbarText = findViewById(R.id.snackbar_text);
         fakeSnackbarItem = findViewById(R.id.snackbar_item);
         mainLayout = findViewById(R.id.amiibo_pager);
@@ -546,41 +542,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     closePrefsDrawer();
                     showWebsite(null);
                 });
-                if (TagMo.isGooglePlay()) {
-                    findViewById(R.id.donate_layout).setOnClickListener(view ->{
-                        View layout = getLayoutInflater().inflate(R.layout.donation_layout, null);
-                        AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(
-                                BrowserActivity.this, R.style.DialogTheme_NoActionBar
-                        ));
-                        LinearLayout donations = layout.findViewById(R.id.donation_layout);
-                        Collections.sort(iapSkuDetails, (obj1, obj2) ->
-                                obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
-                        for (ProductDetails skuDetail : iapSkuDetails) {
-                            if (null == skuDetail.getOneTimePurchaseOfferDetails()) continue;
-                            donations.addView(getDonationButton(skuDetail));
-                        }
-                        LinearLayout subscriptions = layout.findViewById(R.id.subscription_layout);
-                        Collections.sort(subSkuDetails, (obj1, obj2) ->
-                                obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
-                        for (ProductDetails skuDetail : subSkuDetails) {
-                            if (null == skuDetail.getSubscriptionOfferDetails()) continue;
-                            subscriptions.addView(getSubscriptionButton(skuDetail));
-                        }
-                        dialog.setOnCancelListener(dialogInterface -> {
-                            donations.removeAllViewsInLayout();
-                            subscriptions.removeAllViewsInLayout();
-                        });
-                        Dialog donateDialog = dialog.setView(layout).show();
-                        donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    });
-                } else {
-                    findViewById(R.id.donate_layout).setOnClickListener(view -> {
-                        closePrefsDrawer();
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                                "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
-                        )));
-                    });
-                }
+                findViewById(R.id.donate_layout).setOnClickListener(view -> onSendDonationClicked());
                 if (null != appUpdate) {
                     findViewById(R.id.build_layout).setOnClickListener(view -> {
                         closePrefsDrawer();
@@ -775,6 +737,40 @@ public class BrowserActivity extends AppCompatActivity implements
                 ).show());
             }
         });
+    }
+
+    private void onSendDonationClicked() {
+        if (TagMo.isGooglePlay()) {
+            View layout = getLayoutInflater().inflate(R.layout.donation_layout, null);
+            AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(
+                    BrowserActivity.this, R.style.DialogTheme_NoActionBar
+            ));
+            LinearLayout donations = layout.findViewById(R.id.donation_layout);
+            Collections.sort(iapSkuDetails, (obj1, obj2) ->
+                    obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
+            for (ProductDetails skuDetail : iapSkuDetails) {
+                if (null == skuDetail.getOneTimePurchaseOfferDetails()) continue;
+                donations.addView(getDonationButton(skuDetail));
+            }
+            LinearLayout subscriptions = layout.findViewById(R.id.subscription_layout);
+            Collections.sort(subSkuDetails, (obj1, obj2) ->
+                    obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
+            for (ProductDetails skuDetail : subSkuDetails) {
+                if (null == skuDetail.getSubscriptionOfferDetails()) continue;
+                subscriptions.addView(getSubscriptionButton(skuDetail));
+            }
+            dialog.setOnCancelListener(dialogInterface -> {
+                donations.removeAllViewsInLayout();
+                subscriptions.removeAllViewsInLayout();
+            });
+            Dialog donateDialog = dialog.setView(layout).show();
+            donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        } else {
+            closePrefsDrawer();
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                    "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
+            )));
+        }
     }
 
     private int getQueryCount(String queryText) {
@@ -1498,6 +1494,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 prefsDrawer.openDrawer(GravityCompat.START);
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
+        } else if (item.getItemId() == R.id.send_donation) {
+            onSendDonationClicked();
         } else if (item.getItemId() == R.id.filter_game_series) {
             return onFilterGameSeriesClick();
         } else if (item.getItemId() == R.id.filter_character) {
@@ -2429,6 +2427,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
                 @Override
                 public void onAnimationEnd(AnimatedLinearLayout layout) {
+                    fakeSnackbar.clearAnimation();
                     layout.setAnimationListener(null);
                     fakeSnackbar.setVisibility(View.GONE);
                 }

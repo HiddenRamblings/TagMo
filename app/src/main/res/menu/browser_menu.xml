@@ -139,4 +139,9 @@
         android:icon="@drawable/ic_android_studio_24dp"
         android:title="@string/logcat_support"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/send_donation"
+        android:icon="@drawable/ic_google_play_24dp"
+        android:title="@string/donate_support"
+        app:showAsAction="never"/>
 </menu>

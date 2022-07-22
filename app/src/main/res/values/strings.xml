@@ -118,6 +118,7 @@
     <string name="tagmo_settings">TagMo Settings</string>
     <string name="rebuild_database">Sync AmiiboAPI</string>
     <string name="logcat_support">Report Problem</string>
+    <string name="donate_support">Send a Donation</string>
     <string name="clear_foomiibo_set">Clear Foomiibo</string>
     <string name="build_foomiibo_set">Build Foomiibo</string>
     <string name="foomiibo_progress">Building %1$s&#8230;</string>

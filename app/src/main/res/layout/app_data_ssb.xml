@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+<LinearLayout
+    android:id="@+id/appDataSSB"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="@string/appearance"/>
+
+            <Spinner
+                android:id="@+id/spnAppearance"
+                style="@style/TagEditor.Spinner"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="@string/level"/>
+
+            <EditText
+                android:id="@+id/txtLevelSSB"
+                style="@style/TagEditor.EditNumber"
+                android:importantForAutofill="no"
+                tools:ignore="LabelFor" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="@string/special_neutral"/>
+
+            <Spinner
+                android:id="@+id/spnSpecial1"
+                style="@style/TagEditor.Spinner"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="@string/special_side"/>
+
+            <Spinner
+                android:id="@+id/spnSpecial2"
+                style="@style/TagEditor.Spinner"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="@string/special_up"/>
+
+            <Spinner
+                android:id="@+id/spnSpecial3"
+                style="@style/TagEditor.Spinner"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="@string/special_down"/>
+
+            <Spinner
+                android:id="@+id/spnSpecial4"
+                style="@style/TagEditor.Spinner"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="@string/attack"/>
+
+            <EditText
+                android:id="@+id/txtStatAttack"
+                style="@style/TagEditor.EditNumber"
+                android:inputType="numberDecimal|numberSigned"
+                android:importantForAutofill="no"
+                tools:ignore="LabelFor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="@string/defense"/>
+
+            <EditText
+                android:id="@+id/txtStatDefense"
+                style="@style/TagEditor.EditNumber"
+                android:inputType="numberDecimal|numberSigned"
+                android:importantForAutofill="no"
+                tools:ignore="LabelFor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="@string/speed"/>
+
+            <EditText
+                android:id="@+id/txtStatSpeed"
+                style="@style/TagEditor.EditNumber"
+                android:inputType="numberDecimal|numberSigned"
+                android:importantForAutofill="no"
+                tools:ignore="LabelFor" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        style="@style/TagEditor.InputHint"
+        android:text="@string/bonus_one"/>
+
+    <Spinner
+        android:id="@+id/spnEffect1"
+        style="@style/TagEditor.Spinner"/>
+
+    <TextView
+        style="@style/TagEditor.InputHint"
+        android:text="@string/bonus_two"/>
+
+    <Spinner
+        android:id="@+id/spnEffect2"
+        style="@style/TagEditor.Spinner"/>
+
+    <TextView
+        style="@style/TagEditor.InputHint"
+        android:text="@string/bonus_three"/>
+
+    <Spinner
+        android:id="@+id/spnEffect3"
+        style="@style/TagEditor.Spinner"/>
+</LinearLayout>
+</merge>

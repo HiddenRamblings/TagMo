@@ -86,8 +86,9 @@ public class TagDataEditor extends AppCompatActivity {
     private SwitchCompat userDataSwitch;
     private AppCompatButton generateSerial;
 
-    private LinearLayout appDataViewSSB;
     private LinearLayout appDataViewTP;
+    private LinearLayout appDataViewSSBU;
+    private LinearLayout appDataViewSSB;
 
     private CountryCodesAdapter countryCodeAdapter;
     private NSSpinnerAdapter appIdAdapter;
@@ -103,6 +104,18 @@ public class TagDataEditor extends AppCompatActivity {
     private Date initializedDate;
     private Date modifiedDate;
     private Integer appId;
+
+    public static final int APP_ID_TP = 0x1019C800;
+
+    private EditText txtHearts1;
+    private Spinner txtHearts2;
+    private EditText txtLevelTP;
+
+    private AppDataTP appDataTP;
+
+    public static final int APP_ID_SSBU = 0x000EDF00;
+
+    private AppDataSSBU appDataSSBU;
 
     public static final int APP_ID_SSB = 0x10110E00;
 
@@ -123,14 +136,6 @@ public class TagDataEditor extends AppCompatActivity {
     private EditText txtStatSpeed;
 
     private AppDataSSB appDataSSB;
-
-    public static final int APP_ID_TP = 0x1019C800;
-
-    private EditText txtHearts1;
-    private Spinner txtHearts2;
-    private EditText txtLevelTP;
-
-    private AppDataTP appDataTP;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -163,8 +168,9 @@ public class TagDataEditor extends AppCompatActivity {
         userDataSwitch = findViewById(R.id.userDataSwitch);
         generateSerial = findViewById(R.id.random_serial);
 
-        appDataViewSSB = findViewById(R.id.appDataSSB);
         appDataViewTP = findViewById(R.id.appDataTP);
+        appDataViewSSBU = findViewById(R.id.appDataSSBU);
+        appDataViewSSB = findViewById(R.id.appDataSSB);
 
         byte[] tagData = getIntent().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
 
@@ -506,6 +512,14 @@ public class TagDataEditor extends AppCompatActivity {
                 }
             }
 
+            if (appDataSwitch.isChecked() && null != appDataSSBU) {
+                try {
+                    newAmiiboData.setAppData(onAppDataSSBUSaved());
+                } catch (Exception e) {
+                    return;
+                }
+            }
+
             if (appDataSwitch.isChecked() && null != appDataSSB) {
                 try {
                     newAmiiboData.setAppData(onAppDataSSBSaved());
@@ -549,6 +563,9 @@ public class TagDataEditor extends AppCompatActivity {
     private void updateAppDataEnabled(boolean isAppDataInitialized) {
         if (null != appDataTP)
             onAppDataTPChecked(isUserDataInitialized && isAppDataInitialized);
+
+        if (null != appDataSSBU)
+            onAppDataSSBUChecked(isUserDataInitialized && isAppDataInitialized);
 
         if (null != appDataSSB)
             onAppDataSSBChecked(isUserDataInitialized && isAppDataInitialized);
@@ -784,15 +801,20 @@ public class TagDataEditor extends AppCompatActivity {
     };
 
     private void updateAppDataView() {
-        appDataViewSSB.setVisibility(View.GONE);
-        appDataSSB = null;
         appDataViewTP.setVisibility(View.GONE);
         appDataTP = null;
+        appDataViewSSBU.setVisibility(View.GONE);
+        appDataSSBU = null;
+        appDataViewSSB.setVisibility(View.GONE);
+        appDataSSB = null;
 
         if (null != appId) {
             if (appId == APP_ID_TP) {
                 appDataViewTP.setVisibility(View.VISIBLE);
                 enableAppDataTP(amiiboData.getAppData());
+            } else if (appId == APP_ID_SSBU) {
+                appDataViewSSBU.setVisibility(View.VISIBLE);
+                enableAppDataSSBU(amiiboData.getAppData());
             } else if (appId == APP_ID_SSB) {
                 appDataViewSSB.setVisibility(View.VISIBLE);
                 enableAppDataSSB(amiiboData.getAppData());
@@ -952,6 +974,130 @@ public class TagDataEditor extends AppCompatActivity {
                     this, list, R.layout.spinner_text);
             adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
             control.setAdapter(adapter);
+        }
+    }
+
+    void onHeartsUpdate() {
+        try {
+            int hearts = Integer.parseInt(txtHearts1.getText().toString());
+            txtHearts2.setEnabled(hearts < 20);
+            if (!txtHearts2.isEnabled()) {
+                txtHearts2.setSelection(0);
+            }
+            try {
+                appDataTP.checkHearts(hearts * 4);
+                txtHearts1.setError(null);
+            } catch (Exception e) {
+                txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
+            }
+        } catch (NumberFormatException e) {
+            txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
+            txtHearts2.setEnabled(txtHearts1.isEnabled());
+        }
+    }
+
+    void setEffectValue(Spinner spinner, int value) {
+        if (value == 0xFF)
+            value = 0;
+        else
+            value++;
+
+        if (value > spinner.getAdapter().getCount())
+            value = 0;
+
+        spinner.setSelection(value);
+    }
+
+    int getEffectValue(Spinner spinner) {
+        int value = spinner.getSelectedItemPosition();
+        if (value == 0)
+            value = 0xFF;
+        else
+            value--;
+
+        return value;
+    }
+
+    private void enableAppDataTP(byte[] appData) {
+        try {
+            appDataTP = new AppDataTP(appData);
+        } catch (Exception e) {
+            appDataViewTP.setVisibility(View.GONE);
+            return;
+        }
+
+        txtHearts1 = findViewById(R.id.txtHearts1);
+        txtHearts2 = findViewById(R.id.txtHearts2);
+        txtLevelTP = findViewById(R.id.txtLevelTP);
+
+        setListForSpinners(new Spinner[]{ txtHearts2 }, R.array.editor_tp_hearts);
+
+        int level, hearts;
+        if (initialAppDataInitialized) {
+            try {
+                level = appDataTP.getLevel();
+            } catch (Exception e) {
+                level = 40;
+            }
+            try {
+                hearts = appDataTP.getHearts();
+            } catch (Exception e) {
+                hearts = AppDataTP.HEARTS_MAX_VALUE;
+            }
+        } else {
+            level = 40;
+            hearts = AppDataTP.HEARTS_MAX_VALUE;
+        }
+        txtLevelTP.setText(String.valueOf(level));
+        txtHearts1.setText(String.valueOf((hearts / 4)));
+        txtHearts2.setSelection(hearts % 4);
+        txtHearts2.setEnabled((hearts / 4) < 20);
+
+        txtLevelTP.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    int level = Integer.parseInt(txtLevelTP.getText().toString());
+                    try {
+                        appDataTP.checkLevel(level);
+                        txtLevelTP.setError(null);
+                    } catch (Exception e) {
+                        txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
+                    }
+                } catch (NumberFormatException e) {
+                    txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
+
+        txtHearts1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                onHeartsUpdate();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
+
+        onAppDataTPChecked(isAppDataInitialized);
+    }
+
+    private void enableAppDataSSBU(byte[] appData) {
+        try {
+            appDataSSBU = new AppDataSSBU(appData);
+        } catch (Exception e) {
+            appDataViewSSBU.setVisibility(View.GONE);
+            return;
         }
     }
 
@@ -1178,121 +1324,6 @@ public class TagDataEditor extends AppCompatActivity {
         onAppDataSSBChecked(isAppDataInitialized);
     }
 
-    private void enableAppDataTP(byte[] appData) {
-        try {
-            appDataTP = new AppDataTP(appData);
-        } catch (Exception e) {
-            appDataViewTP.setVisibility(View.GONE);
-            return;
-        }
-
-        txtHearts1 = findViewById(R.id.txtHearts1);
-        txtHearts2 = findViewById(R.id.txtHearts2);
-        txtLevelTP = findViewById(R.id.txtLevelTP);
-
-        setListForSpinners(new Spinner[]{ txtHearts2 }, R.array.editor_tp_hearts);
-
-        int level, hearts;
-        if (initialAppDataInitialized) {
-            try {
-                level = appDataTP.getLevel();
-            } catch (Exception e) {
-                level = 40;
-            }
-            try {
-                hearts = appDataTP.getHearts();
-            } catch (Exception e) {
-                hearts = AppDataTP.HEARTS_MAX_VALUE;
-            }
-        } else {
-            level = 40;
-            hearts = AppDataTP.HEARTS_MAX_VALUE;
-        }
-        txtLevelTP.setText(String.valueOf(level));
-        txtHearts1.setText(String.valueOf((hearts / 4)));
-        txtHearts2.setSelection(hearts % 4);
-        txtHearts2.setEnabled((hearts / 4) < 20);
-
-        txtLevelTP.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                try {
-                    int level = Integer.parseInt(txtLevelTP.getText().toString());
-                    try {
-                        appDataTP.checkLevel(level);
-                        txtLevelTP.setError(null);
-                    } catch (Exception e) {
-                        txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
-                    }
-                } catch (NumberFormatException e) {
-                    txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) { }
-        });
-
-        txtHearts1.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                onHeartsUpdate();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) { }
-        });
-
-        onAppDataTPChecked(isAppDataInitialized);
-    }
-
-    void onHeartsUpdate() {
-        try {
-            int hearts = Integer.parseInt(txtHearts1.getText().toString());
-            txtHearts2.setEnabled(hearts < 20);
-            if (!txtHearts2.isEnabled()) {
-                txtHearts2.setSelection(0);
-            }
-            try {
-                appDataTP.checkHearts(hearts * 4);
-                txtHearts1.setError(null);
-            } catch (Exception e) {
-                txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
-            }
-        } catch (NumberFormatException e) {
-            txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
-            txtHearts2.setEnabled(txtHearts1.isEnabled());
-        }
-    }
-
-    void setEffectValue(Spinner spinner, int value) {
-        if (value == 0xFF)
-            value = 0;
-        else
-            value++;
-
-        if (value > spinner.getAdapter().getCount())
-            value = 0;
-
-        spinner.setSelection(value);
-    }
-
-    int getEffectValue(Spinner spinner) {
-        int value = spinner.getSelectedItemPosition();
-        if (value == 0)
-            value = 0xFF;
-        else
-            value--;
-
-        return value;
-    }
-
     public void onAppDataTPChecked(boolean enabled) {
         if (null == txtHearts2 )
             return;
@@ -1300,6 +1331,10 @@ public class TagDataEditor extends AppCompatActivity {
         txtHearts1.setEnabled(enabled);
         onHeartsUpdate();
         txtLevelTP.setEnabled(enabled);
+    }
+
+    public void onAppDataSSBUChecked(boolean enabled) {
+
     }
 
     public void onAppDataSSBChecked(boolean enabled) {
@@ -1318,6 +1353,30 @@ public class TagDataEditor extends AppCompatActivity {
         spnEffect1.setEnabled(enabled);
         spnEffect2.setEnabled(enabled);
         spnEffect3.setEnabled(enabled);
+    }
+
+    public byte[] onAppDataTPSaved() {
+        try {
+            int level = Integer.parseInt(txtLevelTP.getText().toString());
+            appDataTP.setLevel(level);
+        } catch (NumberFormatException e) {
+            txtLevelTP.requestFocus();
+            throw e;
+        }
+        try {
+            int hearts1 = Integer.parseInt(txtHearts1.getText().toString());
+            int hearts2 = txtHearts2.getSelectedItemPosition();
+            appDataTP.setHearts((hearts1 * 4) + hearts2);
+        } catch (NumberFormatException e) {
+            txtHearts1.requestFocus();
+            throw e;
+        }
+
+        return appDataTP.array();
+    }
+
+    public byte[] onAppDataSSBUSaved() {
+        return appDataSSBU.array();
     }
 
     public byte[] onAppDataSSBSaved() {
@@ -1420,26 +1479,6 @@ public class TagDataEditor extends AppCompatActivity {
         }
 
         return appDataSSB.array();
-    }
-
-    public byte[] onAppDataTPSaved() {
-        try {
-            int level = Integer.parseInt(txtLevelTP.getText().toString());
-            appDataTP.setLevel(level);
-        } catch (NumberFormatException e) {
-            txtLevelTP.requestFocus();
-            throw e;
-        }
-        try {
-            int hearts1 = Integer.parseInt(txtHearts1.getText().toString());
-            int hearts2 = txtHearts2.getSelectedItemPosition();
-            appDataTP.setHearts((hearts1 * 4) + hearts2);
-        } catch (NumberFormatException e) {
-            txtHearts1.requestFocus();
-            throw e;
-        }
-
-        return appDataTP.array();
     }
 
     private void showErrorDialog(int msgRes) {

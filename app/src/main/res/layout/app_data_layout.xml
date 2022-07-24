@@ -61,8 +61,8 @@
     </LinearLayout>
 
     <include
-        layout="@layout/app_data_ssbu"
-        android:id="@+id/appDataSSBU" />
+        layout="@layout/app_data_sbu"
+        android:id="@+id/appDataSBU" />
 
     <include
         layout="@layout/app_data_ssb"

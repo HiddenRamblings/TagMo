@@ -300,7 +300,6 @@
     <string name="downloads_hidden">Pobrane są obecnie ukryte!</string>
     <string name="game_usage_view">Zobacz kompatybilne gry</string>
     <string name="game_usage_hide">Ukryj Kompatybilne Gry</string>
-    <string name="rebuild_database">Sync AmiiboAPI</string>
     <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
     <string name="erase_collection">Erase Collection</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>

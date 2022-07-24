@@ -34,7 +34,7 @@
         <myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
             android:id="@+id/amiibos_list"
             android:layout_width="match_parent"
-            android:layout_height="640dp"
+            android:layout_height="360dp"
             android:clipToPadding="false"
             android:paddingTop="4dp"
             android:scrollbars="vertical"

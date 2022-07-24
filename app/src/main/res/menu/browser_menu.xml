@@ -130,11 +130,6 @@
         </menu>
     </item>
     <item
-        android:id="@+id/tagmo_settings"
-        android:icon="@drawable/ic_settings_24dp"
-        android:title="@string/tagmo_settings"
-        app:showAsAction="never"/>
-    <item
         android:id="@+id/capture_logcat"
         android:icon="@drawable/ic_android_studio_24dp"
         android:title="@string/logcat_support"

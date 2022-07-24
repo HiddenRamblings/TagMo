@@ -298,7 +298,6 @@
     <string name="accept">明白</string>
     <string name="game_usage_view">View Compatible Games</string>
     <string name="game_usage_hide">Hide Compatible Games</string>
-    <string name="rebuild_database">Sync AmiiboAPI</string>
     <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
     <string name="erase_collection">Erase Collection</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>

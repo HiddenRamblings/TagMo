@@ -241,6 +241,12 @@ public class BrowserActivity extends AppCompatActivity implements
         setTheme(R.style.AppTheme);
         keyManager = new KeyManager(this);
 
+        if (null != getSupportActionBar()) {
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
+        }
+
         setContentView(R.layout.activity_browser);
 
         fakeSnackbar = findViewById(R.id.fake_snackbar);
@@ -1435,7 +1441,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.install_update) {
+        if (item.getItemId() == android.R.id.home) {
+            if (prefsDrawer.isDrawerOpen(GravityCompat.START))
+                prefsDrawer.closeDrawer(GravityCompat.START);
+            else
+                prefsDrawer.openDrawer(GravityCompat.START);
+        } else if (item.getItemId() == R.id.install_update) {
             if (null != appUpdate) updates.downloadPlayUpdate(appUpdate);
             if (null != updateUrl) updates.installUpdateCompat(updateUrl);
         } else if (item.getItemId() == R.id.refresh) {
@@ -1487,11 +1498,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.show_downloads) {
             this.settings.setShowDownloads(!this.settings.isShowingDownloads());
             this.settings.notifyChanges();
-        } else if (item.getItemId() == R.id.tagmo_settings) {
-            if (prefsDrawer.isDrawerOpen(GravityCompat.START))
-                prefsDrawer.closeDrawer(GravityCompat.START);
-            else
-                prefsDrawer.openDrawer(GravityCompat.START);
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
         } else if (item.getItemId() == R.id.send_donation) {
@@ -2824,7 +2830,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private final ArrayList<String> subsPurchased = new ArrayList<>();
 
-    private final PurchasesResponseListener iapOwnedListener = (billingResult, purchases) -> {
+    private final PurchasesResponseListener subsOwnedListener = (billingResult, purchases) -> {
         if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
             for (Purchase purchase : purchases) {
                 for (String sku : purchase.getProducts()) {
@@ -2841,7 +2847,7 @@ public class BrowserActivity extends AppCompatActivity implements
             for (PurchaseHistoryRecord purchase : purchases)
                 subsPurchased.addAll(purchase.getProducts());
             billingClient.queryPurchasesAsync(QueryPurchasesParams.newBuilder()
-                    .setProductType(BillingClient.ProductType.SUBS).build(), iapOwnedListener);
+                    .setProductType(BillingClient.ProductType.SUBS).build(), subsOwnedListener);
         }
     };
 

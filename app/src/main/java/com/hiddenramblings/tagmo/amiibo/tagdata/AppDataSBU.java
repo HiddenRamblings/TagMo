@@ -2,7 +2,7 @@ package com.hiddenramblings.tagmo.amiibo.tagdata;
 
 import java.io.IOException;
 
-public class AppDataSSBU extends AppData {
+public class AppDataSBU extends AppData {
     static final int APPEARANCE_OFFSET = 0x08;
     static final int APPEARANCE_MIN_VALUE = 0;
     static final int APPEARANCE_MAX_VALUE = 7;
@@ -27,10 +27,10 @@ public class AppDataSSBU extends AppData {
     static final int BONUS_EFFECT3_OFFSET = 0x0F;
 
     static final int EXPERIENCE_MIN_VALUE = 0x0000;
-    static final int EXPERIENCE_MAX_VALUE = 0x093E;
+    static final int EXPERIENCE_MAX_VALUE = 0x0F48;
     static final int EXPERIENCE_OFFSET = 0x7C;
 
-    public AppDataSSBU(byte[] appData) throws IOException {
+    public AppDataSBU(byte[] appData) throws IOException {
         super(appData);
     }
 

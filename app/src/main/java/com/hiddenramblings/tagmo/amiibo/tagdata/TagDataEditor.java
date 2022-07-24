@@ -87,7 +87,7 @@ public class TagDataEditor extends AppCompatActivity {
     private AppCompatButton generateSerial;
 
     private LinearLayout appDataViewTP;
-    private LinearLayout appDataViewSSBU;
+    private LinearLayout appDataViewSBU;
     private LinearLayout appDataViewSSB;
 
     private CountryCodesAdapter countryCodeAdapter;
@@ -113,9 +113,11 @@ public class TagDataEditor extends AppCompatActivity {
 
     private AppDataTP appDataTP;
 
-    public static final int APP_ID_SSBU = 0x000EDF00;
+    public static final int APP_ID_SBU = 0x000EDF00;
 
-    private AppDataSSBU appDataSSBU;
+    private EditText txtLevelSBU;
+
+    private AppDataSBU appDataSBU;
 
     public static final int APP_ID_SSB = 0x10110E00;
 
@@ -169,7 +171,7 @@ public class TagDataEditor extends AppCompatActivity {
         generateSerial = findViewById(R.id.random_serial);
 
         appDataViewTP = findViewById(R.id.appDataTP);
-        appDataViewSSBU = findViewById(R.id.appDataSSBU);
+        appDataViewSBU = findViewById(R.id.appDataSBU);
         appDataViewSSB = findViewById(R.id.appDataSSB);
 
         byte[] tagData = getIntent().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
@@ -512,9 +514,9 @@ public class TagDataEditor extends AppCompatActivity {
                 }
             }
 
-            if (appDataSwitch.isChecked() && null != appDataSSBU) {
+            if (appDataSwitch.isChecked() && null != appDataSBU) {
                 try {
-                    newAmiiboData.setAppData(onAppDataSSBUSaved());
+                    newAmiiboData.setAppData(onAppDataSBUSaved());
                 } catch (Exception e) {
                     return;
                 }
@@ -564,8 +566,8 @@ public class TagDataEditor extends AppCompatActivity {
         if (null != appDataTP)
             onAppDataTPChecked(isUserDataInitialized && isAppDataInitialized);
 
-        if (null != appDataSSBU)
-            onAppDataSSBUChecked(isUserDataInitialized && isAppDataInitialized);
+        if (null != appDataSBU)
+            onAppDataSBUChecked(isUserDataInitialized && isAppDataInitialized);
 
         if (null != appDataSSB)
             onAppDataSSBChecked(isUserDataInitialized && isAppDataInitialized);
@@ -803,8 +805,8 @@ public class TagDataEditor extends AppCompatActivity {
     private void updateAppDataView() {
         appDataViewTP.setVisibility(View.GONE);
         appDataTP = null;
-        appDataViewSSBU.setVisibility(View.GONE);
-        appDataSSBU = null;
+        appDataViewSBU.setVisibility(View.GONE);
+        appDataSBU = null;
         appDataViewSSB.setVisibility(View.GONE);
         appDataSSB = null;
 
@@ -812,9 +814,9 @@ public class TagDataEditor extends AppCompatActivity {
             if (appId == APP_ID_TP) {
                 appDataViewTP.setVisibility(View.VISIBLE);
                 enableAppDataTP(amiiboData.getAppData());
-            } else if (appId == APP_ID_SSBU) {
-                appDataViewSSBU.setVisibility(View.VISIBLE);
-                enableAppDataSSBU(amiiboData.getAppData());
+            } else if (appId == APP_ID_SBU) {
+                appDataViewSBU.setVisibility(View.VISIBLE);
+                enableAppDataSBU(amiiboData.getAppData());
             } else if (appId == APP_ID_SSB) {
                 appDataViewSSB.setVisibility(View.VISIBLE);
                 enableAppDataSSB(amiiboData.getAppData());
@@ -1092,13 +1094,51 @@ public class TagDataEditor extends AppCompatActivity {
         onAppDataTPChecked(isAppDataInitialized);
     }
 
-    private void enableAppDataSSBU(byte[] appData) {
+    private void enableAppDataSBU(byte[] appData) {
         try {
-            appDataSSBU = new AppDataSSBU(appData);
+            appDataSBU = new AppDataSBU(appData);
         } catch (Exception e) {
-            appDataViewSSBU.setVisibility(View.GONE);
+            appDataViewSBU.setVisibility(View.GONE);
             return;
         }
+
+        txtLevelSBU = findViewById(R.id.txtLevelSBU);
+
+        int level;
+        if (initialAppDataInitialized) {
+            try {
+                level = appDataSBU.getLevel();
+            } catch (Exception e) {
+                level = 50;
+            }
+        } else {
+            level = 50;
+        }
+        txtLevelSBU.setText(String.valueOf(level));
+
+        txtLevelSBU.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    int level = Integer.parseInt(txtLevelSBU.getText().toString());
+                    if (level < 1 || level > 50) {
+                        txtLevelSBU.setError(
+                                getString(R.string.error_min_max, 1, 50));
+                    } else {
+                        txtLevelSBU.setError(null);
+                    }
+                } catch (NumberFormatException e) {
+                    txtLevelSBU.setError(
+                            getString(R.string.error_min_max, 1, 50));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
     }
 
     private void enableAppDataSSB(byte[] appData) {
@@ -1333,8 +1373,8 @@ public class TagDataEditor extends AppCompatActivity {
         txtLevelTP.setEnabled(enabled);
     }
 
-    public void onAppDataSSBUChecked(boolean enabled) {
-
+    public void onAppDataSBUChecked(boolean enabled) {
+        txtLevelSBU.setEnabled(enabled);
     }
 
     public void onAppDataSSBChecked(boolean enabled) {
@@ -1375,8 +1415,26 @@ public class TagDataEditor extends AppCompatActivity {
         return appDataTP.array();
     }
 
-    public byte[] onAppDataSSBUSaved() {
-        return appDataSSBU.array();
+    public byte[] onAppDataSBUSaved() {
+        try {
+            int level = Integer.parseInt(txtLevelSBU.getText().toString());
+            Integer oldLevel;
+            try {
+                oldLevel = appDataSBU.getLevel();
+            } catch (Exception e) {
+                oldLevel = null;
+            }
+
+            //level is a granular value as such we don't want to overwrite it in case its halfway through a level
+            if (null == oldLevel  || level != oldLevel) {
+                appDataSBU.setLevel(level);
+            }
+        } catch (NumberFormatException e) {
+            txtLevelSBU.requestFocus();
+            throw e;
+        }
+
+        return appDataSBU.array();
     }
 
     public byte[] onAppDataSSBSaved() {

@@ -29,7 +29,7 @@ public class AppData {
     static {
         appIds.put(TagDataEditor.APP_ID_TP,
                 TagMo.getContext().getString(R.string.zelda_twilight));
-        appIds.put(TagDataEditor.APP_ID_SSBU,
+        appIds.put(TagDataEditor.APP_ID_SBU,
                 TagMo.getContext().getString(R.string.smash_ultimate));
         appIds.put(TagDataEditor.APP_ID_SSB,
                 TagMo.getContext().getString(R.string.super_smash));

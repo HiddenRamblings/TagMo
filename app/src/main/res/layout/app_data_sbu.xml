@@ -2,7 +2,7 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 <LinearLayout
-    android:id="@+id/appDataSSBU"
+    android:id="@+id/appDataSBU"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -40,7 +40,7 @@
                 android:text="@string/level"/>
 
             <EditText
-                android:id="@+id/txtLevelSSB"
+                android:id="@+id/txtLevelSBU"
                 style="@style/TagEditor.EditNumber"
                 android:importantForAutofill="no"
                 tools:ignore="LabelFor" />

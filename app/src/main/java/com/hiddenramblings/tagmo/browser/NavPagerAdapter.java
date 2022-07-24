@@ -25,8 +25,6 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @NonNull @Override
     public Fragment createFragment(int position) {
         switch (position) {
-//            case 1:
-//                return fragmentFoomiibo;
             case 1:
                 return fragmentElite;
             case 2:

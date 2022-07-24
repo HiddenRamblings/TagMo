@@ -386,7 +386,6 @@ public class FlaskSlotFragment extends Fragment implements
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(activity));
 
-
         writeFileAdapter = new WriteTagAdapter(settings, new WriteTagAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) { }
@@ -456,8 +455,6 @@ public class FlaskSlotFragment extends Fragment implements
         });
 
         createBlank.setOnClickListener(view1 -> serviceFlask.createBlankTag());
-
-        delayedBluetoothEnable();
     }
 
     public RecyclerView getAmiibosView() {

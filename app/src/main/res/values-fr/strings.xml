@@ -115,8 +115,6 @@
     <string name="bonus_two">Effet bonus 2</string>
     <string name="bonus_three">Effet bonus 3</string>
 
-    <string name="tagmo_settings">Paramètres de TagMo</string>
-    <string name="rebuild_database">Synchroniser avec AmiiboAPI</string>
     <string name="logcat_support">Signaler un problème</string>
     <string name="clear_foomiibo_set">Vider Foomiibo</string>
     <string name="build_foomiibo_set">Déployer Foomiibo</string>

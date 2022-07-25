@@ -122,9 +122,9 @@
                     android:title="@string/recursive_folders"
                     app:showAsAction="ifRoom"/>
                 <item
-                    android:id="@+id/show_downloads"
+                    android:id="@+id/hide_downloads"
                     android:checkable="true"
-                    android:title="@string/show_downloads"
+                    android:title="@string/hide_downloads"
                     app:showAsAction="ifRoom"/>
             </group>
         </menu>

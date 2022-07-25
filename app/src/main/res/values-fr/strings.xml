@@ -37,7 +37,7 @@
     <string name="amiibo_path_caps">CHEMIN</string>
 
     <string name="recursive_folders">Recherche récursive</string>
-    <string name="show_downloads">Afficher «&#160;Téléchargements&#160;»</string>
+    <string name="hide_downloads">Cacher «&#160;/%1$s&#160;»</string>
 
     <string name="simple">Texte uniquement</string>
     <string name="compact">Compact</string>

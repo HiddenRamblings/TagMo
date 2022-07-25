@@ -21,7 +21,7 @@
     <string name="amiibo_name">名稱</string>
     <string name="amiibo_game">遊戲系列</string>
     <string name="amiibo_character">角色人物</string>
-    <string name="amiibo_系列">amiibo&#8482; 系列</string>
+    <string name="amiibo_series">amiibo&#8482; 系列</string>
     <string name="amiibo_type">amiibo&#8482; 種類</string>
     <string name="amiibo_path">檔案路徑</string>
 
@@ -37,7 +37,7 @@
     <string name="amiibo_path_caps">路徑</string>
 
     <string name="recursive_folders">一併搜尋子目錄</string>
-    <string name="show_downloads">顯示 &#8217;\下載&#8217;</string>
+    <string name="hide_downloads">藏起来 &#8217;\%1$s&#8217;</string>
 
     <string name="simple">僅文字顯示</string>
     <string name="compact">縮圖+文字顯示</string>
@@ -115,8 +115,6 @@
     <string name="bonus_two">Bonus Effect 2</string>
     <string name="bonus_three">Bonus Effect 2</string>
 
-    <string name="tagmo_settings">TagMo 設定</string>
-    <string name="rebuild_database">同步 AmiiboAPI</string>
     <string name="logcat_support">程式意見反映</string>
     <string name="clear_foomiibo_set">清除 Foomiibo</string>
     <string name="build_foomiibo_set">建立 Foomiibo</string>
@@ -188,7 +186,7 @@
     <string name="sync_amiibo_info">與 AmiiboAPI 同步資料庫</string>
     <string name="import_json_details">載入 amiibo&#8482; 資料庫 (JSON)</string>
     <string name="reset_amiibo_info">重置 amiibo&#8482; 資料庫快取</string>
-    <string name="number_amiibo">%1$s: %2$d amiibo&#8482;</string>
+    <string name="number_foomiibo">Foomiibo: %1$d amiibo&#8482;</string>
     <string name="number_game">%1$d 個遊戲系列</string>
     <string name="number_character">%1$d 位角色人物</string>
     <string name="number_series">%1$d 個 amiibo&#8482; 系列</string>

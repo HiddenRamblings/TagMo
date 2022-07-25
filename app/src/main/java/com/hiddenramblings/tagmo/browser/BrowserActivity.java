@@ -213,7 +213,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuViewLarge;
     private MenuItem menuViewImage;
     private MenuItem menuRecursiveFiles;
-    private MenuItem menuShowDownloads;
+    private MenuItem menuHideDownloads;
 
     private BlurView amiiboContainer;
     private Toolbar toolbar;
@@ -1377,14 +1377,23 @@ public class BrowserActivity extends AppCompatActivity implements
         menuViewLarge = menu.findItem(R.id.view_large);
         menuViewImage = menu.findItem(R.id.view_image);
         menuRecursiveFiles = menu.findItem(R.id.recursive);
-        menuShowDownloads = menu.findItem(R.id.show_downloads);
+        menuHideDownloads = menu.findItem(R.id.hide_downloads);
 
         if (null == this.settings) return false;
 
         this.onSortChanged();
         this.onViewChanged();
         this.onRecursiveFilesChanged();
-        this.onShowDownloadsChanged();
+
+        if (isDocumentStorage()) {
+            menuHideDownloads.setVisible(false);
+        } else {
+            menuHideDownloads.setVisible(true);
+            menuHideDownloads.setTitle(getString(
+                    R.string.hide_downloads, Storage.getDownloadDir(null).getName()
+            ));
+            this.onHideDownloadsChanged();
+        }
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menuSearch.getActionView();
@@ -1495,8 +1504,8 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.recursive) {
             this.settings.setRecursiveEnabled(!this.settings.isRecursiveEnabled());
             this.settings.notifyChanges();
-        } else if (item.getItemId() == R.id.show_downloads) {
-            this.settings.setShowDownloads(!this.settings.isShowingDownloads());
+        } else if (item.getItemId() == R.id.hide_downloads) {
+            this.settings.setHideDownloads(!this.settings.isHidingDownloads());
             this.settings.notifyChanges();
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
@@ -1654,7 +1663,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiibos(keyManager, rootFolder, recursiveFiles);
-            if (this.settings.isShowingDownloads()) {
+            if (!this.settings.isHidingDownloads()) {
                 File download = Storage.getDownloadDir(null);
                 if (isDirectoryHidden(rootFolder, download, recursiveFiles))
                     amiiboFiles.addAll(AmiiboManager
@@ -1740,9 +1749,9 @@ public class BrowserActivity extends AppCompatActivity implements
             folderChanged = true;
             onRecursiveFilesChanged();
         }
-        if (newBrowserSettings.isShowingDownloads() != oldBrowserSettings.isShowingDownloads()) {
+        if (newBrowserSettings.isHidingDownloads() != oldBrowserSettings.isHidingDownloads()) {
             folderChanged = true;
-            onShowDownloadsChanged();
+            onHideDownloadsChanged();
         }
         if (!BrowserSettings.equals(newBrowserSettings.getLastUpdatedAPI(),
                 oldBrowserSettings.getLastUpdatedAPI())) {
@@ -1807,7 +1816,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
                 .image_network_settings().put(newBrowserSettings.getImageNetworkSettings())
                 .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
-                .showDownloads().put(newBrowserSettings.isShowingDownloads())
+                .hideDownloads().put(newBrowserSettings.isHidingDownloads())
                 .lastUpdatedAPI().put(newBrowserSettings.getLastUpdatedAPI())
                 .lastUpdatedGit().put(newBrowserSettings.getLastUpdatedGit())
                 .apply();
@@ -1973,11 +1982,11 @@ public class BrowserActivity extends AppCompatActivity implements
         menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
     }
 
-    private void onShowDownloadsChanged() {
-        if (null == menuShowDownloads)
+    private void onHideDownloadsChanged() {
+        if (null == menuHideDownloads)
             return;
 
-        menuShowDownloads.setChecked(settings.isShowingDownloads());
+        menuHideDownloads.setChecked(settings.isHidingDownloads());
     }
 
     private void launchEliteActivity(Intent resultData) {

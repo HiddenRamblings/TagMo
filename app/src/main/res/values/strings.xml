@@ -37,7 +37,7 @@
     <string name="amiibo_path_caps">PATH</string>
 
     <string name="recursive_folders">Recursive Search</string>
-    <string name="show_downloads">Show &#8217;Download&#8217;</string>
+    <string name="hide_downloads">Hide &#8217;/%1$s&#8217;</string>
 
     <string name="simple">Text Banners</string>
     <string name="compact">Snappy Cards</string>
@@ -241,7 +241,7 @@
     <string name="prepare_blank">N2 Elite fails verification with an empty active bank.</string>
     <string name="possible_lock">Is this N2 Elite locked?</string>
     <string name="possible_blank">Scanning an N2 Elite?</string>
-    <string name="tag_update_only">Previously written tags require &quot;Update&quot;</string>
+    <string name="tag_update_only">Previously written tags require \&#34;Update\&#34;</string>
 
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="flask_missing">Bluup Flask cannot be located!</string>

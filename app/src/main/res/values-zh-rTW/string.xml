@@ -155,8 +155,6 @@
     <string name="lock_amiibo">鎖住 N2 Elite</string>
     <string name="write_collection">寫入 Collection</string>
     <string name="erase_collection">抹除 Collection</string>
-    <string name="bluup_flask_ble">Bluup Flask (BLE)</string>
-    <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
     <string name="lego_dimensions">樂高次元</string>
 
     <string name="permission_required">需要存取檔案的權限！</string>
@@ -186,7 +184,6 @@
     <string name="sync_amiibo_info">與 AmiiboAPI 同步資料庫</string>
     <string name="import_json_details">載入 amiibo&#8482; 資料庫 (JSON)</string>
     <string name="reset_amiibo_info">重置 amiibo&#8482; 資料庫快取</string>
-    <string name="number_foomiibo">Foomiibo: %1$d amiibo&#8482;</string>
     <string name="number_game">%1$d 個遊戲系列</string>
     <string name="number_character">%1$d 位角色人物</string>
     <string name="number_series">%1$d 個 amiibo&#8482; 系列</string>

@@ -155,8 +155,6 @@
     <string name="lock_amiibo">Verrouiller N2 Elite</string>
     <string name="write_collection">Écrire collection</string>
     <string name="erase_collection">Effacer collection</string>
-    <string name="bluup_flask_ble">Bluup Flask (BLE)</string>
-    <string name="bluup_flask_web">Bluup Flask &#160;ᵂᵂᵂ</string>
     <string name="lego_dimensions">ᴸᴱᴳᴼ Dimensions</string>
 
     <string name="permission_required">Permissions de stockage nécessaire&#160;!</string>
@@ -186,7 +184,6 @@
     <string name="sync_amiibo_info">Sync. les données avec AmiiboAPI</string>
     <string name="import_json_details">Charger la base de données amiibo&#8482; (JSON)</string>
     <string name="reset_amiibo_info">Réinitialiser le cache de la base de données amiibo&#8482;</string>
-    <string name="number_foomiibo">Foomiibo&#160;: %1$d amiibo&#8482;</string>
     <string name="number_game">%1$d Licence(s)</string>
     <string name="number_character">%1$d Personnage(s)</string>
     <string name="number_series">%1$d Séries d’amiibo&#8482;</string>

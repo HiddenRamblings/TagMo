@@ -296,7 +296,7 @@
 
     <string name="speed_scan">Delikatnie unieś tag, aby zakończyć skanowanie</string>
     <string name="unzip_item">Rozpakowywanie %1$s&#8230;</string>
-    <string name="mkdir_failed">Tworzenie katalogu "%1$s" nieudane!</string>
+    <string name="mkdir_failed">Tworzenie katalogu &#8217;%1$s&#8217; nieudane!</string>
     <string name="downloads_hidden">Pobrane są obecnie ukryte!</string>
     <string name="game_usage_view">Zobacz kompatybilne gry</string>
     <string name="game_usage_hide">Ukryj Kompatybilne Gry</string>

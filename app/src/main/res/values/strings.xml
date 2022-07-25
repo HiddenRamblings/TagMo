@@ -355,7 +355,7 @@
 
     <string name="speed_scan">Lift tag slightly to complete scan</string>
     <string name="unzip_item">Unzipping %1$s&#8230;</string>
-    <string name="mkdir_failed">Mkdir "%1$s" failed!</string>
+    <string name="mkdir_failed">Mkdir &#8217;%1$s&#8217; failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>
 
     <string name="sub_button">%1$s Subscription</string>

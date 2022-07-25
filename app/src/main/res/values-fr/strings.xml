@@ -343,7 +343,7 @@
 
     <string name="speed_scan">Soulevez légèrement le Tag pour bien terminer le scan</string>
     <string name="unzip_item">Décompression de %1$s&#8230;</string>
-    <string name="mkdir_failed">Échec de mkdir "%1$s"&#160;!</string>
+    <string name="mkdir_failed">Échec de mkdir &#8217;%1$s&#8217;&#160;!</string>
     <string name="downloads_hidden">Les téléchargements sont actuellement cachés&#160;!</string>
 
     <string name="sub_button">Suivre %1$s</string>

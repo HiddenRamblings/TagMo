@@ -57,7 +57,8 @@ This app is the result of work by many. Thanks go out to (in alphabetical order)
 ### Translations
 * gocario - French
 * NoiRioN - Polish
-* Oosl - Chinese
+* Oosl - Chinese (CN)
+* qazrfv1234 - Chinese (TW)
 
 ##
 ![TagMo Logo](assets/tagmo_feature.png)

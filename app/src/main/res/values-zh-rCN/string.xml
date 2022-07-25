@@ -106,7 +106,6 @@
     <string name="bonus_two">Bonus Effect 2</string>
     <string name="bonus_three">Bonus Effect 2</string>
 
-    <string name="tagmo_settings">TagMo 设置</string>
     <string name="logcat_support">抓取日志</string>
     <string name="clear_foomiibo_set">删除本地所有 Foomiibo</string>
     <string name="build_foomiibo_set">创建 Foomiibo</string>
@@ -292,7 +291,7 @@
     <string name="firmware_failed">固件升级失败！请重试！(%1$d)</string>
 
     <string name="unzip_item">正在解压 %1$s&#8230;</string>
-    <string name="mkdir_failed">无法创建 "%1$s" 目录！</string>
+    <string name="mkdir_failed">无法创建 &#8217;%1$s&#8217; 目录！</string>
     <string name="downloads_hidden">目前已隐藏 Downloads 文件夹！</string>
     <string name="speed_scan">Tag 卡片离手机远点试试</string>
     <string name="accept">明白</string>

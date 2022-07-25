@@ -2,10 +2,10 @@
     <string name="topCenterTextMessage">Placez le Tag sous le téléphone</string>
     <string name="middleCenterError"> </string>
 
-    <string name="fixed_key_found">«&#160;Locked Key&#160;» chargée.</string>
-    <string name="fixed_key_missing">«&#160;Locked Key&#160;» manquante&#160;!</string>
-    <string name="unfixed_key_found">«&#160;Unfixed Key&#160;» chargée.</string>
-    <string name="unfixed_key_missing">«&#160;Unfixed Key&#160;» manquante&#160;!</string>
+    <string name="fixed_key_found">&#171;Locked Key&#187; chargée.</string>
+    <string name="fixed_key_missing">&#171;Locked Key&#187; manquante&#160;!</string>
+    <string name="unfixed_key_found">&#171;Unfixed Key&#187; chargée.</string>
+    <string name="unfixed_key_missing">&#171;Unfixed Key&#187; manquante&#160;!</string>
 
     <string name="nfc_unsupported">NFC non pris en charge&#160;!</string>
     <string name="nfc_disabled">NFC désactivé&#160;!</string>
@@ -37,7 +37,7 @@
     <string name="amiibo_path_caps">CHEMIN</string>
 
     <string name="recursive_folders">Recherche récursive</string>
-    <string name="hide_downloads">Cacher «&#160;/%1$s&#160;»</string>
+    <string name="hide_downloads">Cacher &#171;/%1$s&#187;</string>
 
     <string name="simple">Texte uniquement</string>
     <string name="compact">Compact</string>
@@ -227,11 +227,11 @@
     <string name="delete_virtual">Impossible de supprimer un Tag virtuel&#160;!</string>
     <string name="erase_active">Impossinle d’effacer la banque active&#160;!</string>
     <string name="backup_filename">Définir le nom du .bin de l’amiibo&#8482;</string>
-    <string name="document_storage_root">Mettre à jour le stockage «&#160;Document&#160;»</string>
-    <string name="emulated_storage_root">Parcourir stockage «&#160;Emulated&#160;»</string>
-    <string name="physical_storage_root">Parcourir stockage «&#160;Physical&#160;»</string>
-    <string name="grant_file_permission">Autoriser permission «&#160;Fichiers multimédias&#160;»</string>
-    <string name="force_document_storage">Activer le stockage «&#160;Document&#160;»</string>
+    <string name="document_storage_root">Mettre à jour le stockage &#171;Document&#187;</string>
+    <string name="emulated_storage_root">Parcourir stockage &#171;Emulated&#187;</string>
+    <string name="physical_storage_root">Parcourir stockage &#171;Physical&#187;</string>
+    <string name="grant_file_permission">Autoriser permission &#171;Fichiers multimédias&#187;</string>
+    <string name="force_document_storage">Activer le stockage &#171;Document&#187;</string>
     <string name="refresh_amiibo">Actualiser amiibo&#8482;</string>
 
     <string name="prepare_unlock">Une fois que le N2 sera scanné, il ne devra pas être retiré du capteur NFC jusqu’à la fin de l’opération.</string>
@@ -239,7 +239,7 @@
     <string name="prepare_blank">La vérification du N2 Elite ne peut se faire avec une banque vide.</string>
     <string name="possible_lock">Est-ce que le N2 Elite est verrouillé ?</string>
     <string name="possible_blank">Scanner un N2 Elite ?</string>
-    <string name="tag_update_only">Les Tags précédemment écrits nécessitent d’être «&#160;Actualisés&#160;»</string>
+    <string name="tag_update_only">Les Tags précédemment écrits nécessitent d’être &#171;Actualisés&#187;</string>
 
     <string name="custom_tab_back">Retour à TagMo</string>
 

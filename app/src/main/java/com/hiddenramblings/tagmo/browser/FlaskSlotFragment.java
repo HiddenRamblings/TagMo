@@ -61,7 +61,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.FlaskTag;
 import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
-import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothEnabler;
+import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothRequest;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -85,9 +85,10 @@ import java.util.concurrent.Executors;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class FlaskSlotFragment extends Fragment implements
         FlaskSlotAdapter.OnAmiiboClickListener,
-        BluetoothEnabler.BluetoothListener {
+        BluetoothRequest.BluetoothListener {
 
     private final Preferences_ prefs = TagMo.getPrefs();
+    private BluetoothRequest bluetoothRequest;
     private boolean isFragmentVisible = false;
 
     private CoordinatorLayout rootLayout;
@@ -561,6 +562,7 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     private Amiibo getAmiiboByTail(String[] name) {
+        if (name.length < 2) return null;
         AmiiboManager amiiboManager;
         try {
             amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
@@ -583,7 +585,7 @@ public class FlaskSlotFragment extends Fragment implements
                 }
             }
         }
-        return null != selectedAmiibo ? selectedAmiibo : new FlaskTag(Long.parseLong(name[2]));
+        return null != selectedAmiibo ? selectedAmiibo : new FlaskTag(Long.parseLong(name[1]));
     }
 
     @SuppressLint("MissingPermission")
@@ -800,10 +802,18 @@ public class FlaskSlotFragment extends Fragment implements
         }
     }
 
-    private void delayedBluetoothEnable() {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> new BluetoothEnabler(
-                requireContext(), requireActivity().getActivityResultRegistry(), this
-        ), 250);
+    public void delayedBluetoothEnable() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (null != mBluetoothAdapter) return;
+            if (null == bluetoothRequest) {
+                bluetoothRequest = new BluetoothRequest(
+                        requireContext(),
+                        requireActivity().getActivityResultRegistry(),
+                        FlaskSlotFragment.this
+                );
+            }
+            bluetoothRequest.queryAdapter(requireActivity());
+        }, 175);
     }
 
     @Override
@@ -828,9 +838,6 @@ public class FlaskSlotFragment extends Fragment implements
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             switch (noticeState) {
                 case NONE:
-                    if (null == mBluetoothAdapter) {
-                        delayedBluetoothEnable();
-                    }
                     break;
                 case SCANNING:
                     showScanningNotice();

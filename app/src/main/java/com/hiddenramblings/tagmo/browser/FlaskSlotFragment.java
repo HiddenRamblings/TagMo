@@ -61,7 +61,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.FlaskTag;
 import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
-import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothRequest;
+import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothHandler;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -85,10 +85,10 @@ import java.util.concurrent.Executors;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class FlaskSlotFragment extends Fragment implements
         FlaskSlotAdapter.OnAmiiboClickListener,
-        BluetoothRequest.BluetoothListener {
+        BluetoothHandler.BluetoothListener {
 
     private final Preferences_ prefs = TagMo.getPrefs();
-    private BluetoothRequest bluetoothRequest;
+    private BluetoothHandler bluetoothHandler;
     private boolean isFragmentVisible = false;
 
     private CoordinatorLayout rootLayout;
@@ -590,6 +590,8 @@ public class FlaskSlotFragment extends Fragment implements
 
     @SuppressLint("MissingPermission")
     private void scanBluetoothServices() {
+        mBluetoothAdapter = null != mBluetoothAdapter ? mBluetoothAdapter
+                : bluetoothHandler.getBluetoothAdapter(requireContext());
         if (null == mBluetoothAdapter) {
             setBottomSheetHidden(true);
             new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
@@ -779,6 +781,8 @@ public class FlaskSlotFragment extends Fragment implements
 
     @SuppressLint("MissingPermission")
     private void dismissFlaskDiscovery() {
+        mBluetoothAdapter = null != mBluetoothAdapter ? mBluetoothAdapter
+                : bluetoothHandler.getBluetoothAdapter(requireContext());
         if (null != mBluetoothAdapter) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 if (null != scanCallbackLP)
@@ -805,14 +809,11 @@ public class FlaskSlotFragment extends Fragment implements
     public void delayedBluetoothEnable() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (null != mBluetoothAdapter) return;
-            if (null == bluetoothRequest) {
-                bluetoothRequest = new BluetoothRequest(
-                        requireContext(),
-                        requireActivity().getActivityResultRegistry(),
-                        FlaskSlotFragment.this
-                );
-            }
-            bluetoothRequest.queryAdapter(requireActivity());
+            bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
+                    requireContext(), requireActivity().getActivityResultRegistry(),
+                    FlaskSlotFragment.this
+            );
+            bluetoothHandler.requestPermissions(requireActivity());
         }, 175);
     }
 
@@ -827,6 +828,9 @@ public class FlaskSlotFragment extends Fragment implements
     public void onPause() {
         isFragmentVisible = false;
         dismissSnackbarNotice();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            requireActivity().setShowWhenLocked(false);
+        }
         super.onPause();
     }
 
@@ -834,6 +838,9 @@ public class FlaskSlotFragment extends Fragment implements
     public void onResume() {
         isFragmentVisible = true;
         super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            requireActivity().setShowWhenLocked(true);
+        }
         if (null != statusBar && statusBar.isShown()) return;
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             switch (noticeState) {
@@ -922,7 +929,7 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     @Override
-    public void onAdapterUnavailable() {
+    public void onAdapterMissing() {
         setBottomSheetHidden(true);
         new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
     }

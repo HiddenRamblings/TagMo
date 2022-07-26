@@ -68,7 +68,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -77,7 +76,7 @@ import com.hiddenramblings.tagmo.TagMo;
 
 import java.util.Map;
 
-public class BluetoothRequest {
+public class BluetoothHandler {
 
     private BluetoothAdapter mBluetoothAdapter;
     private final BluetoothListener listener;
@@ -88,7 +87,7 @@ public class BluetoothRequest {
     ActivityResultLauncher<Intent> onRequestBluetooth;
     ActivityResultLauncher<String[]> onRequestLocation;
 
-    public BluetoothRequest(Context context, ActivityResultRegistry registry, BluetoothListener listener) {
+    public BluetoothHandler(Context context, ActivityResultRegistry registry, BluetoothListener listener) {
         onRequestLocationQ = registry.register("LocationQ",
                 new ActivityResultContracts.RequestMultiplePermissions(),
                 permissions -> { boolean isLocationAvailable = false;
@@ -97,7 +96,7 @@ public class BluetoothRequest {
                         && entry.getValue()) isLocationAvailable = true;
             }
             if (isLocationAvailable) {
-                requestPermissions(context);
+                requestBluetooth(context);
             } else {
                 listener.onPermissionsFailed();
             }
@@ -113,30 +112,30 @@ public class BluetoothRequest {
                 if (entry.getValue()) isBluetoothAvailable = true;
             }
             if (isBluetoothAvailable) {
-                mBluetoothAdapter = getBluetoothAdapter(context);
+                BluetoothAdapter mBluetoothAdapter = getBluetoothAdapter(context);
                 if (null != mBluetoothAdapter) {
 //                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 //                        onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
 //                    }
                     listener.onAdapterEnabled(mBluetoothAdapter);
                 } else {
-                    listener.onAdapterUnavailable();
+                    listener.onAdapterMissing();
                 }
             } else {
-                listener.onAdapterUnavailable();
+                listener.onAdapterMissing();
             }
         });
         
         onRequestBluetooth = registry.register("Bluetooth",
                 new ActivityResultContracts.StartActivityForResult(), result -> {
-            mBluetoothAdapter = getBluetoothAdapter(context);
+            BluetoothAdapter mBluetoothAdapter = getBluetoothAdapter(context);
             if (null != mBluetoothAdapter) {
 //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 //                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
 //                }
                 listener.onAdapterEnabled(mBluetoothAdapter);
             } else {
-                listener.onAdapterUnavailable();
+                listener.onAdapterMissing();
             }
         });
         
@@ -147,7 +146,7 @@ public class BluetoothRequest {
                 if (entry.getValue()) isLocationAvailable = true;
             }
             if (isLocationAvailable) {
-                mBluetoothAdapter = getBluetoothAdapter(context);
+                BluetoothAdapter mBluetoothAdapter = getBluetoothAdapter(context);
                 if (null != mBluetoothAdapter)
                     listener.onAdapterEnabled(mBluetoothAdapter);
                 else
@@ -160,7 +159,7 @@ public class BluetoothRequest {
         this.listener = listener;
     }
 
-    private void requestPermissions(Context context) {
+    private void requestBluetooth(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             final String[] PERMISSIONS_BLUETOOTH = {
                     Manifest.permission.BLUETOOTH_CONNECT,
@@ -168,7 +167,7 @@ public class BluetoothRequest {
             };
             onRequestBluetoothS.launch(PERMISSIONS_BLUETOOTH);
         } else {
-            mBluetoothAdapter = getBluetoothAdapter(context);
+            BluetoothAdapter mBluetoothAdapter = getBluetoothAdapter(context);
             if (null != mBluetoothAdapter) {
 //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 //                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
@@ -180,9 +179,9 @@ public class BluetoothRequest {
         }
     }
 
-    public void queryAdapter(Activity context) {
+    public void requestPermissions(Activity context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            mBluetoothAdapter = getBluetoothAdapter(context);
+            BluetoothAdapter mBluetoothAdapter = getBluetoothAdapter(context);
             if (null != mBluetoothAdapter)
                 listener.onAdapterEnabled(mBluetoothAdapter);
             else
@@ -210,7 +209,7 @@ public class BluetoothRequest {
             } else if (ContextCompat.checkSelfPermission(
                     context, Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(context);
+                requestBluetooth(context);
             } else {
                 if (TagMo.isGooglePlay()) {
                     new AlertDialog.Builder(context)
@@ -245,26 +244,29 @@ public class BluetoothRequest {
     }
 
     @SuppressLint("MissingPermission")
-    private BluetoothAdapter getBluetoothAdapter(Context context) {
-        BluetoothAdapter mBluetoothAdapter;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            mBluetoothAdapter = ((BluetoothManager) context.getSystemService(
-                    Context.BLUETOOTH_SERVICE
-            )).getAdapter();
+    public BluetoothAdapter getBluetoothAdapter(Context context) {
+        if (null != mBluetoothAdapter) {
+            if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
+            return mBluetoothAdapter;
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                mBluetoothAdapter = ((BluetoothManager) context.getSystemService(
+                        Context.BLUETOOTH_SERVICE
+                )).getAdapter();
+            } else {
+                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            }
             if (null != mBluetoothAdapter) {
                 if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
                 return mBluetoothAdapter;
             }
-        } else {
-            //noinspection deprecation
-            return BluetoothAdapter.getDefaultAdapter();
         }
         return null;
     }
 
     public interface BluetoothListener {
         void onPermissionsFailed();
-        void onAdapterUnavailable();
-        void onAdapterEnabled(BluetoothAdapter mBluetoothAdapter);
+        void onAdapterMissing();
+        void onAdapterEnabled(BluetoothAdapter adapter);
     }
 }

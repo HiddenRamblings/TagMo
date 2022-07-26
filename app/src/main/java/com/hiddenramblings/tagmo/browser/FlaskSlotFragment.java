@@ -132,7 +132,6 @@ public class FlaskSlotFragment extends Fragment implements
 
     private int currentCount;
 
-
     protected ServiceConnection mServerConn = new ServiceConnection() {
         boolean isServiceDiscovered = false;
 
@@ -425,6 +424,8 @@ public class FlaskSlotFragment extends Fragment implements
 
         writeFile.setOnClickListener(view1 -> {
             onBottomSheetChanged(false);
+            searchView.setQuery(settings.getQuery(), true);
+            searchView.clearFocus();
             writeFileAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
                 @Override
                 public void onAmiiboClicked(AmiiboFile amiiboFile) {
@@ -447,6 +448,8 @@ public class FlaskSlotFragment extends Fragment implements
 
         writeSlots.setOnClickListener(view1 -> {
             onBottomSheetChanged(false);
+            searchView.setQuery(settings.getQuery(), true);
+            searchView.clearFocus();
             WriteTagAdapter writeListAdapter = new WriteTagAdapter(
                     settings, this::writeAmiiboCollection);
             writeListAdapter.resetSelections();
@@ -655,13 +658,13 @@ public class FlaskSlotFragment extends Fragment implements
         if (null != amiiboList && amiiboList.size() == writeCount.getValue()) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             showUploadingNotice();
-            for (AmiiboFile amiiboFile : amiiboList) {
-                uploadAmiiboFile(amiiboFile);
+            for (int i = 0; i < amiiboList.size(); i++) {
+                uploadAmiiboFile(amiiboList.get(i), i == amiiboList.size() - 1);
             }
         }
     }
 
-    private void uploadAmiiboFile(AmiiboFile amiiboFile) {
+    private void uploadAmiiboFile(AmiiboFile amiiboFile, boolean complete) {
         if (null != amiiboFile) {
             Amiibo amiibo = null;
             AmiiboManager amiiboManager = settings.getAmiiboManager();
@@ -675,10 +678,13 @@ public class FlaskSlotFragment extends Fragment implements
                     Debug.Log(e);
                 }
             }
-            if (null != amiibo) {
-                serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo);
-            }
+            if (null != amiibo) serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo);
         }
+        if (complete) serviceFlask.uploadFilesComplete();
+    }
+
+    private void uploadAmiiboFile(AmiiboFile amiiboFile) {
+        uploadAmiiboFile(amiiboFile, true);
     }
 
     private void setBottomSheetHidden(boolean hidden) {
@@ -817,7 +823,7 @@ public class FlaskSlotFragment extends Fragment implements
                     FlaskSlotFragment.this
             );
             bluetoothHandler.requestPermissions(requireActivity());
-        }, 175);
+        }, 100);
     }
 
     @Override
@@ -841,8 +847,6 @@ public class FlaskSlotFragment extends Fragment implements
         if (null != statusBar && statusBar.isShown()) return;
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             switch (noticeState) {
-                case NONE:
-                    break;
                 case SCANNING:
                     showScanningNotice();
                     break;
@@ -854,6 +858,8 @@ public class FlaskSlotFragment extends Fragment implements
                     break;
                 case PURCHASE:
                     showPurchaseNotice();
+                    break;
+                default:
                     break;
             }
         }, TagMo.uiDelay);

@@ -99,6 +99,7 @@ public class EliteBankFragment extends Fragment implements
     private KeyManager keyManager;
 
     private final ArrayList<Amiibo> amiibos = new ArrayList<>();
+    private SearchView searchView;
     private WriteTagAdapter writeFileAdapter;
 
     private int clickedPosition;
@@ -273,7 +274,7 @@ public class EliteBankFragment extends Fragment implements
             amiibosView.requestLayout();
         });
 
-        SearchView searchView = rootLayout.findViewById(R.id.amiibo_search);
+        searchView = rootLayout.findViewById(R.id.amiibo_search);
         SearchManager searchManager = (SearchManager) activity
                 .getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager
@@ -298,6 +299,8 @@ public class EliteBankFragment extends Fragment implements
 
         writeOpenBanks.setOnClickListener(view1 -> {
             onBottomSheetChanged(false, false);
+            searchView.setQuery(settings.getQuery(), true);
+            searchView.clearFocus();
             WriteTagAdapter writeListAdapter = new WriteTagAdapter(
                     settings, this::writeAmiiboCollection);
             writeListAdapter.resetSelections();
@@ -584,6 +587,8 @@ public class EliteBankFragment extends Fragment implements
 
     private void displayWriteDialog(int position) {
         onBottomSheetChanged(false, false);
+        searchView.setQuery(settings.getQuery(), true);
+        searchView.clearFocus();
         writeFileAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {

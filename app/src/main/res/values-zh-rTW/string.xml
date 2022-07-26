@@ -37,7 +37,7 @@
     <string name="amiibo_path_caps">路徑</string>
 
     <string name="recursive_folders">一併搜尋子目錄</string>
-    <string name="hide_downloads">藏起来 &#8217;\%1$s&#8217;</string>
+    <string name="hide_downloads">藏起来 &#8217;/%1$s&#8217;</string>
 
     <string name="simple">僅文字顯示</string>
     <string name="compact">縮圖+文字顯示</string>

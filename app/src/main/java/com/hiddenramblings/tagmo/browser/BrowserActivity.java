@@ -343,6 +343,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                             setTitle(R.string.bluup_flask);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
+                            fragmentFlask.delayedBluetoothEnable();
                             amiibosView = fragmentFlask.getAmiibosView();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {

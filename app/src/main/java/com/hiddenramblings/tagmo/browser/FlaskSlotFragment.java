@@ -705,6 +705,7 @@ public class FlaskSlotFragment extends Fragment implements
                     Snackbar.LENGTH_INDEFINITE
             );
             statusBar.show();
+            statusBar.getView().setKeepScreenOn(true);
         }
     }
 
@@ -718,6 +719,7 @@ public class FlaskSlotFragment extends Fragment implements
                     Snackbar.LENGTH_INDEFINITE
             );
             statusBar.show();
+            statusBar.getView().setKeepScreenOn(true);
         }
     }
 
@@ -740,6 +742,7 @@ public class FlaskSlotFragment extends Fragment implements
         builder.setView(R.layout.upload_dialog);
         uploadDialog = builder.create();
         uploadDialog.show();
+        uploadDialog.getWindow().getDecorView().setKeepScreenOn(true);
     }
 
     private void showPurchaseNotice() {
@@ -808,7 +811,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     public void delayedBluetoothEnable() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            if (null != mBluetoothAdapter) return;
+            if (null != mBluetoothAdapter && mBluetoothAdapter.isEnabled()) return;
             bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
                     requireContext(), requireActivity().getActivityResultRegistry(),
                     FlaskSlotFragment.this
@@ -828,9 +831,6 @@ public class FlaskSlotFragment extends Fragment implements
     public void onPause() {
         isFragmentVisible = false;
         dismissSnackbarNotice();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            requireActivity().setShowWhenLocked(false);
-        }
         super.onPause();
     }
 
@@ -838,9 +838,6 @@ public class FlaskSlotFragment extends Fragment implements
     public void onResume() {
         isFragmentVisible = true;
         super.onResume();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            requireActivity().setShowWhenLocked(true);
-        }
         if (null != statusBar && statusBar.isShown()) return;
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             switch (noticeState) {

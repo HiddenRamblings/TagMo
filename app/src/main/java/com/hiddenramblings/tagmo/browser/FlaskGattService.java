@@ -591,6 +591,9 @@ public class FlaskGattService extends Service {
                 : nameUnicode;
         delayedTagCharacteristic("saveUploadedTag(\""
                 + amiiboName + "|" + flaskTail + "|0\")");
+    }
+
+    public void uploadFilesComplete() {
         delayedTagCharacteristic("uploadsComplete()");
         delayedTagCharacteristic("getList()");
     }

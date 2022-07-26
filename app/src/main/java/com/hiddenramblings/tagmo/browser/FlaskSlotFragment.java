@@ -507,7 +507,14 @@ public class FlaskSlotFragment extends Fragment implements
             String amiiboImageUrl = null;
 
             amiiboView.setVisibility(View.VISIBLE);
-            if (active instanceof FlaskTag) {
+            if (null == active) {
+                txtName.setText(R.string.no_tag_loaded);
+                txtTagId.setVisibility(View.INVISIBLE);
+                txtAmiiboSeries.setVisibility(View.INVISIBLE);
+                txtAmiiboType.setVisibility(View.INVISIBLE);
+                txtGameSeries.setVisibility(View.INVISIBLE);
+                if (amiiboView == amiiboCard) txtUsageLabel.setVisibility(View.INVISIBLE);
+            } else if (active instanceof FlaskTag) {
                 txtName.setText(R.string.blank_tag);
                 txtTagId.setVisibility(View.INVISIBLE);
                 txtAmiiboSeries.setVisibility(View.INVISIBLE);

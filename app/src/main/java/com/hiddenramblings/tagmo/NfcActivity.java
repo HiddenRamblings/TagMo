@@ -46,7 +46,7 @@ import java.util.concurrent.Executors;
 
 public class NfcActivity extends AppCompatActivity {
 
-    private final Preferences_ prefs = TagMo.getPrefs();
+    private Preferences_ prefs;
 
     TextView txtMessage;
     TextView txtError;
@@ -71,7 +71,7 @@ public class NfcActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        prefs = TagMo.getPrefs();
         setContentView(R.layout.activity_nfc);
 
         ActionBar actionBar = getSupportActionBar();

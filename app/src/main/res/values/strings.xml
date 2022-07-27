@@ -58,6 +58,7 @@
     <string name="browser">Browser</string>
     <string name="purchase">Purchase</string>
     <string name="save">Save</string>
+    <string name="cache">Cache</string>
     <string name="write">Write</string>
     <string name="cancel">Cancel</string>
     <string name="accept">Accept</string>

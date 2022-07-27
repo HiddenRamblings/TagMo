@@ -1174,6 +1174,7 @@ public class BrowserActivity extends AppCompatActivity implements
     void getToolbarOptions(Toolbar toolbar, byte[] tagData, View itemView) {
         if (!toolbar.getMenu().hasVisibleItems())
             toolbar.inflateMenu(R.menu.amiibo_menu);
+        toolbar.getMenu().findItem(R.id.mnu_save).setTitle(R.string.cache);
         toolbar.getMenu().findItem(R.id.mnu_scan).setVisible(false);
         toolbar.setOnMenuItemClickListener(item -> {
             Bundle args = new Bundle();

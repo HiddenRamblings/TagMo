@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="imageNetworkSettings">
+        <item>透過任何網路下載</item>
+        <item>僅當WiFi可用時下載</item>
+        <item>不要下載</item>
+    </string-array>
+
+    <string-array name="themeSettingNames">
+        <item>自動</item>
+        <item>深色</item>
+        <item>淺色</item>
+    </string-array>
+</resources>

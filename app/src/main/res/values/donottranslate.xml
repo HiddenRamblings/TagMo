@@ -75,5 +75,4 @@
     <string name="old_uid" translatable="false">Old UID %1$s</string>
     <string name="page_ten" translatable="false">page 10 %1$s</string>
     <string name="ptag_key" translatable="false">ptag key %1$s</string>
-
 </resources>

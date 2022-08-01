@@ -6,7 +6,7 @@
         <item>Never</item>
     </string-array>
 
-    <string-array name="imageNetworkSettingValues">
+    <string-array name="imageNetworkSettingValues" translatable="false">
         <item>ALWAYS</item>
         <item>WIFI_ONLY</item>
         <item>NEVER</item>
@@ -18,13 +18,13 @@
         <item>Light</item>
     </string-array>
 
-    <string-array name="themeSettingValues">
+    <string-array name="themeSettingValues" translatable="false">
         <item>0</item>
         <item>1</item>
         <item>2</item>
     </string-array>
 
-    <string-array name="production_factory">
+    <string-array name="production_factory" translatable="false">
         <item>S1</item>
         <item>S2</item>
         <item>W1</item>

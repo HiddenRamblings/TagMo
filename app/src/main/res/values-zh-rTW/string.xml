@@ -58,6 +58,7 @@
     <string name="browser">瀏覽器</string>
     <string name="purchase">購買</string>
     <string name="save">儲存</string>
+    <string name="cache">快取</string>	
     <string name="write">寫入</string>
     <string name="cancel">取消</string>
     <string name="accept">接受</string>
@@ -116,6 +117,7 @@
     <string name="bonus_three">Bonus Effect 2</string>
 
     <string name="logcat_support">程式意見反映</string>
+    <string name="donate_support">捐款贊助開發</string>
     <string name="clear_foomiibo_set">清除 Foomiibo</string>
     <string name="build_foomiibo_set">建立 Foomiibo</string>
     <string name="foomiibo_progress">正在建立 %1$s&#8230;</string>
@@ -353,7 +355,7 @@
     <string name="mkdir_failed">新建資料夾 &#8217;%1$s&#8217; 失敗！</string>
     <string name="downloads_hidden">下載項目已經隱藏！</string>
 
-    <string name="sub_button">%1$s Subscription</string>
+    <string name="sub_button">%1$s 訂閱</string>
     <string name="iap_button">%1$s 捐贈</string>
     <string name="donation_thanks">非常感謝你的捐贈！</string>
 </resources>

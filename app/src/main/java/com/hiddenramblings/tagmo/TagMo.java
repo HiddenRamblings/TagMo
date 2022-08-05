@@ -1,6 +1,8 @@
 package com.hiddenramblings.tagmo;
 
 import android.app.Application;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.util.Log;
 
@@ -59,8 +61,12 @@ public class TagMo extends Application {
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
             Log.e("UncaughtException", exception.toString());
-            error.printStackTrace();
-            System.exit(1);
+            ClipboardManager clipboard = (ClipboardManager)
+                    getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setPrimaryClip(ClipData.newPlainText(
+                    "UncaughtException", exception.toString()
+            ));
+            System.exit(0);
         });
     }
 

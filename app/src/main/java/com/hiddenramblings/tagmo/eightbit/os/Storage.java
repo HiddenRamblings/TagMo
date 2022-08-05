@@ -261,11 +261,18 @@ public class Storage extends Environment {
         return getDownloadDir(directory, null);
     }
 
-    public static String getRelativeDocument(Uri uri) {
-        String treeUri = uri.toString().substring(uri.toString().lastIndexOf("/tree/") + 6)
+    private static String unicodeString(String unicode) {
+        return unicode
                 .replace("%3A", ":")
                 .replace("%2F", "/")
                 .replace("%20", " ");
+    }
+
+    public static String getRelativeDocument(Uri uri) {
+        String treeUri = uri.toString().contains("/tree/") ? uri.toString().substring(
+                uri.toString().lastIndexOf("/tree/") + 6
+        ) : uri.toString();
+        treeUri = unicodeString(treeUri);
         return treeUri.contains("primary:") ? "/" + treeUri.substring(
                 treeUri.lastIndexOf("primary:") + 8
         ) : treeUri;

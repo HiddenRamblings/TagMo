@@ -270,10 +270,9 @@ public class FlaskGattService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (null != listener) listener.onServicesDiscovered();
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                    mBluetoothGatt.requestMtu(517);
-//                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    mBluetoothGatt.requestMtu(512); // Maximum: 517
+                else if (null != listener) listener.onServicesDiscovered();
             } else {
                 Debug.Log(TAG, "onServicesDiscovered received: " + status);
             }
@@ -310,6 +309,7 @@ public class FlaskGattService extends Service {
             } else {
                 Debug.Log(TAG, "onMtuChange received: " + status);
             }
+            if (null != listener) listener.onServicesDiscovered();
         }
     };
 

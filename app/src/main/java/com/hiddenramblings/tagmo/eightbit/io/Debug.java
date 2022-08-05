@@ -132,7 +132,7 @@ public class Debug {
     private static void openGitHub(Context context, String logText) {
         ClipboardManager clipboard = (ClipboardManager) context
                 .getSystemService(Context.CLIPBOARD_SERVICE);
-        clipboard.setPrimaryClip(ClipData.newPlainText("logcat", logText));
+        clipboard.setPrimaryClip(ClipData.newPlainText("HiddenRamblings", logText));
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
     }
 

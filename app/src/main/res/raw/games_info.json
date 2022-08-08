@@ -102109,6 +102109,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "Xenoblade Chronicles 3",
+					"gameID": [
+						"010074F013262000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Monado weapon skin for characters using the Swordfighter Class",
+							"write": false
+						}
+					]
 				}
 			]
 		},

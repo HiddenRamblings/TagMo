@@ -64,7 +64,7 @@
                 android:layout_weight="1"
                 android:ellipsize="marquee"
                 android:singleLine="true"
-                android:text="@string/bluup_flask_ble"
+                android:text="@string/bluup_flask"
                 android:textColor="@android:color/white"
                 android:textSize="14sp" />
 

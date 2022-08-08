@@ -95,7 +95,7 @@ public class CheckUpdatesTask {
         });
         Executors.newSingleThreadExecutor().execute(() -> {
             boolean isMaster = TagMo.getPrefs().settings_stable_channel().get();
-            new JSONExecutor(TAGMO_GIT_API + (isMaster
+            new JSONExecutor(activity,TAGMO_GIT_API + (isMaster
                     ? "master" : "experimental")).setResultListener(result -> {
                 if (null != result) parseUpdateJSON(result, isMaster);
             });
@@ -213,7 +213,8 @@ public class CheckUpdatesTask {
         if (isMaster && null != lastCommit && null != downloadUrl) {
             String finalLastCommit = lastCommit;
             String finalDownloadUrl = downloadUrl;
-            new JSONExecutor(TAGMO_GIT_API + "experimental").setResultListener(experimental -> {
+            new JSONExecutor(activity.get(), TAGMO_GIT_API + "experimental")
+                    .setResultListener(experimental -> {
                 try {
                     JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();
                     String extraCommit = ((String) jsonObject.get("name")).substring(offset);

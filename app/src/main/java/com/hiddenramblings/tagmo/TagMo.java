@@ -8,6 +8,7 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 
 import org.androidannotations.annotations.EApplication;
@@ -60,12 +61,7 @@ public class TagMo extends Application {
         Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
-            Log.e("UncaughtException", exception.toString());
-            ClipboardManager clipboard = (ClipboardManager)
-                    getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboard.setPrimaryClip(ClipData.newPlainText(
-                    "UncaughtException", exception.toString()
-            ));
+            Debug.processException(this, exception.toString());
             System.exit(0);
         });
     }

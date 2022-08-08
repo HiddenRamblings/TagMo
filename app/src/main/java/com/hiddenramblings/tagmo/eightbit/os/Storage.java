@@ -269,12 +269,9 @@ public class Storage extends Environment {
     }
 
     public static String getRelativeDocument(Uri uri) {
-        String treeUri = uri.toString().contains("/tree/") ? uri.toString().substring(
-                uri.toString().lastIndexOf("/tree/") + 6
-        ) : uri.toString();
-        treeUri = unicodeString(treeUri);
-        return treeUri.contains("primary:") ? "/" + treeUri.substring(
-                treeUri.lastIndexOf("primary:") + 8
-        ) : treeUri;
+        String treeUri = unicodeString(uri.toString().contains("/tree/") ? uri.toString()
+                .substring(uri.toString().lastIndexOf("/tree/") + 6) : uri.toString());
+        return treeUri.contains("primary:") ? "/" + treeUri
+                .substring(treeUri.lastIndexOf("primary:") + 8) : treeUri;
     }
 }

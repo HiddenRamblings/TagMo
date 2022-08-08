@@ -95,7 +95,6 @@ import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.hiddenramblings.tagmo.BuildConfig;
@@ -188,7 +187,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private AnimatedLinearLayout fakeSnackbar;
     private TextView fakeSnackbarText;
     private AppCompatButton fakeSnackbarItem;
-    private TabLayout navigationTabs;
     private ViewPager2 mainLayout;
     private FloatingActionButton nfcFab;
     private RecyclerView amiibosView;
@@ -275,26 +273,6 @@ public class BrowserActivity extends AppCompatActivity implements
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            this.runOnUiThread(() -> ProviderInstaller.installIfNeededAsync(this,
-                    new ProviderInstaller.ProviderInstallListener() {
-                @Override
-                public void onProviderInstalled() { }
-
-                @Override
-                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                    GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
-                    if (availability.isUserResolvableError(errorCode)) {
-                        availability.showErrorDialogFragment(
-                                BrowserActivity.this, errorCode, 7000,
-                                dialog -> onProviderInstallerNotAvailable());
-                    } else {
-                        onProviderInstallerNotAvailable();
-                    }
-                }
-            }));
-        }
-
         if (null == this.settings) this.settings = new BrowserSettings().initialize();
         this.settings.addChangeListener(this);
 
@@ -309,7 +287,6 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }
 
-        navigationTabs = findViewById(R.id.navigation_tabs);
         mainLayout.setAdapter(pagerAdapter);
         CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
         cardFlipPageTransformer.setScalable(true);
@@ -341,7 +318,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     case 2:
                         hideBrowserInterface();
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                            setTitle(R.string.bluup_flask);
+                            setTitle(R.string.flask_ble);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
                             amiibosView = fragmentFlask.getAmiibosView();
@@ -376,14 +353,15 @@ public class BrowserActivity extends AppCompatActivity implements
                 invalidateOptionsMenu();
             }
         });
-        new TabLayoutMediator(navigationTabs, mainLayout, (tab, position) -> {
+
+        new TabLayoutMediator(findViewById(R.id.navigation_tabs), mainLayout, (tab, position) -> {
             switch (position) {
                 case 1:
                     tab.setText(R.string.elite_n2);
                     break;
                 case 2:
                     tab.setText(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-                            ? R.string.bluup_flask : R.string.pref_guides);
+                            ? R.string.flask_ble : R.string.pref_guides);
                     break;
                 case 3:
                     tab.setText(R.string.pref_guides);
@@ -584,11 +562,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } else {
             onRequestStorage.launch(PERMISSIONS_STORAGE);
         }
-    }
-
-    private void onProviderInstallerNotAvailable() {
-        new Toasty(BrowserActivity.this).Long(R.string.fail_ssl_update);
-        finish();
     }
 
     private final ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
@@ -2425,7 +2398,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void showFakeSnackbar(String msg) {
-        navigationTabs.post(() -> {
+        fakeSnackbar.post(() -> {
             fakeSnackbarItem.setVisibility(View.INVISIBLE);
             fakeSnackbarText.setText(msg);
             fakeSnackbar.setVisibility(View.VISIBLE);

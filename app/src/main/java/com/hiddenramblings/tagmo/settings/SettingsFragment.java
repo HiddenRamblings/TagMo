@@ -74,7 +74,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
-            new JSONExecutor(API_LAST_UPDATED).setResultListener(result -> {
+            new JSONExecutor(requireActivity(), API_LAST_UPDATED).setResultListener(result -> {
                 if (null != result) parseUpdateJSON(result, false);
             });
         }
@@ -286,7 +286,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     public void rebuildAmiiboDatabase() {
         resetAmiiboDatabase(false);
-        new JSONExecutor(API_LAST_UPDATED).setResultListener(result -> {
+        new JSONExecutor(requireActivity(), API_LAST_UPDATED).setResultListener(result -> {
             if (null != result) parseUpdateJSON(result, true);
         });
     }

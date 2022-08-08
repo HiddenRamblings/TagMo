@@ -136,10 +136,7 @@ public class Debug {
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
     }
 
-    public static boolean processLogcat(Context context) throws IOException {
-        String project = context.getString(R.string.tagmo);
-        String username = "HiddenRamblings";
-
+    public static StringBuilder getDeviceProfile(Context context) {
         String separator = System.getProperty("line.separator") != null
                 ? Objects.requireNonNull(System.getProperty("line.separator")) : "\n";
         final StringBuilder log = new StringBuilder(separator);
@@ -162,6 +159,24 @@ public class Debug {
         log.append(Build.VERSION.RELEASE);
         log.append(")");
         log.append(separator).append(context.getString(R.string.install_src, BuildConfig.BUILD_TYPE));
+        return log;
+    }
+
+    public static void processException(Context context, String exception) {
+        String separator = System.getProperty("line.separator") != null
+                ? Objects.requireNonNull(System.getProperty("line.separator")) : "\n";
+        final StringBuilder log = getDeviceProfile(context);
+        log.append(separator).append(separator).append(exception);
+        openGitHub(context, log.toString());
+    }
+
+    public static boolean processLogcat(Context context) throws IOException {
+        String project = context.getString(R.string.tagmo);
+        String username = "HiddenRamblings";
+
+        String separator = System.getProperty("line.separator") != null
+                ? Objects.requireNonNull(System.getProperty("line.separator")) : "\n";
+        final StringBuilder log = getDeviceProfile(context);
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d", "-t", "192", BuildConfig.APPLICATION_ID,
                 "AndroidRuntime", "System.err",

@@ -46,7 +46,7 @@ import java.util.concurrent.Executors;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 
-    private static final String API_LAST_UPDATED = "https://www.amiiboapi.com/api/lastupdated/";
+    private static final String API_LAST_UPDATED = "https://tagmoapi.herokuapp.com/api/lastupdated/";
 
     public static final String IMAGE_NETWORK_NEVER = "NEVER";
     public static final String IMAGE_NETWORK_WIFI = "WIFI_ONLY";
@@ -346,7 +346,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         showSnackbar(R.string.sync_amiibo_process, Snackbar.LENGTH_INDEFINITE);
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                URL url = new URL("https://www.amiiboapi.com/api/amiibo/");
+                URL url = new URL("https://tagmoapi.herokuapp.com/api/amiibo/");
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.setUseCaches(false);

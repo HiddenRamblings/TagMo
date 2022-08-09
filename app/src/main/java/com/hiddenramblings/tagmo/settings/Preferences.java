@@ -84,4 +84,7 @@ public interface Preferences {
     long lastUpdatedGit();
 
     String downloadUrl();
+
+    @DefaultInt(0)
+    int refreshCount();
 }

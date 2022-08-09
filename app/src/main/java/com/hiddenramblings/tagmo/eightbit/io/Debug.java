@@ -129,13 +129,6 @@ public class Debug {
     private static final String issueUrl = "https://github.com/HiddenRamblings/TagMo/issues/new?"
             + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+";
 
-    private static void openGitHub(Context context, String logText) {
-        ClipboardManager clipboard = (ClipboardManager) context
-                .getSystemService(Context.CLIPBOARD_SERVICE);
-        clipboard.setPrimaryClip(ClipData.newPlainText("HiddenRamblings", logText));
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
-    }
-
     public static StringBuilder getDeviceProfile(Context context) {
         String separator = System.getProperty("line.separator") != null
                 ? Objects.requireNonNull(System.getProperty("line.separator")) : "\n";
@@ -162,12 +155,29 @@ public class Debug {
         return log;
     }
 
+    private static void submitLogcat(Context context, String logText) {
+        final Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"samsprungtoo@gmail.com"});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "TagMo Logcat");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, logText);
+        emailIntent.setType("message/rfc822");
+        try {
+            context.startActivity(Intent.createChooser(emailIntent, "Email logcat via..."));
+        } catch (android.content.ActivityNotFoundException ex) {
+            ClipboardManager clipboard = (ClipboardManager) context
+                    .getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setPrimaryClip(ClipData.newPlainText("TagMo", logText));
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
+        }
+    }
+
     public static void processException(Context context, String exception) {
         String separator = System.getProperty("line.separator") != null
                 ? Objects.requireNonNull(System.getProperty("line.separator")) : "\n";
         final StringBuilder log = getDeviceProfile(context);
         log.append(separator).append(separator).append(exception);
-        openGitHub(context, log.toString());
+        submitLogcat(context, log.toString());
     }
 
     public static boolean processLogcat(Context context) throws IOException {
@@ -193,7 +203,7 @@ public class Debug {
         String logText = log.toString();
 
         if (!logText.contains("AndroidRuntime")) {
-            openGitHub(context, logText);
+            submitLogcat(context, logText);
             return false;
         }
         try {
@@ -208,7 +218,7 @@ public class Debug {
                     .homeAsUpEnabled(false).launch(context);
             return true;
         } catch (Exception ignored) {
-            openGitHub(context, logText);
+            submitLogcat(context, logText);
             return true;
         }
     }

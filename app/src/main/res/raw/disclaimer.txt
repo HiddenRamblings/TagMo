@@ -1,5 +1,5 @@
-TagMo is an amiibo™ manager and NFC reader / writer utility. Files used with TagMo are assumed the property of the user.
+TagMo is an amiibo™ manager and NFC reader / writer utility. Files used with TagMo are assumed the sole property of the user.
 
 TagMo is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Nintendo. No amiibo™ or their digital representations are included in this project.
 
-Binaries created with this project are not intended for sale or distribution. This project is for educational and archival purpose.
+Binaries created with this project are not intended for sale or distribution. TagMo is for educational and archival purposes.

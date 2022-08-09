@@ -194,7 +194,7 @@
     <string name="pref_advanced">Advanced</string>
     <string name="pref_theme_details">TagMo System Theme</string>
     <string name="pref_disable_debug">Disable Debug Logger</string>
-    <string name="disable_debug_details">May improve performance, but limits diagnostic information</string>
+    <string name="disable_debug_details">May improve performance, but limits most diagnostic details</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
     <string name="stable_channel_details">Only use the stable branch when checking for TagMo updates</string>
 
@@ -357,4 +357,5 @@
     <string name="sub_button">%1$s Subscription</string>
     <string name="iap_button">%1$s Donation</string>
     <string name="donation_thanks">Thank you for your support!</string>
+    <string name="donation_notice">TagMo is and will remain a free project.\nAll required fees are paid out of pocket.</string>
 </resources>

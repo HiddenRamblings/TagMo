@@ -90,8 +90,6 @@ import com.eightbitlab.blurview.BlurView;
 import com.eightbitlab.blurview.BlurViewFacade;
 import com.eightbitlab.blurview.RenderScriptBlur;
 import com.eightbitlab.blurview.SupportRenderScriptBlur;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -753,6 +751,13 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    private void onShowDonationNotice() {
+        Snackbar costNotice = new IconifiedSnackbar(BrowserActivity.this, mainLayout)
+                .buildSnackbar(getString(R.string.donation_notice), Snackbar.LENGTH_LONG);
+        costNotice.setAction(R.string.pref_donate, v -> onSendDonationClicked());
+        costNotice.show();
+    }
+
     private int getQueryCount(String queryText) {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         if (null == amiiboManager) return 0;
@@ -1320,7 +1325,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 switchStorageType.setVisibility(View.GONE);
             }
             if (keyManager.isKeyMissing()) {
-                hideFakeSnackbar();
+                hideFakeSnackbar(false);
                 showFakeSnackbar(getString(R.string.locating_keys));
                 locateKeyFiles();
             } else {
@@ -1650,7 +1655,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (Thread.currentThread().isInterrupted()) return;
 
             this.runOnUiThread(() -> {
-                hideFakeSnackbar();
+                hideFakeSnackbar(true);
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
             });
@@ -1667,7 +1672,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (Thread.currentThread().isInterrupted()) return;
 
             this.runOnUiThread(() -> {
-                hideFakeSnackbar();
+                hideFakeSnackbar(true);
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
             });
@@ -2405,7 +2410,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    private void hideFakeSnackbar() {
+    private void hideFakeSnackbar(boolean isCompleted) {
         if (fakeSnackbar.getVisibility() == View.VISIBLE) {
             TranslateAnimation animate = new TranslateAnimation(
                     0, 0, 0, -fakeSnackbar.getHeight());
@@ -2420,6 +2425,13 @@ public class BrowserActivity extends AppCompatActivity implements
                     fakeSnackbar.clearAnimation();
                     layout.setAnimationListener(null);
                     fakeSnackbar.setVisibility(View.GONE);
+                    if (isCompleted) {
+                        int loadCount = prefs.refreshCount().get();
+                        if (prefs.refreshCount().get() == 0) {
+                            onShowDonationNotice();
+                        }
+                        prefs.refreshCount().put(loadCount <= 8 ? loadCount + 1 : 0);
+                    }
                 }
             });
             fakeSnackbar.startAnimation(animate);
@@ -2500,7 +2512,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else if (keyNameMatcher(file.getName())) {
                 try (FileInputStream inputStream = new FileInputStream(file)) {
                     this.keyManager.evaluateKey(inputStream);
-                    hideFakeSnackbar();
+                    hideFakeSnackbar(false);
                 } catch (Exception e) {
                     Debug.Log(e);
                 }
@@ -2520,7 +2532,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     this.keyManager.evaluateKey(new ByteArrayInputStream(
                             TagUtils.hexToByteArray(scanner.nextLine()
                                     .replace(" ", ""))));
-                    hideFakeSnackbar();
+                    hideFakeSnackbar(false);
                     scanner.close();
                 } catch (IOException e) {
                     Debug.Log(e);
@@ -2541,7 +2553,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 for (File file : files) {
                     try (FileInputStream inputStream = new FileInputStream(file)) {
                         this.keyManager.evaluateKey(inputStream);
-                        hideFakeSnackbar();
+                        hideFakeSnackbar(false);
                     } catch (Exception e) {
                         Debug.Log(e);
                     }

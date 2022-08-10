@@ -71,7 +71,6 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
         init(context, attrs);
     }
 
-
     private void init(Context context, AttributeSet attrs) {
         
         if (attrs != null) {
@@ -216,6 +215,7 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
     public void setAdapter(Adapter adapter) {
         super.setAdapter(adapter);
         if (mScroller != null)
+            //noinspection unchecked
             mScroller.setAdapter(adapter);
     }
 

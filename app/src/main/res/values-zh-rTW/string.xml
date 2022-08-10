@@ -193,7 +193,7 @@
     <string name="pref_advanced">進階</string>
     <string name="pref_theme_details">TagMo系統主題</string>
     <string name="pref_disable_debug">停用除錯日誌記錄</string>
-    <string name="disable_debug_details">可改善執行效率，但會缺少診斷錯誤的相關資訊</string>
+    <string name="disable_debug_details">可改善執行效率，但將無法完整記錄用來診斷錯誤的所有細節資訊</string>
     <string name="pref_stable_channel">檢查穩定版本更新</string>
     <string name="stable_channel_details">檢查TagMo版本更新時，僅安裝穩定性分支的版本</string>
 
@@ -358,4 +358,6 @@
     <string name="sub_button">%1$s 訂閱</string>
     <string name="iap_button">%1$s 捐贈</string>
     <string name="donation_thanks">非常感謝你的捐贈！</string>
+    <string name="donation_notice">TagMo會持續努力維持免費的專案形式來進行開發。\n所有贊助款項都用於本專案的相關支出。</string>
+
 </resources>

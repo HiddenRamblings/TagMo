@@ -17,7 +17,7 @@ It was created as a result of the "[DIY amiibo cards](https://gbatemp.net/thread
 
 * https://www.reddit.com/r/tagmo/
 
-If you want to contribute, please make sure to adress your PRs to the 'experimental' branch. Thank you.
+If you want to contribute, please make sure to address your PRs to the 'experimental' branch. Thank you.
 
 ## [Instructions](https://tagmo.gitlab.io/)
 

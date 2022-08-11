@@ -2430,7 +2430,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         if (prefs.refreshCount().get() == 0) {
                             onShowDonationNotice();
                         }
-                        prefs.refreshCount().put(loadCount <= 8 ? loadCount + 1 : 0);
+                        prefs.refreshCount().put(loadCount <= 3 ? loadCount + 1 : 0);
                     }
                 }
             });

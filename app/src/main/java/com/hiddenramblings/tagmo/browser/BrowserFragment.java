@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -398,6 +399,25 @@ public class BrowserFragment extends Fragment implements
         intent.putExtras(bundle);
 
         this.startActivity(intent);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (null == getView()) return;
+        amiibosView.postDelayed(() -> {
+            float minHeight = requireContext().getResources()
+                    .getDimension(R.dimen.button_height_min) * 1.95f;
+            if (amiibosView.getLayoutParams().height > getView().getHeight() - (int) minHeight) {
+                amiibosView.getLayoutParams().height = getView().getHeight() - (int) minHeight;
+            } else {
+                int valueY = prefs.foomiiboOffset().get();
+                amiibosView.getLayoutParams().height = valueY != -1
+                        ? valueY : amiibosView.getLayoutParams().height;
+                amiibosView.requestLayout();
+            }
+            amiibosView.requestLayout();
+        }, 250);
     }
 }
 

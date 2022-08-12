@@ -316,4 +316,7 @@
     <string name="prefs_configuration">Opcje Przeglądarki</string>
     <string name="pref_import_keys">Importuj klucze</string>
 
+    <string name="sub_button">%1$s Subskrypcja</string>
+    <string name="iap_button">%1$s Darowizna</string>
+    <string name="donation_thanks">Dziękujemy za wsparcie!</string>
 </resources>

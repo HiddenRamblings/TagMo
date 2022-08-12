@@ -417,7 +417,7 @@ public class BrowserFragment extends Fragment implements
                 amiibosView.requestLayout();
             }
             amiibosView.requestLayout();
-        }, 250);
+        }, 100);
     }
 }
 

@@ -6,6 +6,10 @@
     <string name="nfc_query">NFC ist derzeit deaktiviert. NFC aktivieren?</string>
 
     <string name="proceed">Weiterhin</string>
+    <string name="scan">Scan</string>
+    <string name="browser">Browser</string>
+    <string name="purchase">Kauf</string>
+    <string name="save">Speichern</string>
 
     <string name="accept">Akzeptieren</string>
     <string name="activate">Aktivieren</string>
@@ -15,6 +19,7 @@
     <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
     <string name="super_smash">Super Smash Bros. for Nintendo 3DS and Wii U</string>
 
+    <string name="random_serial">Zufällige Seriennummer</string>
     <string name="game_usage_view">Kompatible Spiele anzeigen</string>
     <string name="game_usage_hide">Kompatible Spiele ausblenden</string>
 
@@ -27,4 +32,9 @@
     <string name="allow">Erlauben</string>
     <string name="yes">Ja</string>
 
+    <string name="speed_scan">Heben Sie das Etikett leicht an, um den Scan zu beenden</string>
+
+    <string name="sub_button">%1$s Abonnement</string>
+    <string name="iap_button">%1$s Spenden</string>
+    <string name="donation_thanks">Vielen Dank für Ihre Unterstützung!</string>
 </resources>

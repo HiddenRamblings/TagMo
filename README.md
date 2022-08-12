@@ -34,7 +34,7 @@ This app is the result of work by many. Thanks go out to (in alphabetical order)
 
 * \_Tim\_ - The original idea
 * 1RedOne - Support / README
-* AbandonedCart - Rebuild, N2 Elite, and more
+* AbandonedCart - Maintainer ([April 2021](https://github.com/HiddenRamblings/TagMo/commit/820ca2ad2a732b7c7c85e565066462f5ff89a6d1) - Current)
 * azsde - Bug fixes / maintenance
 * Bombastisch - Support and motivation
 * brunomarchand - Change AmiiboAPI to https and upgrade to cmake

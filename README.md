@@ -39,7 +39,6 @@ This app is the result of work by many. Thanks go out to (in alphabetical order)
 * Bombastisch - Support and motivation
 * brunomarchand - Change AmiiboAPI to https and upgrade to cmake
 * Catflap62 - N2 Elite hardware and testing
-* DanTheMan827 - Fixes to Amiibo Generator
 * FinalDoom - Bug fixes / maintenance
 * H3llK33p3r - Images for browser and main screen
 * hax0karti - [Amiibo Generator For Wumiibo](https://github.com/hax0kartik/amiibo-generator)

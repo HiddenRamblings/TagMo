@@ -752,8 +752,9 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onShowDonationNotice() {
-        Snackbar costNotice = new IconifiedSnackbar(BrowserActivity.this, mainLayout)
-                .buildSnackbar(getString(R.string.donation_notice), Snackbar.LENGTH_LONG);
+        Snackbar costNotice = new IconifiedSnackbar(
+                BrowserActivity.this, findViewById(R.id.bottom_sheet)
+        ).buildSnackbar(getString(R.string.donation_notice), Snackbar.LENGTH_LONG);
         costNotice.setAction(R.string.pref_donate, v -> onSendDonationClicked());
         costNotice.show();
     }
@@ -2425,13 +2426,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     fakeSnackbar.clearAnimation();
                     layout.setAnimationListener(null);
                     fakeSnackbar.setVisibility(View.GONE);
-                    if (isCompleted) {
-                        int loadCount = prefs.refreshCount().get();
-                        if (prefs.refreshCount().get() == 0) {
-                            onShowDonationNotice();
-                        }
-                        prefs.refreshCount().put(loadCount <= 3 ? loadCount + 1 : 0);
-                    }
                 }
             });
             fakeSnackbar.startAnimation(animate);
@@ -2999,5 +2993,15 @@ public class BrowserActivity extends AppCompatActivity implements
             );
         });
         return button;
+    }
+
+    @Override
+    protected void onRestart() {
+        int loadCount = prefs.refreshCount().get();
+        if (prefs.refreshCount().get() == 0) {
+            onShowDonationNotice();
+        }
+        prefs.refreshCount().put(loadCount <= 3 ? loadCount + 1 : 0);
+        super.onRestart();
     }
 }

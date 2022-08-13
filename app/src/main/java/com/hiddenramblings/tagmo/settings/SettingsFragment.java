@@ -126,6 +126,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
+        CheckBoxPreference hideFoomiiboPanel = findPreference(getString(R.string.settings_hide_foomiibo_panel));
+        if (null != hideFoomiiboPanel && null != getActivity()) {
+            hideFoomiiboPanel.setChecked(prefs.disableFoomiibo().get());
+            hideFoomiiboPanel.setOnPreferenceClickListener(preference -> {
+                boolean isChecked = hideFoomiiboPanel.isChecked();
+                prefs.disableFoomiibo().put(isChecked);
+                ((BrowserActivity) getActivity()).configureFoomiiboVisibility();
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
         CheckBoxPreference enablePowerTagSupport = findPreference(getString(R.string.settings_enable_power_tag_support));
         if (null != enablePowerTagSupport) {
             enablePowerTagSupport.setOnPreferenceClickListener(preference -> {

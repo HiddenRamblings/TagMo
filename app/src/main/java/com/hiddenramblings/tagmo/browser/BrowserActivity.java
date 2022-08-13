@@ -751,6 +751,10 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    public void configureFoomiiboVisibility() {
+        fragmentBrowser.configureFoomiiboVisibility();
+    }
+
     private void onShowDonationNotice() {
         Snackbar costNotice = new IconifiedSnackbar(
                 BrowserActivity.this, findViewById(R.id.bottom_sheet)

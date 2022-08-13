@@ -759,8 +759,8 @@ public class BrowserActivity extends AppCompatActivity implements
         Snackbar donorNotice = new IconifiedSnackbar(
                 BrowserActivity.this, mainLayout
         ).buildSnackbar(
-                R.string.donation_notice, R.drawable.ic_github_octocat_24dp,
-                Snackbar.LENGTH_LONG, findViewById(R.id.nfc_fab)
+                R.string.donation_notice,
+                R.drawable.ic_github_octocat_24dp, Snackbar.LENGTH_LONG
         );
         donorNotice.setAction(R.string.pref_donate, v -> onSendDonationClicked());
         donorNotice.show();
@@ -3005,10 +3005,8 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     protected void onRestart() {
         int loadCount = prefs.refreshCount().get();
-        if (prefs.refreshCount().get() == 0) {
-            onShowDonationNotice();
-        }
-        prefs.refreshCount().put(loadCount <= 3 ? loadCount + 1 : 0);
+        if (prefs.refreshCount().get() == 0) onShowDonationNotice();
+        prefs.refreshCount().put(loadCount <= 8 ? loadCount + 1 : 0);
         super.onRestart();
     }
 }

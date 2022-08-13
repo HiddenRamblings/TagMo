@@ -97,7 +97,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return SettingsFragment.super.onPreferenceTreeClick(preference);
         });
 
-        CheckBoxPreference enableTagTypeValidation = findPreference(getString(R.string.settings_tag_type_validation));
+        CheckBoxPreference enableTagTypeValidation = findPreference(
+                getString(R.string.settings_tag_type_validation)
+        );
         if (null != enableTagTypeValidation) {
             enableTagTypeValidation.setChecked(prefs.enable_tag_type_validation().get());
             enableTagTypeValidation.setOnPreferenceClickListener(preference -> {
@@ -106,7 +108,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
-        CheckBoxPreference enableAutomaticScan = findPreference(getString(R.string.settings_enable_automatic_scan));
+        CheckBoxPreference enableAutomaticScan = findPreference(
+                getString(R.string.settings_enable_automatic_scan)
+        );
         if (null != enableAutomaticScan) {
             enableAutomaticScan.setOnPreferenceClickListener(preference -> {
                 boolean isChecked = enableAutomaticScan.isChecked();
@@ -126,7 +130,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
-        CheckBoxPreference disableFoomiiboPanel = findPreference(getString(R.string.settings_hide_foomiibo_panel));
+        CheckBoxPreference disableFoomiiboPanel = findPreference(
+                getString(R.string.settings_hide_foomiibo_panel)
+        );
         if (null != disableFoomiiboPanel && null != getActivity()) {
             disableFoomiiboPanel.setChecked(prefs.settings_disable_foomiibo().get());
             disableFoomiiboPanel.setOnPreferenceClickListener(preference -> {
@@ -137,7 +143,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
-        CheckBoxPreference enablePowerTagSupport = findPreference(getString(R.string.settings_enable_power_tag_support));
+        CheckBoxPreference enablePowerTagSupport = findPreference(
+                getString(R.string.settings_enable_power_tag_support)
+        );
         if (null != enablePowerTagSupport) {
             enablePowerTagSupport.setOnPreferenceClickListener(preference -> {
                 boolean isEnabled = enablePowerTagSupport.isChecked();
@@ -150,7 +158,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
-        CheckBoxPreference enableEliteSupport = findPreference(getString(R.string.settings_enable_elite_support));
+        CheckBoxPreference enableEliteSupport = findPreference(
+                getString(R.string.settings_enable_elite_support)
+        );
         if (null != enableEliteSupport) {
             boolean isElite = prefs.enable_elite_support().get();
             enableEliteSupport.setChecked(isElite);

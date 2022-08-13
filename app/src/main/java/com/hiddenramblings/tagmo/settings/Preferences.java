@@ -30,6 +30,9 @@ public interface Preferences {
     @DefaultBoolean(true)
     boolean enable_automatic_scan();
 
+    @DefaultBoolean(false)
+    boolean settings_disable_foomiibo();
+
     @DefaultString(SettingsFragment.IMAGE_NETWORK_ALWAYS)
     String image_network_settings();
 
@@ -52,6 +55,9 @@ public interface Preferences {
 
     String browserRootDocument();
 
+    @DefaultInt(-1)
+    int foomiiboOffset();
+
     @DefaultInt(200)
     int eliteBankCount();
 
@@ -60,9 +66,6 @@ public interface Preferences {
 
     @DefaultInt(0)
     int flaskActiveSlot();
-
-    @DefaultBoolean(false)
-    boolean disableFoomiibo();
 
     @DefaultBoolean(false)
     boolean hasAcceptedTOS();
@@ -78,9 +81,6 @@ public interface Preferences {
 
     @DefaultInt(0)
     int applicationTheme();
-
-    @DefaultInt(-1)
-    int foomiiboOffset();
 
     String lastUpdatedAPI();
 

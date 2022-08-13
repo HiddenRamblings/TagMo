@@ -16,16 +16,16 @@
             android:key="@string/settings_enable_automatic_scan"
             android:summary="@string/automatic_scan_details"
             android:title="@string/enable_automatic_scan" />
-        <androidx.preference.ListPreference
-            android:entries="@array/imageNetworkSettings"
-            android:entryValues="@array/imageNetworkSettingValues"
-            android:key="@string/image_network_settings"
-            android:title="@string/image_loading_details" />
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/settings_hide_foomiibo_panel"
             android:summary="@string/hide_foomiibo_details"
             android:title="@string/hide_foomiibo_panel" />
+        <androidx.preference.ListPreference
+            android:entries="@array/imageNetworkSettings"
+            android:entryValues="@array/imageNetworkSettingValues"
+            android:key="@string/image_network_settings"
+            android:title="@string/image_loading_details" />
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

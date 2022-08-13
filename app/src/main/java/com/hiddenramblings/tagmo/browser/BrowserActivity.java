@@ -751,7 +751,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    public void configureFoomiiboVisibility() {
+    public void setFoomiiboPanelVisibility() {
         fragmentBrowser.configureFoomiiboVisibility();
     }
 

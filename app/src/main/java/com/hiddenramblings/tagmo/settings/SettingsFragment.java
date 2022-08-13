@@ -126,13 +126,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
-        CheckBoxPreference hideFoomiiboPanel = findPreference(getString(R.string.settings_hide_foomiibo_panel));
-        if (null != hideFoomiiboPanel && null != getActivity()) {
-            hideFoomiiboPanel.setChecked(prefs.disableFoomiibo().get());
-            hideFoomiiboPanel.setOnPreferenceClickListener(preference -> {
-                boolean isChecked = hideFoomiiboPanel.isChecked();
-                prefs.disableFoomiibo().put(isChecked);
-                ((BrowserActivity) getActivity()).configureFoomiiboVisibility();
+        CheckBoxPreference disableFoomiiboPanel = findPreference(getString(R.string.settings_hide_foomiibo_panel));
+        if (null != disableFoomiiboPanel && null != getActivity()) {
+            disableFoomiiboPanel.setChecked(prefs.settings_disable_foomiibo().get());
+            disableFoomiiboPanel.setOnPreferenceClickListener(preference -> {
+                boolean isChecked = disableFoomiiboPanel.isChecked();
+                prefs.settings_disable_foomiibo().put(isChecked);
+                ((BrowserActivity) getActivity()).setFoomiiboPanelVisibility();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }

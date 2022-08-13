@@ -19,6 +19,7 @@
     <string name="settings_import_keys" translatable="false">import_keys</string>
     <string name="settings_tag_type_validation" translatable="false">enable_tag_type_validation</string>
     <string name="settings_enable_automatic_scan" translatable="false">enable_automatic_scan</string>
+    <string name="settings_hide_foomiibo_panel" translatable="false">hide_foomiibo_panel</string>
     <string name="settings_enable_power_tag_support" translatable="false">enable_power_tag_support</string>
     <string name="settings_enable_elite_support" translatable="false">enable_elite_support</string>
     <string name="settings_elite_signature" translatable="false">settings_elite_signature</string>

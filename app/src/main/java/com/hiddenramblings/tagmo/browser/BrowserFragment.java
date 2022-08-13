@@ -135,11 +135,6 @@ public class BrowserFragment extends Fragment implements
         settings.addChangeListener((BrowserSettings.BrowserSettingsListener)
                 foomiiboView.getAdapter());
 
-        int valueY = prefs.foomiiboOffset().get();
-        amiibosView.getLayoutParams().height = valueY != -1
-                ? valueY : amiibosView.getLayoutParams().height;
-        amiibosView.requestLayout();
-
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
             int srcHeight = amiibosView.getLayoutParams().height;
             int y = (int) event.getY();
@@ -158,6 +153,8 @@ public class BrowserFragment extends Fragment implements
             }
             return true;
         });
+
+        configureFoomiiboVisibility();
     }
 
     public RecyclerView getAmiibosView() {
@@ -187,10 +184,25 @@ public class BrowserFragment extends Fragment implements
         }
     }
 
+    void configureFoomiiboVisibility() {
+        if (null == getView()) return;
+        if (prefs.disableFoomiibo().get()) {
+            getView().findViewById(R.id.list_divider).setVisibility(View.GONE);
+            amiibosView.getLayoutParams().height = getView().getHeight();
+        } else {
+            getView().findViewById(R.id.list_divider).setVisibility(View.VISIBLE);
+            int valueY = prefs.foomiiboOffset().get();
+            amiibosView.getLayoutParams().height = valueY != -1
+                    ? valueY : amiibosView.getLayoutParams().height;
+        }
+        amiibosView.requestLayout();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         ((BrowserActivity) requireActivity()).onRootFolderChanged(false);
+        configureFoomiiboVisibility();
     }
 
     private void deleteDir(Handler handler, ProgressDialog dialog, File dir) {

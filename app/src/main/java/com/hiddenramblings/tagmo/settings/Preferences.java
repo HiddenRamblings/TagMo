@@ -62,6 +62,9 @@ public interface Preferences {
     int flaskActiveSlot();
 
     @DefaultBoolean(false)
+    boolean disableFoomiibo();
+
+    @DefaultBoolean(false)
     boolean hasAcceptedTOS();
 
     @DefaultBoolean(true)

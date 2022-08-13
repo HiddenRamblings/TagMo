@@ -756,11 +756,14 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onShowDonationNotice() {
-        Snackbar costNotice = new IconifiedSnackbar(
-                BrowserActivity.this, findViewById(R.id.bottom_sheet)
-        ).buildSnackbar(getString(R.string.donation_notice), Snackbar.LENGTH_LONG);
-        costNotice.setAction(R.string.pref_donate, v -> onSendDonationClicked());
-        costNotice.show();
+        Snackbar donorNotice = new IconifiedSnackbar(
+                BrowserActivity.this, mainLayout
+        ).buildSnackbar(
+                R.string.donation_notice, R.drawable.ic_github_octocat_24dp,
+                Snackbar.LENGTH_LONG, findViewById(R.id.nfc_fab)
+        );
+        donorNotice.setAction(R.string.pref_donate, v -> onSendDonationClicked());
+        donorNotice.show();
     }
 
     private int getQueryCount(String queryText) {

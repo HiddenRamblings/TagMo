@@ -186,7 +186,7 @@ public class BrowserFragment extends Fragment implements
 
     void configureFoomiiboVisibility() {
         if (null == getView()) return;
-        if (prefs.disableFoomiibo().get()) {
+        if (prefs.settings_disable_foomiibo().get()) {
             getView().findViewById(R.id.list_divider).setVisibility(View.GONE);
             amiibosView.getLayoutParams().height = getView().getHeight();
         } else {

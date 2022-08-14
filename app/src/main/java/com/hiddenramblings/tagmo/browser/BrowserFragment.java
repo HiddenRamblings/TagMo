@@ -8,7 +8,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -135,6 +134,8 @@ public class BrowserFragment extends Fragment implements
         settings.addChangeListener((BrowserSettings.BrowserSettingsListener)
                 foomiiboView.getAdapter());
 
+        configureFoomiiboVisibility();
+
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
             int srcHeight = amiibosView.getLayoutParams().height;
             int y = (int) event.getY();
@@ -153,8 +154,6 @@ public class BrowserFragment extends Fragment implements
             }
             return true;
         });
-
-        configureFoomiiboVisibility();
     }
 
     public RecyclerView getAmiibosView() {
@@ -186,14 +185,20 @@ public class BrowserFragment extends Fragment implements
 
     void configureFoomiiboVisibility() {
         if (null == getView()) return;
+        float minHeight = requireContext().getResources()
+                .getDimension(R.dimen.button_height_min) * 1.95f;
+        if (amiibosView.getLayoutParams().height > getView().getHeight() - (int) minHeight) {
+            amiibosView.getLayoutParams().height = getView().getHeight() - (int) minHeight;
+        } else {
+            int valueY = prefs.foomiiboOffset().get();
+            amiibosView.getLayoutParams().height = valueY != -1
+                    ? valueY : amiibosView.getLayoutParams().height;
+        }
         if (prefs.settings_disable_foomiibo().get()) {
             getView().findViewById(R.id.list_divider).setVisibility(View.GONE);
             amiibosView.getLayoutParams().height = getView().getHeight();
         } else {
             getView().findViewById(R.id.list_divider).setVisibility(View.VISIBLE);
-            int valueY = prefs.foomiiboOffset().get();
-            amiibosView.getLayoutParams().height = valueY != -1
-                    ? valueY : amiibosView.getLayoutParams().height;
         }
         amiibosView.requestLayout();
     }
@@ -417,19 +422,7 @@ public class BrowserFragment extends Fragment implements
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (null == getView()) return;
-        amiibosView.postDelayed(() -> {
-            float minHeight = requireContext().getResources()
-                    .getDimension(R.dimen.button_height_min) * 1.95f;
-            if (amiibosView.getLayoutParams().height > getView().getHeight() - (int) minHeight) {
-                amiibosView.getLayoutParams().height = getView().getHeight() - (int) minHeight;
-            } else {
-                int valueY = prefs.foomiiboOffset().get();
-                amiibosView.getLayoutParams().height = valueY != -1
-                        ? valueY : amiibosView.getLayoutParams().height;
-                amiibosView.requestLayout();
-            }
-            amiibosView.requestLayout();
-        }, 100);
+        amiibosView.postDelayed(this::configureFoomiiboVisibility, 100);
     }
 }
 

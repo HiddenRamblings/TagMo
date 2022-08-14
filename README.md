@@ -19,6 +19,8 @@ It was created as a result of the "[DIY amiibo cards](https://gbatemp.net/thread
 
 If you want to contribute, please make sure to address your PRs to the 'experimental' branch. Thank you.
 
+## [Code of Conduct](https://github.com/HiddenRamblings/TagMo/issues/328)
+
 ## [Instructions](https://tagmo.gitlab.io/)
 
 ## [Features](https://github.com/HiddenRamblings/TagMo/wiki#features)

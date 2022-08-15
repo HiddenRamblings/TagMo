@@ -200,6 +200,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuSortAmiiboSeries;
     private MenuItem menuSortAmiiboType;
     private MenuItem menuSortFilePath;
+    private MenuItem menuFilterGameUsage;
     private MenuItem menuFilterGameSeries;
     private MenuItem menuFilterCharacter;
     private MenuItem menuFilterAmiiboSeries;
@@ -778,6 +779,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private enum FILTER {
+        GAME_USAGE,
         GAME_SERIES,
         CHARACTER,
         AMIIBO_SERIES,
@@ -791,6 +793,20 @@ public class BrowserActivity extends AppCompatActivity implements
         Set<Long> items = new HashSet<>();
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
             switch (filterType) {
+                case GAME_USAGE:
+//                    GameSeries gameSeries = amiibo.getGameSeries();
+//                    if (null != gameSeries &&
+//                            Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
+//                                    settings.getCharacterFilter()) &&
+//                            Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
+//                                    settings.getAmiiboSeriesFilter()) &&
+//                            Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
+//                                    settings.getAmiiboTypeFilter())
+//                    ) {
+//                        if (gameSeries.name.equals(filter))
+//                            items.add(amiibo.id);
+//                    }
+                    break;
                 case GAME_SERIES:
                     GameSeries gameSeries = amiibo.getGameSeries();
                     if (null != gameSeries &&
@@ -851,6 +867,52 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         return items.size();
     }
+
+    private boolean onFilterGameUsageClick() {
+        SubMenu subMenu = menuFilterGameUsage.getSubMenu();
+        subMenu.clear();
+
+        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        if (amiiboManager == null) return false;
+
+        Set<String> items = new HashSet<>();
+        for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+//
+//            GameSeries gameSeries = amiibo.getGameSeries();
+//            if (null != gameSeries &&
+//                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
+//                            settings.getCharacterFilter()) &&
+//                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
+//                            settings.getAmiiboSeriesFilter()) &&
+//                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
+//                            settings.getAmiiboTypeFilter())
+//            ) {
+//                items.add(gameSeries.name);
+//            }
+        }
+
+        ArrayList<String> list = new ArrayList<>(items);
+        Collections.sort(list);
+        for (String item : list) {
+            subMenu.add(R.id.filter_game_usage_group, Menu.NONE, 0, item)
+                    .setChecked(item.equals(settings.getGameUsageFilter()))
+                    .setOnMenuItemClickListener(onFilterGameUsageItemClick);
+        }
+        subMenu.setGroupCheckable(R.id.filter_game_usage_group, true, true);
+
+        return true;
+    }
+
+    private final MenuItem.OnMenuItemClickListener onFilterGameUsageItemClick =
+            new MenuItem.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            settings.setGameUsageFilter(menuItem.getTitle().toString());
+            settings.notifyChanges();
+            filteredCount = getFilteredCount(menuItem.getTitle().toString(), FILTER.GAME_USAGE);
+            return false;
+        }
+    };
 
     private boolean onFilterGameSeriesClick() {
         SubMenu subMenu = menuFilterGameSeries.getSubMenu();
@@ -1356,6 +1418,7 @@ public class BrowserActivity extends AppCompatActivity implements
         menuSortAmiiboSeries = menu.findItem(R.id.sort_amiibo_series);
         menuSortAmiiboType = menu.findItem(R.id.sort_amiibo_type);
         menuSortFilePath = menu.findItem(R.id.sort_file_path);
+        menuFilterGameUsage = menu.findItem(R.id.filter_game_usage);
         menuFilterGameSeries = menu.findItem(R.id.filter_game_series);
         menuFilterCharacter = menu.findItem(R.id.filter_character);
         menuFilterAmiiboSeries = menu.findItem(R.id.filter_amiibo_series);

@@ -19,6 +19,7 @@
 
     <string name="amiibo_id">ID</string>
     <string name="amiibo_name">Name</string>
+    <string name="amiibo_usage">Game Usage</string>
     <string name="amiibo_game">Game Series</string>
     <string name="amiibo_character">Character</string>
     <string name="amiibo_series">amiibo&#8482; Series</string>
@@ -31,6 +32,7 @@
     <string name="amiibo_name_caps">NAME</string>
     <string name="amiibo_id_caps">TAGID</string>
     <string name="amiibo_type_caps">AMIIBO TYPE</string>
+    <string name="amiibo_usage_caps">GAME USAGE</string>
     <string name="amiibo_game_caps">GAME SERIES</string>
     <string name="amiibo_series_caps">AMIIBO SERIES</string>
     <string name="amiibo_character_caps">CHARACTER</string>

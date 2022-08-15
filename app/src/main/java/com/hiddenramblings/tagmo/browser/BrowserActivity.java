@@ -109,7 +109,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
-import com.hiddenramblings.tagmo.amiibo.GamesManager;
+import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.PowerTagManager;
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
@@ -752,7 +752,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public void setFoomiiboPanelVisibility() {
-        fragmentBrowser.configureFoomiiboVisibility();
+        fragmentBrowser.setFoomiiboVisibility();
     }
 
     private void onShowDonationNotice() {

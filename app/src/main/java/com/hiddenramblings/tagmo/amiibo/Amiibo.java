@@ -6,6 +6,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.hiddenramblings.tagmo.amiibo.games.GameTitles;
+import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
 import java.io.Serializable;

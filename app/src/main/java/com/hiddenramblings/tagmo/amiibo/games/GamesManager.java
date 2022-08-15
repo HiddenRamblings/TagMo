@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 
@@ -118,56 +120,45 @@ public class GamesManager {
         return gamesManager;
     }
 
-    public ArrayList<String> get3DSGames(long id) {
-        Games3DS amiibo3DS = games3DS.get(id);
-        return null != amiibo3DS ? amiibo3DS.games : new ArrayList<>();
-    }
-
-    public ArrayList<String> getWiiUGames(long id) {
-        GamesWiiU amiiboWiiU = gamesWiiU.get(id);
-        return null != amiiboWiiU ? amiiboWiiU.games : new ArrayList<>();
-    }
-
-    public ArrayList<String> getSwitchGames(long id) {
-        GamesSwitch amiibSwitch = gamesSwitch.get(id);
-        return null != amiibSwitch ? amiibSwitch.games : new ArrayList<>();
-    }
-
     public String getGamesCompatibility(long amiiboId) {
         StringBuilder usage = new StringBuilder();
-        if (!get3DSGames(amiiboId).isEmpty()) {
+
+        Games3DS amiibo3DS = games3DS.get(amiiboId);
+        if (null != amiibo3DS && !amiibo3DS.games.isEmpty()) {
             usage.append("\n3DS:");
-            for (String game : get3DSGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
+            usage.append(amiibo3DS.getStringList());
             usage.append("\n");
         }
-        if (!getWiiUGames(amiiboId).isEmpty()) {
+
+        GamesWiiU amiiboWiiU = gamesWiiU.get(amiiboId);
+        if (null != amiiboWiiU && !amiiboWiiU.games.isEmpty()) {
             usage.append("\nWiiU:");
-            for (String game : getWiiUGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
+            usage.append(amiiboWiiU.getStringList());
             usage.append("\n");
         }
-        if (!getSwitchGames(amiiboId).isEmpty()) {
+
+        GamesSwitch amiiboSwitch = gamesSwitch.get(amiiboId);
+        if (null != amiiboSwitch && !amiiboSwitch.games.isEmpty()) {
             usage.append("\nSwitch:");
-            for (String game : getSwitchGames(amiiboId)) {
-                if (usage.toString().endsWith(":"))
-                    usage.append("  ");
-                else
-                    usage.append(", ");
-                usage.append(game);
-            }
+            usage.append(amiiboSwitch.getStringList());
             usage.append("\n");
         }
         return usage.toString();
+    }
+
+    public ArrayList<Amiibo> getGameAmiibo(AmiiboManager manager, String name) {
+        ArrayList<Amiibo> amiiboIds = new ArrayList<>();
+        for (Amiibo amiibo : manager.amiibos.values()) {
+            Games3DS amiibo3DS = games3DS.get(amiibo.id);
+            GamesWiiU amiiboWiiU = gamesWiiU.get(amiibo.id);
+            GamesSwitch amiiboSwitch = gamesSwitch.get(amiibo.id);
+            if (null != amiibo3DS && amiibo3DS.hasUsage(name))
+                amiiboIds.add(amiibo);
+            else if (null != amiiboWiiU && amiiboWiiU.hasUsage(name))
+                amiiboIds.add(amiibo);
+            else if (null != amiiboSwitch && amiiboSwitch.hasUsage(name))
+                amiiboIds.add(amiibo);
+        }
+        return amiiboIds;
     }
 }

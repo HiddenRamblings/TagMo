@@ -14,7 +14,19 @@ public class GamesWiiU {
         this.games = games;
     }
 
-    public boolean hasGame(String name) {
+    public String getStringList() {
+        StringBuilder usage = new StringBuilder();
+        for (String game : games) {
+            if (usage.toString().endsWith(":"))
+                usage.append("  ");
+            else
+                usage.append(", ");
+            usage.append(game);
+        }
+        return usage.toString();
+    }
+
+    public boolean hasUsage(String name) {
         return !games.isEmpty() && games.contains(name);
     }
 }

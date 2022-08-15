@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.amiibo;
+package com.hiddenramblings.tagmo.amiibo.games;
 
 import android.content.Context;
 import android.net.Uri;
@@ -22,9 +22,10 @@ import java.util.Iterator;
 public class GamesManager {
 
     public static final String GAMES_DATABASE_FILE = "games_info.json";
-    private final HashMap<Long, ArrayList<String>> games3DS = new HashMap<>();
-    private final HashMap<Long, ArrayList<String>> gamesWiiU = new HashMap<>();
-    private final HashMap<Long, ArrayList<String>> gamesSwitch = new HashMap<>();
+
+    private final HashMap<Long, Games3DS> games3DS = new HashMap<>();
+    private final HashMap<Long, GamesWiiU> gamesWiiU = new HashMap<>();
+    private final HashMap<Long, GamesSwitch> gamesSwitch = new HashMap<>();
 
     static long hexToId(String value) {
         return Long.decode(value);
@@ -55,6 +56,7 @@ public class GamesManager {
         JSONObject amiibosJSON = json.getJSONObject("amiibos");
         for (Iterator<String> amiiboIterator = amiibosJSON.keys(); amiiboIterator.hasNext();) {
             String amiiboKey = amiiboIterator.next();
+            long amiiboId = hexToId(amiiboKey);
             JSONObject amiiboJSON = amiibosJSON.getJSONObject(amiiboKey);
 
             ArrayList<String> amiibo3DS = new ArrayList<>();
@@ -64,7 +66,8 @@ public class GamesManager {
                 String name = game.getString("gameName");
                 amiibo3DS.add(name);
             }
-            manager.games3DS.put(hexToId(amiiboKey), amiibo3DS);
+            Games3DS games3DS = new Games3DS(manager, amiiboId, amiibo3DS);
+            manager.games3DS.put(amiiboId, games3DS);
 
             ArrayList<String> amiiboWiiU = new ArrayList<>();
             JSONArray gamesWiiUJSON = amiiboJSON.getJSONArray("gamesWiiU");
@@ -73,7 +76,8 @@ public class GamesManager {
                 String name = game.getString("gameName");
                 amiiboWiiU.add(name);
             }
-            manager.gamesWiiU.put(hexToId(amiiboKey), amiiboWiiU);
+            GamesWiiU gamesWiiU = new GamesWiiU(manager, amiiboId, amiiboWiiU);
+            manager.gamesWiiU.put(amiiboId, gamesWiiU);
 
             ArrayList<String> amiiboSwitch = new ArrayList<>();
             JSONArray gamesSwitchJSON = amiiboJSON.getJSONArray("gamesSwitch");
@@ -82,7 +86,8 @@ public class GamesManager {
                 String name = game.getString("gameName");
                 amiiboSwitch.add(name);
             }
-            manager.gamesSwitch.put(hexToId(amiiboKey), amiiboSwitch);
+            GamesSwitch gamesSwitch = new GamesSwitch(manager, amiiboId, amiiboSwitch);
+            manager.gamesSwitch.put(amiiboId, gamesSwitch);
         }
 
         return manager;
@@ -114,15 +119,18 @@ public class GamesManager {
     }
 
     public ArrayList<String> get3DSGames(long id) {
-        return games3DS.get(id);
+        Games3DS amiibo3DS = games3DS.get(id);
+        return null != amiibo3DS ? amiibo3DS.games : new ArrayList<>();
     }
 
     public ArrayList<String> getWiiUGames(long id) {
-        return gamesWiiU.get(id);
+        GamesWiiU amiiboWiiU = gamesWiiU.get(id);
+        return null != amiiboWiiU ? amiiboWiiU.games : new ArrayList<>();
     }
 
     public ArrayList<String> getSwitchGames(long id) {
-        return gamesSwitch.get(id);
+        GamesSwitch amiibSwitch = gamesSwitch.get(id);
+        return null != amiibSwitch ? amiibSwitch.games : new ArrayList<>();
     }
 
     public String getGamesCompatibility(long amiiboId) {

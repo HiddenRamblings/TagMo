@@ -35,7 +35,7 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.amiibo.GamesManager;
+import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
@@ -134,7 +134,7 @@ public class BrowserFragment extends Fragment implements
         settings.addChangeListener((BrowserSettings.BrowserSettingsListener)
                 foomiiboView.getAdapter());
 
-        configureFoomiiboVisibility();
+        setFoomiiboVisibility();
 
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
             int srcHeight = amiibosView.getLayoutParams().height;
@@ -183,7 +183,7 @@ public class BrowserFragment extends Fragment implements
         }
     }
 
-    void configureFoomiiboVisibility() {
+    void setFoomiiboVisibility() {
         if (null == getView()) return;
         float minHeight = requireContext().getResources()
                 .getDimension(R.dimen.button_height_min) * 1.95f;
@@ -207,7 +207,7 @@ public class BrowserFragment extends Fragment implements
     public void onResume() {
         super.onResume();
         ((BrowserActivity) requireActivity()).onRootFolderChanged(false);
-        configureFoomiiboVisibility();
+        setFoomiiboVisibility();
     }
 
     private void deleteDir(Handler handler, ProgressDialog dialog, File dir) {
@@ -422,7 +422,7 @@ public class BrowserFragment extends Fragment implements
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (null == getView()) return;
-        amiibosView.postDelayed(this::configureFoomiiboVisibility, 100);
+        amiibosView.postDelayed(this::setFoomiiboVisibility, 100);
     }
 }
 

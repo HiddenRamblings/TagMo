@@ -94,7 +94,7 @@ public class BrowserSettings implements Parcelable {
     protected Uri browserDocument;
     protected String query;
     protected int sort;
-    protected String filterGameUsage;
+    protected String filterGameTitles;
     protected String filterGameSeries;
     protected String filterCharacter;
     protected String filterAmiiboSeries;
@@ -113,7 +113,7 @@ public class BrowserSettings implements Parcelable {
     @SuppressWarnings("unused")
     public BrowserSettings(
             ArrayList<AmiiboFile> amiiboFiles, ArrayList<File> folders, File browserFolder,
-            String query, int sort, String filterGameUsage, String filterGameSeries,
+            String query, int sort, String filterGameTitles, String filterGameSeries,
             String filterCharacter, String filterAmiiboSeries, String filterAmiiboType,
             int browserAmiiboView, String imageNetworkSettings, boolean recursiveFolders,
             boolean hideDownloads, String lastUpdatedAPI, long lastUpdatedGit
@@ -125,7 +125,7 @@ public class BrowserSettings implements Parcelable {
         this.browserFolder = browserFolder;
         this.query = query;
         this.sort = sort;
-        this.filterGameUsage = filterGameUsage;
+        this.filterGameTitles = filterGameTitles;
         this.filterGameSeries = filterGameSeries;
         this.filterCharacter = filterCharacter;
         this.filterAmiiboSeries = filterAmiiboSeries;
@@ -157,7 +157,7 @@ public class BrowserSettings implements Parcelable {
         this.setAmiiboSeriesFilter(prefs.filterAmiiboSeries().get());
         this.setAmiiboTypeFilter(prefs.filterAmiiboType().get());
         this.setCharacterFilter(prefs.filterCharacter().get());
-        this.setGameUsageFilter(prefs.filterGameUsage().get());
+        this.setGameTitlesFilter(prefs.filterGameTitles().get());
         this.setGameSeriesFilter(prefs.filterGameSeries().get());
         this.setAmiiboView(prefs.browserAmiiboView().get());
         this.setImageNetworkSettings(prefs.image_network_settings().get());
@@ -210,12 +210,12 @@ public class BrowserSettings implements Parcelable {
         this.sort = sort;
     }
 
-    public String getGameUsageFilter() {
-        return this.filterGameUsage;
+    public String getGameTitlesFilter() {
+        return this.filterGameTitles;
     }
 
-    public void setGameUsageFilter(String filterGameUsage) {
-        this.filterGameUsage = filterGameUsage;
+    public void setGameTitlesFilter(String filterGameTitles) {
+        this.filterGameTitles = filterGameTitles;
     }
 
     public String getGameSeriesFilter() {
@@ -251,7 +251,7 @@ public class BrowserSettings implements Parcelable {
     }
 
     public boolean hasFilteredData() {
-        return getGameUsageFilter().length() > 0
+        return getGameTitlesFilter().length() > 0
                 || getGameSeriesFilter().length() > 0
                 || getCharacterFilter().length() > 0
                 || getAmiiboSeriesFilter().length() > 0
@@ -354,7 +354,7 @@ public class BrowserSettings implements Parcelable {
         copy.setFolders(this.getFolders());
         copy.setQuery(this.getQuery());
         copy.setSort(this.getSort());
-        copy.setGameUsageFilter(this.getGameUsageFilter());
+        copy.setGameTitlesFilter(this.getGameTitlesFilter());
         copy.setGameSeriesFilter(this.getGameSeriesFilter());
         copy.setCharacterFilter(this.getCharacterFilter());
         copy.setAmiiboSeriesFilter(this.getAmiiboSeriesFilter());
@@ -385,7 +385,7 @@ public class BrowserSettings implements Parcelable {
         dest.writeString(null != this.browserDocument ? this.browserDocument.toString() : null);
         dest.writeString(this.query);
         dest.writeInt(this.sort);
-        dest.writeString(this.filterGameUsage);
+        dest.writeString(this.filterGameTitles);
         dest.writeString(this.filterGameSeries);
         dest.writeString(this.filterCharacter);
         dest.writeString(this.filterAmiiboSeries);
@@ -407,7 +407,7 @@ public class BrowserSettings implements Parcelable {
         this.browserDocument = null != docs && docs.length() > 0 ? Uri.parse(docs) : null;
         this.query = in.readString();
         this.sort = in.readInt();
-        this.filterGameUsage = in.readString();
+        this.filterGameTitles = in.readString();
         this.filterGameSeries = in.readString();
         this.filterCharacter = in.readString();
         this.filterAmiiboSeries = in.readString();

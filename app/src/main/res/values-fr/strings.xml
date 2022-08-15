@@ -91,8 +91,8 @@
     <string name="delete_amiibo">Supprimer amiibo&#8482;</string>
     <string name="ignore_tag_id">Ignorer Tag ID</string>
     <string name="random_serial">Numéro de série aléatoire</string>
-    <string name="game_usage_view">Afficher les jeux compatibles</string>
-    <string name="game_usage_hide">Masquer les jeux compatibles</string>
+    <string name="game_titles_view">Afficher les jeux compatibles</string>
+    <string name="game_titles_hide">Masquer les jeux compatibles</string>
 
     <string name="properties">Propriétés</string>
     <string name="mii">Mii</string>

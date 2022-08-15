@@ -92,8 +92,8 @@
     <string name="delete_amiibo">刪除 amiibo&#8482;</string>
     <string name="ignore_tag_id">忽略此Tag ID #</string>
     <string name="random_serial">隨機序號</string>
-    <string name="game_usage_view">檢視可支援的相關遊戲</string>
-    <string name="game_usage_hide">隱藏可支援的相關遊戲</string>
+    <string name="game_titles_view">檢視可支援的相關遊戲</string>
+    <string name="game_titles_hide">隱藏可支援的相關遊戲</string>
 
     <string name="properties">相關資訊</string>
     <string name="mii">Mii</string>

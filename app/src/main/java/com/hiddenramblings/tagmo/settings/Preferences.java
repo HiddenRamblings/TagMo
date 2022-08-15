@@ -13,7 +13,7 @@ public interface Preferences {
     @DefaultInt(1/*SORT.NAME*/)
     int sort();
 
-    String filterGameUsage();
+    String filterGameTitles();
 
     String filterGameSeries();
 

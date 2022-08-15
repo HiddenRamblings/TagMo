@@ -19,11 +19,11 @@
         app:showAsAction="always">
         <menu>
             <item
-                android:id="@+id/filter_game_usage"
-                android:title="@string/amiibo_usage">
+                android:id="@+id/filter_game_titles"
+                android:title="@string/amiibo_titles">
                 <menu>
                     <group
-                        android:id="@+id/filter_game_usage_group"
+                        android:id="@+id/filter_game_titles_group"
                         android:checkableBehavior="single"/>
                 </menu>
             </item>

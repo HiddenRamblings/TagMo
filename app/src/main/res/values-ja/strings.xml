@@ -19,8 +19,8 @@
     <string name="app">アプリケーション</string>
 
     <string name="random_serial">ランダムシリアル番号</string>
-    <string name="game_usage_view">互換性のあるゲームを表示する</string>
-    <string name="game_usage_hide">互換性のあるゲームを隠す</string>
+    <string name="game_titles_view">互換性のあるゲームを表示する</string>
+    <string name="game_titles_hide">互換性のあるゲームを隠す</string>
 
     <string name="pref_guides">ガイド</string>
     <string name="pref_donate">寄付</string>

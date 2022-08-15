@@ -295,8 +295,8 @@
     <string name="downloads_hidden">目前已隐藏 Downloads 文件夹！</string>
     <string name="speed_scan">Tag 卡片离手机远点试试</string>
     <string name="accept">明白</string>
-    <string name="game_usage_view">View Compatible Games</string>
-    <string name="game_usage_hide">Hide Compatible Games</string>
+    <string name="game_titles_view">View Compatible Games</string>
+    <string name="game_titles_hide">Hide Compatible Games</string>
     <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
     <string name="erase_collection">Erase Collection</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>

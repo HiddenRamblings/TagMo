@@ -200,7 +200,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuSortAmiiboSeries;
     private MenuItem menuSortAmiiboType;
     private MenuItem menuSortFilePath;
-    private MenuItem menuFilterGameUsage;
+    private MenuItem menuFilterGameTitles;
     private MenuItem menuFilterGameSeries;
     private MenuItem menuFilterCharacter;
     private MenuItem menuFilterAmiiboSeries;
@@ -779,7 +779,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private enum FILTER {
-        GAME_USAGE,
+        GAME_TITLES,
         GAME_SERIES,
         CHARACTER,
         AMIIBO_SERIES,
@@ -793,7 +793,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Set<Long> items = new HashSet<>();
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
             switch (filterType) {
-                case GAME_USAGE:
+                case GAME_TITLES:
 //                    GameSeries gameSeries = amiibo.getGameSeries();
 //                    if (null != gameSeries &&
 //                            Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
@@ -868,8 +868,8 @@ public class BrowserActivity extends AppCompatActivity implements
         return items.size();
     }
 
-    private boolean onFilterGameUsageClick() {
-        SubMenu subMenu = menuFilterGameUsage.getSubMenu();
+    private boolean onFilterGameTitlesClick() {
+        SubMenu subMenu = menuFilterGameTitles.getSubMenu();
         subMenu.clear();
 
         AmiiboManager amiiboManager = settings.getAmiiboManager();
@@ -894,22 +894,22 @@ public class BrowserActivity extends AppCompatActivity implements
         ArrayList<String> list = new ArrayList<>(items);
         Collections.sort(list);
         for (String item : list) {
-            subMenu.add(R.id.filter_game_usage_group, Menu.NONE, 0, item)
-                    .setChecked(item.equals(settings.getGameUsageFilter()))
-                    .setOnMenuItemClickListener(onFilterGameUsageItemClick);
+            subMenu.add(R.id.filter_game_titles_group, Menu.NONE, 0, item)
+                    .setChecked(item.equals(settings.getGameTitlesFilter()))
+                    .setOnMenuItemClickListener(onFilterGameTitlesItemClick);
         }
-        subMenu.setGroupCheckable(R.id.filter_game_usage_group, true, true);
+        subMenu.setGroupCheckable(R.id.filter_game_titles_group, true, true);
 
         return true;
     }
 
-    private final MenuItem.OnMenuItemClickListener onFilterGameUsageItemClick =
+    private final MenuItem.OnMenuItemClickListener onFilterGameTitlesItemClick =
             new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
-            settings.setGameUsageFilter(menuItem.getTitle().toString());
+            settings.setGameTitlesFilter(menuItem.getTitle().toString());
             settings.notifyChanges();
-            filteredCount = getFilteredCount(menuItem.getTitle().toString(), FILTER.GAME_USAGE);
+            filteredCount = getFilteredCount(menuItem.getTitle().toString(), FILTER.GAME_TITLES);
             return false;
         }
     };
@@ -1418,7 +1418,7 @@ public class BrowserActivity extends AppCompatActivity implements
         menuSortAmiiboSeries = menu.findItem(R.id.sort_amiibo_series);
         menuSortAmiiboType = menu.findItem(R.id.sort_amiibo_type);
         menuSortFilePath = menu.findItem(R.id.sort_file_path);
-        menuFilterGameUsage = menu.findItem(R.id.filter_game_usage);
+        menuFilterGameTitles = menu.findItem(R.id.filter_game_titles);
         menuFilterGameSeries = menu.findItem(R.id.filter_game_series);
         menuFilterCharacter = menu.findItem(R.id.filter_character);
         menuFilterAmiiboSeries = menu.findItem(R.id.filter_amiibo_series);
@@ -2229,10 +2229,10 @@ public class BrowserActivity extends AppCompatActivity implements
             label.setOnClickListener(view -> {
                 if (txtUsage.getVisibility() == View.VISIBLE) {
                     txtUsage.setVisibility(View.GONE);
-                    label.setText(R.string.game_usage_view);
+                    label.setText(R.string.game_titles_view);
                 } else {
                     txtUsage.setVisibility(View.VISIBLE);
-                    label.setText(R.string.game_usage_hide);
+                    label.setText(R.string.game_titles_hide);
                 }
             });
         } catch (Exception ex) {

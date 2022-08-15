@@ -16,8 +16,8 @@
     <string name="app">Aplicación</string>
 
     <string name="random_serial">Número de Serie Aleatorio</string>
-    <string name="game_usage_view">Ver juegos compatibles</string>
-    <string name="game_usage_hide">Ocultar Juegos Compatibles</string>
+    <string name="game_titles_view">Ver juegos compatibles</string>
+    <string name="game_titles_hide">Ocultar Juegos Compatibles</string>
 
     <string name="pref_guides">Guiar</string>
     <string name="pref_donate">Donación</string>

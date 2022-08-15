@@ -17,7 +17,7 @@ public class Games3DS {
     public String getStringList() {
         StringBuilder usage = new StringBuilder();
         for (String game : games) {
-            if (usage.toString().endsWith(":"))
+            if (usage.length() == 0)
                 usage.append("  ");
             else
                 usage.append(", ");

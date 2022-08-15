@@ -5,13 +5,13 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
-public class GameSeries {
+public class GameTitles {
 
     public final GamesManager manager;
     public final String name;
     private final ArrayList<Long> gameIds = new ArrayList<>();
 
-    public GameSeries(GamesManager manager, String name, JSONArray jsonArray) {
+    public GameTitles(GamesManager manager, String name, JSONArray jsonArray) {
         this.manager = manager;
         this.name = name;
         for (int i = 0; i < jsonArray.length(); i++) {

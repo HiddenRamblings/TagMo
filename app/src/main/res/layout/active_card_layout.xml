@@ -192,7 +192,7 @@
                         android:textColor="@color/tag_text"
                         android:textSize="12sp"
                         android:layout_marginTop="4dp"
-                        android:text="@string/game_usage_view"
+                        android:text="@string/game_titles_view"
                         android:gravity="center"
                         tools:ignore="SmallSp"/>
 

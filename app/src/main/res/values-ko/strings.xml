@@ -21,8 +21,8 @@
     <string name="app">응용 프로그램</string>
 
     <string name="random_serial">무작위 일련 번호</string>
-    <string name="game_usage_view">호환되는 게임 보기</string>
-    <string name="game_usage_hide">호환되는 게임 숨기기</string>
+    <string name="game_titles_view">호환되는 게임 보기</string>
+    <string name="game_titles_hide">호환되는 게임 숨기기</string>
 
     <string name="pref_guides">가이드</string>
     <string name="pref_donate">기부</string>

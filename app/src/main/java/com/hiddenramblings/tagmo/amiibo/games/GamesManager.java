@@ -29,7 +29,7 @@ public class GamesManager {
     private final HashMap<Long, GamesWiiU> gamesWiiU = new HashMap<>();
     private final HashMap<Long, GamesSwitch> gamesSwitch = new HashMap<>();
 
-    private final HashMap<String, GameSeries> games = new HashMap<>();
+    private final HashMap<String, GameTitles> games = new HashMap<>();
 
     static long hexToId(String value) {
         return Long.decode(value);
@@ -69,10 +69,10 @@ public class GamesManager {
                 JSONObject game = games3DSJSON.getJSONObject(i);
                 String name = game.getString("gameName");
                 amiibo3DS.add(name);
-                GameSeries gameSeries = new GameSeries(
+                GameTitles gameTitles = new GameTitles(
                         manager, name, game.getJSONArray("gameID")
                 );
-                if (!manager.games.containsKey(name)) manager.games.put(name, gameSeries);
+                if (!manager.games.containsKey(name)) manager.games.put(name, gameTitles);
             }
             Games3DS games3DS = new Games3DS(manager, amiiboId, amiibo3DS);
             manager.games3DS.put(amiiboId, games3DS);
@@ -83,10 +83,10 @@ public class GamesManager {
                 JSONObject game = gamesWiiUJSON.getJSONObject(i);
                 String name = game.getString("gameName");
                 amiiboWiiU.add(name);
-                GameSeries gameSeries = new GameSeries(
+                GameTitles gameTitles = new GameTitles(
                         manager, name, game.getJSONArray("gameID")
                 );
-                if (!manager.games.containsKey(name)) manager.games.put(name, gameSeries);
+                if (!manager.games.containsKey(name)) manager.games.put(name, gameTitles);
             }
             GamesWiiU gamesWiiU = new GamesWiiU(manager, amiiboId, amiiboWiiU);
             manager.gamesWiiU.put(amiiboId, gamesWiiU);
@@ -97,10 +97,10 @@ public class GamesManager {
                 JSONObject game = gamesSwitchJSON.getJSONObject(i);
                 String name = game.getString("gameName");
                 amiiboSwitch.add(name);
-                GameSeries gameSeries = new GameSeries(
+                GameTitles gameTitles = new GameTitles(
                         manager, name, game.getJSONArray("gameID")
                 );
-                if (!manager.games.containsKey(name)) manager.games.put(name, gameSeries);
+                if (!manager.games.containsKey(name)) manager.games.put(name, gameTitles);
             }
             GamesSwitch gamesSwitch = new GamesSwitch(manager, amiiboId, amiiboSwitch);
             manager.gamesSwitch.put(amiiboId, gamesSwitch);

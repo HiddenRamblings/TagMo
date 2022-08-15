@@ -6,7 +6,7 @@ import android.os.Build;
 
 public class NFCIntent {
     public static ComponentName FilterComponent = new ComponentName(BuildConfig.APPLICATION_ID,
-            BuildConfig.APPLICATION_ID + "." + "NFCIntentFilter");
+            "com.hiddenramblings.tagmo.NFCIntentFilter");
 
     public static final String ACTION_EDIT_COMPLETE = BuildConfig.APPLICATION_ID + ".EDIT_COMPLETE";
     public static final String ACTION_SCAN_TAG = BuildConfig.APPLICATION_ID + ".SCAN_TAG";

@@ -66,7 +66,7 @@
             </intent-filter>
         </activity>
         <activity-alias
-            android:name=".NFCIntentFilter"
+            android:name="com.hiddenramblings.tagmo.NFCIntentFilter"
             android:targetActivity=".browser.BrowserActivity"
             android:exported="true">
             <intent-filter>

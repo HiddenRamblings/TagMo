@@ -19,8 +19,8 @@
     <string name="app">Приложение</string>
 
     <string name="random_serial">Случайный Серийный номер</string>
-    <string name="game_usage_view">Просмотр совместимых игр</string>
-    <string name="game_usage_hide">Скрыть Совместимые игры</string>
+    <string name="game_titles_view">Просмотр совместимых игр</string>
+    <string name="game_titles_hide">Скрыть Совместимые игры</string>
 
     <string name="pref_guides">Направляющие</string>
     <string name="pref_donate">Пожертвование</string>

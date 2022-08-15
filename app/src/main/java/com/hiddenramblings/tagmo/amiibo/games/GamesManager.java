@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -160,19 +161,41 @@ public class GamesManager {
         return usage.toString();
     }
 
-    public ArrayList<Amiibo> getGameAmiibo(AmiiboManager manager, String name) {
-        ArrayList<Amiibo> amiiboIds = new ArrayList<>();
+    public Collection<GameTitles> getGameTitles() {
+        return games.values();
+    }
+
+    public ArrayList<Long> getGameAmiiboIds(AmiiboManager manager, String name) {
+        ArrayList<Long> amiiboIds = new ArrayList<>();
         for (Amiibo amiibo : manager.amiibos.values()) {
             Games3DS amiibo3DS = games3DS.get(amiibo.id);
             GamesWiiU amiiboWiiU = gamesWiiU.get(amiibo.id);
             GamesSwitch amiiboSwitch = gamesSwitch.get(amiibo.id);
-            if (null != amiibo3DS && amiibo3DS.hasUsage(name))
-                amiiboIds.add(amiibo);
-            else if (null != amiiboWiiU && amiiboWiiU.hasUsage(name))
-                amiiboIds.add(amiibo);
-            else if (null != amiiboSwitch && amiiboSwitch.hasUsage(name))
-                amiiboIds.add(amiibo);
+            if (null != amiibo3DS && amiibo3DS.hasUsage(name)) {
+                amiiboIds.add(amiibo.id);
+                continue;
+            }
+            if (null != amiiboWiiU && amiiboWiiU.hasUsage(name)) {
+                amiiboIds.add(amiibo.id);
+                continue;
+            }
+            if (null != amiiboSwitch && amiiboSwitch.hasUsage(name)) {
+                amiiboIds.add(amiibo.id);
+            }
         }
         return amiiboIds;
+    }
+
+    public boolean isGameSupported(Amiibo amiibo, String name) {
+        Games3DS amiibo3DS = games3DS.get(amiibo.id);
+        if (null != amiibo3DS && amiibo3DS.hasUsage(name))
+            return true;
+        GamesWiiU amiiboWiiU = gamesWiiU.get(amiibo.id);
+        if (null != amiiboWiiU && amiiboWiiU.hasUsage(name))
+            return true;
+        GamesSwitch amiiboSwitch = gamesSwitch.get(amiibo.id);
+        if (null != amiiboSwitch && amiiboSwitch.hasUsage(name))
+            return true;
+        return false;
     }
 }

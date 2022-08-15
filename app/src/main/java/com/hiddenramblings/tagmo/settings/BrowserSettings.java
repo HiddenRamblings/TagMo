@@ -13,6 +13,8 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
+import com.hiddenramblings.tagmo.amiibo.games.GameTitles;
+import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 
@@ -86,6 +88,7 @@ public class BrowserSettings implements Parcelable {
 
     protected ArrayList<BrowserSettingsListener> listeners = new ArrayList<>();
     protected AmiiboManager amiiboManager;
+    protected GamesManager gamesManager;
     protected BrowserSettings oldBrowserSettings;
 
     protected ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
@@ -94,11 +97,11 @@ public class BrowserSettings implements Parcelable {
     protected Uri browserDocument;
     protected String query;
     protected int sort;
-    protected String filterGameTitles;
     protected String filterGameSeries;
     protected String filterCharacter;
     protected String filterAmiiboSeries;
     protected String filterAmiiboType;
+    protected String filterGameTitles;
     protected int browserAmiiboView;
     protected String imageNetworkSettings;
     protected boolean recursiveFolders;
@@ -113,8 +116,8 @@ public class BrowserSettings implements Parcelable {
     @SuppressWarnings("unused")
     public BrowserSettings(
             ArrayList<AmiiboFile> amiiboFiles, ArrayList<File> folders, File browserFolder,
-            String query, int sort, String filterGameTitles, String filterGameSeries,
-            String filterCharacter, String filterAmiiboSeries, String filterAmiiboType,
+            String query, int sort, String filterGameSeries, String filterCharacter,
+            String filterAmiiboSeries, String filterAmiiboType, String filterGameTitles,
             int browserAmiiboView, String imageNetworkSettings, boolean recursiveFolders,
             boolean hideDownloads, String lastUpdatedAPI, long lastUpdatedGit
     ) {
@@ -125,11 +128,11 @@ public class BrowserSettings implements Parcelable {
         this.browserFolder = browserFolder;
         this.query = query;
         this.sort = sort;
-        this.filterGameTitles = filterGameTitles;
         this.filterGameSeries = filterGameSeries;
         this.filterCharacter = filterCharacter;
         this.filterAmiiboSeries = filterAmiiboSeries;
         this.filterAmiiboType = filterAmiiboType;
+        this.filterGameTitles = filterGameTitles;
         this.browserAmiiboView = browserAmiiboView;
         this.imageNetworkSettings = imageNetworkSettings;
         this.recursiveFolders = recursiveFolders;
@@ -154,11 +157,11 @@ public class BrowserSettings implements Parcelable {
                 ? Uri.parse(prefs.browserRootDocument().get()) : null);
         this.setQuery(prefs.query().get());
         this.setSort(prefs.sort().get());
+        this.setGameSeriesFilter(prefs.filterGameSeries().get());
+        this.setCharacterFilter(prefs.filterCharacter().get());
         this.setAmiiboSeriesFilter(prefs.filterAmiiboSeries().get());
         this.setAmiiboTypeFilter(prefs.filterAmiiboType().get());
-        this.setCharacterFilter(prefs.filterCharacter().get());
         this.setGameTitlesFilter(prefs.filterGameTitles().get());
-        this.setGameSeriesFilter(prefs.filterGameSeries().get());
         this.setAmiiboView(prefs.browserAmiiboView().get());
         this.setImageNetworkSettings(prefs.image_network_settings().get());
         this.setRecursiveEnabled(prefs.recursiveFolders().get());
@@ -174,6 +177,14 @@ public class BrowserSettings implements Parcelable {
 
     public void setAmiiboManager(AmiiboManager amiiboManager) {
         this.amiiboManager = amiiboManager;
+    }
+
+    public GamesManager getGamesManager() {
+        return this.gamesManager;
+    }
+
+    public void setGamesManager(GamesManager gamesManager) {
+        this.gamesManager = gamesManager;
     }
 
     public ArrayList<AmiiboFile> getAmiiboFiles() {
@@ -210,14 +221,6 @@ public class BrowserSettings implements Parcelable {
         this.sort = sort;
     }
 
-    public String getGameTitlesFilter() {
-        return this.filterGameTitles;
-    }
-
-    public void setGameTitlesFilter(String filterGameTitles) {
-        this.filterGameTitles = filterGameTitles;
-    }
-
     public String getGameSeriesFilter() {
         return this.filterGameSeries;
     }
@@ -250,12 +253,20 @@ public class BrowserSettings implements Parcelable {
         this.filterAmiiboType = filterAmiiboType;
     }
 
+    public String getGameTitlesFilter() {
+        return this.filterGameTitles;
+    }
+
+    public void setGameTitlesFilter(String filterGameTitles) {
+        this.filterGameTitles = filterGameTitles;
+    }
+
     public boolean hasFilteredData() {
-        return getGameTitlesFilter().length() > 0
-                || getGameSeriesFilter().length() > 0
+        return getGameSeriesFilter().length() > 0
                 || getCharacterFilter().length() > 0
                 || getAmiiboSeriesFilter().length() > 0
-                || getAmiiboTypeFilter().length() > 0;
+                || getAmiiboTypeFilter().length() > 0
+                || getGameTitlesFilter().length() > 0;
     }
 
     public int getAmiiboView() {
@@ -354,11 +365,11 @@ public class BrowserSettings implements Parcelable {
         copy.setFolders(this.getFolders());
         copy.setQuery(this.getQuery());
         copy.setSort(this.getSort());
-        copy.setGameTitlesFilter(this.getGameTitlesFilter());
         copy.setGameSeriesFilter(this.getGameSeriesFilter());
         copy.setCharacterFilter(this.getCharacterFilter());
         copy.setAmiiboSeriesFilter(this.getAmiiboSeriesFilter());
         copy.setAmiiboTypeFilter(this.getAmiiboTypeFilter());
+        copy.setGameTitlesFilter(this.getGameTitlesFilter());
         copy.setAmiiboView(this.getAmiiboView());
         copy.setBrowserRootFolder(this.getBrowserRootFolder());
         copy.setBrowserRootDocument(this.getBrowserRootDocument());
@@ -385,11 +396,11 @@ public class BrowserSettings implements Parcelable {
         dest.writeString(null != this.browserDocument ? this.browserDocument.toString() : null);
         dest.writeString(this.query);
         dest.writeInt(this.sort);
-        dest.writeString(this.filterGameTitles);
         dest.writeString(this.filterGameSeries);
         dest.writeString(this.filterCharacter);
         dest.writeString(this.filterAmiiboSeries);
         dest.writeString(this.filterAmiiboType);
+        dest.writeString(this.filterGameTitles);
         dest.writeInt(this.browserAmiiboView);
         dest.writeString(this.imageNetworkSettings);
         dest.writeByte(this.recursiveFolders ? (byte) 1 : (byte) 0);
@@ -407,11 +418,11 @@ public class BrowserSettings implements Parcelable {
         this.browserDocument = null != docs && docs.length() > 0 ? Uri.parse(docs) : null;
         this.query = in.readString();
         this.sort = in.readInt();
-        this.filterGameTitles = in.readString();
         this.filterGameSeries = in.readString();
         this.filterCharacter = in.readString();
         this.filterAmiiboSeries = in.readString();
         this.filterAmiiboType = in.readString();
+        this.filterGameTitles = in.readString();
         this.browserAmiiboView = in.readInt();
         this.imageNetworkSettings = in.readString();
         this.recursiveFolders = in.readByte() != 0;
@@ -457,6 +468,10 @@ public class BrowserSettings implements Parcelable {
 
         AmiiboType amiiboType = amiibo.getAmiiboType();
         if (!Amiibo.matchesAmiiboTypeFilter(amiiboType, getAmiiboTypeFilter()))
+            return false;
+
+        if (getGameTitlesFilter().length() > 0
+                && !gamesManager.isGameSupported(amiibo, getGameTitlesFilter()))
             return false;
 
         if (!query.isEmpty()) {

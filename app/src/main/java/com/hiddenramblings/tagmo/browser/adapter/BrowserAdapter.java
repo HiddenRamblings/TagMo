@@ -36,6 +36,7 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class BrowserAdapter
@@ -78,7 +79,9 @@ public class BrowserAdapter
                 !BrowserSettings.equals(newBrowserSettings.getAmiiboSeriesFilter(),
                         oldBrowserSettings.getAmiiboSeriesFilter()) ||
                 !BrowserSettings.equals(newBrowserSettings.getAmiiboTypeFilter(),
-                        oldBrowserSettings.getAmiiboTypeFilter());
+                        oldBrowserSettings.getAmiiboTypeFilter()) ||
+                !BrowserSettings.equals(newBrowserSettings.getGameTitlesFilter(),
+                        oldBrowserSettings.getGameTitlesFilter());
 
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
@@ -271,7 +274,9 @@ public class BrowserAdapter
             ArrayList<AmiiboFile> tempList = new ArrayList<>();
             String queryText = query.trim().toLowerCase();
             AmiiboManager amiiboManager = settings.getAmiiboManager();
-            for (AmiiboFile amiiboFile : settings.getAmiiboFiles()) {
+            ArrayList<AmiiboFile> files = settings.getAmiiboFiles();
+            for (Iterator<AmiiboFile> iterator = files.iterator(); iterator.hasNext();) {
+                AmiiboFile amiiboFile = iterator.next();
                 boolean add = false;
                 if (null != amiiboManager) {
                     Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
@@ -295,6 +300,7 @@ public class BrowserAdapter
 
         public boolean pathContainsQuery(String path, String query) {
             return !query.isEmpty() &&
+                    settings.getGameTitlesFilter().isEmpty() &&
                     settings.getGameSeriesFilter().isEmpty() &&
                     settings.getCharacterFilter().isEmpty() &&
                     settings.getAmiiboSeriesFilter().isEmpty() &&

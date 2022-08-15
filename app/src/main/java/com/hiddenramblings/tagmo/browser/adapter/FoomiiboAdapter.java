@@ -76,7 +76,9 @@ public class FoomiiboAdapter
                 !BrowserSettings.equals(newBrowserSettings.getAmiiboSeriesFilter(),
                         oldBrowserSettings.getAmiiboSeriesFilter()) ||
                 !BrowserSettings.equals(newBrowserSettings.getAmiiboTypeFilter(),
-                        oldBrowserSettings.getAmiiboTypeFilter());
+                        oldBrowserSettings.getAmiiboTypeFilter()) ||
+                !BrowserSettings.equals(newBrowserSettings.getGameTitlesFilter(),
+                        oldBrowserSettings.getGameTitlesFilter());
 
         if (!BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {

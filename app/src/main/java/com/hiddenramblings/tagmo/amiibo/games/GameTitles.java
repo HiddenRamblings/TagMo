@@ -1,5 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo.games;
 
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -22,9 +24,5 @@ public class GameTitles {
                 e.printStackTrace();
             }
         }
-    }
-
-    public boolean hasId(long gameId) {
-        return !gameIds.isEmpty() && gameIds.contains(gameId);
     }
 }

@@ -245,6 +245,8 @@ public class BrowserActivity extends AppCompatActivity implements
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
         }
 
+        setLoadCompleted();
+
         setContentView(R.layout.activity_browser);
 
         fakeSnackbar = findViewById(R.id.fake_snackbar);
@@ -371,12 +373,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     break;
             }
         }).attach();
-
-        this.onFilterGameSeriesChanged();
-        this.onFilterCharacterChanged();
-        this.onFilterAmiiboSeriesChanged();
-        this.onFilterAmiiboTypeChanged();
-        this.onFilterGameTitlesChanged();
 
         if (null == fragmentSettings)
             fragmentSettings = new SettingsFragment();
@@ -1984,7 +1980,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private void onFilterGameSeriesChanged() {
+    void onFilterGameSeriesChanged() {
         fragmentBrowser.addFilterItemView(settings.getGameSeriesFilter(),
                 "filter_game_series", onFilterGameSeriesChipCloseClick);
     }
@@ -1999,7 +1995,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             };
 
-    private void onFilterCharacterChanged() {
+    void onFilterCharacterChanged() {
         fragmentBrowser.addFilterItemView(settings.getCharacterFilter(),
                 "filter_character", onFilterCharacterChipCloseClick);
     }
@@ -2014,7 +2010,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             };
 
-    private void onFilterAmiiboSeriesChanged() {
+    void onFilterAmiiboSeriesChanged() {
         fragmentBrowser.addFilterItemView(settings.getAmiiboSeriesFilter(),
                 "filter_amiibo_series", onFilterAmiiboSeriesChipCloseClick);
     }
@@ -2029,7 +2025,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             };
 
-    private void onFilterAmiiboTypeChanged() {
+    void onFilterAmiiboTypeChanged() {
         fragmentBrowser.addFilterItemView(settings.getAmiiboTypeFilter(),
                 "filter_amiibo_type", onAmiiboTypeChipCloseClick);
     }
@@ -2044,7 +2040,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             };
 
-    private void onFilterGameTitlesChanged() {
+    void onFilterGameTitlesChanged() {
         fragmentBrowser.addFilterItemView(settings.getGameTitlesFilter(),
                 "filter_game_titles", onFilterGameTitlesChipCloseClick);
     }
@@ -3098,11 +3094,15 @@ public class BrowserActivity extends AppCompatActivity implements
         return button;
     }
 
-    @Override
-    protected void onRestart() {
+    private void setLoadCompleted() {
         int loadCount = prefs.refreshCount().get();
         if (prefs.refreshCount().get() == 0) onShowDonationNotice();
         prefs.refreshCount().put(loadCount <= 8 ? loadCount + 1 : 0);
+    }
+
+    @Override
+    protected void onRestart() {
+        setLoadCompleted();
         super.onRestart();
     }
 }

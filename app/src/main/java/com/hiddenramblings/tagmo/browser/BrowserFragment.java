@@ -154,6 +154,12 @@ public class BrowserFragment extends Fragment implements
             }
             return true;
         });
+
+        activity.onFilterGameSeriesChanged();
+        activity.onFilterCharacterChanged();
+        activity.onFilterAmiiboSeriesChanged();
+        activity.onFilterAmiiboTypeChanged();
+        activity.onFilterGameTitlesChanged();
     }
 
     public RecyclerView getAmiibosView() {
@@ -168,7 +174,7 @@ public class BrowserFragment extends Fragment implements
     public void addFilterItemView(String text, String tag, OnCloseClickListener listener) {
         if (null == chipList) return;
         FrameLayout chipContainer = chipList.findViewWithTag(tag);
-        chipList.removeView(chipContainer);
+        if (null != chipContainer) chipList.removeView(chipContainer);
         if (!text.isEmpty()) {
             chipContainer = (FrameLayout) getLayoutInflater().inflate(R.layout.chip_view, null);
             chipContainer.setTag(tag);

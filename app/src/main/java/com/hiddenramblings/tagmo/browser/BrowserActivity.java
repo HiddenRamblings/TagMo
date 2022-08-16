@@ -1982,78 +1982,48 @@ public class BrowserActivity extends AppCompatActivity implements
 
     void onFilterGameSeriesChanged() {
         fragmentBrowser.addFilterItemView(settings.getGameSeriesFilter(),
-                "filter_game_series", onFilterGameSeriesChipCloseClick);
+                "filter_game_series", v -> {
+            settings.setGameSeriesFilter("");
+            settings.notifyChanges();
+            setAmiiboStats();
+        });
     }
-
-    private final OnCloseClickListener onFilterGameSeriesChipCloseClick =
-            new OnCloseClickListener() {
-                @Override
-                public void onCloseClick(@NonNull View v) {
-                    settings.setGameSeriesFilter("");
-                    settings.notifyChanges();
-                    setAmiiboStats();
-                }
-            };
 
     void onFilterCharacterChanged() {
         fragmentBrowser.addFilterItemView(settings.getCharacterFilter(),
-                "filter_character", onFilterCharacterChipCloseClick);
+                "filter_character", v -> {
+            settings.setCharacterFilter("");
+            settings.notifyChanges();
+            setAmiiboStats();
+        });
     }
-
-    private final OnCloseClickListener onFilterCharacterChipCloseClick =
-            new OnCloseClickListener() {
-                @Override
-                public void onCloseClick(@NonNull View v) {
-                    settings.setCharacterFilter("");
-                    settings.notifyChanges();
-                    setAmiiboStats();
-                }
-            };
 
     void onFilterAmiiboSeriesChanged() {
         fragmentBrowser.addFilterItemView(settings.getAmiiboSeriesFilter(),
-                "filter_amiibo_series", onFilterAmiiboSeriesChipCloseClick);
+                "filter_amiibo_series", v -> {
+            settings.setAmiiboSeriesFilter("");
+            settings.notifyChanges();
+            setAmiiboStats();
+        });
     }
-
-    private final OnCloseClickListener onFilterAmiiboSeriesChipCloseClick =
-            new OnCloseClickListener() {
-                @Override
-                public void onCloseClick(@NonNull View v) {
-                    settings.setAmiiboSeriesFilter("");
-                    settings.notifyChanges();
-                    setAmiiboStats();
-                }
-            };
 
     void onFilterAmiiboTypeChanged() {
         fragmentBrowser.addFilterItemView(settings.getAmiiboTypeFilter(),
-                "filter_amiibo_type", onAmiiboTypeChipCloseClick);
+                "filter_amiibo_type", v -> {
+            settings.setAmiiboTypeFilter("");
+            settings.notifyChanges();
+            setAmiiboStats();
+        });
     }
-
-    private final OnCloseClickListener onAmiiboTypeChipCloseClick =
-            new OnCloseClickListener() {
-                @Override
-                public void onCloseClick(@NonNull View v) {
-                    settings.setAmiiboTypeFilter("");
-                    settings.notifyChanges();
-                    setAmiiboStats();
-                }
-            };
 
     void onFilterGameTitlesChanged() {
         fragmentBrowser.addFilterItemView(settings.getGameTitlesFilter(),
-                "filter_game_titles", onFilterGameTitlesChipCloseClick);
+                "filter_game_titles", v -> {
+            settings.setGameTitlesFilter("");
+            settings.notifyChanges();
+            setAmiiboStats();
+        });
     }
-
-    private final OnCloseClickListener onFilterGameTitlesChipCloseClick =
-            new OnCloseClickListener() {
-                @Override
-                public void onCloseClick(@NonNull View v) {
-                    settings.setGameTitlesFilter("");
-                    settings.notifyChanges();
-                    setAmiiboStats();
-                }
-            };
 
     private void onRecursiveFilesChanged() {
         if (null == menuRecursiveFiles)

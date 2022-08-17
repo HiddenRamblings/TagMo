@@ -27,7 +27,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.FILTER;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
@@ -70,16 +69,7 @@ public class FoomiiboAdapter
                         oldBrowserSettings.getQuery()) ||
                 !BrowserSettings.equals(newBrowserSettings.getSort(),
                         oldBrowserSettings.getSort()) ||
-                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.GAME_SERIES),
-                        oldBrowserSettings.getContentFilter(FILTER.GAME_SERIES)) ||
-                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.CHARACTER),
-                        oldBrowserSettings.getContentFilter(FILTER.CHARACTER)) ||
-                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.AMIIBO_SERIES),
-                        oldBrowserSettings.getContentFilter(FILTER.AMIIBO_SERIES)) ||
-                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.AMIIBO_TYPE),
-                        oldBrowserSettings.getContentFilter(FILTER.AMIIBO_TYPE)) ||
-                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.GAME_TITLES),
-                        oldBrowserSettings.getContentFilter(FILTER.GAME_TITLES));
+                BrowserSettings.hasFilterChanged(newBrowserSettings, oldBrowserSettings);
 
         if (!BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {

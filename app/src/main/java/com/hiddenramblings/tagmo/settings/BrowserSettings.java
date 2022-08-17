@@ -13,7 +13,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboSeries;
 import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
-import com.hiddenramblings.tagmo.amiibo.games.GameTitles;
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -55,6 +54,14 @@ public class BrowserSettings implements Parcelable {
             }
             return SORT.NAME;
         }
+    }
+
+    public enum FILTER {
+        GAME_SERIES,
+        CHARACTER,
+        AMIIBO_SERIES,
+        AMIIBO_TYPE,
+        GAME_TITLES
     }
 
     public enum VIEW {
@@ -157,11 +164,11 @@ public class BrowserSettings implements Parcelable {
                 ? Uri.parse(prefs.browserRootDocument().get()) : null);
         this.setQuery(prefs.query().get());
         this.setSort(prefs.sort().get());
-        this.setGameSeriesFilter(prefs.filterGameSeries().get());
-        this.setCharacterFilter(prefs.filterCharacter().get());
-        this.setAmiiboSeriesFilter(prefs.filterAmiiboSeries().get());
-        this.setAmiiboTypeFilter(prefs.filterAmiiboType().get());
-        this.setGameTitlesFilter(prefs.filterGameTitles().get());
+        this.setContentFilter(FILTER.GAME_SERIES, prefs.filterGameSeries().get());
+        this.setContentFilter(FILTER.CHARACTER, prefs.filterCharacter().get());
+        this.setContentFilter(FILTER.AMIIBO_SERIES, prefs.filterAmiiboSeries().get());
+        this.setContentFilter(FILTER.AMIIBO_TYPE, prefs.filterAmiiboType().get());
+        this.setContentFilter(FILTER.GAME_TITLES, prefs.filterGameTitles().get());
         this.setAmiiboView(prefs.browserAmiiboView().get());
         this.setImageNetworkSettings(prefs.image_network_settings().get());
         this.setRecursiveEnabled(prefs.recursiveFolders().get());
@@ -221,52 +228,54 @@ public class BrowserSettings implements Parcelable {
         this.sort = sort;
     }
 
-    public String getGameSeriesFilter() {
-        return this.filterGameSeries;
+    public String getContentFilter(FILTER filter) {
+        String filterText = "";
+        switch (filter) {
+            case GAME_SERIES:
+                filterText = this.filterGameSeries;
+                break;
+            case CHARACTER:
+                filterText = this.filterCharacter;
+                break;
+            case AMIIBO_SERIES:
+                filterText = this.filterAmiiboSeries;
+                break;
+            case AMIIBO_TYPE:
+                filterText = this.filterAmiiboType;
+                break;
+            case GAME_TITLES:
+                filterText = this.filterGameTitles;
+                break;
+        }
+        return filterText;
     }
 
-    public void setGameSeriesFilter(String filterGameSeries) {
-        this.filterGameSeries = filterGameSeries;
-    }
-
-    public String getCharacterFilter() {
-        return this.filterCharacter;
-    }
-
-    public void setCharacterFilter(String filterCharacter) {
-        this.filterCharacter = filterCharacter;
-    }
-
-    public String getAmiiboSeriesFilter() {
-        return this.filterAmiiboSeries;
-    }
-
-    public void setAmiiboSeriesFilter(String filterAmiiboSeries) {
-        this.filterAmiiboSeries = filterAmiiboSeries;
-    }
-
-    public String getAmiiboTypeFilter() {
-        return this.filterAmiiboType;
-    }
-
-    public void setAmiiboTypeFilter(String filterAmiiboType) {
-        this.filterAmiiboType = filterAmiiboType;
-    }
-
-    public String getGameTitlesFilter() {
-        return this.filterGameTitles;
-    }
-
-    public void setGameTitlesFilter(String filterGameTitles) {
-        this.filterGameTitles = filterGameTitles;
+    public void setContentFilter(FILTER filter, String filterText) {
+        switch (filter) {
+            case GAME_SERIES:
+                this.filterGameSeries = filterText;
+                break;
+            case CHARACTER:
+                this.filterCharacter = filterText;
+                break;
+            case AMIIBO_SERIES:
+                this.filterAmiiboSeries = filterText;
+                break;
+            case AMIIBO_TYPE:
+                this.filterAmiiboType = filterText;
+                break;
+            case GAME_TITLES:
+                this.filterGameTitles = filterText;
+                break;
+        }
     }
 
     public boolean hasFilteredData() {
-        return getGameSeriesFilter().length() > 0
-                || getCharacterFilter().length() > 0
-                || getAmiiboSeriesFilter().length() > 0
-                || getAmiiboTypeFilter().length() > 0
-                || getGameTitlesFilter().length() > 0;
+        return getContentFilter(FILTER.GAME_SERIES).length() > 0
+                || getContentFilter(FILTER.CHARACTER).length() > 0
+                || getContentFilter(FILTER.AMIIBO_SERIES).length() > 0
+                || getContentFilter(FILTER.AMIIBO_TYPE).length() > 0
+                || getContentFilter(FILTER.GAME_TITLES).length() > 0;
     }
 
     public int getAmiiboView() {
@@ -365,11 +374,11 @@ public class BrowserSettings implements Parcelable {
         copy.setFolders(this.getFolders());
         copy.setQuery(this.getQuery());
         copy.setSort(this.getSort());
-        copy.setGameSeriesFilter(this.getGameSeriesFilter());
-        copy.setCharacterFilter(this.getCharacterFilter());
-        copy.setAmiiboSeriesFilter(this.getAmiiboSeriesFilter());
-        copy.setAmiiboTypeFilter(this.getAmiiboTypeFilter());
-        copy.setGameTitlesFilter(this.getGameTitlesFilter());
+        copy.setContentFilter(FILTER.GAME_SERIES, this.getContentFilter(FILTER.GAME_SERIES));
+        copy.setContentFilter(FILTER.CHARACTER, this.getContentFilter(FILTER.CHARACTER));
+        copy.setContentFilter(FILTER.AMIIBO_SERIES, this.getContentFilter(FILTER.AMIIBO_SERIES));
+        copy.setContentFilter(FILTER.AMIIBO_TYPE, this.getContentFilter(FILTER.AMIIBO_TYPE));
+        copy.setContentFilter(FILTER.GAME_TITLES, this.getContentFilter(FILTER.GAME_TITLES));
         copy.setAmiiboView(this.getAmiiboView());
         copy.setBrowserRootFolder(this.getBrowserRootFolder());
         copy.setBrowserRootDocument(this.getBrowserRootDocument());
@@ -455,23 +464,23 @@ public class BrowserSettings implements Parcelable {
 
     public boolean amiiboContainsQuery(Amiibo amiibo, String query) {
         GameSeries gameSeries = amiibo.getGameSeries();
-        if (!Amiibo.matchesGameSeriesFilter(gameSeries, getGameSeriesFilter()))
+        if (!Amiibo.matchesGameSeriesFilter(gameSeries, getContentFilter(FILTER.GAME_SERIES)))
             return false;
 
         Character character = amiibo.getCharacter();
-        if (!Amiibo.matchesCharacterFilter(character, getCharacterFilter()))
+        if (!Amiibo.matchesCharacterFilter(character, getContentFilter(FILTER.CHARACTER)))
             return false;
 
         AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
-        if (!Amiibo.matchesAmiiboSeriesFilter(amiiboSeries, getAmiiboSeriesFilter()))
+        if (!Amiibo.matchesAmiiboSeriesFilter(amiiboSeries, getContentFilter(FILTER.AMIIBO_SERIES)))
             return false;
 
         AmiiboType amiiboType = amiibo.getAmiiboType();
-        if (!Amiibo.matchesAmiiboTypeFilter(amiiboType, getAmiiboTypeFilter()))
+        if (!Amiibo.matchesAmiiboTypeFilter(amiiboType, getContentFilter(FILTER.AMIIBO_TYPE)))
             return false;
 
-        if (getGameTitlesFilter().length() > 0
-                && !gamesManager.isGameSupported(amiibo, getGameTitlesFilter()))
+        if (getContentFilter(FILTER.GAME_TITLES).length() > 0
+                && !gamesManager.isGameSupported(amiibo, getContentFilter(FILTER.GAME_TITLES)))
             return false;
 
         if (!query.isEmpty()) {

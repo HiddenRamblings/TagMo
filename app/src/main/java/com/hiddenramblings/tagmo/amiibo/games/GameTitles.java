@@ -1,7 +1,5 @@
 package com.hiddenramblings.tagmo.amiibo.games;
 
-import com.hiddenramblings.tagmo.amiibo.Amiibo;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 

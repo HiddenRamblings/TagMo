@@ -30,11 +30,13 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.FILTER;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 
 public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.AmiiboViewHolder>
         implements Filterable, BrowserSettingsListener {
@@ -78,7 +80,19 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                                          BrowserSettings oldBrowserSettings) {
         boolean refresh = firstRun ||
                 !BrowserSettings.equals(newBrowserSettings.getQuery(),
-                        oldBrowserSettings.getQuery());
+                        oldBrowserSettings.getQuery()) ||
+                !BrowserSettings.equals(newBrowserSettings.getSort(),
+                        oldBrowserSettings.getSort()) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.GAME_SERIES),
+                        oldBrowserSettings.getContentFilter(FILTER.GAME_SERIES)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.CHARACTER),
+                        oldBrowserSettings.getContentFilter(FILTER.CHARACTER)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.AMIIBO_SERIES),
+                        oldBrowserSettings.getContentFilter(FILTER.AMIIBO_SERIES)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.AMIIBO_TYPE),
+                        oldBrowserSettings.getContentFilter(FILTER.AMIIBO_TYPE)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.GAME_TITLES),
+                        oldBrowserSettings.getContentFilter(FILTER.GAME_TITLES));
 
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
@@ -217,10 +231,11 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
 
         public boolean pathContainsQuery(String path, String query) {
             return !query.isEmpty() &&
-                    settings.getGameSeriesFilter().isEmpty() &&
-                    settings.getCharacterFilter().isEmpty() &&
-                    settings.getAmiiboSeriesFilter().isEmpty() &&
-                    settings.getAmiiboTypeFilter().isEmpty() &&
+                    settings.getContentFilter(FILTER.GAME_SERIES).isEmpty() &&
+                    settings.getContentFilter(FILTER.CHARACTER).isEmpty() &&
+                    settings.getContentFilter(FILTER.AMIIBO_SERIES).isEmpty() &&
+                    settings.getContentFilter(FILTER.AMIIBO_TYPE).isEmpty() &&
+                    settings.getContentFilter(FILTER.GAME_TITLES).isEmpty() &&
                     path.toLowerCase().contains(query);
         }
 

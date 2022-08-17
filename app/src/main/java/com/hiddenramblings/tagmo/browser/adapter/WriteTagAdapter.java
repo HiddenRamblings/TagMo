@@ -43,7 +43,7 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
     private final BrowserSettings settings;
     private OnAmiiboClickListener listener = null;
     private OnHighlightListener collector = null;
-    private final ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
+    private ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
     private ArrayList<AmiiboFile> filteredData;
     private AmiiboFilter filter;
     boolean firstRun;
@@ -96,9 +96,10 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
 
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
-            this.amiiboFiles.clear();
             if (null != newBrowserSettings.getAmiiboFiles() )
-                this.amiiboFiles.addAll(newBrowserSettings.getAmiiboFiles());
+                this.amiiboFiles = new ArrayList<>(newBrowserSettings.getAmiiboFiles());
+            else
+                this.amiiboFiles.clear();
             refresh = true;
         }
         if (!BrowserSettings.equals(newBrowserSettings.getAmiiboManager(),

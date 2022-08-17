@@ -199,8 +199,7 @@ public class BrowserSettings implements Parcelable {
     }
 
     public void setAmiiboFiles(ArrayList<AmiiboFile> amiiboFiles) {
-        this.amiiboFiles.clear();
-        this.amiiboFiles.addAll(amiiboFiles);
+        this.amiiboFiles = new ArrayList<>(amiiboFiles);
     }
 
     public ArrayList<File> getFolders() {
@@ -208,8 +207,7 @@ public class BrowserSettings implements Parcelable {
     }
 
     public void setFolders(ArrayList<File> folders) {
-        this.folders.clear();
-        this.folders.addAll(folders);
+        this.folders = new ArrayList<>(folders);
     }
 
     public String getQuery() {

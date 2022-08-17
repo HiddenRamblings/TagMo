@@ -96,7 +96,7 @@ public class EliteBankFragment extends Fragment implements
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private KeyManager keyManager;
 
-    private final ArrayList<Amiibo> amiibos = new ArrayList<>();
+    private ArrayList<Amiibo> amiibos = new ArrayList<>();
     private SearchView searchView;
     private WriteTagAdapter writeFileAdapter;
 
@@ -408,8 +408,7 @@ public class EliteBankFragment extends Fragment implements
                 for (int x = 0; x < size; x++) {
                     shortList.add(amiibos.get(x));
                 }
-                amiibos.clear();
-                amiibos.addAll(shortList);
+                amiibos = new ArrayList<>(shortList);
                 bankAdapter.notifyItemRangeChanged(0, size);
                 bankAdapter.notifyItemRangeRemoved(size, count - size);
             }

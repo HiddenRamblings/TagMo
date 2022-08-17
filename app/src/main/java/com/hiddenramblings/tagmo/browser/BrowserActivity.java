@@ -229,8 +229,8 @@ public class BrowserActivity extends AppCompatActivity implements
     NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
 
     private BillingClient billingClient;
-    private final ArrayList<ProductDetails> iapSkuDetails = new ArrayList<>();
-    private final ArrayList<ProductDetails> subSkuDetails = new ArrayList<>();
+    private ArrayList<ProductDetails> iapSkuDetails = new ArrayList<>();
+    private ArrayList<ProductDetails> subSkuDetails = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -755,14 +755,16 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onShowDonationNotice() {
-        Snackbar donorNotice = new IconifiedSnackbar(
-                BrowserActivity.this, mainLayout
-        ).buildSnackbar(
-                R.string.donation_notice,
-                R.drawable.ic_github_octocat_24dp, Snackbar.LENGTH_LONG
-        );
-        donorNotice.setAction(R.string.pref_donate, v -> onSendDonationClicked());
-        donorNotice.show();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            Snackbar donorNotice = new IconifiedSnackbar(
+                    BrowserActivity.this, mainLayout
+            ).buildSnackbar(
+                    R.string.donation_notice,
+                    R.drawable.ic_github_octocat_24dp, Snackbar.LENGTH_LONG
+            );
+            donorNotice.setAction(R.string.pref_donate, v -> onSendDonationClicked());
+            donorNotice.show();
+        }, TagMo.uiDelay);
     }
 
     private int getQueryCount(String queryText) {
@@ -2900,9 +2902,6 @@ public class BrowserActivity extends AppCompatActivity implements
         billingClient = BillingClient.newBuilder(this)
                 .setListener(purchasesUpdatedListener).enablePendingPurchases().build();
 
-        iapSkuDetails.clear();
-        subSkuDetails.clear();
-
         billingClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingServiceDisconnected() { }
@@ -2925,7 +2924,7 @@ public class BrowserActivity extends AppCompatActivity implements
                                 .newBuilder().setProductList(List.of(productList));
                         billingClient.queryProductDetailsAsync(params.build(),
                                 (billingResult1, productDetailsList) -> {
-                            iapSkuDetails.addAll(productDetailsList);
+                            iapSkuDetails = new ArrayList<>(productDetailsList);
                             billingClient.queryPurchaseHistoryAsync(
                                     QueryPurchaseHistoryParams.newBuilder().setProductType(
                                             BillingClient.ProductType.INAPP
@@ -2950,7 +2949,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             .newBuilder().setProductList(List.of(productList));
                     billingClient.queryProductDetailsAsync(params.build(),
                             (billingResult1, productDetailsList) -> {
-                        subSkuDetails.addAll(productDetailsList);
+                        subSkuDetails = new ArrayList<>(productDetailsList);
                         billingClient.queryPurchaseHistoryAsync(
                                 QueryPurchaseHistoryParams.newBuilder().setProductType(
                                         BillingClient.ProductType.SUBS

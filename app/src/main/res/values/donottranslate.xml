@@ -32,6 +32,12 @@
     <string name="settings_stable_channel" translatable="false">settings_stable_channel</string>
     <string name="image_network_settings" translatable="false">image_network_settings</string>
 
+    <string name="filter_game_series" translatable="false">filter_game_series</string>
+    <string name="filter_character" translatable="false">filter_character</string>
+    <string name="filter_amiibo_series" translatable="false">filter_amiibo_series</string>
+    <string name="filter_amiibo_type" translatable="false">filter_amiibo_type</string>
+    <string name="filter_game_titles" translatable="false">filter_game_titles</string>
+
     <string name="mimetype_text" translatable="false">text/plain</string>
     <string name="mimetype_apk" translatable="false">application/vnd.android.package-archive</string>
     <string-array name="mimetype_bin">

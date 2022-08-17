@@ -35,8 +35,8 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
@@ -155,11 +155,7 @@ public class BrowserFragment extends Fragment implements
             return true;
         });
 
-        activity.onFilterGameSeriesChanged();
-        activity.onFilterCharacterChanged();
-        activity.onFilterAmiiboSeriesChanged();
-        activity.onFilterAmiiboTypeChanged();
-        activity.onFilterGameTitlesChanged();
+        activity.onFilterContentsLoaded();
     }
 
     public RecyclerView getAmiibosView() {

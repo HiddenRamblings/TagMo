@@ -244,8 +244,6 @@
     <string name="flask_upload">Téléversement d’amiibo&#8482;&#8230;</string>
     <string name="location_disclosure">L’emplacement est requis pour l’analyse Bluetooth LE. Conformément à la politique de Google Play, TagMo est tenu de vous informer que des données de localisation peuvent être collectées en arrière-plan. TagMo ne lit, ne stocke ni ne partage les données de localisation. En tant que tel, cet avis est strictement une formalité.</string>
 
-    <string name="flask_joy_con">Ceci n’est pas un Joy-Con valide&#160;!</string>
-
     <string name="data_write">Données principales écrites</string>
     <string name="password_write">Mot de passe écrit</string>
     <string name="lock_write">Informations de verrouillage écrites</string>

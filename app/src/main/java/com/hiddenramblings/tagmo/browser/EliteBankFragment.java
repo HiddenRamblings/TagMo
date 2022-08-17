@@ -63,11 +63,9 @@ import com.shawnlin.numberpicker.NumberPicker;
 
 import org.json.JSONException;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
 
 public class EliteBankFragment extends Fragment implements
         EliteBankAdapter.OnAmiiboClickListener {

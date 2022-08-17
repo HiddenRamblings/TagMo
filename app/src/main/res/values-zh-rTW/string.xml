@@ -19,6 +19,7 @@
 
     <string name="amiibo_id">ID</string>
     <string name="amiibo_name">名稱</string>
+    <string name="amiibo_titles">遊戲使用率</string>
     <string name="amiibo_game">遊戲系列</string>
     <string name="amiibo_character">角色人物</string>
     <string name="amiibo_series">amiibo&#8482; 系列</string>
@@ -31,6 +32,7 @@
     <string name="amiibo_name_caps">名稱</string>
     <string name="amiibo_id_caps">TAGID</string>
     <string name="amiibo_type_caps">AMIIBO 種類</string>
+    <string name="amiibo_titles_caps">遊戲使用率</string>	
     <string name="amiibo_game_caps">GAME 系列</string>
     <string name="amiibo_series_caps">AMIIBO 系列</string>
     <string name="amiibo_character_caps">角色人物</string>
@@ -135,7 +137,8 @@
     <string name="bank_select">請選擇目標 bank&#8230;</string>
 
     <string name="zelda_twilight">薩爾達傳說 曙光公主HD</string>
-    <string name="super_smash">任天堂明星大亂鬥3DS/Wii</string>
+    <string name="smash_ultimate">任天堂明星大亂鬥特別版 Switch</string>
+    <string name="super_smash">任天堂明星大亂鬥 3DS/Wii</string>
 
     <string name="save_image">儲存圖片</string>
 
@@ -175,6 +178,8 @@
     <string name="automatic_scan_details">停用此項目可避免手持設備出現非預期掃描的狀況。</string>
     <string name="tag_devices">Tag 裝置</string>
     <string name="enable_power_tag">啟用支援Power Tag</string>
+    <string name="hide_foomiibo_panel">隱藏Foomiibo控制面板</string>
+    <string name="hide_foomiibo_details">隱藏瀏覽器畫面下方的Foomiibo面板</string>	
     <string name="power_tag_details">請檢視Github官方頁面提供的使用方式、相容性與限制說明。</string>
     <string name="enable_elite">啟用支援N2 Elite</string>
     <string name="elite_details">請檢視Github官方頁面提供的使用方式、相容性與限制說明。</string>
@@ -231,7 +236,7 @@
     <string name="physical_storage_root">瀏覽實體儲存空間</string>
     <string name="grant_file_permission">啟用 "所有檔案" 管理器</string>
     <string name="force_document_storage">啟用文件儲存空間</string>
-	<string name="refresh_amiibo">重新載入 amiibo&#8482;</string>
+    <string name="refresh_amiibo">重新載入 amiibo&#8482;</string>
 
     <string name="prepare_unlock">開始掃描N2，在傳輸完成前請勿將NFC感應區移開</string>
     <string name="progress_unlock">請長按N2鈕，並保持與NFC的感應連線.</string>
@@ -356,6 +361,5 @@
     <string name="sub_button">%1$s 訂閱</string>
     <string name="iap_button">%1$s 捐贈</string>
     <string name="donation_thanks">非常感謝你的捐贈！</string>
-    <string name="donation_notice">TagMo會持續努力維持免費的專案形式來進行開發。\n所有贊助款項都用於本專案的相關支出。</string>
-
+    <string name="donation_notice">TagMo努力維持免費的專案形式來開發。\n所有贊助款項都用於本專案的相關支出。</string>
 </resources>

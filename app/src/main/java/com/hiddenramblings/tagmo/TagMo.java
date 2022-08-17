@@ -1,10 +1,7 @@
 package com.hiddenramblings.tagmo;
 
 import android.app.Application;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
 

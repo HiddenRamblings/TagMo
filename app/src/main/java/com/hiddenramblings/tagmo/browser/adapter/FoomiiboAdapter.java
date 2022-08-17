@@ -27,6 +27,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.FILTER;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
@@ -42,7 +43,7 @@ public class FoomiiboAdapter
 
     private final BrowserSettings settings;
     private final OnFoomiiboClickListener listener;
-    private final ArrayList<Amiibo> data = new ArrayList<>();
+    private ArrayList<Amiibo> data = new ArrayList<>();
     private ArrayList<Amiibo> filteredData;
     private FoomiiboFilter filter;
     boolean firstRun = true;
@@ -69,16 +70,16 @@ public class FoomiiboAdapter
                         oldBrowserSettings.getQuery()) ||
                 !BrowserSettings.equals(newBrowserSettings.getSort(),
                         oldBrowserSettings.getSort()) ||
-                !BrowserSettings.equals(newBrowserSettings.getGameSeriesFilter(),
-                        oldBrowserSettings.getGameSeriesFilter()) ||
-                !BrowserSettings.equals(newBrowserSettings.getCharacterFilter(),
-                        oldBrowserSettings.getCharacterFilter()) ||
-                !BrowserSettings.equals(newBrowserSettings.getAmiiboSeriesFilter(),
-                        oldBrowserSettings.getAmiiboSeriesFilter()) ||
-                !BrowserSettings.equals(newBrowserSettings.getAmiiboTypeFilter(),
-                        oldBrowserSettings.getAmiiboTypeFilter()) ||
-                !BrowserSettings.equals(newBrowserSettings.getGameTitlesFilter(),
-                        oldBrowserSettings.getGameTitlesFilter());
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.GAME_SERIES),
+                        oldBrowserSettings.getContentFilter(FILTER.GAME_SERIES)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.CHARACTER),
+                        oldBrowserSettings.getContentFilter(FILTER.CHARACTER)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.AMIIBO_SERIES),
+                        oldBrowserSettings.getContentFilter(FILTER.AMIIBO_SERIES)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.AMIIBO_TYPE),
+                        oldBrowserSettings.getContentFilter(FILTER.AMIIBO_TYPE)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.GAME_TITLES),
+                        oldBrowserSettings.getContentFilter(FILTER.GAME_TITLES));
 
         if (!BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
@@ -247,9 +248,10 @@ public class FoomiiboAdapter
             }
             settings.setQuery(query);
 
-            data.clear();
             if (null != settings.getAmiiboManager())
-                data.addAll(settings.getAmiiboManager().amiibos.values());
+                data = new ArrayList<>(settings.getAmiiboManager().amiibos.values());
+            else
+                data.clear();
 
             ArrayList<Amiibo> tempList = new ArrayList<>();
             String queryText = query.trim().toLowerCase();

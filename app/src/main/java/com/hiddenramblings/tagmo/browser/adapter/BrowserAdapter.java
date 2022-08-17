@@ -31,6 +31,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.settings.BrowserSettings.FILTER;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
@@ -72,16 +73,16 @@ public class BrowserAdapter
                         oldBrowserSettings.getQuery()) ||
                 !BrowserSettings.equals(newBrowserSettings.getSort(),
                         oldBrowserSettings.getSort()) ||
-                !BrowserSettings.equals(newBrowserSettings.getGameSeriesFilter(),
-                        oldBrowserSettings.getGameSeriesFilter()) ||
-                !BrowserSettings.equals(newBrowserSettings.getCharacterFilter(),
-                        oldBrowserSettings.getCharacterFilter()) ||
-                !BrowserSettings.equals(newBrowserSettings.getAmiiboSeriesFilter(),
-                        oldBrowserSettings.getAmiiboSeriesFilter()) ||
-                !BrowserSettings.equals(newBrowserSettings.getAmiiboTypeFilter(),
-                        oldBrowserSettings.getAmiiboTypeFilter()) ||
-                !BrowserSettings.equals(newBrowserSettings.getGameTitlesFilter(),
-                        oldBrowserSettings.getGameTitlesFilter());
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.GAME_SERIES),
+                        oldBrowserSettings.getContentFilter(FILTER.GAME_SERIES)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.CHARACTER),
+                        oldBrowserSettings.getContentFilter(FILTER.CHARACTER)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.AMIIBO_SERIES),
+                        oldBrowserSettings.getContentFilter(FILTER.AMIIBO_SERIES)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.AMIIBO_TYPE),
+                        oldBrowserSettings.getContentFilter(FILTER.AMIIBO_TYPE)) ||
+                !BrowserSettings.equals(newBrowserSettings.getContentFilter(FILTER.GAME_TITLES),
+                        oldBrowserSettings.getContentFilter(FILTER.GAME_TITLES));
 
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
@@ -266,17 +267,16 @@ public class BrowserAdapter
             }
             settings.setQuery(query);
 
-            data.clear();
-            if (null != settings.getAmiiboFiles()) {
-                data.addAll(settings.getAmiiboFiles());
-            }
+            if (null != settings.getAmiiboFiles())
+                data = new ArrayList<>(settings.getAmiiboFiles());
+            else
+                data.clear();
 
             ArrayList<AmiiboFile> tempList = new ArrayList<>();
             String queryText = query.trim().toLowerCase();
             AmiiboManager amiiboManager = settings.getAmiiboManager();
-            ArrayList<AmiiboFile> files = settings.getAmiiboFiles();
-            for (Iterator<AmiiboFile> iterator = files.iterator(); iterator.hasNext();) {
-                AmiiboFile amiiboFile = iterator.next();
+            ArrayList<AmiiboFile> amiiboFiles = settings.getAmiiboFiles();
+            for (AmiiboFile amiiboFile : amiiboFiles) {
                 boolean add = false;
                 if (null != amiiboManager) {
                     Amiibo amiibo = amiiboManager.amiibos.get(amiiboFile.getId());
@@ -300,11 +300,11 @@ public class BrowserAdapter
 
         public boolean pathContainsQuery(String path, String query) {
             return !query.isEmpty() &&
-                    settings.getGameTitlesFilter().isEmpty() &&
-                    settings.getGameSeriesFilter().isEmpty() &&
-                    settings.getCharacterFilter().isEmpty() &&
-                    settings.getAmiiboSeriesFilter().isEmpty() &&
-                    settings.getAmiiboTypeFilter().isEmpty() &&
+                    settings.getContentFilter(FILTER.GAME_SERIES).isEmpty() &&
+                    settings.getContentFilter(FILTER.CHARACTER).isEmpty() &&
+                    settings.getContentFilter(FILTER.AMIIBO_SERIES).isEmpty() &&
+                    settings.getContentFilter(FILTER.AMIIBO_TYPE).isEmpty() &&
+                    settings.getContentFilter(FILTER.GAME_TITLES).isEmpty() &&
                     path.toLowerCase().contains(query);
         }
 

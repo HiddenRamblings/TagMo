@@ -40,15 +40,12 @@ jobs:
         # override default build-tools version (29.0.3) -- optional
         BUILD_TOOLS_VERSION: "30.0.2"
 
-    - name: Retrieve commit short hash
-      run: |
-         GIT_HASH=$(git rev-parse --short HEAD)
-         echo "GIT_HASH=${GIT_HASH}" >> $GITHUB_ENV
-
-    - name: Retrieve branch name
+    - name: Retrieve commit identification
       run: |
          GIT_BRANCH=$(git symbolic-ref HEAD | sed -e "s/^refs\/heads\///")
          echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
+         GIT_HASH=$(git rev-parse --short HEAD)
+         echo "GIT_HASH=${GIT_HASH}" >> $GITHUB_ENV
 
     # Example use of `signedReleaseFile` output -- not needed
     - uses: actions/upload-artifact@v3
@@ -58,6 +55,7 @@ jobs:
 
 
     - uses: marvinpinto/action-automatic-releases@v1.2.1
+      if: github.event_name != 'pull_request'
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: ${{ env.GIT_BRANCH }}

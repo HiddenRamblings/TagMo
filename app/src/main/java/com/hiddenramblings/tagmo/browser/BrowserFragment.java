@@ -144,8 +144,8 @@ public class BrowserFragment extends Fragment implements
                     amiibosView.getLayoutParams().height += y;
                     if (srcHeight != amiibosView.getLayoutParams().height) amiibosView.requestLayout();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    float minHeight = requireContext().getResources()
-                            .getDimension(R.dimen.button_height_min) * 1.95f;
+                    float minHeight = activity.getBottomSheetBehavior().getPeekHeight() + v.getHeight()
+                            + requireContext().getResources().getDimension(R.dimen.foomiibo_bar_nargin);
                     if (amiibosView.getLayoutParams().height > view.getHeight() - (int) minHeight)
                         amiibosView.getLayoutParams().height = view.getHeight() - (int) minHeight;
                     if (srcHeight != amiibosView.getLayoutParams().height) amiibosView.requestLayout();
@@ -187,8 +187,10 @@ public class BrowserFragment extends Fragment implements
 
     void setFoomiiboVisibility() {
         if (null == getView()) return;
-        float minHeight = requireContext().getResources()
-                .getDimension(R.dimen.button_height_min) * 1.95f;
+        BrowserActivity activity = (BrowserActivity) requireActivity();
+        float minHeight = activity.getBottomSheetBehavior().getPeekHeight()
+                + getView().findViewById(R.id.list_divider).getHeight() + requireContext()
+                .getResources().getDimension(R.dimen.foomiibo_bar_nargin);
         if (amiibosView.getLayoutParams().height > getView().getHeight() - (int) minHeight) {
             amiibosView.getLayoutParams().height = getView().getHeight() - (int) minHeight;
         } else {

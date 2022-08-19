@@ -1386,7 +1386,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 switchStorageType.setVisibility(View.GONE);
             }
             if (keyManager.isKeyMissing()) {
-                hideFakeSnackbar(false);
+                hideFakeSnackbar();
                 showFakeSnackbar(getString(R.string.locating_keys));
                 locateKeyFiles();
             } else {
@@ -1729,7 +1729,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (Thread.currentThread().isInterrupted()) return;
 
             this.runOnUiThread(() -> {
-                hideFakeSnackbar(true);
+                hideFakeSnackbar();
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
             });
@@ -1746,7 +1746,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (Thread.currentThread().isInterrupted()) return;
 
             this.runOnUiThread(() -> {
-                hideFakeSnackbar(true);
+                hideFakeSnackbar();
                 settings.setAmiiboFiles(amiiboFiles);
                 settings.notifyChanges();
             });
@@ -2456,11 +2456,11 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    private void hideFakeSnackbar(boolean isCompleted) {
+    private void hideFakeSnackbar() {
         if (fakeSnackbar.getVisibility() == View.VISIBLE) {
             TranslateAnimation animate = new TranslateAnimation(
                     0, 0, 0, -fakeSnackbar.getHeight());
-            animate.setDuration(125);
+            animate.setDuration(150);
             animate.setFillAfter(false);
             fakeSnackbar.setAnimationListener(new AnimatedLinearLayout.AnimationListener() {
                 @Override
@@ -2475,6 +2475,10 @@ public class BrowserActivity extends AppCompatActivity implements
             });
             fakeSnackbar.startAnimation(animate);
         }
+    }
+
+    public BottomSheetBehavior<View> getBottomSheetBehavior() {
+        return bottomSheetBehavior;
     }
 
     public void collapseBottomSheet() {
@@ -2551,7 +2555,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else if (keyNameMatcher(file.getName())) {
                 try (FileInputStream inputStream = new FileInputStream(file)) {
                     this.keyManager.evaluateKey(inputStream);
-                    hideFakeSnackbar(false);
+                    hideFakeSnackbar();
                 } catch (Exception e) {
                     Debug.Log(e);
                 }
@@ -2571,7 +2575,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     this.keyManager.evaluateKey(new ByteArrayInputStream(
                             TagUtils.hexToByteArray(scanner.nextLine()
                                     .replace(" ", ""))));
-                    hideFakeSnackbar(false);
+                    hideFakeSnackbar();
                     scanner.close();
                 } catch (IOException e) {
                     Debug.Log(e);
@@ -2592,7 +2596,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 for (File file : files) {
                     try (FileInputStream inputStream = new FileInputStream(file)) {
                         this.keyManager.evaluateKey(inputStream);
-                        hideFakeSnackbar(false);
+                        hideFakeSnackbar();
                     } catch (Exception e) {
                         Debug.Log(e);
                     }

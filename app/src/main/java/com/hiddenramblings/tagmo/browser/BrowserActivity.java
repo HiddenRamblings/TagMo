@@ -764,7 +764,7 @@ public class BrowserActivity extends AppCompatActivity implements
             );
             donorNotice.setAction(R.string.pref_donate, v -> onSendDonationClicked());
             donorNotice.show();
-        }, TagMo.uiDelay);
+        }, TagMo.uiDelay * 2L);
     }
 
     private int getQueryCount(String queryText) {

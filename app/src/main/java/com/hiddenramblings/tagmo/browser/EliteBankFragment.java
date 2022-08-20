@@ -463,8 +463,7 @@ public class EliteBankFragment extends Fragment implements
 
         if (result.getData().hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
             tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
-            if (null != amiibos.get(clickedPosition))
-                amiibos.get(clickedPosition).data = tagData;
+            if (null != amiibos.get(clickedPosition)) amiibos.get(clickedPosition).data = tagData;
         }
 
         if (result.getData().hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
@@ -474,6 +473,10 @@ public class EliteBankFragment extends Fragment implements
 
         updateAmiiboView(amiiboCard, tagData, -1, clickedPosition);
         int active_bank = prefs.eliteActiveBank().get();
+        if (result.getData().hasExtra(NFCIntent.EXTRA_ACTIVE_BANK)) {
+            active_bank = result.getData().getIntExtra(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
+            prefs.eliteActiveBank().put(active_bank);
+        }
         updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
 
         if (status == CLICKED.ERASE_BANK) {

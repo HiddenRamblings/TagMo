@@ -332,17 +332,14 @@ public class NfcActivity extends AppCompatActivity {
                         && !NFCIntent.ACTION_WRITE_ALL_TAGS.equals(mode)
                         && !NFCIntent.ACTION_ERASE_ALL_TAGS.equals(mode)) {
                     selection = getPosition(bankPicker);
-                    if (selection > bank_count) {
-                        throw new Exception(getString(R.string.fail_bank_oob));
-                    }
+                    if (selection > bank_count) throw new Exception(getString(R.string.fail_bank_oob));
                 }
             }
             try {
                 byte[] data = new byte[0];
                 if (commandIntent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
                     data = commandIntent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
-                    if (null == data || data.length <= 1)
-                        throw new IOException(getString(R.string.error_no_data));
+                    if (null == data || data.length <= 1) throw new IOException(getString(R.string.error_no_data));
                 }
                 switch (mode) {
                     case NFCIntent.ACTION_WRITE_TAG_RAW:
@@ -395,8 +392,7 @@ public class NfcActivity extends AppCompatActivity {
 
                     case NFCIntent.ACTION_WRITE_ALL_TAGS:
                         mifare.setBankCount(write_count);
-                        if (active_bank <= write_count)
-                            mifare.activateBank(active_bank);
+                        if (active_bank <= write_count) mifare.activateBank(active_bank);
                         if (commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_FILES)) {
                             ArrayList<AmiiboFile> amiiboList = commandIntent
                                     .getParcelableArrayListExtra(NFCIntent.EXTRA_AMIIBO_FILES);
@@ -431,12 +427,17 @@ public class NfcActivity extends AppCompatActivity {
 
                     case NFCIntent.ACTION_ERASE_ALL_TAGS:
                         mifare.setBankCount(write_count);
+                        Intent erase = new Intent(NFCIntent.ACTION_NFC_SCANNED);
+                        if (write_count == 200) {
+                            mifare.activateBank(0);
+                            erase.putExtra(NFCIntent.EXTRA_ACTIVE_BANK, 0);
+                            erase.putExtra(NFCIntent.EXTRA_CURRENT_BANK, 0);
+                        }
                         for (int x = 1; x < write_count; x++) {
                             txtMessage.setText(getString(R.string.bank_erasing,
                                     x + 1, write_count));
                             TagWriter.wipeBankData(mifare, x);
                         }
-                        Intent erase = new Intent(NFCIntent.ACTION_NFC_SCANNED);
                         erase.putExtra(NFCIntent.EXTRA_BANK_COUNT, write_count);
                         args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST,
                                 TagReader.readTagTitles(mifare, bank_count));
@@ -507,6 +508,12 @@ public class NfcActivity extends AppCompatActivity {
                         break;
 
                     case NFCIntent.ACTION_LOCK_AMIIBO:
+                        try {
+                            TagUtils.getValidatedData(keyManager,
+                                    TagReader.scanBankToBytes(mifare, active_bank));
+                        } catch (Exception ex) {
+                            throw new Exception(getString(R.string.fail_lock));
+                        }
                         mifare.amiiboLock();
                         setResult(Activity.RESULT_OK);
                         break;

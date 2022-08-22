@@ -94,11 +94,18 @@ public class CheckUpdatesTask {
             }
         });
         Executors.newSingleThreadExecutor().execute(() -> {
-            boolean isMaster = TagMo.getPrefs().settings_stable_channel().get();
-            new JSONExecutor(activity,TAGMO_GIT_API + (isMaster
-                    ? "master" : "experimental")).setResultListener(result -> {
-                if (null != result) parseUpdateJSON(result, isMaster);
-            });
+            if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
+                new JSONExecutor(activity,TAGMO_GIT_API + "conversion")
+                        .setResultListener(result -> {
+                    if (null != result) parseUpdateJSON(result, false);
+                });
+            } else {
+                boolean isMaster = TagMo.getPrefs().settings_stable_channel().get();
+                new JSONExecutor(activity, TAGMO_GIT_API + (isMaster
+                        ? "master" : "experimental")).setResultListener(result -> {
+                    if (null != result) parseUpdateJSON(result, isMaster);
+                });
+            }
         });
     }
 

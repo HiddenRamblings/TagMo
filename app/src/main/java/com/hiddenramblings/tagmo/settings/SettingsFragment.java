@@ -21,6 +21,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -228,11 +229,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         CheckBoxPreference stableChannel = findPreference(getString(R.string.settings_stable_channel));
         if (null != stableChannel) {
-            stableChannel.setChecked(prefs.settings_stable_channel().get());
-            stableChannel.setOnPreferenceClickListener(preference -> {
-                prefs.settings_stable_channel().put(stableChannel.isChecked());
-                return SettingsFragment.super.onPreferenceTreeClick(preference);
-            });
+            if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
+                stableChannel.setVisible(false);
+            } else {
+                stableChannel.setChecked(prefs.settings_stable_channel().get());
+                stableChannel.setOnPreferenceClickListener(preference -> {
+                    prefs.settings_stable_channel().put(stableChannel.isChecked());
+                    return SettingsFragment.super.onPreferenceTreeClick(preference);
+                });
+            }
         }
     }
 

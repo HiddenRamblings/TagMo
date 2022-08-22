@@ -718,7 +718,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void onSendDonationClicked() {
         if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
-            View layout = getLayoutInflater().inflate(R.layout.donation_layout, null);
+            LinearLayout layout = (LinearLayout) getLayoutInflater()
+                    .inflate(R.layout.donation_layout, null);
             AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(
                     BrowserActivity.this, R.style.DialogTheme_NoActionBar
             ));
@@ -736,14 +737,22 @@ public class BrowserActivity extends AppCompatActivity implements
                 if (null == skuDetail.getSubscriptionOfferDetails()) continue;
                 subscriptions.addView(getSubscriptionButton(skuDetail));
             }
-            if (!TagMo.isGooglePlay()) {
-                // TODO: Append a PayPal donation option to the dialog
-            }
             dialog.setOnCancelListener(dialogInterface -> {
                 donations.removeAllViewsInLayout();
                 subscriptions.removeAllViewsInLayout();
             });
             Dialog donateDialog = dialog.setView(layout).show();
+            if (!TagMo.isGooglePlay()) {
+                View paypal = getLayoutInflater().inflate(R.layout.button_paypal, null);
+                paypal.setOnClickListener(view -> {
+                    closePrefsDrawer();
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                            "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
+                    )));
+                    donateDialog.cancel();
+                });
+                layout.addView(paypal);
+            }
             donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         } else {
             closePrefsDrawer();
@@ -2828,8 +2837,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private final ArrayList<String> subList = new ArrayList<>();
 
     private final ConsumeResponseListener consumeResponseListener = (billingResult, s)
-            -> new IconifiedSnackbar(this, findViewById(R.id.donation_wrapper))
-            .buildTickerBar(R.string.donation_thanks).show();
+            -> new IconifiedSnackbar(this).buildTickerBar(R.string.donation_thanks).show();
 
     private void handlePurchaseIAP(Purchase purchase) {
         ConsumeParams.Builder consumeParams = ConsumeParams.newBuilder()
@@ -2909,6 +2917,9 @@ public class BrowserActivity extends AppCompatActivity implements
         billingClient = BillingClient.newBuilder(this)
                 .setListener(purchasesUpdatedListener).enablePendingPurchases().build();
 
+        iapSkuDetails.clear();
+        subSkuDetails.clear();
+
         billingClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingServiceDisconnected() { }
@@ -2931,7 +2942,7 @@ public class BrowserActivity extends AppCompatActivity implements
                                 .newBuilder().setProductList(List.of(productList));
                         billingClient.queryProductDetailsAsync(params.build(),
                                 (billingResult1, productDetailsList) -> {
-                            iapSkuDetails = new ArrayList<>(productDetailsList);
+                            iapSkuDetails.addAll(productDetailsList);
                             billingClient.queryPurchaseHistoryAsync(
                                     QueryPurchaseHistoryParams.newBuilder().setProductType(
                                             BillingClient.ProductType.INAPP
@@ -2956,7 +2967,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             .newBuilder().setProductList(List.of(productList));
                     billingClient.queryProductDetailsAsync(params.build(),
                             (billingResult1, productDetailsList) -> {
-                        subSkuDetails = new ArrayList<>(productDetailsList);
+                        subSkuDetails.addAll(productDetailsList);
                         billingClient.queryPurchaseHistoryAsync(
                                 QueryPurchaseHistoryParams.newBuilder().setProductType(
                                         BillingClient.ProductType.SUBS

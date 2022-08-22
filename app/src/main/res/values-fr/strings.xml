@@ -189,7 +189,7 @@
     <string name="number_series">%1$d Séries d’amiibo&#8482;</string>
     <string name="number_type">%1$d Types d’amiibo&#8482;</string>
     <string name="pref_advanced">Avancé</string>
-    <string name="pref_theme_details">Thème système pour TagMo</string>
+    <string name="pref_system_theme">Thème système pour TagMo</string>
     <string name="pref_disable_debug">Désactiver le journal de déboguage</string>
     <string name="disable_debug_details">Peut améliorer les performances, mais réduits les informations de diagnostic.</string>
     <string name="pref_stable_channel">Vérification de mise à jour stable</string>

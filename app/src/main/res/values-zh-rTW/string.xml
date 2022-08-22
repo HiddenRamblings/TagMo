@@ -312,12 +312,13 @@
     <string name="fail_decrypt">解密tag數據失敗</string>
     <string name="fail_encrypt">加密tag數據失敗</string>
     <string name="fail_display">顯示tag數據失敗</string>
+    <string name="fail_lock">無法鎖定空白的bank!</string>
     <string name="fail_unlock">進行鎖定時發生錯誤！</string>
     <string name="fail_logcat">製作操作日誌時發生錯誤！</string>
 
     <string name="no_tag_loaded">&lt;尚未載入Tag&gt;</string>
     <string name="read_error">&lt;讀取Tag時發生錯誤&gt;</string>
- 	<string name="blank_tag">&lt;空白的Tag&gt;</string>
+    <string name="blank_tag">&lt;空白的Tag&gt;</string>
     <string name="blank_bank">%1$s: &lt;空白的Bank&gt;</string>
 
     <string name="key_not_present">尚未載入金鑰檔案！</string>

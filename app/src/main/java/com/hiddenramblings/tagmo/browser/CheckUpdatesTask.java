@@ -211,8 +211,7 @@ public class CheckUpdatesTask {
             JSONObject asset = (JSONObject) assets.get(0);
             downloadUrl = (String) asset.get("browser_download_url");
             isUpdateAvailable = !isMaster && !BuildConfig.COMMIT.equals(lastCommit);
-            if (isUpdateAvailable)
-                if (null != listener) listener.onUpdateFound(downloadUrl);
+            if (isUpdateAvailable && null != listener) listener.onUpdateFound(downloadUrl);
         } catch (JSONException e) {
             Debug.Log(e);
         }
@@ -227,8 +226,7 @@ public class CheckUpdatesTask {
                     String extraCommit = ((String) jsonObject.get("name")).substring(offset);
                     isUpdateAvailable = !BuildConfig.COMMIT.equals(extraCommit)
                             && !BuildConfig.COMMIT.equals(finalLastCommit);
-                    if (isUpdateAvailable)
-                        if (null != listener) listener.onUpdateFound(finalDownloadUrl);
+                    if (isUpdateAvailable && null != listener) listener.onUpdateFound(finalDownloadUrl);
                 } catch (JSONException e) {
                     Debug.Log(e);
                 }

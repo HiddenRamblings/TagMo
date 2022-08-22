@@ -506,7 +506,6 @@ public class BrowserActivity extends AppCompatActivity implements
         AppCompatImageView donate = findViewById(R.id.donate_button);
         if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
             retrieveDonationMenu();
-            donate.setImageResource(R.drawable.ic_google_play_24dp);
         } else {
             donate.setImageResource(R.drawable.ic_paypal_donation_24dp);
         }

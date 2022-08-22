@@ -196,8 +196,8 @@
     <string name="number_series">%1$d amiibo&#8482; Series</string>
     <string name="number_type">%1$d amiibo&#8482; Type(s)</string>
     <string name="pref_advanced">Advanced</string>
-    <string name="pref_system_theme">TagMo System Theme</string>
-    <string name="system_theme_details">Change the local theme independent of system theme settings</string>
+    <string name="pref_tagmo_theme">TagMo System Theme</string>
+    <string name="tagmo_theme_details">Change the local theme independent of system theme settings</string>
     <string name="pref_disable_debug">Disable Debug Logger</string>
     <string name="disable_debug_details">May improve performance, but limits most diagnostic details</string>
     <string name="pref_stable_channel">Stable Update Checks</string>

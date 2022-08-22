@@ -196,7 +196,7 @@
     <string name="number_series">%1$d 個 amiibo&#8482; 系列</string>
     <string name="number_type">%1$d 種 amiibo&#8482; 類型</string>
     <string name="pref_advanced">進階</string>
-    <string name="pref_system_theme">TagMo系統主題</string>
+    <string name="pref_tagmo_theme">TagMo系統主題</string>
     <string name="pref_disable_debug">停用除錯日誌記錄</string>
     <string name="disable_debug_details">可改善執行效率，但將無法完整記錄用來診斷錯誤的所有細節資訊</string>
     <string name="pref_stable_channel">檢查穩定版本更新</string>

@@ -131,6 +131,7 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListene
 import com.hiddenramblings.tagmo.settings.BrowserSettings.FILTER;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
+import com.hiddenramblings.tagmo.settings.JSONExecutor;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -229,8 +230,8 @@ public class BrowserActivity extends AppCompatActivity implements
     NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
 
     private BillingClient billingClient;
-    private ArrayList<ProductDetails> iapSkuDetails = new ArrayList<>();
-    private ArrayList<ProductDetails> subSkuDetails = new ArrayList<>();
+    private final ArrayList<ProductDetails> iapSkuDetails = new ArrayList<>();
+    private final ArrayList<ProductDetails> subSkuDetails = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -517,7 +518,14 @@ public class BrowserActivity extends AppCompatActivity implements
                 super.onDrawerOpened(drawerView);
                 findViewById(R.id.build_layout).setOnClickListener(view -> {
                     closePrefsDrawer();
-                    showWebsite("https://github.com/HiddenRamblings/TagMo");
+                    String repository = "https://github.com/HiddenRamblings/TagMo/tree/";
+                    if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
+                        repository += "conversion";
+                    } else {
+                        boolean isMaster = TagMo.getPrefs().settings_stable_channel().get();
+                        repository += (isMaster ? "master" : "experimental");
+                    }
+                    showWebsite(repository);
                 });
                 findViewById(R.id.guide_layout).setOnClickListener(view -> {
                     closePrefsDrawer();
@@ -742,6 +750,7 @@ public class BrowserActivity extends AppCompatActivity implements
             });
             Dialog donateDialog = dialog.setView(layout).show();
             if (!TagMo.isGooglePlay()) {
+                @SuppressLint("InflateParams")
                 View paypal = getLayoutInflater().inflate(R.layout.button_paypal, null);
                 paypal.setOnClickListener(view -> {
                     closePrefsDrawer();
@@ -1056,12 +1065,12 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     };
 
-    private boolean onFilterGameTitlesClick() {
+    private void onFilterGameTitlesClick() {
         SubMenu subMenu = menuFilterGameTitles.getSubMenu();
         subMenu.clear();
 
         AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (amiiboManager == null) return false;
+        if (amiiboManager == null) return;
         GamesManager gamesManager = settings.getGamesManager();
 
         Set<String> items = new HashSet<>();
@@ -1080,7 +1089,6 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         subMenu.setGroupCheckable(R.id.filter_game_titles_group, true, true);
 
-        return true;
     }
 
     private final MenuItem.OnMenuItemClickListener onFilterGameTitlesItemClick =
@@ -2673,7 +2681,7 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (View.VISIBLE == amiiboContainer.getVisibility()) {
             amiiboContainer.setVisibility(View.GONE);
         } else if (mainLayout.getCurrentItem() != 0) {
-            mainLayout.setCurrentItem(0, false);
+            mainLayout.setCurrentItem(0, true);
         } else {
             super.onBackPressed();
             finishAffinity();

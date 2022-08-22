@@ -1,3 +1,4 @@
+import org.gradle.internal.os.OperatingSystem
 apply plugin: 'com.android.application'
 
 android {
@@ -28,6 +29,7 @@ android {
     }
 
     def branch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+    if (OperatingSystem.current().isMacOsX()) branch = branch.replaceAll("heads/", "")
 
     buildTypes {
         release {

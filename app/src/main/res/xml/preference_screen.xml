@@ -62,7 +62,7 @@
             android:entries="@array/themeSettingNames"
             android:entryValues="@array/themeSettingValues"
             android:key="@string/settings_tagmo_theme"
-            android:title="@string/pref_theme_details" />
+            android:title="@string/pref_system_theme" />
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/settings_disable_debug"

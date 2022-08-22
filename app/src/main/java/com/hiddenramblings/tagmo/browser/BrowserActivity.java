@@ -504,7 +504,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
 
         AppCompatImageView donate = findViewById(R.id.donate_button);
-        if (TagMo.isGooglePlay()) {
+        if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
             retrieveDonationMenu();
             donate.setImageResource(R.drawable.ic_google_play_24dp);
         } else {
@@ -717,7 +717,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onSendDonationClicked() {
-        if (TagMo.isGooglePlay()) {
+        if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
             View layout = getLayoutInflater().inflate(R.layout.donation_layout, null);
             AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(
                     BrowserActivity.this, R.style.DialogTheme_NoActionBar
@@ -735,6 +735,9 @@ public class BrowserActivity extends AppCompatActivity implements
             for (ProductDetails skuDetail : subSkuDetails) {
                 if (null == skuDetail.getSubscriptionOfferDetails()) continue;
                 subscriptions.addView(getSubscriptionButton(skuDetail));
+            }
+            if (!TagMo.isGooglePlay()) {
+                // TODO: Append a PayPal donation option to the dialog
             }
             dialog.setOnCancelListener(dialogInterface -> {
                 donations.removeAllViewsInLayout();
@@ -764,7 +767,7 @@ public class BrowserActivity extends AppCompatActivity implements
             );
             donorNotice.setAction(R.string.pref_donate, v -> onSendDonationClicked());
             donorNotice.show();
-        }, TagMo.uiDelay * 2L);
+        }, TagMo.uiDelay);
     }
 
     private int getQueryCount(String queryText) {

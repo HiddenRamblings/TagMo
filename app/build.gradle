@@ -27,11 +27,14 @@ android {
         project.archivesBaseName = "TagMo-" + commit
     }
 
+    def branch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+
     buildTypes {
         release {
             getIsDefault().set(true)
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (branch == "conversion") applicationIdSuffix ".eightbit"
         }
         debug {
             initWith release
@@ -55,7 +58,7 @@ android {
             initWith release
             getIsDefault().set(false)
             buildTypes.publish.signingConfig signingConfigs.debug
-            applicationIdSuffix ".eightbit"
+            if (branch != "conversion") applicationIdSuffix ".eightbit"
         }
     }
 

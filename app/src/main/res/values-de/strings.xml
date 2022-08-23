@@ -23,8 +23,8 @@
     <string name="game_titles_view">Kompatible Spiele anzeigen</string>
     <string name="game_titles_hide">Kompatible Spiele ausblenden</string>
 
-    <string name="pref_guides">Hilfslinien</string>
-    <string name="pref_donate">Spenden</string>
+    <string name="guides">Hilfslinien</string>
+    <string name="donate">Spenden</string>
 
     <string name="location_disclosure">Der Standort ist für den Bluetooth LE-Scan erforderlich. Gemäß den Google Play-Richtlinien muss TagMo Sie darüber informieren, dass Standortdaten im Hintergrund gesammelt werden können. TagMo liest, speichert oder teilt keine Standortdaten. Daher ist diese Mitteilung ausschließlich eine Formalität.</string>
     <string name="prefs_configuration">Browser-Optionen</string>

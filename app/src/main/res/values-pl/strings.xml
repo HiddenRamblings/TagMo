@@ -167,8 +167,6 @@
     <string name="pref_advanced">Zaawansowane</string>
     <string name="pref_disable_debug">Zablokuj logowanie błędów</string>
     <string name="disable_debug_details">May improve performance, but limits diagnostic information</string>
-    <string name="pref_stable_channel">Tylko stabilne aktualizacje</string>
-    <string name="stable_channel_details">Only use the stable branch when checking for TagMo updates</string>
 
     <string name="amiibo_info_updated">Zaktualizowano bazę amiibo™!</string>
     <string name="sync_amiibo_process">Synchronizacja z AmiiboAPI&#8230;</string>

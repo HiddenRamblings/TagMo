@@ -192,8 +192,6 @@
     <string name="pref_tagmo_theme">Thème système pour TagMo</string>
     <string name="pref_disable_debug">Désactiver le journal de déboguage</string>
     <string name="disable_debug_details">Peut améliorer les performances, mais réduits les informations de diagnostic.</string>
-    <string name="pref_stable_channel">Vérification de mise à jour stable</string>
-    <string name="stable_channel_details">Utiliser seulement la branche stable lors de la vérification de mise à jour pour TagMo</string>
 
     <string name="amiibo_info_updated">Base d’amiibo&#8482; mise à jour&#160;!</string>
     <string name="sync_amiibo_process">Synchronisation avec AmiiboAPI&#8230;</string>

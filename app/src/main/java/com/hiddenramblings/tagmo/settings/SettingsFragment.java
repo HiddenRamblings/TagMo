@@ -226,19 +226,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
-
-        CheckBoxPreference stableChannel = findPreference(getString(R.string.settings_stable_channel));
-        if (null != stableChannel) {
-            if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
-                stableChannel.setVisible(false);
-            } else {
-                stableChannel.setChecked(prefs.settings_stable_channel().get());
-                stableChannel.setOnPreferenceClickListener(preference -> {
-                    prefs.settings_stable_channel().put(stableChannel.isChecked());
-                    return SettingsFragment.super.onPreferenceTreeClick(preference);
-                });
-            }
-        }
     }
 
     private void onImportKeysClicked() {

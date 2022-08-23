@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
@@ -546,6 +547,25 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         });
+
+        if (!BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
+            CheckUpdatesTask convert = new CheckUpdatesTask(this, true);
+            convert.setUpdateListener(downloadUrl -> this.runOnUiThread(()
+                    -> new AlertDialog.Builder(this)
+                .setTitle(R.string.conversion_title)
+                .setMessage(R.string.conversion_message)
+                .setPositiveButton(R.string.proceed, (dialogInterface, i) -> {
+                    updates.installUpdateCompat(downloadUrl);
+                    try {
+                        startActivity(new Intent(Intent.ACTION_DELETE)
+                                .setData(Uri.parse("package:com.hiddenramblings.tagmo")));
+                    } catch (Exception ex) {
+                        Debug.Log(ex);
+                    }
+                })
+                .setNegativeButton(R.string.postpone, (dialogInterface, i) ->
+                        dialogInterface.cancel()).show()));
+        }
     }
 
     private void requestStoragePermission() {

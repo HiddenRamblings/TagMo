@@ -55,7 +55,7 @@ public class CheckUpdatesTask {
     private final SoftReference<BrowserActivity> activity;
     private boolean isUpdateAvailable = false;
 
-    CheckUpdatesTask(BrowserActivity activity) {
+    CheckUpdatesTask(BrowserActivity activity, boolean isConversionTask) {
         this.activity = new SoftReference<>(activity);
         if (TagMo.isGooglePlay()) {
             if (null == appUpdateManager)
@@ -69,11 +69,15 @@ public class CheckUpdatesTask {
                     listenerPlay.onPlayUpdateFound(appUpdateInfo);
             });
         } else {
-            configureUpdates(activity);
+            configureUpdates(activity, isConversionTask);
         }
     }
 
-    void configureUpdates(BrowserActivity activity) {
+    CheckUpdatesTask(BrowserActivity activity) {
+        this(activity, false);
+    }
+
+    void configureUpdates(BrowserActivity activity, boolean isConversion) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             PackageInstaller installer = activity.getApplicationContext()
                     .getPackageManager().getPackageInstaller();
@@ -94,16 +98,16 @@ public class CheckUpdatesTask {
             }
         });
         Executors.newSingleThreadExecutor().execute(() -> {
-            if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
+            if (isConversion || BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
                 new JSONExecutor(activity,TAGMO_GIT_API + "conversion")
                         .setResultListener(result -> {
-                    if (null != result) parseUpdateJSON(result, false);
+                    if (null != result) parseUpdateJSON(result, false, isConversion);
                 });
             } else {
                 boolean isMaster = TagMo.getPrefs().settings_stable_channel().get();
                 new JSONExecutor(activity, TAGMO_GIT_API + (isMaster
                         ? "master" : "experimental")).setResultListener(result -> {
-                    if (null != result) parseUpdateJSON(result, isMaster);
+                    if (null != result) parseUpdateJSON(result, isMaster, false);
                 });
             }
         });
@@ -201,7 +205,7 @@ public class CheckUpdatesTask {
         }
     }
 
-    private void parseUpdateJSON(String result, boolean isMaster) {
+    private void parseUpdateJSON(String result, boolean isMaster, boolean isConversion) {
         int offset = activity.get().getString(R.string.tagmo).length() + 1;
         String lastCommit = null, downloadUrl = null;
         try {
@@ -210,7 +214,7 @@ public class CheckUpdatesTask {
             JSONArray assets = (JSONArray) jsonObject.get("assets");
             JSONObject asset = (JSONObject) assets.get(0);
             downloadUrl = (String) asset.get("browser_download_url");
-            isUpdateAvailable = !isMaster && !BuildConfig.COMMIT.equals(lastCommit);
+            isUpdateAvailable = isConversion || (!isMaster && !BuildConfig.COMMIT.equals(lastCommit));
             if (isUpdateAvailable && null != listener) listener.onUpdateFound(downloadUrl);
         } catch (JSONException e) {
             Debug.Log(e);

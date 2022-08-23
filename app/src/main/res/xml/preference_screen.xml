@@ -69,10 +69,5 @@
             android:key="@string/settings_disable_debug"
             android:summary="@string/disable_debug_details"
             android:title="@string/pref_disable_debug" />
-        <androidx.preference.CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/settings_stable_channel"
-            android:summary="@string/stable_channel_details"
-            android:title="@string/pref_stable_channel" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

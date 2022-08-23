@@ -101,13 +101,12 @@ public class CheckUpdatesTask {
             if (isConversion || BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
                 new JSONExecutor(activity,TAGMO_GIT_API + "conversion")
                         .setResultListener(result -> {
-                    if (null != result) parseUpdateJSON(result, false, isConversion);
+                    if (null != result) parseUpdateJSON(result, isConversion);
                 });
             } else {
-                boolean isMaster = TagMo.getPrefs().settings_stable_channel().get();
-                new JSONExecutor(activity, TAGMO_GIT_API + (isMaster
-                        ? "master" : "experimental")).setResultListener(result -> {
-                    if (null != result) parseUpdateJSON(result, isMaster, false);
+                new JSONExecutor(activity, TAGMO_GIT_API + "master")
+                        .setResultListener(result -> {
+                    if (null != result) parseUpdateJSON(result, false);
                 });
             }
         });
@@ -205,36 +204,18 @@ public class CheckUpdatesTask {
         }
     }
 
-    private void parseUpdateJSON(String result, boolean isMaster, boolean isConversion) {
+    private void parseUpdateJSON(String result, boolean isConversion) {
         int offset = activity.get().getString(R.string.tagmo).length() + 1;
-        String lastCommit = null, downloadUrl = null;
         try {
             JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
-            lastCommit = ((String) jsonObject.get("name")).substring(offset);
+            String lastCommit = ((String) jsonObject.get("name")).substring(offset);
             JSONArray assets = (JSONArray) jsonObject.get("assets");
             JSONObject asset = (JSONObject) assets.get(0);
-            downloadUrl = (String) asset.get("browser_download_url");
-            isUpdateAvailable = isConversion || (!isMaster && !BuildConfig.COMMIT.equals(lastCommit));
+            String downloadUrl = (String) asset.get("browser_download_url");
+            isUpdateAvailable = isConversion || !BuildConfig.COMMIT.equals(lastCommit);
             if (isUpdateAvailable && null != listener) listener.onUpdateFound(downloadUrl);
         } catch (JSONException e) {
             Debug.Log(e);
-        }
-
-        if (isMaster && null != lastCommit && null != downloadUrl) {
-            String finalLastCommit = lastCommit;
-            String finalDownloadUrl = downloadUrl;
-            new JSONExecutor(activity.get(), TAGMO_GIT_API + "experimental")
-                    .setResultListener(experimental -> {
-                try {
-                    JSONObject jsonObject = (JSONObject) new JSONTokener(experimental).nextValue();
-                    String extraCommit = ((String) jsonObject.get("name")).substring(offset);
-                    isUpdateAvailable = !BuildConfig.COMMIT.equals(extraCommit)
-                            && !BuildConfig.COMMIT.equals(finalLastCommit);
-                    if (isUpdateAvailable && null != listener) listener.onUpdateFound(finalDownloadUrl);
-                } catch (JSONException e) {
-                    Debug.Log(e);
-                }
-            });
         }
     }
 

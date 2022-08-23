@@ -9,6 +9,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -504,7 +505,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) retrieveDonationMenu();
+        if (TagMo.isCompatBuild()) retrieveDonationMenu();
 
         ((TextView) findViewById(R.id.build_text)).setText(getString(
                 R.string.build_details, getBuildTypeName(), BuildConfig.COMMIT
@@ -515,12 +516,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 super.onDrawerOpened(drawerView);
                 findViewById(R.id.build_layout).setOnClickListener(view -> {
                     closePrefsDrawer();
-                    String repository = "https://github.com/HiddenRamblings/TagMo/tree/";
-                    if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
-                        repository += "conversion";
-                    } else {
-                        repository += "master";
-                    }
+                    String repository = "https://github.com/HiddenRamblings/TagMo";
                     showWebsite(repository);
                 });
                 if (null != appUpdate) {
@@ -538,7 +534,14 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         });
 
-        if (!BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
+        PackageManager pm=getPackageManager();
+        try {
+            pm.getPackageInfo("com.hiddenramblings.tagmo", PackageManager.GET_META_DATA);
+            startActivity(new Intent(Intent.ACTION_DELETE)
+                    .setData(Uri.parse("package:com.hiddenramblings.tagmo")));
+        } catch (PackageManager.NameNotFoundException ignored) { }
+
+        if (!TagMo.isCompatBuild()) {
             CheckUpdatesTask convert = new CheckUpdatesTask(this, true);
             convert.setUpdateListener(downloadUrl -> this.runOnUiThread(()
                     -> new AlertDialog.Builder(this)
@@ -546,15 +549,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .setMessage(R.string.conversion_message)
                 .setPositiveButton(R.string.proceed, (dialogInterface, i) -> {
                     updates.installUpdateCompat(downloadUrl);
-                    try {
-                        startActivity(new Intent(Intent.ACTION_DELETE)
-                                .setData(Uri.parse("package:com.hiddenramblings.tagmo")));
-                    } catch (Exception ex) {
-                        Debug.Log(ex);
-                    }
-                })
-                .setNegativeButton(R.string.postpone, (dialogInterface, i) ->
-                        dialogInterface.cancel()).show()));
+                }).show()));
         }
     }
 
@@ -734,7 +729,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onSendDonationClicked() {
-        if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
+        if (TagMo.isCompatBuild()) {
             LinearLayout layout = (LinearLayout) getLayoutInflater()
                     .inflate(R.layout.donation_layout, null);
             AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(
@@ -2846,12 +2841,14 @@ public class BrowserActivity extends AppCompatActivity implements
         if (TagMo.isGooglePlay()) {
             return "Google Play";
         } else {
-            if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
-                return "GitHub Release";
-            } else if (Objects.equals(BuildConfig.BUILD_TYPE, "debug")) {
-                return "GitHub Testing";
-            } else if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) {
-                return "GitHub Stable";
+            if (TagMo.isCompatBuild()) {
+                if (Objects.equals(BuildConfig.BUILD_TYPE, "debug")) {
+                    return "GitHub Testing";
+                } else if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) {
+                    return "GitHub Release";
+                }
+            } else {
+                return "GitHub Archive";
             }
         }
         return "";

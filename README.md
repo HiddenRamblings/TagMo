@@ -9,13 +9,9 @@ TagMo is an Android app for cloning amiibo™ to NTAG215 NFC tags
 
 It was created as a result of the "[DIY amiibo cards](https://gbatemp.net/threads/diy-amiibo-cards.406978/)" thread and all the collaboration that took place in it.
 
-* [Current Release - "master"](https://github.com/HiddenRamblings/TagMo/tree/master)
-    * [Archived Stable - "master-archive"](https://github.com/HiddenRamblings/TagMo/tree/master-archive)
-    * [Archived Testing - "master2"](https://github.com/HiddenRamblings/TagMo/tree/master2)
-
 * https://www.reddit.com/r/tagmo/
 
-If you want to contribute, please make sure to address your PRs to the 'experimental' branch. Thank you.
+If you want to contribute, please make sure to address your PRs to the 'conversion' branch. Thank you.
 
 ## [Code of Conduct](https://github.com/HiddenRamblings/TagMo/issues/328)
 

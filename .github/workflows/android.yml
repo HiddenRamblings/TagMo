@@ -4,7 +4,7 @@ on:
   push:
     branches: [ master, experimental, conversion ]
   pull_request:
-    branches: [ experimental ]
+    branches: [ conversion ]
 
 jobs:
   build:

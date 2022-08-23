@@ -68,4 +68,8 @@ public class TagMo extends Application {
     public static boolean isGooglePlay() {
         return Objects.equals(BuildConfig.BUILD_TYPE, "publish");
     }
+
+    public static boolean isCompatBuild() {
+        return BuildConfig.APPLICATION_ID.endsWith(".eightbit");
+    }
 }

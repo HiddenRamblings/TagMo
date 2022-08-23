@@ -98,17 +98,9 @@ public class CheckUpdatesTask {
             }
         });
         Executors.newSingleThreadExecutor().execute(() -> {
-            if (isConversion || BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
-                new JSONExecutor(activity,TAGMO_GIT_API + "conversion")
-                        .setResultListener(result -> {
-                    if (null != result) parseUpdateJSON(result, isConversion);
-                });
-            } else {
-                new JSONExecutor(activity, TAGMO_GIT_API + "master")
-                        .setResultListener(result -> {
-                    if (null != result) parseUpdateJSON(result, false);
-                });
-            }
+            new JSONExecutor(activity, TAGMO_GIT_API + "master").setResultListener(result -> {
+                if (null != result) parseUpdateJSON(result, isConversion);
+            });
         });
     }
 

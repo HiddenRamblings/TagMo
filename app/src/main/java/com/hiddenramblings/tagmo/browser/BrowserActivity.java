@@ -519,8 +519,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
                         repository += "conversion";
                     } else {
-                        boolean isMaster = TagMo.getPrefs().settings_stable_channel().get();
-                        repository += (isMaster ? "master" : "experimental");
+                        repository += "master";
                     }
                     showWebsite(repository);
                 });

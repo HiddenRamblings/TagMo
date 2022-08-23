@@ -50,9 +50,6 @@ public interface Preferences {
     @DefaultBoolean(false)
     boolean settings_disable_debug();
 
-    @DefaultBoolean(true)
-    boolean settings_stable_channel();
-
     String browserRootFolder();
 
     String browserRootDocument();

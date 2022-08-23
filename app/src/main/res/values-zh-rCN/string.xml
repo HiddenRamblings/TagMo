@@ -166,8 +166,6 @@
     <string name="pref_advanced">高级</string>
     <string name="pref_disable_debug">关闭 Debug 日志</string>
     <string name="disable_debug_details">可能提升应用性能，但是会减少发生问题时能提供给开发者的信息。</string>
-    <string name="pref_stable_channel">检查稳定版更新</string>
-    <string name="stable_channel_details">只检查 TagMo 稳定版的更新。</string>
 
     <string name="amiibo_info_updated">已更新 amiibo™ 数据库！</string>
     <string name="sync_amiibo_process">正从 AmiiboAPI 更新中&#8230;</string>

@@ -29,9 +29,8 @@
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
 
     <queries>
-        <intent>
-            <action android:name="android.intent.action.MAIN" />
-        </intent>
+        <package android:name="com.hiddenramblings.tagmo" />
+        <package android:name="com.hiddenramblings.tagmo.eightbit" />
     </queries>
 
     <application

@@ -305,8 +305,8 @@
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="custom_tab_back">Back to TagMo</string>
-    <string name="pref_guides">指南</string>
-    <string name="pref_donate">捐款</string>
+    <string name="guides">指南</string>
+    <string name="donate">捐款</string>
 
     <string name="prefs_configuration">浏览器选项</string>
     <string name="pref_import_keys">导入加密密钥</string>

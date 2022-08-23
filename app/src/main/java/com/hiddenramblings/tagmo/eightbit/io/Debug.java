@@ -133,7 +133,7 @@ public class Debug {
         String separator = System.getProperty("line.separator") != null
                 ? Objects.requireNonNull(System.getProperty("line.separator")) : "\n";
         final StringBuilder log = new StringBuilder(separator);
-        log.append(context.getString(R.string.build_hash_full, BuildConfig.COMMIT));
+        log.append(context.getString(R.string.build_hash, BuildConfig.COMMIT));
         log.append(separator);
         log.append("Android ");
         Field[] fields = Build.VERSION_CODES.class.getFields();

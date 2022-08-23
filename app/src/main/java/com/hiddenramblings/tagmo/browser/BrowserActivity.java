@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
@@ -132,7 +131,6 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListene
 import com.hiddenramblings.tagmo.settings.BrowserSettings.FILTER;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
-import com.hiddenramblings.tagmo.settings.JSONExecutor;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -157,6 +155,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -328,12 +327,12 @@ public class BrowserActivity extends AppCompatActivity implements
                             amiibosView = fragmentFlask.getAmiibosView();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
-                            setTitle(R.string.pref_guides);
+                            setTitle(R.string.guides);
                         }
                         break;
                     case 3:
                         hideBrowserInterface();
-                        setTitle(R.string.pref_guides);
+                        setTitle(R.string.guides);
                         break;
                     default:
                         showBrowserInterface();
@@ -365,10 +364,10 @@ public class BrowserActivity extends AppCompatActivity implements
                     break;
                 case 2:
                     tab.setText(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-                            ? R.string.flask_ble : R.string.pref_guides);
+                            ? R.string.flask_ble : R.string.guides);
                     break;
                 case 3:
-                    tab.setText(R.string.pref_guides);
+                    tab.setText(R.string.guides);
                     break;
                 default:
                     tab.setText(R.string.browser);
@@ -505,14 +504,11 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        AppCompatImageView donate = findViewById(R.id.donate_button);
-        if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
-            retrieveDonationMenu();
-        } else {
-            donate.setImageResource(R.drawable.ic_paypal_donation_24dp);
-        }
-        ((TextView) findViewById(R.id.build_text)).setText(
-                getString(R.string.build_hash, BuildConfig.COMMIT));
+        if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) retrieveDonationMenu();
+
+        ((TextView) findViewById(R.id.build_text)).setText(getString(
+                R.string.build_details, getBuildTypeName(), BuildConfig.COMMIT
+        ));
         prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -528,11 +524,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                     showWebsite(repository);
                 });
-                findViewById(R.id.guide_layout).setOnClickListener(view -> {
-                    closePrefsDrawer();
-                    showWebsite(null);
-                });
-                findViewById(R.id.donate_layout).setOnClickListener(view -> onSendDonationClicked());
                 if (null != appUpdate) {
                     findViewById(R.id.build_layout).setOnClickListener(view -> {
                         closePrefsDrawer();
@@ -802,7 +793,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     R.string.donation_notice,
                     R.drawable.ic_github_octocat_24dp, Snackbar.LENGTH_LONG
             );
-            donorNotice.setAction(R.string.pref_donate, v -> onSendDonationClicked());
+            donorNotice.setAction(R.string.donate, v -> onSendDonationClicked());
             donorNotice.show();
         }, TagMo.uiDelay);
     }
@@ -2850,6 +2841,21 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         }
+    }
+
+    private String getBuildTypeName() {
+        if (TagMo.isGooglePlay()) {
+            return "Google Play";
+        } else {
+            if (BuildConfig.APPLICATION_ID.endsWith(".eightbit")) {
+                return "GitHub Release";
+            } else if (Objects.equals(BuildConfig.BUILD_TYPE, "debug")) {
+                return "GitHub Testing";
+            } else if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) {
+                return "GitHub Stable";
+            }
+        }
+        return "";
     }
 
     private String getIAP(int amount) {

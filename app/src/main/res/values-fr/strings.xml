@@ -161,8 +161,8 @@
     <string name="storage_unavailable">Stockage inaccessible&#160;!</string>
     <string name="allow">Autoriser</string>
 
-    <string name="pref_guides">Guide</string>
-    <string name="pref_donate">Faire un don</string>
+    <string name="guides">Guide</string>
+    <string name="donate">Faire un don</string>
 
     <string name="prefs_configuration">Options du navigateur</string>
     <string name="pref_import_keys">Clés d’importation</string>

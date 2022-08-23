@@ -5,8 +5,8 @@
     <string name="tagmo" translatable="false">TagMo</string>
     <string name="foomiibo" translatable="false">Foomiibo</string>
 
-    <string name="build_hash" translatable="false">#%1$s</string>
-    <string name="build_hash_full" translatable="false"> TagMo - #%1$s</string>
+    <string name="build_details" translatable="false">TagMo %1$s #%2$s</string>
+    <string name="build_hash" translatable="false"> TagMo - #%1$s</string>
     <string name="git_issue_title" translatable="false">Logcat - TagMo #%1$s</string>
     <string name="install_src" translatable="false">Installed by %1$s</string>
 

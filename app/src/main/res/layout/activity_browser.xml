@@ -255,7 +255,7 @@
         android:fitsSystemWindows="true">
 
         <include
-            android:id="@+id/navigation_prefs"
-            layout="@layout/navigation_prefs" />
+            android:id="@+id/fragment_settings"
+            layout="@layout/fragment_settings" />
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

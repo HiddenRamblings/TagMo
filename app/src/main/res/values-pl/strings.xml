@@ -309,8 +309,8 @@
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
     <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="flask_permissions">Required permission denied!</string>
-    <string name="pref_guides">Przewodniki</string>
-    <string name="pref_donate">Darowizna</string>
+    <string name="guides">Przewodniki</string>
+    <string name="donate">Darowizna</string>
 
     <string name="location_disclosure">Lokalizacja jest wymagana do skanowania Bluetooth LE. Zgodnie z zasadami Google Play, TagMo ma obowiązek powiadomić użytkownika, że dane o lokalizacji mogą być gromadzone w tle. TagMo nie odczytuje, nie przechowuje ani nie udostępnia danych o lokalizacji. W związku z tym niniejsze zawiadomienie jest wyłącznie formalnością.</string>
     <string name="prefs_configuration">Opcje Przeglądarki</string>

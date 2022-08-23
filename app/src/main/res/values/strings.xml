@@ -55,6 +55,7 @@
     <string name="close">Close</string>
     <string name="view">View</string>
     <string name="proceed">Continue</string>
+    <string name="postpone">Postpone</string>
     <string name="unlock">Unlock</string>
     <string name="scan">Scan</string>
     <string name="browser">Browser</string>
@@ -365,4 +366,7 @@
     <string name="iap_button">%1$s Donation</string>
     <string name="donation_thanks">Thank you for your support!</string>
     <string name="donation_notice">TagMo is and will remain a free project.\nAll development is funded by donations.</string>
+
+    <string name="conversion_title">TagMo Critical Update</string>
+    <string name="conversion_message">GitHub and Google Play builds are merging, but the installed version is incompatible.\nBy clicking continue, you will install a new version and uninstall the previous build.</string>
 </resources>

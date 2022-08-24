@@ -367,5 +367,5 @@
     <string name="donation_notice">TagMo is and will remain a free project.\nAll development is funded by donations.</string>
 
     <string name="conversion_title">TagMo Critical Update</string>
-    <string name="conversion_message">GitHub and Google Play builds are merging, but the installed version is incompatible.\nBy clicking continue, you will install a new version and uninstall the previous build.</string>
+    <string name="conversion_message">GitHub and Google Play builds are now universal.\nPlease click continue to resolve installation conflicts.</string>
 </resources>

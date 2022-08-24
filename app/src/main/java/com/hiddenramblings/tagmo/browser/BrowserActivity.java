@@ -535,9 +535,10 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         });
 
-        PackageManager pm=getPackageManager();
         try {
-            pm.getPackageInfo("com.hiddenramblings.tagmo", PackageManager.GET_META_DATA);
+            getPackageManager().getPackageInfo(
+                    "com.hiddenramblings.tagmo", PackageManager.GET_META_DATA
+            );
             isDeletePending = true;
         } catch (PackageManager.NameNotFoundException ignored) { }
 
@@ -2839,6 +2840,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private String getBuildTypeName() {
         if (TagMo.isGooglePlay()) {
             return "Google Play";

@@ -175,6 +175,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private BrowserSettings settings;
     private boolean ignoreTagId;
     private CheckUpdatesTask updates;
+    boolean isDeletePending = false;
     private String updateUrl;
     private AppUpdateInfo appUpdate;
 
@@ -537,18 +538,19 @@ public class BrowserActivity extends AppCompatActivity implements
         PackageManager pm=getPackageManager();
         try {
             pm.getPackageInfo("com.hiddenramblings.tagmo", PackageManager.GET_META_DATA);
-            startActivity(new Intent(Intent.ACTION_DELETE)
-                    .setData(Uri.parse("package:com.hiddenramblings.tagmo")));
+            isDeletePending = true;
         } catch (PackageManager.NameNotFoundException ignored) { }
 
-        if (!TagMo.isCompatBuild()) {
+        if (!TagMo.isCompatBuild() || isDeletePending) {
             CheckUpdatesTask convert = new CheckUpdatesTask(this, true);
             convert.setUpdateListener(downloadUrl -> this.runOnUiThread(()
                     -> new AlertDialog.Builder(this)
                 .setTitle(R.string.conversion_title)
                 .setMessage(R.string.conversion_message)
                 .setPositiveButton(R.string.proceed, (dialogInterface, i) -> {
-                    updates.installUpdateCompat(downloadUrl);
+                    if (isDeletePending) startActivity(new Intent(Intent.ACTION_DELETE)
+                            .setData(Uri.parse("package:com.hiddenramblings.tagmo")));
+                    if (!TagMo.isCompatBuild()) updates.installUpdateCompat(downloadUrl);
                 }).show()));
         }
     }

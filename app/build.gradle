@@ -42,27 +42,29 @@ android {
             initWith release
             getIsDefault().set(false)
             debuggable true
-            try {
-                def keystoreProps = new Properties()
-                keystoreProps.load(new FileInputStream(rootProject.file("keystore.properties")))
-                signingConfigs {
-                    debug {
-                        keyAlias keystoreProps['keyAlias']
-                        keyPassword keystoreProps['keyPassword']
-                        storeFile file(keystoreProps['storeFile'])
-                        storePassword keystoreProps['storePassword']
-                    }
-                }
-                buildTypes.debug.signingConfig signingConfigs.debug
-            } catch (FileNotFoundException ignored) { }
         }
         publish {
             initWith release
             getIsDefault().set(false)
             if (branch != "master" && branch != "conversion") applicationIdSuffix ".eightbit"
-            buildTypes.publish.signingConfig signingConfigs.debug
         }
     }
+
+    try {
+        def keystoreProps = new Properties()
+        keystoreProps.load(new FileInputStream(rootProject.file("keystore.properties")))
+        signingConfigs {
+            document {
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+                storeFile file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+            }
+        }
+        buildTypes.release.signingConfig signingConfigs.document
+        buildTypes.debug.signingConfig signingConfigs.document
+        buildTypes.publish.signingConfig signingConfigs.document
+    } catch (FileNotFoundException ignored) { }
 
     ndkVersion '21.4.7075529'
     externalNativeBuild {

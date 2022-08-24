@@ -21,7 +21,6 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;

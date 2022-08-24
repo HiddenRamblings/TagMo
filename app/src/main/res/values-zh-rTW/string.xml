@@ -120,6 +120,7 @@
 
     <string name="logcat_support">程式意見反映</string>
     <string name="donate_support">捐款贊助開發</string>
+    <string name="paypal_link">以PayPal捐款</string>
     <string name="clear_foomiibo_set">清除 Foomiibo</string>
     <string name="build_foomiibo_set">建立 Foomiibo</string>
     <string name="foomiibo_progress">正在建立 %1$s&#8230;</string>
@@ -197,8 +198,11 @@
     <string name="number_type">%1$d 種 amiibo&#8482; 類型</string>
     <string name="pref_advanced">進階</string>
     <string name="pref_tagmo_theme">TagMo系統主題</string>
+    <string name="tagmo_theme_details">將程式背景變更為自訂主題</string>
     <string name="pref_disable_debug">停用除錯日誌記錄</string>
     <string name="disable_debug_details">可改善執行效率，但將無法完整記錄用來診斷錯誤的所有細節資訊</string>
+    <string name="pref_stable_channel">檢查穩定版本更新</string>
+    <string name="stable_channel_details">檢查TagMo版本更新時，僅安裝穩定性分支的版本</string>
 
     <string name="amiibo_info_updated">amiibo&#8482; 資料庫已更新！</string>
     <string name="sync_amiibo_process">正在與AmiiboAPI&#8230;進行同步</string>
@@ -301,7 +305,7 @@
     <string name="fail_powertag_keys">無法載入Power Tag金鑰</string>
     <string name="fail_bank_oob">已選擇的bank超過上限！</string>
     <string name="fail_active_oob">可用的bank超過可啟用數量上限！</string>
-    <string name="fail_parse_banks">Failed to parse banks！</string>
+    <string name="fail_parse_banks">bank解析失敗！</string>
     <string name="fail_read_amiibo">讀取 amiibo&#8482; 數據時發生錯誤！</string>
     <string name="fail_early_remove">讀取中請勿移開 amiibo&#8482;！</string>
     <string name="fail_amiibo_null">請重新掃描 amiibo&#8482;</string>
@@ -360,5 +364,8 @@
     <string name="sub_button">%1$s 訂閱</string>
     <string name="iap_button">%1$s 捐贈</string>
     <string name="donation_thanks">非常感謝你的捐贈！</string>
-    <string name="donation_notice">TagMo努力維持免費的專案形式來開發。\n所有贊助款項都用於本專案的相關支出。</string>
+    <string name="donation_notice">TagMo努力維持免費的專案開發形式。\n所有贊助款項都用於本專案的相關支出。</string>
+	
+    <string name="conversion_title">TagMo必要更新</string>
+    <string name="conversion_message">目前GitHub的新版本已與Google Play商店同步更新。\n請點擊繼續，將核對版本並完成更新安裝。</string>
 </resources>

@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
@@ -53,6 +54,7 @@ import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
 import com.hiddenramblings.tagmo.browser.adapter.EliteBankAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.nfctech.TagUtils;
@@ -362,7 +364,7 @@ public class EliteBankFragment extends Fragment implements
         return bottomSheetBehavior;
     }
 
-    private void updateEliteHardwareAdapter(ArrayList<String> amiiboList) {
+    private void updateEliteAdapter(ArrayList<String> amiiboList) {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         if (null == amiiboManager) {
             try {
@@ -467,8 +469,7 @@ public class EliteBankFragment extends Fragment implements
         }
 
         if (result.getData().hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
-            updateEliteHardwareAdapter(result.getData()
-                    .getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
+            updateEliteAdapter(result.getData().getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
         }
 
         updateAmiiboView(amiiboCard, tagData, -1, clickedPosition);
@@ -848,8 +849,7 @@ public class EliteBankFragment extends Fragment implements
                 prefs.eliteBankCount().put(bank_count);
 
                 eliteBankCount.setValue(bank_count);
-                updateEliteHardwareAdapter(result.getData()
-                        .getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
+                updateEliteAdapter(result.getData().getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
                 bankStats.setText(getString(R.string.bank_stats, getValueForPosition(
                         eliteBankCount, prefs.eliteActiveBank().get()), bank_count)
                 );
@@ -885,9 +885,7 @@ public class EliteBankFragment extends Fragment implements
         return value + picker.getMinValue();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void onHardwareLoaded() {
         try {
             int bank_count = requireArguments().getInt(NFCIntent.EXTRA_BANK_COUNT,
                     prefs.eliteBankCount().get());
@@ -901,8 +899,7 @@ public class EliteBankFragment extends Fragment implements
             ));
             eliteBankCount.setValue(bank_count);
 
-            updateEliteHardwareAdapter(requireArguments()
-                    .getStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST));
+            updateEliteAdapter(requireArguments().getStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST));
             bankStats.setText(getString(R.string.bank_stats,
                     getValueForPosition(eliteBankCount, active_bank), bank_count));
             writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
@@ -922,6 +919,28 @@ public class EliteBankFragment extends Fragment implements
         } catch (Exception ignored) {
             if (amiibos.isEmpty()) setBottomSheetSecure(true);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (prefs.enable_elite_support().get()) {
+            onHardwareLoaded();
+        } else {
+            setBottomSheetSecure(true);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                Snackbar compatNotice = new IconifiedSnackbar(getActivity()).buildSnackbar(
+                        R.string.enable_elite,
+                        R.drawable.ic_settings_24dp, Snackbar.LENGTH_LONG
+                );
+                compatNotice.setAction(R.string.enable, v -> {
+                    prefs.enable_elite_support().put(true);
+                    onHardwareLoaded();
+                });
+                compatNotice.show();
+            }, TagMo.uiDelay);
+        }
+
     }
 
     private void handleImageClicked(Amiibo amiibo) {

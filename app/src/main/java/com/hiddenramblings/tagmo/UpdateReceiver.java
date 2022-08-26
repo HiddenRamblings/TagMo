@@ -1,11 +1,14 @@
 package com.hiddenramblings.tagmo;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.os.Build;
 import android.widget.Toast;
+
+import com.hiddenramblings.tagmo.browser.BrowserActivity;
 
 import java.net.URISyntaxException;
 
@@ -18,9 +21,12 @@ public class UpdateReceiver extends BroadcastReceiver {
         intent.setFlags(0);
         intent.setData(null);
         if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
-            startLauncherActivity(context, context.getPackageManager()
-                    .getLaunchIntentForPackage(BuildConfig.APPLICATION_ID)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            Intent mainIntent = new Intent(context, BrowserActivity.class);
+            try {
+                mainIntent = context.getPackageManager()
+                        .getLaunchIntentForPackage(BuildConfig.APPLICATION_ID);
+            } catch (Exception ignored) { }
+            startLauncherActivity(context, mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (TagMo.isGooglePlay()) return;
             switch(intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {

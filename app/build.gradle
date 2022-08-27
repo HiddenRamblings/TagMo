@@ -36,7 +36,7 @@ android {
             getIsDefault().set(true)
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            if (branch == "master" || branch == "conversion") applicationIdSuffix ".eightbit"
+            applicationIdSuffix ".eightbit"
         }
         debug {
             initWith release
@@ -46,7 +46,6 @@ android {
         publish {
             initWith release
             getIsDefault().set(false)
-            if (branch != "master" && branch != "conversion") applicationIdSuffix ".eightbit"
         }
     }
 

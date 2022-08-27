@@ -2,7 +2,7 @@ name: Android CI
 
 on:
   push:
-    branches: [ master, experimental, conversion ]
+    branches: [ master, conversion ]
   pull_request:
     branches: [ conversion ]
 
@@ -59,6 +59,6 @@ jobs:
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: ${{ env.GIT_BRANCH }}
-        prerelease: ${{ env.GIT_BRANCH == 'experimental' || env.GIT_BRANCH == 'conversion' }}
+        prerelease: ${{ env.GIT_BRANCH == 'conversion' }}
         title: TagMo-${{ env.GIT_HASH }}
         files: ${{steps.sign_app.outputs.signedReleaseFile}}

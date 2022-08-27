@@ -55,7 +55,7 @@ public class CheckUpdatesTask {
     private final SoftReference<BrowserActivity> activity;
     private boolean isUpdateAvailable = false;
 
-    CheckUpdatesTask(BrowserActivity activity, boolean isConversionTask) {
+    CheckUpdatesTask(BrowserActivity activity) {
         this.activity = new SoftReference<>(activity);
         if (TagMo.isGooglePlay()) {
             if (null == appUpdateManager)
@@ -69,15 +69,11 @@ public class CheckUpdatesTask {
                     listenerPlay.onPlayUpdateFound(appUpdateInfo);
             });
         } else {
-            configureUpdates(activity, isConversionTask);
+            configureUpdates(activity);
         }
     }
 
-    CheckUpdatesTask(BrowserActivity activity) {
-        this(activity, false);
-    }
-
-    void configureUpdates(BrowserActivity activity, boolean isConversion) {
+    void configureUpdates(BrowserActivity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             PackageInstaller installer = activity.getApplicationContext()
                     .getPackageManager().getPackageInstaller();
@@ -97,11 +93,11 @@ public class CheckUpdatesTask {
                 }
             }
         });
-        Executors.newSingleThreadExecutor().execute(() -> {
-            new JSONExecutor(activity, TAGMO_GIT_API + "master").setResultListener(result -> {
-                if (null != result) parseUpdateJSON(result, isConversion);
-            });
-        });
+        Executors.newSingleThreadExecutor().execute(() -> new JSONExecutor(
+                activity, TAGMO_GIT_API + "master"
+        ).setResultListener(result -> {
+            if (null != result) parseUpdateJSON(result);
+        }));
     }
 
     void installUpdateTask(String apkUrl) {
@@ -196,7 +192,7 @@ public class CheckUpdatesTask {
         }
     }
 
-    private void parseUpdateJSON(String result, boolean isConversion) {
+    private void parseUpdateJSON(String result) {
         int offset = activity.get().getString(R.string.tagmo).length() + 1;
         try {
             JSONObject jsonObject = (JSONObject) new JSONTokener(result).nextValue();
@@ -204,7 +200,7 @@ public class CheckUpdatesTask {
             JSONArray assets = (JSONArray) jsonObject.get("assets");
             JSONObject asset = (JSONObject) assets.get(0);
             String downloadUrl = (String) asset.get("browser_download_url");
-            isUpdateAvailable = isConversion || !BuildConfig.COMMIT.equals(lastCommit);
+            isUpdateAvailable = !BuildConfig.COMMIT.equals(lastCommit);
             if (isUpdateAvailable && null != listener) listener.onUpdateFound(downloadUrl);
         } catch (JSONException e) {
             Debug.Log(e);

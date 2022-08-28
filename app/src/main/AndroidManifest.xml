@@ -100,7 +100,9 @@
             android:name=".amiibo.tagdata.TagDataEditor"
             android:theme="@style/DialogTheme.NoActionBar" />
         <service
-            android:name=".browser.FlaskGattService" />
+            android:name=".browser.service.FlaskGattService" />
+        <service
+            android:name=".browser.service.JoyConGattService" />
         <receiver
             android:name=".UpdateReceiver"
             android:exported="true">

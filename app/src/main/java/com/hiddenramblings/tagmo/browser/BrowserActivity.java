@@ -376,12 +376,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }).attach();
 
-        if (null == fragmentSettings)
-            fragmentSettings = new SettingsFragment();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences, fragmentSettings)
-                .commit();
+        onShowSettingsFragment();
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
         BlurViewFacade blurView = amiiboContainer.setupWith(coordinator)
@@ -547,6 +542,30 @@ public class BrowserActivity extends AppCompatActivity implements
                             ))
                     ).show());
         } catch (PackageManager.NameNotFoundException ignored) { }
+    }
+
+    private void onShowSettingsFragment() {
+        if (null == fragmentSettings)
+            fragmentSettings = new SettingsFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences, fragmentSettings)
+                .commit();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private void onShowJoyConFragment() {
+        JoyConFragment fragmentJoyCon = new JoyConFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences, fragmentJoyCon)
+                .commit();
+        if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
+            prefsDrawer.closeDrawer(GravityCompat.START);
+            onShowSettingsFragment();
+        } else {
+            prefsDrawer.openDrawer(GravityCompat.START);
+        }
     }
 
     private void requestStoragePermission() {
@@ -1513,10 +1532,12 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            if (prefsDrawer.isDrawerOpen(GravityCompat.START))
+            if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
                 prefsDrawer.closeDrawer(GravityCompat.START);
-            else
+            } else {
+                onShowSettingsFragment();
                 prefsDrawer.openDrawer(GravityCompat.START);
+            }
         } else if (item.getItemId() == R.id.install_update) {
             if (null != appUpdate) updates.downloadPlayUpdate(appUpdate);
             if (null != updateUrl) updates.installUpdateCompat(updateUrl);
@@ -1569,6 +1590,8 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.hide_downloads) {
             this.settings.setHideDownloads(!this.settings.isHidingDownloads());
             this.settings.notifyChanges();
+        } else if (item.getItemId() == R.id.connect_joy_con) {
+            onShowJoyConFragment();
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
         } else if (item.getItemId() == R.id.send_donation) {

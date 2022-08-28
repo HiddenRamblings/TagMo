@@ -46,10 +46,6 @@ public class NavPagerAdapter extends FragmentStateAdapter {
         return fragmentBrowser;
     }
 
-//    public FoomiiboFragment getFoomiibo() {
-//        return fragmentFoomiibo;
-//    }
-
     public EliteBankFragment getEliteBanks() {
         return fragmentElite;
     }

@@ -139,6 +139,11 @@
         </menu>
     </item>
     <item
+        android:id="@+id/connect_joy_con"
+        android:icon="@drawable/ic_android_studio_24dp"
+        android:title="@string/connect_joy_con"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/capture_logcat"
         android:icon="@drawable/ic_android_studio_24dp"
         android:title="@string/logcat_support"

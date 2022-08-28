@@ -54,7 +54,7 @@
  * Bluup Labs and its members are exempt from the above license requirements.
  */
 
-package com.hiddenramblings.tagmo.browser;
+package com.hiddenramblings.tagmo.browser.service;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -74,23 +74,15 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.util.Base64;
 
 import androidx.annotation.RequiresApi;
 
-import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.nfctech.TagUtils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -99,9 +91,9 @@ import java.util.UUID;
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
-public class FlaskGattService extends Service {
+public class JoyConGattService extends Service {
 
-    private final Class<?> TAG = FlaskGattService.class;
+    private final Class<?> TAG = JoyConGattService.class;
 
     private BluetoothGattListener listener;
 
@@ -113,10 +105,7 @@ public class FlaskGattService extends Service {
     BluetoothGattCharacteristic mCharacteristicRX = null;
     BluetoothGattCharacteristic mCharacteristicTX = null;
 
-    private String nameCompat = null;
-    private String tailCompat = null;
-
-    public final static UUID FlaskNUS = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+    public final static UUID FlaskNUS = UUID.fromString("2bc5f224-e9b4-470c-aae1-1c03554e64a1");
     private final static UUID FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
 
@@ -126,132 +115,16 @@ public class FlaskGattService extends Service {
 
     private final ArrayList<Runnable> Callbacks = new ArrayList<>();
 
-    interface BluetoothGattListener {
+    public interface BluetoothGattListener {
         void onServicesDiscovered();
-        void onFlaskActiveChanged(JSONObject jsonObject);
-        void onFlaskStatusChanged(JSONObject jsonObject);
-        void onFlaskListRetrieved(JSONArray jsonArray);
-        void onFlaskFilesDownload(String dataString);
-        void onFlaskFilesUploaded();
         void onGattConnectionLost();
     }
-
-    StringBuilder response = new StringBuilder();
 
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
             String output = new String(data);
             Debug.Log(TAG, getLogTag(characteristic.getUuid()) + " " + output);
-
-            if (characteristic.getUuid().compareTo(FlaskRX) == 0) {
-                if (output.contains(">tag.")) {
-                    response = new StringBuilder();
-                    response.append(output.split(">")[1]);
-                } else if (output.startsWith("tag.") || output.startsWith("{") || response.length() > 0) {
-                    response.append(output);
-                }
-                String progress = response.length() > 0 ? response.toString().trim().replaceAll(
-                        Objects.requireNonNull(System.getProperty("line.separator")), ""
-                ) : "";
-
-                if (isJSONValid(progress) || progress.endsWith(">")
-                        || progress.lastIndexOf("undefined") == 0
-                        || progress.lastIndexOf("\n") == 0) {
-                    if (Callbacks.size() > 0) {
-                        Callbacks.get(0).run();
-                        Callbacks.remove(0);
-                    }
-                }
-
-                if (progress.startsWith("tag.get()") || progress.startsWith("tag.setTag")) {
-                    if (progress.endsWith(">")) {
-                        if (progress.contains("Uncaught no such element")
-                                && null != nameCompat && null != tailCompat) {
-                            response = new StringBuilder();
-                            fixAmiiboName(nameCompat, tailCompat);
-                            nameCompat = null;
-                            tailCompat = null;
-                            return;
-                        }
-                        try {
-                            String getAmiibo = progress.substring(progress.indexOf("{"),
-                                    progress.lastIndexOf("}") + 1);
-                            if (null != listener) {
-                                try {
-                                    JSONObject jsonObject = new JSONObject(getAmiibo);
-                                    listener.onFlaskActiveChanged(jsonObject);
-                                } catch (JSONException e) {
-                                    Debug.Log(e);
-                                    if (null != listener)
-                                        listener.onFlaskActiveChanged(null);
-                                }
-                            }
-                        } catch (StringIndexOutOfBoundsException ex) {
-                            Debug.Log(ex);
-                        }
-                        response = new StringBuilder();
-                    }
-                } else if (progress.startsWith("tag.getList()")) {
-                    if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        String getList = progress.substring(progress.indexOf("["),
-                                progress.lastIndexOf("]") + 1);
-                        try {
-                            String escapedList = getList.replace("'", "\\'")
-                                    .replace("-", "\\-");
-                            JSONArray jsonArray = new JSONArray(escapedList);
-                            if (null != listener) listener.onFlaskListRetrieved(jsonArray);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        response = new StringBuilder();
-                        if (null != listener) listener.onFlaskFilesUploaded();
-                    }
-                } else if (progress.startsWith("tag.remove")) {
-                    if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        if (null != listener) listener.onFlaskStatusChanged(null);
-                        response = new StringBuilder();
-                    }
-                } else if (progress.startsWith("tag.download")) {
-                    if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        String[] getData = progress.split("new Uint8Array");
-                        if (null != listener) {
-                            for (String dataString : getData) {
-                                if (dataString.startsWith("tag.download")
-                                        && dataString.endsWith("=")) continue;
-                                dataString = dataString.substring(1, dataString
-                                        .lastIndexOf(">") - 2);
-                                listener.onFlaskFilesDownload(dataString);
-                            }
-                        }
-                    }
-                } else if (progress.startsWith("tag.createBlank()")) {
-                    if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        response = new StringBuilder();
-                        if (null != listener) listener.onFlaskStatusChanged(null);
-                    }
-                } else if (progress.endsWith("}")) {
-                    if (null != listener) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(response.toString());
-                            String event = jsonObject.getString("event");
-                            if (event.equals("button"))
-                                listener.onFlaskActiveChanged(jsonObject);
-                            if (event.equals("delete"))
-                                listener.onFlaskStatusChanged(jsonObject);
-                        } catch (JSONException e) {
-                            if (null != e.getMessage() && e.getMessage().contains("tag.setTag")) {
-                                getActiveAmiibo();
-                            } else {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                    response = new StringBuilder();
-                } else if (progress.endsWith(">")) {
-                    response = new StringBuilder();
-                }
-            }
         }
     }
 
@@ -270,9 +143,10 @@ public class FlaskGattService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    mBluetoothGatt.requestMtu(512); // Maximum: 517
-                else if (null != listener) listener.onServicesDiscovered();
+                if (null != listener) listener.onServicesDiscovered();
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    mBluetoothGatt.requestMtu(517);
+//                }
             } else {
                 Debug.Log(TAG, "onServicesDiscovered received: " + status);
             }
@@ -309,13 +183,12 @@ public class FlaskGattService extends Service {
             } else {
                 Debug.Log(TAG, "onMtuChange received: " + status);
             }
-            if (null != listener) listener.onServicesDiscovered();
         }
     };
 
     public class LocalBinder extends Binder {
-        FlaskGattService getService() {
-            return FlaskGattService.this;
+        public JoyConGattService getService() {
+            return JoyConGattService.this;
         }
     }
 
@@ -452,6 +325,7 @@ public class FlaskGattService extends Service {
         if (!mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
             for (BluetoothGattCharacteristic customRead : mCustomService.getCharacteristics()) {
                 UUID customUUID = customRead.getUuid();
+                Debug.Log(TAG, "GattReadCharacteristic: " + customUUID);
                 /*get the read characteristic from the service*/
                 if (customUUID.compareTo(FlaskRX) == 0) {
                     Debug.Log(TAG, "GattReadCharacteristic: " + customUUID);
@@ -463,9 +337,13 @@ public class FlaskGattService extends Service {
         return mReadCharacteristic;
     }
 
-    public void setFlaskCharacteristicRX() throws UnsupportedOperationException {
+    public void setJoyConCharacteristicRX() throws UnsupportedOperationException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw new UnsupportedOperationException();
+        }
+
+        for (BluetoothGattService customService : getSupportedGattServices()) {
+            Debug.Log(TAG, "GattReadService: " + customService.getUuid().toString());
         }
 
         BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskNUS);
@@ -495,6 +373,7 @@ public class FlaskGattService extends Service {
             for (BluetoothGattCharacteristic customWrite : mCustomService.getCharacteristics()) {
                 UUID customUUID = customWrite.getUuid();
                 /*get the write characteristic from the service*/
+                Debug.Log(TAG, "GattWriteCharacteristic: " + customUUID);
                 if (customUUID.compareTo(FlaskTX) == 0) {
                     Debug.Log(TAG, "GattWriteCharacteristic: " + customUUID);
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
@@ -505,7 +384,7 @@ public class FlaskGattService extends Service {
         return mWriteCharacteristic;
     }
 
-    public void setFlaskCharacteristicTX() throws UnsupportedOperationException {
+    public void setJoyConCharacteristicTX() throws UnsupportedOperationException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw new UnsupportedOperationException();
         }
@@ -547,7 +426,7 @@ public class FlaskGattService extends Service {
     public void queueTagCharacteristic(String value, int index) {
         if (null == mCharacteristicTX) {
             try {
-                setFlaskCharacteristicTX();
+                setJoyConCharacteristicTX();
             } catch (UnsupportedOperationException e) {
                 e.printStackTrace();
             }
@@ -568,98 +447,6 @@ public class FlaskGattService extends Service {
 
     public void promptTagCharacteristic(String value) {
         queueTagCharacteristic(value, 0);
-    }
-    
-    public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo) {
-        delayedTagCharacteristic("startTagUpload(" + amiiboData.length + ")");
-        List<String> chunks = stringToPortions(Base64.encodeToString(
-                amiiboData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
-        ), 128);
-        for (int i = 0; i < chunks.size(); i+=1) {
-            final String chunk = chunks.get(i);
-            delayedTagCharacteristic(
-                    "tagUploadChunk(\"" + chunk + "\")"
-            );
-        }
-        String flaskTail = Integer.toString(Integer.parseInt(TagUtils
-                .amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
-        int reserved = flaskTail.length() + 3; // |tail|#
-        String nameUnicode = stringToUnicode(amiibo.name);
-        String amiiboName = nameUnicode.length() + reserved > 28
-                ? nameUnicode.substring(0, nameUnicode.length()
-                - ((nameUnicode.length() + reserved) - 28))
-                : nameUnicode;
-        delayedTagCharacteristic("saveUploadedTag(\""
-                + amiiboName + "|" + flaskTail + "|0\")");
-    }
-
-    public void uploadFilesComplete() {
-        delayedTagCharacteristic("uploadsComplete()");
-        delayedTagCharacteristic("getList()");
-    }
-
-    public void setActiveAmiibo(String name, String tail) {
-        if (name.equals("New Tag ")) {
-            delayedTagCharacteristic("setTag(\"" + name + "||" + tail + "\")");
-        } else {
-            int reserved = tail.length() + 3; // |tail|#
-            String nameUnicode = stringToUnicode(name);
-            nameCompat = nameUnicode.length() + reserved > 28
-                    ? nameUnicode.substring(0, nameUnicode.length()
-                    - ((nameUnicode.length() + reserved) - 28))
-                    : nameUnicode;
-            tailCompat = tail;
-            delayedTagCharacteristic("setTag(\"" + nameCompat + "|" + tailCompat + "|0\")");
-        }
-    }
-
-    public void fixAmiiboName(String name, String tail) {
-        int reserved = tail.length() + 3; // |tail|#
-        String nameUnicode = stringToUnicode(name);
-        String amiiboName = nameUnicode.length() + reserved > 28
-                ? nameUnicode.substring(0, nameUnicode.length()
-                - ((nameUnicode.length() + reserved) - 28))
-                : nameUnicode;
-        promptTagCharacteristic("rename(\"" + amiiboName + "|" + tail
-                + "\",\"" + amiiboName + "|" + tail + "|0\" )");
-        getDeviceAmiibo();
-    }
-
-    public void deleteAmiibo(String name, String tail) {
-        if (name.equals("New Tag ")) {
-            delayedTagCharacteristic("remove(\"" + name + "||" + tail + "\")");
-        } else {
-            int reserved = tail.length() + 3; // |tail|#
-            String nameUnicode = stringToUnicode(name);
-            nameCompat = nameUnicode.length() + reserved > 28
-                    ? nameUnicode.substring(0, nameUnicode.length()
-                    - ((nameUnicode.length() + reserved) - 28))
-                    : nameUnicode;
-            tailCompat = tail;
-            delayedTagCharacteristic("remove(\"" + nameCompat + "|" + tailCompat + "|0\")");
-        }
-    }
-
-    public void downloadAmiibo(String name, String tail) {
-        int reserved = tail.length() + 3; // |tail|#
-        String nameUnicode = stringToUnicode(name);
-        String amiiboName = nameUnicode.length() + reserved > 28
-                ? nameUnicode.substring(0, nameUnicode.length()
-                - ((nameUnicode.length() + reserved) - 28))
-                : nameUnicode;
-        delayedTagCharacteristic("download(\"" + amiiboName + "|" + tail + "|0\")");
-    }
-
-    public void getActiveAmiibo() {
-        delayedTagCharacteristic("get()");
-    }
-
-    public void getDeviceAmiibo() {
-        delayedTagCharacteristic("getList()");
-    }
-
-    public void createBlankTag() {
-        delayedTagCharacteristic("createBlank()");
     }
 
     public static List<byte[]> byteToPortions(byte[] largeByteArray, int sizePerPortion) {
@@ -695,25 +482,11 @@ public class FlaskGattService extends Service {
             if (c < 256) {
                 sb.append(c);
             } else {
-                String strHex = Integer.toHexString(c);
+                String strHex = Integer.toHexString((int) c);
                 sb.append("\\u").append(strHex);
             }
         }
         return sb.toString();
-    }
-
-    public boolean isJSONValid(String test) {
-        if (test.startsWith("tag.") && test.endsWith(")")) return false;
-        try {
-            new JSONObject(test);
-        } catch (JSONException ex) {
-            try {
-                new JSONArray(test);
-            } catch (JSONException jex) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private String getLogTag(UUID uuid) {

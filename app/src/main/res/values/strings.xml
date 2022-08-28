@@ -17,6 +17,8 @@
     <string name="sorting">Sorting Options</string>
     <string name="display_options">Display Options</string>
 
+    <string name="connect_joy_con">Joy-Con Testing</string>
+
     <string name="amiibo_id">ID</string>
     <string name="amiibo_name">Name</string>
     <string name="amiibo_titles">Game Usage</string>

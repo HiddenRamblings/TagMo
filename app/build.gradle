@@ -1,15 +1,14 @@
-import org.gradle.internal.os.OperatingSystem
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
-        targetSdkVersion 32
-        versionCode 307
-        versionName "3.0.7"
+        targetSdkVersion 33
+        versionCode 308
+        versionName "3.0.8"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -27,9 +26,6 @@ android {
         buildConfigField "String", "COMMIT", "\""+commit+"\""
         project.archivesBaseName = "TagMo-" + commit
     }
-
-    def branch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
-    if (OperatingSystem.current().isMacOsX()) branch = branch.replaceAll("heads/", "")
 
     buildTypes {
         release {

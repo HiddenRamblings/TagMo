@@ -179,6 +179,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private AppUpdateInfo appUpdate;
 
     private SettingsFragment fragmentSettings;
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private JoyConFragment fragmentJoyCon;
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private TextView currentFolderView;
     private DrawerLayout prefsDrawer;
@@ -376,7 +378,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }).attach();
 
-        onShowSettingsFragment();
+        onLoadSettingsFragment();
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
         BlurViewFacade blurView = amiiboContainer.setupWith(coordinator)
@@ -544,9 +546,8 @@ public class BrowserActivity extends AppCompatActivity implements
         } catch (PackageManager.NameNotFoundException ignored) { }
     }
 
-    private void onShowSettingsFragment() {
-        if (null == fragmentSettings)
-            fragmentSettings = new SettingsFragment();
+    private void onLoadSettingsFragment() {
+        if (null == fragmentSettings) fragmentSettings = new SettingsFragment();
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.preferences, fragmentSettings)
@@ -555,17 +556,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void onShowJoyConFragment() {
-        JoyConFragment fragmentJoyCon = new JoyConFragment();
+        if (null == fragmentJoyCon) fragmentJoyCon = new JoyConFragment();
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.preferences, fragmentJoyCon)
                 .commit();
-        if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
-            prefsDrawer.closeDrawer(GravityCompat.START);
-            onShowSettingsFragment();
-        } else {
-            prefsDrawer.openDrawer(GravityCompat.START);
-        }
+        prefsDrawer.openDrawer(GravityCompat.START);
     }
 
     private void requestStoragePermission() {
@@ -1460,6 +1456,10 @@ public class BrowserActivity extends AppCompatActivity implements
         menuRecursiveFiles = menu.findItem(R.id.recursive);
         menuHideDownloads = menu.findItem(R.id.hide_downloads);
 
+        menu.findItem(R.id.connect_joy_con).setVisible(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+        );
+
         if (null == this.settings) return false;
 
         this.onSortChanged();
@@ -1535,7 +1535,7 @@ public class BrowserActivity extends AppCompatActivity implements
             if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
                 prefsDrawer.closeDrawer(GravityCompat.START);
             } else {
-                onShowSettingsFragment();
+                onLoadSettingsFragment();
                 prefsDrawer.openDrawer(GravityCompat.START);
             }
         } else if (item.getItemId() == R.id.install_update) {
@@ -1590,7 +1590,8 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.hide_downloads) {
             this.settings.setHideDownloads(!this.settings.isHidingDownloads());
             this.settings.notifyChanges();
-        } else if (item.getItemId() == R.id.connect_joy_con) {
+        } else if (item.getItemId() == R.id.connect_joy_con
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             onShowJoyConFragment();
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();

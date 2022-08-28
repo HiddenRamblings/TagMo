@@ -10,7 +10,6 @@ import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.browser.service.JoyConGattService;
 import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothHandler;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -122,7 +122,7 @@ public class JoyConFragment extends Fragment implements
         boolean hasProController = false;
         int[] gamepads = InputDevice.getDeviceIds();
         for (int gamepad: gamepads) {
-            Log.d("InputDevice", "ID: " + gamepad + ", Name: "
+            Debug.Log(JoyConFragment.class, "ID: " + gamepad + ", Name: "
                     + InputDevice.getDevice(gamepad).getName() + ", Descriptor: "
                     + InputDevice.getDevice(gamepad).getDescriptor());
 

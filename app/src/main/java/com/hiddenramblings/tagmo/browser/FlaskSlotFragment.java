@@ -218,7 +218,7 @@ public class FlaskSlotFragment extends Fragment implements
                         @Override
                         public void onFlaskFilesDownload(String dataString) {
                             try {
-                                Amiibo amiibo = new Amiibo(
+                                new Amiibo(
                                         settings.getAmiiboManager(), dataString.getBytes(), -1
                                 );
                             } catch (Exception e) {

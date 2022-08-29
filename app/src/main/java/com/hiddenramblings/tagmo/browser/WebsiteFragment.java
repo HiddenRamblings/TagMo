@@ -159,9 +159,12 @@ public class WebsiteFragment extends Fragment {
                     handler.post(() -> dialog.setMessage(
                             getString(R.string.unzip_item, finalEntry.getName())));
                     if (finalEntry.isDirectory()) {
-                        if (!new File(outputDir, finalEntry.getName()).mkdirs())
+                        File dir = new File(outputDir, finalEntry.getName()
+                                .replace("/", ""));
+                        if (!dir.exists() && !dir.mkdirs())
                             throw new RuntimeException(
-                                    getString(R.string.mkdir_failed, finalEntry.getName()));
+                                    getString(R.string.mkdir_failed, dir.getName())
+                            );
                     } else {
                         FileOutputStream fileOut = new FileOutputStream(
                                 new File(outputDir, finalEntry.getName()));

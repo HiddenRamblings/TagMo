@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,8 @@ import com.hiddenramblings.tagmo.widget.Toasty;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class JoyConFragment extends Fragment implements
         BluetoothHandler.BluetoothListener {
+
+    private BluetoothHandler bluetoothHandler;
 
     private JoyConGattService serviceJoyCon;
     private String addressJoyCon;
@@ -82,8 +86,6 @@ public class JoyConFragment extends Fragment implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        new BluetoothHandler(requireContext(), requireActivity()
-                .getActivityResultRegistry(), this);
     }
 
     public void disconnectJoyCon() {
@@ -100,10 +102,27 @@ public class JoyConFragment extends Fragment implements
         } catch (IllegalArgumentException ignored) { }
     }
 
+    public void delayedBluetoothEnable() {
+        if (null != addressJoyCon) return;
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
+                    requireContext(), requireActivity().getActivityResultRegistry(),
+                    JoyConFragment.this
+            );
+            bluetoothHandler.requestPermissions(requireActivity());
+        }, 100);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         disconnectJoyCon();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
     }
 
     @Override

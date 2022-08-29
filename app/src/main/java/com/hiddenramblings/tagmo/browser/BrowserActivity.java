@@ -562,6 +562,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 .replace(R.id.preferences, fragmentJoyCon)
                 .commit();
         prefsDrawer.openDrawer(GravityCompat.START);
+        fragmentJoyCon.delayedBluetoothEnable();
     }
 
     private void requestStoragePermission() {
@@ -1532,10 +1533,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
-                prefsDrawer.closeDrawer(GravityCompat.START);
-            } else {
-                onLoadSettingsFragment();
+            if (!closePrefsDrawer()) {
                 prefsDrawer.openDrawer(GravityCompat.START);
             }
         } else if (item.getItemId() == R.id.install_update) {
@@ -2563,9 +2561,16 @@ public class BrowserActivity extends AppCompatActivity implements
         showActionButton();
     }
 
-    public void closePrefsDrawer() {
-        if (prefsDrawer.isDrawerOpen(GravityCompat.START))
+    public boolean closePrefsDrawer() {
+        if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                if (null != fragmentJoyCon) fragmentJoyCon.disconnectJoyCon();
+            }
             prefsDrawer.closeDrawer(GravityCompat.START);
+            onLoadSettingsFragment();
+            return true;
+        }
+        return false;
     }
 
     public void showEliteWindow(Bundle extras) {
@@ -2698,18 +2703,18 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
-            prefsDrawer.closeDrawer(GravityCompat.START);
-        } else if (null != bottomSheet && BottomSheetBehavior
-                .STATE_EXPANDED == bottomSheet.getState()) {
-            bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        } else if (View.VISIBLE == amiiboContainer.getVisibility()) {
-            amiiboContainer.setVisibility(View.GONE);
-        } else if (mainLayout.getCurrentItem() != 0) {
-            mainLayout.setCurrentItem(0, true);
-        } else {
-            super.onBackPressed();
-            finishAffinity();
+        if (!closePrefsDrawer()) {
+            if (null != bottomSheet && BottomSheetBehavior
+                    .STATE_EXPANDED == bottomSheet.getState()) {
+                bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            } else if (View.VISIBLE == amiiboContainer.getVisibility()) {
+                amiiboContainer.setVisibility(View.GONE);
+            } else if (mainLayout.getCurrentItem() != 0) {
+                mainLayout.setCurrentItem(0, true);
+            } else {
+                super.onBackPressed();
+                finishAffinity();
+            }
         }
     }
 

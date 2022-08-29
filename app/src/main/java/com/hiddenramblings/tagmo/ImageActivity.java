@@ -219,7 +219,12 @@ public class ImageActivity extends AppCompatActivity {
     }
 
     private void saveImageToFile(@NonNull Bitmap resource, String filename) {
-        File file = new File(Storage.getDownloadDir("TagMo"), filename + ".png");
+        File dir = new File(Storage.getDownloadDir("TagMo"), "Images");
+        if (!dir.exists() && !dir.mkdirs()) {
+            new Toasty(ImageActivity.this).Short(getString(R.string.mkdir_failed, dir.getName()));
+            return;
+        }
+        File file = new File(dir, filename + ".png");
         try (FileOutputStream fos = new FileOutputStream(file)) {
             resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
             new Toasty(ImageActivity.this).Short(getString(R.string.wrote_file,

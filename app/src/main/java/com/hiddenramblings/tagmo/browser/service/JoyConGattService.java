@@ -105,9 +105,9 @@ public class JoyConGattService extends Service {
     BluetoothGattCharacteristic mCharacteristicRX = null;
     BluetoothGattCharacteristic mCharacteristicTX = null;
 
-    public final static UUID FlaskNUS = UUID.fromString("2bc5f224-e9b4-470c-aae1-1c03554e64a1");
-    private final static UUID FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
-    private final static UUID FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
+    public final static UUID JoyConNUS = UUID.fromString("2bc5f224-e9b4-470c-aae1-1c03554e64a1");
+    private final static UUID JoyConTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
+    private final static UUID JoyConRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
 
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
@@ -143,10 +143,9 @@ public class JoyConGattService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (null != listener) listener.onServicesDiscovered();
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                    mBluetoothGatt.requestMtu(517);
-//                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    mBluetoothGatt.requestMtu(512); // Maximum: 517
+                else if (null != listener) listener.onServicesDiscovered();
             } else {
                 Debug.Log(TAG, "onServicesDiscovered received: " + status);
             }
@@ -183,6 +182,7 @@ public class JoyConGattService extends Service {
             } else {
                 Debug.Log(TAG, "onMtuChange received: " + status);
             }
+            if (null != listener) listener.onServicesDiscovered();
         }
     };
 
@@ -321,13 +321,13 @@ public class JoyConGattService extends Service {
 
     public BluetoothGattCharacteristic getCharacteristicRX(BluetoothGattService mCustomService) {
         BluetoothGattCharacteristic mReadCharacteristic =
-                mCustomService.getCharacteristic(FlaskRX);
+                mCustomService.getCharacteristic(JoyConRX);
         if (!mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
             for (BluetoothGattCharacteristic customRead : mCustomService.getCharacteristics()) {
                 UUID customUUID = customRead.getUuid();
                 Debug.Log(TAG, "GattReadCharacteristic: " + customUUID);
                 /*get the read characteristic from the service*/
-                if (customUUID.compareTo(FlaskRX) == 0) {
+                if (customUUID.compareTo(JoyConRX) == 0) {
                     Debug.Log(TAG, "GattReadCharacteristic: " + customUUID);
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
@@ -346,7 +346,7 @@ public class JoyConGattService extends Service {
             Debug.Log(TAG, "GattReadService: " + customService.getUuid().toString());
         }
 
-        BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskNUS);
+        BluetoothGattService mCustomService = mBluetoothGatt.getService(JoyConNUS);
         /*check if the service is available on the device*/
         if (null == mCustomService) {
             List<BluetoothGattService> services = getSupportedGattServices();
@@ -368,13 +368,13 @@ public class JoyConGattService extends Service {
 
     public BluetoothGattCharacteristic getCharacteristicTX(BluetoothGattService mCustomService) {
         BluetoothGattCharacteristic mWriteCharacteristic =
-                mCustomService.getCharacteristic(FlaskTX);
+                mCustomService.getCharacteristic(JoyConTX);
         if (!mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             for (BluetoothGattCharacteristic customWrite : mCustomService.getCharacteristics()) {
                 UUID customUUID = customWrite.getUuid();
                 /*get the write characteristic from the service*/
                 Debug.Log(TAG, "GattWriteCharacteristic: " + customUUID);
-                if (customUUID.compareTo(FlaskTX) == 0) {
+                if (customUUID.compareTo(JoyConTX) == 0) {
                     Debug.Log(TAG, "GattWriteCharacteristic: " + customUUID);
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
@@ -389,7 +389,7 @@ public class JoyConGattService extends Service {
             throw new UnsupportedOperationException();
         }
 
-        BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskNUS);
+        BluetoothGattService mCustomService = mBluetoothGatt.getService(JoyConNUS);
         /*check if the service is available on the device*/
         if (null == mCustomService) {
             List<BluetoothGattService> services = getSupportedGattServices();
@@ -490,12 +490,12 @@ public class JoyConGattService extends Service {
     }
 
     private String getLogTag(UUID uuid) {
-        if (uuid.compareTo(FlaskTX) == 0) {
-            return "FlaskTX";
-        } else if (uuid.compareTo(FlaskRX) == 0) {
-            return "FlaskRX";
-        } else if (uuid.compareTo(FlaskNUS) == 0) {
-            return "FlaskNUS";
+        if (uuid.compareTo(JoyConTX) == 0) {
+            return "JoyConTX";
+        } else if (uuid.compareTo(JoyConRX) == 0) {
+            return "JoyConRX";
+        } else if (uuid.compareTo(JoyConNUS) == 0) {
+            return "JoyConNUS";
         } else {
             return uuid.toString();
         }

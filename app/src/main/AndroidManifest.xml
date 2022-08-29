@@ -103,6 +103,8 @@
             android:name=".browser.service.FlaskGattService" />
         <service
             android:name=".browser.service.JoyConGattService" />
+        <service
+            android:name=".browser.service.PuckGattService" />
         <receiver
             android:name=".UpdateReceiver"
             android:exported="true">

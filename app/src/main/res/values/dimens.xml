@@ -6,5 +6,5 @@
     <dimen name="snackbar_icon_padding">12dp</dimen>
     <dimen name="swipe_progress_end">48dp</dimen>
     <dimen name="button_height_min">36dp</dimen>
-    <dimen name="foomiibo_bar_nargin">10dp</dimen>
+    <dimen name="sliding_bar_margin">10dp</dimen>
 </resources>

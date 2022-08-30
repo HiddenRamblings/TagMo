@@ -46,9 +46,6 @@ import java.util.concurrent.Executors;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 
-    private static final String API_URL = "https://tagmoapi.onrender.com/";
-    private static final String API_LAST_UPDATED = API_URL + "lastupdated/";
-
     public static final String IMAGE_NETWORK_NEVER = "NEVER";
     public static final String IMAGE_NETWORK_WIFI = "WIFI_ONLY";
     public static final String IMAGE_NETWORK_ALWAYS = "ALWAYS";
@@ -75,7 +72,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
-            new JSONExecutor(requireActivity(), API_LAST_UPDATED).setResultListener(result -> {
+            new JSONExecutor(requireActivity(), TagMo.MIRRORED_API, "lastupdated/")
+                    .setResultListener(result -> {
                 if (null != result) parseUpdateJSON(result, false);
             });
         }
@@ -299,7 +297,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     public void rebuildAmiiboDatabase() {
         resetAmiiboDatabase(false);
-        new JSONExecutor(requireActivity(), API_LAST_UPDATED).setResultListener(result -> {
+        new JSONExecutor(requireActivity(), TagMo.MIRRORED_API, "lastupdated/")
+                .setResultListener(result -> {
             if (null != result) parseUpdateJSON(result, true);
         });
     }
@@ -355,17 +354,35 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
+    private HttpURLConnection fixServerLocation(URL url) throws IOException {
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("GET");
+        urlConnection.setUseCaches(false);
+        urlConnection.setDefaultUseCaches(false);
+        return urlConnection;
+    }
+
     private void downloadAmiiboAPIData(String lastUpdated) {
         showSnackbar(R.string.sync_amiibo_process, Snackbar.LENGTH_INDEFINITE);
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                URL url = new URL(API_URL + "api/amiibo/");
+                URL url = new URL(TagMo.MIRRORED_API + "api/amiibo/");
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.setUseCaches(false);
                 urlConnection.setDefaultUseCaches(false);
 
                 int statusCode = urlConnection.getResponseCode();
+                if (statusCode == HttpURLConnection.HTTP_MOVED_PERM) {
+                    String address = urlConnection.getHeaderField("Location");
+                    urlConnection.disconnect();
+                    fixServerLocation(new URL(address));
+                    statusCode = urlConnection.getResponseCode();
+                } else if (statusCode != HttpURLConnection.HTTP_OK) {
+                    fixServerLocation(new URL(TagMo.FALLBACK_API + "api/amiibo/"));
+                    statusCode = urlConnection.getResponseCode();
+                }
+
                 if (statusCode == 200) {
                     InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
 

@@ -45,6 +45,9 @@ public class TagMo extends Application {
         return mContext.get();
     }
 
+    public static final String MIRRORED_API = "https://tagmoapi.onrender.com/";
+    public static final String FALLBACK_API = "https://amiiboapi.com/";
+
     @Override
     public void onCreate() {
         super.onCreate();

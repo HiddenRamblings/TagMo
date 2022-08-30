@@ -145,7 +145,7 @@ public class BrowserFragment extends Fragment implements
                     if (srcHeight != amiibosView.getLayoutParams().height) amiibosView.requestLayout();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     float minHeight = activity.getBottomSheetBehavior().getPeekHeight() + v.getHeight()
-                            + requireContext().getResources().getDimension(R.dimen.foomiibo_bar_nargin);
+                            + requireContext().getResources().getDimension(R.dimen.sliding_bar_margin);
                     if (amiibosView.getLayoutParams().height > view.getHeight() - (int) minHeight)
                         amiibosView.getLayoutParams().height = view.getHeight() - (int) minHeight;
                     if (srcHeight != amiibosView.getLayoutParams().height) amiibosView.requestLayout();
@@ -190,7 +190,7 @@ public class BrowserFragment extends Fragment implements
         BrowserActivity activity = (BrowserActivity) requireActivity();
         float minHeight = activity.getBottomSheetBehavior().getPeekHeight()
                 + getView().findViewById(R.id.list_divider).getHeight() + requireContext()
-                .getResources().getDimension(R.dimen.foomiibo_bar_nargin);
+                .getResources().getDimension(R.dimen.sliding_bar_margin);
         if (amiibosView.getLayoutParams().height > getView().getHeight() - (int) minHeight) {
             amiibosView.getLayoutParams().height = getView().getHeight() - (int) minHeight;
         } else {

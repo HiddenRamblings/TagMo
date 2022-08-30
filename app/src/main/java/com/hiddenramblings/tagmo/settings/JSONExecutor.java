@@ -7,6 +7,7 @@ import android.os.Build;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -23,13 +24,13 @@ public class JSONExecutor {
 
     ResultListener listener;
 
-    public JSONExecutor(Activity activity, String url) {
+    public JSONExecutor(Activity activity, String domain, String path) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             activity.runOnUiThread(() -> ProviderInstaller.installIfNeededAsync(
                     activity, new ProviderInstaller.ProviderInstallListener() {
                 @Override
                 public void onProviderInstalled() {
-                    RetrieveJSON(url);
+                    RetrieveJSON(domain, path);
                 }
 
                 @Override
@@ -45,24 +46,40 @@ public class JSONExecutor {
                 }
             }));
         } else {
-            RetrieveJSON(url);
+            RetrieveJSON(domain, path);
         }
     }
 
-    public void RetrieveJSON(String url) {
+    private HttpURLConnection fixServerLocation(URL url) throws IOException {
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("GET");
+        urlConnection.setUseCaches(false);
+        urlConnection.setDefaultUseCaches(false);
+        return urlConnection;
+    }
+
+    public void RetrieveJSON(String domain, String path) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+                HttpURLConnection conn = (HttpURLConnection)
+                        new URL(domain + path).openConnection();
                 conn.setRequestMethod("GET");
                 conn.setUseCaches(false);
                 conn.setDefaultUseCaches(false);
 
-                int responseCode = conn.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM) {
+                int statusCode = conn.getResponseCode();
+                if (statusCode == HttpURLConnection.HTTP_MOVED_PERM) {
+                    String address = conn.getHeaderField("Location");
                     conn.disconnect();
-                    conn = (HttpURLConnection) new URL(conn
-                            .getHeaderField("Location")).openConnection();
-                } else if (responseCode != 200) {
+                    fixServerLocation(new URL(address));
+                    statusCode = conn.getResponseCode();
+                } else if (statusCode != HttpURLConnection.HTTP_OK
+                        && TagMo.MIRRORED_API.equals(domain)) {
+                    fixServerLocation(new URL(TagMo.FALLBACK_API + "api/amiibo/"));
+                    statusCode = conn.getResponseCode();
+                }
+
+                if (statusCode != 200) {
                     conn.disconnect();
                     return;
                 }

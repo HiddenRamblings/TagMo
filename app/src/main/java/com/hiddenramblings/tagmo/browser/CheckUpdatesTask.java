@@ -48,7 +48,7 @@ import java.util.concurrent.Executors;
 public class CheckUpdatesTask {
 
     private static final String TAGMO_GIT_API =
-            "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/";
+            "https://api.github.com/repos/HiddenRamblings/TagMo/";
     private CheckUpdateListener listener;
     private CheckPlayUpdateListener listenerPlay;
     private AppUpdateManager appUpdateManager;
@@ -94,7 +94,7 @@ public class CheckUpdatesTask {
             }
         });
         Executors.newSingleThreadExecutor().execute(() -> new JSONExecutor(
-                activity, TAGMO_GIT_API + "master"
+                activity, TAGMO_GIT_API, "releases/tags/master"
         ).setResultListener(result -> {
             if (null != result) parseUpdateJSON(result);
         }));

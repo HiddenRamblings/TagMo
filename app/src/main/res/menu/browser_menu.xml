@@ -16,7 +16,7 @@
         android:id="@+id/filter"
         android:icon="@drawable/ic_filter_list_24dp"
         android:title="@string/filter"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom">
         <menu>
             <item
                 android:id="@+id/filter_game_series"

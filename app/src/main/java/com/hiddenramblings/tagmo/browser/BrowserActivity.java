@@ -2595,21 +2595,23 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void locateKeyFilesRecursive(File rootFolder) {
-        File[] files = rootFolder.listFiles();
-        if (files == null || files.length == 0)
-            return;
-        for (File file : files) {
-            if (file.isDirectory() && file != Storage.getDownloadDir(null)) {
-                locateKeyFilesRecursive(file);
-            } else if (keyNameMatcher(file.getName())) {
-                try (FileInputStream inputStream = new FileInputStream(file)) {
-                    this.keyManager.evaluateKey(inputStream);
-                    hideFakeSnackbar();
-                } catch (Exception e) {
-                    Debug.Log(e);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            File[] files = rootFolder.listFiles();
+            if (files == null || files.length == 0)
+                return;
+            for (File file : files) {
+                if (file.isDirectory() && file != Storage.getDownloadDir(null)) {
+                    locateKeyFilesRecursive(file);
+                } else if (keyNameMatcher(file.getName())) {
+                    try (FileInputStream inputStream = new FileInputStream(file)) {
+                        this.keyManager.evaluateKey(inputStream);
+                        hideFakeSnackbar();
+                    } catch (Exception e) {
+                        Debug.Log(e);
+                    }
                 }
             }
-        }
+        });
     }
 
     public void verifyKeyFiles() {
@@ -2663,10 +2665,12 @@ public class BrowserActivity extends AppCompatActivity implements
     };
 
     private void showStoragePrompt() {
-        Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
-                R.string.permission_required, Snackbar.LENGTH_LONG);
-        storageBar.setAction(R.string.allow, v -> onRequestStorage.launch(PERMISSIONS_STORAGE));
-        storageBar.show();
+        this.runOnUiThread(() -> {
+            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
+                    R.string.permission_required, Snackbar.LENGTH_LONG);
+            storageBar.setAction(R.string.allow, v -> onRequestStorage.launch(PERMISSIONS_STORAGE));
+            storageBar.show();
+        });
     }
 
     ActivityResultLauncher<String[]> onRequestStorage = registerForActivityResult(

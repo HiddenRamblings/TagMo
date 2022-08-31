@@ -799,7 +799,7 @@ public class FlaskSlotFragment extends Fragment implements
     @SuppressLint("MissingPermission")
     private void dismissFlaskDiscovery() {
         mBluetoothAdapter = null != mBluetoothAdapter ? mBluetoothAdapter
-                : bluetoothHandler.getBluetoothAdapter(requireContext());
+                : bluetoothHandler.getBluetoothAdapter(getContext());
         if (null != mBluetoothAdapter) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 if (null != scanCallbackLP)

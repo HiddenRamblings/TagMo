@@ -245,6 +245,7 @@ public class BluetoothHandler {
 
     @SuppressLint("MissingPermission")
     public BluetoothAdapter getBluetoothAdapter(Context context) {
+        if (null == context) return null;
         if (null != mBluetoothAdapter) {
             if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
             return mBluetoothAdapter;

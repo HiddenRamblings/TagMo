@@ -13,7 +13,7 @@ It was created as a result of the "[DIY amiibo cards](https://gbatemp.net/thread
 
 If you want to contribute, please make sure to address your PRs to the 'conversion' branch. Thank you.
 
-## [Code of Conduct](https://github.com/HiddenRamblings/TagMo/issues/328)
+## [Code of Conduct](https://github.com/HiddenRamblings/TagMo/blob/master/CODE_OF_CONDUCT.md)
 
 ## [Instructions](https://tagmo.gitlab.io/)
 

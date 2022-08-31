@@ -248,7 +248,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             try (InputStream strm = requireContext().getContentResolver().openInputStream(data)) {
                 this.keyManager.evaluateKey(strm);
             } catch (Exception e) {
-                Debug.Log(e);
+                Debug.Info(e);
                 requireActivity().runOnUiThread(() ->
                         new IconifiedSnackbar(requireActivity()).buildSnackbar(
                                 requireActivity().findViewById(R.id.preferences),
@@ -309,13 +309,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             AmiiboManager amiiboManager;
             try {
                 amiiboManager = AmiiboManager.parse(requireContext(), data);
-            } catch (JSONException | ParseException e) {
-                Debug.Log(e);
+            } catch (JSONException | ParseException | IOException e) {
+                Debug.Warn(e);
                 new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse);
-                return;
-            } catch (IOException e) {
-                Debug.Log(e);
-                new Toasty(requireActivity()).Short(R.string.amiibo_failure_read);
                 return;
             }
 
@@ -324,7 +320,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             try {
                 AmiiboManager.saveDatabase(amiiboManager, requireContext().getApplicationContext());
             } catch (JSONException | IOException e) {
-                Debug.Log(e);
+                Debug.Warn(e);
                 new Toasty(requireActivity()).Short(R.string.amiibo_failure_update);
                 return;
             }
@@ -399,7 +395,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             try {
                                 reader.close();
                             } catch (IOException e) {
-                                Debug.Log(e);
+                                Debug.Info(e);
                             }
                         }
                     }
@@ -419,7 +415,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     throw new Exception(String.valueOf(statusCode));
                 }
             } catch (Exception e) {
-                Debug.Log(e);
+                Debug.Warn(e);
                 requireActivity().runOnUiThread(() -> showSnackbar(
                         R.string.sync_amiibo_failed, Snackbar.LENGTH_SHORT));
             }
@@ -466,7 +462,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     onLoadKeys.launch(Intent.createChooser(
                             NFCIntent.getIntent(intent), title));
                 } catch (ActivityNotFoundException ex) {
-                    Debug.Log(ex);
+                    Debug.Info(ex);
                 }
                 break;
             case RESULT_IMPORT_AMIIBO_DATABASE:
@@ -478,7 +474,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     onImportAmiiboDatabase.launch(Intent.createChooser(
                             NFCIntent.getIntent(intent), title));
                 } catch (ActivityNotFoundException ex) {
-                    Debug.Log(ex);
+                    Debug.Info(ex);
                 }
                 break;
         }
@@ -505,7 +501,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 ).setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated)).show();
             }
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.Warn(e);
         }
     }
 }

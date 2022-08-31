@@ -262,7 +262,7 @@ public class TagUtils {
                 if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
                     throw new FormatException(context.getString(R.string.error_tag_format));
             } catch (Exception e) {
-                Debug.Log(R.string.error_version, e);
+                Debug.Warn(R.string.error_version, e);
                 throw e;
             }
         }
@@ -274,7 +274,7 @@ public class TagUtils {
         if (!TagUtils.compareRange(pages, tagData, 9))
             throw new Exception(context.getString(R.string.fail_mismatch_uid));
 
-        Debug.Log(TagWriter.class, R.string.validation_success);
+        Debug.Info(TagWriter.class, R.string.validation_success);
     }
 
     public static String decipherFilename(AmiiboManager amiiboManager, byte[] tagData, boolean verified) {
@@ -284,7 +284,7 @@ public class TagUtils {
                 validateData(tagData);
                 status = "Validated";
             } catch (Exception e) {
-                Debug.Log(e);
+                Debug.Warn(e);
                 status = e.getMessage();
             }
         }
@@ -304,8 +304,8 @@ public class TagUtils {
                 return String.format(Locale.ROOT, "%1$s[%2$s]-%3$s.bin", name, uidHex, status);
             else
                 return String.format(Locale.ROOT, "%1$s[%2$s].bin", name, uidHex);
-        } catch (Exception e) {
-            Debug.Log(TagUtils.class, e.getMessage());
+        } catch (Exception ex) {
+            Debug.Warn(ex);
         }
         return "";
     }
@@ -345,7 +345,7 @@ public class TagUtils {
             MediaScannerConnection.scanFile(TagMo.getContext(),
                     new String[] { binFile.getAbsolutePath() }, null, null);
         } catch (Exception e) {
-            Debug.Log(R.string.fail_media_scan, e);
+            Debug.Info(R.string.fail_media_scan, e);
         }
         return binFile.getAbsolutePath();
     }

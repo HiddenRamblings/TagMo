@@ -124,7 +124,7 @@ public class JoyConGattService extends Service {
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
             String output = new String(data);
-            Debug.Log(TAG, getLogTag(characteristic.getUuid()) + " " + output);
+            Debug.Verbose(TAG, getLogTag(characteristic.getUuid()) + " " + output);
         }
     }
 
@@ -147,7 +147,7 @@ public class JoyConGattService extends Service {
                     mBluetoothGatt.requestMtu(512); // Maximum: 517
                 else if (null != listener) listener.onServicesDiscovered();
             } else {
-                Debug.Log(TAG, "onServicesDiscovered received: " + status);
+                Debug.Warn(TAG, "onServicesDiscovered received: " + status);
             }
         }
 
@@ -164,7 +164,7 @@ public class JoyConGattService extends Service {
         public void onCharacteristicWrite(
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status
         ) {
-            Debug.Log(TAG, getLogTag(characteristic.getUuid())
+            Debug.Verbose(TAG, getLogTag(characteristic.getUuid())
                     + " onCharacteristicWrite " + status);
         }
 
@@ -178,9 +178,9 @@ public class JoyConGattService extends Service {
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Debug.Log(TAG, "onMtuChange complete: " + mtu);
+                Debug.Verbose(TAG, "onMtuChange complete: " + mtu);
             } else {
-                Debug.Log(TAG, "onMtuChange received: " + status);
+                Debug.Warn(TAG, "onMtuChange received: " + status);
             }
             if (null != listener) listener.onServicesDiscovered();
         }
@@ -325,10 +325,10 @@ public class JoyConGattService extends Service {
         if (!mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
             for (BluetoothGattCharacteristic customRead : mCustomService.getCharacteristics()) {
                 UUID customUUID = customRead.getUuid();
-                Debug.Log(TAG, "GattReadCharacteristic: " + customUUID);
+                Debug.Verbose(TAG, "GattReadCharacteristic: " + customUUID);
                 /*get the read characteristic from the service*/
                 if (customUUID.compareTo(JoyConRX) == 0) {
-                    Debug.Log(TAG, "GattReadCharacteristic: " + customUUID);
+                    Debug.Verbose(TAG, "GattReadCharacteristic: " + customUUID);
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
                 }
@@ -343,7 +343,7 @@ public class JoyConGattService extends Service {
         }
 
         for (BluetoothGattService customService : getSupportedGattServices()) {
-            Debug.Log(TAG, "GattReadService: " + customService.getUuid().toString());
+            Debug.Verbose(TAG, "GattReadService: " + customService.getUuid().toString());
         }
 
         BluetoothGattService mCustomService = mBluetoothGatt.getService(JoyConNUS);
@@ -355,7 +355,7 @@ public class JoyConGattService extends Service {
             }
 
             for (BluetoothGattService customService : services) {
-                Debug.Log(TAG, "GattReadService: " + customService.getUuid().toString());
+                Debug.Verbose(TAG, "GattReadService: " + customService.getUuid().toString());
                 /*get the read characteristic from the service*/
                 mCharacteristicRX = getCharacteristicRX(customService);
                 break;
@@ -373,9 +373,9 @@ public class JoyConGattService extends Service {
             for (BluetoothGattCharacteristic customWrite : mCustomService.getCharacteristics()) {
                 UUID customUUID = customWrite.getUuid();
                 /*get the write characteristic from the service*/
-                Debug.Log(TAG, "GattWriteCharacteristic: " + customUUID);
+                Debug.Verbose(TAG, "GattWriteCharacteristic: " + customUUID);
                 if (customUUID.compareTo(JoyConTX) == 0) {
-                    Debug.Log(TAG, "GattWriteCharacteristic: " + customUUID);
+                    Debug.Verbose(TAG, "GattWriteCharacteristic: " + customUUID);
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
                 }
@@ -398,7 +398,7 @@ public class JoyConGattService extends Service {
             }
 
             for (BluetoothGattService customService : services) {
-                Debug.Log(TAG, "GattWriteService: " + customService.getUuid().toString());
+                Debug.Verbose(TAG, "GattWriteService: " + customService.getUuid().toString());
                 /*get the read characteristic from the service*/
                 mCharacteristicTX = getCharacteristicTX(customService);
             }

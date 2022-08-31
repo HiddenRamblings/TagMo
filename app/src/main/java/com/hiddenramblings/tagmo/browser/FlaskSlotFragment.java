@@ -174,7 +174,7 @@ public class FlaskSlotFragment extends Fragment implements
                                         if (null != amiibo) amiibo.index = i;
                                         flaskAmiibos.add(amiibo);
                                     } catch (JSONException jex) {
-                                        Debug.Log(jex);
+                                        Debug.Warn(jex);
                                     }
                                 }
                                 FlaskSlotAdapter adapter = new FlaskSlotAdapter(
@@ -578,7 +578,7 @@ public class FlaskSlotFragment extends Fragment implements
         try {
             amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Log(e);
+            Debug.Warn(e);
             amiiboManager = null;
             new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
         }
@@ -683,7 +683,7 @@ public class FlaskSlotFragment extends Fragment implements
                     if (null == amiibo)
                         amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
                 } catch (Exception e) {
-                    Debug.Log(e);
+                    Debug.Warn(e);
                 }
             }
             if (null != amiibo) serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo);

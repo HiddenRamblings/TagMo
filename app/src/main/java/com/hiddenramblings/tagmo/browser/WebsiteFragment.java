@@ -178,7 +178,7 @@ public class WebsiteFragment extends Fragment {
                 }
                 zipIn.close();
             } catch (IOException e) {
-                Debug.Log(e);
+                Debug.Warn(e);
             } finally {
                 dialog.dismiss();
                 this.archive.delete();
@@ -200,7 +200,7 @@ public class WebsiteFragment extends Fragment {
             os.write(tagData);
             os.flush();
         } catch (IOException e) {
-            Debug.Log(e);
+            Debug.Warn(e);
         }
     }
 
@@ -215,7 +215,7 @@ public class WebsiteFragment extends Fragment {
                     .getAmiiboManager(requireContext().getApplicationContext());
             input.setText(TagUtils.decipherFilename(amiiboManager, tagData, true));
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Log(e);
+            Debug.Warn(e);
         }
         Dialog backupDialog = dialog.setView(view).create();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {

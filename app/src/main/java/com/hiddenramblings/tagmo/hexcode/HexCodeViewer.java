@@ -46,7 +46,7 @@ public class HexCodeViewer extends AppCompatActivity {
                 listView.setLayoutManager(new LinearLayoutManager(this));
                 listView.setAdapter(adapter);
             } catch (Exception ex) {
-                Debug.Log(e);
+                Debug.Warn(e);
                 showErrorDialog(R.string.fail_display);
             }
         }

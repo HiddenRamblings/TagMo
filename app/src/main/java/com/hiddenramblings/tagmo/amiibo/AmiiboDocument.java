@@ -38,7 +38,7 @@ public class AmiiboDocument {
                 null, null, null);
         try {
             while (docCursor.moveToNext()) {
-                Debug.Log(this.getClass(), "Primary doc=" + docCursor.getString(0)
+                Debug.Verbose(this.getClass(), "Primary doc=" + docCursor.getString(0)
                         + ", mime=" + docCursor.getString(1));
             }
         } finally {
@@ -73,7 +73,7 @@ public class AmiiboDocument {
                 fileCount.increment();
                 String displayName = cursor.getString(0);
                 String mimeType = cursor.getString(1);
-                Debug.Log(this.getClass(), "Child parent=" + documentId
+                Debug.Verbose(this.getClass(), "Child parent=" + documentId
                         + ", doc=" + displayName + ", mime=" + mimeType);
 
                 String childDocumentId = cursor.getString(2);

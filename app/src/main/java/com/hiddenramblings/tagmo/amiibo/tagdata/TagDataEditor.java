@@ -188,7 +188,7 @@ public class TagDataEditor extends AppCompatActivity {
                 tagData = TagUtils.getValidatedData(keyManager, tagData);
                 this.amiiboData = new AmiiboData(tagData);
             } catch (Exception ex) {
-                Debug.Log(e);
+                Debug.Warn(e);
                 showErrorDialog(R.string.fail_display);
                 return;
             }
@@ -250,7 +250,7 @@ public class TagDataEditor extends AppCompatActivity {
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
-                Debug.Log(e);
+                Debug.Warn(e);
                 new Toasty(this).Short(getString(R.string.amiibo_info_parse_error));
             }
 
@@ -329,7 +329,7 @@ public class TagDataEditor extends AppCompatActivity {
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
-                Debug.Log(e);
+                Debug.Info(e);
                 amiiboId = -1;
             }
             if (amiiboId == 0) {
@@ -437,7 +437,7 @@ public class TagDataEditor extends AppCompatActivity {
             newAmiiboData.setUserDataInitialized(isUserDataInitialized);
             newAmiiboData.setAppDataInitialized(isUserDataInitialized && isAppDataInitialized);
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.Warn(e);
             showErrorDialog(R.string.fail_save_data);
             return;
         }
@@ -535,7 +535,7 @@ public class TagDataEditor extends AppCompatActivity {
         try {
             tagData = keyManager.encrypt(newAmiiboData.array());
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.Warn(e);
             showErrorDialog(R.string.fail_encrypt);
             return;
         }

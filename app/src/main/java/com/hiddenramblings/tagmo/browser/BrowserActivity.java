@@ -447,7 +447,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         .setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
                                 LinearLayout.LayoutParams.WRAP_CONTENT);
             } catch (Exception e) {
-                Debug.Log(e);
+                Debug.Info(e);
             }
         }
 
@@ -475,7 +475,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.Warn(e);
         }
         popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
         nfcFab.setOnClickListener(view -> showPopupMenu(popup));
@@ -1128,7 +1128,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
                 available = false;
-                Debug.Log(e);
+                Debug.Info(e);
             }
         }
         toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(available);
@@ -1309,7 +1309,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     String usage = gamesManager.getGamesCompatibility(amiiboId);
                     txtUsage.post(() -> txtUsage.setText(usage));
                 } catch (Exception ex) {
-                    Debug.Log(ex);
+                    Debug.Warn(ex);
                 }
             });
         } else {
@@ -1641,7 +1641,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 updateAmiiboView(tagData, amiiboFile);
             }
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.Warn(e);
         }
     }
 
@@ -1661,7 +1661,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 updateAmiiboView(tagData, amiiboFile);
             }
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.Warn(e);
         }
     }
 
@@ -1682,7 +1682,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 try {
                     PowerTagManager.getPowerTagManager();
                 } catch (Exception e) {
-                    Debug.Log(e);
+                    Debug.Warn(e);
                     new Toasty(this).Short(R.string.fail_powertag_keys);
                 }
             });
@@ -1695,7 +1695,7 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
-                Debug.Log(e);
+                Debug.Warn(e);
                 amiiboManager = null;
                 new Toasty(this).Short(R.string.amiibo_info_parse_error);
             }
@@ -1704,7 +1704,7 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 gamesManager = GamesManager.getGamesManager(this);
             } catch (IOException | JSONException | ParseException e) {
-                Debug.Log(e);
+                Debug.Warn(e);
                 gamesManager = null;
             }
 
@@ -2188,7 +2188,7 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 amiiboId = TagUtils.amiiboIdFromTag(tagData);
             } catch (Exception e) {
-                Debug.Log(e);
+                Debug.Info(e);
             }
         }
 
@@ -2254,7 +2254,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             });
         } catch (Exception ex) {
-            Debug.Log(ex);
+            Debug.Warn(ex);
         }
 
         if (null != imageAmiibo) {
@@ -2607,7 +2607,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         this.keyManager.evaluateKey(inputStream);
                         hideFakeSnackbar();
                     } catch (Exception e) {
-                        Debug.Log(e);
+                        Debug.Warn(e);
                     }
                 }
             }
@@ -2629,7 +2629,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     hideFakeSnackbar();
                     scanner.close();
                 } catch (IOException e) {
-                    Debug.Log(e);
+                    Debug.Warn(e);
                 }
                 if (Thread.currentThread().isInterrupted()) return;
                 this.onRefresh(true);
@@ -2649,7 +2649,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         this.keyManager.evaluateKey(inputStream);
                         hideFakeSnackbar();
                     } catch (Exception e) {
-                        Debug.Log(e);
+                        Debug.Warn(e);
                     }
                 }
             } else {
@@ -2759,7 +2759,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         try {
                             mifare.connect();
                         } catch (Exception ex) {
-                            Debug.Log(ex);
+                            Debug.Info(ex);
                         }
                         if (TagReader.needsFirmware(mifare)) {
                             if (TagWriter.updateFirmware(mifare))
@@ -2812,7 +2812,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     mifare.close();
                 }
             } catch (Exception e) {
-                Debug.Log(e);
+                Debug.Warn(e);
                 String error = e.getMessage();
                 error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
                 if (null != error && prefs.enable_elite_support().get()) {

@@ -123,7 +123,7 @@ public class GamesManager {
                 gamesManager = GamesManager.parse(context.openFileInput(GAMES_DATABASE_FILE));
             } catch (IOException | JSONException | ParseException e) {
                 gamesManager = null;
-                Debug.Log(R.string.error_amiibo_parse, e);
+                Debug.Warn(R.string.error_amiibo_parse, e);
             }
         } else {
             gamesManager = null;

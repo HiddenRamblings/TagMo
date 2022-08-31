@@ -259,7 +259,7 @@ public class BrowserFragment extends Fragment implements
             TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
                     settings.getAmiiboManager(), tagData, false), tagData);
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.Warn(e);
         }
     }
 
@@ -277,7 +277,7 @@ public class BrowserFragment extends Fragment implements
                     getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT
             ).show();
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.Warn(e);
         }
     }
 
@@ -343,7 +343,7 @@ public class BrowserFragment extends Fragment implements
                 String usage = gamesManager.getGamesCompatibility(amiiboId);
                 txtUsage.post(() -> txtUsage.setText(usage));
             } catch (Exception ex) {
-                Debug.Log(ex);
+                Debug.Warn(ex);
             }
         });
     }

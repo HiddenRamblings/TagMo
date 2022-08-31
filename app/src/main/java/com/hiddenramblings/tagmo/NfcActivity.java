@@ -541,7 +541,7 @@ public class NfcActivity extends AppCompatActivity {
             }
             finish();
         } catch (Exception e) {
-            Debug.Log(e);
+            Debug.Warn(e);
             String error = e.getMessage();
             error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
             if (null != error && prefs.enable_elite_support().get()) {

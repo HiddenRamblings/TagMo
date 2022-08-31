@@ -90,30 +90,88 @@ public class Debug {
         return source.getSimpleName();
     }
 
-    public static void Log(Class<?> source, String params) {
-        if (hasDebugging()) Log.w(TAG(source), params);
+    public static void Error(Class<?> source, String params) {
+        if (hasDebugging()) Log.e(TAG(source), params);
     }
-
-    public static void Log(Class<?> source, int resource) {
-        Log(source, getContext().getString(resource));
+    public static void Error(Class<?> source, int resource) {
+        Error(source, getContext().getString(resource));
     }
-
-    public static void Log(Class<?> source, int resource, String params) {
-        Log(source, getContext().getString(resource, params));
+    public static void Error(Class<?> source, int resource, String params) {
+        Error(source,getContext().getString(resource, params));
     }
-
-    public static void Log(Exception ex) {
+    public static void Error(Exception ex) {
         if (!hasDebugging()) return;
         if (ex.getStackTrace().length > 0) {
             StringWriter exception = new StringWriter();
             ex.printStackTrace(new PrintWriter(exception));
-            Log(ex.getClass(), exception.toString());
+            Error(ex.getClass(), exception.toString());
         }
     }
+    public static void Error(int resource, Exception ex) {
+        if (hasDebugging()) Log.e(TAG(ex.getClass()), getContext().getString(resource), ex);
+    }
 
-    public static void Log(int resource, Exception ex) {
-        if (hasDebugging())
-            Log.w(TAG(ex.getClass()), getContext().getString(resource), ex);
+    public static void Warn(Class<?> source, String params) {
+        if (hasDebugging()) Log.w(TAG(source), params);
+    }
+    public static void Warn(Class<?> source, int resource) {
+        Warn(source, getContext().getString(resource));
+    }
+    public static void Warn(Class<?> source, int resource, String params) {
+        Warn(source,getContext().getString(resource, params));
+    }
+    public static void Warn(Exception ex) {
+        if (!hasDebugging()) return;
+        if (ex.getStackTrace().length > 0) {
+            StringWriter exception = new StringWriter();
+            ex.printStackTrace(new PrintWriter(exception));
+            Warn(ex.getClass(), exception.toString());
+        }
+    }
+    public static void Warn(int resource, Exception ex) {
+        if (hasDebugging()) Log.w(TAG(ex.getClass()), getContext().getString(resource), ex);
+    }
+
+    public static void Info(Class<?> source, String params) {
+        if (hasDebugging()) Log.i(TAG(source), params);
+    }
+    public static void Info(Class<?> source, int resource) {
+        Info(source, getContext().getString(resource));
+    }
+    public static void Info(Class<?> source, int resource, String params) {
+        Info(source,getContext().getString(resource, params));
+    }
+    public static void Info(Exception ex) {
+        if (!hasDebugging()) return;
+        if (ex.getStackTrace().length > 0) {
+            StringWriter exception = new StringWriter();
+            ex.printStackTrace(new PrintWriter(exception));
+            Info(ex.getClass(), exception.toString());
+        }
+    }
+    public static void Info(int resource, Exception ex) {
+        if (hasDebugging()) Log.i(TAG(ex.getClass()), getContext().getString(resource), ex);
+    }
+
+    public static void Verbose(Class<?> source, String params) {
+        if (hasDebugging()) Log.d(TAG(source), params);
+    }
+    public static void Verbose(Class<?> source, int resource) {
+        Verbose(source, getContext().getString(resource));
+    }
+    public static void Verbose(Class<?> source, int resource, String params) {
+        Verbose(source,getContext().getString(resource, params));
+    }
+    public static void Verbose(Exception ex) {
+        if (!hasDebugging()) return;
+        if (ex.getStackTrace().length > 0) {
+            StringWriter exception = new StringWriter();
+            ex.printStackTrace(new PrintWriter(exception));
+            Verbose(ex.getClass(), exception.toString());
+        }
+    }
+    public static void Verbose(int resource, Exception ex) {
+        if (hasDebugging()) Log.d(TAG(ex.getClass()), getContext().getString(resource), ex);
     }
 
     private static String getRepositoryToken() {
@@ -190,7 +248,7 @@ public class Debug {
         Process mLogcatProc = Runtime.getRuntime().exec(new String[]{
                 "logcat", "-d", "-t", "192", BuildConfig.APPLICATION_ID,
                 "AndroidRuntime", "System.err",
-                "ViewRootImpl*:S", "IssueReporterActivity:S", "*:D"
+                "ViewRootImpl*:S", "IssueReporterActivity:S", "*:W"
         });
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 mLogcatProc.getInputStream()));

@@ -370,7 +370,7 @@ public class EliteBankFragment extends Fragment implements
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
-                Debug.Log(e);
+                Debug.Warn(e);
                 new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
             }
 
@@ -563,7 +563,7 @@ public class EliteBankFragment extends Fragment implements
                         : TagUtils.getValidatedDocument(keyManager, amiiboFile.getDocUri());
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
             } catch (Exception e) {
-                Debug.Log(e);
+                Debug.Warn(e);
             }
         } else {
             try {
@@ -571,7 +571,7 @@ public class EliteBankFragment extends Fragment implements
                         : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
             } catch (Exception e) {
-                Debug.Log(e);
+                Debug.Warn(e);
             }
         }
 
@@ -761,7 +761,7 @@ public class EliteBankFragment extends Fragment implements
                 try {
                     amiiboId = TagUtils.amiiboIdFromTag(tagData);
                 } catch (Exception e) {
-                    Debug.Log(e);
+                    Debug.Info(e);
                 }
             }
             AmiiboManager amiiboManager = settings.getAmiiboManager();

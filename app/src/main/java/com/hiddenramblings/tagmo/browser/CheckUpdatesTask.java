@@ -166,12 +166,8 @@ public class CheckUpdatesTask {
                         }
                     }
                 }
-            } catch (MalformedURLException mue) {
-                Debug.Log(mue);
-            } catch (IOException ioe) {
-                Debug.Log(ioe);
-            } catch (SecurityException se) {
-                Debug.Log(se);
+            } catch (SecurityException | IOException ex) {
+                Debug.Warn(ex);
             }
         });
     }
@@ -203,7 +199,7 @@ public class CheckUpdatesTask {
             isUpdateAvailable = !BuildConfig.COMMIT.equals(lastCommit);
             if (isUpdateAvailable && null != listener) listener.onUpdateFound(downloadUrl);
         } catch (JSONException e) {
-            Debug.Log(e);
+            Debug.Warn(e);
         }
     }
 
@@ -219,7 +215,7 @@ public class CheckUpdatesTask {
                     // Include a request code to later monitor this update request.
                     8675309);
         } catch (IntentSender.SendIntentException ex) {
-            Debug.Log(ex);
+            Debug.Warn(ex);
         }
     }
 

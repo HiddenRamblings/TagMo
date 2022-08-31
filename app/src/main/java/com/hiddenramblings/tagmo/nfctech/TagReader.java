@@ -20,12 +20,12 @@ public class TagReader {
 
     static void validateBlankTag(NTAG215 mifare) throws IOException {
         byte[] lockPage = mifare.readPages(0x02);
-        Debug.Log(TagWriter.class, TagUtils.bytesToHex(lockPage));
+        Debug.Info(TagWriter.class, TagUtils.bytesToHex(lockPage));
         if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {
             throw new IOException(TagMo.getContext()
                     .getString(R.string.error_tag_rewrite));
         }
-        Debug.Log(TagWriter.class, R.string.validation_success);
+        Debug.Info(TagWriter.class, R.string.validation_success);
     }
 
     private static byte[] getTagData(String path, InputStream inputStream) throws Exception {
@@ -70,7 +70,7 @@ public class TagReader {
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount);
         }
 
-        Debug.Log(TagReader.class, TagUtils.bytesToHex(tagData));
+        Debug.Info(TagReader.class, TagUtils.bytesToHex(tagData));
         return tagData;
     }
 
@@ -90,7 +90,7 @@ public class TagReader {
                 tags.add(TagUtils.bytesToHex(tagData));
                 i++;
             } catch (Exception e) {
-                Debug.Log(TagReader.class, TagMo.getContext()
+                Debug.Warn(TagReader.class, TagMo.getContext()
                         .getString(R.string.fail_parse_banks));
             }
         }
@@ -139,7 +139,7 @@ public class TagReader {
                 throw new NullPointerException(context.getString(R.string.fail_read_amiibo));
             }
             System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_FILE_SIZE);
-            Debug.Log(TagReader.class, TagUtils.bytesToHex(tagData));
+            Debug.Info(TagReader.class, TagUtils.bytesToHex(tagData));
             return tagData;
         } catch (IllegalStateException e) {
             throw new IllegalStateException(context.getString(R.string.fail_early_remove));

@@ -237,7 +237,7 @@ public class AmiiboManager {
                 amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
             } catch (IOException | JSONException | ParseException e) {
                 amiiboManager = null;
-                Debug.Log(R.string.error_amiibo_parse, e);
+                Debug.Warn(R.string.error_amiibo_parse, e);
             }
         } else {
             amiiboManager = null;
@@ -261,7 +261,7 @@ public class AmiiboManager {
                 try {
                     streamWriter.close();
                 } catch (IOException e) {
-                    Debug.Log(e);
+                    Debug.Verbose(e);
                 }
             }
         }
@@ -278,7 +278,7 @@ public class AmiiboManager {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
-                    Debug.Log(e);
+                    Debug.Verbose(e);
                 }
             }
         }
@@ -305,7 +305,7 @@ public class AmiiboManager {
                                 TagUtils.amiiboIdFromTag(data), data));
                     }
                 } catch (Exception e) {
-                    Debug.Log(e);
+                    Debug.Info(e);
                 }
             }
         }
@@ -329,7 +329,7 @@ public class AmiiboManager {
                     ));
                 }
             } catch (Exception e) {
-                Debug.Log(e);
+                Debug.Info(e);
             }
         }
         return amiiboFiles;

@@ -98,7 +98,7 @@ public class JSONExecutor {
                 in.close();
                 conn.disconnect();
             } catch (IOException e) {
-                Debug.Log(e);
+                Debug.Warn(e);
             }
         });
     }

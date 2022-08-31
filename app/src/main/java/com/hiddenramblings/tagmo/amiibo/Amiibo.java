@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class Amiibo implements Comparable<Amiibo>, Parcelable {
 
     private static final String AMIIBO_IMAGE =
-            "https://raw.githubusercontent.com/8BitDream/AmiiboAPI/heroku/images/icon_%08x-%08x.png";
+            "https://raw.githubusercontent.com/8BitDream/AmiiboAPI/render/images/icon_%08x-%08x.png";
 
     static long HEAD_MASK = 0xFFFFFFFF00000000L;
     static long TAIL_MASK = 0x00000000FFFFFFFFL;

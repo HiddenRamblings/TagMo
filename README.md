@@ -13,17 +13,13 @@ It was created as a result of the "[DIY amiibo cards](https://gbatemp.net/thread
 
 If you want to contribute, please make sure to address your PRs to the 'conversion' branch. Thank you.
 
-## [Code of Conduct](https://github.com/HiddenRamblings/TagMo/blob/master/CODE_OF_CONDUCT.md)
-
 ## [Instructions](https://tagmo.gitlab.io/)
-
-## [Features](https://github.com/HiddenRamblings/TagMo/wiki#features)
-
-## [Limitations](https://github.com/HiddenRamblings/TagMo/wiki#limitations)
-
-## [Requirements](https://github.com/HiddenRamblings/TagMo/wiki#requirements)
+* [Limitations](https://github.com/HiddenRamblings/TagMo/wiki#limitations)
+* [Requirements](https://github.com/HiddenRamblings/TagMo/wiki#requirements)
 
 ## [Reporting Issues](https://github.com/HiddenRamblings/TagMo/wiki#reporting-issues)
+
+## [Code of Conduct](https://github.com/HiddenRamblings/TagMo/blob/master/CODE_OF_CONDUCT.md)
 
 # Credits
 This app is the result of work by many. Thanks go out to (in alphabetical order):

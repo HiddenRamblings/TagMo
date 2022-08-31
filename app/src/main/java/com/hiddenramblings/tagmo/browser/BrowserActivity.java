@@ -2588,7 +2588,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private boolean keyNameMatcher(String name) {
-        boolean isValid = name.toLowerCase(Locale.ROOT).endsWith(".bin");
+        boolean isValid = AmiiboManager.binFileMatcher(name);
         return name.toLowerCase(Locale.ROOT).endsWith("retail.bin") ||
                 (isValid && (name.toLowerCase(Locale.ROOT).startsWith("locked")
                         || name.toLowerCase(Locale.ROOT).startsWith("unfixed")));

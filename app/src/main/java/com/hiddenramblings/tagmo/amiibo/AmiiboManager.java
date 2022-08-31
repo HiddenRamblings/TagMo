@@ -284,6 +284,10 @@ public class AmiiboManager {
         }
     }
 
+    public static boolean binFileMatcher(String name) {
+        return name.toLowerCase(Locale.ROOT).endsWith(".bin");
+    }
+
     public static ArrayList<AmiiboFile> listAmiibos(
             KeyManager keyManager, File rootFolder, boolean recursiveFiles) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
@@ -293,7 +297,7 @@ public class AmiiboManager {
         for (File file : files) {
             if (file.isDirectory() && recursiveFiles) {
                 amiiboFiles.addAll(listAmiibos(keyManager, file, true));
-            } else if (file.getName().toLowerCase(Locale.ROOT).endsWith(".bin")) {
+            } else if (binFileMatcher(file.getName())) {
                 try {
                     byte[] data = TagUtils.getValidatedFile(keyManager, file);
                     if (null != data) {

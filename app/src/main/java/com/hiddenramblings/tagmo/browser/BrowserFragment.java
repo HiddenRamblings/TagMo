@@ -357,6 +357,7 @@ public class BrowserFragment extends Fragment implements
     }
 
     public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
+        if (null == itemView || null == amiibo) return;
         byte[] tagData = new byte[0];
         for (byte[] data : resultData) {
             try {

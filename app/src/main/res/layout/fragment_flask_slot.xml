@@ -63,6 +63,7 @@
                 android:gravity="center"
                 android:layout_weight="1"
                 android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:singleLine="true"
                 android:text="@string/bluup_flask"
                 android:textColor="@android:color/white"
@@ -86,6 +87,7 @@
             android:gravity="center"
             android:singleLine="true"
             android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
             android:text="@string/amiibo_not_found"
             android:textColor="@android:color/white"
             android:textSize="14sp"/>

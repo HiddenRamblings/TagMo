@@ -2593,47 +2593,27 @@ public class BrowserActivity extends AppCompatActivity implements
                         || name.toLowerCase(Locale.ROOT).startsWith("unfixed")));
     }
 
-    private void locateKeyFilesRecursive(File rootFolder) {
-            File[] files = rootFolder.listFiles();
-            if (files == null || files.length == 0)
-                return;
-            for (File file : files) {
-                if (file.isDirectory() && file != Storage.getDownloadDir(null)) {
-                    locateKeyFilesRecursive(file);
-                } else if (keyNameMatcher(file.getName())) {
+    public void locateKeyFilesRecursive(File rootFolder) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            File[] files = rootFolder.listFiles((dir, name) -> keyNameMatcher(name));
+            if (null != files && files.length > 0) {
+                for (File file : files) {
                     try (FileInputStream inputStream = new FileInputStream(file)) {
                         this.keyManager.evaluateKey(inputStream);
                         hideFakeSnackbar();
                     } catch (Exception e) {
                         Debug.Warn(e);
+                        verifyKeyFiles();
                     }
+                }
+            } else {
+                File[] directories = rootFolder.listFiles();
+                if (directories == null || directories.length == 0) return;
+                for (File directory : directories) {
+                    if (directory.isDirectory()) locateKeyFilesRecursive(directory);
                 }
             }
-    }
-
-    public void verifyKeyFiles() {
-        if (keyManager.isKeyMissing()) {
-            this.runOnUiThread(() -> Executors.newSingleThreadExecutor().execute(() -> {
-                try {
-                    Scanner scanner = new Scanner(new URL(
-                            "https://pastebin.com/raw/aV23ha3X").openStream());
-                    for (int i = 0; i < 4; i++) {
-                        if (scanner.hasNextLine()) scanner.nextLine();
-                    }
-                    this.keyManager.evaluateKey(new ByteArrayInputStream(
-                            TagUtils.hexToByteArray(scanner.nextLine()
-                                    .replace(" ", ""))));
-                    hideFakeSnackbar();
-                    scanner.close();
-                } catch (IOException e) {
-                    Debug.Warn(e);
-                }
-                if (Thread.currentThread().isInterrupted()) return;
-                this.onRefresh(true);
-            }));
-        } else {
-            this.onRefresh(true);
-        }
+        });
     }
 
     public void locateKeyFiles() {
@@ -2647,13 +2627,42 @@ public class BrowserActivity extends AppCompatActivity implements
                         hideFakeSnackbar();
                     } catch (Exception e) {
                         Debug.Warn(e);
+                        verifyKeyFiles();
                     }
                 }
             } else {
                 locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated().get()));
             }
-            verifyKeyFiles();
         });
+    }
+
+    public void verifyKeyFiles() {
+        if (keyManager.isKeyMissing()) {
+            Executors.newSingleThreadExecutor().execute(() -> {
+                try {
+                    Scanner scanner = new Scanner(new URL(
+                            "https://pastebin.com/raw/aV23ha3X").openStream());
+                    for (int i = 0; i < 4; i++) {
+                        if (scanner.hasNextLine()) scanner.nextLine();
+                    }
+                    this.keyManager.evaluateKey(new ByteArrayInputStream(
+                            TagUtils.hexToByteArray(scanner.nextLine()
+                                    .replace(" ", ""))));
+                    scanner.close();
+                } catch (IOException e) {
+                    Debug.Warn(e);
+                }
+
+                if (Thread.currentThread().isInterrupted()) return;
+
+                this.runOnUiThread(() -> {
+                    hideFakeSnackbar();
+                    this.onRefresh(true);
+                });
+            });
+        } else {
+            this.onRefresh(true);
+        }
     }
 
     private static final String[] PERMISSIONS_STORAGE = {

@@ -289,15 +289,12 @@ public class AmiiboManager {
     }
 
     public static ArrayList<AmiiboFile> listAmiibos(
-            KeyManager keyManager, File rootFolder, boolean recursiveFiles) {
+            KeyManager keyManager, File rootFolder, boolean recursiveFiles
+    ) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
-        File[] files = rootFolder.listFiles();
-        if (null == files || files.length == 0)
-            return amiiboFiles;
-        for (File file : files) {
-            if (file.isDirectory() && recursiveFiles) {
-                amiiboFiles.addAll(listAmiibos(keyManager, file, true));
-            } else if (binFileMatcher(file.getName())) {
+        File[] files = rootFolder.listFiles((dir, name) -> binFileMatcher(name));
+        if (null != files && files.length > 0) {
+            for (File file : files) {
                 try {
                     byte[] data = TagUtils.getValidatedFile(keyManager, file);
                     if (null != data) {
@@ -308,13 +305,20 @@ public class AmiiboManager {
                     Debug.Info(e);
                 }
             }
+        } else if (recursiveFiles) {
+            File[] directories = rootFolder.listFiles();
+            if (directories == null || directories.length == 0) return amiiboFiles;
+            for (File directory : directories) {
+                if (directory.isDirectory()) amiiboFiles
+                        .addAll(listAmiibos(keyManager, directory, true));
+            }
         }
         return amiiboFiles;
     }
 
     public static ArrayList<AmiiboFile> listAmiiboDocuments(
-            Context context, KeyManager keyManager,
-            DocumentFile rootFolder, boolean recursiveFiles) {
+            Context context, KeyManager keyManager, DocumentFile rootFolder, boolean recursiveFiles
+    ) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
         ArrayList<Uri> uris = new AmiiboDocument(context)
                 .listFiles(rootFolder.getUri(), recursiveFiles);

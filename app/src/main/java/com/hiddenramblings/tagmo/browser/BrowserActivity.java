@@ -2595,7 +2595,6 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void locateKeyFilesRecursive(File rootFolder) {
-        Executors.newSingleThreadExecutor().execute(() -> {
             File[] files = rootFolder.listFiles();
             if (files == null || files.length == 0)
                 return;
@@ -2611,7 +2610,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                 }
             }
-        });
     }
 
     public void verifyKeyFiles() {

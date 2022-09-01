@@ -798,7 +798,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     @SuppressLint("MissingPermission")
     private void dismissFlaskDiscovery() {
-        mBluetoothAdapter = null != getContext() && null != mBluetoothAdapter ? mBluetoothAdapter
+        mBluetoothAdapter = null != mBluetoothAdapter ? mBluetoothAdapter
                 : bluetoothHandler.getBluetoothAdapter(requireContext());
         if (null != mBluetoothAdapter) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -835,17 +835,19 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        dismissFlaskDiscovery();
-        disconnectFlask();
-    }
-
-    @Override
     public void onPause() {
         isFragmentVisible = false;
         dismissSnackbarNotice();
         super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            dismissFlaskDiscovery();
+        } catch (NullPointerException ignored) { }
+        disconnectFlask();
     }
 
     @Override

@@ -53,6 +53,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
+import myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView;
+
 public class BrowserFragment extends Fragment implements
         FoomiiboAdapter.OnFoomiiboClickListener{
 
@@ -137,6 +139,12 @@ public class BrowserFragment extends Fragment implements
         setFoomiiboVisibility();
 
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
+            if (amiibosView instanceof IndexFastScrollRecyclerView) {
+                ((IndexFastScrollRecyclerView) amiibosView).setIndexBarVisibility(false);
+            }
+            if (foomiiboView instanceof IndexFastScrollRecyclerView) {
+                ((IndexFastScrollRecyclerView) foomiiboView).setIndexBarVisibility(false);
+            }
             int srcHeight = amiibosView.getLayoutParams().height;
             int y = (int) event.getY();
             if (amiibosView.getLayoutParams().height + y >= 0.5f) {

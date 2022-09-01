@@ -1613,8 +1613,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public void onAmiiboClicked(View itemView, AmiiboFile amiiboFile) {
-        if (null == amiiboFile.getDocUri() && null == amiiboFile.getFilePath())
-            return;
+        if (null == amiiboFile.getDocUri() && null == amiiboFile.getFilePath()) return;
         try {
             byte[] tagData = null != amiiboFile.getData() ? amiiboFile.getData()
                     : null != amiiboFile.getDocUri()

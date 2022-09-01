@@ -54,6 +54,7 @@
 
 package com.hiddenramblings.tagmo.eightbit.io;
 
+import android.app.ActivityManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -187,6 +188,42 @@ public class Debug {
     private static final String issueUrl = "https://github.com/HiddenRamblings/TagMo/issues/new?"
             + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+";
 
+    private static String floatForm(double d) {
+        return String.format(java.util.Locale.US, "%.2f", d);
+    }
+
+    private static String bytesToString(long size) {
+        long Kb = 1024;
+        long Mb = Kb * 1024;
+        long Gb = Mb * 1024;
+        long Tb = Gb * 1024;
+        long Pb = Tb * 1024;
+        long Eb = Pb * 1024;
+
+        if (size < Kb)
+            return floatForm(size) + " byte";
+        else if (size < Mb)
+            return floatForm((double) size / Kb) + " KB";
+        else if (size < Gb)
+            return floatForm((double) size / Mb) + " MB";
+        else if (size < Tb)
+            return floatForm((double) size / Gb) + " GB";
+        else if (size < Pb)
+            return floatForm((double) size / Tb) + " TB";
+        else if (size < Eb)
+            return floatForm((double) size / Pb) + " Pb";
+        else
+            return floatForm((double) size / Eb) + " Eb";
+    }
+
+    private static String getDeviceRAM(Context context) {
+        ActivityManager actManager = (ActivityManager)
+                context.getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+        actManager.getMemoryInfo(memInfo);
+        return bytesToString(memInfo.totalMem);
+    }
+
     public static StringBuilder getDeviceProfile(Context context) {
         String separator = System.getProperty("line.separator") != null
                 ? Objects.requireNonNull(System.getProperty("line.separator")) : "\n";
@@ -209,6 +246,7 @@ public class Debug {
         log.append(" (");
         log.append(Build.VERSION.RELEASE);
         log.append(")");
+        log.append(separator).append(getDeviceRAM(context)).append(" RAM");
         log.append(separator).append(context.getString(R.string.install_src, BuildConfig.BUILD_TYPE));
         return log;
     }

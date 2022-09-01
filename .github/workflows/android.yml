@@ -44,7 +44,7 @@ jobs:
 
     - name: Retrieve commit identification
       run: |
-         GIT_BRANCH=$(git symbolic-ref HEAD | sed -e "s/^refs\/heads\///")
+         GIT_BRANCH=$(git name-rev --name-only HEAD)
          echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
          GIT_HASH=$(git rev-parse --short HEAD)
          echo "GIT_HASH=${GIT_HASH}" >> $GITHUB_ENV
@@ -61,6 +61,6 @@ jobs:
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: ${{ env.GIT_BRANCH }}
-        prerelease: ${{ env.GIT_BRANCH == 'conversion' }}
+        prerelease: ${{ env.GIT_BRANCH != 'master' }}
         title: TagMo-${{ env.GIT_HASH }}
         files: ${{steps.sign_app.outputs.signedReleaseFile}}

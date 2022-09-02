@@ -18,18 +18,6 @@ import com.hiddenramblings.tagmo.settings.SettingsFragment;
 @GlideModule
 public class GlideTagModule extends AppGlideModule {
 
-    @Override
-    public void applyOptions(@NonNull Context context, GlideBuilder builder) {
-        int diskCacheSizeBytes = 1024 * 1024 * 128; // 128 MB
-        // The current size of the API image repo is 117.1 MB
-        builder.setDiskCache(new ExternalPreferredCacheDiskCacheFactory(
-                context, diskCacheSizeBytes));
-        builder.setLogLevel(Log.ERROR);
-        RequestOptions requestOptions = onlyRetrieveFromCache(context,
-                new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE));
-        builder.setDefaultRequestOptions(requestOptions);
-    }
-
     public RequestOptions onlyRetrieveFromCache(Context context, RequestOptions requestOptions) {
         String imageNetworkSetting = TagMo.getPrefs().image_network_settings().get();
         if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
@@ -43,6 +31,23 @@ public class GlideTagModule extends AppGlideModule {
         } else {
             return requestOptions.onlyRetrieveFromCache(false);
         }
+    }
+
+    @Override
+    public void applyOptions(@NonNull Context context, GlideBuilder builder) {
+        int diskCacheSizeBytes = 1024 * 1024 * 128; // 128 MB
+        // The current size of the API image repo is 117.1 MB
+        builder.setDiskCache(new ExternalPreferredCacheDiskCacheFactory(
+                context, diskCacheSizeBytes));
+        builder.setLogLevel(Log.ERROR);
+        RequestOptions requestOptions = onlyRetrieveFromCache(context,
+                new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE));
+        builder.setDefaultRequestOptions(requestOptions);
+    }
+
+    @Override
+    public boolean isManifestParsingEnabled() {
+        return false;
     }
 }
 

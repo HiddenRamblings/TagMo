@@ -63,20 +63,20 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
         return (int) ((this.id & TAIL_MASK) >> TAIL_BITSHIFT);
     }
 
-    public long getGameSeriesId() {
-        return this.id & GameSeries.MASK;
-    }
-
-    public GameSeries getGameSeries() {
-        return this.manager.gameSeries.get(this.getGameSeriesId());
-    }
-
     public long getCharacterId() {
         return this.id & Character.MASK;
     }
 
     public Character getCharacter() {
         return this.manager.characters.get(this.getCharacterId());
+    }
+
+    public long getGameSeriesId() {
+        return this.id & GameSeries.MASK;
+    }
+
+    public GameSeries getGameSeries() {
+        return this.manager.gameSeries.get(this.getGameSeriesId());
     }
 
     @SuppressWarnings("unused")
@@ -133,21 +133,7 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
     public int compareTo(@NonNull Amiibo amiibo) {
         if (this.id == amiibo.id)
             return 0;
-
-        GameSeries gameSeries1 = this.getGameSeries();
-        GameSeries gameSeries2 = amiibo.getGameSeries();
         int value;
-        if (gameSeries1 == null && gameSeries2 == null) {
-            value = 0;
-        } else if (gameSeries1 == null) {
-            value = 1;
-        } else if (gameSeries2 == null) {
-            value = -1;
-        } else {
-            value = gameSeries1.compareTo(gameSeries2);
-        }
-        if (value != 0)
-            return value;
 
         Character character1 = this.getCharacter();
         Character character2 = amiibo.getCharacter();
@@ -159,6 +145,20 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
             value = -1;
         } else {
             value = character1.compareTo(character2);
+        }
+        if (value != 0)
+            return value;
+
+        GameSeries gameSeries1 = this.getGameSeries();
+        GameSeries gameSeries2 = amiibo.getGameSeries();
+        if (gameSeries1 == null && gameSeries2 == null) {
+            value = 0;
+        } else if (gameSeries1 == null) {
+            value = 1;
+        } else if (gameSeries2 == null) {
+            value = -1;
+        } else {
+            value = gameSeries1.compareTo(gameSeries2);
         }
         if (value != 0)
             return value;
@@ -205,16 +205,16 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
         return value;
     }
 
-    public static boolean matchesGameSeriesFilter(GameSeries gameSeries, String gameSeriesFilter) {
-        if (null != gameSeries) {
-            return gameSeriesFilter.isEmpty() || gameSeries.name.equals(gameSeriesFilter);
+    public static boolean matchesCharacterFilter(Character character, String characterFilter) {
+        if (null != character) {
+            return characterFilter.isEmpty() || character.name.equals(characterFilter);
         }
         return true;
     }
 
-    public static boolean matchesCharacterFilter(Character character, String characterFilter) {
-        if (null != character) {
-            return characterFilter.isEmpty() || character.name.equals(characterFilter);
+    public static boolean matchesGameSeriesFilter(GameSeries gameSeries, String gameSeriesFilter) {
+        if (null != gameSeries) {
+            return gameSeriesFilter.isEmpty() || gameSeries.name.equals(gameSeriesFilter);
         }
         return true;
     }

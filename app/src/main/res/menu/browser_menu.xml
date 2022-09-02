@@ -19,20 +19,20 @@
         app:showAsAction="ifRoom">
         <menu>
             <item
-                android:id="@+id/filter_game_series"
-                android:title="@string/amiibo_game">
-                <menu>
-                    <group
-                        android:id="@+id/filter_game_series_group"
-                        android:checkableBehavior="single"/>
-                </menu>
-            </item>
-            <item
                 android:id="@+id/filter_character"
                 android:title="@string/amiibo_character">
                 <menu>
                     <group
                         android:id="@+id/filter_character_group"
+                        android:checkableBehavior="single"/>
+                </menu>
+            </item>
+            <item
+                android:id="@+id/filter_game_series"
+                android:title="@string/amiibo_game">
+                <menu>
+                    <group
+                        android:id="@+id/filter_game_series_group"
                         android:checkableBehavior="single"/>
                 </menu>
             </item>
@@ -84,11 +84,11 @@
                     android:id="@+id/sort_name"
                     android:title="@string/amiibo_name"/>
                 <item
-                    android:id="@+id/sort_game_series"
-                    android:title="@string/amiibo_game"/>
-                <item
                     android:id="@+id/sort_character"
                     android:title="@string/amiibo_character"/>
+                <item
+                    android:id="@+id/sort_game_series"
+                    android:title="@string/amiibo_game"/>
                 <item
                     android:id="@+id/sort_amiibo_series"
                     android:title="@string/amiibo_series"/>

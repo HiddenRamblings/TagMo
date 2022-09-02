@@ -34,8 +34,8 @@ public class AmiiboManager {
     public static final String AMIIBO_DATABASE_FILE = "amiibo.json";
 
     public final HashMap<Long, Amiibo> amiibos = new HashMap<>();
-    public final HashMap<Long, GameSeries> gameSeries = new HashMap<>();
     public final HashMap<Long, Character> characters = new HashMap<>();
+    public final HashMap<Long, GameSeries> gameSeries = new HashMap<>();
     public final HashMap<Long, AmiiboType> amiiboTypes = new HashMap<>();
     public final HashMap<Long, AmiiboSeries> amiiboSeries = new HashMap<>();
 
@@ -141,16 +141,16 @@ public class AmiiboManager {
             Amiibo amiibo = new Amiibo(manager, key, name, releaseDates);
             manager.amiibos.put(amiibo.id, amiibo);
 
-            long gameSeriesId = amiibo.getGameSeriesId();
-            if (!manager.gameSeries.containsKey(gameSeriesId)) {
-                GameSeries gameSeries = new GameSeries(manager, gameSeriesId, amiiboJSON.getString("gameSeries"));
-                manager.gameSeries.put(gameSeriesId, gameSeries);
-            }
-
             long characterId = amiibo.getCharacterId();
             if (!manager.characters.containsKey(characterId)) {
                 Character character = new Character(manager, characterId, amiiboJSON.getString("character"));
                 manager.characters.put(characterId, character);
+            }
+
+            long gameSeriesId = amiibo.getGameSeriesId();
+            if (!manager.gameSeries.containsKey(gameSeriesId)) {
+                GameSeries gameSeries = new GameSeries(manager, gameSeriesId, amiiboJSON.getString("gameSeries"));
+                manager.gameSeries.put(gameSeriesId, gameSeries);
             }
 
             long amiiboTypeId = amiibo.getAmiiboTypeId();

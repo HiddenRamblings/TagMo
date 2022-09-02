@@ -130,16 +130,16 @@ public class FoomiiboAdapter
                             section = String.valueOf(amiibo.name.charAt(0)).toUpperCase();
                         }
                         break;
-                    case GAME_SERIES:
-                        if (null != amiibo.getGameSeries()) {
-                            section = String.valueOf(amiibo
-                                    .getGameSeries().name.charAt(0)).toUpperCase();
-                        }
-                        break;
                     case CHARACTER:
                         if (null != amiibo.getCharacter()) {
                             section = String.valueOf(amiibo
                                     .getCharacter().name.charAt(0)).toUpperCase();
+                        }
+                        break;
+                    case GAME_SERIES:
+                        if (null != amiibo.getGameSeries()) {
+                            section = String.valueOf(amiibo
+                                    .getGameSeries().name.charAt(0)).toUpperCase();
                         }
                         break;
                     case AMIIBO_SERIES:

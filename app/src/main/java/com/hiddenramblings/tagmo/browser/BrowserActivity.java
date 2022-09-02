@@ -151,7 +151,9 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -823,20 +825,6 @@ public class BrowserActivity extends AppCompatActivity implements
         Set<Long> items = new HashSet<>();
         for (Amiibo amiibo : amiiboManager.amiibos.values()) {
             switch (filterType) {
-                case GAME_SERIES:
-                    GameSeries gameSeries = amiibo.getGameSeries();
-                    if (null != gameSeries &&
-                            Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
-                                    settings.getFilter(FILTER.CHARACTER)) &&
-                            Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
-                                    settings.getFilter(FILTER.AMIIBO_SERIES)) &&
-                            Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
-                                    settings.getFilter(FILTER.AMIIBO_TYPE))
-                    ) {
-                        if (gameSeries.name.equals(filter))
-                            items.add(amiibo.id);
-                    }
-                    break;
                 case CHARACTER:
                     Character character = amiibo.getCharacter();
                     if (null != character &&
@@ -848,6 +836,20 @@ public class BrowserActivity extends AppCompatActivity implements
                                     settings.getFilter(FILTER.AMIIBO_TYPE))
                     ) {
                         if (character.name.equals(filter))
+                            items.add(amiibo.id);
+                    }
+                    break;
+                case GAME_SERIES:
+                    GameSeries gameSeries = amiibo.getGameSeries();
+                    if (null != gameSeries &&
+                            Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
+                                    settings.getFilter(FILTER.CHARACTER)) &&
+                            Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
+                                    settings.getFilter(FILTER.AMIIBO_SERIES)) &&
+                            Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
+                                    settings.getFilter(FILTER.AMIIBO_TYPE))
+                    ) {
+                        if (gameSeries.name.equals(filter))
                             items.add(amiibo.id);
                     }
                     break;
@@ -898,52 +900,6 @@ public class BrowserActivity extends AppCompatActivity implements
         return items.size();
     }
 
-    private boolean onFilterGameSeriesClick() {
-        SubMenu subMenu = menuFilterGameSeries.getSubMenu();
-        subMenu.clear();
-
-        AmiiboManager amiiboManager = settings.getAmiiboManager();
-        if (amiiboManager == null) return false;
-
-        Set<String> items = new HashSet<>();
-        for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
-
-            GameSeries gameSeries = amiibo.getGameSeries();
-            if (null != gameSeries &&
-                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
-                            settings.getFilter(FILTER.CHARACTER)) &&
-                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
-                            settings.getFilter(FILTER.AMIIBO_SERIES)) &&
-                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
-                            settings.getFilter(FILTER.AMIIBO_TYPE))
-            ) {
-                items.add(gameSeries.name);
-            }
-        }
-
-        ArrayList<String> list = new ArrayList<>(items);
-        Collections.sort(list);
-        for (String item : list) {
-            subMenu.add(R.id.filter_game_series_group, Menu.NONE, 0, item)
-                    .setChecked(item.equals(settings.getFilter(FILTER.GAME_SERIES)))
-                    .setOnMenuItemClickListener(onFilterGameSeriesItemClick);
-        }
-        subMenu.setGroupCheckable(R.id.filter_game_series_group, true, true);
-
-        return true;
-    }
-
-    private final MenuItem.OnMenuItemClickListener onFilterGameSeriesItemClick =
-            new MenuItem.OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            settings.setFilter(FILTER.GAME_SERIES, menuItem.getTitle().toString());
-            settings.notifyChanges();
-            filteredCount = getFilteredCount(menuItem.getTitle().toString(), FILTER.GAME_SERIES);
-            return false;
-        }
-    };
-
     private boolean onFilterCharacterClick() {
         SubMenu subMenu = menuFilterCharacter.getSubMenu();
         subMenu.clear();
@@ -989,6 +945,52 @@ public class BrowserActivity extends AppCompatActivity implements
                     return false;
                 }
             };
+
+    private boolean onFilterGameSeriesClick() {
+        SubMenu subMenu = menuFilterGameSeries.getSubMenu();
+        subMenu.clear();
+
+        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        if (amiiboManager == null) return false;
+
+        Set<String> items = new HashSet<>();
+        for (Amiibo amiibo : settings.getAmiiboManager().amiibos.values()) {
+
+            GameSeries gameSeries = amiibo.getGameSeries();
+            if (null != gameSeries &&
+                    Amiibo.matchesCharacterFilter(amiibo.getCharacter(),
+                            settings.getFilter(FILTER.CHARACTER)) &&
+                    Amiibo.matchesAmiiboSeriesFilter(amiibo.getAmiiboSeries(),
+                            settings.getFilter(FILTER.AMIIBO_SERIES)) &&
+                    Amiibo.matchesAmiiboTypeFilter(amiibo.getAmiiboType(),
+                            settings.getFilter(FILTER.AMIIBO_TYPE))
+            ) {
+                items.add(gameSeries.name);
+            }
+        }
+
+        ArrayList<String> list = new ArrayList<>(items);
+        Collections.sort(list);
+        for (String item : list) {
+            subMenu.add(R.id.filter_game_series_group, Menu.NONE, 0, item)
+                    .setChecked(item.equals(settings.getFilter(FILTER.GAME_SERIES)))
+                    .setOnMenuItemClickListener(onFilterGameSeriesItemClick);
+        }
+        subMenu.setGroupCheckable(R.id.filter_game_series_group, true, true);
+
+        return true;
+    }
+
+    private final MenuItem.OnMenuItemClickListener onFilterGameSeriesItemClick
+            = new MenuItem.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            settings.setFilter(FILTER.GAME_SERIES, menuItem.getTitle().toString());
+            settings.notifyChanges();
+            filteredCount = getFilteredCount(menuItem.getTitle().toString(), FILTER.GAME_SERIES);
+            return false;
+        }
+    };
 
     private boolean onFilterAmiiboSeriesClick() {
         SubMenu subMenu = menuFilterAmiiboSeries.getSubMenu();
@@ -1440,8 +1442,8 @@ public class BrowserActivity extends AppCompatActivity implements
         MenuItem menuUpdate = menu.findItem(R.id.install_update);
         menuSortId = menu.findItem(R.id.sort_id);
         menuSortName = menu.findItem(R.id.sort_name);
-        menuSortGameSeries = menu.findItem(R.id.sort_game_series);
         menuSortCharacter = menu.findItem(R.id.sort_character);
+        menuSortGameSeries = menu.findItem(R.id.sort_game_series);
         menuSortAmiiboSeries = menu.findItem(R.id.sort_amiibo_series);
         menuSortAmiiboType = menu.findItem(R.id.sort_amiibo_type);
         menuSortFilePath = menu.findItem(R.id.sort_file_path);
@@ -1547,11 +1549,11 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.sort_name) {
             settings.setSort(SORT.NAME.getValue());
             settings.notifyChanges();
-        } else if (item.getItemId() == R.id.sort_game_series) {
-            settings.setSort(SORT.GAME_SERIES.getValue());
-            settings.notifyChanges();
         } else if (item.getItemId() == R.id.sort_character) {
             settings.setSort(SORT.CHARACTER.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_game_series) {
+            settings.setSort(SORT.GAME_SERIES.getValue());
             settings.notifyChanges();
         } else if (item.getItemId() == R.id.sort_amiibo_series) {
             settings.setSort(SORT.AMIIBO_SERIES.getValue());
@@ -1595,10 +1597,10 @@ public class BrowserActivity extends AppCompatActivity implements
             onCaptureLogcatClicked();
         } else if (item.getItemId() == R.id.send_donation) {
             onSendDonationClicked();
-        } else if (item.getItemId() == R.id.filter_game_series) {
-            return onFilterGameSeriesClick();
         } else if (item.getItemId() == R.id.filter_character) {
             return onFilterCharacterClick();
+        } else if (item.getItemId() == R.id.filter_game_series) {
+            return onFilterGameSeriesClick();
         } else if (item.getItemId() == R.id.filter_amiibo_series) {
             return onFilterAmiiboSeriesClick();
         } else if (item.getItemId() == R.id.filter_amiibo_type) {
@@ -1863,13 +1865,13 @@ public class BrowserActivity extends AppCompatActivity implements
         if (newBrowserSettings.getSort() != oldBrowserSettings.getSort()) {
             onSortChanged();
         }
-        if (!BrowserSettings.equals(newBrowserSettings.getFilter(FILTER.GAME_SERIES),
-                oldBrowserSettings.getFilter(FILTER.GAME_SERIES))) {
-            onFilterContentsChanged(FILTER.GAME_SERIES);
-        }
         if (!BrowserSettings.equals(newBrowserSettings.getFilter(FILTER.CHARACTER),
                 oldBrowserSettings.getFilter(FILTER.CHARACTER))) {
             onFilterContentsChanged(FILTER.CHARACTER);
+        }
+        if (!BrowserSettings.equals(newBrowserSettings.getFilter(FILTER.GAME_SERIES),
+                oldBrowserSettings.getFilter(FILTER.GAME_SERIES))) {
+            onFilterContentsChanged(FILTER.GAME_SERIES);
         }
         if (!BrowserSettings.equals(newBrowserSettings.getFilter(FILTER.AMIIBO_SERIES),
                 oldBrowserSettings.getFilter(FILTER.AMIIBO_SERIES))) {
@@ -1908,8 +1910,8 @@ public class BrowserActivity extends AppCompatActivity implements
                         ? newBrowserSettings.getBrowserRootDocument().toString() : null)
                 .query().put(newBrowserSettings.getQuery())
                 .sort().put(newBrowserSettings.getSort())
-                .filterGameSeries().put(newBrowserSettings.getFilter(FILTER.GAME_SERIES))
                 .filterCharacter().put(newBrowserSettings.getFilter(FILTER.CHARACTER))
+                .filterGameSeries().put(newBrowserSettings.getFilter(FILTER.GAME_SERIES))
                 .filterAmiiboSeries().put(newBrowserSettings.getFilter(FILTER.AMIIBO_SERIES))
                 .filterAmiiboType().put(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE))
                 .filterGameTitles().put(newBrowserSettings.getFilter(FILTER.GAME_TITLES))
@@ -1952,13 +1954,13 @@ public class BrowserActivity extends AppCompatActivity implements
                 setIndexFastScrollRecyclerListener(amiibosView);
                 setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
-            case GAME_SERIES:
-                menuSortGameSeries.setChecked(true);
+            case CHARACTER:
+                menuSortCharacter.setChecked(true);
                 setIndexFastScrollRecyclerListener(amiibosView);
                 setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
-            case CHARACTER:
-                menuSortCharacter.setChecked(true);
+            case GAME_SERIES:
+                menuSortGameSeries.setChecked(true);
                 setIndexFastScrollRecyclerListener(amiibosView);
                 setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
@@ -2019,11 +2021,11 @@ public class BrowserActivity extends AppCompatActivity implements
         String filterText = settings.getFilter(filter);
         String filterTag = "";
         switch (filter) {
-            case GAME_SERIES:
-                filterTag = getString(R.string.filter_game_series);
-                break;
             case CHARACTER:
                 filterTag = getString(R.string.filter_character);
+                break;
+            case GAME_SERIES:
+                filterTag = getString(R.string.filter_game_series);
                 break;
             case AMIIBO_SERIES:
                 filterTag = getString(R.string.filter_amiibo_series);
@@ -2043,8 +2045,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     void onFilterContentsLoaded() {
-        onFilterContentsChanged(FILTER.GAME_SERIES);
         onFilterContentsChanged(FILTER.CHARACTER);
+        onFilterContentsChanged(FILTER.GAME_SERIES);
         onFilterContentsChanged(FILTER.AMIIBO_SERIES);
         onFilterContentsChanged(FILTER.AMIIBO_TYPE);
         onFilterContentsChanged(FILTER.GAME_TITLES);
@@ -2310,10 +2312,11 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void getManagerStats() {
         View foomiiboSlider = fragmentBrowser.getView();
-        TextView gameSeriesStats = findViewById(R.id.stats_game_series);
         TextView characterStats = findViewById(R.id.stats_character);
-        TextView amiiboSeriesStats = findViewById(R.id.stats_amiibo_series);
+//        TextView gameSeriesStats = findViewById(R.id.stats_game_series);
+//        TextView amiiboSeriesStats = findViewById(R.id.stats_amiibo_series);
         TextView amiiboTypeStats = findViewById(R.id.stats_amiibo_type);
+        TextView amiiboTitleStats = findViewById(R.id.stats_amiibo_titles);
 
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         boolean hasAmiibo = null != amiiboManager;
@@ -2322,32 +2325,16 @@ public class BrowserActivity extends AppCompatActivity implements
             foomiiboStats.setText(getString(R.string.number_foomiibo, hasAmiibo
                     ? amiiboManager.amiibos.size() : 0));
         }
-        gameSeriesStats.setText(getString(R.string.number_game, hasAmiibo
-                ? amiiboManager.gameSeries.size() : 0));
         characterStats.setText(getString(R.string.number_character, hasAmiibo
                 ? amiiboManager.characters.size() : 0));
-        amiiboSeriesStats.setText(getString(R.string.number_series, hasAmiibo
-                ? amiiboManager.amiiboSeries.size() : 0));
+//        gameSeriesStats.setText(getString(R.string.number_game, hasAmiibo
+//                ? amiiboManager.gameSeries.size() : 0));
+//        amiiboSeriesStats.setText(getString(R.string.number_series, hasAmiibo
+//                ? amiiboManager.amiiboSeries.size() : 0));
         amiiboTypeStats.setText(getString(R.string.number_type, hasAmiibo
                 ? amiiboManager.amiiboTypes.size() : 0));
 
         if (hasAmiibo) {
-            gameSeriesStats.setOnClickListener(view1 -> {
-                final ArrayList<String> items = new ArrayList<>();
-                for (GameSeries gameSeries : amiiboManager.gameSeries.values()) {
-                    if (!items.contains(gameSeries.name))
-                        items.add(gameSeries.name);
-                }
-                Collections.sort(items);
-
-                new android.app.AlertDialog.Builder(this)
-                        .setTitle(R.string.amiibo_game)
-                        .setAdapter(new ArrayAdapter<>(this,
-                                android.R.layout.simple_list_item_1, items), null)
-                        .setPositiveButton(R.string.close, null)
-                        .show();
-            });
-
             characterStats.setOnClickListener(view1 -> {
                 final ArrayList<Character> items = new ArrayList<>();
                 for (Character character : amiiboManager.characters.values()) {
@@ -2380,21 +2367,37 @@ public class BrowserActivity extends AppCompatActivity implements
                         .show();
             });
 
-            amiiboSeriesStats.setOnClickListener(view1 -> {
-                final ArrayList<String> items = new ArrayList<>();
-                for (AmiiboSeries amiiboSeries : amiiboManager.amiiboSeries.values()) {
-                    if (!items.contains(amiiboSeries.name))
-                        items.add(amiiboSeries.name);
-                }
-                Collections.sort(items);
+//            gameSeriesStats.setOnClickListener(view1 -> {
+//                final ArrayList<String> items = new ArrayList<>();
+//                for (GameSeries gameSeries : amiiboManager.gameSeries.values()) {
+//                    if (!items.contains(gameSeries.name))
+//                        items.add(gameSeries.name);
+//                }
+//                Collections.sort(items);
+//
+//                new android.app.AlertDialog.Builder(this)
+//                        .setTitle(R.string.amiibo_game)
+//                        .setAdapter(new ArrayAdapter<>(this,
+//                                android.R.layout.simple_list_item_1, items), null)
+//                        .setPositiveButton(R.string.close, null)
+//                        .show();
+//            });
 
-                new android.app.AlertDialog.Builder(this)
-                        .setTitle(R.string.amiibo_series)
-                        .setAdapter(new ArrayAdapter<>(this,
-                                android.R.layout.simple_list_item_1, items), null)
-                        .setPositiveButton(R.string.close, null)
-                        .show();
-            });
+//            amiiboSeriesStats.setOnClickListener(view1 -> {
+//                final ArrayList<String> items = new ArrayList<>();
+//                for (AmiiboSeries amiiboSeries : amiiboManager.amiiboSeries.values()) {
+//                    if (!items.contains(amiiboSeries.name))
+//                        items.add(amiiboSeries.name);
+//                }
+//                Collections.sort(items);
+//
+//                new android.app.AlertDialog.Builder(this)
+//                        .setTitle(R.string.amiibo_series)
+//                        .setAdapter(new ArrayAdapter<>(this,
+//                                android.R.layout.simple_list_item_1, items), null)
+//                        .setPositiveButton(R.string.close, null)
+//                        .show();
+//            });
 
             amiiboTypeStats.setOnClickListener(view1 -> {
                 final ArrayList<AmiiboType> amiiboTypes =
@@ -2409,6 +2412,30 @@ public class BrowserActivity extends AppCompatActivity implements
 
                 new android.app.AlertDialog.Builder(this)
                         .setTitle(R.string.pref_amiibo_types)
+                        .setAdapter(new ArrayAdapter<>(this,
+                                android.R.layout.simple_list_item_1, items), null)
+                        .setPositiveButton(R.string.close, null)
+                        .show();
+            });
+        }
+
+        GamesManager gamesManager = settings.getGamesManager();
+        boolean hasGames = null != amiiboManager;
+        amiiboTitleStats.setText(getString(R.string.number_titles, hasGames
+                ? gamesManager.getGameTitles().size() : 0));
+
+        if (hasGames) {
+            amiiboTitleStats.setOnClickListener(view1 -> {
+                final Collection<GameTitles> amiiboTitles = gamesManager.getGameTitles();
+                final ArrayList<String> items = new ArrayList<>();
+                for (GameTitles amiiboTitle : amiiboTitles) {
+                    if (!items.contains(amiiboTitle.name))
+                        items.add(amiiboTitle.name);
+                }
+                Collections.sort(items);
+
+                new android.app.AlertDialog.Builder(this)
+                        .setTitle(R.string.pref_amiibo_titles)
                         .setAdapter(new ArrayAdapter<>(this,
                                 android.R.layout.simple_list_item_1, items), null)
                         .setPositiveButton(R.string.close, null)

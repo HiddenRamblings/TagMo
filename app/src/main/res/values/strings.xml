@@ -30,6 +30,7 @@
 
     <string name="pref_amiibo_characters">Characters</string>
     <string name="pref_amiibo_types">Amiibo Types</string>
+    <string name="pref_amiibo_titles">Enabled Games</string>
 
     <string name="amiibo_name_caps">NAME</string>
     <string name="amiibo_id_caps">TAGID</string>
@@ -198,6 +199,7 @@
     <string name="number_character">%1$d Character(s)</string>
     <string name="number_series">%1$d amiibo&#8482; Series</string>
     <string name="number_type">%1$d amiibo&#8482; Type(s)</string>
+    <string name="number_titles">%1$d Enabled Game(s)</string>
     <string name="pref_advanced">Advanced</string>
     <string name="pref_tagmo_theme">TagMo System Theme</string>
     <string name="tagmo_theme_details">Change local theme independent of system theme settings</string>

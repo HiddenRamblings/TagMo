@@ -175,35 +175,35 @@
                     android:text="@string/grant_file_permission" />
 
                 <TextView
-                    android:id="@+id/stats_game_series"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="12dp" />
-
-                <TextView
                     android:id="@+id/stats_character"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:singleLine="true"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginBottom="12dp" />
 
-                <TextView
-                    android:id="@+id/stats_amiibo_series"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="12dp" />
+<!--                <TextView-->
+<!--                    android:id="@+id/stats_game_series"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:gravity="center"-->
+<!--                    android:singleLine="true"-->
+<!--                    android:textColor="@android:color/white"-->
+<!--                    android:textSize="16sp"-->
+<!--                    android:layout_marginBottom="12dp" />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/stats_amiibo_series"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:gravity="center"-->
+<!--                    android:singleLine="true"-->
+<!--                    android:textColor="@android:color/white"-->
+<!--                    android:textSize="18sp"-->
+<!--                    android:layout_marginBottom="12dp" />-->
 
                 <TextView
                     android:id="@+id/stats_amiibo_type"
@@ -212,7 +212,17 @@
                     android:gravity="center"
                     android:singleLine="true"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:id="@+id/stats_amiibo_titles"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
                     android:layout_marginBottom="16dp" />
 
                 <LinearLayout

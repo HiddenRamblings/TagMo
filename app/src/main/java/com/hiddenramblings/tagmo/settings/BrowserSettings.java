@@ -57,8 +57,8 @@ public class BrowserSettings implements Parcelable {
     }
 
     public enum FILTER {
-        GAME_SERIES,
         CHARACTER,
+        GAME_SERIES,
         AMIIBO_SERIES,
         AMIIBO_TYPE,
         GAME_TITLES
@@ -104,8 +104,8 @@ public class BrowserSettings implements Parcelable {
     protected Uri browserDocument;
     protected String query;
     protected int sort;
-    protected String filterGameSeries;
     protected String filterCharacter;
+    protected String filterGameSeries;
     protected String filterAmiiboSeries;
     protected String filterAmiiboType;
     protected String filterGameTitles;
@@ -123,7 +123,7 @@ public class BrowserSettings implements Parcelable {
     @SuppressWarnings("unused")
     public BrowserSettings(
             ArrayList<AmiiboFile> amiiboFiles, ArrayList<File> folders, File browserFolder,
-            String query, int sort, String filterGameSeries, String filterCharacter,
+            String query, int sort, String filterCharacter, String filterGameSeries,
             String filterAmiiboSeries, String filterAmiiboType, String filterGameTitles,
             int browserAmiiboView, String imageNetworkSettings, boolean recursiveFolders,
             boolean hideDownloads, String lastUpdatedAPI, long lastUpdatedGit
@@ -135,8 +135,8 @@ public class BrowserSettings implements Parcelable {
         this.browserFolder = browserFolder;
         this.query = query;
         this.sort = sort;
-        this.filterGameSeries = filterGameSeries;
         this.filterCharacter = filterCharacter;
+        this.filterGameSeries = filterGameSeries;
         this.filterAmiiboSeries = filterAmiiboSeries;
         this.filterAmiiboType = filterAmiiboType;
         this.filterGameTitles = filterGameTitles;
@@ -164,8 +164,8 @@ public class BrowserSettings implements Parcelable {
                 ? Uri.parse(prefs.browserRootDocument().get()) : null);
         this.setQuery(prefs.query().get());
         this.setSort(prefs.sort().get());
-        this.setFilter(FILTER.GAME_SERIES, prefs.filterGameSeries().get());
         this.setFilter(FILTER.CHARACTER, prefs.filterCharacter().get());
+        this.setFilter(FILTER.GAME_SERIES, prefs.filterGameSeries().get());
         this.setFilter(FILTER.AMIIBO_SERIES, prefs.filterAmiiboSeries().get());
         this.setFilter(FILTER.AMIIBO_TYPE, prefs.filterAmiiboType().get());
         this.setFilter(FILTER.GAME_TITLES, prefs.filterGameTitles().get());
@@ -229,11 +229,11 @@ public class BrowserSettings implements Parcelable {
     public String getFilter(FILTER filter) {
         String filterText = "";
         switch (filter) {
-            case GAME_SERIES:
-                filterText = this.filterGameSeries;
-                break;
             case CHARACTER:
                 filterText = this.filterCharacter;
+                break;
+            case GAME_SERIES:
+                filterText = this.filterGameSeries;
                 break;
             case AMIIBO_SERIES:
                 filterText = this.filterAmiiboSeries;
@@ -250,11 +250,11 @@ public class BrowserSettings implements Parcelable {
 
     public void setFilter(FILTER filter, String filterText) {
         switch (filter) {
-            case GAME_SERIES:
-                this.filterGameSeries = filterText;
-                break;
             case CHARACTER:
                 this.filterCharacter = filterText;
+                break;
+            case GAME_SERIES:
+                this.filterGameSeries = filterText;
                 break;
             case AMIIBO_SERIES:
                 this.filterAmiiboSeries = filterText;
@@ -364,8 +364,8 @@ public class BrowserSettings implements Parcelable {
         copy.setFolders(this.getFolders());
         copy.setQuery(this.getQuery());
         copy.setSort(this.getSort());
-        copy.setFilter(FILTER.GAME_SERIES, this.getFilter(FILTER.GAME_SERIES));
         copy.setFilter(FILTER.CHARACTER, this.getFilter(FILTER.CHARACTER));
+        copy.setFilter(FILTER.GAME_SERIES, this.getFilter(FILTER.GAME_SERIES));
         copy.setFilter(FILTER.AMIIBO_SERIES, this.getFilter(FILTER.AMIIBO_SERIES));
         copy.setFilter(FILTER.AMIIBO_TYPE, this.getFilter(FILTER.AMIIBO_TYPE));
         copy.setFilter(FILTER.GAME_TITLES, this.getFilter(FILTER.GAME_TITLES));
@@ -395,8 +395,8 @@ public class BrowserSettings implements Parcelable {
         dest.writeString(null != this.browserDocument ? this.browserDocument.toString() : null);
         dest.writeString(this.query);
         dest.writeInt(this.sort);
-        dest.writeString(this.filterGameSeries);
         dest.writeString(this.filterCharacter);
+        dest.writeString(this.filterGameSeries);
         dest.writeString(this.filterAmiiboSeries);
         dest.writeString(this.filterAmiiboType);
         dest.writeString(this.filterGameTitles);
@@ -417,8 +417,8 @@ public class BrowserSettings implements Parcelable {
         this.browserDocument = null != docs && docs.length() > 0 ? Uri.parse(docs) : null;
         this.query = in.readString();
         this.sort = in.readInt();
-        this.filterGameSeries = in.readString();
         this.filterCharacter = in.readString();
+        this.filterGameSeries = in.readString();
         this.filterAmiiboSeries = in.readString();
         this.filterAmiiboType = in.readString();
         this.filterGameTitles = in.readString();
@@ -453,18 +453,18 @@ public class BrowserSettings implements Parcelable {
     }
 
     public boolean isFilterEmpty() {
-        return getFilter(FILTER.GAME_SERIES).isEmpty()
-                && getFilter(FILTER.CHARACTER).isEmpty()
+        return getFilter(FILTER.CHARACTER).isEmpty()
+                && getFilter(FILTER.GAME_SERIES).isEmpty()
                 && getFilter(FILTER.AMIIBO_SERIES).isEmpty()
                 && getFilter(FILTER.AMIIBO_TYPE).isEmpty()
                 && getFilter(FILTER.GAME_TITLES).isEmpty();
     }
 
     public static boolean hasFilterChanged(BrowserSettings current, BrowserSettings previous) {
-        return !equals(current.getFilter(FILTER.GAME_SERIES),
-                previous.getFilter(FILTER.GAME_SERIES))
-                || !equals(current.getFilter(FILTER.CHARACTER),
+        return !equals(current.getFilter(FILTER.CHARACTER),
                 previous.getFilter(FILTER.CHARACTER))
+                || !equals(current.getFilter(FILTER.GAME_SERIES),
+                previous.getFilter(FILTER.GAME_SERIES))
                 || !equals(current.getFilter(FILTER.AMIIBO_SERIES),
                 previous.getFilter(FILTER.AMIIBO_SERIES))
                 || !equals(current.getFilter(FILTER.AMIIBO_TYPE),
@@ -474,12 +474,12 @@ public class BrowserSettings implements Parcelable {
     }
 
     public boolean amiiboContainsQuery(Amiibo amiibo, String query) {
-        GameSeries gameSeries = amiibo.getGameSeries();
-        if (!Amiibo.matchesGameSeriesFilter(gameSeries, getFilter(FILTER.GAME_SERIES)))
-            return false;
-
         Character character = amiibo.getCharacter();
         if (!Amiibo.matchesCharacterFilter(character, getFilter(FILTER.CHARACTER)))
+            return false;
+
+        GameSeries gameSeries = amiibo.getGameSeries();
+        if (!Amiibo.matchesGameSeriesFilter(gameSeries, getFilter(FILTER.GAME_SERIES)))
             return false;
 
         AmiiboSeries amiiboSeries = amiibo.getAmiiboSeries();
@@ -499,9 +499,9 @@ public class BrowserSettings implements Parcelable {
                 return true;
             else if (null != amiibo.name && amiibo.name.toLowerCase().contains(query))
                 return true;
-            else if (null != gameSeries && gameSeries.name.toLowerCase().contains(query))
-                return true;
             else if (null != character && character.name.toLowerCase().contains(query))
+                return true;
+            else if (null != gameSeries && gameSeries.name.toLowerCase().contains(query))
                 return true;
             else if (null != amiiboSeries && amiiboSeries.name.toLowerCase().contains(query))
                 return true;

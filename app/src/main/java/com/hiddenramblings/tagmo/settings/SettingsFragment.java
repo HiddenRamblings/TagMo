@@ -247,18 +247,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Executors.newSingleThreadExecutor().execute(() -> {
             try (InputStream strm = requireContext().getContentResolver().openInputStream(data)) {
                 this.keyManager.evaluateKey(strm);
+
+                if (Thread.currentThread().isInterrupted()) return;
+
+                ((BrowserActivity) requireActivity()).onRefresh(true);
+                updateKeySummary();
             } catch (Exception e) {
                 Debug.Info(e);
-                requireActivity().runOnUiThread(() ->
-                        new IconifiedSnackbar(requireActivity()).buildSnackbar(
-                                requireActivity().findViewById(R.id.preferences),
-                                e.getMessage(), Snackbar.LENGTH_SHORT
-                        ).show());
+                ((BrowserActivity) requireActivity()).verifyKeyFiles();
             }
-            if (Thread.currentThread().isInterrupted()) return;
-
-            ((BrowserActivity) requireActivity()).onRefresh(true);
-            updateKeySummary();
         });
     }
 

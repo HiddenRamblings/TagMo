@@ -153,7 +153,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -2630,7 +2629,6 @@ public class BrowserActivity extends AppCompatActivity implements
                         hideFakeSnackbar();
                     } catch (Exception e) {
                         Debug.Warn(e);
-                        verifyKeyFiles();
                     }
                 }
             } else {
@@ -2654,7 +2652,6 @@ public class BrowserActivity extends AppCompatActivity implements
                         hideFakeSnackbar();
                     } catch (Exception e) {
                         Debug.Warn(e);
-                        verifyKeyFiles();
                     }
                 }
             } else {

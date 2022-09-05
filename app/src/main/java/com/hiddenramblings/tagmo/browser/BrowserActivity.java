@@ -44,6 +44,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -250,9 +251,9 @@ public class BrowserActivity extends AppCompatActivity implements
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
         }
 
-        setLoadCompleted();
-
         setContentView(R.layout.activity_browser);
+
+        setLoadCompleted();
 
         fakeSnackbar = findViewById(R.id.fake_snackbar);
         fakeSnackbarText = findViewById(R.id.snackbar_text);
@@ -2735,23 +2736,6 @@ public class BrowserActivity extends AppCompatActivity implements
         onRequestScopedStorage.launch(intent);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (!closePrefsDrawer()) {
-            if (null != bottomSheet && BottomSheetBehavior
-                    .STATE_EXPANDED == bottomSheet.getState()) {
-                bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            } else if (View.VISIBLE == amiiboContainer.getVisibility()) {
-                amiiboContainer.setVisibility(View.GONE);
-            } else if (mainLayout.getCurrentItem() != 0) {
-                mainLayout.setCurrentItem(0, true);
-            } else {
-                super.onBackPressed();
-                finishAffinity();
-            }
-        }
-    }
-
     private boolean hasTestedElite;
     private boolean isEliteDevice;
 
@@ -3146,8 +3130,26 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void setLoadCompleted() {
         int loadCount = prefs.refreshCount().get();
-        if (prefs.refreshCount().get() == 0) onShowDonationNotice();
+        if (loadCount == 0) onShowDonationNotice();
         prefs.refreshCount().put(loadCount <= 8 ? loadCount + 1 : 0);
+        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (!closePrefsDrawer()) {
+                    if (null != bottomSheet && BottomSheetBehavior
+                            .STATE_EXPANDED == bottomSheet.getState()) {
+                        bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    } else if (View.VISIBLE == amiiboContainer.getVisibility()) {
+                        amiiboContainer.setVisibility(View.GONE);
+                    } else if (mainLayout.getCurrentItem() != 0) {
+                        mainLayout.setCurrentItem(0, true);
+                    } else {
+                        finishAffinity();
+                    }
+                }
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(onBackPressedCallback);
     }
 
     @Override

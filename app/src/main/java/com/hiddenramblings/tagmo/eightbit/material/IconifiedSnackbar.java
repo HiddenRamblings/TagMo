@@ -94,6 +94,9 @@ public class IconifiedSnackbar {
         switch (mActivity.get().getResources().getConfiguration()
                 .uiMode & Configuration.UI_MODE_NIGHT_MASK) {
             case Configuration.UI_MODE_NIGHT_YES:
+                snackbar.setBackgroundTint(ContextCompat.getColor(
+                        mActivity.get(), R.color.snackbar_dark
+                ));
                 textView.setTextColor(ContextCompat.getColor(
                         mActivity.get(), android.R.color.primary_text_dark
                 ));

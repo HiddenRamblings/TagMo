@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -64,6 +65,7 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -182,12 +184,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private SettingsFragment fragmentSettings;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private JoyConFragment fragmentJoyCon;
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private TextView currentFolderView;
     private DrawerLayout prefsDrawer;
     private AppCompatButton switchStorageRoot;
     private AppCompatButton switchStorageType;
+    private Dialog joyConDialog;
 
     private AnimatedLinearLayout fakeSnackbar;
     private TextView fakeSnackbarText;
@@ -558,13 +560,10 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void onShowJoyConFragment() {
-        if (null == fragmentJoyCon) fragmentJoyCon = new JoyConFragment();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences, fragmentJoyCon)
-                .commit();
-        prefsDrawer.openDrawer(GravityCompat.START);
-        fragmentJoyCon.delayedBluetoothEnable();
+        if (null != joyConDialog && joyConDialog.isShowing()) return;
+        JoyConFragment fragmentJoyCon = JoyConFragment.newInstance();
+        fragmentJoyCon.show(getSupportFragmentManager(), "dialog");
+        joyConDialog = fragmentJoyCon.getDialog();
     }
 
     private void requestStoragePermission() {
@@ -617,8 +616,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
         byte[] tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
 
-        View view = getLayoutInflater().inflate(R.layout.dialog_backup,
-                mainLayout, false);
+        View view = getLayoutInflater().inflate(
+                R.layout.dialog_backup, mainLayout, false
+        );
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData, true));
@@ -2589,11 +2589,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     public boolean closePrefsDrawer() {
         if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                if (null != fragmentJoyCon) fragmentJoyCon.disconnectJoyCon();
-            }
             prefsDrawer.closeDrawer(GravityCompat.START);
-            onLoadSettingsFragment();
             return true;
         }
         return false;

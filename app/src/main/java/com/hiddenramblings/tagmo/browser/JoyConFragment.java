@@ -1,10 +1,12 @@
 package com.hiddenramblings.tagmo.browser;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
@@ -20,6 +22,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.hiddenramblings.tagmo.R;
@@ -29,7 +33,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class JoyConFragment extends Fragment implements
+public class JoyConFragment extends DialogFragment implements
         BluetoothHandler.BluetoothListener {
 
     private BluetoothHandler bluetoothHandler;
@@ -128,6 +132,7 @@ public class JoyConFragment extends Fragment implements
     @Override
     public void onPermissionsFailed() {
         new Toasty(requireActivity()).Long(R.string.flask_permissions);
+        this.dismiss();
     }
 
     @Override
@@ -161,5 +166,24 @@ public class JoyConFragment extends Fragment implements
                 }
             }
         }
+    }
+
+    public static JoyConFragment newInstance() {
+        return new JoyConFragment();
+    }
+
+    @NonNull @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(requireActivity());
+        dialog.setNegativeButton(R.string.close, (dialogInterface, i) -> dialogInterface.cancel());
+        Dialog joyConDialog = dialog.setView(getView()).create();
+        joyConDialog.setOnShowListener(dialogInterface -> delayedBluetoothEnable());
+        return joyConDialog;
+    }
+
+    @Override
+    public void onCancel(@NonNull DialogInterface dialog) {
+        super.onCancel(dialog);
+        disconnectJoyCon();
     }
 }

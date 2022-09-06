@@ -98,7 +98,7 @@ public class IconifiedSnackbar {
                         mActivity.get(), R.color.snackbar_dark
                 ));
                 textView.setTextColor(ContextCompat.getColor(
-                        mActivity.get(), android.R.color.primary_text_dark
+                        mActivity.get(), R.color.primary_text_dark
                 ));
                 break;
             case Configuration.UI_MODE_NIGHT_NO:
@@ -106,7 +106,7 @@ public class IconifiedSnackbar {
                         mActivity.get(), android.R.color.darker_gray
                 ));
                 textView.setTextColor(ContextCompat.getColor(
-                        mActivity.get(), android.R.color.primary_text_light
+                        mActivity.get(), R.color.primary_text_light
                 ));
                 break;
         }

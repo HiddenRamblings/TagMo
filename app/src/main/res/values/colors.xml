@@ -12,4 +12,14 @@
     <color name="tagWarningDark">#FF00FF</color>
 
     <color name="snackbar_dark">#222</color>
+    <!-- Equivalent to 0xff000000 -->
+    <color name="background_dark">#ff000000</color>
+    <!-- Equivalent to 0xffffffff -->
+    <color name="background_light">#ffffffff</color>
+    <color name="bright_foreground_dark">@color/background_light</color>
+    <color name="bright_foreground_light">@color/background_dark</color>
+    <color name="bright_foreground_dark_disabled">#80ffffff</color>
+    <color name="bright_foreground_light_disabled">#80000000</color>
+    <color name="bright_foreground_dark_inverse">@color/bright_foreground_light</color>
+    <color name="bright_foreground_light_inverse">@color/bright_foreground_dark</color>
 </resources>

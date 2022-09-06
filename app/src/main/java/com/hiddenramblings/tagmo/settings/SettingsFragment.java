@@ -254,7 +254,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 updateKeySummary();
             } catch (Exception e) {
                 Debug.Info(e);
-                ((BrowserActivity) requireActivity()).verifyKeyFiles();
             }
         });
     }
@@ -422,7 +421,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private final ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
-            ((BrowserActivity) requireActivity()).locateKeyFiles();
+            ((BrowserActivity) requireActivity()).verifyKeyFiles();
             return;
         }
         if (null != result.getData().getClipData()) {

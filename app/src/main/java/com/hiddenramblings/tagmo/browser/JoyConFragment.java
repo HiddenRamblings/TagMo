@@ -57,7 +57,7 @@ public class JoyConFragment extends DialogFragment implements
                             try {
                                 serviceJoyCon.setJoyConCharacteristicRX();
                             } catch (UnsupportedOperationException uoe) {
-                                disconnectJoyCon();
+                                JoyConFragment.this.dismiss();
                                 new Toasty(requireActivity()).Short(R.string.flask_invalid);
                             }
                         }
@@ -77,7 +77,7 @@ public class JoyConFragment extends DialogFragment implements
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            disconnectJoyCon();
+            stopJoyConService();
         }
     };
 
@@ -131,12 +131,13 @@ public class JoyConFragment extends DialogFragment implements
 
     @Override
     public void onPermissionsFailed() {
-        new Toasty(requireActivity()).Long(R.string.flask_permissions);
         this.dismiss();
+        new Toasty(requireActivity()).Long(R.string.flask_permissions);
     }
 
     @Override
     public void onAdapterMissing() {
+        this.dismiss();
         new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
     }
 

@@ -796,7 +796,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onShowDonationNotice() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             Snackbar donorNotice = new IconifiedSnackbar(
-                    BrowserActivity.this, mainLayout
+                    BrowserActivity.this, findViewById(R.id.coordinator)
             ).buildSnackbar(
                     R.string.donation_notice,
                     R.drawable.ic_github_octocat_24dp, Snackbar.LENGTH_LONG

@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -65,7 +64,6 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -183,8 +181,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private AppUpdateInfo appUpdate;
 
     private SettingsFragment fragmentSettings;
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private BottomSheetBehavior<View> bottomSheetBehavior;
+    private BottomSheetBehavior<View> bottomSheet;
     private TextView currentFolderView;
     private DrawerLayout prefsDrawer;
     private AppCompatButton switchStorageRoot;
@@ -198,7 +196,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private FloatingActionButton nfcFab;
     private RecyclerView amiibosView;
     private RecyclerView foomiiboView;
-    private BottomSheetBehavior<View> bottomSheet;
     private BrowserFragment fragmentBrowser;
     private EliteBankFragment fragmentElite;
 
@@ -2983,68 +2980,71 @@ public class BrowserActivity extends AppCompatActivity implements
     };
 
     private void retrieveDonationMenu() {
-        billingClient = BillingClient.newBuilder(this)
-                .setListener(purchasesUpdatedListener).enablePendingPurchases().build();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            billingClient = BillingClient.newBuilder(this)
+                    .setListener(purchasesUpdatedListener).enablePendingPurchases().build();
 
-        iapSkuDetails.clear();
-        subSkuDetails.clear();
+            iapSkuDetails.clear();
+            subSkuDetails.clear();
 
-        billingClient.startConnection(new BillingClientStateListener() {
-            @Override
-            public void onBillingServiceDisconnected() { }
+            billingClient.startConnection(new BillingClientStateListener() {
+                @Override
+                public void onBillingServiceDisconnected() {
+                }
 
-            @Override
-            public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
-                if (billingResult.getResponseCode() ==  BillingClient.BillingResponseCode.OK) {
-                    iapList.add(getIAP(1));
-                    iapList.add(getIAP(5));
-                    iapList.add(getIAP(10));
-                    iapList.add(getIAP(25));
-                    iapList.add(getIAP(50));
-                    iapList.add(getIAP(75));
-                    iapList.add(getIAP(99));
-                    for (String productId : iapList) {
+                @Override
+                public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                        iapList.add(getIAP(1));
+                        iapList.add(getIAP(5));
+                        iapList.add(getIAP(10));
+                        iapList.add(getIAP(25));
+                        iapList.add(getIAP(50));
+                        iapList.add(getIAP(75));
+                        iapList.add(getIAP(99));
+                        for (String productId : iapList) {
+                            QueryProductDetailsParams.Product productList = QueryProductDetailsParams
+                                    .Product.newBuilder().setProductId(productId)
+                                    .setProductType(BillingClient.ProductType.INAPP).build();
+                            QueryProductDetailsParams.Builder params = QueryProductDetailsParams
+                                    .newBuilder().setProductList(List.of(productList));
+                            billingClient.queryProductDetailsAsync(params.build(),
+                                    (billingResult1, productDetailsList) -> {
+                                        iapSkuDetails.addAll(productDetailsList);
+                                        billingClient.queryPurchaseHistoryAsync(
+                                                QueryPurchaseHistoryParams.newBuilder().setProductType(
+                                                        BillingClient.ProductType.INAPP
+                                                ).build(), iapHistoryListener
+                                        );
+                                    });
+
+                        }
+                    }
+                    subList.add(getSub(1));
+                    subList.add(getSub(5));
+                    subList.add(getSub(10));
+                    subList.add(getSub(25));
+                    subList.add(getSub(50));
+                    subList.add(getSub(75));
+                    subList.add(getSub(99));
+                    for (String productId : subList) {
                         QueryProductDetailsParams.Product productList = QueryProductDetailsParams
                                 .Product.newBuilder().setProductId(productId)
-                                .setProductType(BillingClient.ProductType.INAPP).build();
+                                .setProductType(BillingClient.ProductType.SUBS).build();
                         QueryProductDetailsParams.Builder params = QueryProductDetailsParams
                                 .newBuilder().setProductList(List.of(productList));
                         billingClient.queryProductDetailsAsync(params.build(),
                                 (billingResult1, productDetailsList) -> {
-                            iapSkuDetails.addAll(productDetailsList);
-                            billingClient.queryPurchaseHistoryAsync(
-                                    QueryPurchaseHistoryParams.newBuilder().setProductType(
-                                            BillingClient.ProductType.INAPP
-                                    ).build(), iapHistoryListener
-                            );
-                        });
-
+                                    subSkuDetails.addAll(productDetailsList);
+                                    billingClient.queryPurchaseHistoryAsync(
+                                            QueryPurchaseHistoryParams.newBuilder().setProductType(
+                                                    BillingClient.ProductType.SUBS
+                                            ).build(), subHistoryListener
+                                    );
+                                });
                     }
                 }
-                subList.add(getSub(1));
-                subList.add(getSub(5));
-                subList.add(getSub(10));
-                subList.add(getSub(25));
-                subList.add(getSub(50));
-                subList.add(getSub(75));
-                subList.add(getSub(99));
-                for (String productId : subList) {
-                    QueryProductDetailsParams.Product productList = QueryProductDetailsParams
-                            .Product.newBuilder().setProductId(productId)
-                            .setProductType(BillingClient.ProductType.SUBS).build();
-                    QueryProductDetailsParams.Builder params = QueryProductDetailsParams
-                            .newBuilder().setProductList(List.of(productList));
-                    billingClient.queryProductDetailsAsync(params.build(),
-                            (billingResult1, productDetailsList) -> {
-                        subSkuDetails.addAll(productDetailsList);
-                        billingClient.queryPurchaseHistoryAsync(
-                                QueryPurchaseHistoryParams.newBuilder().setProductType(
-                                        BillingClient.ProductType.SUBS
-                                ).build(), subHistoryListener
-                        );
-                    });
-                }
-            }
+            });
         });
     }
 

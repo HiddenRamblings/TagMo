@@ -263,7 +263,9 @@ public class Debug {
         } catch (android.content.ActivityNotFoundException ex) {
             ClipboardManager clipboard = (ClipboardManager) context
                     .getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboard.setPrimaryClip(ClipData.newPlainText("TagMo", logText));
+            clipboard.setPrimaryClip(ClipData.newPlainText(context.getString(
+                    R.string.git_issue_title, BuildConfig.COMMIT
+            ), logText));
             context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
         }
     }

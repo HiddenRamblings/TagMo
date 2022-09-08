@@ -83,7 +83,7 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+@SuppressLint("NewApi")
 public class FlaskSlotFragment extends Fragment implements
         FlaskSlotAdapter.OnAmiiboClickListener,
         BluetoothHandler.BluetoothListener {
@@ -133,6 +133,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private int currentCount;
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     protected ServiceConnection mServerConn = new ServiceConnection() {
         boolean isServiceDiscovered = false;
 
@@ -269,6 +270,8 @@ public class FlaskSlotFragment extends Fragment implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
 
         rootLayout = (CoordinatorLayout) view;
 
@@ -599,6 +602,7 @@ public class FlaskSlotFragment extends Fragment implements
         return null != selectedAmiibo ? selectedAmiibo : new FlaskTag(Long.parseLong(name[1]));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @SuppressLint("MissingPermission")
     private void scanBluetoothServices() {
         mBluetoothAdapter = null != mBluetoothAdapter ? mBluetoothAdapter
@@ -646,6 +650,7 @@ public class FlaskSlotFragment extends Fragment implements
         }, 20000);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @SuppressLint("MissingPermission")
     private void selectBluetoothDevice() {
         boolean isDevicePaired = false;
@@ -672,6 +677,7 @@ public class FlaskSlotFragment extends Fragment implements
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void uploadAmiiboFile(AmiiboFile amiiboFile, boolean complete) {
         if (null != amiiboFile) {
             Amiibo amiibo = null;
@@ -836,14 +842,16 @@ public class FlaskSlotFragment extends Fragment implements
 
     @Override
     public void onPause() {
+        super.onPause();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
         isFragmentVisible = false;
         dismissSnackbarNotice();
-        super.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
         try {
             dismissFlaskDiscovery();
         } catch (NullPointerException ignored) { }
@@ -852,8 +860,9 @@ public class FlaskSlotFragment extends Fragment implements
 
     @Override
     public void onResume() {
-        isFragmentVisible = true;
         super.onResume();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
+        isFragmentVisible = true;
         if (null != statusBar && statusBar.isShown()) return;
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             switch (noticeState) {

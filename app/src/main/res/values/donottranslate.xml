@@ -58,10 +58,8 @@
     <string name="power_tag" translatable="false">Power Tag</string>
     <string name="elite_n2" translatable="false">N2 Elite</string>
     <string name="elite_amiiqo" translatable="false">N2 Elite / Amiiqo</string>
-    <string name="flask_ble" translatable="false">Flask</string>
+    <string name="flask_title" translatable="false">Flask</string>
     <string name="bluup_flask" translatable="false">Bluup Flask</string>
-
-    <string name="bluup_flask_web" translatable="false">Bluup Flask &#160;ᵂᵂᵂ</string>
 
     <string name="mifare_classic" translatable="false">Mifare Classic</string>
     <string name="mifare_plus" translatable="false">Mifare Plus</string>

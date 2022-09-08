@@ -11,9 +11,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class NavPagerAdapter extends FragmentStateAdapter {
     private final BrowserFragment fragmentBrowser = new BrowserFragment();
-//    private final FoomiiboFragment fragmentFoomiibo = new FoomiiboFragment();
     private final EliteBankFragment fragmentElite = new EliteBankFragment();
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private final FlaskSlotFragment fragmentFlask = new FlaskSlotFragment();
     private final WebsiteFragment fragmentWebsite = new WebsiteFragment();
 
@@ -28,8 +26,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
             case 1:
                 return fragmentElite;
             case 2:
-                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-                        ? fragmentFlask : fragmentWebsite;
+                return fragmentFlask;
             case 3:
                 return fragmentWebsite;
             default:
@@ -39,7 +36,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 ? 4 : 3;
+        return 4;
     }
 
     public BrowserFragment getBrowser() {
@@ -50,7 +47,6 @@ public class NavPagerAdapter extends FragmentStateAdapter {
         return fragmentElite;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public FlaskSlotFragment getFlaskSlots() {
         return fragmentFlask;
     }

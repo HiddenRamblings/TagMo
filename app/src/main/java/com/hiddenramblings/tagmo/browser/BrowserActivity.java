@@ -717,7 +717,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 ).setAction(NFCIntent.ACTION_SCAN_TAG));
                 return true;
             } else if (item.getItemId() == R.id.mnu_lego) {
-
+                new Toasty(this).Short(R.string.notice_incomplete);
                 return true;
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
                     && item.getItemId() == R.id.mnu_joy_con) {

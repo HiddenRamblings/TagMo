@@ -325,13 +325,19 @@ public class BrowserActivity extends AppCompatActivity implements
                     case 2:
                         hideBrowserInterface();
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                            setTitle(R.string.flask_ble);
+                            setTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
                             amiibosView = fragmentFlask.getAmiibosView();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
-                            setTitle(R.string.guides);
+                            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                            CustomTabsIntent customTabsIntent = builder.build();
+                            builder.setCloseButtonIcon(BitmapFactory.decodeResource(getResources(),
+                                    R.drawable.ic_stat_notice_24dp));
+                            customTabsIntent.launchUrl(
+                                    BrowserActivity.this, Uri.parse("https://flask.run/")
+                            );
                         }
                         break;
                     case 3:
@@ -367,8 +373,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     tab.setText(R.string.elite_n2);
                     break;
                 case 2:
-                    tab.setText(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-                            ? R.string.flask_ble : R.string.guides);
+                    tab.setText(R.string.flask_title);
                     break;
                 case 3:
                     tab.setText(R.string.guides);
@@ -667,13 +672,15 @@ public class BrowserActivity extends AppCompatActivity implements
         MenuItem scanItem = popup.getMenu().findItem(R.id.mnu_scan);
         MenuItem backupItem = popup.getMenu().findItem(R.id.mnu_backup);
         MenuItem validateItem = popup.getMenu().findItem(R.id.mnu_validate);
-        MenuItem flaskItem = popup.getMenu().findItem(R.id.mnu_flask);
+        MenuItem legoItem = popup.getMenu().findItem(R.id.mnu_lego);
+        MenuItem joyConItem = popup.getMenu().findItem(R.id.mnu_joy_con);
 
         scanItem.setEnabled(false);
         backupItem.setEnabled(false);
         validateItem.setEnabled(false);
-        flaskItem.setEnabled(false);
-        flaskItem.setVisible(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2);
+        legoItem.setEnabled(false);
+        joyConItem.setEnabled(false);
+        joyConItem.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2);
 
         popup.show();
         Handler popupHandler = new Handler(Looper.getMainLooper()) {
@@ -684,26 +691,20 @@ public class BrowserActivity extends AppCompatActivity implements
         };
         popupHandler.postDelayed(() -> {
             int baseDelay = 0;
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 baseDelay = 75;
-                popupHandler.sendEmptyMessageDelayed(R.id.mnu_flask,  baseDelay);
+                popupHandler.sendEmptyMessageDelayed(R.id.mnu_joy_con, baseDelay);
             }
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, 75 + baseDelay);
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, 175 + baseDelay);
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, 275 + baseDelay);
-        }, 325);
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_lego, 75 + baseDelay);
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, 175 + baseDelay);
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, 275 + baseDelay);
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, 375 + baseDelay);
+        }, 275);
 
         popup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.mnu_scan) {
                 onNFCActivity.launch(new Intent(this,
                         NfcActivity.class).setAction(NFCIntent.ACTION_SCAN_TAG));
-                return true;
-            } else if (item.getItemId() == R.id.mnu_flask) {
-                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                CustomTabsIntent customTabsIntent = builder.build();
-                builder.setCloseButtonIcon(BitmapFactory.decodeResource(getResources(),
-                        R.drawable.ic_stat_notice_24dp));
-                customTabsIntent.launchUrl(this, Uri.parse("https://flask.run/"));
                 return true;
             } else if (item.getItemId() == R.id.mnu_backup) {
                 Intent backup = new Intent(this, NfcActivity.class);
@@ -714,6 +715,13 @@ public class BrowserActivity extends AppCompatActivity implements
                 onValidateActivity.launch(new Intent(
                         this, NfcActivity.class
                 ).setAction(NFCIntent.ACTION_SCAN_TAG));
+                return true;
+            } else if (item.getItemId() == R.id.mnu_lego) {
+
+                return true;
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+                    && item.getItemId() == R.id.mnu_joy_con) {
+                onShowJoyConFragment();
                 return true;
             }
             return false;
@@ -1456,10 +1464,6 @@ public class BrowserActivity extends AppCompatActivity implements
         menuRecursiveFiles = menu.findItem(R.id.recursive);
         menuHideDownloads = menu.findItem(R.id.hide_downloads);
 
-        menu.findItem(R.id.connect_joy_con).setVisible(
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-        );
-
         if (null == this.settings) return false;
 
         this.onSortChanged();
@@ -1587,9 +1591,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.hide_downloads) {
             this.settings.setHideDownloads(!this.settings.isHidingDownloads());
             this.settings.notifyChanges();
-        } else if (item.getItemId() == R.id.connect_joy_con
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            onShowJoyConFragment();
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
         } else if (item.getItemId() == R.id.send_donation) {

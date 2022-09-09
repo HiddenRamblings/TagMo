@@ -1258,13 +1258,21 @@ public class BrowserActivity extends AppCompatActivity implements
             if (item.getItemId() == R.id.mnu_write) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
                 scan.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
-                fragment.onUpdateTagResult.launch(scan.putExtras(args));
+                try {
+                    fragment.onUpdateTagResult.launch(scan.putExtras(args));
+                } catch (IllegalStateException ex) {
+                    mainLayout.setAdapter(pagerAdapter);
+                }
                 return true;
             } else if (item.getItemId() == R.id.mnu_update) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
                 scan.setAction(NFCIntent.ACTION_WRITE_TAG_DATA);
                 scan.putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId);
-                fragment.onUpdateTagResult.launch(scan.putExtras(args));
+                try {
+                    fragment.onUpdateTagResult.launch(scan.putExtras(args));
+                } catch (IllegalStateException ex) {
+                    mainLayout.setAdapter(pagerAdapter);
+                }
                 return true;
             } else if (item.getItemId() == R.id.mnu_save) {
                 fragment.buildFoomiiboFile(tagData);
@@ -1274,7 +1282,11 @@ public class BrowserActivity extends AppCompatActivity implements
             } else if (item.getItemId() == R.id.mnu_edit) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
                 Intent tagEdit = new Intent(this, TagDataEditor.class);
-                fragment.onUpdateTagResult.launch(tagEdit.putExtras(args));
+                try {
+                    fragment.onUpdateTagResult.launch(tagEdit.putExtras(args));
+                } catch (IllegalStateException ex) {
+                    mainLayout.setAdapter(pagerAdapter);
+                }
                 return true;
             } else if (item.getItemId() == R.id.mnu_view_hex) {
                 Intent hexView = new Intent(this, HexCodeViewer.class);

@@ -680,7 +680,7 @@ public class BrowserActivity extends AppCompatActivity implements
         validateItem.setEnabled(false);
         legoItem.setEnabled(false);
         joyConItem.setEnabled(false);
-        joyConItem.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2);
+        joyConItem.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M);
 
         popup.show();
         Handler popupHandler = new Handler(Looper.getMainLooper()) {
@@ -691,7 +691,7 @@ public class BrowserActivity extends AppCompatActivity implements
         };
         popupHandler.postDelayed(() -> {
             int baseDelay = 0;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 baseDelay = 75;
                 popupHandler.sendEmptyMessageDelayed(R.id.mnu_joy_con, baseDelay);
             }

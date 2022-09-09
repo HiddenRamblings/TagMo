@@ -4,15 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.ComponentName;
-import android.content.Context;
+import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.view.InputDevice;
 import android.view.LayoutInflater;
@@ -24,62 +20,44 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.browser.service.JoyConGattService;
 import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothHandler;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+
+@RequiresApi(api = Build.VERSION_CODES.M)
 public class JoyConFragment extends DialogFragment implements
         BluetoothHandler.BluetoothListener {
 
     private BluetoothHandler bluetoothHandler;
 
-    private JoyConGattService serviceJoyCon;
     private String addressJoyCon;
 
-    protected ServiceConnection mServerConn = new ServiceConnection() {
-        boolean isServiceDiscovered = false;
+    public static BluetoothSocket createL2CAPBluetoothSocket(String address, int psm) {
+        return createBluetoothSocket(BluetoothSocket.TYPE_L2CAP,
+                -1, false,false, address, psm);
+    }
 
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            JoyConGattService.LocalBinder localBinder = (JoyConGattService.LocalBinder) binder;
-            serviceJoyCon = localBinder.getService();
-            if (serviceJoyCon.initialize()) {
-                if (serviceJoyCon.connect(addressJoyCon)) {
-                    serviceJoyCon.setListener(new JoyConGattService.BluetoothGattListener() {
-                        @Override
-                        public void onServicesDiscovered() {
-                            isServiceDiscovered = true;
-                            try {
-                                serviceJoyCon.setJoyConCharacteristicRX();
-                            } catch (UnsupportedOperationException uoe) {
-                                JoyConFragment.this.dismiss();
-                                new Toasty(requireActivity()).Short(R.string.flask_invalid);
-                            }
-                        }
+    private static BluetoothSocket createBluetoothSocket(
+            int type, int fd, boolean auth, boolean encrypt, String address, int port
+    ) {
+        Debug.Verbose(JoyConFragment.class, "Creating socket with " + address + ":" + port);
 
-                        @Override
-                        public void onGattConnectionLost() {
-                            addressJoyCon = null;
-                            stopJoyConService();
-                        }
-                    });
-                } else {
-                    stopJoyConService();
-                    new Toasty(requireActivity()).Short(R.string.flask_invalid);
-                }
-            }
+        try {
+            Constructor<BluetoothSocket> constructor = BluetoothSocket.class.getDeclaredConstructor(
+                    int.class, int.class, boolean.class ,boolean.class, String.class, int.class
+            );
+            constructor.setAccessible(true);
+            return (BluetoothSocket) constructor.newInstance(type, fd, auth, encrypt, address, port);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            stopJoyConService();
-        }
-    };
+        return null;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -90,20 +68,6 @@ public class JoyConFragment extends DialogFragment implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-    }
-
-    public void disconnectJoyCon() {
-        if (null != serviceJoyCon)
-            serviceJoyCon.disconnect();
-        else
-            stopJoyConService();
-    }
-
-    public void stopJoyConService() {
-        try {
-            requireContext().unbindService(mServerConn);
-            requireContext().stopService(new Intent(requireContext(), JoyConGattService.class));
-        } catch (IllegalArgumentException ignored) { }
     }
 
     public void delayedBluetoothEnable() {
@@ -149,9 +113,22 @@ public class JoyConFragment extends DialogFragment implements
             for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
                 if (device.getName().equals("Pro Controller")) {
                     addressJoyCon = device.getAddress();
-                    Intent service = new Intent(requireContext(), JoyConGattService.class);
-                    requireContext().startService(service);
-                    requireContext().bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
+//                    Intent service = new Intent(requireContext(), JoyConGattService.class);
+//                    requireContext().startService(service);
+//                    requireContext().bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
+                    try {
+                        BluetoothSocket mSocket = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                                ? device.createInsecureL2capChannel(0x11)
+                                : createL2CAPBluetoothSocket(addressJoyCon, 0x11);
+                        if (mSocket != null) {
+                            if (!mSocket.isConnected()) {
+                                mSocket.connect();
+                            }
+                        }
+                    } catch (IOException ex) {
+                        JoyConFragment.this.dismiss();
+                        new Toasty(requireActivity()).Short(R.string.flask_invalid);
+                    }
                 }
             }
         }
@@ -172,7 +149,6 @@ public class JoyConFragment extends DialogFragment implements
 
     @Override
     public void onCancel(@NonNull DialogInterface dialog) {
-        disconnectJoyCon();
         super.onCancel(dialog);
     }
 }

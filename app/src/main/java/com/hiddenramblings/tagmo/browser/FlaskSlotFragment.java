@@ -133,7 +133,6 @@ public class FlaskSlotFragment extends Fragment implements
 
     private int currentCount;
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     protected ServiceConnection mServerConn = new ServiceConnection() {
         boolean isServiceDiscovered = false;
 
@@ -602,7 +601,6 @@ public class FlaskSlotFragment extends Fragment implements
         return null != selectedAmiibo ? selectedAmiibo : new FlaskTag(Long.parseLong(name[1]));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @SuppressLint("MissingPermission")
     private void scanBluetoothServices() {
         mBluetoothAdapter = null != mBluetoothAdapter ? mBluetoothAdapter
@@ -650,7 +648,6 @@ public class FlaskSlotFragment extends Fragment implements
         }, 20000);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @SuppressLint("MissingPermission")
     private void selectBluetoothDevice() {
         boolean isDevicePaired = false;
@@ -677,7 +674,6 @@ public class FlaskSlotFragment extends Fragment implements
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void uploadAmiiboFile(AmiiboFile amiiboFile, boolean complete) {
         if (null != amiiboFile) {
             Amiibo amiibo = null;
@@ -842,27 +838,24 @@ public class FlaskSlotFragment extends Fragment implements
 
     @Override
     public void onPause() {
-        super.onPause();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
         isFragmentVisible = false;
         dismissSnackbarNotice();
+        super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
         try {
             dismissFlaskDiscovery();
         } catch (NullPointerException ignored) { }
         disconnectFlask();
+        super.onDestroy();
     }
 
     @Override
     public void onResume() {
-        super.onResume();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
         isFragmentVisible = true;
+        super.onResume();
         if (null != statusBar && statusBar.isShown()) return;
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             switch (noticeState) {

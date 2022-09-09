@@ -118,18 +118,6 @@ public class JoyConFragment extends DialogFragment implements
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        disconnectJoyCon();
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-    }
-
-    @Override
     public void onPermissionsFailed() {
         this.dismiss();
         new Toasty(requireActivity()).Long(R.string.flask_permissions);
@@ -184,7 +172,7 @@ public class JoyConFragment extends DialogFragment implements
 
     @Override
     public void onCancel(@NonNull DialogInterface dialog) {
-        super.onCancel(dialog);
         disconnectJoyCon();
+        super.onCancel(dialog);
     }
 }

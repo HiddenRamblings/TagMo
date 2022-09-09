@@ -72,7 +72,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
-            new JSONExecutor(requireActivity(), TagMo.MIRRORED_API, "lastupdated/")
+            new JSONExecutor(requireActivity(), TagMo.getDatabaseUrl(), "lastupdated/")
                     .setResultListener(result -> {
                 if (null != result) parseUpdateJSON(result, false);
             });
@@ -293,7 +293,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     public void rebuildAmiiboDatabase() {
         resetAmiiboDatabase(false);
-        new JSONExecutor(requireActivity(), TagMo.MIRRORED_API, "lastupdated/")
+        new JSONExecutor(requireActivity(), TagMo.getDatabaseUrl(), "lastupdated/")
                 .setResultListener(result -> {
             if (null != result) parseUpdateJSON(result, true);
         });
@@ -358,7 +358,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         showSnackbar(R.string.sync_amiibo_process, Snackbar.LENGTH_INDEFINITE);
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                URL url = new URL(TagMo.MIRRORED_API + "api/amiibo/");
+                String domain = TagMo.getDatabaseUrl();
+                URL url = new URL(domain + "api/amiibo/");
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.setUseCaches(false);
@@ -370,7 +371,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     urlConnection.disconnect();
                     fixServerLocation(new URL(address));
                     statusCode = urlConnection.getResponseCode();
-                } else if (statusCode != HttpURLConnection.HTTP_OK) {
+                } else if (statusCode != HttpURLConnection.HTTP_OK
+                        && TagMo.MIRRORED_API.equals(domain)) {
                     fixServerLocation(new URL(TagMo.FALLBACK_API + "api/amiibo/"));
                     statusCode = urlConnection.getResponseCode();
                 }

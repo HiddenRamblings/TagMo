@@ -68,6 +68,10 @@ public class TagMo extends Application {
 
     public static int uiDelay = 50;
 
+    public static String getDatabaseUrl() {
+        return mPrefs.get().settings_disable_foomiibo().get() ? FALLBACK_API : MIRRORED_API;
+    }
+
     public static boolean isGooglePlay() {
         return Objects.equals(BuildConfig.BUILD_TYPE, "publish");
     }

@@ -381,7 +381,7 @@ public class BrowserFragment extends Fragment implements
                 menuOptions.setVisibility(View.GONE);
             } else {
                 menuOptions.setVisibility(View.VISIBLE);
-                activity.getToolbarOptions(toolbar, tagData, itemView);
+                activity.getToolbarOptions(this, toolbar, tagData, itemView);
             }
             TextView txtUsage = itemView.findViewById(R.id.txtUsage);
             if (txtUsage.getVisibility() == View.VISIBLE) {
@@ -391,7 +391,7 @@ public class BrowserFragment extends Fragment implements
                 getGameCompatibility(txtUsage, tagData);
             }
         } else {
-            activity.getToolbarOptions(toolbar, tagData, itemView);
+            activity.getToolbarOptions(this, toolbar, tagData, itemView);
             activity.updateAmiiboView(tagData, null);
         }
     }
@@ -414,8 +414,9 @@ public class BrowserFragment extends Fragment implements
         } catch (Exception ignored) { }
 
         if (settings.getAmiiboView() != BrowserSettings.VIEW.IMAGE.getValue()) {
-            ((BrowserActivity) requireActivity()).getToolbarOptions(itemView
-                    .findViewById(R.id.menu_options).findViewById(R.id.toolbar), tagData, itemView);
+            BrowserActivity activity = (BrowserActivity) requireActivity();
+            Toolbar toolbar = itemView.findViewById(R.id.menu_options).findViewById(R.id.toolbar);
+            activity.getToolbarOptions(this, toolbar, tagData, itemView);
             getGameCompatibility(itemView.findViewById(R.id.txtUsage), tagData);
         }
     }

@@ -29,7 +29,7 @@ import com.hiddenramblings.tagmo.widget.Toasty;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 
-@RequiresApi(api = Build.VERSION_CODES.M)
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class JoyConFragment extends DialogFragment implements
         BluetoothHandler.BluetoothListener {
 
@@ -38,7 +38,7 @@ public class JoyConFragment extends DialogFragment implements
     private String addressJoyCon;
 
     public static BluetoothSocket createL2CAPBluetoothSocket(String address, int psm) {
-        return createBluetoothSocket(BluetoothSocket.TYPE_L2CAP,
+        return createBluetoothSocket(3 /*BluetoothSocket.TYPE_L2CAP*/,
                 -1, false,false, address, psm);
     }
 

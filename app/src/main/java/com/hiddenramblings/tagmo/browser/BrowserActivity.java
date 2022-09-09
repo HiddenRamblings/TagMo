@@ -680,7 +680,7 @@ public class BrowserActivity extends AppCompatActivity implements
         validateItem.setEnabled(false);
         legoItem.setEnabled(false);
         joyConItem.setEnabled(false);
-        joyConItem.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M);
+        joyConItem.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2);
 
         popup.show();
         Handler popupHandler = new Handler(Looper.getMainLooper()) {
@@ -691,7 +691,7 @@ public class BrowserActivity extends AppCompatActivity implements
         };
         popupHandler.postDelayed(() -> {
             int baseDelay = 0;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 baseDelay = 75;
                 popupHandler.sendEmptyMessageDelayed(R.id.mnu_joy_con, baseDelay);
             }
@@ -1247,7 +1247,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    void getToolbarOptions(Toolbar toolbar, byte[] tagData, View itemView) {
+    void getToolbarOptions(BrowserFragment fragment, Toolbar toolbar, byte[] tagData, View itemView) {
         if (!toolbar.getMenu().hasVisibleItems())
             toolbar.inflateMenu(R.menu.amiibo_menu);
         toolbar.getMenu().findItem(R.id.mnu_save).setTitle(R.string.cache);
@@ -1258,23 +1258,23 @@ public class BrowserActivity extends AppCompatActivity implements
             if (item.getItemId() == R.id.mnu_write) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
                 scan.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
-                fragmentBrowser.onUpdateTagResult.launch(scan.putExtras(args));
+                fragment.onUpdateTagResult.launch(scan.putExtras(args));
                 return true;
             } else if (item.getItemId() == R.id.mnu_update) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
                 scan.setAction(NFCIntent.ACTION_WRITE_TAG_DATA);
                 scan.putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId);
-                fragmentBrowser.onUpdateTagResult.launch(scan.putExtras(args));
+                fragment.onUpdateTagResult.launch(scan.putExtras(args));
                 return true;
             } else if (item.getItemId() == R.id.mnu_save) {
-                fragmentBrowser.buildFoomiiboFile(tagData);
+                fragment.buildFoomiiboFile(tagData);
                 itemView.callOnClick();
                 onRefresh(false);
                 return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
                 Intent tagEdit = new Intent(this, TagDataEditor.class);
-                fragmentBrowser.onUpdateTagResult.launch(tagEdit.putExtras(args));
+                fragment.onUpdateTagResult.launch(tagEdit.putExtras(args));
                 return true;
             } else if (item.getItemId() == R.id.mnu_view_hex) {
                 Intent hexView = new Intent(this, HexCodeViewer.class);
@@ -1292,7 +1292,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
                 return true;
             } else if (item.getItemId() == R.id.mnu_delete) {
-                fragmentBrowser.deleteFoomiiboFile(tagData);
+                fragment.deleteFoomiiboFile(tagData);
                 itemView.callOnClick();
                 onRefresh(false);
                 return true;

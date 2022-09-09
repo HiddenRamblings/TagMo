@@ -341,7 +341,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 requireActivity().runOnUiThread(() ->
                         Glide.get(requireActivity()).clearMemory());
             } catch (IllegalStateException ignored) { }
-            requireActivity().runOnUiThread(() -> showSnackbar(
+            if (notify) requireActivity().runOnUiThread(() -> showSnackbar(
                     R.string.removing_amiibo_info, Snackbar.LENGTH_SHORT));
         });
     }

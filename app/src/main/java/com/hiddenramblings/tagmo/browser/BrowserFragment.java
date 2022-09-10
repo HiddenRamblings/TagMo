@@ -147,15 +147,19 @@ public class BrowserFragment extends Fragment implements
             }
             int srcHeight = amiibosView.getLayoutParams().height;
             int y = (int) event.getY();
-            if (amiibosView.getLayoutParams().height + y >= 0.5f) {
+            if (amiibosView.getLayoutParams().height + y >= -0.5f) {
                 if (event.getAction() == MotionEvent.ACTION_MOVE) {
                     amiibosView.getLayoutParams().height += y;
                     if (srcHeight != amiibosView.getLayoutParams().height) amiibosView.requestLayout();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    float minHeight = activity.getBottomSheetBehavior().getPeekHeight() + v.getHeight()
-                            + requireContext().getResources().getDimension(R.dimen.sliding_bar_margin);
-                    if (amiibosView.getLayoutParams().height > view.getHeight() - (int) minHeight)
-                        amiibosView.getLayoutParams().height = view.getHeight() - (int) minHeight;
+                    if (amiibosView.getLayoutParams().height + y < 0f) {
+                        amiibosView.getLayoutParams().height = 0;
+                    } else {
+                        float minHeight = activity.getBottomSheetBehavior()
+                                .getPeekHeight() + v.getHeight() + requireContext().getResources().getDimension(R.dimen.sliding_bar_margin);
+                        if (amiibosView.getLayoutParams().height > view.getHeight() - (int) minHeight)
+                            amiibosView.getLayoutParams().height = view.getHeight() - (int) minHeight;
+                    }
                     if (srcHeight != amiibosView.getLayoutParams().height) amiibosView.requestLayout();
                 }
                 prefs.foomiiboOffset().put(amiibosView.getLayoutParams().height);

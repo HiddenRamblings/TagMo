@@ -341,10 +341,19 @@ public class TagUtils {
         return getValidatedData(keyManager, TagReader.readTagDocument(file.getUri()));
     }
 
+    private static byte[] getSignedData(byte[] tagData) {
+        byte[] signature = hexToByteArray(TagMo.hexSingature);
+        byte[] signedData = new byte[572];
+        System.arraycopy(tagData, 0, signedData, 0, tagData.length);
+        System.arraycopy(signature, 0, signedData, 540, signature.length);
+        return signedData;
+    }
+
     public static String writeBytesToFile(File destination, String name, byte[] tagData)
             throws IOException {
+        byte[] signedData = getSignedData(tagData);
         File binFile = new File(destination, name);
-        new FileOutputStream(binFile).write(tagData);
+        new FileOutputStream(binFile).write(signedData);
         try {
             MediaScannerConnection.scanFile(TagMo.getContext(),
                     new String[] { binFile.getAbsolutePath() }, null, null);
@@ -357,10 +366,11 @@ public class TagUtils {
     public static String writeBytesToDocument(
             Context context, DocumentFile destination, String name, byte[] tagData
     ) throws IOException {
+        byte[] signedData = getSignedData(tagData);
         DocumentFile newFile = destination.createFile(context.getResources()
                 .getStringArray(R.array.mimetype_bin)[0], name + ".bin");
         if (null != newFile) {
-            context.getContentResolver().openOutputStream(newFile.getUri()).write(tagData);
+            context.getContentResolver().openOutputStream(newFile.getUri()).write(signedData);
         }
         return null != newFile ? newFile.getName() : null;
     }

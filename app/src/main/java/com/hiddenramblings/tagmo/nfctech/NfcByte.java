@@ -5,8 +5,8 @@ import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
 @SuppressWarnings("unused")
 public class NfcByte {
 
-    public static final int KEY_FILE_SIZE = 80;
-    public static final int TAG_FILE_SIZE = 532; // 572 with signature
+    public static final int KEY_FILE_SIZE = 80; // Each key read separately
+    public static final int TAG_FILE_SIZE = 532; // 540, 572 with signature
     public static final int PAGE_SIZE = 4;
 
     public static final int CMD_GET_VERSION = 0x60;

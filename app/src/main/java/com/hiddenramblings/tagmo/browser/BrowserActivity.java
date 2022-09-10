@@ -798,19 +798,6 @@ public class BrowserActivity extends AppCompatActivity implements
         fragmentBrowser.setFoomiiboVisibility();
     }
 
-    private void onShowDonationNotice() {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            Snackbar donorNotice = new IconifiedSnackbar(
-                    BrowserActivity.this, findViewById(R.id.coordinator)
-            ).buildSnackbar(
-                    R.string.donation_notice,
-                    R.drawable.ic_github_octocat_24dp, Snackbar.LENGTH_LONG
-            );
-            donorNotice.setAction(R.string.donate, v -> onSendDonationClicked());
-            donorNotice.show();
-        }, TagMo.uiDelay);
-    }
-
     private int getQueryCount(String queryText) {
         AmiiboManager amiiboManager = settings.getAmiiboManager();
         if (null == amiiboManager) return 0;
@@ -2323,8 +2310,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private void getManagerStats() {
         View foomiiboSlider = fragmentBrowser.getView();
         TextView characterStats = findViewById(R.id.stats_character);
-//        TextView gameSeriesStats = findViewById(R.id.stats_game_series);
-//        TextView amiiboSeriesStats = findViewById(R.id.stats_amiibo_series);
         TextView amiiboTypeStats = findViewById(R.id.stats_amiibo_type);
         TextView amiiboTitleStats = findViewById(R.id.stats_amiibo_titles);
 
@@ -2337,10 +2322,6 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         characterStats.setText(getString(R.string.number_character, hasAmiibo
                 ? amiiboManager.characters.size() : 0));
-//        gameSeriesStats.setText(getString(R.string.number_game, hasAmiibo
-//                ? amiiboManager.gameSeries.size() : 0));
-//        amiiboSeriesStats.setText(getString(R.string.number_series, hasAmiibo
-//                ? amiiboManager.amiiboSeries.size() : 0));
         amiiboTypeStats.setText(getString(R.string.number_type, hasAmiibo
                 ? amiiboManager.amiiboTypes.size() : 0));
 
@@ -3138,9 +3119,6 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void setLoadCompleted() {
-        int loadCount = prefs.refreshCount().get();
-        if (loadCount == 0) onShowDonationNotice();
-        prefs.refreshCount().put(loadCount <= 8 ? loadCount + 1 : 0);
         OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {

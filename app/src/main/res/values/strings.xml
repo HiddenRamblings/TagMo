@@ -194,9 +194,7 @@
     <string name="sync_amiibo_info">Sync database with AmiiboAPI</string>
     <string name="import_json_details">Load amiibo&#8482; database (JSON)</string>
     <string name="reset_amiibo_info">Reset amiibo&#8482; database cache</string>
-    <string name="number_game">%1$d Game Series</string>
     <string name="number_character">%1$d Character(s)</string>
-    <string name="number_series">%1$d amiibo&#8482; Series</string>
     <string name="number_type">%1$d amiibo&#8482; Type(s)</string>
     <string name="number_titles">%1$d Enabled Game(s)</string>
     <string name="pref_advanced">Advanced</string>
@@ -366,8 +364,7 @@
 
     <string name="sub_button">%1$s Subscription</string>
     <string name="iap_button">%1$s Donation</string>
-    <string name="donation_thanks">Thank you for your support!</string>
-    <string name="donation_notice">TagMo is free and open-source.\nAny funding is by donation only.</string>
+    <string name="donation_thanks">Thanks for your support!</string>
 
     <string name="conversion_title">TagMo Critical Update</string>
     <string name="conversion_message">GitHub and Google Play builds are now universal.\nPlease click continue to resolve installation conflicts.</string>

@@ -367,8 +367,9 @@ public class TagUtils {
         return null;
     }
 
-    public static String writeBytesToFile(File directory, String name, byte[] tagData, boolean sign)
-            throws IOException {
+    public static String writeBytesToFile(
+            File directory, String name, byte[] tagData, boolean sign
+    ) throws IOException {
         byte[] fileData = sign ? getSignedTagData(tagData) : tagData;
         File binFile = new File(directory, name);
         new FileOutputStream(binFile).write(fileData);
@@ -382,8 +383,14 @@ public class TagUtils {
         return binFile.getAbsolutePath();
     }
 
+    public static String writeBytesToFile(File directory, String name, byte[] tagData)
+            throws IOException {
+        return writeBytesToFile(directory, name, tagData, false);
+    }
+
     public static String writeBytesToDocument(
-            Context context, DocumentFile directory, String name, byte[] tagData, boolean sign
+            Context context, DocumentFile directory,
+            String name, byte[] tagData, boolean sign
     ) throws IOException {
         byte[] fileData = sign ? getSignedTagData(tagData) : tagData;
         DocumentFile newFile = directory.createFile(context.getResources()
@@ -392,5 +399,11 @@ public class TagUtils {
             context.getContentResolver().openOutputStream(newFile.getUri()).write(fileData);
         }
         return null != newFile ? newFile.getName() : null;
+    }
+
+    public static String writeBytesToDocument(
+            Context context, DocumentFile directory, String name, byte[] tagData
+    ) throws IOException {
+        return writeBytesToDocument(context, directory, name, tagData, false);
     }
 }

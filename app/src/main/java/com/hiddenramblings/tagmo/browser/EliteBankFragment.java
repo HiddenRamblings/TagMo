@@ -622,11 +622,11 @@ public class EliteBankFragment extends Fragment implements
                             this.settings.getBrowserRootDocument());
                     if (null == rootDocument) throw new NullPointerException();
                     fileName = TagUtils.writeBytesToDocument(requireContext(), rootDocument,
-                            input.getText().toString() + ".bin", tagData, false);
+                            input.getText().toString() + ".bin", tagData);
                 } else {
                     fileName = TagUtils.writeBytesToFile(Storage.getDownloadDir(
                             "TagMo", "Backups"
-                    ), input.getText().toString(), tagData, false);
+                    ), input.getText().toString(), tagData);
                 }
                 new Toasty(requireActivity()).Long(getString(R.string.wrote_file, fileName));
                 activity.loadStoredAmiibo();

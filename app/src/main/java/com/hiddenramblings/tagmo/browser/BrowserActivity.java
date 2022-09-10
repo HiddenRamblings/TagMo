@@ -633,11 +633,11 @@ public class BrowserActivity extends AppCompatActivity implements
                             this.settings.getBrowserRootDocument());
                     if (null == rootDocument) throw new NullPointerException();
                     fileName = TagUtils.writeBytesToDocument(this, rootDocument,
-                            fileName, tagData, false);
+                            fileName, tagData);
                 } else {
                     fileName = TagUtils.writeBytesToFile(Storage.getDownloadDir(
                             "TagMo", "Backups"
-                    ), fileName, tagData, false);
+                    ), fileName, tagData);
                 }
                 new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                         getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
@@ -1184,11 +1184,11 @@ public class BrowserActivity extends AppCompatActivity implements
                                     this.settings.getBrowserRootDocument());
                             if (null == rootDocument) throw new NullPointerException();
                             fileName = TagUtils.writeBytesToDocument(this, rootDocument,
-                                    fileName, tagData, false);
+                                    fileName, tagData);
                         } else {
                             fileName = TagUtils.writeBytesToFile(Storage.getDownloadDir(
                                     "TagMo", "Backups"
-                            ), fileName, tagData, false);
+                            ), fileName, tagData);
                         }
                         new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                                 getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT

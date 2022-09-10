@@ -26,7 +26,7 @@ body:
   - type: checkboxes
     id: terms
     attributes:
-      label: Core Requirements
+      label: Usage Requirements
       description: |
           amiibo™ binary key file(s). (Encryption keys cannot be shared for legal reasons)
           Blank NTAG215 tags, Power Tags, Amiiqo / N2 Elite, or Flask (Sold separately)
@@ -39,7 +39,7 @@ body:
           Only NTAG215 tags are recognized as amiibo™. No other NTAG format is supported.
           Only Android phones with Android 4.1+ and NFC / Bluetooth hardware are supported.
 
-          By submitting this issue, you confirm reading the core requirements for TagMo
+          By submitting this issue, you confirm reading the usage requirements for TagMo
       options:
-        - label: I have read and understood the core requirements for TagMo
+        - label: I have read and understood the usage requirements for TagMo
           required: true

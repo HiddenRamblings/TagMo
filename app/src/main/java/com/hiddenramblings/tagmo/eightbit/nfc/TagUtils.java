@@ -216,9 +216,9 @@ public class TagUtils {
     }
 
     public static byte[][] splitPages(byte[] data) throws Exception {
-        if (data.length < NfcByte.TAG_FILE_SIZE)
+        if (data.length < NfcByte.TAG_DATA_SIZE)
             throw new IOException(TagMo.getContext().getString(
-                    R.string.invalid_data_size, data.length, NfcByte.TAG_FILE_SIZE));
+                    R.string.invalid_data_size, data.length, NfcByte.TAG_DATA_SIZE));
 
         byte[][] pages = new byte[data.length / NfcByte.PAGE_SIZE][];
         for (int i = 0, j = 0; i < data.length; i += NfcByte.PAGE_SIZE, j++) {
@@ -343,10 +343,24 @@ public class TagUtils {
 
     private static byte[] getSignedData(byte[] tagData) {
         byte[] signature = hexToByteArray(TagMo.hexSingature);
-        byte[] signedData = new byte[572];
+        byte[] signedData = new byte[NfcByte.TAG_FILE_SIZE];
         System.arraycopy(tagData, 0, signedData, 0, tagData.length);
         System.arraycopy(signature, 0, signedData, 540, signature.length);
         return signedData;
+    }
+
+    public static String getSignature(byte[] tagData) {
+        if (tagData.length == NfcByte.TAG_FILE_SIZE) {
+            byte[] signature = Arrays.copyOfRange(tagData, 540, NfcByte.TAG_FILE_SIZE);
+            String hexSignature = bytesToHex(signature).substring(0, 32);
+            StringBuilder output = new StringBuilder();
+            for (int i = 0; i < hexSignature.length(); i += 2) {
+                String str = hexSignature.substring(i, i + 2);
+                output.append((char) Integer.parseInt(str, 16));
+            }
+            return output.toString();
+        }
+        return null;
     }
 
     public static String writeBytesToFile(File destination, String name, byte[] tagData)

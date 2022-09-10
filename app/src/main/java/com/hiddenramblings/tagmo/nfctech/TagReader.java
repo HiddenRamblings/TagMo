@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TagReader {
 
@@ -31,14 +32,21 @@ public class TagReader {
 
     private static byte[] getTagData(String path, InputStream inputStream) throws Exception {
         int length = inputStream.available();
-        if (length < NfcByte.TAG_FILE_SIZE) {
+        if (length < NfcByte.TAG_DATA_SIZE) {
             if (length == NfcByte.KEY_FILE_SIZE) return null;
             throw new IOException(TagMo.getContext().getString(
-                    R.string.invalid_file_size, path, length, NfcByte.TAG_FILE_SIZE));
+                    R.string.invalid_file_size, path, length, NfcByte.TAG_DATA_SIZE));
         }
-        byte[] data = new byte[NfcByte.TAG_FILE_SIZE];
-        new DataInputStream(inputStream).readFully(data);
-        return data;
+        if (length == NfcByte.TAG_FILE_SIZE) {
+            byte[] signed = new byte[NfcByte.TAG_FILE_SIZE];
+            new DataInputStream(inputStream).readFully(signed);
+            Debug.Info(TagMo.class, TagUtils.getSignature(signed));
+            return Arrays.copyOfRange(signed, 0, NfcByte.TAG_DATA_SIZE);
+        } else {
+            byte[] tagData = new byte[NfcByte.TAG_DATA_SIZE];
+            new DataInputStream(inputStream).readFully(tagData);
+            return tagData;
+        }
     }
 
     public static byte[] readTagFile(File file) throws Exception {
@@ -55,8 +63,8 @@ public class TagReader {
     }
 
     public static byte[] readFromTag(NTAG215 tag) throws Exception {
-        byte[] tagData = new byte[NfcByte.TAG_FILE_SIZE];
-        int pageCount = NfcByte.TAG_FILE_SIZE / NfcByte.PAGE_SIZE;
+        byte[] tagData = new byte[NfcByte.TAG_DATA_SIZE];
+        int pageCount = NfcByte.TAG_DATA_SIZE / NfcByte.PAGE_SIZE;
 
         for (int i = 0; i < pageCount; i += BULK_READ_PAGE_COUNT) {
             byte[] pages = tag.readPages(i);
@@ -111,7 +119,7 @@ public class TagReader {
 
     public static byte[] scanTagToBytes(NTAG215 tag, int bank)
             throws IllegalStateException, NullPointerException {
-        byte[] tagData = new byte[NfcByte.TAG_FILE_SIZE];
+        byte[] tagData = new byte[NfcByte.TAG_DATA_SIZE];
         try {
             byte[] data = bank == -1 ? tag.fastRead(0x00, 0x86)
                     : tag.amiiboFastRead(0x00, 0x86, bank);
@@ -119,7 +127,7 @@ public class TagReader {
                 throw new NullPointerException(TagMo.getContext()
                         .getString(R.string.fail_read_amiibo));
             }
-            System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_FILE_SIZE);
+            System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_DATA_SIZE);
             return tagData;
         } catch (IllegalStateException e) {
             throw new IllegalStateException(TagMo.getContext()
@@ -133,13 +141,13 @@ public class TagReader {
     public static byte[] scanBankToBytes(NTAG215 tag, int bank)
             throws IllegalStateException, NullPointerException {
         final Context context = TagMo.getContext();
-        byte[] tagData = new byte[NfcByte.TAG_FILE_SIZE];
+        byte[] tagData = new byte[NfcByte.TAG_DATA_SIZE];
         try {
             byte[] data = tag.amiiboFastRead(0x00, 0x86, bank);
             if (null == data) {
                 throw new NullPointerException(context.getString(R.string.fail_read_amiibo));
             }
-            System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_FILE_SIZE);
+            System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_DATA_SIZE);
             Debug.Info(TagReader.class, TagUtils.bytesToHex(tagData));
             return tagData;
         } catch (IllegalStateException e) {

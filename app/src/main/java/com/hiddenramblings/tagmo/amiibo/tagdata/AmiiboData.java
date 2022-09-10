@@ -48,9 +48,9 @@ public class AmiiboData {
     private final ByteBuffer tagData;
 
     public AmiiboData(byte[] tagData) throws IOException {
-        if (tagData.length < NfcByte.TAG_FILE_SIZE)
+        if (tagData.length < NfcByte.TAG_DATA_SIZE)
             throw new IOException(context.getString(R.string.invalid_data_size,
-                    tagData.length, NfcByte.TAG_FILE_SIZE));
+                    tagData.length, NfcByte.TAG_DATA_SIZE));
 
         this.tagData = ByteBuffer.wrap(tagData);
     }

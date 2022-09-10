@@ -125,7 +125,7 @@ public class KeyManager {
             throw new Exception(context.getString(R.string.error_amiitool_init));
         if (tool.setKeysUnfixed(unfixedKey, unfixedKey.length) == 0)
             throw new Exception(context.getString(R.string.error_amiitool_init));
-        byte[] decrypted = new byte[NfcByte.TAG_FILE_SIZE];
+        byte[] decrypted = new byte[NfcByte.TAG_DATA_SIZE];
         if (tool.unpack(tagData, tagData.length, decrypted, decrypted.length) == 0)
             throw new Exception(context.getString(R.string.fail_decrypt));
 
@@ -141,7 +141,7 @@ public class KeyManager {
             throw new RuntimeException(context.getString(R.string.error_amiitool_init));
         if (tool.setKeysUnfixed(unfixedKey, unfixedKey.length) == 0)
             throw new RuntimeException(context.getString(R.string.error_amiitool_init));
-        byte[] encrypted = new byte[NfcByte.TAG_FILE_SIZE];
+        byte[] encrypted = new byte[NfcByte.TAG_DATA_SIZE];
         if (tool.pack(tagData, tagData.length, encrypted, encrypted.length) == 0)
             throw new RuntimeException(context.getString(R.string.fail_encrypt));
 

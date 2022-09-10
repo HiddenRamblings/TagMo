@@ -6,7 +6,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.hiddenramblings.tagmo.nfctech.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
 
 import java.io.Serializable;
 

@@ -48,6 +48,8 @@ public class TagMo extends Application {
     public static final String MIRRORED_API = "https://tagmoapi.onrender.com/";
     public static final String FALLBACK_API = "https://amiiboapi.com/";
 
+    public static final String hexSingature = "5461674D6F384274";
+
     @Override
     public void onCreate() {
         super.onCreate();

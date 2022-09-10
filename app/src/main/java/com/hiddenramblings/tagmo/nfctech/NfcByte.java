@@ -1,5 +1,7 @@
 package com.hiddenramblings.tagmo.nfctech;
 
+import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+
 @SuppressWarnings("unused")
 public class NfcByte {
 
@@ -30,11 +32,11 @@ public class NfcByte {
     public static final int N2_WRITE =  0xA5;
     public static final int SECTOR_SELECT = 0xC2;
 
-    static final byte[] POWERTAG_SIGNATURE = TagUtils.hexToByteArray(
+    public static final byte[] POWERTAG_SIGNATURE = TagUtils.hexToByteArray(
             "213C65444901602985E9F6B50CACB9C8CA3C4BCD13142711FF571CF01E66BD6F");
     static final byte[] POWERTAG_IDPAGES = TagUtils.hexToByteArray(
             "04070883091012131800000000000000");
     static final String POWERTAG_KEY = "FFFFFFFFFFFFFFFF0000000000000000";
     static final byte[] POWERTAG_WRITE = TagUtils.hexToByteArray("a000");
-    static final byte[] POWERTAG_SIG = TagUtils.hexToByteArray("3c00");
+    public static final byte[] POWERTAG_SIG = TagUtils.hexToByteArray("3c00");
 }

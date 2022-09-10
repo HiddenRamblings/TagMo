@@ -2,16 +2,12 @@
   <a href="https://play.google.com/store/apps/details?id=com.hiddenramblings.tagmo.eightbit"><img src="https://github.com/HiddenRamblings/TagMo/raw/master/assets/google-play-badge.png" /></a>
 </p>
 
-# What is TagMo?
-
-TagMo is an Android app for cloning amiibo™ to NTAG215 NFC tags  
-&ensp;(including Power Tags, Amiiqo / N2 Elite and Bluup Flask devices)
-
-It was created as a result of the "[DIY amiibo cards](https://gbatemp.net/threads/diy-amiibo-cards.406978/)" thread and all the collaboration that took place in it.
-
-* https://www.reddit.com/r/tagmo/
-
-If you want to contribute, please make sure to address your PRs to the 'conversion' branch. Thank you.
+<p align="center">
+TagMo is an Android app for cloning amiibo™ to NTAG215 NFC tags<br />
+(including Power Tags, Amiiqo / N2 Elite and Bluup Flask devices)
+<br /><br />
+To contribute, please address PRs to the <a href="https://github.com/HiddenRamblings/TagMo/tree/conversion">conversion</a> branch. Thank you.
+<p align="center">
 
 ## [Instructions](https://tagmo.gitlab.io/)
 * [Limitations](https://github.com/HiddenRamblings/TagMo/wiki#limitations)
@@ -21,7 +17,7 @@ If you want to contribute, please make sure to address your PRs to the 'conversi
 
 ## [Code of Conduct](https://github.com/HiddenRamblings/TagMo/blob/master/CODE_OF_CONDUCT.md)
 
-# Credits
+## Credits
 This app is the result of work by many. Thanks go out to (in alphabetical order):
 
 * \_Tim\_ - The original idea

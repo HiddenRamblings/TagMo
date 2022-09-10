@@ -26,24 +26,20 @@ body:
   - type: checkboxes
     id: terms
     attributes:
-      label: Limitations and Requirements
+      label: Core Requirements
       description: |
-          Limitations
+          amiibo™ binary key file(s). (Encryption keys cannot be shared for legal reasons)
+          Blank NTAG215 tags, Power Tags, Amiiqo / N2 Elite, or Flask (Sold separately)
+          Android phone with NFC (Tested on various live Android devices and emulators)
+          amiibo™ backups or amiibo™. (Backups cannot be shared for legal reasons)
 
-          Only NTAG215 tags can be used to clone amiibo™. No other type (eg: NTAG216/NTAG213) are supported.
-          You will require the key files used in amiibo™ encryption. Keys cannot be shared for legal reasons.
-          Once you write an NFC card, it is effectively permanent. Rewriting will break amiibo™ recognition.
-          This means that writing to cards can not replace N2 Elite or other amiibo™ emulator devices
-          Only Android phones with NFC capabilities are supported.
+          You will require the key files used in amiibo™ encryption. Key files cannot be shared.
+          Writing an NFC card is effectively permanent. Rewriting will break amiibo™ recognition.
+              Cards or coins cannot replace an N2 Elite or other amiibo™ emulator devices
+          Only NTAG215 tags are recognized as amiibo™. No other NTAG format is supported.
+          Only Android phones with Android 4.1+ and NFC / Bluetooth hardware are supported.
 
-          Requirements
-
-          amiibo™ Key Files. (These cannot be shared for legal reasons. See limitations)
-          Blank NTAG 215 tags, Power Tags, or Amiiqo / N2 Elite (Ebay / Aliexpress / Amazon)
-          Android phone with NFC (Tested on various Samsung, Asus, and Nexus devices)
-          Previous amiibo™ backups or amiibo™. (Again, these cannot be shared for legal reasons)
-
-          By submitting this issue, you confirm reading the limitations and requirements
+          By submitting this issue, you confirm reading the core requirements for TagMo
       options:
-        - label: I have read and understood the limitations and requirements
+        - label: I have read and understood the core requirements for TagMo
           required: true

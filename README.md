@@ -10,8 +10,6 @@ To contribute, please address PRs to the <a href="https://github.com/HiddenRambl
 <p align="center">
 
 ## [Instructions](https://tagmo.gitlab.io/)
-* [Limitations](https://github.com/HiddenRamblings/TagMo/wiki#limitations)
-* [Requirements](https://github.com/HiddenRamblings/TagMo/wiki#requirements)
 
 ## [Reporting Issues](https://github.com/HiddenRamblings/TagMo/wiki#reporting-issues)
 

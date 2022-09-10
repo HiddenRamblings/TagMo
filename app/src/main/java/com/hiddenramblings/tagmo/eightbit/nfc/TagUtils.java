@@ -207,6 +207,14 @@ public class TagUtils {
         return (byte) (((lo - 0x61) + 0x0A) | ret);
     }
 
+    private static String hexToString(String hex) {
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < hex.length(); i += 2) {
+            output.append((char) Integer.parseInt(hex.substring(i, i + 2), 16));
+        }
+        return output.toString();
+    }
+
     public static long amiiboIdFromTag(byte[] data) throws NumberFormatException, IOException {
         return new AmiiboData(data).getAmiiboID();
     }
@@ -341,7 +349,7 @@ public class TagUtils {
         return getValidatedData(keyManager, TagReader.readTagDocument(file.getUri()));
     }
 
-    private static byte[] getSignedData(byte[] tagData) {
+    private static byte[] getSignedTagData(byte[] tagData) {
         byte[] signature = hexToByteArray(TagMo.hexSingature);
         byte[] signedData = new byte[NfcByte.TAG_FILE_SIZE];
         System.arraycopy(tagData, 0, signedData, 0, tagData.length);
@@ -349,23 +357,19 @@ public class TagUtils {
         return signedData;
     }
 
-    public static String getSignature(byte[] tagData) {
+    public static String getTagSignature(byte[] tagData) {
         if (tagData.length == NfcByte.TAG_FILE_SIZE) {
             byte[] signature = Arrays.copyOfRange(tagData, 540, NfcByte.TAG_FILE_SIZE);
-            String hexSignature = bytesToHex(signature).substring(0, 32);
-            StringBuilder output = new StringBuilder();
-            for (int i = 0; i < hexSignature.length(); i += 2) {
-                String str = hexSignature.substring(i, i + 2);
-                output.append((char) Integer.parseInt(str, 16));
-            }
-            return output.toString();
+            String hexSignature = bytesToHex(signature).substring(0, 32).toLowerCase(Locale.US);
+            Debug.Info(TagMo.class, hexToString(hexSignature));
+            if (TagMo.hexSingature.equals(hexSignature)) return hexSignature;
         }
         return null;
     }
 
     public static String writeBytesToFile(File destination, String name, byte[] tagData)
             throws IOException {
-        byte[] signedData = getSignedData(tagData);
+        byte[] signedData = getSignedTagData(tagData);
         File binFile = new File(destination, name);
         new FileOutputStream(binFile).write(signedData);
         try {
@@ -380,7 +384,7 @@ public class TagUtils {
     public static String writeBytesToDocument(
             Context context, DocumentFile destination, String name, byte[] tagData
     ) throws IOException {
-        byte[] signedData = getSignedData(tagData);
+        byte[] signedData = getSignedTagData(tagData);
         DocumentFile newFile = destination.createFile(context.getResources()
                 .getStringArray(R.array.mimetype_bin)[0], name + ".bin");
         if (null != newFile) {

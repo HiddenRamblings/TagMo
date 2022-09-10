@@ -269,7 +269,8 @@ public class BrowserFragment extends Fragment implements
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
             TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
-                    settings.getAmiiboManager(), tagData, false), tagData);
+                    settings.getAmiiboManager(), tagData, false
+            ), tagData, true);
         } catch (Exception e) {
             Debug.Warn(e);
         }
@@ -284,7 +285,8 @@ public class BrowserFragment extends Fragment implements
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
             TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
-                    settings.getAmiiboManager(), tagData, false), tagData);
+                    settings.getAmiiboManager(), tagData, false
+            ), tagData, true);
             new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
                     getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT
             ).show();

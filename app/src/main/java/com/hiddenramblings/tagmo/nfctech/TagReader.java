@@ -6,6 +6,7 @@ import android.net.Uri;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -40,7 +41,7 @@ public class TagReader {
         return data;
     }
 
-    static byte[] readTagFile(File file) throws Exception {
+    public static byte[] readTagFile(File file) throws Exception {
         try (FileInputStream inputStream = new FileInputStream(file)) {
             return getTagData(file.getPath(), inputStream);
         }

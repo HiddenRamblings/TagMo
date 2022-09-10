@@ -52,7 +52,7 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.hiddenramblings.tagmo.nfctech;
+package com.hiddenramblings.tagmo.eightbit.nfc;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
@@ -74,6 +74,10 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.nfctech.NTAG215;
+import com.hiddenramblings.tagmo.nfctech.NfcByte;
+import com.hiddenramblings.tagmo.nfctech.TagReader;
+import com.hiddenramblings.tagmo.nfctech.TagWriter;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -150,7 +154,7 @@ public class TagUtils {
         return true;
     }
 
-    static boolean compareRange(byte[] data, byte[] data2, int len) {
+    public static boolean compareRange(byte[] data, byte[] data2, int len) {
         return compareRange(data, data2, 0, len);
     }
 
@@ -180,7 +184,7 @@ public class TagUtils {
         return result;
     }
 
-    static byte hexToByte(String hex) {
+    public static byte hexToByte(String hex) {
         byte ret = (byte) 0;
         byte hi = (byte) hex.charAt(0);
         byte lo = (byte) hex.charAt(1);
@@ -211,7 +215,7 @@ public class TagUtils {
         return String.format("%016X", amiiboId);
     }
 
-    static byte[][] splitPages(byte[] data) throws Exception {
+    public static byte[][] splitPages(byte[] data) throws Exception {
         if (data.length < NfcByte.TAG_FILE_SIZE)
             throw new IOException(TagMo.getContext().getString(
                     R.string.invalid_data_size, data.length, NfcByte.TAG_FILE_SIZE));

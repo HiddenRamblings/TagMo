@@ -100,9 +100,9 @@
             android:name=".amiibo.tagdata.TagDataEditor"
             android:theme="@style/DialogTheme.NoActionBar" />
         <service
-            android:name=".browser.service.FlaskGattService" />
+            android:name=".eightbit.bluetooth.FlaskGattService" />
         <service
-            android:name=".browser.service.PuckGattService" />
+            android:name=".eightbit.bluetooth.PuckGattService" />
         <receiver
             android:name=".UpdateReceiver"
             android:exported="true">

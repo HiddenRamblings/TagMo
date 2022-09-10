@@ -54,7 +54,7 @@
  * Bluup Labs and its members are exempt from the above license requirements.
  */
 
-package com.hiddenramblings.tagmo.browser.service;
+package com.hiddenramblings.tagmo.eightbit.bluetooth;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -74,11 +74,14 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Base64;
 
 import androidx.annotation.RequiresApi;
 
+import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -87,6 +90,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -95,9 +99,9 @@ import java.util.UUID;
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
-public class PuckGattService extends Service {
+public class FlaskGattService extends Service {
 
-    private final Class<?> TAG = PuckGattService.class;
+    private final Class<?> TAG = FlaskGattService.class;
 
     private BluetoothGattListener listener;
 
@@ -112,9 +116,9 @@ public class PuckGattService extends Service {
     private String nameCompat = null;
     private String tailCompat = null;
 
-    public final static UUID PuckNUS = UUID.fromString("78290001-d52e-473f-a9f4-f03da7c67dd1");
-    private final static UUID PuckTX = UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1");
-    private final static UUID PuckRX = UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1");
+    public final static UUID FlaskNUS = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+    private final static UUID FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
+    private final static UUID FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
 
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
@@ -124,11 +128,11 @@ public class PuckGattService extends Service {
 
     public interface BluetoothGattListener {
         void onServicesDiscovered();
-        void onPuckActiveChanged(JSONObject jsonObject);
-        void onPuckStatusChanged(JSONObject jsonObject);
-        void onPuckListRetrieved(JSONArray jsonArray);
-        void onPuckFilesDownload(String dataString);
-        void onPuckFilesUploaded();
+        void onFlaskActiveChanged(JSONObject jsonObject);
+        void onFlaskStatusChanged(JSONObject jsonObject);
+        void onFlaskListRetrieved(JSONArray jsonArray);
+        void onFlaskFilesDownload(String dataString);
+        void onFlaskFilesUploaded();
         void onGattConnectionLost();
     }
 
@@ -140,8 +144,113 @@ public class PuckGattService extends Service {
             String output = new String(data);
             Debug.Verbose(TAG, getLogTag(characteristic.getUuid()) + " " + output);
 
-            if (characteristic.getUuid().compareTo(PuckRX) == 0) {
+            if (characteristic.getUuid().compareTo(FlaskRX) == 0) {
+                if (output.contains(">tag.")) {
+                    response = new StringBuilder();
+                    response.append(output.split(">")[1]);
+                } else if (output.startsWith("tag.") || output.startsWith("{") || response.length() > 0) {
+                    response.append(output);
+                }
+                String progress = response.length() > 0 ? response.toString().trim().replaceAll(
+                        Objects.requireNonNull(System.getProperty("line.separator")), ""
+                ) : "";
 
+                if (isJSONValid(progress) || progress.endsWith(">")
+                        || progress.lastIndexOf("undefined") == 0
+                        || progress.lastIndexOf("\n") == 0) {
+                    if (Callbacks.size() > 0) {
+                        Callbacks.get(0).run();
+                        Callbacks.remove(0);
+                    }
+                }
+
+                if (progress.startsWith("tag.get()") || progress.startsWith("tag.setTag")) {
+                    if (progress.endsWith(">")) {
+                        if (progress.contains("Uncaught no such element")
+                                && null != nameCompat && null != tailCompat) {
+                            response = new StringBuilder();
+                            fixAmiiboName(nameCompat, tailCompat);
+                            nameCompat = null;
+                            tailCompat = null;
+                            return;
+                        }
+                        try {
+                            String getAmiibo = progress.substring(progress.indexOf("{"),
+                                    progress.lastIndexOf("}") + 1);
+                            if (null != listener) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(getAmiibo);
+                                    listener.onFlaskActiveChanged(jsonObject);
+                                } catch (JSONException e) {
+                                    Debug.Warn(e);
+                                    if (null != listener)
+                                        listener.onFlaskActiveChanged(null);
+                                }
+                            }
+                        } catch (StringIndexOutOfBoundsException ex) {
+                            Debug.Warn(ex);
+                        }
+                        response = new StringBuilder();
+                    }
+                } else if (progress.startsWith("tag.getList()")) {
+                    if (progress.endsWith(">") || progress.endsWith("\n")) {
+                        String getList = progress.substring(progress.indexOf("["),
+                                progress.lastIndexOf("]") + 1);
+                        try {
+                            String escapedList = getList.replace("'", "\\'")
+                                    .replace("-", "\\-");
+                            JSONArray jsonArray = new JSONArray(escapedList);
+                            if (null != listener) listener.onFlaskListRetrieved(jsonArray);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        response = new StringBuilder();
+                        if (null != listener) listener.onFlaskFilesUploaded();
+                    }
+                } else if (progress.startsWith("tag.remove")) {
+                    if (progress.endsWith(">") || progress.endsWith("\n")) {
+                        if (null != listener) listener.onFlaskStatusChanged(null);
+                        response = new StringBuilder();
+                    }
+                } else if (progress.startsWith("tag.download")) {
+                    if (progress.endsWith(">") || progress.endsWith("\n")) {
+                        String[] getData = progress.split("new Uint8Array");
+                        if (null != listener) {
+                            for (String dataString : getData) {
+                                if (dataString.startsWith("tag.download")
+                                        && dataString.endsWith("=")) continue;
+                                dataString = dataString.substring(1, dataString
+                                        .lastIndexOf(">") - 2);
+                                listener.onFlaskFilesDownload(dataString);
+                            }
+                        }
+                    }
+                } else if (progress.startsWith("tag.createBlank()")) {
+                    if (progress.endsWith(">") || progress.endsWith("\n")) {
+                        response = new StringBuilder();
+                        if (null != listener) listener.onFlaskStatusChanged(null);
+                    }
+                } else if (progress.endsWith("}")) {
+                    if (null != listener) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.toString());
+                            String event = jsonObject.getString("event");
+                            if (event.equals("button"))
+                                listener.onFlaskActiveChanged(jsonObject);
+                            if (event.equals("delete"))
+                                listener.onFlaskStatusChanged(jsonObject);
+                        } catch (JSONException e) {
+                            if (null != e.getMessage() && e.getMessage().contains("tag.setTag")) {
+                                getActiveAmiibo();
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    response = new StringBuilder();
+                } else if (progress.endsWith(">")) {
+                    response = new StringBuilder();
+                }
             }
         }
     }
@@ -163,7 +272,7 @@ public class PuckGattService extends Service {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                     mBluetoothGatt.requestMtu(512); // Maximum: 517
-                else if (null != listener) listener.onServicesDiscovered();
+                if (null != listener) listener.onServicesDiscovered();
             } else {
                 Debug.Warn(TAG, "onServicesDiscovered received: " + status);
             }
@@ -200,13 +309,12 @@ public class PuckGattService extends Service {
             } else {
                 Debug.Warn(TAG, "onMtuChange received: " + status);
             }
-            if (null != listener) listener.onServicesDiscovered();
         }
     };
 
     public class LocalBinder extends Binder {
-        public PuckGattService getService() {
-            return PuckGattService.this;
+        public FlaskGattService getService() {
+            return FlaskGattService.this;
         }
     }
 
@@ -339,12 +447,12 @@ public class PuckGattService extends Service {
 
     public BluetoothGattCharacteristic getCharacteristicRX(BluetoothGattService mCustomService) {
         BluetoothGattCharacteristic mReadCharacteristic =
-                mCustomService.getCharacteristic(PuckRX);
+                mCustomService.getCharacteristic(FlaskRX);
         if (!mBluetoothGatt.readCharacteristic(mReadCharacteristic)) {
             for (BluetoothGattCharacteristic customRead : mCustomService.getCharacteristics()) {
                 UUID customUUID = customRead.getUuid();
                 /*get the read characteristic from the service*/
-                if (customUUID.compareTo(PuckRX) == 0) {
+                if (customUUID.compareTo(FlaskRX) == 0) {
                     Debug.Verbose(TAG, "GattReadCharacteristic: " + customUUID);
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
@@ -354,12 +462,12 @@ public class PuckGattService extends Service {
         return mReadCharacteristic;
     }
 
-    public void setPuckCharacteristicRX() throws UnsupportedOperationException {
+    public void setFlaskCharacteristicRX() throws UnsupportedOperationException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw new UnsupportedOperationException();
         }
 
-        BluetoothGattService mCustomService = mBluetoothGatt.getService(PuckNUS);
+        BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskNUS);
         /*check if the service is available on the device*/
         if (null == mCustomService) {
             List<BluetoothGattService> services = getSupportedGattServices();
@@ -381,12 +489,12 @@ public class PuckGattService extends Service {
 
     public BluetoothGattCharacteristic getCharacteristicTX(BluetoothGattService mCustomService) {
         BluetoothGattCharacteristic mWriteCharacteristic =
-                mCustomService.getCharacteristic(PuckTX);
+                mCustomService.getCharacteristic(FlaskTX);
         if (!mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             for (BluetoothGattCharacteristic customWrite : mCustomService.getCharacteristics()) {
                 UUID customUUID = customWrite.getUuid();
                 /*get the write characteristic from the service*/
-                if (customUUID.compareTo(PuckTX) == 0) {
+                if (customUUID.compareTo(FlaskTX) == 0) {
                     Debug.Verbose(TAG, "GattWriteCharacteristic: " + customUUID);
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
@@ -396,12 +504,12 @@ public class PuckGattService extends Service {
         return mWriteCharacteristic;
     }
 
-    public void setPuckCharacteristicTX() throws UnsupportedOperationException {
+    public void setFlaskCharacteristicTX() throws UnsupportedOperationException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw new UnsupportedOperationException();
         }
 
-        BluetoothGattService mCustomService = mBluetoothGatt.getService(PuckNUS);
+        BluetoothGattService mCustomService = mBluetoothGatt.getService(FlaskNUS);
         /*check if the service is available on the device*/
         if (null == mCustomService) {
             List<BluetoothGattService> services = getSupportedGattServices();
@@ -438,7 +546,7 @@ public class PuckGattService extends Service {
     public void queueTagCharacteristic(String value, int index) {
         if (null == mCharacteristicTX) {
             try {
-                setPuckCharacteristicTX();
+                setFlaskCharacteristicTX();
             } catch (UnsupportedOperationException e) {
                 e.printStackTrace();
             }
@@ -459,6 +567,98 @@ public class PuckGattService extends Service {
 
     public void promptTagCharacteristic(String value) {
         queueTagCharacteristic(value, 0);
+    }
+    
+    public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo) {
+        delayedTagCharacteristic("startTagUpload(" + amiiboData.length + ")");
+        List<String> chunks = stringToPortions(Base64.encodeToString(
+                amiiboData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
+        ), 128);
+        for (int i = 0; i < chunks.size(); i+=1) {
+            final String chunk = chunks.get(i);
+            delayedTagCharacteristic(
+                    "tagUploadChunk(\"" + chunk + "\")"
+            );
+        }
+        String flaskTail = Integer.toString(Integer.parseInt(TagUtils
+                .amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
+        int reserved = flaskTail.length() + 3; // |tail|#
+        String nameUnicode = stringToUnicode(amiibo.name);
+        String amiiboName = nameUnicode.length() + reserved > 28
+                ? nameUnicode.substring(0, nameUnicode.length()
+                - ((nameUnicode.length() + reserved) - 28))
+                : nameUnicode;
+        delayedTagCharacteristic("saveUploadedTag(\""
+                + amiiboName + "|" + flaskTail + "|0\")");
+    }
+
+    public void uploadFilesComplete() {
+        delayedTagCharacteristic("uploadsComplete()");
+        delayedTagCharacteristic("getList()");
+    }
+
+    public void setActiveAmiibo(String name, String tail) {
+        if (name.equals("New Tag ")) {
+            delayedTagCharacteristic("setTag(\"" + name + "||" + tail + "\")");
+        } else {
+            int reserved = tail.length() + 3; // |tail|#
+            String nameUnicode = stringToUnicode(name);
+            nameCompat = nameUnicode.length() + reserved > 28
+                    ? nameUnicode.substring(0, nameUnicode.length()
+                    - ((nameUnicode.length() + reserved) - 28))
+                    : nameUnicode;
+            tailCompat = tail;
+            delayedTagCharacteristic("setTag(\"" + nameCompat + "|" + tailCompat + "|0\")");
+        }
+    }
+
+    public void fixAmiiboName(String name, String tail) {
+        int reserved = tail.length() + 3; // |tail|#
+        String nameUnicode = stringToUnicode(name);
+        String amiiboName = nameUnicode.length() + reserved > 28
+                ? nameUnicode.substring(0, nameUnicode.length()
+                - ((nameUnicode.length() + reserved) - 28))
+                : nameUnicode;
+        promptTagCharacteristic("rename(\"" + amiiboName + "|" + tail
+                + "\",\"" + amiiboName + "|" + tail + "|0\" )");
+        getDeviceAmiibo();
+    }
+
+    public void deleteAmiibo(String name, String tail) {
+        if (name.equals("New Tag ")) {
+            delayedTagCharacteristic("remove(\"" + name + "||" + tail + "\")");
+        } else {
+            int reserved = tail.length() + 3; // |tail|#
+            String nameUnicode = stringToUnicode(name);
+            nameCompat = nameUnicode.length() + reserved > 28
+                    ? nameUnicode.substring(0, nameUnicode.length()
+                    - ((nameUnicode.length() + reserved) - 28))
+                    : nameUnicode;
+            tailCompat = tail;
+            delayedTagCharacteristic("remove(\"" + nameCompat + "|" + tailCompat + "|0\")");
+        }
+    }
+
+    public void downloadAmiibo(String name, String tail) {
+        int reserved = tail.length() + 3; // |tail|#
+        String nameUnicode = stringToUnicode(name);
+        String amiiboName = nameUnicode.length() + reserved > 28
+                ? nameUnicode.substring(0, nameUnicode.length()
+                - ((nameUnicode.length() + reserved) - 28))
+                : nameUnicode;
+        delayedTagCharacteristic("download(\"" + amiiboName + "|" + tail + "|0\")");
+    }
+
+    public void getActiveAmiibo() {
+        delayedTagCharacteristic("get()");
+    }
+
+    public void getDeviceAmiibo() {
+        delayedTagCharacteristic("getList()");
+    }
+
+    public void createBlankTag() {
+        delayedTagCharacteristic("createBlank()");
     }
 
     public static List<byte[]> byteToPortions(byte[] largeByteArray, int sizePerPortion) {
@@ -516,12 +716,12 @@ public class PuckGattService extends Service {
     }
 
     private String getLogTag(UUID uuid) {
-        if (uuid.compareTo(PuckTX) == 0) {
-            return "PuckTX";
-        } else if (uuid.compareTo(PuckRX) == 0) {
-            return "PuckRX";
-        } else if (uuid.compareTo(PuckNUS) == 0) {
-            return "PuckNUS";
+        if (uuid.compareTo(FlaskTX) == 0) {
+            return "FlaskTX";
+        } else if (uuid.compareTo(FlaskRX) == 0) {
+            return "FlaskRX";
+        } else if (uuid.compareTo(FlaskNUS) == 0) {
+            return "FlaskNUS";
         } else {
             return uuid.toString();
         }

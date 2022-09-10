@@ -40,7 +40,7 @@ public class TagReader {
         if (length == NfcByte.TAG_FILE_SIZE) {
             byte[] signed = new byte[NfcByte.TAG_FILE_SIZE];
             new DataInputStream(inputStream).readFully(signed);
-            Debug.Info(TagMo.class, TagUtils.getSignature(signed));
+            TagUtils.getTagSignature(signed);
             return Arrays.copyOfRange(signed, 0, NfcByte.TAG_DATA_SIZE);
         } else {
             byte[] tagData = new byte[NfcByte.TAG_DATA_SIZE];

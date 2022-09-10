@@ -98,7 +98,7 @@ public class Foomiibo {
     }
 
     public byte[] generateData(String id) {
-        byte[] arr = new byte[NfcByte.TAG_FILE_SIZE];
+        byte[] arr = new byte[NfcByte.TAG_DATA_SIZE];
 
         // Set UID, BCC0
         byte[] uid = generateRandomUID(); // 0x04, (byte) 0xC0, 0x0A, 0x46, 0x61, 0x6B, 0x65, 0x0A

@@ -627,17 +627,17 @@ public class BrowserActivity extends AppCompatActivity implements
         Dialog backupDialog = dialog.setView(view).create();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                String fileName;
+                String fileName = input.getText().toString() + ".bin";
                 if (isDocumentStorage()) {
                     DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
                             this.settings.getBrowserRootDocument());
                     if (null == rootDocument) throw new NullPointerException();
                     fileName = TagUtils.writeBytesToDocument(this, rootDocument,
-                            input.getText().toString() + ".bin", tagData);
+                            fileName, tagData, false);
                 } else {
-                    fileName = TagUtils.writeBytesToFile(
-                            Storage.getDownloadDir("TagMo", "Backups"),
-                            input.getText().toString() + ".bin", tagData);
+                    fileName = TagUtils.writeBytesToFile(Storage.getDownloadDir(
+                            "TagMo", "Backups"
+                    ), fileName, tagData, false);
                 }
                 new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                         getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
@@ -1178,17 +1178,17 @@ public class BrowserActivity extends AppCompatActivity implements
                 Dialog backupDialog = dialog.setView(view).create();
                 view.findViewById(R.id.save_backup).setOnClickListener(v -> {
                     try {
-                        String fileName;
+                        String fileName = input.getText().toString() + ".bin";
                         if (isDocumentStorage()) {
                             DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
                                     this.settings.getBrowserRootDocument());
                             if (null == rootDocument) throw new NullPointerException();
                             fileName = TagUtils.writeBytesToDocument(this, rootDocument,
-                                    input.getText().toString() + ".bin", tagData);
+                                    fileName, tagData, false);
                         } else {
-                            fileName = TagUtils.writeBytesToFile(
-                                    Storage.getDownloadDir("TagMo", "Backups"),
-                                    input.getText().toString(), tagData);
+                            fileName = TagUtils.writeBytesToFile(Storage.getDownloadDir(
+                                    "TagMo", "Backups"
+                            ), fileName, tagData, false);
                         }
                         new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                                 getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT

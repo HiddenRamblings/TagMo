@@ -193,8 +193,9 @@ public class WebsiteFragment extends Fragment {
 
     private void saveBinFile(byte[] tagData, String name) {
         try {
-            File filePath = new File(Storage.getDownloadDir("TagMo", "Downloads"),
-                    name + ".bin");
+            File filePath = new File(Storage.getDownloadDir(
+                    "TagMo", "Downloads"
+            ), name + ".bin");
             FileOutputStream os = new FileOutputStream(filePath, false);
             os.write(tagData);
             os.flush();
@@ -258,7 +259,8 @@ public class WebsiteFragment extends Fragment {
                 File filePath = new File(Storage.getDownloadDir("TagMo"), "download.zip");
                 FileOutputStream os = new FileOutputStream(filePath, false);
                 os.write(Base64.decode(base64File.replaceFirst(
-                        "^data:" + zipType + ";base64,", ""), 0));
+                        "^data:" + zipType + ";base64,", ""
+                ), 0));
                 os.flush();
                 unzipFile(filePath);
             } else {

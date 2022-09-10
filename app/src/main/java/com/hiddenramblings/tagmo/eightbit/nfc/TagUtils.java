@@ -367,14 +367,15 @@ public class TagUtils {
         return null;
     }
 
-    public static String writeBytesToFile(File destination, String name, byte[] tagData)
+    public static String writeBytesToFile(File directory, String name, byte[] tagData, boolean sign)
             throws IOException {
-        byte[] signedData = getSignedTagData(tagData);
-        File binFile = new File(destination, name);
-        new FileOutputStream(binFile).write(signedData);
+        byte[] fileData = sign ? getSignedTagData(tagData) : tagData;
+        File binFile = new File(directory, name);
+        new FileOutputStream(binFile).write(fileData);
         try {
             MediaScannerConnection.scanFile(TagMo.getContext(),
-                    new String[] { binFile.getAbsolutePath() }, null, null);
+                    new String[] { binFile.getAbsolutePath() },
+                    null, null);
         } catch (Exception e) {
             Debug.Info(R.string.fail_media_scan, e);
         }
@@ -382,13 +383,13 @@ public class TagUtils {
     }
 
     public static String writeBytesToDocument(
-            Context context, DocumentFile destination, String name, byte[] tagData
+            Context context, DocumentFile directory, String name, byte[] tagData, boolean sign
     ) throws IOException {
-        byte[] signedData = getSignedTagData(tagData);
-        DocumentFile newFile = destination.createFile(context.getResources()
+        byte[] fileData = sign ? getSignedTagData(tagData) : tagData;
+        DocumentFile newFile = directory.createFile(context.getResources()
                 .getStringArray(R.array.mimetype_bin)[0], name + ".bin");
         if (null != newFile) {
-            context.getContentResolver().openOutputStream(newFile.getUri()).write(signedData);
+            context.getContentResolver().openOutputStream(newFile.getUri()).write(fileData);
         }
         return null != newFile ? newFile.getName() : null;
     }

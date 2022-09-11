@@ -24,13 +24,13 @@ public class JSONExecutor {
 
     ResultListener listener;
 
-    public JSONExecutor(Activity activity, String domain, String path) {
+    public JSONExecutor(Activity activity, String server, String path) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             activity.runOnUiThread(() -> ProviderInstaller.installIfNeededAsync(
                     activity, new ProviderInstaller.ProviderInstallListener() {
                 @Override
                 public void onProviderInstalled() {
-                    RetrieveJSON(domain, path);
+                    RetrieveJSON(server, path);
                 }
 
                 @Override
@@ -46,7 +46,7 @@ public class JSONExecutor {
                 }
             }));
         } else {
-            RetrieveJSON(domain, path);
+            RetrieveJSON(server, path);
         }
     }
 
@@ -58,11 +58,11 @@ public class JSONExecutor {
         return urlConnection;
     }
 
-    public void RetrieveJSON(String domain, String path) {
+    public void RetrieveJSON(String server, String path) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 HttpURLConnection conn = (HttpURLConnection)
-                        new URL(domain + path).openConnection();
+                        new URL(server + path).openConnection();
                 conn.setRequestMethod("GET");
                 conn.setUseCaches(false);
                 conn.setDefaultUseCaches(false);
@@ -71,15 +71,15 @@ public class JSONExecutor {
                 if (statusCode == HttpURLConnection.HTTP_MOVED_PERM) {
                     String address = conn.getHeaderField("Location");
                     conn.disconnect();
-                    fixServerLocation(new URL(address));
+                    conn = fixServerLocation(new URL(address));
                     statusCode = conn.getResponseCode();
                 } else if (statusCode != HttpURLConnection.HTTP_OK
-                        && TagMo.MIRRORED_API.equals(domain)) {
-                    fixServerLocation(new URL(TagMo.FALLBACK_API + "api/amiibo/"));
+                        && TagMo.MIRRORED_API.equals(server)) {
+                    conn = fixServerLocation(new URL(TagMo.FALLBACK_API + "amiibo/"));
                     statusCode = conn.getResponseCode();
                 }
 
-                if (statusCode != 200) {
+                if (statusCode != HttpURLConnection.HTTP_OK) {
                     conn.disconnect();
                     return;
                 }

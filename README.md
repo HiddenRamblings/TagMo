@@ -17,7 +17,7 @@ To contribute, please address PRs to the <a href="https://github.com/HiddenRambl
 
 ## Credits (2021 - Current)
 
-* AbandonedCart - Maintainer ([April 2021](https://github.com/HiddenRamblings/TagMo/commit/d0576591fda0187e4ad0ed5edb6e7e052e230f4c) - Current)
+* AbandonedCart - Maintainer ([2021](https://github.com/HiddenRamblings/TagMo/commit/d0576591fda0187e4ad0ed5edb6e7e052e230f4c) - Current)
 * Catflap62 - N2 Elite hardware and testing
 * hax0karti - [Amiibo Generator For Wumiibo](https://github.com/hax0kartik/amiibo-generator)
 * N3evin - [AmiiboAPI](https://github.com/N3evin/AmiiboAPI)

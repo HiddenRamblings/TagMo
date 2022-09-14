@@ -409,7 +409,18 @@ public class AmiiboData {
 
     private static String getString(ByteBuffer bb, int offset, int length, Charset charset)
             throws UnsupportedEncodingException {
-        return charset.decode(ByteBuffer.wrap(getBytes(bb, offset, length))).toString();
+        bb.position(offset);
+        
+        // Find the position of the first null terminator
+        int i;
+        if (charset == CharsetCompat.UTF_16BE || charset == CharsetCompat.UTF_16LE) {
+            for (i = 0; i < length / 2 && bb.getShort() != 0; i++);
+            i *= 2;
+        } else {
+            for (i = 0; i < length && bb.get() != 0; i++);
+        }
+
+        return charset.decode(ByteBuffer.wrap(getBytes(bb, offset, i))).toString();
     }
 
     private static void putString(ByteBuffer bb, int offset, int length, Charset charset, String text) {

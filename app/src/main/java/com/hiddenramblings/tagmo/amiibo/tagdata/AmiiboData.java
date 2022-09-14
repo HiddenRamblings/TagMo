@@ -115,7 +115,7 @@ public class AmiiboData {
     }
 
     public void checkCountryCode(int value) throws NumberFormatException {
-        if (value < 0 || value > 20)
+        if (value < 0 || value > 255)
             throw new NumberFormatException();
     }
 

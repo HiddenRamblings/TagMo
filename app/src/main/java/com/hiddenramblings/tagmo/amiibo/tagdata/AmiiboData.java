@@ -407,10 +407,10 @@ public class AmiiboData {
         putBytes(bbuf, offset, bb.array());
     }
 
-    private static String getString(ByteBuffer bb, int offset, int length, Charset charset)
-            throws UnsupportedEncodingException {
+    @SuppressWarnings("StatementWithEmptyBody")
+    private static String getString(ByteBuffer bb, int offset, int length, Charset charset)  {
         bb.position(offset);
-        
+
         // Find the position of the first null terminator
         int i;
         if (charset == CharsetCompat.UTF_16BE || charset == CharsetCompat.UTF_16LE) {

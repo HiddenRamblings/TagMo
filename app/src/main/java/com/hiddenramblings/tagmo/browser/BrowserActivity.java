@@ -121,12 +121,12 @@ import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout;
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
@@ -431,30 +431,23 @@ public class BrowserActivity extends AppCompatActivity implements
                 clickView -> fragmentBrowser.buildFoomiiboSet()
         );
 
-        if (prefs.hasAcceptedTOS().get()) {
-            requestStoragePermission();
-        } else {
-            try (InputStream in = getResources().openRawResource(R.raw.disclaimer);
-                 BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
-                StringBuilder total = new StringBuilder();
-                String line;
-                while (null != (line = r.readLine())) {
-                    total.append(line).append("\n");
-                }
-                new AlertDialog.Builder(this)
-                        .setMessage(total.toString())
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.accept, (dialog, which) -> {
-                            prefs.hasAcceptedTOS().put(true);
-                            dialog.dismiss();
-                            requestStoragePermission();
-                        })
-                        .show().getWindow()
-                        .setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT);
-            } catch (Exception e) {
-                Debug.Info(e);
-            }
+        try {
+            getPackageManager().getPackageInfo(
+                    "com.hiddenramblings.tagmo", PackageManager.GET_META_DATA
+            );
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.conversion_title)
+                    .setMessage(R.string.conversion_message)
+                    .setOnCancelListener(dialogInterface -> onShowDisclaimer())
+                    .setOnDismissListener(dialogInterface -> onShowDisclaimer())
+                    .setPositiveButton(R.string.proceed, (dialogInterface, i) -> {
+                        startActivity(new Intent(Intent.ACTION_DELETE).setData(
+                                Uri.parse("package:com.hiddenramblings.tagmo")
+                        ));
+                    }).show();
+
+        } catch (PackageManager.NameNotFoundException ignored) {
+            onShowDisclaimer();
         }
 
         RecyclerView foldersView = findViewById(R.id.folders_list);
@@ -536,20 +529,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         });
-
-        try {
-            getPackageManager().getPackageInfo(
-                    "com.hiddenramblings.tagmo", PackageManager.GET_META_DATA
-            );
-            this.runOnUiThread(() -> new AlertDialog.Builder(this)
-                    .setTitle(R.string.conversion_title)
-                    .setMessage(R.string.conversion_message)
-                    .setPositiveButton(R.string.proceed, (dialogInterface, i) ->
-                            startActivity(new Intent(Intent.ACTION_DELETE).setData(
-                                    Uri.parse("package:com.hiddenramblings.tagmo")
-                            ))
-                    ).show());
-        } catch (PackageManager.NameNotFoundException ignored) { }
     }
 
     private void onLoadSettingsFragment() {
@@ -566,6 +545,34 @@ public class BrowserActivity extends AppCompatActivity implements
         JoyConFragment fragmentJoyCon = JoyConFragment.newInstance();
         fragmentJoyCon.show(getSupportFragmentManager(), "dialog");
         joyConDialog = fragmentJoyCon.getDialog();
+    }
+
+    private void onShowDisclaimer() {
+        if (prefs.hasAcceptedTOS().get()) {
+            requestStoragePermission();
+        } else {
+            try (InputStream in = getResources().openRawResource(R.raw.disclaimer);
+                 BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
+                StringBuilder total = new StringBuilder();
+                String line;
+                while (null != (line = r.readLine())) {
+                    total.append(line).append("\n");
+                }
+                new AlertDialog.Builder(this)
+                        .setMessage(total.toString())
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.accept, (dialog, which) -> {
+                            prefs.hasAcceptedTOS().put(true);
+                            dialog.dismiss();
+                            requestStoragePermission();
+                        })
+                        .show().getWindow()
+                        .setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT);
+            } catch (Exception e) {
+                Debug.Info(e);
+            }
+        }
     }
 
     private void requestStoragePermission() {
@@ -586,6 +593,19 @@ public class BrowserActivity extends AppCompatActivity implements
         } else {
             onRequestStorage.launch(PERMISSIONS_STORAGE);
         }
+        try {
+            getPackageManager().getPackageInfo(
+                    "com.hiddenramblings.tagmo", PackageManager.GET_META_DATA
+            );
+            this.runOnUiThread(() -> new AlertDialog.Builder(this)
+                    .setTitle(R.string.conversion_title)
+                    .setMessage(R.string.conversion_message)
+                    .setPositiveButton(R.string.proceed, (dialogInterface, i) ->
+                            startActivity(new Intent(Intent.ACTION_DELETE).setData(
+                                    Uri.parse("package:com.hiddenramblings.tagmo")
+                            ))
+                    ).show());
+        } catch (PackageManager.NameNotFoundException ignored) { }
     }
 
     private final ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
@@ -769,6 +789,10 @@ public class BrowserActivity extends AppCompatActivity implements
                 subscriptions.addView(getSubscriptionButton(skuDetail));
             }
             dialog.setOnCancelListener(dialogInterface -> {
+                donations.removeAllViewsInLayout();
+                subscriptions.removeAllViewsInLayout();
+            });
+            dialog.setOnDismissListener(dialogInterface -> {
                 donations.removeAllViewsInLayout();
                 subscriptions.removeAllViewsInLayout();
             });

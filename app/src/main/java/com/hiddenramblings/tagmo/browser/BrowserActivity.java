@@ -435,6 +435,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 clickView -> fragmentBrowser.buildFoomiiboSet()
         );
 
+        requestStoragePermission();
         try {
             getPackageManager().getPackageInfo(
                     "com.hiddenramblings.tagmo", PackageManager.GET_META_DATA
@@ -442,8 +443,8 @@ public class BrowserActivity extends AppCompatActivity implements
             new AlertDialog.Builder(this)
                     .setTitle(R.string.conversion_title)
                     .setMessage(R.string.conversion_message)
-                    .setOnCancelListener(dialogInterface -> onShowDisclaimer())
-                    .setOnDismissListener(dialogInterface -> onShowDisclaimer())
+                    .setOnCancelListener(dialogInterface -> onShowDisclaimerTOS())
+                    .setOnDismissListener(dialogInterface -> onShowDisclaimerTOS())
                     .setPositiveButton(R.string.proceed, (dialogInterface, i) -> {
                         startActivity(new Intent(Intent.ACTION_DELETE).setData(
                                 Uri.parse("package:com.hiddenramblings.tagmo")
@@ -451,7 +452,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     }).show();
 
         } catch (PackageManager.NameNotFoundException ignored) {
-            onShowDisclaimer();
+            onShowDisclaimerTOS();
         }
 
         RecyclerView foldersView = findViewById(R.id.folders_list);
@@ -551,10 +552,8 @@ public class BrowserActivity extends AppCompatActivity implements
         joyConDialog = fragmentJoyCon.getDialog();
     }
 
-    private void onShowDisclaimer() {
-        if (prefs.hasAcceptedTOS().get()) {
-            requestStoragePermission();
-        } else {
+    private void onShowDisclaimerTOS() {
+        if (!prefs.hasAcceptedTOS().get()) {
             try (InputStream in = getResources().openRawResource(R.raw.disclaimer);
                  BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
                 StringBuilder total = new StringBuilder();
@@ -568,7 +567,6 @@ public class BrowserActivity extends AppCompatActivity implements
                         .setPositiveButton(R.string.accept, (dialog, which) -> {
                             prefs.hasAcceptedTOS().put(true);
                             dialog.dismiss();
-                            requestStoragePermission();
                         })
                         .show().getWindow()
                         .setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -597,19 +595,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } else {
             onRequestStorage.launch(PERMISSIONS_STORAGE);
         }
-        try {
-            getPackageManager().getPackageInfo(
-                    "com.hiddenramblings.tagmo", PackageManager.GET_META_DATA
-            );
-            this.runOnUiThread(() -> new AlertDialog.Builder(this)
-                    .setTitle(R.string.conversion_title)
-                    .setMessage(R.string.conversion_message)
-                    .setPositiveButton(R.string.proceed, (dialogInterface, i) ->
-                            startActivity(new Intent(Intent.ACTION_DELETE).setData(
-                                    Uri.parse("package:com.hiddenramblings.tagmo")
-                            ))
-                    ).show());
-        } catch (PackageManager.NameNotFoundException ignored) { }
     }
 
     private final ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(

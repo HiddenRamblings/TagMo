@@ -116,6 +116,7 @@ public class FlaskGattService extends Service {
     private String nameCompat = null;
     private String tailCompat = null;
 
+    private int maxTransmissionUnit = 23;
     public final static UUID FlaskNUS = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
@@ -306,6 +307,7 @@ public class FlaskGattService extends Service {
             if (null != listener) listener.onServicesDiscovered();
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Debug.Verbose(TAG, "onMtuChange complete: " + mtu);
+                maxTransmissionUnit = mtu;
             } else {
                 Debug.Warn(TAG, "onMtuChange received: " + status);
             }
@@ -529,7 +531,7 @@ public class FlaskGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(byte[] value) {
-        List<byte[]> chunks = byteToPortions(value, 20);
+        List<byte[]> chunks = byteToPortions(value, maxTransmissionUnit);
         int commandQueue = Callbacks.size() + 1 + chunks.size();
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {

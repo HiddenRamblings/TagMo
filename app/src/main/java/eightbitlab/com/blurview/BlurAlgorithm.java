@@ -1,6 +1,7 @@
-package com.eightbitlab.blurview;
+package eightbitlab.com.blurview;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 
 import androidx.annotation.NonNull;
 
@@ -35,4 +36,8 @@ public interface BlurAlgorithm {
      */
     @NonNull
     Bitmap.Config getSupportedBitmapConfig();
+
+    float scaleFactor();
+
+    void render(@NonNull Canvas canvas, @NonNull Bitmap bitmap);
 }

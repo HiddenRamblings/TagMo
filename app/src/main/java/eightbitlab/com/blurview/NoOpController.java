@@ -1,4 +1,4 @@
-package com.eightbitlab.blurview;
+package eightbitlab.com.blurview;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -26,11 +26,6 @@ class NoOpController implements BlurController {
     }
 
     @Override
-    public BlurViewFacade setBlurAlgorithm(BlurAlgorithm algorithm) {
-        return this;
-    }
-
-    @Override
     public BlurViewFacade setOverlayColor(int overlayColor) {
         return this;
     }
@@ -47,11 +42,6 @@ class NoOpController implements BlurController {
 
     @Override
     public BlurViewFacade setBlurAutoUpdate(boolean enabled) {
-        return this;
-    }
-
-    @Override
-    public BlurViewFacade setHasFixedTransformationMatrix(boolean hasFixedTransformationMatrix) {
         return this;
     }
 }

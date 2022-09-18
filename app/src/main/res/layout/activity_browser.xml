@@ -76,7 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <com.eightbitlab.blurview.BlurView
+            <eightbitlab.com.blurview.BlurView
                 android:id="@+id/amiiboContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -90,7 +90,7 @@
                 <include
                     android:id="@+id/active_card_layout"
                     layout="@layout/active_card_layout" />
-            </com.eightbitlab.blurview.BlurView>
+            </eightbitlab.com.blurview.BlurView>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/nfc_fab"

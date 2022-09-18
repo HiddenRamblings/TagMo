@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -82,7 +83,7 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 
-@SuppressLint("NewApi")
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class FlaskSlotFragment extends Fragment implements
         FlaskSlotAdapter.OnAmiiboClickListener,
         BluetoothHandler.BluetoothListener {
@@ -268,8 +269,6 @@ public class FlaskSlotFragment extends Fragment implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
 
         rootLayout = (CoordinatorLayout) view;
 

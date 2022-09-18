@@ -12,6 +12,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 public class NavPagerAdapter extends FragmentStateAdapter {
     private final BrowserFragment fragmentBrowser = new BrowserFragment();
     private final EliteBankFragment fragmentElite = new EliteBankFragment();
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private final FlaskSlotFragment fragmentFlask = new FlaskSlotFragment();
     private final WebsiteFragment fragmentWebsite = new WebsiteFragment();
 
@@ -26,7 +27,8 @@ public class NavPagerAdapter extends FragmentStateAdapter {
             case 1:
                 return fragmentElite;
             case 2:
-                return fragmentFlask;
+                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+                        ? fragmentFlask : fragmentWebsite;
             case 3:
                 return fragmentWebsite;
             default:
@@ -47,6 +49,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
         return fragmentElite;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public FlaskSlotFragment getFlaskSlots() {
         return fragmentFlask;
     }

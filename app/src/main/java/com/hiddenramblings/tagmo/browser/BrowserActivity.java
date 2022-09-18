@@ -41,6 +41,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -219,7 +220,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuRecursiveFiles;
     private MenuItem menuHideDownloads;
 
-    private BlurView amiiboContainer;
+    private FrameLayout amiiboContainer;
     private Toolbar toolbar;
     private View amiiboInfo;
     private TextView txtError;
@@ -388,13 +389,16 @@ public class BrowserActivity extends AppCompatActivity implements
         onLoadSettingsFragment();
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
-        amiiboContainer.setupWith(coordinator, Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                        ? new RenderEffectBlur()
-                        : Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-                        ? new RenderScriptBlur(this)
-                        : new SupportRenderScriptBlur(this))
-                .setFrameClearDrawable(getWindow().getDecorView().getBackground())
-                .setBlurRadius(2f).setBlurAutoUpdate(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            ((BlurView) amiiboContainer).setupWith(coordinator,
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                            ? new RenderEffectBlur()
+                            : Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                            ? new RenderScriptBlur(this)
+                            : new SupportRenderScriptBlur(this))
+                    .setFrameClearDrawable(getWindow().getDecorView().getBackground())
+                    .setBlurRadius(2f).setBlurAutoUpdate(true);
+        }
 
         AppCompatImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));

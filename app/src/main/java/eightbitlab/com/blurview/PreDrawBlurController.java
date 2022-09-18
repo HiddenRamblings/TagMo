@@ -1,11 +1,9 @@
-package com.eightbitlab.blurview;
+package eightbitlab.com.blurview;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
@@ -23,36 +21,35 @@ import androidx.annotation.Nullable;
  * It uses {@link ViewTreeObserver.OnPreDrawListener} to detect when
  * blur should be updated.
  * <p>
- * Blur is done on the main thread.
  */
-final class BlockingBlurController implements BlurController {
+final class PreDrawBlurController implements BlurController {
 
     @ColorInt
     static final int TRANSPARENT = 0;
 
     private float blurRadius = DEFAULT_BLUR_RADIUS;
 
-    private BlurAlgorithm blurAlgorithm;
+    private final BlurAlgorithm blurAlgorithm;
     private BlurViewCanvas internalCanvas;
     private Bitmap internalBitmap;
 
     @SuppressWarnings("WeakerAccess")
-    final View blurView;
+    final BlurView blurView;
     private int overlayColor;
     private final ViewGroup rootView;
     private final int[] rootLocation = new int[2];
     private final int[] blurViewLocation = new int[2];
-    private final SizeScaler sizeScaler = new SizeScaler(DEFAULT_SCALE_FACTOR);
-    private float scaleFactor = 1f;
 
-    private final ViewTreeObserver.OnPreDrawListener drawListener = () -> {
-        // Not invalidating a View here, just updating the Bitmap.
-        // This relies on the HW accelerated bitmap drawing behavior in Android
-        // If the bitmap was drawn on HW accelerated canvas, it holds a reference to it and on next
-        // drawing pass the updated content of the bitmap will be rendered on the screen
-
-        updateBlur();
-        return true;
+    private final ViewTreeObserver.OnPreDrawListener drawListener = new ViewTreeObserver.OnPreDrawListener() {
+        @Override
+        public boolean onPreDraw() {
+            // Not invalidating a View here, just updating the Bitmap.
+            // This relies on the HW accelerated bitmap drawing behavior in Android
+            // If the bitmap was drawn on HW accelerated canvas, it holds a reference to it and on next
+            // drawing pass the updated content of the bitmap will be rendered on the screen
+            updateBlur();
+            return true;
+        }
     };
 
     private boolean blurEnabled = true;
@@ -60,20 +57,18 @@ final class BlockingBlurController implements BlurController {
 
     @Nullable
     private Drawable frameClearDrawable;
-    private boolean hasFixedTransformationMatrix;
-    private final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 
     /**
-     * @param blurView View which will draw it's blurred underlying content
-     * @param rootView Root View where blurView's underlying content starts drawing.
-     *                 Can be Activity's root content layout (android.R.id.content)
-     *                 or some of your custom root layouts.
+     * @param blurView  View which will draw it's blurred underlying content
+     * @param rootView  Root View where blurView's underlying content starts drawing.
+     *                  Can be Activity's root content layout (android.R.id.content)
+     * @param algorithm sets the blur algorithm
      */
-    BlockingBlurController(@NonNull View blurView, @NonNull ViewGroup rootView, @ColorInt int overlayColor) {
+    PreDrawBlurController(@NonNull BlurView blurView, @NonNull ViewGroup rootView, @ColorInt int overlayColor, BlurAlgorithm algorithm) {
         this.rootView = rootView;
         this.blurView = blurView;
         this.overlayColor = overlayColor;
-        this.blurAlgorithm = new NoOpBlurAlgorithm();
+        this.blurAlgorithm = algorithm;
 
         int measuredWidth = blurView.getMeasuredWidth();
         int measuredHeight = blurView.getMeasuredHeight();
@@ -83,6 +78,8 @@ final class BlockingBlurController implements BlurController {
 
     @SuppressWarnings("WeakerAccess")
     void init(int measuredWidth, int measuredHeight) {
+        setBlurAutoUpdate(true);
+        SizeScaler sizeScaler = new SizeScaler(blurAlgorithm.scaleFactor());
         if (sizeScaler.isZeroSized(measuredWidth, measuredHeight)) {
             // Will be initialized later when the View reports a size change
             blurView.setWillNotDraw(true);
@@ -90,13 +87,15 @@ final class BlockingBlurController implements BlurController {
         }
 
         blurView.setWillNotDraw(false);
-        allocateBitmap(measuredWidth, measuredHeight);
+        SizeScaler.Size bitmapSize = sizeScaler.scale(measuredWidth, measuredHeight);
+        internalBitmap = Bitmap.createBitmap(bitmapSize.width, bitmapSize.height, blurAlgorithm.getSupportedBitmapConfig());
         internalCanvas = new BlurViewCanvas(internalBitmap);
         initialized = true;
-
-        if (hasFixedTransformationMatrix) {
-            setupInternalCanvasMatrix();
-        }
+        // Usually it's not needed, because `onPreDraw` updates the blur anyway.
+        // But it handles cases when the PreDraw listener is attached to a different Window, for example
+        // when the BlurView is in a Dialog window, but the root is in the Activity.
+        // Previously it was done in `draw`, but it was causing potential side effects and Jetpack Compose crashes
+        updateBlur();
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -111,22 +110,12 @@ final class BlockingBlurController implements BlurController {
             frameClearDrawable.draw(internalCanvas);
         }
 
-        if (hasFixedTransformationMatrix) {
-            rootView.draw(internalCanvas);
-        } else {
-            internalCanvas.save();
-            setupInternalCanvasMatrix();
-            rootView.draw(internalCanvas);
-            internalCanvas.restore();
-        }
+        internalCanvas.save();
+        setupInternalCanvasMatrix();
+        rootView.draw(internalCanvas);
+        internalCanvas.restore();
 
         blurAndSave();
-    }
-
-    private void allocateBitmap(int measuredWidth, int measuredHeight) {
-        SizeScaler.Size bitmapSize = sizeScaler.scale(measuredWidth, measuredHeight);
-        scaleFactor = bitmapSize.scaleFactor;
-        internalBitmap = Bitmap.createBitmap(bitmapSize.width, bitmapSize.height, blurAlgorithm.getSupportedBitmapConfig());
     }
 
     /**
@@ -139,11 +128,15 @@ final class BlockingBlurController implements BlurController {
         int left = blurViewLocation[0] - rootLocation[0];
         int top = blurViewLocation[1] - rootLocation[1];
 
-        float scaledLeftPosition = -left / scaleFactor;
-        float scaledTopPosition = -top / scaleFactor;
+        // https://github.com/Dimezis/BlurView/issues/128
+        float scaleFactorH = (float) blurView.getHeight() / internalBitmap.getHeight();
+        float scaleFactorW = (float) blurView.getWidth() / internalBitmap.getWidth();
+
+        float scaledLeftPosition = -left / scaleFactorW;
+        float scaledTopPosition = -top / scaleFactorH;
 
         internalCanvas.translate(scaledLeftPosition, scaledTopPosition);
-        internalCanvas.scale(1 / scaleFactor, 1 / scaleFactor);
+        internalCanvas.scale(1 / scaleFactorW, 1 / scaleFactorH);
     }
 
     @Override
@@ -153,18 +146,18 @@ final class BlockingBlurController implements BlurController {
         }
         // Not blurring itself or other BlurViews to not cause recursive draw calls
         // Related: https://github.com/Dimezis/BlurView/issues/110
-        //          https://github.com/Dimezis/BlurView/issues/110
         if (canvas instanceof BlurViewCanvas) {
             return false;
         }
 
-        updateBlur();
+        // https://github.com/Dimezis/BlurView/issues/128
+        float scaleFactorH = (float) blurView.getHeight() / internalBitmap.getHeight();
+        float scaleFactorW = (float) blurView.getWidth() / internalBitmap.getWidth();
 
         canvas.save();
-        canvas.scale(scaleFactor, scaleFactor);
-        canvas.drawBitmap(internalBitmap, 0, 0, paint);
+        canvas.scale(scaleFactorW, scaleFactorH);
+        blurAlgorithm.render(canvas, internalBitmap);
         canvas.restore();
-
         if (overlayColor != TRANSPARENT) {
             canvas.drawColor(overlayColor);
         }
@@ -200,12 +193,6 @@ final class BlockingBlurController implements BlurController {
     }
 
     @Override
-    public BlurViewFacade setBlurAlgorithm(BlurAlgorithm algorithm) {
-        this.blurAlgorithm = algorithm;
-        return this;
-    }
-
-    @Override
     public BlurViewFacade setFrameClearDrawable(@Nullable Drawable frameClearDrawable) {
         this.frameClearDrawable = frameClearDrawable;
         return this;
@@ -220,16 +207,10 @@ final class BlockingBlurController implements BlurController {
     }
 
     public BlurViewFacade setBlurAutoUpdate(final boolean enabled) {
-        blurView.getViewTreeObserver().removeOnPreDrawListener(drawListener);
+        rootView.getViewTreeObserver().removeOnPreDrawListener(drawListener);
         if (enabled) {
-            blurView.getViewTreeObserver().addOnPreDrawListener(drawListener);
+            rootView.getViewTreeObserver().addOnPreDrawListener(drawListener);
         }
-        return this;
-    }
-
-    @Override
-    public BlurViewFacade setHasFixedTransformationMatrix(boolean hasFixedTransformationMatrix) {
-        this.hasFixedTransformationMatrix = hasFixedTransformationMatrix;
         return this;
     }
 

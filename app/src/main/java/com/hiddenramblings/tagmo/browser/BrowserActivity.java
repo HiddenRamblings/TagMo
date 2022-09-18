@@ -88,10 +88,6 @@ import com.android.billingclient.api.QueryPurchaseHistoryParams;
 import com.android.billingclient.api.QueryPurchasesParams;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.eightbitlab.blurview.BlurView;
-import com.eightbitlab.blurview.BlurViewFacade;
-import com.eightbitlab.blurview.RenderScriptBlur;
-import com.eightbitlab.blurview.SupportRenderScriptBlur;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -163,6 +159,11 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
+import eightbitlab.com.blurview.BlurAlgorithm;
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderEffectBlur;
+import eightbitlab.com.blurview.RenderScriptBlur;
+import eightbitlab.com.blurview.SupportRenderScriptBlur;
 import myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView;
 
 public class BrowserActivity extends AppCompatActivity implements
@@ -387,14 +388,13 @@ public class BrowserActivity extends AppCompatActivity implements
         onLoadSettingsFragment();
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
-        BlurViewFacade blurView = amiiboContainer.setupWith(coordinator)
+        amiiboContainer.setupWith(coordinator, Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                        ? new RenderEffectBlur()
+                        : Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                        ? new RenderScriptBlur(this)
+                        : new SupportRenderScriptBlur(this))
                 .setFrameClearDrawable(getWindow().getDecorView().getBackground())
-                .setBlurRadius(2f).setBlurAutoUpdate(true)
-                .setHasFixedTransformationMatrix(false);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-            blurView.setBlurAlgorithm(new RenderScriptBlur(this));
-        else
-            blurView.setBlurAlgorithm(new SupportRenderScriptBlur(this));
+                .setBlurRadius(2f).setBlurAutoUpdate(true);
 
         AppCompatImageView toggle = findViewById(R.id.toggle);
         this.bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet));

@@ -1,6 +1,4 @@
-package com.eightbitlab.blurview;
-
-import androidx.annotation.NonNull;
+package eightbitlab.com.blurview;
 
 /**
  * Scales width and height by [scaleFactor],
@@ -51,6 +49,7 @@ public class SizeScaler {
 
         final int width;
         final int height;
+        // TODO this is probably not needed anymore
         final float scaleFactor;
 
         Size(int width, int height, float scaleFactor) {
@@ -79,11 +78,13 @@ public class SizeScaler {
             return result;
         }
 
-        @NonNull
         @Override
         public String toString() {
-            return "Size{width=" + width + ", height=" + height
-                    + ", scaleFactor=" + scaleFactor + '}';
+            return "Size{" +
+                    "width=" + width +
+                    ", height=" + height +
+                    ", scaleFactor=" + scaleFactor +
+                    '}';
         }
     }
 }

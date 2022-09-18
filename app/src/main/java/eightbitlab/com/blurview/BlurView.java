@@ -1,6 +1,6 @@
-package com.eightbitlab.blurview;
+package eightbitlab.com.blurview;
 
-import static com.eightbitlab.blurview.BlockingBlurController.TRANSPARENT;
+import static eightbitlab.com.blurview.PreDrawBlurController.TRANSPARENT;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -19,7 +19,6 @@ import com.hiddenramblings.tagmo.R;
  * FrameLayout that blurs its underlying content.
  * Can have children and draw them over blurred background.
  */
-@SuppressWarnings("unused")
 public class BlurView extends FrameLayout {
 
     private static final String TAG = BlurView.class.getSimpleName();
@@ -81,14 +80,15 @@ public class BlurView extends FrameLayout {
     }
 
     /**
-     * @param rootView root to start blur from.
-     *                 Can be Activity's root content layout (android.R.id.content)
-     *                 or (preferably) some of your layouts. The lower amount of Views are in the root, the better for performance.
+     * @param rootView  root to start blur from.
+     *                  Can be Activity's root content layout (android.R.id.content)
+     *                  or (preferably) some of your layouts. The lower amount of Views are in the root, the better for performance.
+     * @param algorithm sets the blur algorithm
      * @return {@link BlurView} to setup needed params.
      */
-    public BlurViewFacade setupWith(@NonNull ViewGroup rootView) {
-        BlurController blurController = new BlockingBlurController(this, rootView, overlayColor);
+    public BlurViewFacade setupWith(@NonNull ViewGroup rootView, BlurAlgorithm algorithm) {
         this.blurController.destroy();
+        BlurController blurController = new PreDrawBlurController(this, rootView, overlayColor, algorithm);
         this.blurController = blurController;
 
         return blurController;

@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.SoftReference;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.concurrent.Executors;
@@ -74,7 +73,7 @@ public class CheckUpdatesTask {
     }
 
     void configureUpdates(BrowserActivity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP)) {
             PackageInstaller installer = activity.getApplicationContext()
                     .getPackageManager().getPackageInstaller();
             for (PackageInstaller.SessionInfo session : installer.getMySessions()) {
@@ -120,7 +119,7 @@ public class CheckUpdatesTask {
                     apk.delete();
 
                 Context applicationContext = activity.get().getApplicationContext();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (Debug.hasBuild(Build.VERSION_CODES.N)) {
                     PackageInstaller installer = applicationContext
                             .getPackageManager().getPackageInstaller();
                     ContentResolver resolver = applicationContext.getContentResolver();
@@ -145,7 +144,7 @@ public class CheckUpdatesTask {
                     sessionStream.close();
                     PendingIntent pi = PendingIntent.getBroadcast(applicationContext, 8675309,
                             new Intent(applicationContext, UpdateReceiver.class),
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                            Debug.hasBuild(Build.VERSION_CODES.S)
                                     ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
                                     : PendingIntent.FLAG_UPDATE_CURRENT);
                     session.commit(pi.getIntentSender());
@@ -173,7 +172,7 @@ public class CheckUpdatesTask {
     }
 
     void installUpdateCompat(String apkUrl) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Debug.hasBuild(Build.VERSION_CODES.O)) {
             if (activity.get().getPackageManager().canRequestPackageInstalls()) {
                 installUpdateTask(apkUrl);
             } else {

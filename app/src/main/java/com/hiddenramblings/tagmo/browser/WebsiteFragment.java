@@ -36,8 +36,8 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.json.JSONException;
@@ -68,7 +68,7 @@ public class WebsiteFragment extends Fragment {
 
         mWebView = view.findViewById(R.id.webview_content);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        if (Debug.hasBuild(Build.VERSION_CODES.M)) {
             ProviderInstaller.installIfNeededAsync(requireContext(),
                     new ProviderInstaller.ProviderInstallListener() {
                 @Override
@@ -109,11 +109,11 @@ public class WebsiteFragment extends Fragment {
         webViewSettings.setJavaScriptEnabled(true);
         webViewSettings.setDomStorageEnabled(true);
         webViewSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+        if (Debug.hasBuild(Build.VERSION_CODES.KITKAT)) {
             webViewSettings.setPluginState(WebSettings.PluginState.ON);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP)) {
             final WebViewAssetLoader assetLoader =
                     new WebViewAssetLoader.Builder().addPathHandler("/assets/",
                             new WebViewAssetLoader.AssetsPathHandler(requireContext())).build();

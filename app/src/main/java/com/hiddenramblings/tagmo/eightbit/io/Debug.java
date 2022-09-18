@@ -83,6 +83,10 @@ public class Debug {
         return TagMo.getContext();
     }
 
+    public static boolean hasBuild(int versionCode) {
+        return Build.VERSION.SDK_INT >= versionCode;
+    }
+
     private static boolean hasDebugging() {
         return !TagMo.getPrefs().settings_disable_debug().get();
     }

@@ -161,7 +161,7 @@ public class PuckGattService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP))
                     mBluetoothGatt.requestMtu(512); // Maximum: 517
                 else if (null != listener) listener.onServicesDiscovered();
             } else {

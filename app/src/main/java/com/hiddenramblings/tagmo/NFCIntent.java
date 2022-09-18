@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
 
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+
 public class NFCIntent {
     public static ComponentName FilterComponent = new ComponentName(BuildConfig.APPLICATION_ID,
             "com.hiddenramblings.tagmo.NFCIntentFilter");
@@ -40,7 +42,7 @@ public class NFCIntent {
     public static final String SITE_POWERTAG_HELP = "https://tagmo.gitlab.io/powertags.html";
 
     public static Intent getIntent(Intent intent) {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+        return Debug.hasBuild(Build.VERSION_CODES.N)
                 ? intent.addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)

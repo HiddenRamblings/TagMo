@@ -39,7 +39,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.concurrent.Executors;
@@ -456,17 +455,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     });
 
     private void showFileChooser(String title, int resultCode) {
-        Intent intent = new Intent(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+        Intent intent = new Intent(Debug.hasBuild(Build.VERSION_CODES.KITKAT)
                 ? Intent.ACTION_OPEN_DOCUMENT : Intent.ACTION_GET_CONTENT)
                 .putExtra("android.content.extra.SHOW_ADVANCED", true)
                 .putExtra("android.content.extra.FANCY", true);
 
         switch(resultCode) {
             case RESULT_KEYS:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
+                if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2))
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    if (Debug.hasBuild(Build.VERSION_CODES.KITKAT)) {
                         intent.putExtra(Intent.EXTRA_MIME_TYPES,
                                 getResources().getStringArray(R.array.mimetype_bin));
                     }
@@ -478,7 +477,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 break;
             case RESULT_IMPORT_AMIIBO_DATABASE:
                 try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    if (Debug.hasBuild(Build.VERSION_CODES.KITKAT)) {
                         intent.putExtra(Intent.EXTRA_MIME_TYPES,
                                 getResources().getStringArray(R.array.mimetype_json));
                     }

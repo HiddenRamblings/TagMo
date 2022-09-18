@@ -68,6 +68,7 @@ import androidx.transition.TransitionManager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import java.lang.ref.WeakReference;
 
@@ -110,7 +111,7 @@ public class IconifiedSnackbar {
                 ));
                 break;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
             textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     drawable, 0, 0, 0);
         } else {

@@ -16,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Executors;
 
@@ -27,7 +26,7 @@ public class JSONExecutor {
     ResultListener listener;
 
     public JSONExecutor(Activity activity, String server, String path) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        if (Debug.hasBuild(Build.VERSION_CODES.M)) {
             ProviderInstaller.installIfNeededAsync(
                     activity, new ProviderInstaller.ProviderInstallListener() {
                 @Override

@@ -14,8 +14,9 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboType;
 import com.hiddenramblings.tagmo.amiibo.Character;
 import com.hiddenramblings.tagmo.amiibo.GameSeries;
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class BrowserSettings implements Parcelable {
         }
 
         public static SORT valueOf(int value) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (Debug.hasBuild(Build.VERSION_CODES.N)) {
                 Optional<SORT> optional = Arrays.stream(values()).filter(
                         SORT -> SORT.value == value).findFirst();
                 if (optional.isPresent()) return optional.get();
@@ -80,7 +81,7 @@ public class BrowserSettings implements Parcelable {
         }
 
         public static VIEW valueOf(int value) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (Debug.hasBuild(Build.VERSION_CODES.N)) {
                 Optional<VIEW> optional = Arrays.stream(values()).filter(
                         VIEW -> VIEW.value == value).findFirst();
                 if (optional.isPresent()) return optional.get();

@@ -160,7 +160,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
-import eightbitlab.com.blurview.BlurAlgorithm;
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderEffectBlur;
 import eightbitlab.com.blurview.RenderScriptBlur;
@@ -369,7 +368,9 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         });
 
-        new TabLayoutMediator(findViewById(R.id.navigation_tabs), mainLayout, (tab, position) -> {
+        new TabLayoutMediator(findViewById(R.id.navigation_tabs), mainLayout, true,
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2,
+                (tab, position) -> {
             switch (position) {
                 case 1:
                     tab.setText(R.string.elite_n2);

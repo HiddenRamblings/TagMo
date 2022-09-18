@@ -68,7 +68,7 @@ public class WebsiteFragment extends Fragment {
 
         mWebView = view.findViewById(R.id.webview_content);
 
-        if (Debug.hasBuild(Build.VERSION_CODES.M)) {
+        if (Debug.isOlder(Build.VERSION_CODES.M)) {
             ProviderInstaller.installIfNeededAsync(requireContext(),
                     new ProviderInstaller.ProviderInstallListener() {
                 @Override
@@ -85,7 +85,7 @@ public class WebsiteFragment extends Fragment {
                                     requireActivity(), errorCode, 7000,
                                     dialog -> onProviderInstallerNotAvailable());
                         } catch (IllegalArgumentException ex) {
-                            ((BrowserActivity) requireActivity()).showBrowserPage();
+                            onProviderInstallerNotAvailable();
                         }
                     } else {
                         onProviderInstallerNotAvailable();
@@ -109,11 +109,11 @@ public class WebsiteFragment extends Fragment {
         webViewSettings.setJavaScriptEnabled(true);
         webViewSettings.setDomStorageEnabled(true);
         webViewSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        if (Debug.hasBuild(Build.VERSION_CODES.KITKAT)) {
+        if (Debug.isOlder(Build.VERSION_CODES.KITKAT)) {
             webViewSettings.setPluginState(WebSettings.PluginState.ON);
         }
 
-        if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             final WebViewAssetLoader assetLoader =
                     new WebViewAssetLoader.Builder().addPathHandler("/assets/",
                             new WebViewAssetLoader.AssetsPathHandler(requireContext())).build();
@@ -169,7 +169,7 @@ public class WebsiteFragment extends Fragment {
             mWebView.loadUrl(address);
         } else {
             final String delayedUrl = address;
-            new Handler(Looper.getMainLooper()).postDelayed((Runnable) () ->
+            new Handler(Looper.getMainLooper()).postDelayed(() ->
                     loadWebsite(delayedUrl), TagMo.uiDelay);
         }
     }
@@ -315,7 +315,6 @@ public class WebsiteFragment extends Fragment {
     private void onProviderInstallerNotAvailable() {
         requireActivity().runOnUiThread(() -> {
             new Toasty(requireActivity()).Long(R.string.fail_ssl_update);
-            ((BrowserActivity) requireActivity()).showBrowserPage();
         });
     }
 }

@@ -129,7 +129,7 @@ public class Foomiibo {
         System.arraycopy(CFG1, 0, arr, 0x210, CFG1.length);
 
         // Set Keygen Salt
-        if (Debug.hasBuild(Build.VERSION_CODES.N)) {
+        if (Debug.isNewer(Build.VERSION_CODES.N)) {
             byte[] salt = getRandomBytes(32);
             System.arraycopy(salt, 0, arr, 0x1E8, salt.length);
         }

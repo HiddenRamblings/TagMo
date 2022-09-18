@@ -626,7 +626,7 @@ public class NfcActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setMessage(R.string.nfc_query)
                     .setPositiveButton(R.string.yes, (dialog, which) -> {
-                        if (Debug.hasBuild(Build.VERSION_CODES.Q))
+                        if (Debug.isNewer(Build.VERSION_CODES.Q))
                             onNFCActivity.launch(new Intent(Settings.Panel.ACTION_NFC));
                         else
                             onNFCActivity.launch(new Intent(Settings.ACTION_NFC_SETTINGS));
@@ -635,7 +635,7 @@ public class NfcActivity extends AppCompatActivity {
                     .show();
         } else {
             // monitor nfc status
-            if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                 IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
                 this.registerReceiver(mReceiver, filter);
             }
@@ -647,7 +647,7 @@ public class NfcActivity extends AppCompatActivity {
         if (null != nfcAdapter) {
             nfcAdapter.disableForegroundDispatch(this);
         }
-        if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+        if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
             try {
                 this.unregisterReceiver(mReceiver);
             } catch (IllegalArgumentException ignored) { }
@@ -657,7 +657,7 @@ public class NfcActivity extends AppCompatActivity {
     private void listenForTags() {
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(getApplicationContext(),
                 0, new Intent(getApplicationContext(), this.getClass()),
-                Debug.hasBuild(Build.VERSION_CODES.S)
+                Debug.isNewer(Build.VERSION_CODES.S)
                         ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
                         : PendingIntent.FLAG_UPDATE_CURRENT
         );

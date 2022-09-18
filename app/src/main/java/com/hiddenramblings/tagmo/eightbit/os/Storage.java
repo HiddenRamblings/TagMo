@@ -209,9 +209,9 @@ public class Storage extends Environment {
 
     private static File setFile(boolean internal) {
         isInternalPreferred = internal;
-        if (Debug.hasBuild(Build.VERSION_CODES.R))
+        if (Debug.isNewer(Build.VERSION_CODES.R))
             return setFileRedVelvet(internal);
-        else if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP))
+        else if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
             return setFileLollipop(internal);
         else
             return setFileGeneric(internal);
@@ -227,7 +227,7 @@ public class Storage extends Environment {
     }
 
     public static Uri getFileUri(File file) {
-        return Debug.hasBuild(Build.VERSION_CODES.N)
+        return Debug.isNewer(Build.VERSION_CODES.N)
                 ? FileProvider.getUriForFile(TagMo.getContext(), PROVIDER, file)
                 : Uri.fromFile(file);
     }

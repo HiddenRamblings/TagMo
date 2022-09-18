@@ -26,7 +26,7 @@ public class JSONExecutor {
     ResultListener listener;
 
     public JSONExecutor(Activity activity, String server, String path) {
-        if (Debug.hasBuild(Build.VERSION_CODES.M)) {
+        if (Debug.isOlder(Build.VERSION_CODES.M)) {
             ProviderInstaller.installIfNeededAsync(
                     activity, new ProviderInstaller.ProviderInstallListener() {
                 @Override

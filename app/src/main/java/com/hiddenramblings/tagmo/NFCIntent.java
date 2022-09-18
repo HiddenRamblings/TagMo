@@ -42,7 +42,7 @@ public class NFCIntent {
     public static final String SITE_POWERTAG_HELP = "https://tagmo.gitlab.io/powertags.html";
 
     public static Intent getIntent(Intent intent) {
-        return Debug.hasBuild(Build.VERSION_CODES.N)
+        return Debug.isNewer(Build.VERSION_CODES.N)
                 ? intent.addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)

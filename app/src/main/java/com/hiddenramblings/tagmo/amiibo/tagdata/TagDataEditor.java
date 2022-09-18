@@ -850,7 +850,7 @@ public class TagDataEditor extends AppCompatActivity {
 
         public CountryCodesAdapter(HashMap<Integer, String> data) {
             this.data = new ArrayList<>(data.entrySet());
-            if (Debug.hasBuild(Build.VERSION_CODES.N)) {
+            if (Debug.isNewer(Build.VERSION_CODES.N)) {
                 Collections.sort(this.data, Map.Entry.comparingByKey());
             } else {
                 //noinspection all
@@ -921,7 +921,7 @@ public class TagDataEditor extends AppCompatActivity {
 
         public AppIdAdapter(HashMap<Integer, String> data) {
             this.data = new ArrayList<>(data.entrySet());
-            if (Debug.hasBuild(Build.VERSION_CODES.N)) {
+            if (Debug.isNewer(Build.VERSION_CODES.N)) {
                 Collections.sort(this.data, Map.Entry.comparingByKey());
             } else {
                 //noinspection all

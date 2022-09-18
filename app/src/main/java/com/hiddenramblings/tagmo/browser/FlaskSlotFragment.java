@@ -33,7 +33,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -83,7 +82,7 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+@SuppressLint("NewApi")
 public class FlaskSlotFragment extends Fragment implements
         FlaskSlotAdapter.OnAmiiboClickListener,
         BluetoothHandler.BluetoothListener {
@@ -269,6 +268,8 @@ public class FlaskSlotFragment extends Fragment implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
 
         rootLayout = (CoordinatorLayout) view;
 
@@ -599,7 +600,7 @@ public class FlaskSlotFragment extends Fragment implements
         return null != selectedAmiibo ? selectedAmiibo : new FlaskTag(Long.parseLong(name[1]));
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint({"MissingPermission", "NewApi"})
     private void scanBluetoothServices() {
         mBluetoothAdapter = null != mBluetoothAdapter ? mBluetoothAdapter
                 : bluetoothHandler.getBluetoothAdapter(requireContext());
@@ -610,7 +611,7 @@ public class FlaskSlotFragment extends Fragment implements
         }
         showScanningNotice();
         profileFlask = null;
-        if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
             ParcelUuid FlaskUUID = new ParcelUuid(FlaskGattService.FlaskNUS);
             ScanFilter filter = new ScanFilter.Builder().setServiceUuid(FlaskUUID).build();
@@ -801,7 +802,7 @@ public class FlaskSlotFragment extends Fragment implements
         mBluetoothAdapter = null != mBluetoothAdapter ? mBluetoothAdapter
                 : bluetoothHandler.getBluetoothAdapter(requireContext());
         if (null != mBluetoothAdapter) {
-            if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP)) {
+            if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
                 if (null != scanCallbackLP)
                     mBluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallbackLP);
             } else {

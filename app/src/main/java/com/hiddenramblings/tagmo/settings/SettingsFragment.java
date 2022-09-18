@@ -44,6 +44,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.concurrent.Executors;
 
+import javax.net.ssl.HttpsURLConnection;
+
 public class SettingsFragment extends PreferenceFragmentCompat {
 
     public static final String IMAGE_NETWORK_NEVER = "NEVER";
@@ -349,8 +351,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    private HttpURLConnection fixServerLocation(URL url) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+    private HttpsURLConnection fixServerLocation(URL url) throws IOException {
+        HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
         urlConnection.setRequestMethod("GET");
         urlConnection.setUseCaches(false);
         urlConnection.setDefaultUseCaches(false);
@@ -367,18 +369,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             try {
                 String server = TagMo.getDatabaseUrl();
                 URL url = new URL(server + "amiibo/");
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.setUseCaches(false);
                 urlConnection.setDefaultUseCaches(false);
 
                 int statusCode = urlConnection.getResponseCode();
-                if (statusCode == HttpURLConnection.HTTP_MOVED_PERM) {
+                if (statusCode == HttpsURLConnection.HTTP_MOVED_PERM) {
                     String address = urlConnection.getHeaderField("Location");
                     urlConnection.disconnect();
                     urlConnection = fixServerLocation(new URL(address));
                     statusCode = urlConnection.getResponseCode();
-                } else if (statusCode != HttpURLConnection.HTTP_OK
+                } else if (statusCode != HttpsURLConnection.HTTP_OK
                         && TagMo.MIRRORED_API.equals(server)) {
                     urlConnection = fixServerLocation(new URL(
                             TagMo.FALLBACK_API + "amiibo/"
@@ -386,7 +388,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     statusCode = urlConnection.getResponseCode();
                 }
 
-                if (statusCode == HttpURLConnection.HTTP_OK) {
+                if (statusCode == HttpsURLConnection.HTTP_OK) {
                     InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
 
                     BufferedReader reader = null;

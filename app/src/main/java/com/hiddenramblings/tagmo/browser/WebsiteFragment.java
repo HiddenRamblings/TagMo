@@ -80,9 +80,13 @@ public class WebsiteFragment extends Fragment {
                 public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
                     GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
                     if (availability.isUserResolvableError(errorCode)) {
-                        availability.showErrorDialogFragment(
-                                requireActivity(), errorCode, 7000,
-                                dialog -> onProviderInstallerNotAvailable());
+                        try {
+                            availability.showErrorDialogFragment(
+                                    requireActivity(), errorCode, 7000,
+                                    dialog -> onProviderInstallerNotAvailable());
+                        } catch (IllegalArgumentException ex) {
+                            ((BrowserActivity) requireActivity()).showBrowserPage();
+                        }
                     } else {
                         onProviderInstallerNotAvailable();
                     }
@@ -311,7 +315,7 @@ public class WebsiteFragment extends Fragment {
     private void onProviderInstallerNotAvailable() {
         requireActivity().runOnUiThread(() -> {
             new Toasty(requireActivity()).Long(R.string.fail_ssl_update);
-            requireActivity().finish();
+            ((BrowserActivity) requireActivity()).showBrowserPage();
         });
     }
 }

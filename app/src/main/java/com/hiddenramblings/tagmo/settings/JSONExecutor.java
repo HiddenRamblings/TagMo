@@ -20,13 +20,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Executors;
 
+import javax.net.ssl.HttpsURLConnection;
+
 public class JSONExecutor {
 
     ResultListener listener;
 
     public JSONExecutor(Activity activity, String server, String path) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            activity.runOnUiThread(() -> ProviderInstaller.installIfNeededAsync(
+            ProviderInstaller.installIfNeededAsync(
                     activity, new ProviderInstaller.ProviderInstallListener() {
                 @Override
                 public void onProviderInstalled() {
@@ -44,14 +46,14 @@ public class JSONExecutor {
                         onProviderInstallerNotAvailable(activity);
                     }
                 }
-            }));
+            });
         } else {
             RetrieveJSON(server, path);
         }
     }
 
-    private HttpURLConnection fixServerLocation(URL url) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+    private HttpsURLConnection fixServerLocation(URL url) throws IOException {
+        HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
         urlConnection.setRequestMethod("GET");
         urlConnection.setUseCaches(false);
         urlConnection.setDefaultUseCaches(false);
@@ -61,25 +63,25 @@ public class JSONExecutor {
     public void RetrieveJSON(String server, String path) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                HttpURLConnection conn = (HttpURLConnection)
+                HttpsURLConnection conn = (HttpsURLConnection)
                         new URL(server + path).openConnection();
                 conn.setRequestMethod("GET");
                 conn.setUseCaches(false);
                 conn.setDefaultUseCaches(false);
 
                 int statusCode = conn.getResponseCode();
-                if (statusCode == HttpURLConnection.HTTP_MOVED_PERM) {
+                if (statusCode == HttpsURLConnection.HTTP_MOVED_PERM) {
                     String address = conn.getHeaderField("Location");
                     conn.disconnect();
                     conn = fixServerLocation(new URL(address));
                     statusCode = conn.getResponseCode();
-                } else if (statusCode != HttpURLConnection.HTTP_OK
+                } else if (statusCode != HttpsURLConnection.HTTP_OK
                         && TagMo.MIRRORED_API.equals(server)) {
                     conn = fixServerLocation(new URL(TagMo.FALLBACK_API + "amiibo/"));
                     statusCode = conn.getResponseCode();
                 }
 
-                if (statusCode != HttpURLConnection.HTTP_OK) {
+                if (statusCode != HttpsURLConnection.HTTP_OK) {
                     conn.disconnect();
                     return;
                 }
@@ -112,7 +114,9 @@ public class JSONExecutor {
     }
 
     private void onProviderInstallerNotAvailable(Activity activity) {
-        new Toasty(activity).Long(R.string.fail_ssl_update);
-        activity.finish();
+        activity.runOnUiThread(() -> {
+            new Toasty(activity).Long(R.string.fail_ssl_update);
+            activity.finish();
+        });
     }
 }

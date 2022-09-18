@@ -117,7 +117,7 @@ public class JoyConFragment extends DialogFragment implements
 //                    requireContext().startService(service);
 //                    requireContext().bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
                     try {
-                        BluetoothSocket mSocket = Debug.hasBuild(Build.VERSION_CODES.Q)
+                        BluetoothSocket mSocket = Debug.isNewer(Build.VERSION_CODES.Q)
                                 ? device.createInsecureL2capChannel(0x11)
                                 : createL2CAPBluetoothSocket(addressJoyCon, 0x11);
                         if (mSocket != null) {

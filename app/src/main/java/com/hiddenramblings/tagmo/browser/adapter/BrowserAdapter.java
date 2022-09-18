@@ -443,7 +443,7 @@ public class BrowserAdapter
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(
                             android.R.attr.textColor, a, true);
-                    if (Debug.hasBuild(Build.VERSION_CODES.Q) && a.isColorType()) {
+                    if (Debug.isNewer(Build.VERSION_CODES.Q) && a.isColorType()) {
                         this.txtPath.setTextColor(a.data);
                     } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
@@ -466,7 +466,7 @@ public class BrowserAdapter
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(
                             android.R.attr.textColor, a, true);
-                    if (Debug.hasBuild(Build.VERSION_CODES.Q) && a.isColorType()) {
+                    if (Debug.isNewer(Build.VERSION_CODES.Q) && a.isColorType()) {
                         this.txtPath.setTextColor(a.data);
                     } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {

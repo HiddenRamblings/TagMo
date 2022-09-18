@@ -276,7 +276,7 @@ public class BrowserActivity extends AppCompatActivity implements
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
         imageAmiibo = findViewById(R.id.imageAmiibo);
 
-        if (Debug.hasBuild(Build.VERSION_CODES.M)) {
+        if (Debug.isOlder(Build.VERSION_CODES.M)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
@@ -325,7 +325,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         break;
                     case 2:
                         hideBrowserInterface();
-                        if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+                        if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                             setTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
@@ -369,7 +369,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
 
         new TabLayoutMediator(findViewById(R.id.navigation_tabs), mainLayout, true,
-                Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2), (tab, position) -> {
+                Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2), (tab, position) -> {
             switch (position) {
                 case 1:
                     tab.setText(R.string.elite_n2);
@@ -389,11 +389,11 @@ public class BrowserActivity extends AppCompatActivity implements
         onLoadSettingsFragment();
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
-        if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
+        if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
             ((BlurView) amiiboContainer).setupWith(coordinator,
-                    Debug.hasBuild(Build.VERSION_CODES.S)
+                    Debug.isNewer(Build.VERSION_CODES.S)
                             ? new RenderEffectBlur()
-                            : Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR1)
+                            : Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)
                             ? new RenderScriptBlur(this)
                             : new SupportRenderScriptBlur(this))
                     .setFrameClearDrawable(getWindow().getDecorView().getBackground())
@@ -462,7 +462,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.loadPTagKeyManager();
 
-        PopupMenu popup = Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP_MR1)
+        PopupMenu popup = Debug.isNewer(Build.VERSION_CODES.LOLLIPOP_MR1)
                     ? new PopupMenu(this, nfcFab, Gravity.END, 0, R.style.PopupMenu)
                     : new PopupMenu(this, nfcFab);
         try {
@@ -578,7 +578,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void requestStoragePermission() {
-        if (Debug.hasBuild(Build.VERSION_CODES.R)) {
+        if (Debug.isNewer(Build.VERSION_CODES.R)) {
             if (TagMo.isGooglePlay()) {
                 this.onDocumentEnabled();
             } else {
@@ -689,7 +689,7 @@ public class BrowserActivity extends AppCompatActivity implements
         validateItem.setEnabled(false);
         legoItem.setEnabled(false);
         joyConItem.setEnabled(false);
-        joyConItem.setVisible(Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2));
+        joyConItem.setVisible(Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2));
 
         popup.show();
         Handler popupHandler = new Handler(Looper.getMainLooper()) {
@@ -700,7 +700,7 @@ public class BrowserActivity extends AppCompatActivity implements
         };
         popupHandler.postDelayed(() -> {
             int baseDelay = 0;
-            if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                 baseDelay = 75;
                 popupHandler.sendEmptyMessageDelayed(R.id.mnu_joy_con, baseDelay);
             }
@@ -728,7 +728,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else if (item.getItemId() == R.id.mnu_lego) {
                 new Toasty(this).Short(R.string.notice_incomplete);
                 return true;
-            } else if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2)
+            } else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
                     && item.getItemId() == R.id.mnu_joy_con) {
                 onShowJoyConFragment();
                 return true;
@@ -1354,7 +1354,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onDocumentRequested() throws ActivityNotFoundException {
-        if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
             intent.putExtra("android.content.extra.FANCY", true);
@@ -1385,7 +1385,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 } catch (ActivityNotFoundException ignored) { }
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             });
-            if (Debug.hasBuild(Build.VERSION_CODES.R) && !TagMo.isGooglePlay()) {
+            if (Debug.isNewer(Build.VERSION_CODES.R) && !TagMo.isGooglePlay()) {
                 switchStorageType.setVisibility(View.VISIBLE);
                 switchStorageType.setText(R.string.grant_file_permission);
                 switchStorageType.setOnClickListener(view -> {
@@ -1425,7 +1425,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else {
                 switchStorageRoot.setVisibility(View.GONE);
             }
-            if (Debug.hasBuild(Build.VERSION_CODES.R)) {
+            if (Debug.isNewer(Build.VERSION_CODES.R)) {
                 switchStorageType.setVisibility(View.VISIBLE);
                 switchStorageType.setText(R.string.force_document_storage);
                 switchStorageType.setOnClickListener(view -> {
@@ -1823,7 +1823,7 @@ public class BrowserActivity extends AppCompatActivity implements
             return;
 
         Uri treeUri = result.getData().getData();
-        if (Debug.hasBuild(Build.VERSION_CODES.KITKAT))
+        if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
             getContentResolver().takePersistableUriPermission(treeUri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION
                             | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -2296,7 +2296,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public int getColumnCount() {
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR1))
+        if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
             mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
         else
             mWindowManager.getDefaultDisplay().getMetrics(metrics);
@@ -2597,10 +2597,6 @@ public class BrowserActivity extends AppCompatActivity implements
             return true;
         }
         return false;
-    }
-
-    public void showBrowserPage() {
-        mainLayout.setCurrentItem(0, true);
     }
 
     public void showElitePage(Bundle extras) {
@@ -3063,7 +3059,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private Button getDonationButton(ProductDetails skuDetail) {
         Button button = new Button(getApplicationContext());
         button.setBackgroundResource(R.drawable.rounded_view);
-        if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             button.setElevation(TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
                     10f,
@@ -3100,7 +3096,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private Button getSubscriptionButton(ProductDetails skuDetail) {
         Button button = new Button(getApplicationContext());
         button.setBackgroundResource(R.drawable.rounded_view);
-        if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             button.setElevation(TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
                     10f,

@@ -83,8 +83,12 @@ public class Debug {
         return TagMo.getContext();
     }
 
-    public static boolean hasBuild(int versionCode) {
+    public static boolean isNewer(int versionCode) {
         return Build.VERSION.SDK_INT >= versionCode;
+    }
+
+    public static boolean isOlder(int versionCode) {
+        return Build.VERSION.SDK_INT < versionCode;
     }
 
     private static boolean hasDebugging() {

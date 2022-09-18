@@ -161,7 +161,7 @@ public class BluetoothHandler {
     }
 
     private void requestBluetooth(Context context) {
-        if (Debug.hasBuild(Build.VERSION_CODES.S)) {
+        if (Debug.isNewer(Build.VERSION_CODES.S)) {
             final String[] PERMISSIONS_BLUETOOTH = {
                     Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.BLUETOOTH_SCAN
@@ -200,7 +200,7 @@ public class BluetoothHandler {
                                     Manifest.permission.ACCESS_FINE_LOCATION,
                                     Manifest.permission.ACCESS_COARSE_LOCATION
                             };
-                            if (Debug.hasBuild(Build.VERSION_CODES.Q)) {
+                            if (Debug.isNewer(Build.VERSION_CODES.Q)) {
                                 onRequestLocationQ.launch(PERMISSIONS_LOCATION);
                             } else {
                                 onRequestLocation.launch(PERMISSIONS_LOCATION);
@@ -222,7 +222,7 @@ public class BluetoothHandler {
                                         Manifest.permission.ACCESS_FINE_LOCATION,
                                         Manifest.permission.ACCESS_COARSE_LOCATION
                                 };
-                                if (Debug.hasBuild(Build.VERSION_CODES.Q)) {
+                                if (Debug.isNewer(Build.VERSION_CODES.Q)) {
                                     onRequestLocationQ.launch(PERMISSIONS_LOCATION);
                                 } else {
                                     onRequestLocation.launch(PERMISSIONS_LOCATION);
@@ -234,7 +234,7 @@ public class BluetoothHandler {
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION
                     };
-                    if (Debug.hasBuild(Build.VERSION_CODES.Q)) {
+                    if (Debug.isNewer(Build.VERSION_CODES.Q)) {
                         onRequestLocationQ.launch(PERMISSIONS_LOCATION);
                     } else {
                         onRequestLocation.launch(PERMISSIONS_LOCATION);
@@ -251,7 +251,7 @@ public class BluetoothHandler {
             if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
             return mBluetoothAdapter;
         } else {
-            if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                 mBluetoothAdapter = ((BluetoothManager) context.getSystemService(
                         Context.BLUETOOTH_SERVICE
                 )).getAdapter();

@@ -27,7 +27,7 @@ public class UpdateReceiver extends BroadcastReceiver {
                         .getLaunchIntentForPackage(BuildConfig.APPLICATION_ID);
             } catch (Exception ignored) { }
             startLauncherActivity(context, mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-        } else if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP)) {
+        } else if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             if (TagMo.isGooglePlay()) return;
             switch(intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 case PackageInstaller.STATUS_PENDING_USER_ACTION:
@@ -35,7 +35,7 @@ public class UpdateReceiver extends BroadcastReceiver {
                     if (null != activityIntent) {
                         try {
                             String intentUri = activityIntent.toUri(0);
-                            if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP_MR1)) {
+                            if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP_MR1)) {
                                 startLauncherActivity(context, Intent.parseUri(
                                         intentUri, Intent.URI_ALLOW_UNSAFE
                                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

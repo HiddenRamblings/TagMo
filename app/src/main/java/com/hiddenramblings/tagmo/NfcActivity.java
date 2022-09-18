@@ -33,9 +33,9 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.shawnlin.numberpicker.NumberPicker;
@@ -626,7 +626,7 @@ public class NfcActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setMessage(R.string.nfc_query)
                     .setPositiveButton(R.string.yes, (dialog, which) -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                        if (Debug.hasBuild(Build.VERSION_CODES.Q))
                             onNFCActivity.launch(new Intent(Settings.Panel.ACTION_NFC));
                         else
                             onNFCActivity.launch(new Intent(Settings.ACTION_NFC_SETTINGS));
@@ -635,7 +635,7 @@ public class NfcActivity extends AppCompatActivity {
                     .show();
         } else {
             // monitor nfc status
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                 IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
                 this.registerReceiver(mReceiver, filter);
             }
@@ -647,7 +647,7 @@ public class NfcActivity extends AppCompatActivity {
         if (null != nfcAdapter) {
             nfcAdapter.disableForegroundDispatch(this);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+        if (Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
             try {
                 this.unregisterReceiver(mReceiver);
             } catch (IllegalArgumentException ignored) { }
@@ -657,7 +657,7 @@ public class NfcActivity extends AppCompatActivity {
     private void listenForTags() {
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(getApplicationContext(),
                 0, new Intent(getApplicationContext(), this.getClass()),
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                Debug.hasBuild(Build.VERSION_CODES.S)
                         ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
                         : PendingIntent.FLAG_UPDATE_CURRENT
         );

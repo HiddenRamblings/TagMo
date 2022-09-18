@@ -26,8 +26,9 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
@@ -360,7 +361,7 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(
                             android.R.attr.textColor, a, true);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                    if (Debug.hasBuild(Build.VERSION_CODES.Q) && a.isColorType()) {
                         this.txtPath.setTextColor(a.data);
                     } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
@@ -375,7 +376,7 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(
                             android.R.attr.textColor, a, true);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && a.isColorType()) {
+                    if (Debug.hasBuild(Build.VERSION_CODES.Q) && a.isColorType()) {
                         this.txtPath.setTextColor(a.data);
                     } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {

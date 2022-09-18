@@ -61,8 +61,8 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.FlaskTag;
 import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
-import com.hiddenramblings.tagmo.eightbit.bluetooth.FlaskGattService;
 import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothHandler;
+import com.hiddenramblings.tagmo.eightbit.bluetooth.FlaskGattService;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
@@ -610,7 +610,7 @@ public class FlaskSlotFragment extends Fragment implements
         }
         showScanningNotice();
         profileFlask = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP)) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
             ParcelUuid FlaskUUID = new ParcelUuid(FlaskGattService.FlaskNUS);
             ScanFilter filter = new ScanFilter.Builder().setServiceUuid(FlaskUUID).build();
@@ -801,7 +801,7 @@ public class FlaskSlotFragment extends Fragment implements
         mBluetoothAdapter = null != mBluetoothAdapter ? mBluetoothAdapter
                 : bluetoothHandler.getBluetoothAdapter(requireContext());
         if (null != mBluetoothAdapter) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP)) {
                 if (null != scanCallbackLP)
                     mBluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallbackLP);
             } else {

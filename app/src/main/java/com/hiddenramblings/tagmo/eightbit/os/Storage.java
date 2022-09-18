@@ -65,6 +65,7 @@ import androidx.core.content.FileProvider;
 
 import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import java.io.File;
 import java.io.InputStream;
@@ -208,9 +209,9 @@ public class Storage extends Environment {
 
     private static File setFile(boolean internal) {
         isInternalPreferred = internal;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+        if (Debug.hasBuild(Build.VERSION_CODES.R))
             return setFileRedVelvet(internal);
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        else if (Debug.hasBuild(Build.VERSION_CODES.LOLLIPOP))
             return setFileLollipop(internal);
         else
             return setFileGeneric(internal);
@@ -226,7 +227,7 @@ public class Storage extends Environment {
     }
 
     public static Uri getFileUri(File file) {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+        return Debug.hasBuild(Build.VERSION_CODES.N)
                 ? FileProvider.getUriForFile(TagMo.getContext(), PROVIDER, file)
                 : Uri.fromFile(file);
     }

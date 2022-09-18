@@ -60,6 +60,7 @@ import android.os.Build;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.NfcByte;
 
 import java.text.DecimalFormat;
@@ -128,7 +129,7 @@ public class Foomiibo {
         System.arraycopy(CFG1, 0, arr, 0x210, CFG1.length);
 
         // Set Keygen Salt
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Debug.hasBuild(Build.VERSION_CODES.N)) {
             byte[] salt = getRandomBytes(32);
             System.arraycopy(salt, 0, arr, 0x1E8, salt.length);
         }

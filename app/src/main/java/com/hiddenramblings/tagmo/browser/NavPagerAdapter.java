@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+
 public class NavPagerAdapter extends FragmentStateAdapter {
     private final BrowserFragment fragmentBrowser = new BrowserFragment();
     private final EliteBankFragment fragmentElite = new EliteBankFragment();
@@ -27,7 +29,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
             case 1:
                 return fragmentElite;
             case 2:
-                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+                return Debug.hasBuild(Build.VERSION_CODES.JELLY_BEAN_MR2)
                         ? fragmentFlask : fragmentWebsite;
             case 3:
                 return fragmentWebsite;

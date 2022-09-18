@@ -7,8 +7,8 @@ import androidx.documentfile.provider.DocumentFile;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 
 import org.json.JSONArray;
 import org.json.JSONException;

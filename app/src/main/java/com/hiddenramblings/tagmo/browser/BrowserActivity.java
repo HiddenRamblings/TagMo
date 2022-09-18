@@ -613,7 +613,7 @@ public class BrowserActivity extends AppCompatActivity implements
             int bank_count = result.getData().getIntExtra(
                     NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
             prefs.eliteBankCount().put(bank_count);
-            showEliteWindow(result.getData().getExtras());
+            showElitePage(result.getData().getExtras());
         } else {
             mainLayout.setCurrentItem(0, true);
             updateAmiiboView(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
@@ -2076,7 +2076,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void launchEliteActivity(Intent resultData) {
         if (TagMo.getPrefs().enable_elite_support().get()
                 && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
-            showEliteWindow(resultData.getExtras());
+            showElitePage(resultData.getExtras());
         }
     }
 
@@ -2600,7 +2600,11 @@ public class BrowserActivity extends AppCompatActivity implements
         return false;
     }
 
-    public void showEliteWindow(Bundle extras) {
+    public void showBrowserPage() {
+        mainLayout.setCurrentItem(0, true);
+    }
+
+    public void showElitePage(Bundle extras) {
         fragmentElite.setArguments(extras);
         mainLayout.setCurrentItem(1, true);
     }
@@ -2816,7 +2820,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         args.putInt(NFCIntent.EXTRA_BANK_COUNT, bank_count);
                         args.putInt(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
                         args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles);
-                        showEliteWindow(args);
+                        showElitePage(args);
 
                     } else {
                         updateAmiiboView(TagReader.readFromTag(mifare));

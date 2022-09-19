@@ -592,8 +592,10 @@ public class BrowserActivity extends AppCompatActivity implements
                     requestScopedStorage();
                 }
             }
-        } else {
+        } else if (Debug.isNewer(Build.VERSION_CODES.M)) {
             onRequestStorage.launch(PERMISSIONS_STORAGE);
+        } else {
+            this.onStorageEnabled();
         }
     }
 
@@ -1342,7 +1344,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public boolean isDocumentStorage() {
-        if (null != this.settings.getBrowserRootDocument()) {
+        if (Debug.isNewer(Build.VERSION_CODES.M) && null != this.settings.getBrowserRootDocument()) {
             try {
                 DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
                 return true;

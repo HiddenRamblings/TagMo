@@ -10,6 +10,7 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.security.ProviderAdapter;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import java.io.BufferedReader;
@@ -26,29 +27,25 @@ public class JSONExecutor {
     ResultListener listener;
 
     public JSONExecutor(Activity activity, String server, String path) {
-        if (Debug.isOlder(Build.VERSION_CODES.M)) {
-            ProviderInstaller.installIfNeededAsync(
-                    activity, new ProviderInstaller.ProviderInstallListener() {
-                @Override
-                public void onProviderInstalled() {
-                    RetrieveJSON(server, path);
-                }
+        new ProviderAdapter(activity, new ProviderAdapter.ProviderInstallListener() {
+            @Override
+            public void onProviderInstalled() {
+                RetrieveJSON(server, path);
+            }
 
-                @Override
-                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                    GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
-                    if (availability.isUserResolvableError(errorCode)) {
-                        availability.showErrorDialogFragment(
-                                activity, errorCode, 7000,
-                                dialog -> onProviderInstallerNotAvailable(activity));
-                    } else {
-                        onProviderInstallerNotAvailable(activity);
-                    }
-                }
-            });
-        } else {
-            RetrieveJSON(server, path);
-        }
+            @Override
+            public void onProviderInstallException() {
+                RetrieveJSON(server, path);
+            }
+
+            @Override
+            public void onProviderInstallFailed() {
+                activity.runOnUiThread(() -> {
+                    new Toasty(activity).Long(R.string.fail_ssl_update);
+                    activity.finish();
+                });
+            }
+        });
     }
 
     private HttpsURLConnection fixServerLocation(URL url) throws IOException {
@@ -110,12 +107,5 @@ public class JSONExecutor {
 
     public void setResultListener(ResultListener listener) {
         this.listener = listener;
-    }
-
-    private void onProviderInstallerNotAvailable(Activity activity) {
-        activity.runOnUiThread(() -> {
-            new Toasty(activity).Long(R.string.fail_ssl_update);
-            activity.finish();
-        });
     }
 }

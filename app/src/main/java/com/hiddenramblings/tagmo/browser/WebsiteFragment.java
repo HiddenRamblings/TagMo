@@ -38,6 +38,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.security.ProviderAdapter;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.json.JSONException;
@@ -68,33 +69,24 @@ public class WebsiteFragment extends Fragment {
 
         mWebView = view.findViewById(R.id.webview_content);
 
-        if (Debug.isOlder(Build.VERSION_CODES.M)) {
-            ProviderInstaller.installIfNeededAsync(requireContext(),
-                    new ProviderInstaller.ProviderInstallListener() {
-                @Override
-                public void onProviderInstalled() {
-                    configureWebView();
-                }
+        new ProviderAdapter(requireActivity(), new ProviderAdapter.ProviderInstallListener() {
+            @Override
+            public void onProviderInstalled() {
+                configureWebView();
+            }
 
-                @Override
-                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                    GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
-                    if (availability.isUserResolvableError(errorCode)) {
-                        try {
-                            availability.showErrorDialogFragment(
-                                    requireActivity(), errorCode, 7000,
-                                    dialog -> onProviderInstallerNotAvailable());
-                        } catch (IllegalArgumentException ex) {
-                            onProviderInstallerNotAvailable();
-                        }
-                    } else {
-                        onProviderInstallerNotAvailable();
-                    }
-                }
-            });
-        } else {
-            configureWebView();
-        }
+            @Override
+            public void onProviderInstallException() {
+                requireActivity().runOnUiThread(() ->
+                        new Toasty(requireActivity()).Long(R.string.fail_ssl_update));
+            }
+
+            @Override
+            public void onProviderInstallFailed() {
+                requireActivity().runOnUiThread(() ->
+                        new Toasty(requireActivity()).Long(R.string.fail_ssl_update));
+            }
+        });
     }
 
     @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled"})
@@ -310,12 +302,6 @@ public class WebsiteFragment extends Fragment {
                 }
             }
         }
-    }
-
-    private void onProviderInstallerNotAvailable() {
-        requireActivity().runOnUiThread(() -> {
-            new Toasty(requireActivity()).Long(R.string.fail_ssl_update);
-        });
     }
 }
 

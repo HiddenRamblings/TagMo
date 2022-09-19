@@ -29,6 +29,7 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.browser.BrowserActivity;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.eightbit.security.ProviderAdapter;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.json.JSONException;
@@ -432,6 +433,27 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
+    private void onDownloadRequested(String lastUpdated) {
+        new ProviderAdapter(requireActivity(), new ProviderAdapter.ProviderInstallListener() {
+            @Override
+            public void onProviderInstalled() {
+                downloadAmiiboAPIData(lastUpdated);
+            }
+
+            @Override
+            public void onProviderInstallException() {
+                requireActivity().runOnUiThread(() ->
+                        new Toasty(requireActivity()).Long(R.string.fail_ssl_update));
+            }
+
+            @Override
+            public void onProviderInstallFailed() {
+                requireActivity().runOnUiThread(() ->
+                        new Toasty(requireActivity()).Long(R.string.fail_ssl_update));
+            }
+        });
+    }
+
     private final ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
@@ -502,12 +524,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             String lastUpdated = (String) jsonObject.get("lastUpdated");
             BrowserActivity activity = (BrowserActivity) requireActivity();
             if (isMenuClicked) {
-                downloadAmiiboAPIData(lastUpdated);
+                onDownloadRequested(lastUpdated);
             } else if (null == activity.getSettings().getLastUpdatedAPI()
                     || !activity.getSettings().getLastUpdatedAPI().equals(lastUpdated)) {
                 activity.runOnUiThread(() -> {
                     buildSnackbar(R.string.update_amiibo_api, Snackbar.LENGTH_LONG)
-                            .setAction(R.string.sync, v -> downloadAmiiboAPIData(lastUpdated)).show();
+                            .setAction(R.string.sync, v -> onDownloadRequested(lastUpdated)).show();
                 });
             }
         } catch (Exception e) {

@@ -2840,7 +2840,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         closeTagSilently(finalMifare);
                         return;
                     } else if (getString(R.string.nfc_null_array).equals(error)) {
-                        new AlertDialog.Builder(BrowserActivity.this)
+                        this.runOnUiThread(() -> new AlertDialog.Builder(BrowserActivity.this)
                                 .setTitle(R.string.possible_lock)
                                 .setMessage(R.string.prepare_unlock)
                                 .setPositiveButton(R.string.unlock, (dialog, which) -> {
@@ -2850,14 +2850,14 @@ public class BrowserActivity extends AppCompatActivity implements
                                             this, NfcActivity.class
                                     ).setAction(NFCIntent.ACTION_UNLOCK_UNIT));
                                 })
-                                .setNegativeButton(R.string.cancel,  (dialog, which) -> {
+                                .setNegativeButton(R.string.cancel, (dialog, which) -> {
                                     closeTagSilently(finalMifare);
                                     dialog.dismiss();
-                                }).show();
+                                }).show());
                         return;
                     } else if (e instanceof NullPointerException
                             && error.contains("nfctech.NTAG215.connect()")) {
-                        new AlertDialog.Builder(BrowserActivity.this)
+                        this.runOnUiThread(() -> new AlertDialog.Builder(BrowserActivity.this)
                                 .setTitle(R.string.possible_blank)
                                 .setMessage(R.string.prepare_blank)
                                 .setPositiveButton(R.string.scan, (dialog, which) -> {
@@ -2866,7 +2866,8 @@ public class BrowserActivity extends AppCompatActivity implements
                                             this, NfcActivity.class
                                     ).setAction(NFCIntent.ACTION_BLIND_SCAN));
                                 })
-                                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
+                                .setNegativeButton(R.string.cancel, (dialog, which) ->
+                                        dialog.dismiss()).show());
                     }
                 }
                 if (null != error) {

@@ -88,7 +88,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (null != imageNetworkSetting) {
             onImageNetworkChange(imageNetworkSetting, prefs.image_network_settings().get());
             imageNetworkSetting.setOnPreferenceChangeListener((preference, newValue) -> {
-                onImageNetworkChange((ListPreference) preference, newValue.toString());
+                onImageNetworkChange(imageNetworkSetting, newValue.toString());
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
@@ -442,14 +442,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             @Override
             public void onProviderInstallException() {
-                requireActivity().runOnUiThread(() ->
-                        new Toasty(requireActivity()).Long(R.string.fail_ssl_update));
+                new Toasty(requireActivity()).Long(R.string.fail_ssl_update);
             }
 
             @Override
             public void onProviderInstallFailed() {
-                requireActivity().runOnUiThread(() ->
-                        new Toasty(requireActivity()).Long(R.string.fail_ssl_update));
+                new Toasty(requireActivity()).Long(R.string.fail_ssl_update);
             }
         });
     }

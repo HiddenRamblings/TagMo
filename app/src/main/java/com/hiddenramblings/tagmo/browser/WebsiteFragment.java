@@ -77,14 +77,12 @@ public class WebsiteFragment extends Fragment {
 
             @Override
             public void onProviderInstallException() {
-                requireActivity().runOnUiThread(() ->
-                        new Toasty(requireActivity()).Long(R.string.fail_ssl_update));
+                new Toasty(requireActivity()).Long(R.string.fail_ssl_update);
             }
 
             @Override
             public void onProviderInstallFailed() {
-                requireActivity().runOnUiThread(() ->
-                        new Toasty(requireActivity()).Long(R.string.fail_ssl_update));
+                new Toasty(requireActivity()).Long(R.string.fail_ssl_update);
             }
         });
     }

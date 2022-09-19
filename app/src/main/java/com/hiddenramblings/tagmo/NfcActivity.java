@@ -554,7 +554,7 @@ public class NfcActivity extends AppCompatActivity {
                     setResult(Activity.RESULT_OK, new Intent(
                             NFCIntent.ACTION_UPDATE_TAG
                     ).putExtras(args));
-                    new AlertDialog.Builder(NfcActivity.this)
+                    this.runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                             .setTitle(R.string.error_tag_rewrite)
                             .setMessage(R.string.tag_update_only)
                             .setPositiveButton(R.string.proceed, (dialog, which) -> {
@@ -562,10 +562,10 @@ public class NfcActivity extends AppCompatActivity {
                                 dialog.dismiss();
                                 finish();
                             })
-                           .show();
+                            .show());
                     return;
                 } else if (getString(R.string.nfc_null_array).equals(error)) {
-                    new AlertDialog.Builder(NfcActivity.this)
+                    this.runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                             .setTitle(R.string.possible_lock)
                             .setMessage(R.string.prepare_unlock)
                             .setPositiveButton(R.string.unlock, (dialog, which) -> {
@@ -574,15 +574,15 @@ public class NfcActivity extends AppCompatActivity {
                                 getIntent().setAction(NFCIntent.ACTION_UNLOCK_UNIT);
                                 recreate();
                             })
-                            .setNegativeButton(R.string.cancel,  (dialog, which) -> {
+                            .setNegativeButton(R.string.cancel, (dialog, which) -> {
                                 closeTagSilently(mifare);
                                 dialog.dismiss();
                                 finish();
-                            }).show();
+                            }).show());
                     return;
                 } else if (e instanceof NullPointerException
                         && error.contains("nfctech.NTAG215.connect()")) {
-                    new AlertDialog.Builder(NfcActivity.this)
+                    this.runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                             .setTitle(R.string.possible_blank)
                             .setMessage(R.string.prepare_blank)
                             .setPositiveButton(R.string.scan, (dialog, which) -> {
@@ -590,7 +590,8 @@ public class NfcActivity extends AppCompatActivity {
                                 getIntent().setAction(NFCIntent.ACTION_BLIND_SCAN);
                                 recreate();
                             })
-                            .setNegativeButton(R.string.cancel,  (dialog, which) -> dialog.dismiss()).show();
+                            .setNegativeButton(R.string.cancel, (dialog, which) ->
+                                    dialog.dismiss()).show());
                 }
             }
             if (null != error) {

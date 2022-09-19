@@ -40,10 +40,8 @@ public class JSONExecutor {
 
             @Override
             public void onProviderInstallFailed() {
-                activity.runOnUiThread(() -> {
-                    new Toasty(activity).Long(R.string.fail_ssl_update);
-                    activity.finish();
-                });
+                new Toasty(activity).Long(R.string.fail_ssl_update);
+                activity.finish();
             }
         });
     }

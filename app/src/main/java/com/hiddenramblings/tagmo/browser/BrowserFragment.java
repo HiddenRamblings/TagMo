@@ -363,7 +363,6 @@ public class BrowserFragment extends Fragment implements
     }
 
     public void onFoomiiboClicked(View itemView, Amiibo amiibo) {
-        if (null == itemView || null == amiibo) return;
         byte[] tagData = new byte[0];
         for (byte[] data : resultData) {
             try {
@@ -381,24 +380,26 @@ public class BrowserFragment extends Fragment implements
 
         BrowserActivity activity = (BrowserActivity) requireActivity();
         LinearLayout menuOptions = itemView.findViewById(R.id.menu_options);
-        Toolbar toolbar = menuOptions.findViewById(R.id.toolbar);
-        if (settings.getAmiiboView() != BrowserSettings.VIEW.IMAGE.getValue()) {
-            if (menuOptions.getVisibility() == View.VISIBLE) {
-                menuOptions.setVisibility(View.GONE);
+        if (null != menuOptions) {
+            Toolbar toolbar = menuOptions.findViewById(R.id.toolbar);
+            if (settings.getAmiiboView() != BrowserSettings.VIEW.IMAGE.getValue()) {
+                if (menuOptions.getVisibility() == View.VISIBLE) {
+                    menuOptions.setVisibility(View.GONE);
+                } else {
+                    menuOptions.setVisibility(View.VISIBLE);
+                    activity.getToolbarOptions(this, toolbar, tagData, itemView);
+                }
+                TextView txtUsage = itemView.findViewById(R.id.txtUsage);
+                if (txtUsage.getVisibility() == View.VISIBLE) {
+                    txtUsage.setVisibility(View.GONE);
+                } else {
+                    txtUsage.setVisibility(View.VISIBLE);
+                    getGameCompatibility(txtUsage, tagData);
+                }
             } else {
-                menuOptions.setVisibility(View.VISIBLE);
                 activity.getToolbarOptions(this, toolbar, tagData, itemView);
+                activity.updateAmiiboView(tagData, null);
             }
-            TextView txtUsage = itemView.findViewById(R.id.txtUsage);
-            if (txtUsage.getVisibility() == View.VISIBLE) {
-                txtUsage.setVisibility(View.GONE);
-            } else {
-                txtUsage.setVisibility(View.VISIBLE);
-                getGameCompatibility(txtUsage, tagData);
-            }
-        } else {
-            activity.getToolbarOptions(this, toolbar, tagData, itemView);
-            activity.updateAmiiboView(tagData, null);
         }
     }
 

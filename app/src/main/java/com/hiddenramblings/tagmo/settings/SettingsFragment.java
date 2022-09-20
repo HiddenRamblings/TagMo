@@ -442,12 +442,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             @Override
             public void onProviderInstallException() {
-                new Toasty(requireActivity()).Long(R.string.fail_ssl_update);
+                new Toasty(requireActivity()).Short(R.string.fail_ssl_update);
             }
 
             @Override
             public void onProviderInstallFailed() {
-                new Toasty(requireActivity()).Long(R.string.fail_ssl_update);
+                new Toasty(requireActivity()).Short(R.string.fail_ssl_update);
             }
         });
     }

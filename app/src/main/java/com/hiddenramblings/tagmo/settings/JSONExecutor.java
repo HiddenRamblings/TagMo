@@ -8,6 +8,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.browser.BrowserActivity;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.security.ProviderAdapter;
@@ -40,7 +41,12 @@ public class JSONExecutor {
 
             @Override
             public void onProviderInstallFailed() {
-                new Toasty(activity).Short(R.string.fail_ssl_update);
+                if (activity instanceof BrowserActivity) {
+                    TagMo.getPrefs().image_network_settings().put("NEVER");
+                    activity.runOnUiThread(() ->
+                            ((BrowserActivity) activity).getSettings().notifyChanges()
+                    );
+                }
                 listener.onResults(null);
             }
         });

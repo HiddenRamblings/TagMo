@@ -58,6 +58,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     Preferences_ prefs;
 
     Preference importKeys;
+    ListPreference imageNetworkSetting;
 
     private KeyManager keyManager;
 
@@ -84,7 +85,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         updateKeySummary();
 
-        ListPreference imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
+        imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
         if (null != imageNetworkSetting) {
             onImageNetworkChange(imageNetworkSetting, prefs.image_network_settings().get());
             imageNetworkSetting.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -441,12 +442,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
 
             @Override
-            public void onProviderInstallException() {
-                new Toasty(requireActivity()).Short(R.string.fail_ssl_update);
-            }
+            public void onProviderInstallException() { downloadAmiiboAPIData(lastUpdated); }
 
             @Override
             public void onProviderInstallFailed() {
+                onImageNetworkChange(imageNetworkSetting, IMAGE_NETWORK_NEVER);
                 new Toasty(requireActivity()).Short(R.string.fail_ssl_update);
             }
         });

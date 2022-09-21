@@ -37,24 +37,43 @@ public class JoyConFragment extends DialogFragment implements
 
     private String addressJoyCon;
 
-    public static BluetoothSocket createL2CAPBluetoothSocket(String address, int psm) {
-        return createBluetoothSocket(3 /*BluetoothSocket.TYPE_L2CAP*/,
-                -1, false,false, address, psm);
+    public static BluetoothSocket createL2CAPBluetoothSocket(
+            BluetoothDevice device, String address, int psm) {
+        return createBluetoothSocket(device, address, psm);
     }
 
     private static BluetoothSocket createBluetoothSocket(
-            int type, int fd, boolean auth, boolean encrypt, String address, int port
-    ) {
+            BluetoothDevice device, String address, int port) {
         Debug.Verbose(JoyConFragment.class, "Creating socket with " + address + ":" + port);
+        /*
+        android / bluetooth / BluetoothSocket.java
 
+        static final int TYPE_L2CAP = 3;
+        ...
+        private BluetoothSocket(int type, int fd, boolean auth, boolean encrypt, String address,
+        int port) throws IOException {
+            this(type, fd, auth, encrypt, new BluetoothDevice(address), port, null);
+        }
+        */
         try {
             Constructor<BluetoothSocket> constructor = BluetoothSocket.class.getDeclaredConstructor(
-                    int.class, int.class, boolean.class ,boolean.class, String.class, int.class
+                    int.class, int.class, boolean.class, boolean.class, String.class, int.class
             );
             constructor.setAccessible(true);
-            return (BluetoothSocket) constructor.newInstance(type, fd, auth, encrypt, address, port);
+            // type, fd, auth, encrypt, address, port
+            return constructor.newInstance(3, -1, false, false, address, port);
         } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                Constructor<BluetoothSocket> constructor = BluetoothSocket.class.getDeclaredConstructor(
+                        int.class, int.class, boolean.class, boolean.class,
+                        BluetoothDevice.class, String.class, int.class
+                );
+                constructor.setAccessible(true);
+                // type, fd, auth, encrypt, address, port
+                return constructor.newInstance(3, -1, false, false, device, address, port);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
         return null;
     }
@@ -119,7 +138,7 @@ public class JoyConFragment extends DialogFragment implements
                     try {
                         BluetoothSocket mSocket = Debug.isNewer(Build.VERSION_CODES.Q)
                                 ? device.createInsecureL2capChannel(0x11)
-                                : createL2CAPBluetoothSocket(addressJoyCon, 0x11);
+                                : createL2CAPBluetoothSocket(device, addressJoyCon, 0x11);
                         if (mSocket != null) {
                             if (!mSocket.isConnected()) {
                                 mSocket.connect();

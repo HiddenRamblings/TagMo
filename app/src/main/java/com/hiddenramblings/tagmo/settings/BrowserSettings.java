@@ -496,7 +496,7 @@ public class BrowserSettings implements Parcelable {
             return false;
 
         if (!query.isEmpty()) {
-            if (TagUtils.amiiboIdToHex(amiibo.id).toLowerCase().startsWith(query))
+            if (Amiibo.idToHex(amiibo.id).toLowerCase().startsWith(query))
                 return true;
             else if (null != amiibo.name && amiibo.name.toLowerCase().contains(query))
                 return true;

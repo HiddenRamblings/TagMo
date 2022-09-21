@@ -320,7 +320,7 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                     amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
             }
             if (null != amiibo) {
-                amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
+                amiiboHexId = Amiibo.idToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
                 if (null != amiibo.name )
                     amiiboName = amiibo.name;
@@ -331,7 +331,7 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                 if (null != amiibo.getGameSeries() )
                     gameSeries = amiibo.getGameSeries().name;
             } else {
-                tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
+                tagInfo = "ID: " + Amiibo.idToHex(amiiboId);
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
             }
 

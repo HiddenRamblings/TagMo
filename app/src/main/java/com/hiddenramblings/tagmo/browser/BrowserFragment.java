@@ -84,8 +84,7 @@ public class BrowserFragment extends Fragment implements
             boolean updated = false;
             for (byte[] data : resultData) {
                 try {
-                    if (data.length > 0 && TagUtils.amiiboIdFromTag(data) ==
-                            TagUtils.amiiboIdFromTag(tagData)) {
+                    if (data.length > 0 && Amiibo.dataToId(data) == Amiibo.dataToId(tagData)) {
                         updated = true;
                         resultData.set(resultData.indexOf(data), tagData);
                         break;
@@ -264,7 +263,7 @@ public class BrowserFragment extends Fragment implements
 
     private void buildFoomiiboFile(Amiibo amiibo) {
         try {
-            byte[] tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
+            byte[] tagData = foomiibo.generateData(Amiibo.idToHex(amiibo.id));
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
@@ -279,7 +278,7 @@ public class BrowserFragment extends Fragment implements
     void buildFoomiiboFile(byte[] tagData) {
         try {
             Amiibo amiibo = settings.getAmiiboManager().amiibos
-                    .get(TagUtils.amiiboIdFromTag(tagData));
+                    .get(Amiibo.dataToId(tagData));
             if (null == amiibo) return;
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
             //noinspection ResultOfMethodCallIgnored
@@ -298,7 +297,7 @@ public class BrowserFragment extends Fragment implements
     void deleteFoomiiboFile(byte[] tagData) {
         try {
             Amiibo amiibo = settings.getAmiiboManager().amiibos
-                    .get(TagUtils.amiiboIdFromTag(tagData));
+                    .get(Amiibo.dataToId(tagData));
             if (amiibo == null) throw new Exception();
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
             File amiiboFile = new File(directory, TagUtils.decipherFilename(
@@ -352,7 +351,7 @@ public class BrowserFragment extends Fragment implements
     private void getGameCompatibility(TextView txtUsage, byte[] tagData) {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+                long amiiboId = Amiibo.dataToId(tagData);
                 GamesManager gamesManager = GamesManager.getGamesManager(requireContext());
                 String usage = gamesManager.getGamesCompatibility(amiiboId);
                 txtUsage.post(() -> txtUsage.setText(usage));
@@ -366,14 +365,14 @@ public class BrowserFragment extends Fragment implements
         byte[] tagData = new byte[0];
         for (byte[] data : resultData) {
             try {
-                if (data.length > 0 && TagUtils.amiiboIdFromTag(data) == amiibo.id) {
+                if (data.length > 0 && Amiibo.dataToId(data) == amiibo.id) {
                     tagData = data;
                     break;
                 }
             } catch (Exception ignored) { }
         }
         if (tagData.length == 0)
-            tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
+            tagData = foomiibo.generateData(Amiibo.idToHex(amiibo.id));
         try {
             tagData = TagUtils.getValidatedData(keyManager, tagData);
         } catch (Exception ignored) { }
@@ -408,14 +407,14 @@ public class BrowserFragment extends Fragment implements
         byte[] tagData = new byte[0];
         for (byte[] data : resultData) {
             try {
-                if (data.length > 0 && TagUtils.amiiboIdFromTag(data) == amiibo.id) {
+                if (data.length > 0 && Amiibo.dataToId(data) == amiibo.id) {
                     tagData = data;
                     break;
                 }
             } catch (Exception ignored) { }
         }
         if (tagData.length == 0)
-            tagData = foomiibo.generateData(TagUtils.amiiboIdToHex(amiibo.id));
+            tagData = foomiibo.generateData(Amiibo.idToHex(amiibo.id));
         try {
             tagData = TagUtils.getValidatedData(keyManager, tagData);
         } catch (Exception ignored) { }

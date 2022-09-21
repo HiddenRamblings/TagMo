@@ -72,7 +72,6 @@ import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
-import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.NfcByte;
@@ -215,14 +214,6 @@ public class TagUtils {
         return output.toString();
     }
 
-    public static long amiiboIdFromTag(byte[] data) throws NumberFormatException, IOException {
-        return new AmiiboData(data).getAmiiboID();
-    }
-
-    public static String amiiboIdToHex(long amiiboId) {
-        return String.format("%016X", amiiboId);
-    }
-
     public static byte[][] splitPages(byte[] data) throws Exception {
         if (data.length < NfcByte.TAG_DATA_SIZE)
             throw new IOException(TagMo.getContext().getString(
@@ -301,8 +292,8 @@ public class TagUtils {
             }
         }
         try {
-            long amiiboId = amiiboIdFromTag(tagData);
-            String name = amiiboIdToHex(amiiboId);
+            long amiiboId = Amiibo.dataToId(tagData);
+            String name = Amiibo.idToHex(amiiboId);
             if (null != amiiboManager) {
                 Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
                 if (null != amiibo && null != amiibo.name) {

@@ -64,7 +64,6 @@ import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothHandler;
 import com.hiddenramblings.tagmo.eightbit.bluetooth.FlaskGattService;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -529,7 +528,7 @@ public class FlaskSlotFragment extends Fragment implements
                 txtAmiiboType.setVisibility(View.VISIBLE);
                 txtGameSeries.setVisibility(View.VISIBLE);
                 if (amiiboView == amiiboCard) txtUsageLabel.setVisibility(View.VISIBLE);
-                amiiboHexId = TagUtils.amiiboIdToHex(active.id);
+                amiiboHexId = Amiibo.idToHex(active.id);
                 amiiboName = active.name;
                 amiiboImageUrl = active.getImageUrl();
                 if (null != active.getAmiiboSeries())
@@ -589,8 +588,9 @@ public class FlaskSlotFragment extends Fragment implements
         Amiibo selectedAmiibo = null;
         if (null != amiiboManager) {
             for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-                String flaskTail = Integer.toString(Integer.parseInt(TagUtils
-                        .amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
+                String flaskTail = Integer.toString(Integer.parseInt(
+                        Amiibo.idToHex(amiibo.id).substring(8, 16), 16
+                ), 36);
                 if (name[1].equals(flaskTail)) {
                     selectedAmiibo = amiibo;
                     break;
@@ -679,7 +679,7 @@ public class FlaskSlotFragment extends Fragment implements
             AmiiboManager amiiboManager = settings.getAmiiboManager();
             if (null != amiiboManager) {
                 try {
-                    long amiiboId = TagUtils.amiiboIdFromTag(amiiboFile.getData());
+                    long amiiboId = Amiibo.dataToId(amiiboFile.getData());
                     amiibo = amiiboManager.amiibos.get(amiiboId);
                     if (null == amiibo)
                         amiibo = new Amiibo(amiiboManager, amiiboId, null, null);

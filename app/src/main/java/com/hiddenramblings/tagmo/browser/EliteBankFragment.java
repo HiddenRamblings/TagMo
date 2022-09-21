@@ -759,7 +759,7 @@ public class EliteBankFragment extends Fragment implements
         if (null == amiibo) {
             if (null != tagData && tagData.length > 0) {
                 try {
-                    amiiboId = TagUtils.amiiboIdFromTag(tagData);
+                    amiiboId = Amiibo.dataToId(tagData);
                 } catch (Exception e) {
                     Debug.Info(e);
                 }
@@ -779,7 +779,7 @@ public class EliteBankFragment extends Fragment implements
         if (null != amiibo) {
             amiiboView.setVisibility(View.VISIBLE);
             amiiboImageUrl = amiibo.getImageUrl();
-            amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
+            amiiboHexId = Amiibo.idToHex(amiibo.id);
             if (null != amiibo.name)
                 amiiboName = amiibo.name;
             if (null != amiibo.getAmiiboSeries())
@@ -789,7 +789,7 @@ public class EliteBankFragment extends Fragment implements
             if (null != amiibo.getGameSeries())
                 gameSeries = amiibo.getGameSeries().name;
         } else {
-            tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
+            tagInfo = "ID: " + Amiibo.idToHex(amiiboId);
             amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
         }
 

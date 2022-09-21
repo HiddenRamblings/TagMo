@@ -6,8 +6,9 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 public class Amiibo implements Comparable<Amiibo>, Parcelable {
@@ -44,7 +45,7 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
         this.manager = manager;
         this.index = index;
         this.data = data;
-        this.id = TagUtils.amiiboIdFromTag(data);
+        this.id = dataToId(data);
         Amiibo amiibo = manager.amiibos.get(this.id);
         this.name = null != amiibo ? amiibo.name : null;
         this.releaseDates = null != amiibo ? amiibo.releaseDates : new AmiiboReleaseDates(
@@ -114,6 +115,14 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
         return Long.decode(value);
     }
 
+    public static String idToHex(long amiiboId) {
+        return String.format("%016X", amiiboId);
+    }
+
+    public static long dataToId(byte[] data) throws NumberFormatException, IOException {
+        return new AmiiboData(data).getAmiiboID();
+    }
+
     public String getImageUrl() {
         return String.format(AMIIBO_IMAGE, getHead(), getTail());
     }
@@ -125,8 +134,9 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
     }
 
     public String getFlaskTail() {
-        return Integer.toString(Integer.parseInt(TagUtils
-                .amiiboIdToHex(this.id).substring(8, 16), 16), 36);
+        return Integer.toString(Integer.parseInt(
+                idToHex(this.id).substring(8, 16), 16
+        ), 36);
     }
 
     @Override

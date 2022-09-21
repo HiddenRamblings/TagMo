@@ -393,7 +393,7 @@ public class BrowserAdapter
                     amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
             }
             if (null != amiibo) {
-                amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
+                amiiboHexId = Amiibo.idToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
                 if (null != amiibo.name)
                     amiiboName = amiibo.name;
@@ -404,7 +404,7 @@ public class BrowserAdapter
                 if (null != amiibo.getGameSeries())
                     gameSeries = amiibo.getGameSeries().name;
             } else {
-                amiiboHexId = TagUtils.amiiboIdToHex(amiiboId);
+                amiiboHexId = Amiibo.idToHex(amiiboId);
                 tagInfo = "ID: " + amiiboHexId;
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
             }

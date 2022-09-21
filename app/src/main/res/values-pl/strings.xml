@@ -145,6 +145,9 @@
     <string name="permission_required">Wymagany dostęp do pamięci!</string>
     <string name="allow">Zezwól</string>
 
+    <string name="guides">Przewodniki</string>
+    <string name="donate">Darowizna</string>
+
     <string name="enable_tag_validation">Walidacja NTAG215</string>
     <string name="tag_validation_details">Nie wszystkie układy NFC prawidłowo weryfikują tagi NFC.\nWyłącz, aby dopuścić użycie potencjalnie niekompatybilnych tagów.</string>
     <string name="enable_automatic_scan">Auto-skanowanie NFC</string>
@@ -305,10 +308,8 @@
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
-    <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
-    <string name="flask_permissions">Required permission denied!</string>
-    <string name="guides">Przewodniki</string>
-    <string name="donate">Darowizna</string>
+    <string name="fail_bluetooth_adapter">Bluetooth adapter unavailable!</string>
+    <string name="fail_permissions">Required permission denied!</string>
 
     <string name="location_disclosure">Lokalizacja jest wymagana do skanowania Bluetooth LE. Zgodnie z zasadami Google Play, TagMo ma obowiązek powiadomić użytkownika, że dane o lokalizacji mogą być gromadzone w tle. TagMo nie odczytuje, nie przechowuje ani nie udostępnia danych o lokalizacji. W związku z tym niniejsze zawiadomienie jest wyłącznie formalnością.</string>
     <string name="prefs_configuration">Opcje Przeglądarki</string>

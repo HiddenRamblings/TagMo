@@ -253,14 +253,14 @@
     <string name="flask_scanning">正在掃描Bluup Flask&#8230;</string>
     <string name="flask_located">正在連接Bluup Flask&#8230;</string>
     <string name="flask_disconnect">Flask 藍牙連線無法使用！</string>
-    <string name="flask_bluetooth">藍牙裝置無法使用！</string>
-    <string name="flask_permissions">無法取得執行所需的權限！</string>
     <string name="flask_paired">取消配對Flask以繼續.</string>
     <string name="flask_count">Slot %1$s 可啟用，%2$d Slots 已執行</string>
     <string name="write_slot_file">將 amiibo&#8482; 上傳到 Bluup Flask</string>
     <string name="write_slots">將 %1$d slots 寫入 Bluup Flask</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
     <string name="flask_upload">正在上傳 amiibo&#8482;&#8230;</string>
+    <string name="fail_bluetooth_adapter">藍牙裝置無法使用！</string>
+    <string name="fail_permissions">無法取得執行所需的權限！</string>
     <string name="location_disclosure">特此知會您，使用Bluetooth LE掃描時必須取得定位資訊，依據Google Play商店的政策，本程序會在背景服務收集定位資訊，但絕對不會讀取、儲存或與第三人分享定位資訊。</string>
 
     <string name="data_write">寫入主要數據</string>
@@ -364,8 +364,7 @@
     <string name="sub_button">%1$s 訂閱</string>
     <string name="iap_button">%1$s 捐贈</string>
     <string name="donation_thanks">非常感謝你的捐贈！</string>
-    <string name="donation_notice">TagMo努力維持免費的專案開發形式。\n所有贊助款項都用於本專案的相關支出。</string>
-	
+
     <string name="conversion_title">TagMo必要更新</string>
     <string name="conversion_message">目前GitHub的新版本已與Google Play商店同步更新。\n請點擊繼續，將核對版本並完成更新安裝。</string>
 </resources>

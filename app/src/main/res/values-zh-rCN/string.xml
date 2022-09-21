@@ -144,6 +144,9 @@
     <string name="permission_required">需要存储权限！</string>
     <string name="allow">允许</string>
 
+    <string name="guides">指南</string>
+    <string name="donate">捐款</string>
+
     <string name="enable_tag_validation">仅限 NTag215</string>
     <string name="tag_validation_details">并非所有的 NFC 芯片组都能正确验证 NFC 标签。\n关闭此选项以允许可能不兼容的标签。</string>
     <string name="enable_automatic_scan">自动扫描 NFC</string>
@@ -298,13 +301,11 @@
     <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
     <string name="erase_collection">Erase Collection</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>
-    <string name="flask_permissions">Required permission denied!</string>
-    <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="custom_tab_back">Back to TagMo</string>
-    <string name="guides">指南</string>
-    <string name="donate">捐款</string>
+    <string name="fail_permissions">Required permission denied!</string>
+    <string name="fail_bluetooth_adapter">Bluetooth adapter unavailable!</string>
 
     <string name="prefs_configuration">浏览器选项</string>
     <string name="pref_import_keys">导入加密密钥</string>

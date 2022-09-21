@@ -254,14 +254,15 @@
     <string name="flask_scanning">Scanning for Bluup Flask&#8230;</string>
     <string name="flask_located">Connecting to Bluup Flask&#8230;</string>
     <string name="flask_disconnect">Flask Bluetooth connection lost!</string>
-    <string name="flask_bluetooth">Bluetooth adapter unavailable!</string>
-    <string name="flask_permissions">Required permission denied!</string>
     <string name="flask_paired">Unpair Flask to continue.</string>
     <string name="flask_count">Slot %1$s Active, %2$d Slots Occupied</string>
     <string name="write_slot_file">Upload amiibo&#8482; to Bluup Flask</string>
     <string name="write_slots">Write %1$d slots to Bluup Flask</string>
     <string name="create_blank">Create blank virtual NFC tag</string>
     <string name="flask_upload">Uploading amiibo&#8482;&#8230;</string>
+    <string name="joy_con_invalid">Not a valid Joy-Con device!</string>
+    <string name="fail_bluetooth_adapter">Bluetooth adapter unavailable!</string>
+    <string name="fail_permissions">Required permission denied!</string>
     <string name="location_disclosure">Location is required for Bluetooth LE scan. In accordance with Google Play policy, TagMo is required to notify you that location data may be collected in the background.  TagMo does not read, store, or share location data. As such, this notice is strictly a formality.</string>
 
     <string name="data_write">Wrote main data</string>

@@ -112,14 +112,13 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.PowerTagManager;
 import com.hiddenramblings.tagmo.amiibo.games.GameTitles;
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
-import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData;
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout;
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
@@ -635,7 +634,7 @@ public class BrowserActivity extends AppCompatActivity implements
         );
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData, true));
+        input.setText(TagArray.decipherFilename(settings.getAmiiboManager(), tagData, true));
         Dialog backupDialog = dialog.setView(view).create();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
@@ -644,10 +643,10 @@ public class BrowserActivity extends AppCompatActivity implements
                     DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
                             this.settings.getBrowserRootDocument());
                     if (null == rootDocument) throw new NullPointerException();
-                    fileName = TagUtils.writeBytesToDocument(this, rootDocument,
+                    fileName = TagArray.writeBytesToDocument(this, rootDocument,
                             fileName, tagData);
                 } else {
-                    fileName = TagUtils.writeBytesToFile(Storage.getDownloadDir(
+                    fileName = TagArray.writeBytesToFile(Storage.getDownloadDir(
                             "TagMo", "Backups"
                     ), fileName, tagData);
                 }
@@ -671,7 +670,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         try {
-            TagUtils.validateData(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
+            TagArray.validateData(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));
             new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                     R.string.validation_success, Snackbar.LENGTH_SHORT).show();
         } catch (Exception e) {
@@ -1190,7 +1189,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
                 AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                 final EditText input = view.findViewById(R.id.backup_entry);
-                input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData, true));
+                input.setText(TagArray.decipherFilename(settings.getAmiiboManager(), tagData, true));
                 Dialog backupDialog = dialog.setView(view).create();
                 view.findViewById(R.id.save_backup).setOnClickListener(v -> {
                     try {
@@ -1199,10 +1198,10 @@ public class BrowserActivity extends AppCompatActivity implements
                             DocumentFile rootDocument = DocumentFile.fromTreeUri(this,
                                     this.settings.getBrowserRootDocument());
                             if (null == rootDocument) throw new NullPointerException();
-                            fileName = TagUtils.writeBytesToDocument(this, rootDocument,
+                            fileName = TagArray.writeBytesToDocument(this, rootDocument,
                                     fileName, tagData);
                         } else {
-                            fileName = TagUtils.writeBytesToFile(Storage.getDownloadDir(
+                            fileName = TagArray.writeBytesToFile(Storage.getDownloadDir(
                                     "TagMo", "Backups"
                             ), fileName, tagData);
                         }
@@ -1230,7 +1229,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 return true;
             } else if (item.getItemId() == R.id.mnu_validate) {
                 try {
-                    TagUtils.validateData(tagData);
+                    TagArray.validateData(tagData);
                     new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                             R.string.validation_success, Snackbar.LENGTH_SHORT).show();
                 } catch (Exception e) {
@@ -1298,7 +1297,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 return true;
             } else if (item.getItemId() == R.id.mnu_validate) {
                 try {
-                    TagUtils.validateData(tagData);
+                    TagArray.validateData(tagData);
                     new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                             R.string.validation_success, Snackbar.LENGTH_SHORT).show();
                 } catch (Exception e) {
@@ -1632,8 +1631,8 @@ public class BrowserActivity extends AppCompatActivity implements
         try {
             byte[] tagData = null != amiiboFile.getData() ? amiiboFile.getData()
                     : null != amiiboFile.getDocUri()
-                    ? TagUtils.getValidatedDocument(keyManager, amiiboFile.getDocUri())
-                    : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
+                    ? TagArray.getValidatedDocument(keyManager, amiiboFile.getDocUri())
+                    : TagArray.getValidatedFile(keyManager, amiiboFile.getFilePath());
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 LinearLayout menuOptions = itemView.findViewById(R.id.menu_options);
@@ -1665,7 +1664,7 @@ public class BrowserActivity extends AppCompatActivity implements
             return;
         try {
             byte[] tagData = null != amiiboFile.getData() ? amiiboFile.getData()
-                    : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
+                    : TagArray.getValidatedFile(keyManager, amiiboFile.getFilePath());
 
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 getToolbarOptions(itemView.findViewById(R.id.menu_options)
@@ -2674,7 +2673,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         if (scanner.hasNextLine()) scanner.nextLine();
                     }
                     this.keyManager.evaluateKey(new ByteArrayInputStream(
-                            TagUtils.hexToByteArray(scanner.nextLine()
+                            TagArray.hexToByteArray(scanner.nextLine()
                                     .replace(" ", ""))));
                     scanner.close();
                 } catch (IOException e) {
@@ -2769,7 +2768,7 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 mifare = NTAG215.get(tag);
-                String tagTech = TagUtils.getTagTechnology(tag);
+                String tagTech = TagArray.getTagTechnology(tag);
                 if (mifare == null) {
                     if (prefs.enable_elite_support().get()) {
                         mifare = new NTAG215(NfcA.get(tag));
@@ -2790,8 +2789,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 mifare.connect();
                 if (!hasTestedElite) {
                     hasTestedElite = true;
-                    if (!TagUtils.isPowerTag(mifare)) {
-                        isEliteDevice = TagUtils.isElite(mifare);
+                    if (!TagArray.isPowerTag(mifare)) {
+                        isEliteDevice = TagArray.isElite(mifare);
                     }
                 }
                 byte[] bank_details;

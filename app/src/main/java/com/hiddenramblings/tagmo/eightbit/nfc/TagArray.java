@@ -84,7 +84,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
-public class TagUtils {
+public class TagArray {
 
     public static String getTagTechnology(Tag tag) {
         final Context context = TagMo.getContext();
@@ -129,7 +129,7 @@ public class TagUtils {
     public static boolean isPowerTag(NTAG215 mifare) {
         if (TagMo.getPrefs().enable_power_tag_support().get()) {
             byte[] signature = mifare.transceive(NfcByte.POWERTAG_SIG);
-            return null != signature && TagUtils.compareRange(signature,
+            return null != signature && TagArray.compareRange(signature,
                     NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.length);
         }
         return false;
@@ -138,8 +138,8 @@ public class TagUtils {
     public static boolean isElite(NTAG215 mifare) {
         if (TagMo.getPrefs().enable_elite_support().get()) {
             byte[] signature = mifare.readSignature(false);
-            byte[] page10 = TagUtils.hexToByteArray("FFFFFFFFFF");
-            return null != signature && TagUtils.compareRange(signature, page10,
+            byte[] page10 = TagArray.hexToByteArray("FFFFFFFFFF");
+            return null != signature && TagArray.compareRange(signature, page10,
                     32 - page10.length, signature.length);
         }
         return false;
@@ -228,7 +228,7 @@ public class TagUtils {
 
     public static void validateData(byte[] data) throws Exception {
         final Context context = TagMo.getContext();
-        byte[][] pages = TagUtils.splitPages(data);
+        byte[][] pages = TagArray.splitPages(data);
 
         if (pages[0][0] != (byte) 0x04)
             throw new Exception(context.getString(R.string.invalid_tag_prefix));
@@ -274,7 +274,7 @@ public class TagUtils {
         if (null == pages  || pages.length != NfcByte.PAGE_SIZE * 4)
             throw new Exception(context.getString(R.string.fail_read_size));
 
-        if (!TagUtils.compareRange(pages, tagData, 9))
+        if (!TagArray.compareRange(pages, tagData, 9))
             throw new Exception(context.getString(R.string.fail_mismatch_uid));
 
         Debug.Info(TagWriter.class, R.string.validation_success);
@@ -316,11 +316,11 @@ public class TagUtils {
     public static byte[] getValidatedData(KeyManager keyManager, byte[] data) throws Exception {
         if (null == data ) return null;
         try {
-            TagUtils.validateData(data);
+            TagArray.validateData(data);
             data = keyManager.decrypt(data);
         } catch (Exception e) {
             data = keyManager.encrypt(data);
-            TagUtils.validateData(data);
+            TagArray.validateData(data);
             data = keyManager.decrypt(data);
         }
         return keyManager.encrypt(data);

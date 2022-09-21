@@ -81,7 +81,6 @@ import androidx.annotation.RequiresApi;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -40,9 +40,9 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
-import com.hiddenramblings.tagmo.eightbit.Foomiibo;
+import com.hiddenramblings.tagmo.eightbit.nfc.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
@@ -185,7 +185,7 @@ public class TagDataEditor extends AppCompatActivity {
             this.amiiboData = new AmiiboData(keyManager.decrypt(tagData));
         } catch (Exception e) {
             try {
-                tagData = TagUtils.getValidatedData(keyManager, tagData);
+                tagData = TagArray.getValidatedData(keyManager, tagData);
                 this.amiiboData = new AmiiboData(tagData);
             } catch (Exception ex) {
                 Debug.Warn(e);
@@ -214,7 +214,7 @@ public class TagDataEditor extends AppCompatActivity {
                 onAppDataSwitchClicked(checked));
 
         findViewById(R.id.random_serial).setOnClickListener(view ->
-                txtSerialNumber.setText(TagUtils.bytesToHex(new Foomiibo().generateRandomUID())));
+                txtSerialNumber.setText(TagArray.bytesToHex(new Foomiibo().generateRandomUID())));
 
         findViewById(R.id.txtInitDate).setOnClickListener(view -> {
             final Calendar c = Calendar.getInstance();
@@ -491,7 +491,7 @@ public class TagDataEditor extends AppCompatActivity {
             }
 
             try {
-                byte[] serialNumber = TagUtils.hexToByteArray(txtSerialNumber.getText().toString());
+                byte[] serialNumber = TagArray.hexToByteArray(txtSerialNumber.getText().toString());
                 newAmiiboData.setUID(serialNumber);
             } catch (Exception e) {
                 txtSerialNumber.requestFocus();
@@ -574,7 +574,7 @@ public class TagDataEditor extends AppCompatActivity {
     }
 
     private void loadUID() {
-        txtUID.setText(TagUtils.bytesToHex(amiiboData.getUID()));
+        txtUID.setText(TagArray.bytesToHex(amiiboData.getUID()));
     }
 
     private void loadCountryCode() {
@@ -838,7 +838,7 @@ public class TagDataEditor extends AppCompatActivity {
         txtSerialNumber.setTag(txtSerialNumber.getKeyListener());
         txtSerialNumber.setKeyListener(null);
         byte[] value = amiiboData.getUID();
-        txtSerialNumber.setText(TagUtils.bytesToHex(value));
+        txtSerialNumber.setText(TagArray.bytesToHex(value));
     }
 
     private static String getDateString(Date date) {

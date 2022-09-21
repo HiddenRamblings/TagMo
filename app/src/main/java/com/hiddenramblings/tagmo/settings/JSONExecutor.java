@@ -1,18 +1,12 @@
 package com.hiddenramblings.tagmo.settings;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
 
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.security.ProviderInstaller;
-import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.browser.BrowserActivity;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.security.ProviderAdapter;
-import com.hiddenramblings.tagmo.widget.Toasty;
+import com.hiddenramblings.tagmo.eightbit.security.SecurityHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,7 +22,7 @@ public class JSONExecutor {
     ResultListener listener;
 
     public JSONExecutor(Activity activity, String server, String path) {
-        new ProviderAdapter(activity, new ProviderAdapter.ProviderInstallListener() {
+        new SecurityHandler(activity, new SecurityHandler.ProviderInstallListener() {
             @Override
             public void onProviderInstalled() {
                 RetrieveJSON(server, path);

@@ -606,7 +606,7 @@ public class FlaskSlotFragment extends Fragment implements
                 : bluetoothHandler.getBluetoothAdapter(requireContext());
         if (null == mBluetoothAdapter) {
             setBottomSheetHidden(true);
-            new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+            new Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter);
             return;
         }
         showScanningNotice();
@@ -939,13 +939,13 @@ public class FlaskSlotFragment extends Fragment implements
     @Override
     public void onPermissionsFailed() {
         setBottomSheetHidden(true);
-        new Toasty(requireActivity()).Long(R.string.flask_permissions);
+        new Toasty(requireActivity()).Long(R.string.fail_permissions);
     }
 
     @Override
     public void onAdapterMissing() {
         setBottomSheetHidden(true);
-        new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+        new Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter);
     }
 
     @Override

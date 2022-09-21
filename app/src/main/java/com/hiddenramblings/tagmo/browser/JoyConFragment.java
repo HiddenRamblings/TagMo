@@ -84,13 +84,13 @@ public class JoyConFragment extends DialogFragment implements
     @Override
     public void onPermissionsFailed() {
         this.dismiss();
-        new Toasty(requireActivity()).Long(R.string.flask_permissions);
+        new Toasty(requireActivity()).Long(R.string.fail_permissions);
     }
 
     @Override
     public void onAdapterMissing() {
         this.dismiss();
-        new Toasty(requireActivity()).Long(R.string.flask_bluetooth);
+        new Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter);
     }
 
     @SuppressLint("MissingPermission")
@@ -127,7 +127,7 @@ public class JoyConFragment extends DialogFragment implements
                         }
                     } catch (IOException ex) {
                         JoyConFragment.this.dismiss();
-                        new Toasty(requireActivity()).Short(R.string.flask_invalid);
+                        new Toasty(requireActivity()).Short(R.string.joy_con_invalid);
                     }
                 }
             }

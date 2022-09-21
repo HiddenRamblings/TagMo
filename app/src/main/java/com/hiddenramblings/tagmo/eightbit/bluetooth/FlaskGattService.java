@@ -272,6 +272,7 @@ public class FlaskGattService extends Service {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
                     mBluetoothGatt.requestMtu(512); // Maximum: 517
+                else if (null != listener) listener.onServicesDiscovered();
             } else {
                 Debug.Warn(TAG, "onServicesDiscovered received: " + status);
             }

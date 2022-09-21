@@ -109,9 +109,7 @@ public class PuckGattService extends Service {
     BluetoothGattCharacteristic mCharacteristicRX = null;
     BluetoothGattCharacteristic mCharacteristicTX = null;
 
-    private String nameCompat = null;
-    private String tailCompat = null;
-
+    private int maxTransmissionUnit = 23;
     public final static UUID PuckNUS = UUID.fromString("78290001-d52e-473f-a9f4-f03da7c67dd1");
     private final static UUID PuckTX = UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1");
     private final static UUID PuckRX = UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1");
@@ -195,12 +193,13 @@ public class PuckGattService extends Service {
 
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+            if (null != listener) listener.onServicesDiscovered();
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Debug.Verbose(TAG, "onMtuChange complete: " + mtu);
+                maxTransmissionUnit = mtu;
             } else {
                 Debug.Warn(TAG, "onMtuChange received: " + status);
             }
-            if (null != listener) listener.onServicesDiscovered();
         }
     };
 

@@ -1,5 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo.games;
 
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -19,7 +21,7 @@ public class GameTitles {
                 String gameId = jsonArray.getString(i);
                 gameIds.add(GamesManager.hexToId("0x" + gameId));
             } catch (JSONException e) {
-                e.printStackTrace();
+                Debug.Warn(e);
             }
         }
     }

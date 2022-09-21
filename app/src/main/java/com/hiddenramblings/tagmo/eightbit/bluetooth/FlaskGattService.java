@@ -200,7 +200,8 @@ public class FlaskGattService extends Service {
                             String escapedList = getList
                                     .replace("/", "\\/")
                                     .replace("'", "\\'")
-                                    .replace("-", "\\-");
+                                    .replace("-", "\\-")
+                                    .replace("  ...", ""); // TODO: CRITICAL
                             JSONArray jsonArray = new JSONArray(escapedList);
                             if (null != listener) listener.onFlaskListRetrieved(jsonArray);
                         } catch (JSONException e) {

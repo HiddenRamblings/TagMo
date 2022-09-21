@@ -327,7 +327,7 @@ public class TagDataEditor extends AppCompatActivity {
         } else {
             long amiiboId;
             try {
-                amiiboId = TagUtils.amiiboIdFromTag(tagData);
+                amiiboId = Amiibo.dataToId(tagData);
             } catch (Exception e) {
                 Debug.Info(e);
                 amiiboId = -1;
@@ -343,7 +343,7 @@ public class TagDataEditor extends AppCompatActivity {
                         amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
                 }
                 if (null != amiibo) {
-                    amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
+                    amiiboHexId = Amiibo.idToHex(amiibo.id);
                     amiiboImageUrl = amiibo.getImageUrl();
                     if (null != amiibo.name)
                         amiiboName = amiibo.name;
@@ -354,7 +354,7 @@ public class TagDataEditor extends AppCompatActivity {
                     if (null != amiibo.getGameSeries())
                         gameSeries = amiibo.getGameSeries().name;
                 } else {
-                    tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
+                    tagInfo = "ID: " + Amiibo.idToHex(amiiboId);
                     amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
                 }
             }

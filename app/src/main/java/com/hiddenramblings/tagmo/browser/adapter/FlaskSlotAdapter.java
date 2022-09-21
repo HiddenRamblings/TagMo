@@ -188,7 +188,7 @@ public class FlaskSlotAdapter
                     this.txtAmiiboType.setVisibility(View.GONE);
                     this.txtGameSeries.setVisibility(View.GONE);
                 } else {
-                    amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
+                    amiiboHexId = Amiibo.idToHex(amiibo.id);
                     if (null != amiibo.getAmiiboSeries())
                         amiiboSeries = amiibo.getAmiiboSeries().name;
                     if (null != amiibo.getAmiiboType())

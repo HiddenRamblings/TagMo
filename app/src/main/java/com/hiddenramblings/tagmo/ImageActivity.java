@@ -147,7 +147,7 @@ public class ImageActivity extends AppCompatActivity {
                 amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
         }
         if (null != amiibo) {
-            amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
+            amiiboHexId = Amiibo.idToHex(amiibo.id);
             if (null != amiibo.name)
                 amiiboName = amiibo.name;
             if (null != amiibo.getAmiiboSeries())
@@ -157,7 +157,7 @@ public class ImageActivity extends AppCompatActivity {
             if (null != amiibo.getGameSeries())
                 gameSeries = amiibo.getGameSeries().name;
         } else {
-            tagInfo = "ID: " + TagUtils.amiiboIdToHex(amiiboId);
+            tagInfo = "ID: " + Amiibo.idToHex(amiiboId);
         }
 
         boolean hasTagInfo = null != tagInfo;
@@ -198,7 +198,7 @@ public class ImageActivity extends AppCompatActivity {
         if (null != amiibo) {
             editText.setText(amiibo.name);
         } else {
-            editText.setText(TagUtils.amiiboIdToHex(amiiboId));
+            editText.setText(Amiibo.idToHex(amiiboId));
         }
 
         (new AlertDialog.Builder(this)).setTitle(R.string.save_image)

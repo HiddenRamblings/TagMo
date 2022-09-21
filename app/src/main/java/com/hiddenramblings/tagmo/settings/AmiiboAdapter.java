@@ -67,7 +67,7 @@ public class AmiiboAdapter extends BaseAdapter {
         String amiiboImageUrl;
 
         Amiibo amiibo = getItem(position);
-        amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
+        amiiboHexId = Amiibo.idToHex(amiibo.id);
         amiiboImageUrl = amiibo.getImageUrl();
         if (null != amiibo.name)
             amiiboName = amiibo.name;

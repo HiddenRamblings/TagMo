@@ -582,8 +582,9 @@ public class FlaskGattService extends Service {
                     "tagUploadChunk(\"" + chunk + "\")"
             );
         }
-        String flaskTail = Integer.toString(Integer.parseInt(TagUtils
-                .amiiboIdToHex(amiibo.id).substring(8, 16), 16), 36);
+        String flaskTail = Integer.toString(Integer.parseInt(
+                Amiibo.idToHex(amiibo.id).substring(8, 16), 16
+        ), 36);
         int reserved = flaskTail.length() + 3; // |tail|#
         String nameUnicode = stringToUnicode(amiibo.name);
         String amiiboName = nameUnicode.length() + reserved > 28

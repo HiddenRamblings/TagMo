@@ -112,6 +112,7 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.PowerTagManager;
 import com.hiddenramblings.tagmo.amiibo.games.GameTitles;
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
+import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData;
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter;
@@ -495,13 +496,13 @@ public class BrowserActivity extends AppCompatActivity implements
                         Uri uri = intent.getClipData().getItemAt(i).getUri();
                         byte[] data = TagReader.readTagDocument(uri);
                         updateAmiiboView(data, new AmiiboFile(new File(uri.getPath()),
-                                TagUtils.amiiboIdFromTag(data), data));
+                                Amiibo.dataToId(data), data));
                     }
                 } else if (null != intent.getData()) {
                     Uri uri = intent.getData();
                     byte[] data = TagReader.readTagDocument(uri);
                     updateAmiiboView(data, new AmiiboFile(new File(uri.getPath()),
-                            TagUtils.amiiboIdFromTag(data), data));
+                            Amiibo.dataToId(data), data));
                 }
             } catch (Exception ignored) {}
         }
@@ -1134,7 +1135,7 @@ public class BrowserActivity extends AppCompatActivity implements
         boolean available = null != tagData  && tagData.length > 0;
         if (available) {
             try {
-                TagUtils.amiiboIdFromTag(tagData);
+                Amiibo.dataToId(tagData);
             } catch (Exception e) {
                 available = false;
                 Debug.Info(e);
@@ -1326,7 +1327,7 @@ public class BrowserActivity extends AppCompatActivity implements
             label.setVisibility(View.VISIBLE);
             Executors.newSingleThreadExecutor().execute(() -> {
                 try {
-                    long amiiboId = TagUtils.amiiboIdFromTag(tagData);
+                    long amiiboId = Amiibo.dataToId(tagData);
                     String usage = gamesManager.getGamesCompatibility(amiiboId);
                     txtUsage.post(() -> txtUsage.setText(usage));
                 } catch (Exception ex) {
@@ -2199,7 +2200,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (null != tagData  && tagData.length > 0) {
             try {
-                amiiboId = TagUtils.amiiboIdFromTag(tagData);
+                amiiboId = Amiibo.dataToId(tagData);
             } catch (Exception e) {
                 Debug.Info(e);
             }
@@ -2220,7 +2221,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
             }
             if (null != amiibo) {
-                amiiboHexId = TagUtils.amiiboIdToHex(amiibo.id);
+                amiiboHexId = Amiibo.idToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
                 if (null != amiibo.name )
                     amiiboName = amiibo.name;
@@ -2231,7 +2232,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 if (null != amiibo.getGameSeries() )
                     gameSeries = amiibo.getGameSeries().name;
             } else {
-                amiiboHexId = TagUtils.amiiboIdToHex(amiiboId);
+                amiiboHexId = Amiibo.idToHex(amiiboId);
                 tagInfo = "ID: " + amiiboHexId;
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
             }

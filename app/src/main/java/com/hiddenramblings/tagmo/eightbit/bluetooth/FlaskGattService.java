@@ -197,12 +197,14 @@ public class FlaskGattService extends Service {
                         String getList = progress.substring(progress.indexOf("["),
                                 progress.lastIndexOf("]") + 1);
                         try {
-                            String escapedList = getList.replace("'", "\\'")
+                            String escapedList = getList
+                                    .replace("/", "\\/")
+                                    .replace("'", "\\'")
                                     .replace("-", "\\-");
                             JSONArray jsonArray = new JSONArray(escapedList);
                             if (null != listener) listener.onFlaskListRetrieved(jsonArray);
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Debug.Warn(e);
                         }
                         response = new StringBuilder();
                         if (null != listener) listener.onFlaskFilesUploaded();
@@ -243,7 +245,7 @@ public class FlaskGattService extends Service {
                             if (null != e.getMessage() && e.getMessage().contains("tag.setTag")) {
                                 getActiveAmiibo();
                             } else {
-                                e.printStackTrace();
+                                Debug.Warn(e);
                             }
                         }
                     }
@@ -550,7 +552,7 @@ public class FlaskGattService extends Service {
             try {
                 setFlaskCharacteristicTX();
             } catch (UnsupportedOperationException e) {
-                e.printStackTrace();
+                Debug.Warn(e);
             }
         }
 

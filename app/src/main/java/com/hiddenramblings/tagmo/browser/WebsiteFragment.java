@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo.browser;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,16 +28,14 @@ import androidx.webkit.WebViewAssetLoader;
 import androidx.webkit.WebViewClientCompat;
 import androidx.webkit.WebViewFeature;
 
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.security.ProviderInstaller;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
-import com.hiddenramblings.tagmo.eightbit.security.ProviderAdapter;
+import com.hiddenramblings.tagmo.eightbit.security.SecurityHandler;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.json.JSONException;
@@ -69,7 +66,7 @@ public class WebsiteFragment extends Fragment {
 
         mWebView = view.findViewById(R.id.webview_content);
 
-        new ProviderAdapter(requireActivity(), new ProviderAdapter.ProviderInstallListener() {
+        new SecurityHandler(requireActivity(), new SecurityHandler.ProviderInstallListener() {
             @Override
             public void onProviderInstalled() {
                 configureWebView();
@@ -240,7 +237,7 @@ public class WebsiteFragment extends Fragment {
         try {
             AmiiboManager amiiboManager = AmiiboManager
                     .getAmiiboManager(requireContext().getApplicationContext());
-            input.setText(TagUtils.decipherFilename(amiiboManager, tagData, true));
+            input.setText(TagArray.decipherFilename(amiiboManager, tagData, true));
         } catch (IOException | JSONException | ParseException e) {
             Debug.Warn(e);
         }

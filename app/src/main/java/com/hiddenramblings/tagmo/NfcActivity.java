@@ -30,10 +30,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
-import com.hiddenramblings.tagmo.eightbit.Foomiibo;
+import com.hiddenramblings.tagmo.eightbit.nfc.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
@@ -295,15 +295,15 @@ public class NfcActivity extends AppCompatActivity {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             mifare = NFCIntent.ACTION_BLIND_SCAN.equals(mode) || isEliteIntent
                     ? NTAG215.getBlind(tag) : NTAG215.get(tag);
-            tagTech = TagUtils.getTagTechnology(tag);
+            tagTech = TagArray.getTagTechnology(tag);
             showMessage(R.string.tag_scanning, tagTech);
             mifare.connect();
             if (!hasTestedElite) {
                 hasTestedElite = true;
-                if (TagUtils.isPowerTag(mifare)) {
+                if (TagArray.isPowerTag(mifare)) {
                     showMessage(R.string.tag_scanning, getString(R.string.power_tag));
                 } else if (prefs.enable_elite_support().get()) {
-                    isEliteDevice = TagUtils.isElite(mifare)
+                    isEliteDevice = TagArray.isElite(mifare)
                             || NFCIntent.ACTION_UNLOCK_UNIT.equals(mode);
                     if (isEliteDevice)
                         showMessage(R.string.tag_scanning, getString(R.string.elite_n2));
@@ -401,7 +401,7 @@ public class NfcActivity extends AppCompatActivity {
                                         x + 1, amiiboList.size()));
                                 byte[] tagData = amiiboList.get(x).getData();
                                 if (null == tagData)
-                                    tagData = TagUtils.getValidatedFile(keyManager,
+                                    tagData = TagArray.getValidatedFile(keyManager,
                                             amiiboList.get(x).getFilePath());
                                 TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
                             }
@@ -413,7 +413,7 @@ public class NfcActivity extends AppCompatActivity {
                                         x + 1, amiiboList.size()));
                                 byte[] tagData = foomiibo.generateData(amiiboList.get(x).id);
                                 if (null == tagData)
-                                    tagData = TagUtils.getValidatedData(keyManager,
+                                    tagData = TagArray.getValidatedData(keyManager,
                                             amiiboList.get(x).data);
                                 TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
                             }
@@ -460,7 +460,7 @@ public class NfcActivity extends AppCompatActivity {
                         Intent result = new Intent(NFCIntent.ACTION_NFC_SCANNED);
                         if (isEliteDevice) {
                             if (commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
-                                data = TagUtils.getValidatedData(keyManager,
+                                data = TagArray.getValidatedData(keyManager,
                                         TagReader.scanBankToBytes(mifare, selection));
                                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
                                 result.putExtra(NFCIntent.EXTRA_CURRENT_BANK, selection);
@@ -507,7 +507,7 @@ public class NfcActivity extends AppCompatActivity {
 
                     case NFCIntent.ACTION_LOCK_AMIIBO:
                         try {
-                            TagUtils.getValidatedData(keyManager,
+                            TagArray.getValidatedData(keyManager,
                                     TagReader.scanBankToBytes(mifare, active_bank));
                         } catch (Exception ex) {
                             throw new Exception(getString(R.string.fail_lock));

@@ -55,7 +55,7 @@ import com.hiddenramblings.tagmo.browser.adapter.EliteBankAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
@@ -388,14 +388,14 @@ public class EliteBankFragment extends Fragment implements
         if (amiibos.isEmpty()) {
             bankAdapter.setAmiibos(amiibos);
             for (int x = 0; x < amiiboList.size(); x++) {
-                amiibos.add(amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
+                amiibos.add(amiiboManager.amiibos.get(TagArray.hexToLong(amiiboList.get(x))));
                 bankAdapter.notifyItemInserted(x);
             }
         } else {
             for (int x = 0; x < amiiboList.size(); x++) {
-                long amiiboId = TagUtils.hexToLong(amiiboList.get(x));
+                long amiiboId = TagArray.hexToLong(amiiboList.get(x));
                 if (x >= amiibos.size()) {
-                    amiibos.add(amiiboManager.amiibos.get(TagUtils.hexToLong(amiiboList.get(x))));
+                    amiibos.add(amiiboManager.amiibos.get(TagArray.hexToLong(amiiboList.get(x))));
                     bankAdapter.notifyItemInserted(x);
                 } else if (null == amiibos.get(x) || amiibos.get(x).index != x
                         || amiiboId != amiibos.get(x).id) {
@@ -524,7 +524,7 @@ public class EliteBankFragment extends Fragment implements
                 break;
             case VERIFY_TAG:
                 try {
-                    TagUtils.validateData(tagData);
+                    TagArray.validateData(tagData);
                     new Toasty(requireActivity()).Dialog(R.string.validation_success);
                 } catch (Exception e) {
                     new Toasty(requireActivity()).Dialog(e.getMessage());
@@ -560,7 +560,7 @@ public class EliteBankFragment extends Fragment implements
         if (((BrowserActivity) requireActivity()).isDocumentStorage()) {
             try {
                 byte[] data = null != amiiboFile.getData() ? amiiboFile.getData()
-                        : TagUtils.getValidatedDocument(keyManager, amiiboFile.getDocUri());
+                        : TagArray.getValidatedDocument(keyManager, amiiboFile.getDocUri());
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
             } catch (Exception e) {
                 Debug.Warn(e);
@@ -568,7 +568,7 @@ public class EliteBankFragment extends Fragment implements
         } else {
             try {
                 byte[] data = null != amiiboFile.getData() ? amiiboFile.getData()
-                        : TagUtils.getValidatedFile(keyManager, amiiboFile.getFilePath());
+                        : TagArray.getValidatedFile(keyManager, amiiboFile.getFilePath());
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
             } catch (Exception e) {
                 Debug.Warn(e);
@@ -611,7 +611,7 @@ public class EliteBankFragment extends Fragment implements
         View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(requireContext());
         final EditText input = view.findViewById(R.id.backup_entry);
-        input.setText(TagUtils.decipherFilename(settings.getAmiiboManager(), tagData, true));
+        input.setText(TagArray.decipherFilename(settings.getAmiiboManager(), tagData, true));
         Dialog backupDialog = dialog.setView(view).create();
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
@@ -621,10 +621,10 @@ public class EliteBankFragment extends Fragment implements
                     DocumentFile rootDocument = DocumentFile.fromTreeUri(requireContext(),
                             this.settings.getBrowserRootDocument());
                     if (null == rootDocument) throw new NullPointerException();
-                    fileName = TagUtils.writeBytesToDocument(requireContext(), rootDocument,
+                    fileName = TagArray.writeBytesToDocument(requireContext(), rootDocument,
                             input.getText().toString() + ".bin", tagData);
                 } else {
-                    fileName = TagUtils.writeBytesToFile(Storage.getDownloadDir(
+                    fileName = TagArray.writeBytesToFile(Storage.getDownloadDir(
                             "TagMo", "Backups"
                     ), input.getText().toString(), tagData);
                 }
@@ -719,7 +719,7 @@ public class EliteBankFragment extends Fragment implements
             } else if (item.getItemId() == R.id.mnu_validate) {
                 if (null != tagData && tagData.length > 0) {
                     try {
-                        TagUtils.validateData(tagData);
+                        TagArray.validateData(tagData);
                         notice.Dialog(R.string.validation_success);
                     } catch (Exception e) {
                         notice.Dialog(e.getMessage());

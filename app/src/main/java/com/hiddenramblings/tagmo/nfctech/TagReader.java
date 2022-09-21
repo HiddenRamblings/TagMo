@@ -6,7 +6,7 @@ import android.net.Uri;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -22,7 +22,7 @@ public class TagReader {
 
     static void validateBlankTag(NTAG215 mifare) throws IOException {
         byte[] lockPage = mifare.readPages(0x02);
-        Debug.Info(TagWriter.class, TagUtils.bytesToHex(lockPage));
+        Debug.Info(TagWriter.class, TagArray.bytesToHex(lockPage));
         if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {
             throw new IOException(TagMo.getContext()
                     .getString(R.string.error_tag_rewrite));
@@ -40,7 +40,7 @@ public class TagReader {
         if (length == NfcByte.TAG_FILE_SIZE) {
             byte[] signed = new byte[NfcByte.TAG_FILE_SIZE];
             new DataInputStream(inputStream).readFully(signed);
-            TagUtils.getTagSignature(signed);
+            TagArray.getTagSignature(signed);
             return Arrays.copyOfRange(signed, 0, NfcByte.TAG_DATA_SIZE);
         } else {
             byte[] tagData = new byte[NfcByte.TAG_DATA_SIZE];
@@ -79,7 +79,7 @@ public class TagReader {
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount);
         }
 
-        Debug.Info(TagReader.class, TagUtils.bytesToHex(tagData));
+        Debug.Info(TagReader.class, TagArray.bytesToHex(tagData));
         return tagData;
     }
 
@@ -96,7 +96,7 @@ public class TagReader {
                 if (null == tagData || tagData.length != 8) {
                     throw new NullPointerException();
                 }
-                tags.add(TagUtils.bytesToHex(tagData));
+                tags.add(TagArray.bytesToHex(tagData));
                 i++;
             } catch (Exception e) {
                 Debug.Warn(TagReader.class, TagMo.getContext()
@@ -113,7 +113,7 @@ public class TagReader {
     public static String getTagSignature(NTAG215 tag) {
         byte[] signature = tag.readSignature(false);
         if (null != signature)
-            return TagUtils.bytesToHex(signature).substring(0, 22);
+            return TagArray.bytesToHex(signature).substring(0, 22);
         return null;
     }
 
@@ -148,7 +148,7 @@ public class TagReader {
                 throw new NullPointerException(context.getString(R.string.fail_read_amiibo));
             }
             System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_DATA_SIZE);
-            Debug.Info(TagReader.class, TagUtils.bytesToHex(tagData));
+            Debug.Info(TagReader.class, TagArray.bytesToHex(tagData));
             return tagData;
         } catch (IllegalStateException e) {
             throw new IllegalStateException(context.getString(R.string.fail_early_remove));

@@ -39,10 +39,10 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
-import com.hiddenramblings.tagmo.eightbit.Foomiibo;
+import com.hiddenramblings.tagmo.eightbit.nfc.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -267,7 +267,7 @@ public class BrowserFragment extends Fragment implements
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
-            TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
+            TagArray.writeBytesToFile(directory, TagArray.decipherFilename(
                     settings.getAmiiboManager(), tagData, false
             ), tagData, true);
         } catch (Exception e) {
@@ -283,7 +283,7 @@ public class BrowserFragment extends Fragment implements
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
-            TagUtils.writeBytesToFile(directory, TagUtils.decipherFilename(
+            TagArray.writeBytesToFile(directory, TagArray.decipherFilename(
                     settings.getAmiiboManager(), tagData, false
             ), tagData, true);
             new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
@@ -300,7 +300,7 @@ public class BrowserFragment extends Fragment implements
                     .get(Amiibo.dataToId(tagData));
             if (amiibo == null) throw new Exception();
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
-            File amiiboFile = new File(directory, TagUtils.decipherFilename(
+            File amiiboFile = new File(directory, TagArray.decipherFilename(
                     settings.getAmiiboManager(), tagData, false
             ));
             new AlertDialog.Builder(requireContext())
@@ -374,7 +374,7 @@ public class BrowserFragment extends Fragment implements
         if (tagData.length == 0)
             tagData = foomiibo.generateData(Amiibo.idToHex(amiibo.id));
         try {
-            tagData = TagUtils.getValidatedData(keyManager, tagData);
+            tagData = TagArray.getValidatedData(keyManager, tagData);
         } catch (Exception ignored) { }
 
         BrowserActivity activity = (BrowserActivity) requireActivity();
@@ -416,7 +416,7 @@ public class BrowserFragment extends Fragment implements
         if (tagData.length == 0)
             tagData = foomiibo.generateData(Amiibo.idToHex(amiibo.id));
         try {
-            tagData = TagUtils.getValidatedData(keyManager, tagData);
+            tagData = TagArray.getValidatedData(keyManager, tagData);
         } catch (Exception ignored) { }
 
         if (settings.getAmiiboView() != BrowserSettings.VIEW.IMAGE.getValue()) {

@@ -6,9 +6,8 @@ import android.net.Uri;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 
 import org.json.JSONArray;
@@ -297,7 +296,7 @@ public class AmiiboManager {
         if (null != files && files.length > 0) {
             for (File file : files) {
                 try {
-                    byte[] data = TagUtils.getValidatedFile(keyManager, file);
+                    byte[] data = TagArray.getValidatedFile(keyManager, file);
                     if (null != data) {
                         amiiboFiles.add(new AmiiboFile(file,
                                 Amiibo.dataToId(data), data));
@@ -326,7 +325,7 @@ public class AmiiboManager {
         if (uris.isEmpty()) return amiiboFiles;
         for (Uri uri : uris) {
             try {
-                byte[] data = TagUtils.getValidatedDocument(keyManager, uri);
+                byte[] data = TagArray.getValidatedDocument(keyManager, uri);
                 if (null != data) {
                     amiiboFiles.add(new AmiiboFile(
                             DocumentFile.fromSingleUri(context, uri),

@@ -4,7 +4,7 @@ import android.util.Base64;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 
 import org.json.JSONException;
@@ -79,7 +79,7 @@ public class PowerTagManager {
         uidc[5] = (byte) (uid[5] & 0xFE);
         uidc[6] = (byte) (uid[6] & 0xFE);
 
-        HashMap<String, byte[]> keymap = keys.get(TagUtils.bytesToHex(uidc));
+        HashMap<String, byte[]> keymap = keys.get(TagArray.bytesToHex(uidc));
         if (null == keymap)
             throw new NullPointerException(TagMo.getContext().getString(R.string.uid_key_missing));
 

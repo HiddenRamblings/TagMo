@@ -15,7 +15,7 @@ import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagUtils;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 
 public class HexCodeViewer extends AppCompatActivity {
 
@@ -42,7 +42,7 @@ public class HexCodeViewer extends AppCompatActivity {
             listView.setAdapter(adapter);
         } catch (Exception e) {
             try {
-                adapter = new HexAdapter(TagUtils.getValidatedData(keyManager, tagData));
+                adapter = new HexAdapter(TagArray.getValidatedData(keyManager, tagData));
                 listView.setLayoutManager(new LinearLayoutManager(this));
                 listView.setAdapter(adapter);
             } catch (Exception ex) {

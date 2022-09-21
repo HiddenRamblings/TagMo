@@ -8,9 +8,9 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
-public class ProviderAdapter {
+public class SecurityHandler {
 
-    public ProviderAdapter(Activity activity, ProviderInstallListener listener) {
+    public SecurityHandler(Activity activity, ProviderInstallListener listener) {
         if (Debug.isOlder(Build.VERSION_CODES.M)) {
             ProviderInstaller.installIfNeededAsync(activity, new ProviderInstaller.ProviderInstallListener() {
                 @Override

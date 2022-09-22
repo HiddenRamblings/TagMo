@@ -297,7 +297,6 @@
 
     <string name="fail_ssl_update">OpenSSL 安全性憑證已逾期！</string>
     <string name="fail_save_data">儲存tag數據失敗</string>
-    <string name="fail_media_scan">媒體掃描器重置失敗</string>
     <string name="fail_read_size">讀取失敗！超出可支援的讀取範圍</string>
     <string name="fail_read_uid">無法讀取舊版UID</string>
     <string name="fail_mismatch_uid">來源的UID與目標的UID不一致！</string>

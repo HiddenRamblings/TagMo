@@ -236,7 +236,6 @@
 
     <string name="fail_ssl_update">Dostawca zabezp. OpenSSL przedawniony!</string>
     <string name="fail_save_data">Nieudany zapis danych tagu</string>
-    <string name="fail_media_scan">Nieudane odświeżenie skanera mediów</string>
     <string name="fail_read_size">Odczyt nieudany! Nieoczekiwany rozmiar odczytu.</string>
     <string name="fail_read_uid">Odczyt starego UID nieudany.</string>
     <string name="fail_mismatch_uid">Źródłowy UID nie pasuje do docelowego!</string>

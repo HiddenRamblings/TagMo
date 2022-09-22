@@ -362,7 +362,7 @@ public class TagArray {
                     new String[] { binFile.getAbsolutePath() },
                     null, null);
         } catch (Exception e) {
-            Debug.Info(R.string.fail_media_scan, e);
+            Debug.Info(e);
         }
         return binFile.getAbsolutePath();
     }

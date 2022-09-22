@@ -543,8 +543,8 @@ public class FlaskGattService extends Service {
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
                         mCharacteristicTX.setValue(chunk);
                          mCharacteristicTX.setWriteType(
-                                 // BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                                 BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+                                 // BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+                                 BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                          );
                         try {
                             mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
@@ -728,7 +728,7 @@ public class FlaskGattService extends Service {
         }
         return true;
     }
-    
+
     private String getStatusCode(int code) {
         switch (code) {
             case 128:

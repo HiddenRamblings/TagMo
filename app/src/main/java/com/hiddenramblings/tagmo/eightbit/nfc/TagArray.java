@@ -340,30 +340,23 @@ public class TagArray {
         return getValidatedData(keyManager, TagReader.readTagDocument(file.getUri()));
     }
 
-    private static byte[] getSignedTagData(byte[] tagData) {
-        byte[] signature = hexToByteArray(TagMo.hexSingature);
-        byte[] signedData = new byte[NfcByte.TAG_FILE_SIZE];
-        System.arraycopy(tagData, 0, signedData, 0, tagData.length);
-        System.arraycopy(signature, 0, signedData, 540, signature.length);
-        return signedData;
-    }
+    private static final String hexSingature = "5461674d6f20382d426974204e544147";
 
     public static String getTagSignature(byte[] tagData) {
         if (tagData.length == NfcByte.TAG_FILE_SIZE) {
-            byte[] signature = Arrays.copyOfRange(tagData, 540, NfcByte.TAG_FILE_SIZE);
-            String hexSignature = bytesToHex(signature).substring(0, 32).toLowerCase(Locale.US);
-            Debug.Info(TagMo.class, hexToString(hexSignature));
-            if (TagMo.hexSingature.equals(hexSignature)) return hexSignature;
+            String signature = bytesToHex(
+                    Arrays.copyOfRange(tagData, 540, NfcByte.TAG_FILE_SIZE)
+            ).substring(0, 32).toLowerCase(Locale.US);
+            Debug.Info(TagMo.class, hexToString(signature));
+            if (hexSingature.equals(signature)) return signature;
         }
         return null;
     }
 
-    public static String writeBytesToFile(
-            File directory, String name, byte[] tagData, boolean sign
-    ) throws IOException {
-        byte[] fileData = sign ? getSignedTagData(tagData) : tagData;
+    public static String writeBytesToFile(File directory, String name, byte[] tagData)
+            throws IOException {
         File binFile = new File(directory, name);
-        new FileOutputStream(binFile).write(fileData);
+        new FileOutputStream(binFile).write(tagData);
         try {
             MediaScannerConnection.scanFile(TagMo.getContext(),
                     new String[] { binFile.getAbsolutePath() },
@@ -374,27 +367,14 @@ public class TagArray {
         return binFile.getAbsolutePath();
     }
 
-    public static String writeBytesToFile(File directory, String name, byte[] tagData)
-            throws IOException {
-        return writeBytesToFile(directory, name, tagData, false);
-    }
-
-    public static String writeBytesToDocument(
-            Context context, DocumentFile directory,
-            String name, byte[] tagData, boolean sign
-    ) throws IOException {
-        byte[] fileData = sign ? getSignedTagData(tagData) : tagData;
-        DocumentFile newFile = directory.createFile(context.getResources()
-                .getStringArray(R.array.mimetype_bin)[0], name + ".bin");
-        if (null != newFile) {
-            context.getContentResolver().openOutputStream(newFile.getUri()).write(fileData);
-        }
-        return null != newFile ? newFile.getName() : null;
-    }
-
     public static String writeBytesToDocument(
             Context context, DocumentFile directory, String name, byte[] tagData
     ) throws IOException {
-        return writeBytesToDocument(context, directory, name, tagData, false);
+        DocumentFile newFile = directory.createFile(context.getResources()
+                .getStringArray(R.array.mimetype_bin)[0], name + ".bin");
+        if (null != newFile) {
+            context.getContentResolver().openOutputStream(newFile.getUri()).write(tagData);
+        }
+        return null != newFile ? newFile.getName() : null;
     }
 }

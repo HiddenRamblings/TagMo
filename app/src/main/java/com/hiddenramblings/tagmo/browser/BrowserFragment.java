@@ -269,7 +269,7 @@ public class BrowserFragment extends Fragment implements
             directory.mkdirs();
             TagArray.writeBytesToFile(directory, TagArray.decipherFilename(
                     settings.getAmiiboManager(), tagData, false
-            ), tagData, true);
+            ), tagData);
         } catch (Exception e) {
             Debug.Warn(e);
         }
@@ -285,7 +285,7 @@ public class BrowserFragment extends Fragment implements
             directory.mkdirs();
             TagArray.writeBytesToFile(directory, TagArray.decipherFilename(
                     settings.getAmiiboManager(), tagData, false
-            ), tagData, true);
+            ), tagData);
             new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
                     getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT
             ).show();

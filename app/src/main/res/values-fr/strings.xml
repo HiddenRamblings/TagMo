@@ -276,7 +276,6 @@
 
     <string name="fail_ssl_update">Sécurité OpenSSL obsolète&#160;!</string>
     <string name="fail_save_data">Échec de l’enregistrement des données du Tag</string>
-    <string name="fail_media_scan">Impossible de rafraîchir le scanner de médias</string>
     <string name="fail_read_size">La lecture a échoué&#160;! Taille des données lues inattendue.</string>
     <string name="fail_read_uid">Impossible de lire l’ancien UID</string>
     <string name="fail_mismatch_uid">L’UID source ne correspond pas avec la cible&#160;!</string>

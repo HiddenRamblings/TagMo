@@ -233,7 +233,6 @@
 
     <string name="fail_ssl_update">OpenSSL 安全验证过期了!</string>
     <string name="fail_save_data">tag 数据保存失败</string>
-    <string name="fail_media_scan">媒体扫描器刷新失败</string>
     <string name="fail_read_size">读取失败！读取大小异常。</string>
     <string name="fail_read_uid">无法读取旧的 UID</string>
     <string name="fail_mismatch_uid">源 UID 与目标不匹配!</string>

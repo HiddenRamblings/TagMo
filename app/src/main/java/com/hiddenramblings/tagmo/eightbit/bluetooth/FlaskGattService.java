@@ -197,13 +197,16 @@ public class FlaskGattService extends Service {
                         String getList = progress.substring(progress.indexOf("["),
                                 progress.lastIndexOf("]") + 1);
                         try {
-                            String escapedList = getList
-                                    .replace("/", "\\/")
-                                    .replace("'", "\\'")
-                                    .replace("-", "\\-")
-                                    .replace("  ...", ""); // TODO: CRITICAL
-                            JSONArray jsonArray = new JSONArray(escapedList);
-                            if (null != listener) listener.onFlaskListRetrieved(jsonArray);
+                            if (getList.contains("...")) {
+
+                            } else {
+                                String escapedList = getList
+                                        .replace("/", "\\/")
+                                        .replace("'", "\\'")
+                                        .replace("-", "\\-");
+                                JSONArray jsonArray = new JSONArray(escapedList);
+                                if (null != listener) listener.onFlaskListRetrieved(jsonArray);
+                            }
                         } catch (JSONException e) {
                             Debug.Warn(e);
                         }
@@ -295,22 +298,20 @@ public class FlaskGattService extends Service {
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status
         ) {
             Debug.Verbose(TAG, getLogTag(characteristic.getUuid())
-                    + " onCharacteristicWrite " + status);
+                    + " onCharacteristicWrite " + getStatusCode(status));
         }
 
         @Override
         public void onCharacteristicChanged(
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic
-        ) {
-            getCharacteristicValue(characteristic);
-        }
+        ) { getCharacteristicValue(characteristic); }
 
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
             if (null != listener) listener.onServicesDiscovered();
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Debug.Verbose(TAG, "onMtuChange complete: " + mtu);
-                maxTransmissionUnit = mtu;
+                maxTransmissionUnit = mtu - 3;
             } else {
                 Debug.Warn(TAG, "onMtuChange received: " + status);
             }
@@ -534,18 +535,25 @@ public class FlaskGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(byte[] value) {
-        List<byte[]> chunks = byteToPortions(value, maxTransmissionUnit);
-        int commandQueue = Callbacks.size() + 1 + chunks.size();
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            for (int i = 0; i < chunks.size(); i += 1) {
-                final byte[] chunk = chunks.get(i);
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    mCharacteristicTX.setValue(chunk);
-                    mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
-                    mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
-                }, (i + 1) * 30L);
-            }
-        }, commandQueue * 30L);
+            List<byte[]> chunks = byteToPortions(value, maxTransmissionUnit);
+            int commandQueue = Callbacks.size() + 1 + chunks.size();
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                for (int i = 0; i < chunks.size(); i += 1) {
+                    final byte[] chunk = chunks.get(i);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        mCharacteristicTX.setValue(chunk);
+                         mCharacteristicTX.setWriteType(
+                                 // BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                                 BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+                         );
+                        try {
+                            mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
+                        } catch (NullPointerException ex) {
+                            if (null != listener) listener.onServicesDiscovered();
+                        }
+                    }, (i + 1) * 30L);
+                }
+            }, commandQueue * 30L);
     }
 
     public void queueTagCharacteristic(String value, int index) {
@@ -719,6 +727,42 @@ public class FlaskGattService extends Service {
             }
         }
         return true;
+    }
+    
+    private String getStatusCode(int code) {
+        switch (code) {
+            case 128:
+                return "GATT_NO_RESOURCES";
+            case 129:
+                return "GATT_INTERNAL_ERROR";
+            case 130:
+                return "GATT_WRONG_STATE";
+            case 131:
+                return "GATT_DB_FULL";
+            case 132:
+                return "GATT_BUSY";
+            case 133:
+                return "GATT_ERROR";
+            case 134:
+                return "GATT_CMD_STARTED";
+            case 135:
+                return "GATT_ILLEGAL_PARAMETER";
+            case 136:
+                return "GATT_PENDING";
+            case 137:
+                return "GATT_AUTH_FAIL";
+            case 138:
+                return "GATT_MORE";
+            case 139:
+                return "GATT_INVALID_CFG";
+            case 140:
+                return "GATT_SERVICE_STARTED";
+            case 141:
+                return "GATT_ENCRYPED_NO_MITM";
+            case 142:
+                return "GATT_NOT_ENCRYPTED";
+        }
+        return "GATT_ENCRYPED_MITM"; //GATT_SUCCESS
     }
 
     private String getLogTag(UUID uuid) {

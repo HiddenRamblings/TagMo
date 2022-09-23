@@ -90,12 +90,7 @@ public class TagWriter {
 
         boolean isPowerTag = TagArray.isPowerTag(mifare);
         Debug.Info(TagWriter.class, R.string.power_tag_verify, String.valueOf(isPowerTag));
-
-        try {
-            tagData = keyManager.decrypt(tagData);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        tagData = keyManager.decrypt(tagData);
 
         if (isPowerTag) {
             // use a pre-determined static id for Power Tag

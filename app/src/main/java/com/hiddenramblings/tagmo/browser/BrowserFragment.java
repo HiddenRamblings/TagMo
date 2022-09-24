@@ -135,7 +135,7 @@ public class BrowserFragment extends Fragment implements
         settings.addChangeListener((BrowserSettings.BrowserSettingsListener)
                 foomiiboView.getAdapter());
 
-        setFoomiiboVisibility();
+        amiibosView.postDelayed(this::setFoomiiboVisibility, 100);
 
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
             if (amiibosView instanceof IndexFastScrollRecyclerView) {
@@ -222,7 +222,7 @@ public class BrowserFragment extends Fragment implements
     public void onResume() {
         super.onResume();
         ((BrowserActivity) requireActivity()).onRootFolderChanged(false);
-        setFoomiiboVisibility();
+        amiibosView.postDelayed(this::setFoomiiboVisibility, TagMo.uiDelay);
     }
 
     private void deleteDir(Handler handler, ProgressDialog dialog, File dir) {
@@ -442,7 +442,7 @@ public class BrowserFragment extends Fragment implements
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (null == getView()) return;
-        amiibosView.postDelayed(this::setFoomiiboVisibility, 100);
+        amiibosView.postDelayed(this::setFoomiiboVisibility, TagMo.uiDelay);
     }
 }
 

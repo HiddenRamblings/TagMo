@@ -329,11 +329,11 @@ public class BrowserActivity extends AppCompatActivity implements
                             bottomSheet = fragmentElite.getBottomSheet();
                         } else if (hasFlaskEnabled) {
                             hideBrowserInterface();
-                                setTitle(R.string.flask_title);
-                                FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
-                                fragmentFlask.delayedBluetoothEnable();
-                                amiibosView = fragmentFlask.getAmiibosView();
-                                bottomSheet = fragmentFlask.getBottomSheet();
+                            setTitle(R.string.flask_title);
+                            FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
+                            fragmentFlask.delayedBluetoothEnable();
+                            amiibosView = fragmentFlask.getAmiibosView();
+                            bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
                             hideBrowserInterface();
                             setTitle(R.string.guides);
@@ -341,7 +341,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         break;
                     case 2:
                         hideBrowserInterface();
-                        if (hasFlaskEnabled) {
+                        if (hasEliteEnabled && hasFlaskEnabled) {
                             setTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
@@ -393,7 +393,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                     break;
                 case 2:
-                    if (hasFlaskEnabled) {
+                    if (hasEliteEnabled && hasFlaskEnabled) {
                         tab.setText(R.string.flask_title);
                     } else {
                         tab.setText(R.string.guides);

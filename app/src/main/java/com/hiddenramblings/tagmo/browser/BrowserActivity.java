@@ -158,6 +158,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import eightbitlab.com.blurview.BlurView;
@@ -1796,8 +1798,11 @@ public class BrowserActivity extends AppCompatActivity implements
                 && !directory.getPath().startsWith(rootFolder.getPath())));
     }
 
+    private ExecutorService filesLoader;
     private void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
-        Executors.newSingleThreadExecutor().execute(() -> {
+        if (null != filesLoader && !filesLoader.isTerminated()) filesLoader.shutdown();
+        filesLoader = Executors.newSingleThreadExecutor();
+        filesLoader.execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiibos(keyManager, rootFolder, recursiveFiles);
             if (!this.settings.isHidingDownloads()) {
@@ -1819,8 +1824,11 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
+    private ExecutorService documentLoader;
     private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
-        Executors.newSingleThreadExecutor().execute(() -> {
+        if (null != documentLoader && !documentLoader.isTerminated()) documentLoader.shutdown();
+        documentLoader = Executors.newSingleThreadExecutor();
+        documentLoader.execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiiboDocuments(this, keyManager, rootFolder, recursiveFiles);
             File foomiibo = new File(getFilesDir(), "Foomiibo");

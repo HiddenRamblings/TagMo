@@ -316,7 +316,8 @@ public class BrowserActivity extends AppCompatActivity implements
                     FoomiiboAdapter.resetVisible();
                 }
                 boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
-                boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2);
+                boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
+                        && TagMo.getPrefs().enable_flask_support().get();
                 switch (position) {
                     case 1:
                         if (hasEliteEnabled) {
@@ -379,7 +380,8 @@ public class BrowserActivity extends AppCompatActivity implements
         new TabLayoutMediator(findViewById(R.id.navigation_tabs), mainLayout, true,
                 Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2), (tab, position) -> {
             boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
-            boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2);
+            boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
+                    && TagMo.getPrefs().enable_flask_support().get();
             switch (position) {
                 case 1:
                     if (hasEliteEnabled) {

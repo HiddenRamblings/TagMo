@@ -47,6 +47,9 @@ public interface Preferences {
     @DefaultString("")
     String settings_elite_signature();
 
+    @DefaultBoolean(true)
+    boolean enable_flask_support();
+
     @DefaultBoolean(false)
     boolean settings_disable_debug();
 

@@ -183,6 +183,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
+        CheckBoxPreference enableFlaskSupport = findPreference(
+                getString(R.string.settings_enable_flask_support)
+        );
+        if (null != enableFlaskSupport) {
+            enableFlaskSupport.setChecked(prefs.enable_flask_support().get());
+            enableFlaskSupport.setOnPreferenceClickListener(preference -> {
+                prefs.enable_flask_support().put(enableFlaskSupport.isChecked());
+                ((BrowserActivity) requireActivity()).onTabCollectionChanged();
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
         Preference syncInfo = findPreference(getString(R.string.settings_import_info_amiiboapi));
         if (null != syncInfo) {
             syncInfo.setOnPreferenceClickListener(preference -> {

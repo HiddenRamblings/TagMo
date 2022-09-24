@@ -26,7 +26,8 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @NonNull @Override
     public Fragment createFragment(int position) {
         boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
-        boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2);
+        boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
+                && TagMo.getPrefs().enable_flask_support().get();
         switch (position) {
             case 1:
                 return hasEliteEnabled ? fragmentElite : hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
@@ -42,7 +43,8 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @Override
     public int getItemCount() {
         boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
-        boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2);
+        boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
+                && TagMo.getPrefs().enable_flask_support().get();
         return hasEliteEnabled && hasFlaskEnabled ? 4 : hasEliteEnabled || hasFlaskEnabled ? 3 : 2;
     }
 

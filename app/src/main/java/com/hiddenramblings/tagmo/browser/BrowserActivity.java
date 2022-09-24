@@ -315,30 +315,38 @@ public class BrowserActivity extends AppCompatActivity implements
                     BrowserAdapter.resetVisible();
                     FoomiiboAdapter.resetVisible();
                 }
+                boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
+                boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2);
                 switch (position) {
                     case 1:
-                        showActionButton();
-                        hideBottomSheet();
-                        setTitle(R.string.elite_n2);
-                        amiibosView = fragmentElite.getAmiibosView();
-                        bottomSheet = fragmentElite.getBottomSheet();
+                        if (hasEliteEnabled) {
+                            showActionButton();
+                            hideBottomSheet();
+                            setTitle(R.string.elite_n2);
+                            amiibosView = fragmentElite.getAmiibosView();
+                            bottomSheet = fragmentElite.getBottomSheet();
+                        } else if (hasFlaskEnabled) {
+                            hideBrowserInterface();
+                                setTitle(R.string.flask_title);
+                                FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
+                                fragmentFlask.delayedBluetoothEnable();
+                                amiibosView = fragmentFlask.getAmiibosView();
+                                bottomSheet = fragmentFlask.getBottomSheet();
+                        } else {
+                            hideBrowserInterface();
+                            setTitle(R.string.guides);
+                        }
                         break;
                     case 2:
                         hideBrowserInterface();
-                        if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+                        if (hasFlaskEnabled) {
                             setTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
                             amiibosView = fragmentFlask.getAmiibosView();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
-                            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                            CustomTabsIntent customTabsIntent = builder.build();
-                            builder.setCloseButtonIcon(BitmapFactory.decodeResource(getResources(),
-                                    R.drawable.ic_stat_notice_24dp));
-                            customTabsIntent.launchUrl(
-                                    BrowserActivity.this, Uri.parse("https://flask.run/")
-                            );
+                            setTitle(R.string.guides);
                         }
                         break;
                     case 3:
@@ -370,12 +378,24 @@ public class BrowserActivity extends AppCompatActivity implements
 
         new TabLayoutMediator(findViewById(R.id.navigation_tabs), mainLayout, true,
                 Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2), (tab, position) -> {
+            boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
+            boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2);
             switch (position) {
                 case 1:
-                    tab.setText(R.string.elite_n2);
+                    if (hasEliteEnabled) {
+                        tab.setText(R.string.elite_n2);
+                    } else if (hasFlaskEnabled) {
+                        tab.setText(R.string.flask_title);
+                    } else {
+                        tab.setText(R.string.guides);
+                    }
                     break;
                 case 2:
-                    tab.setText(R.string.flask_title);
+                    if (hasFlaskEnabled) {
+                        tab.setText(R.string.flask_title);
+                    } else {
+                        tab.setText(R.string.guides);
+                    }
                     break;
                 case 3:
                     tab.setText(R.string.guides);
@@ -534,6 +554,12 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         });
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void onTabCollectionChanged() {
+        mainLayout.setCurrentItem(0, false);
+        pagerAdapter.notifyDataSetChanged();
     }
 
     private void onLoadSettingsFragment() {

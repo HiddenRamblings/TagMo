@@ -1,13 +1,18 @@
 package com.hiddenramblings.tagmo.browser;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+
 public class NavPagerAdapter extends FragmentStateAdapter {
+
     private final BrowserFragment fragmentBrowser = new BrowserFragment();
     private final EliteBankFragment fragmentElite = new EliteBankFragment();
     private final FlaskSlotFragment fragmentFlask = new FlaskSlotFragment();
@@ -20,11 +25,13 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @SuppressLint("NewApi")
     @NonNull @Override
     public Fragment createFragment(int position) {
+        boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
+        boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2);
         switch (position) {
             case 1:
-                return fragmentElite;
+                return hasEliteEnabled ? fragmentElite : hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
             case 2:
-                return fragmentFlask;
+                return hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
             case 3:
                 return fragmentWebsite;
             default:
@@ -34,7 +41,9 @@ public class NavPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 4;
+        boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
+        boolean hasFlaskEnabled = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2);
+        return hasEliteEnabled && hasFlaskEnabled ? 4 : hasEliteEnabled || hasFlaskEnabled ? 3 : 2;
     }
 
     public BrowserFragment getBrowser() {

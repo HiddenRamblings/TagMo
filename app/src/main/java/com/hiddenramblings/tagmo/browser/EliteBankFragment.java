@@ -924,23 +924,7 @@ public class EliteBankFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        if (prefs.enable_elite_support().get()) {
-            onHardwareLoaded();
-        } else {
-            setBottomSheetSecure(true);
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                Snackbar compatNotice = new IconifiedSnackbar(getActivity()).buildSnackbar(
-                        R.string.enable_elite,
-                        R.drawable.ic_settings_24dp, Snackbar.LENGTH_LONG
-                );
-                compatNotice.setAction(R.string.enable, v -> {
-                    prefs.enable_elite_support().put(true);
-                    onHardwareLoaded();
-                });
-                compatNotice.show();
-            }, TagMo.uiDelay);
-        }
-
+        onHardwareLoaded();
     }
 
     private void handleImageClicked(Amiibo amiibo) {

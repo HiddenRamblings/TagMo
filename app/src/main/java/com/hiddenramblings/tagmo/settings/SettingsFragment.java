@@ -178,6 +178,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             prefs.settings_elite_signature().get()));
                 else
                     enableEliteSupport.setSummary(getString(R.string.elite_details));
+                ((BrowserActivity) requireActivity()).onTabCollectionChanged();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }

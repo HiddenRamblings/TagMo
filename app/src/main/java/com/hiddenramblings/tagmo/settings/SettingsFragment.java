@@ -193,6 +193,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 ((BrowserActivity) requireActivity()).onTabCollectionChanged();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
+            enableFlaskSupport.setVisible(Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2));
         }
 
         Preference syncInfo = findPreference(getString(R.string.settings_import_info_amiiboapi));
@@ -425,6 +426,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                     String json = response.toString();
                     AmiiboManager amiiboManager = AmiiboManager.parseAmiiboAPI(new JSONObject(json));
+
                     if (Thread.currentThread().isInterrupted()) return;
 
                     AmiiboManager.saveDatabase(amiiboManager, requireContext().getApplicationContext());

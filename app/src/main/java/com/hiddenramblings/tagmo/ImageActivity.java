@@ -114,6 +114,7 @@ public class ImageActivity extends AppCompatActivity {
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Warn(e);
             }
+
             if (Thread.currentThread().isInterrupted()) return;
 
             this.amiiboManager = amiiboManager;

@@ -295,7 +295,9 @@ public class AmiiboManager {
         File[] files = rootFolder.listFiles((dir, name) -> binFileMatcher(name));
         if (null != files && files.length > 0) {
             for (File file : files) {
+
                 if (Thread.currentThread().isInterrupted()) return amiiboFiles;
+
                 try {
                     byte[] data = TagArray.getValidatedFile(keyManager, file);
                     if (null != data) {
@@ -325,7 +327,9 @@ public class AmiiboManager {
                 .listFiles(rootFolder.getUri(), recursiveFiles);
         if (uris.isEmpty()) return amiiboFiles;
         for (Uri uri : uris) {
+
             if (Thread.currentThread().isInterrupted()) return amiiboFiles;
+
             try {
                 byte[] data = TagArray.getValidatedDocument(keyManager, uri);
                 if (null != data) {

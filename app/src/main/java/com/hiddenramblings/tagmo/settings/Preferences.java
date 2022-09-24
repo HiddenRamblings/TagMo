@@ -47,7 +47,7 @@ public interface Preferences {
     @DefaultString("")
     String settings_elite_signature();
 
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     boolean enable_flask_support();
 
     @DefaultBoolean(false)

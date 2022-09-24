@@ -31,7 +31,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
             case 1:
                 return hasEliteEnabled ? fragmentElite : hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
             case 2:
-                return hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
+                return hasEliteEnabled && hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
             case 3:
                 return fragmentWebsite;
             default:

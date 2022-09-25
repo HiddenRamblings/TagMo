@@ -29,6 +29,7 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.browser.BrowserActivity;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 import com.hiddenramblings.tagmo.eightbit.security.SecurityHandler;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
@@ -37,11 +38,13 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.Scanner;
 import java.util.concurrent.Executors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -267,15 +270,49 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                 if (Thread.currentThread().isInterrupted()) return;
 
-                ((BrowserActivity) requireActivity()).onRefresh(true);
-                updateKeySummary();
+                requireActivity().runOnUiThread(() -> {
+                    ((BrowserActivity) requireActivity()).onKeysLoaded(true);
+                    updateKeySummary();
+                });
             } catch (Exception e) {
                 Debug.Info(e);
             }
         });
     }
 
-    private void updateKeySummary() {
+    public void verifyKeyFiles() {
+        if (keyManager.isKeyMissing()) {
+            Executors.newSingleThreadExecutor().execute(() -> {
+                try {
+                    Scanner scanner = new Scanner(new URL(
+                            "https://pastebin.com/raw/aV23ha3X").openStream());
+                    for (int i = 0; i < 4; i++) {
+                        if (scanner.hasNextLine()) scanner.nextLine();
+                    }
+                    this.keyManager.evaluateKey(new ByteArrayInputStream(
+                            TagArray.hexToByteArray(scanner.nextLine()
+                                    .replace(" ", ""))));
+                    scanner.close();
+                } catch (IOException e) {
+                    Debug.Warn(e);
+                }
+
+                if (Thread.currentThread().isInterrupted()) return;
+
+                requireActivity().runOnUiThread(() -> {
+                    ((BrowserActivity) requireActivity()).onKeysLoaded(true);
+                    updateKeySummary();
+                });
+            });
+        } else {
+            requireActivity().runOnUiThread(() -> {
+                ((BrowserActivity) requireActivity()).onKeysLoaded(true);
+                updateKeySummary();
+            });
+        }
+    }
+
+    public void updateKeySummary() {
         String unfixedText;
         ForegroundColorSpan unfixedSpan;
         if (this.keyManager.hasUnFixedKey()) {
@@ -470,10 +507,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private final ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
-            ((BrowserActivity) requireActivity()).verifyKeyFiles();
-            return;
-        }
-        if (null != result.getData().getClipData()) {
+            verifyKeyFiles();
+        } else if (null != result.getData().getClipData()) {
             for (int i = 0; i < result.getData().getClipData().getItemCount(); i++) {
                 validateKeys(result.getData().getClipData().getItemAt(i).getUri());
             }

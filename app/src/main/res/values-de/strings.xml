@@ -32,9 +32,19 @@
     <string name="allow">Erlauben</string>
     <string name="yes">Ja</string>
 
-    <string name="speed_scan">Heben Sie das Etikett leicht an, um den Scan zu beenden</string>
+    <string name="firmware_failed">Firmware-Update fehlgeschlagen. Bitte versuchen Sie es erneut! (%1$d)</string>
+
+    <string name="speed_scan">Tag leicht anheben, um den Scan abzuschließen</string>
+    <string name="unzip_item">Unzipping %1$s&#8230;</string>
+    <string name="mkdir_failed">Mkdir &#8217;%1$s&#8217; failed!</string>
+    <string name="downloads_hidden">Downloads sind derzeit ausgeblendet!</string>
 
     <string name="sub_button">%1$s Abonnement</string>
     <string name="iap_button">%1$s Spenden</string>
     <string name="donation_thanks">Vielen Dank für Ihre Unterstützung!</string>
+
+    <string name="conversion_title">TagMo Kritisches Update</string>
+    <string name="conversion_message">GitHub- und Google Play-Versionen sind jetzt universell.\nKlicken Sie auf Weiter, um Installationskonflikte zu beheben.</string>
+
+    <string name="notice_incomplete">Kommt bald!</string>
 </resources>

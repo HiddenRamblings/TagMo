@@ -261,7 +261,7 @@ public class AmiiboManager {
                 try {
                     streamWriter.close();
                 } catch (IOException e) {
-                    Debug.Verbose(e);
+                    Debug.Info(e);
                 }
             }
         }
@@ -278,7 +278,7 @@ public class AmiiboManager {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
-                    Debug.Verbose(e);
+                    Debug.Info(e);
                 }
             }
         }

@@ -41,9 +41,11 @@ public class NavPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
-        boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
-        return hasEliteEnabled && hasFlaskEnabled ? 4 : hasEliteEnabled || hasFlaskEnabled ? 3 : 2;
+        int viewCount = 1;
+        if (!TagMo.isGalaxyWear()) viewCount += 1;
+        if (TagMo.getPrefs().enable_elite_support().get()) viewCount += 1;
+        if (TagMo.getPrefs().enable_flask_support().get()) viewCount += 1;
+        return viewCount;
     }
 
     public BrowserFragment getBrowser() {

@@ -319,40 +319,40 @@ public class BrowserActivity extends AppCompatActivity implements
                         if (hasEliteEnabled) {
                             showActionButton();
                             hideBottomSheet();
-                            onTitleChanged(R.string.elite_n2);
+                            setBrowserTitle(R.string.elite_n2);
                             amiibosView = fragmentElite.getAmiibosView();
                             bottomSheet = fragmentElite.getBottomSheet();
                         } else if (hasFlaskEnabled) {
                             hideBrowserInterface();
-                            onTitleChanged(R.string.flask_title);
+                            setBrowserTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
                             amiibosView = fragmentFlask.getAmiibosView();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
                             hideBrowserInterface();
-                            onTitleChanged(R.string.guides);
+                            setBrowserTitle(R.string.guides);
                         }
                         break;
                     case 2:
                         hideBrowserInterface();
                         if (hasEliteEnabled && hasFlaskEnabled) {
-                            onTitleChanged(R.string.flask_title);
+                            setBrowserTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
                             amiibosView = fragmentFlask.getAmiibosView();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
-                            onTitleChanged(R.string.guides);
+                            setBrowserTitle(R.string.guides);
                         }
                         break;
                     case 3:
                         hideBrowserInterface();
-                        onTitleChanged(R.string.guides);
+                        setBrowserTitle(R.string.guides);
                         break;
                     default:
                         showBrowserInterface();
-                        onTitleChanged(R.string.tagmo);
+                        setBrowserTitle(R.string.tagmo);
                         amiibosView = fragmentBrowser.getAmiibosView();
                         foomiiboView = fragmentBrowser.getFoomiiboView();
                         bottomSheet = bottomSheetBehavior;
@@ -2504,6 +2504,10 @@ public class BrowserActivity extends AppCompatActivity implements
         return new int[]{size, count};
     }
 
+    private void setBrowserTitle(int titleId) {
+        if (!TagMo.isGalaxyWear()) setTitle(titleId);
+    }
+
     private void setAmiiboStats() {
         handler.removeCallbacksAndMessages(null);
         currentFolderView.post(() -> {
@@ -2603,10 +2607,6 @@ public class BrowserActivity extends AppCompatActivity implements
             bottomSheetBehavior.setHideable(true);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }, TagMo.uiDelay);
-    }
-
-    private void onTitleChanged(int titleId) {
-        if (!TagMo.isGalaxyWear()) setTitle(titleId);
     }
 
     private void hideBrowserInterface() {

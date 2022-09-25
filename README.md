@@ -24,8 +24,8 @@ Additional thanks go out to (alphabetically):
 * withgallantry - [Bluup Flask](https://www.bluuplabs.com/flask/)
 
 ### Miscellaneous
-* \_Tim\_ - The original idea
-* Supercool330 - Encryption help
+* \_Tim\_ - [DIY amiibo cards](https://gbatemp.net/threads/diy-amiibo-cards.406978/)
+* Supercool330 - [Encryption help](https://gbatemp.net/search/2757547/)
 
 ### Source
 * hax0karti - [Amiibo Generator For Wumiibo](https://github.com/hax0kartik/amiibo-generator)

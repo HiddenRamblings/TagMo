@@ -165,7 +165,6 @@
     <string name="lego_dimensions">Dimensions 213</string>
     <string name="connect_joy_con">Joy-Con Testing</string>
 
-    <string name="permission_required">Storage permission required!</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>
     <string name="allow">Allow</string>
 

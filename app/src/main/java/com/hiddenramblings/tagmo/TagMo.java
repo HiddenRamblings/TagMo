@@ -76,6 +76,10 @@ public class TagMo extends Application {
         return Objects.equals(BuildConfig.BUILD_TYPE, "publish");
     }
 
+    public static boolean isGalaxyWear() {
+        return Objects.equals(BuildConfig.BUILD_TYPE, "galaxy");
+    }
+
     @SuppressWarnings("ConstantConditions")
     public static boolean isCompatBuild() {
         return BuildConfig.APPLICATION_ID.endsWith(".eightbit");

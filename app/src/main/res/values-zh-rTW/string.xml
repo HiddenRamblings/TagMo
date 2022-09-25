@@ -163,7 +163,6 @@
     <string name="erase_collection">抹除 Collection</string>
     <string name="lego_dimensions">樂高次元</string>
 
-    <string name="permission_required">需要存取檔案的權限！</string>
     <string name="storage_unavailable">無法存取手機的儲存空間！</string>
     <string name="allow">允許</string>
 

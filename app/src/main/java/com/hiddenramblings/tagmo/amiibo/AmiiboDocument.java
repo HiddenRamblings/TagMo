@@ -1,12 +1,14 @@
 package com.hiddenramblings.tagmo.amiibo;
 
-import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.DocumentsContract;
+
+import androidx.annotation.RequiresApi;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -17,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 
-@SuppressLint("NewApi")
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class AmiiboDocument {
     private final ArrayList<Uri> files = new ArrayList<>();
     private final Resources resources;
@@ -38,8 +40,10 @@ public class AmiiboDocument {
                 null, null, null);
         try {
             while (docCursor.moveToNext()) {
-                Debug.Verbose(this.getClass(), "Primary doc=" + docCursor.getString(0)
-                        + ", mime=" + docCursor.getString(1));
+                String displayName = docCursor.getString(0);
+                String mimeType = docCursor.getString(1);
+                Debug.Verbose(this.getClass(), "Primary doc="
+                        + displayName + ", mime=" + mimeType);
             }
         } finally {
             closeQuietly(docCursor);
@@ -73,8 +77,8 @@ public class AmiiboDocument {
                 fileCount.increment();
                 String displayName = cursor.getString(0);
                 String mimeType = cursor.getString(1);
-                Debug.Verbose(this.getClass(), "Child parent=" + documentId
-                        + ", doc=" + displayName + ", mime=" + mimeType);
+                Debug.Verbose(this.getClass(), "Child doc=" + displayName
+                        + ", parent=" + documentId + ", mime=" + mimeType);
 
                 String childDocumentId = cursor.getString(2);
                 if (DocumentsContract.Document.MIME_TYPE_DIR.equals(mimeType) && recursiveFiles) {

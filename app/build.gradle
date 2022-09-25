@@ -43,6 +43,10 @@ android {
             initWith release
             getIsDefault().set(false)
         }
+        galaxy {
+            initWith release
+            getIsDefault().set(false)
+        }
     }
 
     try {
@@ -59,6 +63,7 @@ android {
         buildTypes.release.signingConfig signingConfigs.document
         buildTypes.debug.signingConfig signingConfigs.document
         buildTypes.publish.signingConfig signingConfigs.document
+        buildTypes.galaxy.signingConfig signingConfigs.document
     } catch (FileNotFoundException ignored) { }
 
     ndkVersion '21.4.7075529'

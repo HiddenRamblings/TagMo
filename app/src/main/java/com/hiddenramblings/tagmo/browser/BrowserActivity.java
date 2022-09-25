@@ -248,6 +248,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
 
         setContentView(R.layout.activity_browser);
+        if (TagMo.isGalaxyWear()) setTitle("");
 
         onBackButtonEnabled();
 
@@ -318,40 +319,40 @@ public class BrowserActivity extends AppCompatActivity implements
                         if (hasEliteEnabled) {
                             showActionButton();
                             hideBottomSheet();
-                            setTitle(R.string.elite_n2);
+                            onTitleChanged(R.string.elite_n2);
                             amiibosView = fragmentElite.getAmiibosView();
                             bottomSheet = fragmentElite.getBottomSheet();
                         } else if (hasFlaskEnabled) {
                             hideBrowserInterface();
-                            setTitle(R.string.flask_title);
+                            onTitleChanged(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
                             amiibosView = fragmentFlask.getAmiibosView();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
                             hideBrowserInterface();
-                            setTitle(R.string.guides);
+                            onTitleChanged(R.string.guides);
                         }
                         break;
                     case 2:
                         hideBrowserInterface();
                         if (hasEliteEnabled && hasFlaskEnabled) {
-                            setTitle(R.string.flask_title);
+                            onTitleChanged(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
                             amiibosView = fragmentFlask.getAmiibosView();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
-                            setTitle(R.string.guides);
+                            onTitleChanged(R.string.guides);
                         }
                         break;
                     case 3:
                         hideBrowserInterface();
-                        setTitle(R.string.guides);
+                        onTitleChanged(R.string.guides);
                         break;
                     default:
                         showBrowserInterface();
-                        setTitle(R.string.tagmo);
+                        onTitleChanged(R.string.tagmo);
                         amiibosView = fragmentBrowser.getAmiibosView();
                         foomiiboView = fragmentBrowser.getFoomiiboView();
                         bottomSheet = bottomSheetBehavior;
@@ -1397,9 +1398,8 @@ public class BrowserActivity extends AppCompatActivity implements
         } else {
             try {
                 onDocumentRequested();
-            } catch (ActivityNotFoundException anfex) {
+            } catch (ActivityNotFoundException anf) {
                 new Toasty(this).Long(R.string.storage_unavailable);
-                finish();
             }
         }
     }
@@ -1411,7 +1411,9 @@ public class BrowserActivity extends AppCompatActivity implements
             switchStorageRoot.setOnClickListener(view -> {
                 try {
                     onDocumentRequested();
-                } catch (ActivityNotFoundException ignored) { }
+                } catch (ActivityNotFoundException anf) {
+                    new Toasty(this).Long(R.string.storage_unavailable);
+                }
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             });
             if (Debug.isNewer(Build.VERSION_CODES.R) && !TagMo.isGooglePlay()) {
@@ -1461,9 +1463,8 @@ public class BrowserActivity extends AppCompatActivity implements
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     try {
                         onDocumentRequested();
-                    } catch (ActivityNotFoundException anfex) {
+                    } catch (ActivityNotFoundException anf) {
                         new Toasty(this).Long(R.string.storage_unavailable);
-                        finish();
                     }
                 });
             } else {
@@ -1521,6 +1522,12 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onHideDownloadsChanged();
         }
 
+        menuUpdate.setVisible(null != appUpdate || null != updateUrl);
+
+        if (TagMo.isGalaxyWear()) {
+            menuSearch.setVisible(false);
+            return super.onCreateOptionsMenu(menu);
+        }
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menuSearch.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -1568,8 +1575,6 @@ public class BrowserActivity extends AppCompatActivity implements
             searchView.setQuery(query, true);
             searchView.clearFocus();
         }
-
-        menuUpdate.setVisible(null != appUpdate || null != updateUrl);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -2600,6 +2605,10 @@ public class BrowserActivity extends AppCompatActivity implements
         }, TagMo.uiDelay);
     }
 
+    private void onTitleChanged(int titleId) {
+        if (!TagMo.isGalaxyWear()) setTitle(titleId);
+    }
+
     private void hideBrowserInterface() {
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) nfcFab.getLayoutParams();
@@ -2701,22 +2710,13 @@ public class BrowserActivity extends AppCompatActivity implements
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    private void showStoragePrompt() {
-        this.runOnUiThread(() -> {
-            Snackbar storageBar = Snackbar.make(findViewById(R.id.coordinator),
-                    R.string.permission_required, Snackbar.LENGTH_LONG);
-            storageBar.setAction(R.string.allow, v -> onRequestStorage.launch(PERMISSIONS_STORAGE));
-            storageBar.show();
-        });
-    }
-
     ActivityResultLauncher<String[]> onRequestStorage = registerForActivityResult(
                     new ActivityResultContracts.RequestMultiplePermissions(),
     permissions -> { boolean isStorageEnabled = true;
         for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
             if (!entry.getValue()) isStorageEnabled = false;
         }
-        if (isStorageEnabled) this.onStorageEnabled(); else showStoragePrompt();
+        if (isStorageEnabled) this.onStorageEnabled(); else this.onDocumentEnabled();
     });
 
     @RequiresApi(api = Build.VERSION_CODES.R)
@@ -2733,13 +2733,17 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     void requestScopedStorage() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
         try {
-            intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
-        } catch (Exception e) {
-            intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            try {
+                intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
+            } catch (Exception e) {
+                intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+            }
+            onRequestScopedStorage.launch(intent);
+        } catch (ActivityNotFoundException anf) {
+            this.onDocumentEnabled();
         }
-        onRequestScopedStorage.launch(intent);
     }
 
     private boolean hasTestedElite;

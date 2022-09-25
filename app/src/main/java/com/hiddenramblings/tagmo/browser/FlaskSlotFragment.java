@@ -397,31 +397,35 @@ public class FlaskSlotFragment extends Fragment implements
         this.settings.addChangeListener(writeFileAdapter);
 
         SearchView searchView = rootLayout.findViewById(R.id.amiibo_search);
-        SearchManager searchManager = (SearchManager) activity
-                .getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager
-                .getSearchableInfo(activity.getComponentName()));
-        searchView.setSubmitButtonEnabled(false);
-        searchView.setIconifiedByDefault(false);
-        LinearLayout searchBar = searchView.findViewById(R.id.search_bar);
-        searchBar.getLayoutParams().height = (int) getResources()
-                .getDimension(R.dimen.button_height_min);
-        searchBar.setGravity(Gravity.CENTER_VERTICAL);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                settings.setQuery(query);
-                settings.notifyChanges();
-                return false;
-            }
+        if (TagMo.isGalaxyWear()) {
+            searchView.setVisibility(View.GONE);
+        } else {
+            SearchManager searchManager = (SearchManager) activity
+                    .getSystemService(Context.SEARCH_SERVICE);
+            searchView.setSearchableInfo(searchManager
+                    .getSearchableInfo(activity.getComponentName()));
+            searchView.setSubmitButtonEnabled(false);
+            searchView.setIconifiedByDefault(false);
+            LinearLayout searchBar = searchView.findViewById(R.id.search_bar);
+            searchBar.getLayoutParams().height = (int) getResources()
+                    .getDimension(R.dimen.button_height_min);
+            searchBar.setGravity(Gravity.CENTER_VERTICAL);
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    settings.setQuery(query);
+                    settings.notifyChanges();
+                    return false;
+                }
 
-            @Override
-            public boolean onQueryTextChange(String query) {
-                settings.setQuery(query);
-                settings.notifyChanges();
-                return true;
-            }
-        });
+                @Override
+                public boolean onQueryTextChange(String query) {
+                    settings.setQuery(query);
+                    settings.notifyChanges();
+                    return true;
+                }
+            });
+        }
 
         writeFile.setOnClickListener(view1 -> {
             onBottomSheetChanged(false);

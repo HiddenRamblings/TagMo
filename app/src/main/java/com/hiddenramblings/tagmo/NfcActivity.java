@@ -646,7 +646,9 @@ public class NfcActivity extends AppCompatActivity {
 
     private void stopNfcMonitor() {
         if (null != nfcAdapter) {
-            nfcAdapter.disableForegroundDispatch(this);
+            try {
+                nfcAdapter.disableForegroundDispatch(this);
+            } catch (RuntimeException ignored) { }
         }
         if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
             try {
@@ -670,8 +672,13 @@ public class NfcActivity extends AppCompatActivity {
         filter.addAction(NfcAdapter.ACTION_TECH_DISCOVERED);
         filter.addAction(NfcAdapter.ACTION_TAG_DISCOVERED);
 
-        nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent,
-                new IntentFilter[]{filter}, nfcTechList);
+        try {
+            nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent,
+                    new IntentFilter[]{filter}, nfcTechList);
+        } catch (RuntimeException ex) {
+            Debug.Warn(ex);
+            cancelAction();
+        }
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {

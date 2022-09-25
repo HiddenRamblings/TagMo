@@ -10,6 +10,7 @@ import android.provider.DocumentsContract;
 
 import androidx.annotation.RequiresApi;
 
+import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
@@ -32,21 +33,28 @@ public class AmiiboDocument {
 
     public ArrayList<Uri> listFiles(Uri uri, boolean recursiveFiles) {
         String docId = DocumentsContract.getTreeDocumentId(uri);
-        Uri docUri = DocumentsContract.buildDocumentUriUsingTree(uri, docId);
 
-        Cursor docCursor = contentResolver.query(docUri, new String[] {
-                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                DocumentsContract.Document.COLUMN_MIME_TYPE },
-                null, null, null);
-        try {
-            while (docCursor.moveToNext()) {
-                String displayName = docCursor.getString(0);
-                String mimeType = docCursor.getString(1);
-                Debug.Verbose(this.getClass(), "Primary doc="
-                        + displayName + ", mime=" + mimeType);
+        if (BuildConfig.DEBUG) {
+            Uri docUri = DocumentsContract.buildDocumentUriUsingTree(uri, docId);
+            ArrayList<String> items = new ArrayList<>(Arrays.asList(
+                    resources.getStringArray(R.array.mimetype_bin)
+            ));
+            items.add(DocumentsContract.Document.MIME_TYPE_DIR);
+            String[] selectionArgs = items.toArray(new String[0]);
+            Cursor docCursor = contentResolver.query(docUri, new String[] {
+                            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                            DocumentsContract.Document.COLUMN_MIME_TYPE },
+                    DocumentsContract.Document.COLUMN_MIME_TYPE, selectionArgs, null);
+            try {
+                while (docCursor.moveToNext()) {
+                    String displayName = docCursor.getString(0);
+                    String mimeType = docCursor.getString(1);
+                    Debug.Verbose(this.getClass(), "Primary doc="
+                            + displayName + ", mime=" + mimeType);
+                }
+            } finally {
+                closeQuietly(docCursor);
             }
-        } finally {
-            closeQuietly(docCursor);
         }
 
         Queue<String> queue = new ArrayDeque<>();
@@ -67,20 +75,22 @@ public class AmiiboDocument {
         List<String> binFiles = Arrays.asList(resources.getStringArray(R.array.mimetype_bin));
         Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(rootUri, documentId);
 
+        ArrayList<String> items = new ArrayList<>(binFiles);
+        items.add(DocumentsContract.Document.MIME_TYPE_DIR);
+        String[] selectionArgs = items.toArray(new String[0]);
         Cursor cursor = contentResolver.query(childrenUri, new String[] {
                 DocumentsContract.Document.COLUMN_DISPLAY_NAME,
                 DocumentsContract.Document.COLUMN_MIME_TYPE,
                 DocumentsContract.Document.COLUMN_DOCUMENT_ID },
-                null, null, null);
+                DocumentsContract.Document.COLUMN_MIME_TYPE, selectionArgs, null);
         try {
             while (cursor.moveToNext()) {
                 fileCount.increment();
                 String displayName = cursor.getString(0);
                 String mimeType = cursor.getString(1);
+                String childDocumentId = cursor.getString(2);
                 Debug.Verbose(this.getClass(), "Child doc=" + displayName
                         + ", parent=" + documentId + ", mime=" + mimeType);
-
-                String childDocumentId = cursor.getString(2);
                 if (DocumentsContract.Document.MIME_TYPE_DIR.equals(mimeType) && recursiveFiles) {
                     queue.add(childDocumentId);
                 } else if (binFiles.contains(mimeType)) {

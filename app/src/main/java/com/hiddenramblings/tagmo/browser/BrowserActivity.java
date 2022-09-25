@@ -12,7 +12,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -58,7 +57,6 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -138,7 +136,6 @@ import com.wajahatkarim3.easyflipviewpager.CardFlipPageTransformer2;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -146,7 +143,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -156,9 +152,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Scanner;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -255,7 +249,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_browser);
 
-        setLoadCompleted();
+        onBackButtonEnabled();
 
         fakeSnackbar = findViewById(R.id.fake_snackbar);
         fakeSnackbarText = findViewById(R.id.snackbar_text);
@@ -528,8 +522,6 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        if (TagMo.isCompatBuild()) retrieveDonationMenu();
-
         ((TextView) findViewById(R.id.build_text)).setText(getString(
                 R.string.build_details, getBuildTypeName(), BuildConfig.COMMIT
         ));
@@ -556,6 +548,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         });
+
+        if (TagMo.isCompatBuild()) retrieveDonationMenu();
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -1366,6 +1360,11 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    public void onKeysLoaded(boolean indicator) {
+        hideFakeSnackbar();
+        this.onRefresh(indicator);
+    }
+
     public void onRefresh(boolean indicator) {
         this.loadAmiiboManager();
         this.onRootFolderChanged(indicator);
@@ -1432,7 +1431,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 switchStorageType.setVisibility(View.GONE);
             }
             if (keyManager.isKeyMissing()) {
-                verifyKeyFiles();
+                if (null != fragmentSettings) fragmentSettings.verifyKeyFiles();
             } else {
                 this.onRefresh(true);
             }
@@ -2697,35 +2696,6 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    public void verifyKeyFiles() {
-        if (keyManager.isKeyMissing()) {
-            Executors.newSingleThreadExecutor().execute(() -> {
-                try {
-                    Scanner scanner = new Scanner(new URL(
-                            "https://pastebin.com/raw/aV23ha3X").openStream());
-                    for (int i = 0; i < 4; i++) {
-                        if (scanner.hasNextLine()) scanner.nextLine();
-                    }
-                    this.keyManager.evaluateKey(new ByteArrayInputStream(
-                            TagArray.hexToByteArray(scanner.nextLine()
-                                    .replace(" ", ""))));
-                    scanner.close();
-                } catch (IOException e) {
-                    Debug.Warn(e);
-                }
-
-                if (Thread.currentThread().isInterrupted()) return;
-
-                this.runOnUiThread(() -> {
-                    hideFakeSnackbar();
-                    this.onRefresh(true);
-                });
-            });
-        } else {
-            this.onRefresh(true);
-        }
-    }
-
     private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -3168,7 +3138,7 @@ public class BrowserActivity extends AppCompatActivity implements
         return button;
     }
 
-    private void setLoadCompleted() {
+    private void onBackButtonEnabled() {
         OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -3191,7 +3161,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     protected void onRestart() {
-        setLoadCompleted();
+        onBackButtonEnabled();
         super.onRestart();
     }
 }

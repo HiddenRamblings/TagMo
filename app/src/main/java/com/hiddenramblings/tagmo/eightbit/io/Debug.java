@@ -163,7 +163,7 @@ public class Debug {
     }
 
     public static void Verbose(Class<?> source, String params) {
-        if (hasDebugging()) Log.d(TAG(source), params);
+        if (BuildConfig.DEBUG) Log.d(TAG(source), params);
     }
     public static void Verbose(Class<?> source, int resource) {
         Verbose(source, getContext().getString(resource));

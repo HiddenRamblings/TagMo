@@ -45,8 +45,13 @@ public class TagMo extends Application {
         return mContext.get();
     }
 
+    public static final String MIRRORED_JSON =
+            "https://raw.githubusercontent.com/8BitDream/AmiiboAPI/render/database/amiibo.json";
     public static final String MIRRORED_API = "https://tagmoapi.onrender.com/api/";
+    public static final String FALLBACK_JSON =
+            "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/database/amiibo.json";
     public static final String FALLBACK_API = "https://amiiboapi.com/api/";
+
 
     @Override
     public void onCreate() {

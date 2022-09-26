@@ -69,8 +69,8 @@ public class JSONExecutor {
                     conn.disconnect();
                     conn = fixServerLocation(new URL(address));
                     statusCode = conn.getResponseCode();
-                } else if (statusCode != HttpsURLConnection.HTTP_OK
-                        && TagMo.RENDER_API.equals(server)) {
+                } else if (statusCode != HttpsURLConnection.HTTP_OK && isRenderAPI(conn)) {
+                    conn.disconnect();
                     conn = fixServerLocation(new URL(TagMo.AMIIBO_API + "amiibo/"));
                     statusCode = conn.getResponseCode();
                 }
@@ -97,6 +97,11 @@ public class JSONExecutor {
                 Debug.Warn(e);
             }
         });
+    }
+
+    private boolean isRenderAPI(HttpsURLConnection urlConnection) {
+        String render = TagMo.RENDER_RAW + "render/database/amiibo.json";
+        return render.equals(urlConnection.getURL().toString());
     }
 
     public interface ResultListener {

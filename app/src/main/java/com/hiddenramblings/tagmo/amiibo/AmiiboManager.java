@@ -48,7 +48,7 @@ public class AmiiboManager {
         }
     }
 
-    public static AmiiboManager parse(JSONObject json) throws JSONException, ParseException {
+    static AmiiboManager parse(JSONObject json) throws JSONException, ParseException {
         final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
         AmiiboManager manager = new AmiiboManager();
@@ -118,7 +118,11 @@ public class AmiiboManager {
         return parse(new JSONObject(new String(data)));
     }
 
-    public static AmiiboManager parseAmiiboAPI(JSONObject json) throws JSONException, ParseException {
+    public static AmiiboManager parse(String string) throws JSONException, ParseException {
+        return parse(new JSONObject(string));
+    }
+
+    static AmiiboManager parseAmiiboAPI(JSONObject json) throws JSONException, ParseException {
         final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
         AmiiboManager manager = new AmiiboManager();
@@ -126,14 +130,19 @@ public class AmiiboManager {
         for (int i = 0; i < amiibosJSON.length(); i++) {
             JSONObject amiiboJSON = amiibosJSON.getJSONObject(i);
 
-            String key = "0x" + amiiboJSON.getString("head") + amiiboJSON.getString("tail");
+            String key = "0x" + amiiboJSON.getString("head")
+                    + amiiboJSON.getString("tail");
             String name = amiiboJSON.getString("name");
 
             JSONObject releaseDatesJSON = amiiboJSON.getJSONObject("release");
-            Date naDate = releaseDatesJSON.isNull("na") ? null : iso8601.parse(releaseDatesJSON.getString("na"));
-            Date jpDate = releaseDatesJSON.isNull("jp") ? null : iso8601.parse(releaseDatesJSON.getString("jp"));
-            Date euDate = releaseDatesJSON.isNull("eu") ? null : iso8601.parse(releaseDatesJSON.getString("eu"));
-            Date auDate = releaseDatesJSON.isNull("au") ? null : iso8601.parse(releaseDatesJSON.getString("au"));
+            Date naDate = releaseDatesJSON.isNull("na") ? null
+                    : iso8601.parse(releaseDatesJSON.getString("na"));
+            Date jpDate = releaseDatesJSON.isNull("jp") ? null
+                    : iso8601.parse(releaseDatesJSON.getString("jp"));
+            Date euDate = releaseDatesJSON.isNull("eu") ? null
+                    : iso8601.parse(releaseDatesJSON.getString("eu"));
+            Date auDate = releaseDatesJSON.isNull("au") ? null
+                    : iso8601.parse(releaseDatesJSON.getString("au"));
             AmiiboReleaseDates releaseDates = new AmiiboReleaseDates(naDate, jpDate, euDate, auDate);
 
             Amiibo amiibo = new Amiibo(manager, key, name, releaseDates);
@@ -141,13 +150,17 @@ public class AmiiboManager {
 
             long characterId = amiibo.getCharacterId();
             if (!manager.characters.containsKey(characterId)) {
-                Character character = new Character(manager, characterId, amiiboJSON.getString("character"));
+                Character character = new Character(
+                        manager, characterId, amiiboJSON.getString("character")
+                );
                 manager.characters.put(characterId, character);
             }
 
             long gameSeriesId = amiibo.getGameSeriesId();
             if (!manager.gameSeries.containsKey(gameSeriesId)) {
-                GameSeries gameSeries = new GameSeries(manager, gameSeriesId, amiiboJSON.getString("gameSeries"));
+                GameSeries gameSeries = new GameSeries(
+                        manager, gameSeriesId, amiiboJSON.getString("gameSeries")
+                );
                 manager.gameSeries.put(gameSeriesId, gameSeries);
             }
 
@@ -159,12 +172,19 @@ public class AmiiboManager {
 
             long amiiboSeriesId = amiibo.getAmiiboSeriesId();
             if (!manager.amiiboSeries.containsKey(amiiboSeriesId)) {
-                AmiiboSeries amiiboSeries = new AmiiboSeries(manager, amiiboSeriesId, amiiboJSON.getString("amiiboSeries"));
+                AmiiboSeries amiiboSeries = new AmiiboSeries(
+                        manager, amiiboSeriesId, amiiboJSON.getString("amiiboSeries")
+                );
                 manager.amiiboSeries.put(amiiboSeriesId, amiiboSeries);
             }
         }
 
         return manager;
+    }
+
+    public static AmiiboManager parseAmiiboAPI(String string)
+            throws JSONException, ParseException {
+        return parseAmiiboAPI(new JSONObject(string));
     }
 
     public JSONObject toJSON() throws JSONException {

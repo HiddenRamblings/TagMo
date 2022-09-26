@@ -14,7 +14,6 @@ import android.text.style.ForegroundColorSpan;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -79,10 +78,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         this.keyManager = new KeyManager(this.getContext());
         if (!keyManager.isKeyMissing()) {
-            new JSONExecutor(requireActivity(), TagMo.getDatabaseUrl(), "lastupdated/")
-                    .setResultListener(result -> {
-                if (null != result) parseUpdateJSON(result, false);
-            });
+            onUpdateRequested(false);
         }
 
         importKeys = findPreference(getString(R.string.settings_import_keys));
@@ -379,10 +375,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     public void rebuildAmiiboDatabase() {
         resetAmiiboDatabase(false);
-        new JSONExecutor(requireActivity(), TagMo.getDatabaseUrl(), "lastupdated/")
-                .setResultListener(result -> {
-            if (null != result) parseUpdateJSON(result, true);
-        });
+        onUpdateRequested(true);
     }
 
     private void updateAmiiboDatabase(Uri data) {
@@ -451,32 +444,31 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         activity.runOnUiThread(syncMessage::show);
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                String server = TagMo.getDatabaseUrl();
                 URL url;
-                if (TagMo.RENDER_API.equals(server)) {
-                    url = new URL(TagMo.RENDER_JSON);
+                if (prefs.database_source_setting().get() == 0) {
+                    url = new URL(TagMo.RENDER_RAW + "render/database/amiibo.json");
                 } else {
-                    url = new URL(TagMo.AMIIBO_JSON);
+                    url = new URL(TagMo.AMIIBO_API + "amiibo/");
                 }
-                HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.setUseCaches(false);
-                urlConnection.setDefaultUseCaches(false);
+                HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setUseCaches(false);
+                conn.setDefaultUseCaches(false);
 
-                int statusCode = urlConnection.getResponseCode();
+                int statusCode = conn.getResponseCode();
                 if (statusCode == HttpsURLConnection.HTTP_MOVED_PERM) {
-                    String address = urlConnection.getHeaderField("Location");
-                    urlConnection.disconnect();
-                    urlConnection = fixServerLocation(new URL(address));
-                    statusCode = urlConnection.getResponseCode();
-                } else if (statusCode != HttpsURLConnection.HTTP_OK
-                        && TagMo.RENDER_API.equals(server)) {
-                    urlConnection = fixServerLocation(new URL(TagMo.AMIIBO_JSON));
-                    statusCode = urlConnection.getResponseCode();
+                    String address = conn.getHeaderField("Location");
+                    conn.disconnect();
+                    conn = fixServerLocation(new URL(address));
+                    statusCode = conn.getResponseCode();
+                } else if (statusCode != HttpsURLConnection.HTTP_OK && isRenderAPI(conn)) {
+                    conn.disconnect();
+                    conn = fixServerLocation(new URL(TagMo.AMIIBO_API  + "amiibo/"));
+                    statusCode = conn.getResponseCode();
                 }
 
                 if (statusCode == HttpsURLConnection.HTTP_OK) {
-                    InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+                    InputStream inputStream = new BufferedInputStream(conn.getInputStream());
 
                     BufferedReader reader = null;
                     StringBuilder response = new StringBuilder();
@@ -494,10 +486,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                                 Debug.Info(e);
                             }
                         }
+                        conn.disconnect();
                     }
 
-                    AmiiboManager amiiboManager = AmiiboManager
-                            .parse(new JSONObject(response.toString()));
+                    AmiiboManager amiiboManager = isRenderAPI(conn)
+                            ? AmiiboManager.parse(response.toString())
+                            : AmiiboManager.parseAmiiboAPI(response.toString());
 
                     if (Thread.currentThread().isInterrupted()) return;
 
@@ -509,6 +503,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         activity.getSettings().notifyChanges();
                     });
                 } else {
+                    conn.disconnect();
                     throw new Exception(String.valueOf(statusCode));
                 }
             } catch (Exception e) {
@@ -601,22 +596,67 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         );
     }
 
-    private void parseUpdateJSON(String result, boolean isMenuClicked) {
+    private void parseCommitDate(String result, boolean isMenuClicked) {
         try {
             JSONObject jsonObject = new JSONObject(result);
-            String lastUpdated = (String) jsonObject.get("lastUpdated");
+            JSONObject commitAPI = (JSONObject) jsonObject.get("commit");
+            JSONObject commit = (JSONObject) commitAPI.get("commit");
+            JSONObject committer = (JSONObject) commit.get("committer");
+            String lastUpdated = (String) committer.get("date");
             BrowserActivity activity = (BrowserActivity) requireActivity();
             if (isMenuClicked) {
                 onDownloadRequested(lastUpdated);
             } else if (null == activity.getSettings().getLastUpdatedAPI()
                     || !activity.getSettings().getLastUpdatedAPI().equals(lastUpdated)) {
-                activity.runOnUiThread(() -> {
-                    buildSnackbar(R.string.update_amiibo_api, Snackbar.LENGTH_LONG)
-                            .setAction(R.string.sync, v -> onDownloadRequested(lastUpdated)).show();
-                });
+                activity.runOnUiThread(() -> buildSnackbar(
+                        R.string.update_amiibo_api, Snackbar.LENGTH_LONG
+                ).setAction(R.string.sync, v -> onDownloadRequested(lastUpdated)).show());
             }
         } catch (Exception e) {
             Debug.Warn(e);
         }
+    }
+
+    private void parseUpdateJSON(String result, boolean isMenuClicked) {
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            String lastUpdatedAPI = (String) jsonObject.get("lastUpdated");
+            String lastUpdated = lastUpdatedAPI.substring(
+                    0, lastUpdatedAPI.lastIndexOf(".")
+            ) + "Z";
+            BrowserActivity activity = (BrowserActivity) requireActivity();
+            if (isMenuClicked) {
+                onDownloadRequested(lastUpdated);
+            } else if (null == activity.getSettings().getLastUpdatedAPI()
+                    || !activity.getSettings().getLastUpdatedAPI().equals(lastUpdated)) {
+                activity.runOnUiThread(() -> buildSnackbar(
+                        R.string.update_amiibo_api, Snackbar.LENGTH_LONG
+                ).setAction(R.string.sync, v -> onDownloadRequested(lastUpdated)).show());
+            }
+        } catch (Exception e) {
+            Debug.Warn(e);
+        }
+    }
+
+    private void onUpdateRequested(boolean isMenuClicked) {
+        if (prefs.database_source_setting().get() == 0) {
+            new JSONExecutor(requireActivity(),
+                    "https://api.github.com/repos/8BitDream/AmiiboAPI/",
+                    "branches/render?path=databaset%2Famiibo.json&page=1&per_page=1"
+            ).setResultListener(result -> {
+                if (null != result) parseCommitDate(result, isMenuClicked);
+            });
+        } else {
+            new JSONExecutor(requireActivity(),
+                    TagMo.AMIIBO_API, "lastupdated/"
+            ).setResultListener(result -> {
+                if (null != result) parseUpdateJSON(result, isMenuClicked);
+            });
+        }
+    }
+
+    private boolean isRenderAPI(HttpsURLConnection conn) {
+        String render = TagMo.RENDER_RAW + "render/database/amiibo.json";
+        return render.equals(conn.getURL().toString());
     }
 }

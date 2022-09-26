@@ -191,6 +191,7 @@
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="enable_flask">Enable Bluup Flask support</string>
     <string name="amiibo_info">amiibo&#8482; Database</string>
+    <string name="pref_database_source">Preferred AmiiboAPI Database</string>
     <string name="sync_amiibo_info">Sync database with AmiiboAPI</string>
     <string name="import_json_details">Load amiibo&#8482; database (JSON)</string>
     <string name="reset_amiibo_info">Reset amiibo&#8482; database cache</string>

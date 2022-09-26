@@ -24,6 +24,7 @@
     <string name="settings_enable_elite_support" translatable="false">enable_elite_support</string>
     <string name="settings_elite_signature" translatable="false">settings_elite_signature</string>
     <string name="settings_enable_flask_support" translatable="false">settings_enable_flask_support</string>
+    <string name="setting_database_source" translatable="false">setting_database_source</string>
     <string name="settings_import_info" translatable="false">import_info</string>
     <string name="settings_reset_info" translatable="false">reset_info</string>
     <string name="settings_export_info" translatable="false">settings_export_info</string>

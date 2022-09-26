@@ -51,6 +51,11 @@
 
     <androidx.preference.PreferenceCategory
         android:title="@string/amiibo_api_url">
+        <androidx.preference.ListPreference
+            android:entries="@array/databaseSource"
+            android:entryValues="@array/databaseSourceValues"
+            android:key="@string/setting_database_source"
+            android:title="@string/pref_database_source" />
         <androidx.preference.Preference
             android:key="@string/settings_import_info_amiiboapi"
             android:title="@string/sync_amiibo_info" />

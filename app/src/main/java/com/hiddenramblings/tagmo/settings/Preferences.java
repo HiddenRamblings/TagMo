@@ -33,10 +33,13 @@ public interface Preferences {
     boolean enable_automatic_scan();
 
     @DefaultBoolean(false)
-    boolean settings_disable_foomiibo();
+    boolean disable_foomiibo_browser();
 
     @DefaultString(SettingsFragment.IMAGE_NETWORK_ALWAYS)
     String image_network_settings();
+
+    @DefaultInt(0)
+    int database_source_setting();
 
     @DefaultBoolean(false)
     boolean enable_power_tag_support();

@@ -14,6 +14,7 @@ import android.text.style.ForegroundColorSpan;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -139,10 +140,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 getString(R.string.settings_hide_foomiibo_panel)
         );
         if (null != disableFoomiiboPanel && null != getActivity()) {
-            disableFoomiiboPanel.setChecked(prefs.settings_disable_foomiibo().get());
+            disableFoomiiboPanel.setChecked(prefs.disable_foomiibo_browser().get());
             disableFoomiiboPanel.setOnPreferenceClickListener(preference -> {
                 boolean isChecked = disableFoomiiboPanel.isChecked();
-                prefs.settings_disable_foomiibo().put(isChecked);
+                prefs.disable_foomiibo_browser().put(isChecked);
                 ((BrowserActivity) getActivity()).setFoomiiboPanelVisibility();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
@@ -199,6 +200,23 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             enableFlaskSupport.setVisible(Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2));
         }
 
+        ListPreference databaseSourceSetting = findPreference(getString(R.string.setting_database_source));
+        if (null != databaseSourceSetting) {
+            databaseSourceSetting.setValueIndex(prefs.database_source_setting().get());
+            databaseSourceSetting.setSummary(databaseSourceSetting.getEntry());
+            databaseSourceSetting.setOnPreferenceClickListener(preference -> {
+                ((ListPreference) preference).setValueIndex(prefs.database_source_setting().get());
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+            databaseSourceSetting.setOnPreferenceChangeListener((preference, newValue) -> {
+                ListPreference databaseSource = ((ListPreference) preference);
+                int index = databaseSource.findIndexOfValue(newValue.toString());
+                prefs.database_source_setting().put(index);
+                databaseSource.setSummary(databaseSource.getEntries()[index]);
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
         Preference syncInfo = findPreference(getString(R.string.settings_import_info_amiiboapi));
         if (null != syncInfo) {
             syncInfo.setOnPreferenceClickListener(preference -> {
@@ -227,11 +245,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         ListPreference themeSetting = findPreference(getString(R.string.settings_tagmo_theme));
         if (null != themeSetting) {
             themeSetting.setValueIndex(prefs.applicationTheme().get());
+            themeSetting.setOnPreferenceClickListener(preference -> {
+                ((ListPreference) preference).setValueIndex(prefs.applicationTheme().get());
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
             themeSetting.setOnPreferenceChangeListener((preference, newValue) -> {
                 int index = ((ListPreference) preference).findIndexOfValue(newValue.toString());
                 prefs.applicationTheme().put(index);
                 ((TagMo) requireActivity().getApplication()).setThemePreference();
-                requireActivity().recreate();
+                onApplicationThemeChanged();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
@@ -261,6 +283,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             BrowserActivity activity = (BrowserActivity) requireActivity();
             activity.runOnUiThread(() -> activity.getSettings().notifyChanges());
         }
+    }
+
+    private void onApplicationThemeChanged() {
+        Intent intent = requireActivity().getIntent();
+        requireActivity().overridePendingTransition(0, 0);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        requireActivity().finish();
+        requireActivity().overridePendingTransition(0, 0);
+        startActivity(intent);
     }
 
     private void validateKeys(Uri data) {
@@ -421,10 +452,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             try {
                 String server = TagMo.getDatabaseUrl();
                 URL url;
-                if (TagMo.MIRRORED_API.equals(server)) {
-                    url = new URL(TagMo.MIRRORED_JSON);
+                if (TagMo.RENDER_API.equals(server)) {
+                    url = new URL(TagMo.RENDER_JSON);
                 } else {
-                    url = new URL(TagMo.FALLBACK_JSON);
+                    url = new URL(TagMo.AMIIBO_JSON);
                 }
                 HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -438,8 +469,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     urlConnection = fixServerLocation(new URL(address));
                     statusCode = urlConnection.getResponseCode();
                 } else if (statusCode != HttpsURLConnection.HTTP_OK
-                        && TagMo.MIRRORED_API.equals(server)) {
-                    urlConnection = fixServerLocation(new URL(TagMo.FALLBACK_JSON));
+                        && TagMo.RENDER_API.equals(server)) {
+                    urlConnection = fixServerLocation(new URL(TagMo.AMIIBO_JSON));
                     statusCode = urlConnection.getResponseCode();
                 }
 

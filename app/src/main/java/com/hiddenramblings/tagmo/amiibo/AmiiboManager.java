@@ -222,31 +222,6 @@ public class AmiiboManager {
         return outputJSON;
     }
 
-    public static AmiiboManager getDefaultAmiiboManager(Context context)
-            throws IOException, JSONException, ParseException {
-        return AmiiboManager.parse(context.getResources().openRawResource(R.raw.amiibo));
-    }
-
-    public static AmiiboManager getAmiiboManager(Context context)
-            throws IOException, JSONException, ParseException {
-        AmiiboManager amiiboManager;
-        if (new File(Storage.getDownloadDir("TagMo"), AMIIBO_DATABASE_FILE).exists()) {
-            try {
-                amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
-            } catch (IOException | JSONException | ParseException e) {
-                amiiboManager = null;
-                Debug.Warn(R.string.error_amiibo_parse, e);
-            }
-        } else {
-            amiiboManager = null;
-        }
-        if (null == amiiboManager) {
-            amiiboManager = getDefaultAmiiboManager(context);
-        }
-
-        return amiiboManager;
-    }
-
     public static void saveDatabase(AmiiboManager amiiboManager, OutputStream outputStream)
             throws JSONException, IOException {
         OutputStreamWriter streamWriter = null;
@@ -280,6 +255,31 @@ public class AmiiboManager {
                 }
             }
         }
+    }
+
+    public static AmiiboManager getDefaultAmiiboManager(Context context)
+            throws IOException, JSONException, ParseException {
+        return AmiiboManager.parse(context.getResources().openRawResource(R.raw.amiibo));
+    }
+
+    public static AmiiboManager getAmiiboManager(Context context)
+            throws IOException, JSONException, ParseException {
+        AmiiboManager amiiboManager;
+        if (new File(Storage.getDownloadDir("TagMo"), AMIIBO_DATABASE_FILE).exists()) {
+            try {
+                amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
+            } catch (IOException | JSONException | ParseException e) {
+                amiiboManager = null;
+                Debug.Warn(R.string.error_amiibo_parse, e);
+            }
+        } else {
+            amiiboManager = null;
+        }
+        if (null == amiiboManager) {
+            amiiboManager = getDefaultAmiiboManager(context);
+        }
+
+        return amiiboManager;
     }
 
     public static boolean binFileMatcher(String name) {

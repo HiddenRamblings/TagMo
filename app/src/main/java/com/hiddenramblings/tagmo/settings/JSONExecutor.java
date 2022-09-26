@@ -70,8 +70,8 @@ public class JSONExecutor {
                     conn = fixServerLocation(new URL(address));
                     statusCode = conn.getResponseCode();
                 } else if (statusCode != HttpsURLConnection.HTTP_OK
-                        && TagMo.MIRRORED_API.equals(server)) {
-                    conn = fixServerLocation(new URL(TagMo.FALLBACK_API + "amiibo/"));
+                        && TagMo.RENDER_API.equals(server)) {
+                    conn = fixServerLocation(new URL(TagMo.AMIIBO_API + "amiibo/"));
                     statusCode = conn.getResponseCode();
                 }
 

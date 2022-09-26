@@ -213,6 +213,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 int index = databaseSource.findIndexOfValue(newValue.toString());
                 prefs.database_source_setting().put(index);
                 databaseSource.setSummary(databaseSource.getEntries()[index]);
+                rebuildAmiiboDatabase();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }

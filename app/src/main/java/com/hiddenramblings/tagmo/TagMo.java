@@ -45,12 +45,12 @@ public class TagMo extends Application {
         return mContext.get();
     }
 
-    public static final String MIRRORED_JSON =
+    public static final String RENDER_JSON =
             "https://raw.githubusercontent.com/8BitDream/AmiiboAPI/render/database/amiibo.json";
-    public static final String MIRRORED_API = "https://tagmoapi.onrender.com/api/";
-    public static final String FALLBACK_JSON =
+    public static final String RENDER_API = "https://tagmoapi.onrender.com/api/";
+    public static final String AMIIBO_JSON =
             "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/database/amiibo.json";
-    public static final String FALLBACK_API = "https://amiiboapi.com/api/";
+    public static final String AMIIBO_API = "https://amiiboapi.com/api/";
 
 
     @Override
@@ -74,7 +74,7 @@ public class TagMo extends Application {
     public static int uiDelay = 50;
 
     public static String getDatabaseUrl() {
-        return mPrefs.get().settings_disable_foomiibo().get() ? FALLBACK_API : MIRRORED_API;
+        return mPrefs.get().database_source_setting().get() == 1 ? AMIIBO_API : RENDER_API;
     }
 
     public static boolean isGooglePlay() {

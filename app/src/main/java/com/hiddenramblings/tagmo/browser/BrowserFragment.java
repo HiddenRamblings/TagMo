@@ -214,7 +214,7 @@ public class BrowserFragment extends Fragment implements
             amiibosView.getLayoutParams().height = valueY != -1
                     ? valueY : amiibosView.getLayoutParams().height;
         }
-        if (prefs.settings_disable_foomiibo().get()) {
+        if (prefs.disable_foomiibo_browser().get()) {
             getView().findViewById(R.id.list_divider).setVisibility(View.GONE);
             amiibosView.getLayoutParams().height = getView().getHeight();
         } else {

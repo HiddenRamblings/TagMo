@@ -24,6 +24,16 @@
         <item>2</item>
     </string-array>
 
+    <string-array name="databaseSource" translatable="false">
+        <item>Foomiibo</item>
+        <item>AmiiboAPI</item>
+    </string-array>
+
+    <string-array name="databaseSourceValues" translatable="false">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
     <string-array name="production_factory" translatable="false">
         <item>S1</item>
         <item>S2</item>

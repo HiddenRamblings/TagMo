@@ -420,7 +420,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 String server = TagMo.getDatabaseUrl();
-                URL url = new URL(server + "amiibo/");
+                URL url;
+                if (TagMo.MIRRORED_API.equals(server)) {
+                    url = new URL(TagMo.MIRRORED_JSON);
+                } else {
+                    url = new URL(TagMo.FALLBACK_JSON);
+                }
                 HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.setUseCaches(false);
@@ -434,9 +439,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     statusCode = urlConnection.getResponseCode();
                 } else if (statusCode != HttpsURLConnection.HTTP_OK
                         && TagMo.MIRRORED_API.equals(server)) {
-                    urlConnection = fixServerLocation(new URL(
-                            TagMo.FALLBACK_API + "amiibo/"
-                    ));
+                    urlConnection = fixServerLocation(new URL(TagMo.FALLBACK_JSON));
                     statusCode = urlConnection.getResponseCode();
                 }
 
@@ -461,8 +464,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         }
                     }
 
-                    String json = response.toString();
-                    AmiiboManager amiiboManager = AmiiboManager.parseAmiiboAPI(new JSONObject(json));
+                    AmiiboManager amiiboManager = AmiiboManager
+                            .parse(new JSONObject(response.toString()));
 
                     if (Thread.currentThread().isInterrupted()) return;
 

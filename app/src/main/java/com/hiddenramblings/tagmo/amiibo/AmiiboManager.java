@@ -2,7 +2,9 @@ package com.hiddenramblings.tagmo.amiibo;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.hiddenramblings.tagmo.R;
@@ -46,20 +48,7 @@ public class AmiiboManager {
         }
     }
 
-    static AmiiboManager parse(InputStream inputStream) throws IOException, JSONException, ParseException {
-        byte[] data = new byte[inputStream.available()];
-        //noinspection ResultOfMethodCallIgnored
-        inputStream.read(data);
-        inputStream.close();
-
-        return parse(new String(data));
-    }
-
-    static AmiiboManager parse(String json) throws JSONException, ParseException {
-        return parse(new JSONObject(json));
-    }
-
-    static AmiiboManager parse(JSONObject json) throws JSONException, ParseException {
+    public static AmiiboManager parse(JSONObject json) throws JSONException, ParseException {
         final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
         AmiiboManager manager = new AmiiboManager();
@@ -118,6 +107,15 @@ public class AmiiboManager {
         }
 
         return manager;
+    }
+
+    static AmiiboManager parse(InputStream inputStream) throws IOException, JSONException, ParseException {
+        byte[] data = new byte[inputStream.available()];
+        //noinspection ResultOfMethodCallIgnored
+        inputStream.read(data);
+        inputStream.close();
+
+        return parse(new JSONObject(new String(data)));
     }
 
     public static AmiiboManager parseAmiiboAPI(JSONObject json) throws JSONException, ParseException {
@@ -319,6 +317,7 @@ public class AmiiboManager {
         return amiiboFiles;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static ArrayList<AmiiboFile> listAmiiboDocuments(
             Context context, KeyManager keyManager, DocumentFile rootFolder, boolean recursiveFiles
     ) {

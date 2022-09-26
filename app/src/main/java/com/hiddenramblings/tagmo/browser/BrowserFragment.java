@@ -135,12 +135,8 @@ public class BrowserFragment extends Fragment implements
         settings.addChangeListener((BrowserSettings.BrowserSettingsListener)
                 foomiiboView.getAdapter());
 
-        if (TagMo.isGalaxyWear()) {
-            view.findViewById(R.id.list_divider).setVisibility(View.GONE);
-            amiibosView.getLayoutParams().height = 0;
-        } else {
-            amiibosView.postDelayed(this::setFoomiiboVisibility, 100);
-        }
+        view.findViewById(R.id.list_divider).setVisibility(View.GONE);
+        amiibosView.getLayoutParams().height = TagMo.isGalaxyWear() ? 0 : view.getHeight();
 
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
             if (amiibosView instanceof IndexFastScrollRecyclerView) {

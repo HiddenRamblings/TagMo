@@ -1800,11 +1800,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 && !directory.getPath().startsWith(rootFolder.getPath())));
     }
 
-    private ExecutorService filesLoader;
     private void loadAmiiboFiles(File rootFolder, boolean recursiveFiles) {
-        if (null != filesLoader && !filesLoader.isTerminated()) filesLoader.shutdown();
-        filesLoader = Executors.newSingleThreadExecutor();
-        filesLoader.execute(() -> {
+        Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiibos(keyManager, rootFolder, recursiveFiles);
             if (!this.settings.isHidingDownloads()) {
@@ -1826,11 +1823,9 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    private ExecutorService documentLoader;
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
-        if (null != documentLoader && !documentLoader.isTerminated()) documentLoader.shutdown();
-        documentLoader = Executors.newSingleThreadExecutor();
-        documentLoader.execute(() -> {
+        Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiiboDocuments(this, keyManager, rootFolder, recursiveFiles);
             File foomiibo = new File(getFilesDir(), "Foomiibo");

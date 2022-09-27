@@ -68,7 +68,8 @@ public class TagMo extends Application {
             System.exit(0);
         });
 
-        if (!BuildConfig.DEBUG) new ANRWatchDog(10000 /*timeout*/).start();
+        if (!BuildConfig.DEBUG && !hasPublisher())
+            new ANRWatchDog(10000).setReportMainThreadOnly().start();
     }
 
     public static int uiDelay = 50;

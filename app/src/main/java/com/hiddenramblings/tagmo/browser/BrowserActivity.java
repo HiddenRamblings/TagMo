@@ -153,7 +153,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import eightbitlab.com.blurview.BlurView;
@@ -602,7 +601,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void requestStoragePermission() {
         if (Debug.isNewer(Build.VERSION_CODES.R)) {
-            if (TagMo.isGooglePlay()) {
+            if (TagMo.isGooglePlay() || TagMo.isGalaxyWear()) {
                 this.onDocumentEnabled();
             } else {
                 if (null != settings.getBrowserRootDocument() && isDocumentStorage()) {
@@ -1372,7 +1371,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public boolean isDocumentStorage() {
-        if (Debug.isNewer(Build.VERSION_CODES.M) && null != this.settings.getBrowserRootDocument()) {
+        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)
+                && null != this.settings.getBrowserRootDocument()) {
             try {
                 DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
                 return true;
@@ -1823,7 +1823,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @SuppressLint("NewApi")
     private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
@@ -1935,7 +1935,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (System.currentTimeMillis() >= oldBrowserSettings.getLastUpdatedGit() + 3600000) {
             updates = new CheckUpdatesTask(this);
-            if (TagMo.isGooglePlay()) {
+            if (TagMo.isGooglePlay() || TagMo.isGalaxyWear()) {
                 updates.setPlayUpdateListener(appUpdateInfo -> {
                     appUpdate = appUpdateInfo;
                     invalidateOptionsMenu();
@@ -2888,7 +2888,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @SuppressWarnings("ConstantConditions")
     private String getBuildTypeName() {
-        if (TagMo.isGooglePlay()) {
+        if (TagMo.isGalaxyWear()) {
+            return "Android Wear";
+        } else if (TagMo.isGooglePlay()) {
             return "Google Play";
         } else {
             if (TagMo.isCompatBuild()) {

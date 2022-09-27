@@ -97,7 +97,6 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation "androidx.browser:browser:1.4.0"
-    implementation "androidx.wear:wear:1.2.0"
     implementation 'com.android.billingclient:billing:5.0.0'
     implementation 'com.google.android.play:core:1.10.3'
     implementation "org.androidannotations:androidannotations-api:4.6.0"
@@ -112,6 +111,8 @@ dependencies {
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     // Required for Lollipop Amiibo API download compatibility
     implementation 'com.google.android.gms:play-services-safetynet:18.0.1'
+
+    galaxyImplementation "androidx.wear:wear:1.2.0"
 }
 
 configurations {

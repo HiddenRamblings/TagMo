@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/colorPrimary">
+        android:background="?attr/colorPrimary">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/drawer_layout"
@@ -92,7 +92,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <FrameLayout
+            <eightbitlab.com.blurview.BlurView
                 android:id="@+id/amiiboContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -106,7 +106,7 @@
                 <include
                     android:id="@+id/active_card_layout"
                     layout="@layout/active_card_layout" />
-            </FrameLayout>
+            </eightbitlab.com.blurview.BlurView>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/nfc_fab"

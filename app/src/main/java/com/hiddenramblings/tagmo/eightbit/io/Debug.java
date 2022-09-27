@@ -55,6 +55,7 @@
 package com.hiddenramblings.tagmo.eightbit.io;
 
 import android.app.ActivityManager;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -260,21 +261,23 @@ public class Debug {
     }
 
     private static void submitLogcat(Context context, String logText) {
-        final Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setType("text/plain");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"samsprungtoo@gmail.com"});
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "TagMo Logcat");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, logText);
-        emailIntent.setType("message/rfc822");
         try {
+            final Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            emailIntent.setType("text/plain");
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"samsprungtoo@gmail.com"});
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "TagMo Logcat");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, logText);
+            emailIntent.setType("message/rfc822");
             context.startActivity(Intent.createChooser(emailIntent, "Email logcat via..."));
-        } catch (android.content.ActivityNotFoundException ex) {
+        } catch (ActivityNotFoundException ex) {
             ClipboardManager clipboard = (ClipboardManager) context
                     .getSystemService(Context.CLIPBOARD_SERVICE);
             clipboard.setPrimaryClip(ClipData.newPlainText(context.getString(
                     R.string.git_issue_title, BuildConfig.COMMIT
             ), logText));
+            try {
             context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
+            } catch (Exception ignored) { }
         }
     }
 

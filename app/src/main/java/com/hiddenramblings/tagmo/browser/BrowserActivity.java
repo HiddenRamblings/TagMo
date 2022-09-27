@@ -240,14 +240,14 @@ public class BrowserActivity extends AppCompatActivity implements
         setTheme(R.style.AppTheme);
         keyManager = new KeyManager(this);
 
-        if (null != getSupportActionBar()) {
+        if (!TagMo.isGalaxyWear() && null != getSupportActionBar()) {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
         }
 
         setContentView(R.layout.activity_browser);
-        if (TagMo.isGalaxyWear()) setTitle("");
+        setBrowserTitle(R.string.tagmo);
 
         onBackButtonEnabled();
 
@@ -257,7 +257,6 @@ public class BrowserActivity extends AppCompatActivity implements
         mainLayout = findViewById(R.id.amiibo_pager);
         nfcFab = findViewById(R.id.nfc_fab);
         currentFolderView = findViewById(R.id.current_folder);
-        prefsDrawer = findViewById(R.id.drawer_layout);
         switchStorageRoot = findViewById(R.id.switch_storage_root);
         switchStorageType = findViewById(R.id.switch_storage_type);
         amiiboContainer = findViewById(R.id.amiiboContainer);
@@ -315,7 +314,9 @@ public class BrowserActivity extends AppCompatActivity implements
                 boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
                 switch (position) {
                     case 1:
-                        if (hasEliteEnabled) {
+                        if (TagMo.isGalaxyWear()) {
+                            hideBrowserInterface();
+                        } else if (hasEliteEnabled) {
                             showActionButton();
                             hideBottomSheet();
                             setBrowserTitle(R.string.elite_n2);
@@ -378,7 +379,9 @@ public class BrowserActivity extends AppCompatActivity implements
             boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
             switch (position) {
                 case 1:
-                    if (hasEliteEnabled) {
+                    if (TagMo.isGalaxyWear()) {
+                        tab.setText(R.string.settings);
+                    } else if (hasEliteEnabled) {
                         tab.setText(R.string.elite_n2);
                     } else if (hasFlaskEnabled) {
                         tab.setText(R.string.flask_title);
@@ -525,29 +528,33 @@ public class BrowserActivity extends AppCompatActivity implements
         ((TextView) findViewById(R.id.build_text)).setText(getString(
                 R.string.build_details, getBuildTypeName(), BuildConfig.COMMIT
         ));
-        prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                findViewById(R.id.build_layout).setOnClickListener(view -> {
-                    closePrefsDrawer();
-                    String repository = "https://github.com/HiddenRamblings/TagMo";
-                    showWebsite(repository);
-                });
-                if (null != appUpdate) {
+
+        if (!TagMo.isGalaxyWear()) {
+            prefsDrawer = findViewById(R.id.drawer_layout);
+            prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                @Override
+                public void onDrawerOpened(View drawerView) {
+                    super.onDrawerOpened(drawerView);
                     findViewById(R.id.build_layout).setOnClickListener(view -> {
                         closePrefsDrawer();
-                        updates.downloadPlayUpdate(appUpdate);
+                        String repository = "https://github.com/HiddenRamblings/TagMo";
+                        showWebsite(repository);
                     });
+                    if (null != appUpdate) {
+                        findViewById(R.id.build_layout).setOnClickListener(view -> {
+                            closePrefsDrawer();
+                            updates.downloadPlayUpdate(appUpdate);
+                        });
+                    }
+                    if (null != updateUrl) {
+                        findViewById(R.id.build_layout).setOnClickListener(view -> {
+                            closePrefsDrawer();
+                            updates.installUpdateCompat(updateUrl);
+                        });
+                    }
                 }
-                if (null != updateUrl) {
-                    findViewById(R.id.build_layout).setOnClickListener(view -> {
-                        closePrefsDrawer();
-                        updates.installUpdateCompat(updateUrl);
-                    });
-                }
-            }
-        });
+            });
+        }
 
         if (TagMo.isCompatBuild()) retrieveDonationMenu();
     }
@@ -559,11 +566,15 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onLoadSettingsFragment() {
-        if (null == fragmentSettings) fragmentSettings = new SettingsFragment();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences, fragmentSettings)
-                .commit();
+        if (TagMo.isGalaxyWear()) {
+            fragmentSettings = pagerAdapter.getSettings();
+        } else {
+            if (null == fragmentSettings) fragmentSettings = new SettingsFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.preferences, fragmentSettings)
+                    .commit();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -1970,6 +1981,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void setIndexFastScrollRecyclerListener(RecyclerView amiibosView) {
+        if (TagMo.isGalaxyWear()) return;
         if (amiibosView instanceof IndexFastScrollRecyclerView) {
             IndexFastScrollRecyclerView indexView = (IndexFastScrollRecyclerView) amiibosView;
             //noinspection deprecation
@@ -2500,7 +2512,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void setBrowserTitle(int titleId) {
-        if (!TagMo.isGalaxyWear()) setTitle(titleId);
+        setTitle(TagMo.isGalaxyWear() ? "" : getString(titleId));
     }
 
     private void setAmiiboStats() {
@@ -2631,6 +2643,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public boolean closePrefsDrawer() {
+        if (TagMo.isGalaxyWear()) return false;
         if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
             prefsDrawer.closeDrawer(GravityCompat.START);
             return true;

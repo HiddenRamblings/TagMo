@@ -4,6 +4,13 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
+    <uses-sdk tools:overrideLibrary="androidx.wear" />
     
     <uses-feature android:name="android.hardware.type.watch" />
+    <application>
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="true" />
+    </application>
 </manifest>

@@ -5,6 +5,7 @@ import android.content.Context;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.github.anrwatchdog.ANRWatchDog;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 
@@ -66,6 +67,8 @@ public class TagMo extends Application {
             Debug.processException(this, exception.toString());
             System.exit(0);
         });
+
+        if (!BuildConfig.DEBUG) new ANRWatchDog(10000 /*timeout*/).start();
     }
 
     public static int uiDelay = 50;

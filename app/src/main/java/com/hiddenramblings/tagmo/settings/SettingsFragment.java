@@ -599,10 +599,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void parseCommitDate(String result, boolean isMenuClicked) {
         try {
             JSONObject jsonObject = new JSONObject(result);
-            JSONObject commitAPI = (JSONObject) jsonObject.get("commit");
-            JSONObject commit = (JSONObject) commitAPI.get("commit");
-            JSONObject committer = (JSONObject) commit.get("committer");
-            String lastUpdated = (String) committer.get("date");
+            JSONObject render = (JSONObject) jsonObject.get("commit");
+            JSONObject commit = (JSONObject) render.get("commit");
+            JSONObject author = (JSONObject) commit.get("committer");
+            String lastUpdated = (String) author.get("date");
             BrowserActivity activity = (BrowserActivity) requireActivity();
             if (isMenuClicked) {
                 onDownloadRequested(lastUpdated);
@@ -642,7 +642,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (prefs.database_source_setting().get() == 0) {
             new JSONExecutor(requireActivity(),
                     "https://api.github.com/repos/8BitDream/AmiiboAPI/",
-                    "branches/render?path=databaset%2Famiibo.json&page=1&per_page=1"
+                    "branches/render?path=databaset%2Famiibo.json"
             ).setResultListener(result -> {
                 if (null != result) parseCommitDate(result, isMenuClicked);
             });

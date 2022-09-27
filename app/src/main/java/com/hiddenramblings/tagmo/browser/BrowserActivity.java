@@ -474,7 +474,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         ));
                     }).show();
 
-        } catch (PackageManager.NameNotFoundException ignored) {
+        } catch (PackageManager.NameNotFoundException nnf) {
             onShowDisclaimerTOS();
         }
 
@@ -617,7 +617,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void requestStoragePermission() {
         if (Debug.isNewer(Build.VERSION_CODES.R)) {
-            if (TagMo.isGooglePlay() || TagMo.isGalaxyWear()) {
+            if (TagMo.hasPublisher()) {
                 this.onDocumentEnabled();
             } else {
                 if (null != settings.getBrowserRootDocument() && isDocumentStorage()) {
@@ -826,7 +826,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 subscriptions.removeAllViewsInLayout();
             });
             Dialog donateDialog = dialog.setView(layout).show();
-            if (!TagMo.isGooglePlay()) {
+            if (!TagMo.hasPublisher()) {
                 @SuppressLint("InflateParams")
                 View paypal = getLayoutInflater().inflate(R.layout.button_paypal, null);
                 paypal.setOnClickListener(view -> {
@@ -1432,7 +1432,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             });
-            if (Debug.isNewer(Build.VERSION_CODES.R) && !TagMo.isGooglePlay()) {
+            if (Debug.isNewer(Build.VERSION_CODES.R) && !TagMo.hasPublisher()) {
                 switchStorageType.setVisibility(View.VISIBLE);
                 switchStorageType.setText(R.string.grant_file_permission);
                 switchStorageType.setOnClickListener(view -> {
@@ -1996,7 +1996,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (System.currentTimeMillis() >= oldBrowserSettings.getLastUpdatedGit() + 3600000) {
             updates = new CheckUpdatesTask(this);
-            if (TagMo.isGooglePlay() || TagMo.isGalaxyWear()) {
+            if (TagMo.hasPublisher()) {
                 updates.setPlayUpdateListener(appUpdateInfo -> {
                     appUpdate = appUpdateInfo;
                     onMenuItemsInvalidated();

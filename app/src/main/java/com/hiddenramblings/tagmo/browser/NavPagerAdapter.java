@@ -10,10 +10,12 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 public class NavPagerAdapter extends FragmentStateAdapter {
 
     private final BrowserFragment fragmentBrowser = new BrowserFragment();
+    private final SettingsFragment fragmentSettings = new SettingsFragment();
     private final EliteBankFragment fragmentElite = new EliteBankFragment();
     private final FlaskSlotFragment fragmentFlask = new FlaskSlotFragment();
     private final WebsiteFragment fragmentWebsite = new WebsiteFragment();
@@ -29,7 +31,8 @@ public class NavPagerAdapter extends FragmentStateAdapter {
         boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
         switch (position) {
             case 1:
-                return hasEliteEnabled ? fragmentElite : hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
+                return TagMo.isGalaxyWear() ? fragmentSettings : hasEliteEnabled
+                        ? fragmentElite : hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
             case 2:
                 return hasEliteEnabled && hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
             case 3:
@@ -41,8 +44,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        int viewCount = 1;
-        if (!TagMo.isGalaxyWear()) viewCount += 1;
+        int viewCount = 2;
         if (TagMo.getPrefs().enable_elite_support().get()) viewCount += 1;
         if (TagMo.getPrefs().enable_flask_support().get()) viewCount += 1;
         return viewCount;
@@ -50,6 +52,10 @@ public class NavPagerAdapter extends FragmentStateAdapter {
 
     public BrowserFragment getBrowser() {
         return fragmentBrowser;
+    }
+
+    public SettingsFragment getSettings() {
+        return fragmentSettings;
     }
 
     public EliteBankFragment getEliteBanks() {

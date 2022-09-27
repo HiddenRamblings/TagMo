@@ -168,6 +168,7 @@
     <string name="storage_unavailable">Device storage inaccessible!</string>
     <string name="allow">Allow</string>
 
+    <string name="settings">Settings</string>
     <string name="guides">Guides</string>
     <string name="donate">Donate</string>
 

@@ -56,7 +56,7 @@ public class CheckUpdatesTask {
 
     CheckUpdatesTask(BrowserActivity activity) {
         this.activity = new SoftReference<>(activity);
-        if (TagMo.isGooglePlay()) {
+        if (TagMo.hasPublisher()) {
             if (null == appUpdateManager)
                 appUpdateManager = AppUpdateManagerFactory.create(activity);
             Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
@@ -160,9 +160,7 @@ public class CheckUpdatesTask {
                     } catch (ActivityNotFoundException anf) {
                         try {
                             activity.get().startActivity(intent.setAction(Intent.ACTION_VIEW));
-                        } catch (ActivityNotFoundException ignored) {
-
-                        }
+                        } catch (ActivityNotFoundException ignored) { }
                     }
                 }
             } catch (SecurityException | IOException ex) {

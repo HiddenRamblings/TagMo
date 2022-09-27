@@ -240,10 +240,14 @@ public class BrowserActivity extends AppCompatActivity implements
         setTheme(R.style.AppTheme);
         keyManager = new KeyManager(this);
 
-        if (!TagMo.isGalaxyWear() && null != getSupportActionBar()) {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
+        if (null != getSupportActionBar()) {
+            if (TagMo.isGalaxyWear()) {
+                getSupportActionBar().hide();
+            } else {
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
+            }
         }
 
         setContentView(R.layout.activity_browser);
@@ -369,7 +373,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             ? new GridLayoutManager(BrowserActivity.this, getColumnCount())
                             : new LinearLayoutManager(BrowserActivity.this));
                 }
-                invalidateOptionsMenu();
+                onMenuItemsInvalidated();
             }
         });
 
@@ -525,11 +529,11 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        ((TextView) findViewById(R.id.build_text)).setText(getString(
-                R.string.build_details, getBuildTypeName(), BuildConfig.COMMIT
-        ));
-
         if (!TagMo.isGalaxyWear()) {
+            ((TextView) findViewById(R.id.build_text)).setText(getString(
+                    R.string.build_details, getBuildTypeName(), BuildConfig.COMMIT
+            ));
+
             prefsDrawer = findViewById(R.id.drawer_layout);
             prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
                 @Override
@@ -556,6 +560,7 @@ public class BrowserActivity extends AppCompatActivity implements
             });
         }
 
+        if (TagMo.isGalaxyWear()) onCreateWearOptionsMenu();
         if (TagMo.isCompatBuild()) retrieveDonationMenu();
     }
 
@@ -1491,8 +1496,119 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    private boolean onMenuItemClicked(MenuItem item) {
+        if (item.getItemId() == R.id.refresh) {
+            onRefresh(true);
+        } else if (item.getItemId() == R.id.sort_id) {
+            settings.setSort(SORT.ID.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_name) {
+            settings.setSort(SORT.NAME.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_character) {
+            settings.setSort(SORT.CHARACTER.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_game_series) {
+            settings.setSort(SORT.GAME_SERIES.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_amiibo_series) {
+            settings.setSort(SORT.AMIIBO_SERIES.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_amiibo_type) {
+            settings.setSort(SORT.AMIIBO_TYPE.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.sort_file_path) {
+            settings.setSort(SORT.FILE_PATH.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.view_simple) {
+            if (null != amiibosView)
+                amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            foomiiboView.setLayoutManager(new LinearLayoutManager(this));
+            settings.setAmiiboView(VIEW.SIMPLE.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.view_compact) {
+            if (null != amiibosView)
+                amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            foomiiboView.setLayoutManager(new LinearLayoutManager(this));
+            settings.setAmiiboView(VIEW.COMPACT.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.view_large) {
+            if (null != amiibosView)
+                amiibosView.setLayoutManager(new LinearLayoutManager(this));
+            foomiiboView.setLayoutManager(new LinearLayoutManager(this));
+            settings.setAmiiboView(VIEW.LARGE.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.view_image) {
+            if (null != amiibosView)
+                amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+            foomiiboView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
+            settings.setAmiiboView(VIEW.IMAGE.getValue());
+            settings.notifyChanges();
+        } else if (item.getItemId() == R.id.recursive) {
+            this.settings.setRecursiveEnabled(!this.settings.isRecursiveEnabled());
+            this.settings.notifyChanges();
+        } else if (item.getItemId() == R.id.capture_logcat) {
+            onCaptureLogcatClicked();
+        } else if (item.getItemId() == R.id.send_donation) {
+            onSendDonationClicked();
+        } else if (item.getItemId() == R.id.filter_character) {
+            return onFilterCharacterClick();
+        } else if (item.getItemId() == R.id.filter_game_series) {
+            return onFilterGameSeriesClick();
+        } else if (item.getItemId() == R.id.filter_amiibo_series) {
+            return onFilterAmiiboSeriesClick();
+        } else if (item.getItemId() == R.id.filter_amiibo_type) {
+            return onFilterAmiiboTypeClick();
+        } else if (item.getItemId() == R.id.filter_game_titles) {
+            onFilterGameTitlesClick();
+        }
+        return TagMo.isGalaxyWear() || super.onOptionsItemSelected(item);
+    }
+
+    public void onCreateWearOptionsMenu() {
+        Toolbar toolbar = findViewById(R.id.drawer_layout);
+        if (!toolbar.getMenu().hasVisibleItems()) {
+            toolbar.inflateMenu(R.menu.wear_menu);
+            menuSortId = toolbar.getMenu().findItem(R.id.sort_id);
+            menuSortName = toolbar.getMenu().findItem(R.id.sort_name);
+            menuSortCharacter = toolbar.getMenu().findItem(R.id.sort_character);
+            menuSortGameSeries = toolbar.getMenu().findItem(R.id.sort_game_series);
+            menuSortAmiiboSeries = toolbar.getMenu().findItem(R.id.sort_amiibo_series);
+            menuSortAmiiboType = toolbar.getMenu().findItem(R.id.sort_amiibo_type);
+            menuSortFilePath = toolbar.getMenu().findItem(R.id.sort_file_path);
+            menuFilterGameSeries = toolbar.getMenu().findItem(R.id.filter_game_series);
+            menuFilterCharacter = toolbar.getMenu().findItem(R.id.filter_character);
+            menuFilterAmiiboSeries = toolbar.getMenu().findItem(R.id.filter_amiibo_series);
+            menuFilterAmiiboType = toolbar.getMenu().findItem(R.id.filter_amiibo_type);
+            menuFilterGameTitles = toolbar.getMenu().findItem(R.id.filter_game_titles);
+            menuViewSimple = toolbar.getMenu().findItem(R.id.view_simple);
+            menuViewCompact = toolbar.getMenu().findItem(R.id.view_compact);
+            menuViewLarge = toolbar.getMenu().findItem(R.id.view_large);
+            menuViewImage = toolbar.getMenu().findItem(R.id.view_image);
+            menuRecursiveFiles = toolbar.getMenu().findItem(R.id.recursive);
+        }
+
+        this.onSortChanged();
+        this.onViewChanged();
+        this.onRecursiveFilesChanged();
+
+        toolbar.setOnMenuItemClickListener(this::onMenuItemClicked);
+    }
+
+    private void onMenuItemsInvalidated() {
+        if (TagMo.isGalaxyWear()) {
+            onCreateWearOptionsMenu();
+        } else {
+            invalidateOptionsMenu();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (TagMo.isGalaxyWear()) {
+            return super.onCreateOptionsMenu(menu);
+        }
+
         getMenuInflater().inflate(R.menu.browser_menu, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
 
@@ -1535,10 +1651,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
         menuUpdate.setVisible(null != appUpdate || null != updateUrl);
 
-        if (TagMo.isGalaxyWear()) {
-            menuSearch.setVisible(false);
-            return super.onCreateOptionsMenu(menu);
-        }
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menuSearch.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -1599,73 +1711,11 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.install_update) {
             if (null != appUpdate) updates.downloadPlayUpdate(appUpdate);
             if (null != updateUrl) updates.installUpdateCompat(updateUrl);
-        } else if (item.getItemId() == R.id.refresh) {
-            onRefresh(true);
-        } else if (item.getItemId() == R.id.sort_id) {
-            settings.setSort(SORT.ID.getValue());
-            settings.notifyChanges();
-        } else if (item.getItemId() == R.id.sort_name) {
-            settings.setSort(SORT.NAME.getValue());
-            settings.notifyChanges();
-        } else if (item.getItemId() == R.id.sort_character) {
-            settings.setSort(SORT.CHARACTER.getValue());
-            settings.notifyChanges();
-        } else if (item.getItemId() == R.id.sort_game_series) {
-            settings.setSort(SORT.GAME_SERIES.getValue());
-            settings.notifyChanges();
-        } else if (item.getItemId() == R.id.sort_amiibo_series) {
-            settings.setSort(SORT.AMIIBO_SERIES.getValue());
-            settings.notifyChanges();
-        } else if (item.getItemId() == R.id.sort_amiibo_type) {
-            settings.setSort(SORT.AMIIBO_TYPE.getValue());
-            settings.notifyChanges();
-        } else if (item.getItemId() == R.id.sort_file_path) {
-            settings.setSort(SORT.FILE_PATH.getValue());
-            settings.notifyChanges();
-        } else if (item.getItemId() == R.id.view_simple) {
-            amiibosView.setLayoutManager(new LinearLayoutManager(this));
-            foomiiboView.setLayoutManager(new LinearLayoutManager(this));
-            settings.setAmiiboView(VIEW.SIMPLE.getValue());
-            settings.notifyChanges();
-        } else if (item.getItemId() == R.id.view_compact) {
-            amiibosView.setLayoutManager(new LinearLayoutManager(this));
-            foomiiboView.setLayoutManager(new LinearLayoutManager(this));
-            settings.setAmiiboView(VIEW.COMPACT.getValue());
-            settings.notifyChanges();
-        } else if (item.getItemId() == R.id.view_large) {
-            amiibosView.setLayoutManager(new LinearLayoutManager(this));
-            foomiiboView.setLayoutManager(new LinearLayoutManager(this));
-            settings.setAmiiboView(VIEW.LARGE.getValue());
-            settings.notifyChanges();
-        } else if (item.getItemId() == R.id.view_image) {
-            amiibosView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
-            foomiiboView.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
-            settings.setAmiiboView(VIEW.IMAGE.getValue());
-            settings.notifyChanges();
-        } else if (item.getItemId() == R.id.recursive) {
-            this.settings.setRecursiveEnabled(!this.settings.isRecursiveEnabled());
-            this.settings.notifyChanges();
         } else if (item.getItemId() == R.id.hide_downloads) {
             this.settings.setHideDownloads(!this.settings.isHidingDownloads());
             this.settings.notifyChanges();
-        } else if (item.getItemId() == R.id.capture_logcat) {
-            onCaptureLogcatClicked();
-        } else if (item.getItemId() == R.id.send_donation) {
-            onSendDonationClicked();
-        } else if (item.getItemId() == R.id.filter_character) {
-            return onFilterCharacterClick();
-        } else if (item.getItemId() == R.id.filter_game_series) {
-            return onFilterGameSeriesClick();
-        } else if (item.getItemId() == R.id.filter_amiibo_series) {
-            return onFilterAmiiboSeriesClick();
-        } else if (item.getItemId() == R.id.filter_amiibo_type) {
-            return onFilterAmiiboTypeClick();
-        } else if (item.getItemId() == R.id.filter_game_titles) {
-            onFilterGameTitlesClick();
-        } else {
-            return super.onOptionsItemSelected(item);
         }
-        return true;
+        return onMenuItemClicked(item);
     }
 
     @Override
@@ -1949,12 +1999,12 @@ public class BrowserActivity extends AppCompatActivity implements
             if (TagMo.isGooglePlay() || TagMo.isGalaxyWear()) {
                 updates.setPlayUpdateListener(appUpdateInfo -> {
                     appUpdate = appUpdateInfo;
-                    invalidateOptionsMenu();
+                    onMenuItemsInvalidated();
                 });
             } else {
                 updates.setUpdateListener(downloadUrl -> {
                     updateUrl = downloadUrl;
-                    invalidateOptionsMenu();
+                    onMenuItemsInvalidated();
                 });
             }
             newBrowserSettings.setLastUpdatedGit(System.currentTimeMillis());

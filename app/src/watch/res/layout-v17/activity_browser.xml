@@ -153,8 +153,8 @@
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/icon"
-                        android:layout_width="@dimen/button_height_wear"
-                        android:layout_height="@dimen/button_height_wear"
+                        android:layout_width="@dimen/wear_drawable_size"
+                        android:layout_height="@dimen/wear_drawable_size"
                         android:layout_gravity="center"
                         android:layout_marginEnd="4dp"
                         android:layout_marginRight="4dp"
@@ -174,8 +174,8 @@
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/toggle"
-                        android:layout_width="@dimen/button_height_wear"
-                        android:layout_height="@dimen/button_height_wear"
+                        android:layout_width="@dimen/wear_drawable_size"
+                        android:layout_height="@dimen/wear_drawable_size"
                         android:layout_gravity="center_vertical"
                         android:contentDescription="@string/imageview_toggle"
                         app:srcCompat="@drawable/ic_expand_less_white_24dp" />

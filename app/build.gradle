@@ -7,8 +7,8 @@ android {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
         targetSdkVersion 33
-        versionCode 315
-        versionName "3.1.5"
+        versionCode 316
+        versionName "3.1.6"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -46,6 +46,18 @@ android {
         watch {
             initWith release
             getIsDefault().set(false)
+        }
+    }
+
+    sourceSets {
+        release {
+            java.srcDirs('src/shared/java')
+        }
+        debug {
+            java.srcDirs('src/shared/java')
+        }
+        publish {
+            java.srcDirs('src/shared/java')
         }
     }
 

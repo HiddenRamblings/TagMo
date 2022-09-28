@@ -43,7 +43,7 @@ android {
             initWith release
             getIsDefault().set(false)
         }
-        galaxy {
+        watch {
             initWith release
             getIsDefault().set(false)
         }
@@ -63,7 +63,7 @@ android {
         buildTypes.release.signingConfig signingConfigs.document
         buildTypes.debug.signingConfig signingConfigs.document
         buildTypes.publish.signingConfig signingConfigs.document
-        buildTypes.galaxy.signingConfig signingConfigs.document
+        buildTypes.watch.signingConfig signingConfigs.document
     } catch (FileNotFoundException ignored) { }
 
     ndkVersion '21.4.7075529'
@@ -113,7 +113,7 @@ dependencies {
     // Required for Lollipop Amiibo API download compatibility
     implementation 'com.google.android.gms:play-services-safetynet:18.0.1'
 
-    galaxyImplementation "androidx.wear:wear:1.2.0"
+    watchImplementation "androidx.wear:wear:1.2.0"
 }
 
 configurations {

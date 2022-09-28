@@ -56,7 +56,7 @@ public class CheckUpdatesTask {
 
     CheckUpdatesTask(BrowserActivity activity) {
         this.activity = new SoftReference<>(activity);
-        if (TagMo.hasPublisher()) {
+        if (TagMo.isMainstream()) {
             if (null == appUpdateManager)
                 appUpdateManager = AppUpdateManagerFactory.create(activity);
             Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();

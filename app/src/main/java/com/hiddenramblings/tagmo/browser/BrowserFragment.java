@@ -136,7 +136,7 @@ public class BrowserFragment extends Fragment implements
                 foomiiboView.getAdapter());
 
         view.findViewById(R.id.list_divider).setVisibility(View.GONE);
-        if (TagMo.isGalaxyWear()) amiibosView.getLayoutParams().height =
+        if (TagMo.isWearableUI()) amiibosView.getLayoutParams().height =
                 amiibosView.getLayoutParams().height / 3;
 
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {

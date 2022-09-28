@@ -68,7 +68,7 @@ public class TagMo extends Application {
             System.exit(0);
         });
 
-        if (!BuildConfig.DEBUG && !hasPublisher())
+        if (!BuildConfig.DEBUG && !isMainstream())
             new ANRWatchDog(10000).setReportMainThreadOnly().start();
     }
 
@@ -78,12 +78,12 @@ public class TagMo extends Application {
         return Objects.equals(BuildConfig.BUILD_TYPE, "publish");
     }
 
-    public static boolean isGalaxyWear() {
-        return Objects.equals(BuildConfig.BUILD_TYPE, "galaxy");
+    public static boolean isWearableUI() {
+        return Objects.equals(BuildConfig.BUILD_TYPE, "watch");
     }
 
-    public static boolean hasPublisher() {
-        return isGooglePlay() || isGalaxyWear();
+    public static boolean isMainstream() {
+        return isGooglePlay() || isWearableUI();
     }
 
     @SuppressWarnings("ConstantConditions")

@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.browser;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -9,7 +8,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 public class NavPagerAdapter extends FragmentStateAdapter {
@@ -31,7 +29,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
         boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
         switch (position) {
             case 1:
-                return TagMo.isGalaxyWear() ? fragmentSettings : hasEliteEnabled
+                return TagMo.isWearableUI() ? fragmentSettings : hasEliteEnabled
                         ? fragmentElite : hasFlaskEnabled
                         ? fragmentFlask : fragmentWebsite;
             case 2:

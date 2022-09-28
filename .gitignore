@@ -17,7 +17,7 @@ keystore.properties
 
 # Generated
 app/.cxx/
-app/*.aab
+app/*/*.aab
 
 # User-specific configurations
 .idea/

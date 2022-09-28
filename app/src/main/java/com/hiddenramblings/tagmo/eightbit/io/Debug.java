@@ -261,6 +261,11 @@ public class Debug {
     }
 
     private static void submitLogcat(Context context, String logText) {
+        ClipboardManager clipboard = (ClipboardManager) context
+                .getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboard.setPrimaryClip(ClipData.newPlainText(
+                context.getString(R.string.git_issue_title, BuildConfig.COMMIT
+        ), logText));
         try {
             final Intent emailIntent = new Intent(Intent.ACTION_SEND);
             emailIntent.setType("text/plain");
@@ -270,13 +275,8 @@ public class Debug {
             emailIntent.setType("message/rfc822");
             context.startActivity(Intent.createChooser(emailIntent, "Email logcat via..."));
         } catch (ActivityNotFoundException ex) {
-            ClipboardManager clipboard = (ClipboardManager) context
-                    .getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboard.setPrimaryClip(ClipData.newPlainText(context.getString(
-                    R.string.git_issue_title, BuildConfig.COMMIT
-            ), logText));
             try {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
             } catch (Exception ignored) { }
         }
     }

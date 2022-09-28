@@ -47,7 +47,6 @@ public class TagMo extends Application {
     }
 
     public static final String RENDER_RAW = "https://raw.githubusercontent.com/8BitDream/AmiiboAPI/";
-    public static final String RENDER_API = "https://tagmoapi.onrender.com/api/";
     public static final String AMIIBO_API = "https://amiiboapi.com/api/";
 
 

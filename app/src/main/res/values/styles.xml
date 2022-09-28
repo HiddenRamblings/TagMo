@@ -74,6 +74,10 @@
         <item name="android:paddingStart">0dp</item>
     </style>
 
+    <style name="WearTabText" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">10sp</item>
+    </style>
+
     <style name="SlimButton" parent="Widget.AppCompat.Button.Small">
         <item name="android:minHeight">@dimen/button_height_min</item>
     </style>

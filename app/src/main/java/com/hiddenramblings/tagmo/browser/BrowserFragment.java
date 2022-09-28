@@ -136,7 +136,8 @@ public class BrowserFragment extends Fragment implements
                 foomiiboView.getAdapter());
 
         view.findViewById(R.id.list_divider).setVisibility(View.GONE);
-        if (TagMo.isGalaxyWear()) amiibosView.getLayoutParams().height = 0;
+        if (TagMo.isGalaxyWear()) amiibosView.getLayoutParams().height =
+                amiibosView.getLayoutParams().height / 3;
 
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
             if (amiibosView instanceof IndexFastScrollRecyclerView) {
@@ -198,7 +199,7 @@ public class BrowserFragment extends Fragment implements
     }
 
     void setFoomiiboVisibility() {
-        if (null == getView() || TagMo.isGalaxyWear()) return;
+        if (null == getView()) return;
         BrowserActivity activity = (BrowserActivity) requireActivity();
         float minHeight = activity.getBottomSheetBehavior().getPeekHeight()
                 + getView().findViewById(R.id.list_divider).getHeight() + requireContext()

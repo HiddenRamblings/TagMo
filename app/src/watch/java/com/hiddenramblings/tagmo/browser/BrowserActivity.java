@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -55,14 +54,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.core.view.MenuCompat;
 import androidx.documentfile.provider.DocumentFile;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -92,7 +87,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
-import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
@@ -150,8 +144,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
@@ -159,7 +151,6 @@ import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderEffectBlur;
 import eightbitlab.com.blurview.RenderScriptBlur;
 import eightbitlab.com.blurview.SupportRenderScriptBlur;
-import myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView;
 
 public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,
@@ -180,9 +171,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private BottomSheetBehavior<View> bottomSheet;
     private TextView currentFolderView;
-    private DrawerLayout prefsDrawer;
-    private AppCompatButton switchStorageRoot;
-    private AppCompatButton switchStorageType;
     private Dialog joyConDialog;
 
     private AnimatedLinearLayout fakeSnackbar;
@@ -212,7 +200,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuViewLarge;
     private MenuItem menuViewImage;
     private MenuItem menuRecursiveFiles;
-    private MenuItem menuHideDownloads;
 
     private FrameLayout amiiboContainer;
     private Toolbar toolbar;
@@ -240,18 +227,9 @@ public class BrowserActivity extends AppCompatActivity implements
         setTheme(R.style.AppTheme);
         keyManager = new KeyManager(this);
 
-        if (null != getSupportActionBar()) {
-            if (TagMo.isWearableUI()) {
-                getSupportActionBar().hide();
-            } else {
-                getSupportActionBar().setDisplayShowHomeEnabled(true);
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
-            }
-        }
+        if (null != getSupportActionBar()) getSupportActionBar().hide();
 
         setContentView(R.layout.activity_browser);
-        setBrowserTitle(R.string.tagmo);
 
         onBackButtonEnabled();
 
@@ -261,8 +239,6 @@ public class BrowserActivity extends AppCompatActivity implements
         mainLayout = findViewById(R.id.amiibo_pager);
         nfcFab = findViewById(R.id.nfc_fab);
         currentFolderView = findViewById(R.id.current_folder);
-        switchStorageRoot = findViewById(R.id.switch_storage_root);
-        switchStorageType = findViewById(R.id.switch_storage_type);
         amiiboContainer = findViewById(R.id.amiiboContainer);
         toolbar = findViewById(R.id.toolbar);
         amiiboInfo = findViewById(R.id.amiiboInfo);
@@ -300,6 +276,7 @@ public class BrowserActivity extends AppCompatActivity implements
         mainLayout.setPageTransformer(cardFlipPageTransformer);
         setViewPagerSensitivity(mainLayout, 4);
         fragmentBrowser = pagerAdapter.getBrowser();
+        fragmentSettings = pagerAdapter.getSettings();
         fragmentElite = pagerAdapter.getEliteBanks();
 
         amiibosView = fragmentBrowser.getAmiibosView();
@@ -318,45 +295,22 @@ public class BrowserActivity extends AppCompatActivity implements
                 boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
                 switch (position) {
                     case 1:
-                        if (TagMo.isWearableUI()) {
-                            hideBrowserInterface();
-                        } else if (hasEliteEnabled) {
-                            showActionButton();
-                            hideBottomSheet();
-                            setBrowserTitle(R.string.elite_n2);
-                            amiibosView = fragmentElite.getAmiibosView();
-                            bottomSheet = fragmentElite.getBottomSheet();
-                        } else if (hasFlaskEnabled) {
-                            hideBrowserInterface();
-                            setBrowserTitle(R.string.flask_title);
-                            FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
-                            fragmentFlask.delayedBluetoothEnable();
-                            amiibosView = fragmentFlask.getAmiibosView();
-                            bottomSheet = fragmentFlask.getBottomSheet();
-                        } else {
-                            hideBrowserInterface();
-                            setBrowserTitle(R.string.guides);
-                        }
+                        hideBrowserInterface();
                         break;
                     case 2:
                         hideBrowserInterface();
                         if (hasFlaskEnabled) {
-                            setBrowserTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
                             amiibosView = fragmentFlask.getAmiibosView();
                             bottomSheet = fragmentFlask.getBottomSheet();
-                        } else {
-                            setBrowserTitle(R.string.guides);
                         }
                         break;
                     case 3:
                         hideBrowserInterface();
-                        setBrowserTitle(R.string.guides);
                         break;
                     default:
                         showBrowserInterface();
-                        setBrowserTitle(R.string.tagmo);
                         amiibosView = fragmentBrowser.getAmiibosView();
                         foomiiboView = fragmentBrowser.getFoomiiboView();
                         bottomSheet = bottomSheetBehavior;
@@ -373,7 +327,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             ? new GridLayoutManager(BrowserActivity.this, getColumnCount())
                             : new LinearLayoutManager(BrowserActivity.this));
                 }
-                onMenuItemsInvalidated();
+                onCreateWearOptionsMenu();
             }
         });
 
@@ -383,15 +337,7 @@ public class BrowserActivity extends AppCompatActivity implements
             boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
             switch (position) {
                 case 1:
-                    if (TagMo.isWearableUI()) {
-                        tab.setText(R.string.settings);
-                    } else if (hasEliteEnabled) {
-                        tab.setText(R.string.elite_n2);
-                    } else if (hasFlaskEnabled) {
-                        tab.setText(R.string.flask_title);
-                    } else {
-                        tab.setText(R.string.guides);
-                    }
+                    tab.setText(R.string.settings);
                     break;
                 case 2:
                     if (hasFlaskEnabled) {
@@ -408,8 +354,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     break;
             }
         }).attach();
-
-        onLoadSettingsFragment();
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
         if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
@@ -458,7 +402,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 clickView -> fragmentBrowser.buildFoomiiboSet()
         );
 
-        requestStoragePermission();
+        onRequestStorage.launch(PERMISSIONS_STORAGE);
         try {
             getPackageManager().getPackageInfo(
                     "com.hiddenramblings.tagmo", PackageManager.GET_META_DATA
@@ -529,38 +473,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        if (!TagMo.isWearableUI()) {
-            ((TextView) findViewById(R.id.build_text)).setText(getString(
-                    R.string.build_details, getBuildTypeName(), BuildConfig.COMMIT
-            ));
-
-            prefsDrawer = findViewById(R.id.drawer_layout);
-            prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-                @Override
-                public void onDrawerOpened(View drawerView) {
-                    super.onDrawerOpened(drawerView);
-                    findViewById(R.id.build_layout).setOnClickListener(view -> {
-                        closePrefsDrawer();
-                        String repository = "https://github.com/HiddenRamblings/TagMo";
-                        showWebsite(repository);
-                    });
-                    if (null != appUpdate) {
-                        findViewById(R.id.build_layout).setOnClickListener(view -> {
-                            closePrefsDrawer();
-                            updates.downloadPlayUpdate(appUpdate);
-                        });
-                    }
-                    if (null != updateUrl) {
-                        findViewById(R.id.build_layout).setOnClickListener(view -> {
-                            closePrefsDrawer();
-                            updates.installUpdateCompat(updateUrl);
-                        });
-                    }
-                }
-            });
-        }
-
-        if (TagMo.isWearableUI()) onCreateWearOptionsMenu();
+        onCreateWearOptionsMenu();
         if (TagMo.isCompatBuild()) retrieveDonationMenu();
     }
 
@@ -568,18 +481,6 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onTabCollectionChanged() {
         mainLayout.setCurrentItem(0, false);
         pagerAdapter.notifyDataSetChanged();
-    }
-
-    private void onLoadSettingsFragment() {
-        if (TagMo.isWearableUI()) {
-            fragmentSettings = pagerAdapter.getSettings();
-        } else {
-            if (null == fragmentSettings) fragmentSettings = new SettingsFragment();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.preferences, fragmentSettings)
-                    .commit();
-        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -612,30 +513,6 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 Debug.Info(e);
             }
-        }
-    }
-
-    private void requestStoragePermission() {
-        if (TagMo.isWearableUI()) {
-            onRequestStorage.launch(PERMISSIONS_STORAGE);
-        } else if (Debug.isNewer(Build.VERSION_CODES.R)) {
-            if (TagMo.isGooglePlay()) {
-                this.onDocumentEnabled();
-            } else {
-                if (null != settings.getBrowserRootDocument() && isDocumentStorage()) {
-                    this.onDocumentEnabled();
-                } else if (Environment.isExternalStorageManager()) {
-                    settings.setBrowserRootDocument(null);
-                    settings.notifyChanges();
-                    this.onStorageEnabled();
-                } else {
-                    requestScopedStorage();
-                }
-            }
-        } else if (Debug.isNewer(Build.VERSION_CODES.M)) {
-            onRequestStorage.launch(PERMISSIONS_STORAGE);
-        } else {
-            this.onStorageEnabled();
         }
     }
 
@@ -832,7 +709,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 @SuppressLint("InflateParams")
                 View paypal = getLayoutInflater().inflate(R.layout.button_paypal, null);
                 paypal.setOnClickListener(view -> {
-                    closePrefsDrawer();
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
                             "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
                     )));
@@ -842,7 +718,6 @@ public class BrowserActivity extends AppCompatActivity implements
             }
             donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         } else {
-            closePrefsDrawer();
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
                     "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
             )));
@@ -1423,84 +1298,10 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onStorageEnabled() {
-        if (TagMo.isWearableUI()) {
-            if (keyManager.isKeyMissing()) {
-                if (null != fragmentSettings) fragmentSettings.verifyKeyFiles();
-            } else {
-                this.onRefresh(true);
-            }
-        } else if (isDocumentStorage()) {
-            switchStorageRoot.setVisibility(View.VISIBLE);
-            switchStorageRoot.setText(R.string.document_storage_root);
-            switchStorageRoot.setOnClickListener(view -> {
-                try {
-                    onDocumentRequested();
-                } catch (ActivityNotFoundException anf) {
-                    new Toasty(this).Long(R.string.storage_unavailable);
-                }
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            });
-            if (Debug.isNewer(Build.VERSION_CODES.R) && !TagMo.isGooglePlay()) {
-                switchStorageType.setVisibility(View.VISIBLE);
-                switchStorageType.setText(R.string.grant_file_permission);
-                switchStorageType.setOnClickListener(view -> {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    if (Environment.isExternalStorageManager()) {
-                        settings.setBrowserRootDocument(null);
-                        settings.notifyChanges();
-                        this.onStorageEnabled();
-                    } else {
-                        requestScopedStorage();
-                    }
-                });
-            } else {
-                switchStorageType.setVisibility(View.GONE);
-            }
-            if (keyManager.isKeyMissing()) {
-                if (null != fragmentSettings) fragmentSettings.verifyKeyFiles();
-            } else {
-                this.onRefresh(true);
-            }
+        if (keyManager.isKeyMissing()) {
+            if (null != fragmentSettings) fragmentSettings.verifyKeyFiles();
         } else {
-            boolean internal = prefs.preferEmulated().get();
-            if (Storage.getFile(internal).exists() && Storage.hasPhysicalStorage()) {
-                switchStorageRoot.setVisibility(View.VISIBLE);
-                switchStorageRoot.setText(internal
-                        ? R.string.emulated_storage_root
-                        : R.string.physical_storage_root);
-                switchStorageRoot.setOnClickListener(view -> {
-                    boolean external = !prefs.preferEmulated().get();
-                    switchStorageRoot.setText(external
-                            ? R.string.emulated_storage_root
-                            : R.string.physical_storage_root);
-                    this.settings.setBrowserRootFolder(Storage.getFile(external));
-                    this.settings.notifyChanges();
-                    prefs.preferEmulated().put(external);
-                });
-            } else {
-                switchStorageRoot.setVisibility(View.GONE);
-            }
-            if (Debug.isNewer(Build.VERSION_CODES.R)) {
-                switchStorageType.setVisibility(View.VISIBLE);
-                switchStorageType.setText(R.string.force_document_storage);
-                switchStorageType.setOnClickListener(view -> {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    try {
-                        onDocumentRequested();
-                    } catch (ActivityNotFoundException anf) {
-                        new Toasty(this).Long(R.string.storage_unavailable);
-                    }
-                });
-            } else {
-                switchStorageType.setVisibility(View.GONE);
-            }
-            if (keyManager.isKeyMissing()) {
-                hideFakeSnackbar();
-                showFakeSnackbar(getString(R.string.locating_keys));
-                locateKeyFiles();
-            } else {
-                this.onRefresh(true);
-            }
+            this.onRefresh(true);
         }
     }
 
@@ -1570,13 +1371,13 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.filter_game_titles) {
             onFilterGameTitlesClick();
         }
-        return TagMo.isWearableUI() || super.onOptionsItemSelected(item);
+        return true;
     }
 
     public void onCreateWearOptionsMenu() {
         Toolbar toolbar = findViewById(R.id.drawer_layout);
         if (!toolbar.getMenu().hasVisibleItems()) {
-            toolbar.inflateMenu(R.menu.wear_menu);
+            toolbar.inflateMenu(R.menu.browser_menu);
             menuSortId = toolbar.getMenu().findItem(R.id.sort_id);
             menuSortName = toolbar.getMenu().findItem(R.id.sort_name);
             menuSortCharacter = toolbar.getMenu().findItem(R.id.sort_character);
@@ -1603,126 +1404,13 @@ public class BrowserActivity extends AppCompatActivity implements
         toolbar.setOnMenuItemClickListener(this::onMenuItemClicked);
     }
 
-    private void onMenuItemsInvalidated() {
-        if (TagMo.isWearableUI()) {
-            onCreateWearOptionsMenu();
-        } else {
-            invalidateOptionsMenu();
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (TagMo.isWearableUI()) {
-            return super.onCreateOptionsMenu(menu);
-        }
-
-        getMenuInflater().inflate(R.menu.browser_menu, menu);
-        MenuCompat.setGroupDividerEnabled(menu, true);
-
-        MenuItem menuSearch = menu.findItem(R.id.search);
-        MenuItem menuUpdate = menu.findItem(R.id.install_update);
-        menuSortId = menu.findItem(R.id.sort_id);
-        menuSortName = menu.findItem(R.id.sort_name);
-        menuSortCharacter = menu.findItem(R.id.sort_character);
-        menuSortGameSeries = menu.findItem(R.id.sort_game_series);
-        menuSortAmiiboSeries = menu.findItem(R.id.sort_amiibo_series);
-        menuSortAmiiboType = menu.findItem(R.id.sort_amiibo_type);
-        menuSortFilePath = menu.findItem(R.id.sort_file_path);
-        menuFilterGameSeries = menu.findItem(R.id.filter_game_series);
-        menuFilterCharacter = menu.findItem(R.id.filter_character);
-        menuFilterAmiiboSeries = menu.findItem(R.id.filter_amiibo_series);
-        menuFilterAmiiboType = menu.findItem(R.id.filter_amiibo_type);
-        menuFilterGameTitles = menu.findItem(R.id.filter_game_titles);
-        menuViewSimple = menu.findItem(R.id.view_simple);
-        menuViewCompact = menu.findItem(R.id.view_compact);
-        menuViewLarge = menu.findItem(R.id.view_large);
-        menuViewImage = menu.findItem(R.id.view_image);
-        menuRecursiveFiles = menu.findItem(R.id.recursive);
-        menuHideDownloads = menu.findItem(R.id.hide_downloads);
-
-        if (null == this.settings) return false;
-
-        this.onSortChanged();
-        this.onViewChanged();
-        this.onRecursiveFilesChanged();
-
-        if (isDocumentStorage()) {
-            menuHideDownloads.setVisible(false);
-        } else {
-            menuHideDownloads.setVisible(true);
-            menuHideDownloads.setTitle(getString(
-                    R.string.hide_downloads, Storage.getDownloadDir(null).getName()
-            ));
-            this.onHideDownloadsChanged();
-        }
-
-        menuUpdate.setVisible(null != appUpdate || null != updateUrl);
-
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menuSearch.getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setSubmitButtonEnabled(false);
-        menuSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                if (BottomSheetBehavior.STATE_EXPANDED == bottomSheet.getState()
-                        || View.VISIBLE == amiiboContainer.getVisibility()
-                        || getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    onBackPressed();
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        });
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                settings.setQuery(query);
-                settings.notifyChanges();
-                if (mainLayout.getCurrentItem() == 0) setAmiiboStats();
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String query) {
-                settings.setQuery(query);
-                settings.notifyChanges();
-                if (mainLayout.getCurrentItem() == 0 && query.length() == 0)
-                    setAmiiboStats();
-                return true;
-            }
-        });
-
-        String query = settings.getQuery();
-        if (!query.isEmpty()) {
-            menuSearch.expandActionView();
-            searchView.setQuery(query, true);
-            searchView.clearFocus();
-        }
-
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            if (!closePrefsDrawer()) {
-                prefsDrawer.openDrawer(GravityCompat.START);
-            }
-        } else if (item.getItemId() == R.id.install_update) {
-            if (null != appUpdate) updates.downloadPlayUpdate(appUpdate);
-            if (null != updateUrl) updates.installUpdateCompat(updateUrl);
-        } else if (item.getItemId() == R.id.hide_downloads) {
-            this.settings.setHideDownloads(!this.settings.isHidingDownloads());
-            this.settings.notifyChanges();
-        }
         return onMenuItemClicked(item);
     }
 
@@ -1960,10 +1648,6 @@ public class BrowserActivity extends AppCompatActivity implements
             folderChanged = true;
             onRecursiveFilesChanged();
         }
-        if (newBrowserSettings.isHidingDownloads() != oldBrowserSettings.isHidingDownloads()) {
-            folderChanged = true;
-            onHideDownloadsChanged();
-        }
         if (!BrowserSettings.equals(newBrowserSettings.getLastUpdatedAPI(),
                 oldBrowserSettings.getLastUpdatedAPI())) {
             this.loadAmiiboManager();
@@ -2007,12 +1691,12 @@ public class BrowserActivity extends AppCompatActivity implements
             if (TagMo.isMainstream()) {
                 updates.setPlayUpdateListener(appUpdateInfo -> {
                     appUpdate = appUpdateInfo;
-                    onMenuItemsInvalidated();
+                    onCreateWearOptionsMenu();
                 });
             } else {
                 updates.setUpdateListener(downloadUrl -> {
                     updateUrl = downloadUrl;
-                    onMenuItemsInvalidated();
+                    onCreateWearOptionsMenu();
                 });
             }
             newBrowserSettings.setLastUpdatedGit(System.currentTimeMillis());
@@ -2038,25 +1722,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 .apply();
     }
 
-    private void setIndexFastScrollRecyclerListener(RecyclerView amiibosView) {
-        if (TagMo.isWearableUI()) return;
-        if (amiibosView instanceof IndexFastScrollRecyclerView) {
-            IndexFastScrollRecyclerView indexView = (IndexFastScrollRecyclerView) amiibosView;
-            //noinspection deprecation
-            indexView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                        indexView.setIndexBarVisibility(true);
-                    } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        indexView.setIndexBarVisibility(false);
-                    }
-                }
-            });
-        }
-    }
-
     private void onSortChanged() {
         if (null == menuSortId)
             return;
@@ -2066,28 +1731,18 @@ public class BrowserActivity extends AppCompatActivity implements
                 break;
             case NAME:
                 menuSortName.setChecked(true);
-                setIndexFastScrollRecyclerListener(amiibosView);
-                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case CHARACTER:
                 menuSortCharacter.setChecked(true);
-                setIndexFastScrollRecyclerListener(amiibosView);
-                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case GAME_SERIES:
                 menuSortGameSeries.setChecked(true);
-                setIndexFastScrollRecyclerListener(amiibosView);
-                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case AMIIBO_SERIES:
                 menuSortAmiiboSeries.setChecked(true);
-                setIndexFastScrollRecyclerListener(amiibosView);
-                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case AMIIBO_TYPE:
                 menuSortAmiiboType.setChecked(true);
-                setIndexFastScrollRecyclerListener(amiibosView);
-                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case FILE_PATH:
                 menuSortFilePath.setChecked(true);
@@ -2170,11 +1825,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onRecursiveFilesChanged() {
         if (null == menuRecursiveFiles) return;
         menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
-    }
-
-    private void onHideDownloadsChanged() {
-        if (null == menuHideDownloads) return;
-        menuHideDownloads.setChecked(settings.isHidingDownloads());
     }
 
     private void launchEliteActivity(Intent resultData) {
@@ -2569,10 +2219,6 @@ public class BrowserActivity extends AppCompatActivity implements
         return new int[]{size, count};
     }
 
-    private void setBrowserTitle(int titleId) {
-        setTitle(TagMo.isWearableUI() ? "" : getString(titleId));
-    }
-
     private void setAmiiboStats() {
         handler.removeCallbacksAndMessages(null);
         currentFolderView.post(() -> {
@@ -2700,15 +2346,6 @@ public class BrowserActivity extends AppCompatActivity implements
         showActionButton();
     }
 
-    public boolean closePrefsDrawer() {
-        if (TagMo.isWearableUI()) return false;
-        if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
-            prefsDrawer.closeDrawer(GravityCompat.START);
-            return true;
-        }
-        return false;
-    }
-
     public void showElitePage(Bundle extras) {
         fragmentElite.setArguments(extras);
         mainLayout.setCurrentItem(1, true);
@@ -2778,16 +2415,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
     ActivityResultLauncher<String[]> onRequestStorage = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(), permissions -> {
-        boolean isStorageEnabled = true;
-        if (TagMo.isWearableUI()) {
-            isStorageEnabled = Boolean.TRUE.equals(permissions.get(
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-            ));
-        } else {
-            for (Map.Entry<String, Boolean> entry : permissions.entrySet()) {
-                if (!entry.getValue()) isStorageEnabled = false;
-            }
-        }
+        boolean isStorageEnabled = Boolean.TRUE.equals(permissions.get(
+                Manifest.permission.READ_EXTERNAL_STORAGE
+        ));
         if (isStorageEnabled)
             this.onStorageEnabled();
         else
@@ -2964,26 +2594,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         }
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private String getBuildTypeName() {
-        if (TagMo.isWearableUI()) {
-            return "Android Wear";
-        } else if (TagMo.isGooglePlay()) {
-            return "Google Play";
-        } else {
-            if (TagMo.isCompatBuild()) {
-                if (Objects.equals(BuildConfig.BUILD_TYPE, "debug")) {
-                    return "GitHub Testing";
-                } else if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) {
-                    return "GitHub Release";
-                }
-            } else {
-                return "GitHub Archive";
-            }
-        }
-        return "";
     }
 
     private String getIAP(int amount) {
@@ -3223,17 +2833,15 @@ public class BrowserActivity extends AppCompatActivity implements
         OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (!closePrefsDrawer()) {
-                    if (null != bottomSheet && BottomSheetBehavior
-                            .STATE_EXPANDED == bottomSheet.getState()) {
-                        bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    } else if (View.VISIBLE == amiiboContainer.getVisibility()) {
-                        amiiboContainer.setVisibility(View.GONE);
-                    } else if (mainLayout.getCurrentItem() != 0) {
-                        mainLayout.setCurrentItem(0, true);
-                    } else {
-                        finishAffinity();
-                    }
+                if (null != bottomSheet && BottomSheetBehavior
+                        .STATE_EXPANDED == bottomSheet.getState()) {
+                    bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                } else if (View.VISIBLE == amiiboContainer.getVisibility()) {
+                    amiiboContainer.setVisibility(View.GONE);
+                } else if (mainLayout.getCurrentItem() != 0) {
+                    mainLayout.setCurrentItem(0, true);
+                } else {
+                    finishAffinity();
                 }
             }
         };

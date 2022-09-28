@@ -309,35 +309,28 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     public void verifyKeyFiles() {
-        if (keyManager.isKeyMissing()) {
-            Executors.newSingleThreadExecutor().execute(() -> {
-                try {
-                    Scanner scanner = new Scanner(new URL(
-                            "https://pastebin.com/raw/aV23ha3X").openStream());
-                    for (int i = 0; i < 4; i++) {
-                        if (scanner.hasNextLine()) scanner.nextLine();
-                    }
-                    this.keyManager.evaluateKey(new ByteArrayInputStream(
-                            TagArray.hexToByteArray(scanner.nextLine()
-                                    .replace(" ", ""))));
-                    scanner.close();
-                } catch (IOException e) {
-                    Debug.Warn(e);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                Scanner scanner = new Scanner(new URL(
+                        "https://pastebin.com/raw/aV23ha3X").openStream());
+                for (int i = 0; i < 4; i++) {
+                    if (scanner.hasNextLine()) scanner.nextLine();
                 }
+                this.keyManager.evaluateKey(new ByteArrayInputStream(
+                        TagArray.hexToByteArray(scanner.nextLine()
+                                .replace(" ", ""))));
+                scanner.close();
+            } catch (IOException e) {
+                Debug.Warn(e);
+            }
 
-                if (Thread.currentThread().isInterrupted()) return;
+            if (Thread.currentThread().isInterrupted()) return;
 
-                requireActivity().runOnUiThread(() -> {
-                    ((BrowserActivity) requireActivity()).onKeysLoaded(true);
-                    updateKeySummary();
-                });
-            });
-        } else {
             requireActivity().runOnUiThread(() -> {
                 ((BrowserActivity) requireActivity()).onKeysLoaded(true);
                 updateKeySummary();
             });
-        }
+        });
     }
 
     public void updateKeySummary() {

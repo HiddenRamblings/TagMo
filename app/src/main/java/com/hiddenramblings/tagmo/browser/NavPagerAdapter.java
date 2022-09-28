@@ -32,9 +32,10 @@ public class NavPagerAdapter extends FragmentStateAdapter {
         switch (position) {
             case 1:
                 return TagMo.isGalaxyWear() ? fragmentSettings : hasEliteEnabled
-                        ? fragmentElite : hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
+                        ? fragmentElite : hasFlaskEnabled
+                        ? fragmentFlask : fragmentWebsite;
             case 2:
-                return hasEliteEnabled && hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
+                return hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
             case 3:
                 return fragmentWebsite;
             default:

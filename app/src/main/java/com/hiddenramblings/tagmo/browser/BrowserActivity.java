@@ -340,7 +340,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         break;
                     case 2:
                         hideBrowserInterface();
-                        if (hasEliteEnabled && hasFlaskEnabled) {
+                        if (hasFlaskEnabled) {
                             setBrowserTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
@@ -394,7 +394,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                     break;
                 case 2:
-                    if (hasEliteEnabled && hasFlaskEnabled) {
+                    if (hasFlaskEnabled) {
                         tab.setText(R.string.flask_title);
                     } else {
                         tab.setText(R.string.guides);
@@ -616,8 +616,10 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void requestStoragePermission() {
-        if (Debug.isNewer(Build.VERSION_CODES.R)) {
-            if (TagMo.hasPublisher()) {
+        if (TagMo.isGalaxyWear()) {
+            onRequestStorage.launch(PERMISSIONS_STORAGE);
+        } else if (Debug.isNewer(Build.VERSION_CODES.R)) {
+            if (TagMo.isGooglePlay()) {
                 this.onDocumentEnabled();
             } else {
                 if (null != settings.getBrowserRootDocument() && isDocumentStorage()) {
@@ -1421,7 +1423,13 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onStorageEnabled() {
-        if (isDocumentStorage()) {
+        if (TagMo.isGalaxyWear()) {
+            if (keyManager.isKeyMissing()) {
+                if (null != fragmentSettings) fragmentSettings.verifyKeyFiles();
+            } else {
+                this.onRefresh(true);
+            }
+        } else if (isDocumentStorage()) {
             switchStorageRoot.setVisibility(View.VISIBLE);
             switchStorageRoot.setText(R.string.document_storage_root);
             switchStorageRoot.setOnClickListener(view -> {
@@ -1432,7 +1440,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             });
-            if (Debug.isNewer(Build.VERSION_CODES.R) && !TagMo.hasPublisher()) {
+            if (Debug.isNewer(Build.VERSION_CODES.R) && !TagMo.isGooglePlay()) {
                 switchStorageType.setVisibility(View.VISIBLE);
                 switchStorageType.setText(R.string.grant_file_permission);
                 switchStorageType.setOnClickListener(view -> {
@@ -2769,12 +2777,21 @@ public class BrowserActivity extends AppCompatActivity implements
     };
 
     ActivityResultLauncher<String[]> onRequestStorage = registerForActivityResult(
-                    new ActivityResultContracts.RequestMultiplePermissions(),
-    permissions -> { boolean isStorageEnabled = true;
-        for (Map.Entry<String,Boolean> entry : permissions.entrySet()) {
-            if (!entry.getValue()) isStorageEnabled = false;
+            new ActivityResultContracts.RequestMultiplePermissions(), permissions -> {
+        boolean isStorageEnabled = true;
+        if (TagMo.isGalaxyWear()) {
+            isStorageEnabled = Boolean.TRUE.equals(permissions.get(
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            ));
+        } else {
+            for (Map.Entry<String, Boolean> entry : permissions.entrySet()) {
+                if (!entry.getValue()) isStorageEnabled = false;
+            }
         }
-        if (isStorageEnabled) this.onStorageEnabled(); else this.onDocumentEnabled();
+        if (isStorageEnabled)
+            this.onStorageEnabled();
+        else
+            this.onDocumentEnabled();
     });
 
     @RequiresApi(api = Build.VERSION_CODES.R)

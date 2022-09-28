@@ -397,7 +397,7 @@ public class FlaskSlotFragment extends Fragment implements
         this.settings.addChangeListener(writeFileAdapter);
 
         SearchView searchView = rootLayout.findViewById(R.id.amiibo_search);
-        if (TagMo.isGalaxyWear()) {
+        if (TagMo.isWearableUI()) {
             searchView.setVisibility(View.GONE);
         } else {
             SearchManager searchManager = (SearchManager) activity

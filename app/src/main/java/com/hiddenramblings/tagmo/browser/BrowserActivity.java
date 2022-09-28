@@ -241,7 +241,7 @@ public class BrowserActivity extends AppCompatActivity implements
         keyManager = new KeyManager(this);
 
         if (null != getSupportActionBar()) {
-            if (TagMo.isGalaxyWear()) {
+            if (TagMo.isWearableUI()) {
                 getSupportActionBar().hide();
             } else {
                 getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -318,7 +318,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
                 switch (position) {
                     case 1:
-                        if (TagMo.isGalaxyWear()) {
+                        if (TagMo.isWearableUI()) {
                             hideBrowserInterface();
                         } else if (hasEliteEnabled) {
                             showActionButton();
@@ -383,7 +383,7 @@ public class BrowserActivity extends AppCompatActivity implements
             boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
             switch (position) {
                 case 1:
-                    if (TagMo.isGalaxyWear()) {
+                    if (TagMo.isWearableUI()) {
                         tab.setText(R.string.settings);
                     } else if (hasEliteEnabled) {
                         tab.setText(R.string.elite_n2);
@@ -529,7 +529,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        if (!TagMo.isGalaxyWear()) {
+        if (!TagMo.isWearableUI()) {
             ((TextView) findViewById(R.id.build_text)).setText(getString(
                     R.string.build_details, getBuildTypeName(), BuildConfig.COMMIT
             ));
@@ -560,7 +560,7 @@ public class BrowserActivity extends AppCompatActivity implements
             });
         }
 
-        if (TagMo.isGalaxyWear()) onCreateWearOptionsMenu();
+        if (TagMo.isWearableUI()) onCreateWearOptionsMenu();
         if (TagMo.isCompatBuild()) retrieveDonationMenu();
     }
 
@@ -571,7 +571,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onLoadSettingsFragment() {
-        if (TagMo.isGalaxyWear()) {
+        if (TagMo.isWearableUI()) {
             fragmentSettings = pagerAdapter.getSettings();
         } else {
             if (null == fragmentSettings) fragmentSettings = new SettingsFragment();
@@ -616,7 +616,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void requestStoragePermission() {
-        if (TagMo.isGalaxyWear()) {
+        if (TagMo.isWearableUI()) {
             onRequestStorage.launch(PERMISSIONS_STORAGE);
         } else if (Debug.isNewer(Build.VERSION_CODES.R)) {
             if (TagMo.isGooglePlay()) {
@@ -828,7 +828,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 subscriptions.removeAllViewsInLayout();
             });
             Dialog donateDialog = dialog.setView(layout).show();
-            if (!TagMo.hasPublisher()) {
+            if (!TagMo.isMainstream()) {
                 @SuppressLint("InflateParams")
                 View paypal = getLayoutInflater().inflate(R.layout.button_paypal, null);
                 paypal.setOnClickListener(view -> {
@@ -1423,7 +1423,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onStorageEnabled() {
-        if (TagMo.isGalaxyWear()) {
+        if (TagMo.isWearableUI()) {
             if (keyManager.isKeyMissing()) {
                 if (null != fragmentSettings) fragmentSettings.verifyKeyFiles();
             } else {
@@ -1570,7 +1570,7 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.filter_game_titles) {
             onFilterGameTitlesClick();
         }
-        return TagMo.isGalaxyWear() || super.onOptionsItemSelected(item);
+        return TagMo.isWearableUI() || super.onOptionsItemSelected(item);
     }
 
     public void onCreateWearOptionsMenu() {
@@ -1604,7 +1604,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onMenuItemsInvalidated() {
-        if (TagMo.isGalaxyWear()) {
+        if (TagMo.isWearableUI()) {
             onCreateWearOptionsMenu();
         } else {
             invalidateOptionsMenu();
@@ -1613,7 +1613,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (TagMo.isGalaxyWear()) {
+        if (TagMo.isWearableUI()) {
             return super.onCreateOptionsMenu(menu);
         }
 
@@ -2004,7 +2004,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (System.currentTimeMillis() >= oldBrowserSettings.getLastUpdatedGit() + 3600000) {
             updates = new CheckUpdatesTask(this);
-            if (TagMo.hasPublisher()) {
+            if (TagMo.isMainstream()) {
                 updates.setPlayUpdateListener(appUpdateInfo -> {
                     appUpdate = appUpdateInfo;
                     onMenuItemsInvalidated();
@@ -2039,7 +2039,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void setIndexFastScrollRecyclerListener(RecyclerView amiibosView) {
-        if (TagMo.isGalaxyWear()) return;
+        if (TagMo.isWearableUI()) return;
         if (amiibosView instanceof IndexFastScrollRecyclerView) {
             IndexFastScrollRecyclerView indexView = (IndexFastScrollRecyclerView) amiibosView;
             //noinspection deprecation
@@ -2570,7 +2570,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void setBrowserTitle(int titleId) {
-        setTitle(TagMo.isGalaxyWear() ? "" : getString(titleId));
+        setTitle(TagMo.isWearableUI() ? "" : getString(titleId));
     }
 
     private void setAmiiboStats() {
@@ -2701,7 +2701,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public boolean closePrefsDrawer() {
-        if (TagMo.isGalaxyWear()) return false;
+        if (TagMo.isWearableUI()) return false;
         if (prefsDrawer.isDrawerOpen(GravityCompat.START)) {
             prefsDrawer.closeDrawer(GravityCompat.START);
             return true;
@@ -2779,7 +2779,7 @@ public class BrowserActivity extends AppCompatActivity implements
     ActivityResultLauncher<String[]> onRequestStorage = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(), permissions -> {
         boolean isStorageEnabled = true;
-        if (TagMo.isGalaxyWear()) {
+        if (TagMo.isWearableUI()) {
             isStorageEnabled = Boolean.TRUE.equals(permissions.get(
                     Manifest.permission.READ_EXTERNAL_STORAGE
             ));
@@ -2968,7 +2968,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     @SuppressWarnings("ConstantConditions")
     private String getBuildTypeName() {
-        if (TagMo.isGalaxyWear()) {
+        if (TagMo.isWearableUI()) {
             return "Android Wear";
         } else if (TagMo.isGooglePlay()) {
             return "Google Play";

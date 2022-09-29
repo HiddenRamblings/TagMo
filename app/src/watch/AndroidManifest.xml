@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
+    <uses-feature android:name="android.hardware.type.watch" />
 
     <uses-sdk tools:overrideLibrary="androidx.wear" />
-    
-    <uses-feature android:name="android.hardware.type.watch" />
+
     <application>
         <meta-data
             android:name="com.google.android.wearable.standalone"

@@ -99,11 +99,12 @@ public class Foomiibo {
         byte[] arr = new byte[NfcByte.TAG_DATA_SIZE];
 
         // Set UID, BCC0
-        byte[] uid = generateRandomUID(); // 0x04, (byte) 0xC0, 0x0A, 0x46, 0x61, 0x6B, 0x65, 0x0A
+        // 0x04, (byte) 0xC0, 0x0A, 0x46, 0x61, 0x6B, 0x65, 0x0A
+        byte[] uid = generateRandomUID();
         System.arraycopy(uid, 0, arr, 0x1D4, uid.length);
 
         // Set BCC1
-        arr[0] = uid[8];
+        arr[0] = uid[0x8];
 
         // Set Internal, Static Lock, and CC
         byte[] CC = new byte[]{ 0x48, 0x0F, (byte) 0xE0, (byte) 0xF1, 0x10, (byte) 0xFF, (byte) 0xEE };

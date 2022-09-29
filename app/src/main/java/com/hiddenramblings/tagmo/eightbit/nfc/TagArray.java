@@ -343,9 +343,9 @@ public class TagArray {
     private static final String hexSingature = "5461674d6f20382d426974204e544147";
 
     public static byte[] getSignedData(byte[] tagData) {
-        byte[] signature = hexToByteArray(hexSingature);
         byte[] signedData = new byte[NfcByte.TAG_FILE_SIZE];
         System.arraycopy(tagData, 0, signedData, 0x0, tagData.length);
+        byte[] signature = hexToByteArray(hexSingature);
         System.arraycopy(signature, 0, signedData, 0x21C, signature.length);
         return signedData;
     }

@@ -7,8 +7,8 @@ android {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
         targetSdkVersion 33
-        versionCode 317
-        versionName "3.1.7"
+        versionCode 318
+        versionName "3.1.8"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -46,6 +46,7 @@ android {
         watch {
             initWith release
             getIsDefault().set(false)
+            versionNameSuffix "-wear"
         }
     }
 

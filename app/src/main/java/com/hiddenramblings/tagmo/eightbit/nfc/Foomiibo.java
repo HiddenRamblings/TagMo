@@ -82,11 +82,6 @@ public class Foomiibo {
         return uid;
     }
 
-    public byte[] getSignature() {
-        return new byte[]{ 0x54, 0x61, 0x67, 0x4D, 0x6F, 0x20, 0x38,
-                0x2D, 0x42, 0x69, 0x74, 0x20, 0x4E, 0x54, 0x41, 0x47 };
-    }
-
     @SuppressWarnings("unused")
     private String randomizeSerial(String serial) {
         Random random = new Random();
@@ -101,7 +96,7 @@ public class Foomiibo {
     }
 
     public byte[] generateData(String id) {
-        byte[] arr = new byte[NfcByte.TAG_FILE_SIZE];
+        byte[] arr = new byte[NfcByte.TAG_DATA_SIZE];
 
         // Set UID, BCC0
         byte[] uid = generateRandomUID(); // 0x04, (byte) 0xC0, 0x0A, 0x46, 0x61, 0x6B, 0x65, 0x0A
@@ -135,16 +130,12 @@ public class Foomiibo {
         System.arraycopy(salt, 0, arr, 0x1E8, salt.length);
 
         int off1 = 0x54, off2 = 0x1DC;
-        // write identification block
+        // Write Identification Block
         for (int i = 0; i < 16; i += 2, off1 += 1, off2 += 1) {
             byte currByte = (byte) parseInt(id.substring(i, i + 2), 16);
             arr[off1] = currByte;
             arr[off2] = currByte;
         }
-
-        // Set TagMo Signature
-        byte[] tagmo = getSignature();
-        System.arraycopy(tagmo, 0, arr, 0x021C, tagmo.length);
 
         return arr;
     }

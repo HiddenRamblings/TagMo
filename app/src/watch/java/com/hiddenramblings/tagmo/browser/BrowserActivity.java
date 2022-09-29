@@ -2519,7 +2519,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
                 try {
                     if (isEliteDevice) {
-                        String signature = TagReader.getTagSignature(mifare);
+                        String signature = TagReader.getBankSignature(mifare);
                         prefs.settings_elite_signature().put(signature);
                         prefs.eliteActiveBank().put(active_bank);
                         prefs.eliteBankCount().put(bank_count);

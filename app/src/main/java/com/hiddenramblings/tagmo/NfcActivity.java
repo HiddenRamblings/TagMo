@@ -366,7 +366,7 @@ public class NfcActivity extends AppCompatActivity {
                             TagWriter.writeEliteAuto(mifare, data, keyManager, selection);
                             Intent write = new Intent(NFCIntent.ACTION_NFC_SCANNED);
                             write.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                                    TagReader.getTagSignature(mifare));
+                                    TagReader.getBankSignature(mifare));
                             write.putExtra(NFCIntent.EXTRA_BANK_COUNT, bank_count);
                             write.putExtra(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
                             write.putExtra(NFCIntent.EXTRA_CURRENT_BANK, selection);
@@ -467,7 +467,7 @@ public class NfcActivity extends AppCompatActivity {
                             } else {
                                 ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
                                 result.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                                        TagReader.getTagSignature(mifare));
+                                        TagReader.getBankSignature(mifare));
                                 result.putExtra(NFCIntent.EXTRA_BANK_COUNT, bank_count);
                                 result.putExtra(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
                                 args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles);

@@ -40,7 +40,7 @@ public class TagReader {
         if (length == NfcByte.TAG_FILE_SIZE) {
             byte[] signed = new byte[NfcByte.TAG_FILE_SIZE];
             new DataInputStream(inputStream).readFully(signed);
-            TagArray.getTagSignature(signed);
+            TagArray.getDataSignature(signed);
             return Arrays.copyOfRange(signed, 0, NfcByte.TAG_DATA_SIZE);
         } else {
             byte[] tagData = new byte[NfcByte.TAG_DATA_SIZE];
@@ -110,7 +110,7 @@ public class TagReader {
         return tag.getVersion(false);
     }
 
-    public static String getTagSignature(NTAG215 tag) {
+    public static String getBankSignature(NTAG215 tag) {
         byte[] signature = tag.readSignature(false);
         if (null != signature)
             return TagArray.bytesToHex(signature).substring(0, 22);

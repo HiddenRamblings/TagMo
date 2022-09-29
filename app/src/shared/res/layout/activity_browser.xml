@@ -62,6 +62,9 @@
             android:id="@+id/navigation_tabs"
             android:layout_width="match_parent"
             android:layout_height="24dp"
+            app:tabMaxWidth="0dp"
+            app:tabGravity="fill"
+            app:tabMode="fixed"
             app:tabTextColor="@android:color/white"
             android:background="?attr/colorPrimaryDark" />
 

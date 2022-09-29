@@ -33,7 +33,8 @@ public class NavPagerAdapter extends FragmentStateAdapter {
                         ? fragmentElite : hasFlaskEnabled
                         ? fragmentFlask : fragmentWebsite;
             case 2:
-                return hasFlaskEnabled ? fragmentFlask : fragmentWebsite;
+                return (TagMo.isWearableUI() || hasEliteEnabled) && hasFlaskEnabled
+                        ? fragmentFlask : fragmentWebsite;
             case 3:
                 return fragmentWebsite;
             default:

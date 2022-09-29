@@ -333,7 +333,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         break;
                     case 2:
                         hideBrowserInterface();
-                        if (hasFlaskEnabled) {
+                        if (hasEliteEnabled && hasFlaskEnabled) {
                             setTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
@@ -385,7 +385,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                     break;
                 case 2:
-                    if (hasFlaskEnabled) {
+                    if (hasEliteEnabled && hasFlaskEnabled) {
                         tab.setText(R.string.flask_title);
                     } else {
                         tab.setText(R.string.guides);

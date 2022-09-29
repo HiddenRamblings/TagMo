@@ -851,8 +851,8 @@ public class EliteBankFragment extends Fragment implements
                 eliteBankCount.setValue(bank_count);
                 updateEliteAdapter(result.getData().getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
                 bankStats.setText(getString(R.string.bank_stats, getValueForPosition(
-                        eliteBankCount, prefs.eliteActiveBank().get()), bank_count)
-                );
+                        eliteBankCount, prefs.eliteActiveBank().get()
+                ), bank_count));
                 writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
                 eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
             });

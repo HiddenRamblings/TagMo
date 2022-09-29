@@ -216,9 +216,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private final Handler handler = new Handler(Looper.getMainLooper());
     NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
 
-    private BillingClient billingClient;
-    private final ArrayList<ProductDetails> iapSkuDetails = new ArrayList<>();
-    private final ArrayList<ProductDetails> subSkuDetails = new ArrayList<>();
+    private DonationHandler donations = new DonationHandler(this);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -291,10 +289,10 @@ public class BrowserActivity extends AppCompatActivity implements
                     BrowserAdapter.resetVisible();
                     FoomiiboAdapter.resetVisible();
                 }
-                boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
                 boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
                 switch (position) {
                     case 1:
+                    case 3:
                         hideBrowserInterface();
                         break;
                     case 2:
@@ -305,9 +303,6 @@ public class BrowserActivity extends AppCompatActivity implements
                             amiibosView = fragmentFlask.getAmiibosView();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         }
-                        break;
-                    case 3:
-                        hideBrowserInterface();
                         break;
                     default:
                         showBrowserInterface();
@@ -474,7 +469,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
 
         onCreateWearOptionsMenu();
-        if (TagMo.isCompatBuild()) retrieveDonationMenu();
+        if (TagMo.isCompatBuild()) donations.retrieveDonationMenu();
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -673,55 +668,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 ).show());
             }
         });
-    }
-
-    private void onSendDonationClicked() {
-        if (TagMo.isCompatBuild()) {
-            LinearLayout layout = (LinearLayout) getLayoutInflater()
-                    .inflate(R.layout.donation_layout, null);
-            AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(
-                    BrowserActivity.this, R.style.DialogTheme_NoActionBar
-            ));
-            LinearLayout donations = layout.findViewById(R.id.donation_layout);
-            Collections.sort(iapSkuDetails, (obj1, obj2) ->
-                    obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
-            for (ProductDetails skuDetail : iapSkuDetails) {
-                if (null == skuDetail.getOneTimePurchaseOfferDetails()) continue;
-                donations.addView(getDonationButton(skuDetail));
-            }
-            LinearLayout subscriptions = layout.findViewById(R.id.subscription_layout);
-            Collections.sort(subSkuDetails, (obj1, obj2) ->
-                    obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
-            for (ProductDetails skuDetail : subSkuDetails) {
-                if (null == skuDetail.getSubscriptionOfferDetails()) continue;
-                subscriptions.addView(getSubscriptionButton(skuDetail));
-            }
-            dialog.setOnCancelListener(dialogInterface -> {
-                donations.removeAllViewsInLayout();
-                subscriptions.removeAllViewsInLayout();
-            });
-            dialog.setOnDismissListener(dialogInterface -> {
-                donations.removeAllViewsInLayout();
-                subscriptions.removeAllViewsInLayout();
-            });
-            Dialog donateDialog = dialog.setView(layout).show();
-            if (!TagMo.isMainstream()) {
-                @SuppressLint("InflateParams")
-                View paypal = getLayoutInflater().inflate(R.layout.button_paypal, null);
-                paypal.setOnClickListener(view -> {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                            "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
-                    )));
-                    donateDialog.cancel();
-                });
-                layout.addView(paypal);
-            }
-            donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        } else {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                    "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
-            )));
-        }
     }
 
     public void setFoomiiboPanelVisibility() {
@@ -1359,7 +1305,7 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
         } else if (item.getItemId() == R.id.send_donation) {
-            onSendDonationClicked();
+            donations.onSendDonationClicked();
         } else if (item.getItemId() == R.id.filter_character) {
             return onFilterCharacterClick();
         } else if (item.getItemId() == R.id.filter_game_series) {
@@ -2360,52 +2306,8 @@ public class BrowserActivity extends AppCompatActivity implements
         return this.settings;
     }
 
-    private boolean keyNameMatcher(String name) {
-        boolean isValid = AmiiboManager.binFileMatcher(name);
-        return name.toLowerCase(Locale.ROOT).endsWith("retail.bin") ||
-                (isValid && (name.toLowerCase(Locale.ROOT).startsWith("locked")
-                        || name.toLowerCase(Locale.ROOT).startsWith("unfixed")));
-    }
-
-    public void locateKeyFilesRecursive(File rootFolder) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            File[] files = rootFolder.listFiles((dir, name) -> keyNameMatcher(name));
-            if (null != files && files.length > 0) {
-                for (File file : files) {
-                    try (FileInputStream inputStream = new FileInputStream(file)) {
-                        this.keyManager.evaluateKey(inputStream);
-                        hideFakeSnackbar();
-                    } catch (Exception e) {
-                        Debug.Warn(e);
-                    }
-                }
-            } else {
-                File[] directories = rootFolder.listFiles();
-                if (directories == null || directories.length == 0) return;
-                for (File directory : directories) {
-                    if (directory.isDirectory()) locateKeyFilesRecursive(directory);
-                }
-            }
-        });
-    }
-
-    public void locateKeyFiles() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            File[] files = Storage.getDownloadDir(null)
-                    .listFiles((dir, name) -> keyNameMatcher(name));
-            if (null != files && files.length > 0) {
-                for (File file : files) {
-                    try (FileInputStream inputStream = new FileInputStream(file)) {
-                        this.keyManager.evaluateKey(inputStream);
-                        hideFakeSnackbar();
-                    } catch (Exception e) {
-                        Debug.Warn(e);
-                    }
-                }
-            } else {
-                locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated().get()));
-            }
-        });
+    public boolean closePrefsDrawer() {
+        return true;
     }
 
     private static final String[] PERMISSIONS_STORAGE = {
@@ -2423,33 +2325,6 @@ public class BrowserActivity extends AppCompatActivity implements
         else
             this.onDocumentEnabled();
     });
-
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    ActivityResultLauncher<Intent> onRequestScopedStorage = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (Environment.isExternalStorageManager()) {
-            settings.setBrowserRootDocument(null);
-            settings.notifyChanges();
-            this.onStorageEnabled();
-        } else {
-            this.onDocumentEnabled();
-        }
-    });
-
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    void requestScopedStorage() {
-        try {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-            try {
-                intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
-            } catch (Exception e) {
-                intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-            }
-            onRequestScopedStorage.launch(intent);
-        } catch (ActivityNotFoundException anf) {
-            this.onDocumentEnabled();
-        }
-    }
 
     private boolean hasTestedElite;
     private boolean isEliteDevice;
@@ -2594,239 +2469,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         }
-    }
-
-    private String getIAP(int amount) {
-        return String.format(Locale.ROOT, "subscription_%02d", amount);
-    }
-
-    private String getSub(int amount) {
-        return String.format(Locale.ROOT, "monthly_%02d", amount);
-    }
-
-    private final ArrayList<String> iapList = new ArrayList<>();
-    private final ArrayList<String> subList = new ArrayList<>();
-
-    private final ConsumeResponseListener consumeResponseListener = (billingResult, s)
-            -> new IconifiedSnackbar(this).buildTickerBar(R.string.donation_thanks).show();
-
-    private void handlePurchaseIAP(Purchase purchase) {
-        ConsumeParams.Builder consumeParams = ConsumeParams.newBuilder()
-                .setPurchaseToken(purchase.getPurchaseToken());
-        billingClient.consumeAsync(consumeParams.build(), consumeResponseListener);
-    }
-
-    private final AcknowledgePurchaseResponseListener acknowledgePurchaseResponseListener = billingResult
-            -> new IconifiedSnackbar(this).buildTickerBar(R.string.donation_thanks).show();
-
-    private void handlePurchaseSub(Purchase purchase) {
-        AcknowledgePurchaseParams.Builder acknowledgePurchaseParams = AcknowledgePurchaseParams
-                .newBuilder().setPurchaseToken(purchase.getPurchaseToken());
-        billingClient.acknowledgePurchase(acknowledgePurchaseParams.build(),
-                acknowledgePurchaseResponseListener);
-    }
-
-    private void handlePurchase(Purchase purchase) {
-        if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
-            if (!purchase.isAcknowledged()) {
-                for (String iap : iapList) {
-                    if (purchase.getProducts().contains(iap))
-                        handlePurchaseIAP(purchase);
-                }
-                for (String sub : subList) {
-                    if (purchase.getProducts().contains(sub))
-                        handlePurchaseSub(purchase);
-                }
-            }
-        }
-    }
-
-    private final PurchasesUpdatedListener purchasesUpdatedListener = (billingResult, purchases) -> {
-        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && null != purchases) {
-            for (Purchase purchase : purchases) {
-                handlePurchase(purchase);
-            }
-        }
-    };
-
-    private final ArrayList<String> subsPurchased = new ArrayList<>();
-
-    private final PurchasesResponseListener subsOwnedListener = (billingResult, purchases) -> {
-        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-            for (Purchase purchase : purchases) {
-                for (String sku : purchase.getProducts()) {
-                    if (subsPurchased.contains(sku)) {
-                        break;
-                    }
-                }
-            }
-        }
-    };
-
-    private final PurchaseHistoryResponseListener subHistoryListener = (billingResult, purchases) -> {
-        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && null != purchases) {
-            for (PurchaseHistoryRecord purchase : purchases)
-                subsPurchased.addAll(purchase.getProducts());
-            billingClient.queryPurchasesAsync(QueryPurchasesParams.newBuilder()
-                    .setProductType(BillingClient.ProductType.SUBS).build(), subsOwnedListener);
-        }
-    };
-
-    private final PurchaseHistoryResponseListener iapHistoryListener = (billingResult, purchases) -> {
-        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && null != purchases) {
-            for (PurchaseHistoryRecord purchase : purchases) {
-                for (String sku : purchase.getProducts()) {
-                    if (Integer.parseInt(sku.split("_")[1]) >= 10) {
-                        break;
-                    }
-                }
-            }
-        }
-    };
-
-    private void retrieveDonationMenu() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            billingClient = BillingClient.newBuilder(this)
-                    .setListener(purchasesUpdatedListener).enablePendingPurchases().build();
-
-            iapSkuDetails.clear();
-            subSkuDetails.clear();
-
-            billingClient.startConnection(new BillingClientStateListener() {
-                @Override
-                public void onBillingServiceDisconnected() {
-                }
-
-                @Override
-                public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
-                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                        iapList.add(getIAP(1));
-                        iapList.add(getIAP(5));
-                        iapList.add(getIAP(10));
-                        iapList.add(getIAP(25));
-                        iapList.add(getIAP(50));
-                        iapList.add(getIAP(75));
-                        iapList.add(getIAP(99));
-                        for (String productId : iapList) {
-                            QueryProductDetailsParams.Product productList = QueryProductDetailsParams
-                                    .Product.newBuilder().setProductId(productId)
-                                    .setProductType(BillingClient.ProductType.INAPP).build();
-                            QueryProductDetailsParams.Builder params = QueryProductDetailsParams
-                                    .newBuilder().setProductList(List.of(productList));
-                            billingClient.queryProductDetailsAsync(params.build(),
-                                    (billingResult1, productDetailsList) -> {
-                                        iapSkuDetails.addAll(productDetailsList);
-                                        billingClient.queryPurchaseHistoryAsync(
-                                                QueryPurchaseHistoryParams.newBuilder().setProductType(
-                                                        BillingClient.ProductType.INAPP
-                                                ).build(), iapHistoryListener
-                                        );
-                                    });
-
-                        }
-                    }
-                    subList.add(getSub(1));
-                    subList.add(getSub(5));
-                    subList.add(getSub(10));
-                    subList.add(getSub(25));
-                    subList.add(getSub(50));
-                    subList.add(getSub(75));
-                    subList.add(getSub(99));
-                    for (String productId : subList) {
-                        QueryProductDetailsParams.Product productList = QueryProductDetailsParams
-                                .Product.newBuilder().setProductId(productId)
-                                .setProductType(BillingClient.ProductType.SUBS).build();
-                        QueryProductDetailsParams.Builder params = QueryProductDetailsParams
-                                .newBuilder().setProductList(List.of(productList));
-                        billingClient.queryProductDetailsAsync(params.build(),
-                                (billingResult1, productDetailsList) -> {
-                                    subSkuDetails.addAll(productDetailsList);
-                                    billingClient.queryPurchaseHistoryAsync(
-                                            QueryPurchaseHistoryParams.newBuilder().setProductType(
-                                                    BillingClient.ProductType.SUBS
-                                            ).build(), subHistoryListener
-                                    );
-                                });
-                    }
-                }
-            });
-        });
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private Button getDonationButton(ProductDetails skuDetail) {
-        Button button = new Button(getApplicationContext());
-        button.setBackgroundResource(R.drawable.rounded_view);
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
-            button.setElevation(TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    10f,
-                    Resources.getSystem().getDisplayMetrics()
-            ));
-        }
-        int padding = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                4f,
-                Resources.getSystem().getDisplayMetrics()
-        );
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        params.setMargins(0, padding, 0, padding);
-        button.setLayoutParams(params);
-        button.setTextColor(ContextCompat.getColor(this, android.R.color.white));
-        button.setText(getString(R.string.iap_button, skuDetail
-                .getOneTimePurchaseOfferDetails().getFormattedPrice()));
-        button.setOnClickListener(view1 -> {
-            BillingFlowParams.ProductDetailsParams productDetailsParamsList
-                    = BillingFlowParams.ProductDetailsParams
-                    .newBuilder().setProductDetails(skuDetail).build();
-            billingClient.launchBillingFlow(
-                    BrowserActivity.this, BillingFlowParams.newBuilder()
-                            .setProductDetailsParamsList(List.of(productDetailsParamsList)).build()
-            );
-        });
-        return button;
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private Button getSubscriptionButton(ProductDetails skuDetail) {
-        Button button = new Button(getApplicationContext());
-        button.setBackgroundResource(R.drawable.rounded_view);
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
-            button.setElevation(TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    10f,
-                    Resources.getSystem().getDisplayMetrics()
-            ));
-        }
-        int padding = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                4f,
-                Resources.getSystem().getDisplayMetrics()
-        );
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        params.setMargins(0, padding, 0, padding);
-        button.setLayoutParams(params);
-        button.setTextColor(ContextCompat.getColor(this, android.R.color.white));
-        button.setText(getString(R.string.sub_button, skuDetail
-                .getSubscriptionOfferDetails().get(0).getPricingPhases()
-                .getPricingPhaseList().get(0).getFormattedPrice()));
-        button.setOnClickListener(view1 -> {
-            BillingFlowParams.ProductDetailsParams productDetailsParamsList
-                    = BillingFlowParams.ProductDetailsParams.newBuilder()
-                    .setOfferToken(skuDetail.getSubscriptionOfferDetails().get(0).getOfferToken())
-                    .setProductDetails(skuDetail).build();
-            billingClient.launchBillingFlow(
-                    BrowserActivity.this, BillingFlowParams.newBuilder()
-                            .setProductDetailsParamsList(List.of(productDetailsParamsList)).build()
-            );
-        });
-        return button;
     }
 
     private void onBackButtonEnabled() {

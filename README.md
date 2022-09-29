@@ -3,8 +3,7 @@
 </p>
 
 <p align="center">
-TagMo is an Android app for cloning amiibo™ to NTAG215 NFC tags<br />
-(including Power Tags, Amiiqo / N2 Elite and Bluup Flask devices)
+TagMo is an Android app to manage NTAG215, Power Tag, N2 Elite, & Flask amiibo™ for Nintendo 3DS, WiiU, and Switch
 <br /><br />
 To contribute, please address PRs to the <a href="https://github.com/HiddenRamblings/TagMo/tree/conversion">conversion</a> branch. Thank you.
 <p align="center">

@@ -342,7 +342,15 @@ public class TagArray {
 
     private static final String hexSingature = "5461674d6f20382d426974204e544147";
 
-    public static String getTagSignature(byte[] tagData) {
+    public static byte[] getSignedData(byte[] tagData) {
+        byte[] signature = hexToByteArray(hexSingature);
+        byte[] signedData = new byte[NfcByte.TAG_FILE_SIZE];
+        System.arraycopy(tagData, 0, signedData, 0x0, tagData.length);
+        System.arraycopy(signature, 0, signedData, 0x21C, signature.length);
+        return signedData;
+    }
+
+    public static String getDataSignature(byte[] tagData) {
         if (tagData.length == NfcByte.TAG_FILE_SIZE) {
             String signature = bytesToHex(
                     Arrays.copyOfRange(tagData, 540, NfcByte.TAG_FILE_SIZE)

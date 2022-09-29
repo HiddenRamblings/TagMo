@@ -560,10 +560,12 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void onLoadSettingsFragment() {
         if (null == fragmentSettings) fragmentSettings = new SettingsFragment();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences, fragmentSettings)
-                .commit();
+        if (!fragmentSettings.isAdded()) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.preferences, fragmentSettings)
+                    .commit();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)

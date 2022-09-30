@@ -45,10 +45,6 @@ public class TagMo extends Application {
         return Objects.equals(BuildConfig.BUILD_TYPE, "wearos");
     }
 
-    public static boolean isMainstream() {
-        return isGooglePlay() || isWearableUI();
-    }
-
     @SuppressWarnings("ConstantConditions")
     public static boolean isCompatBuild() {
         return BuildConfig.APPLICATION_ID.endsWith(".eightbit");

@@ -6,8 +6,8 @@ body:
   - type: textarea
     id: what-happened
     attributes:
-      label: Issue Details
-      description: Email Body
+      label: Issue Description
+      description: The body content of the email
       placeholder:
     validations:
       required: true
@@ -15,14 +15,14 @@ body:
     id: logs
     attributes:
       label: Logcat Output
-      description: Email Logs
+      description: The log attached to the email
       render: shell
     validations:
       required: true
   - type: checkboxes
     id: terms
     attributes:
-      label: Report Requirement
+      label: Use Authorization
       options:
         - label: I am authorized to submit this issue by TagMo collaborators
           required: true

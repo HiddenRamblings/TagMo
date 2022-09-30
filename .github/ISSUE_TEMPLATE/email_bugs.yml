@@ -1,0 +1,28 @@
+name: Logcat Email
+description: TagMo Use ONLY
+title: "[Email]:  PST"
+labels: ["logcat"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Issue Details
+      description: Email Body
+      placeholder:
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logcat Output
+      description: Email Logs
+      render: shell
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Report Requirement
+      options:
+        - label: I am authorized to submit this issue by TagMo collaborators
+          required: true

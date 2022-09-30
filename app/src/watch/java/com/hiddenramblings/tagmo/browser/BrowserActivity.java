@@ -216,7 +216,8 @@ public class BrowserActivity extends AppCompatActivity implements
     private final Handler handler = new Handler(Looper.getMainLooper());
     NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
 
-    private DonationHandler donations = new DonationHandler(this);
+    private final ScanTag tagScanner = new ScanTag();
+    private final DonationHandler donations = new DonationHandler(this);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -511,7 +512,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private final ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
+    public final ActivityResultLauncher<Intent> onNFCActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK || null == result.getData()) return;
 
@@ -1880,114 +1881,117 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public void updateAmiiboView(byte[] tagData, AmiiboFile amiiboFile) {
-        amiiboContainer.setAlpha(0f);
-        amiiboContainer.setVisibility(View.VISIBLE);
-        amiiboContainer.animate().alpha(1f).setDuration(150).setListener(null);
+        amiiboContainer.post(() -> {
+            amiiboContainer.setAlpha(0f);
+            amiiboContainer.setVisibility(View.VISIBLE);
+            amiiboContainer.animate().alpha(1f).setDuration(150).setListener(null);
 
-        getToolbarOptions(toolbar, tagData, amiiboFile);
+            getToolbarOptions(toolbar, tagData, amiiboFile);
 
-        long amiiboId = -1;
-        String tagInfo = null;
-        String amiiboHexId = "";
-        String amiiboName = "";
-        String amiiboSeries = "";
-        String amiiboType = "";
-        String gameSeries = "";
-        // String character = "";
-        String amiiboImageUrl;
+            long amiiboId = -1;
+            String tagInfo = null;
+            String amiiboHexId = "";
+            String amiiboName = "";
+            String amiiboSeries = "";
+            String amiiboType = "";
+            String gameSeries = "";
+            // String character = "";
+            String amiiboImageUrl;
 
-        if (null != tagData  && tagData.length > 0) {
-            try {
-                amiiboId = Amiibo.dataToId(tagData);
-            } catch (Exception e) {
-                Debug.Info(e);
-            }
-        }
-
-        if (amiiboId == -1) {
-            tagInfo = getString(R.string.read_error);
-            amiiboImageUrl = null;
-        } else if (amiiboId == 0) {
-            tagInfo = getString(R.string.blank_tag);
-            amiiboImageUrl = null;
-        } else {
-            Amiibo amiibo = null;
-            AmiiboManager amiiboManager = settings.getAmiiboManager();
-            if (null != amiiboManager) {
-                amiibo = amiiboManager.amiibos.get(amiiboId);
-                if (null == amiibo)
-                    amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
-            }
-            if (null != amiibo) {
-                amiiboHexId = Amiibo.idToHex(amiibo.id);
-                amiiboImageUrl = amiibo.getImageUrl();
-                if (null != amiibo.name )
-                    amiiboName = amiibo.name;
-                if (null != amiibo.getAmiiboSeries() )
-                    amiiboSeries = amiibo.getAmiiboSeries().name;
-                if (null != amiibo.getAmiiboType() )
-                    amiiboType = amiibo.getAmiiboType().name;
-                if (null != amiibo.getGameSeries() )
-                    gameSeries = amiibo.getGameSeries().name;
-            } else {
-                amiiboHexId = Amiibo.idToHex(amiiboId);
-                tagInfo = "ID: " + amiiboHexId;
-                amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
-            }
-        }
-
-        boolean hasTagInfo = null != tagInfo;
-        if (hasTagInfo) {
-            setAmiiboInfoText(txtError, tagInfo, false);
-            amiiboInfo.setVisibility(View.GONE);
-        } else {
-            txtError.setVisibility(View.GONE);
-            amiiboInfo.setVisibility(View.VISIBLE);
-        }
-        setAmiiboInfoText(txtName, amiiboName, hasTagInfo);
-        setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo);
-        setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo);
-        setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo);
-        setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo);
-        // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
-
-        try {
-            TextView txtUsage = findViewById(R.id.txtUsage);
-            getGameCompatibility(txtUsage, tagData);
-            txtUsage.setVisibility(View.GONE);
-            TextView label = findViewById(R.id.txtUsageLabel);
-            label.setOnClickListener(view -> {
-                if (txtUsage.getVisibility() == View.VISIBLE) {
-                    txtUsage.setVisibility(View.GONE);
-                    label.setText(R.string.game_titles_view);
-                } else {
-                    txtUsage.setVisibility(View.VISIBLE);
-                    label.setText(R.string.game_titles_hide);
+            if (null != tagData  && tagData.length > 0) {
+                try {
+                    amiiboId = Amiibo.dataToId(tagData);
+                } catch (Exception e) {
+                    Debug.Info(e);
                 }
-            });
-        } catch (Exception ex) {
-            Debug.Warn(ex);
-        }
-
-        if (null != imageAmiibo) {
-            imageAmiibo.setVisibility(View.GONE);
-            GlideApp.with(this).clear(imageTarget);
-            if (null != amiiboImageUrl) {
-                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(imageTarget);
-                final long amiiboTagId = amiiboId;
-                imageAmiibo.setOnClickListener(view -> {
-                    Bundle bundle = new Bundle();
-                    bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId);
-
-                    Intent intent = new Intent(this, ImageActivity.class);
-                    intent.putExtras(bundle);
-
-                    startActivity(intent);
-                });
             }
-        }
-        if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000"))
-            txtTagId.setEnabled(false);
+
+            if (amiiboId == -1) {
+                tagInfo = getString(R.string.read_error);
+                amiiboImageUrl = null;
+            } else if (amiiboId == 0) {
+                tagInfo = getString(R.string.blank_tag);
+                amiiboImageUrl = null;
+            } else {
+                Amiibo amiibo = null;
+                AmiiboManager amiiboManager = settings.getAmiiboManager();
+                if (null != amiiboManager) {
+                    amiibo = amiiboManager.amiibos.get(amiiboId);
+                    if (null == amiibo)
+                        amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
+                }
+                if (null != amiibo) {
+                    amiiboHexId = Amiibo.idToHex(amiibo.id);
+                    amiiboImageUrl = amiibo.getImageUrl();
+                    if (null != amiibo.name )
+                        amiiboName = amiibo.name;
+                    if (null != amiibo.getAmiiboSeries() )
+                        amiiboSeries = amiibo.getAmiiboSeries().name;
+                    if (null != amiibo.getAmiiboType() )
+                        amiiboType = amiibo.getAmiiboType().name;
+                    if (null != amiibo.getGameSeries() )
+                        gameSeries = amiibo.getGameSeries().name;
+                } else {
+                    amiiboHexId = Amiibo.idToHex(amiiboId);
+                    tagInfo = "ID: " + amiiboHexId;
+                    amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
+                }
+            }
+
+            boolean hasTagInfo = null != tagInfo;
+            if (hasTagInfo) {
+                setAmiiboInfoText(txtError, tagInfo, false);
+                amiiboInfo.setVisibility(View.GONE);
+            } else {
+                txtError.setVisibility(View.GONE);
+                amiiboInfo.setVisibility(View.VISIBLE);
+            }
+            setAmiiboInfoText(txtName, amiiboName, hasTagInfo);
+            setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo);
+            setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo);
+            setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo);
+            setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo);
+            // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
+
+            try {
+                TextView txtUsage = findViewById(R.id.txtUsage);
+                getGameCompatibility(txtUsage, tagData);
+                txtUsage.setVisibility(View.GONE);
+                TextView label = findViewById(R.id.txtUsageLabel);
+                label.setOnClickListener(view -> {
+                    if (txtUsage.getVisibility() == View.VISIBLE) {
+                        txtUsage.setVisibility(View.GONE);
+                        label.setText(R.string.game_titles_view);
+                    } else {
+                        txtUsage.setVisibility(View.VISIBLE);
+                        label.setText(R.string.game_titles_hide);
+                    }
+                });
+            } catch (Exception ex) {
+                Debug.Warn(ex);
+            }
+
+            if (null != imageAmiibo) {
+                imageAmiibo.setVisibility(View.GONE);
+                GlideApp.with(BrowserActivity.this).clear(imageTarget);
+                if (null != amiiboImageUrl) {
+                    GlideApp.with(BrowserActivity.this).asBitmap()
+                            .load(amiiboImageUrl).into(imageTarget);
+                    final long amiiboTagId = amiiboId;
+                    imageAmiibo.setOnClickListener(view -> {
+                        Bundle bundle = new Bundle();
+                        bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId);
+
+                        Intent intent = new Intent(BrowserActivity.this, ImageActivity.class);
+                        intent.putExtras(bundle);
+
+                        startActivity(intent);
+                    });
+                }
+            }
+            if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000"))
+                txtTagId.setEnabled(false);
+        });
     }
 
     private void updateAmiiboView(byte[] tagData) {
@@ -2293,8 +2297,10 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public void showElitePage(Bundle extras) {
-        fragmentElite.setArguments(extras);
-        mainLayout.setCurrentItem(1, true);
+        mainLayout.post(() -> {
+            fragmentElite.setArguments(extras);
+            mainLayout.setCurrentItem(1, true);
+        });
     }
 
     public void showWebsite(String address) {
@@ -2302,12 +2308,12 @@ public class BrowserActivity extends AppCompatActivity implements
         pagerAdapter.getWebsite().loadWebsite(address);
     }
 
-    public BrowserSettings getSettings() {
-        return this.settings;
+    public ViewPager2 getLayout() {
+        return this.mainLayout;
     }
 
-    public boolean closePrefsDrawer() {
-        return true;
+    public BrowserSettings getSettings() {
+        return this.settings;
     }
 
     private static final String[] PERMISSIONS_STORAGE = {
@@ -2326,9 +2332,6 @@ public class BrowserActivity extends AppCompatActivity implements
             this.onDocumentEnabled();
     });
 
-    private boolean hasTestedElite;
-    private boolean isEliteDevice;
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     final ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -2337,14 +2340,6 @@ public class BrowserActivity extends AppCompatActivity implements
         prefs.downloadUrl().remove();
     });
 
-    private void closeTagSilently(NTAG215 mifare) {
-        if (null != mifare) {
-            try {
-                mifare.close();
-            } catch (Exception ignored) { }
-        }
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -2352,122 +2347,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             if (keyManager.isKeyMissing()) return;
-            NTAG215 mifare = null;
-            try {
-                Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                mifare = NTAG215.get(tag);
-                String tagTech = TagArray.getTagTechnology(tag);
-                if (mifare == null) {
-                    if (prefs.enable_elite_support().get()) {
-                        mifare = new NTAG215(NfcA.get(tag));
-                        try {
-                            mifare.connect();
-                        } catch (Exception ex) {
-                            Debug.Info(ex);
-                        }
-                        if (TagReader.needsFirmware(mifare)) {
-                            if (TagWriter.updateFirmware(mifare))
-                                new Toasty(this).Short(R.string.firmware_update);
-                            mifare.close();
-                            finish();
-                        }
-                    }
-                    throw new Exception(getString(R.string.error_tag_protocol, tagTech));
-                }
-                mifare.connect();
-                if (!hasTestedElite) {
-                    hasTestedElite = true;
-                    if (!TagArray.isPowerTag(mifare)) {
-                        isEliteDevice = TagArray.isElite(mifare);
-                    }
-                }
-                byte[] bank_details;
-                int bank_count;
-                int active_bank;
-                if (!isEliteDevice) {
-                    bank_count = -1;
-                    active_bank = -1;
-                } else {
-                    bank_details = TagReader.getBankDetails(mifare);
-                    bank_count = bank_details[1] & 0xFF;
-                    active_bank = bank_details[0] & 0xFF;
-                }
-                try {
-                    if (isEliteDevice) {
-                        String signature = TagReader.getBankSignature(mifare);
-                        prefs.settings_elite_signature().put(signature);
-                        prefs.eliteActiveBank().put(active_bank);
-                        prefs.eliteBankCount().put(bank_count);
-
-                        Bundle args = new Bundle();
-                        ArrayList<String> titles = TagReader.readTagTitles(mifare, bank_count);
-                        args.putString(NFCIntent.EXTRA_SIGNATURE, signature);
-                        args.putInt(NFCIntent.EXTRA_BANK_COUNT, bank_count);
-                        args.putInt(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
-                        args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles);
-                        showElitePage(args);
-
-                    } else {
-                        updateAmiiboView(TagReader.readFromTag(mifare));
-                    }
-                    hasTestedElite = false;
-                    isEliteDevice = false;
-                } finally {
-                    mifare.close();
-                }
-            } catch (Exception e) {
-                Debug.Warn(e);
-                String error = e.getMessage();
-                error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
-                if (null != error && prefs.enable_elite_support().get()) {
-                    NTAG215 finalMifare = mifare;
-                    if (e instanceof android.nfc.TagLostException) {
-                        new IconifiedSnackbar(this, mainLayout).buildSnackbar(
-                                R.string.speed_scan, Snackbar.LENGTH_SHORT
-                        ).show();
-                        closeTagSilently(finalMifare);
-                        return;
-                    } else if (getString(R.string.nfc_null_array).equals(error)) {
-                        this.runOnUiThread(() -> new AlertDialog.Builder(BrowserActivity.this)
-                                .setTitle(R.string.possible_lock)
-                                .setMessage(R.string.prepare_unlock)
-                                .setPositiveButton(R.string.unlock, (dialog, which) -> {
-                                    closeTagSilently(finalMifare);
-                                    dialog.dismiss();
-                                    onNFCActivity.launch(new Intent(
-                                            this, NfcActivity.class
-                                    ).setAction(NFCIntent.ACTION_UNLOCK_UNIT));
-                                })
-                                .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                                    closeTagSilently(finalMifare);
-                                    dialog.dismiss();
-                                }).show());
-                        return;
-                    } else if (e instanceof NullPointerException
-                            && error.contains("nfctech.NTAG215.connect()")) {
-                        this.runOnUiThread(() -> new AlertDialog.Builder(BrowserActivity.this)
-                                .setTitle(R.string.possible_blank)
-                                .setMessage(R.string.prepare_blank)
-                                .setPositiveButton(R.string.scan, (dialog, which) -> {
-                                    dialog.dismiss();
-                                    onNFCActivity.launch(new Intent(
-                                            this, NfcActivity.class
-                                    ).setAction(NFCIntent.ACTION_BLIND_SCAN));
-                                })
-                                .setNegativeButton(R.string.cancel, (dialog, which) ->
-                                        dialog.dismiss()).show());
-                    }
-                }
-                if (null != error) {
-                    if (e instanceof NullPointerException
-                            && error.contains("nfctech.NTAG215.connect()")) {
-                        error = getString(R.string.error_tag_faulty);
-                    }
-                    new Toasty(this).Short(error);
-                } else {
-                    new Toasty(this).Short(R.string.error_unknown);
-                }
-            }
+            Executors.newSingleThreadExecutor().execute(() ->
+                    tagScanner.onTagDiscovered(BrowserActivity.this, intent));
         }
     }
 

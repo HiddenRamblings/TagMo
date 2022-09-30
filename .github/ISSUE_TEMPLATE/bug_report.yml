@@ -1,6 +1,6 @@
-name: Bug Report
+name: Report a Bug
 description: File a bug report
-title: "[Bug]: "
+title: "[Issue]: "
 labels: ["logcat"]
 body:
   - type: markdown
@@ -12,7 +12,7 @@ body:
     attributes:
       label: Issue Description
       description: Please describe the issue in your own words
-      placeholder: Issues without a meaningful description are closed
+      placeholder: This is how you would see the problem again
     validations:
       required: true
   - type: textarea
@@ -20,6 +20,7 @@ body:
     attributes:
       label: Logcat Output
       description: Long press inside this box and select "Paste"
+      placeholder: This is a logcat, not a secondary description
       render: shell
     validations:
       required: true

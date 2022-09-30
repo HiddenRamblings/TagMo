@@ -75,14 +75,23 @@ public class AmiiboDocument {
         List<String> binFiles = Arrays.asList(resources.getStringArray(R.array.mimetype_bin));
         Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(rootUri, documentId);
 
-        ArrayList<String> items = new ArrayList<>(binFiles);
-        items.add(DocumentsContract.Document.MIME_TYPE_DIR);
-        String[] selectionArgs = items.toArray(new String[0]);
-        Cursor cursor = contentResolver.query(childrenUri, new String[] {
-                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                DocumentsContract.Document.COLUMN_MIME_TYPE,
-                DocumentsContract.Document.COLUMN_DOCUMENT_ID },
-                DocumentsContract.Document.COLUMN_MIME_TYPE, selectionArgs, null);
+        Cursor cursor;
+        try {
+            ArrayList<String> items = new ArrayList<>(binFiles);
+            items.add(DocumentsContract.Document.MIME_TYPE_DIR);
+            String[] selectionArgs = items.toArray(new String[0]);
+            cursor = contentResolver.query(childrenUri, new String[] {
+                            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                            DocumentsContract.Document.COLUMN_MIME_TYPE,
+                            DocumentsContract.Document.COLUMN_DOCUMENT_ID },
+                    DocumentsContract.Document.COLUMN_MIME_TYPE, selectionArgs, null);
+        } catch (SecurityException ex) {
+            cursor = contentResolver.query(childrenUri, new String[] {
+                            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                            DocumentsContract.Document.COLUMN_MIME_TYPE,
+                            DocumentsContract.Document.COLUMN_DOCUMENT_ID },
+                    null, null, null);
+        }
         try {
             while (cursor.moveToNext()) {
                 fileCount.increment();

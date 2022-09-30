@@ -77,7 +77,6 @@ import android.os.Looper;
 
 import androidx.annotation.RequiresApi;
 
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import org.json.JSONArray;
@@ -85,7 +84,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -420,7 +418,7 @@ public class PuckGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(byte[] value) {
-        List<byte[]> chunks = byteToPortions(value, 20);
+        List<byte[]> chunks = GattArray.byteToPortions(value, 20);
         int commandQueue = Callbacks.size() + 1 + chunks.size();
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
@@ -429,6 +427,28 @@ public class PuckGattService extends Service {
                     mCharacteristicTX.setValue(chunk);
                     mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
                     mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
+                }, (i + 1) * 30L);
+            }
+        }, commandQueue * 30L);
+    }
+
+    private void delayedWriteCharacteristic(String value) {
+        List<String> chunks = GattArray.stringToPortions(value, maxTransmissionUnit);
+        int commandQueue = Callbacks.size() + 1 + chunks.size();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            for (int i = 0; i < chunks.size(); i += 1) {
+                final String chunk = chunks.get(i);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    mCharacteristicTX.setValue(chunk);
+                    mCharacteristicTX.setWriteType(
+                            // BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+                            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                    );
+                    try {
+                        mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
+                    } catch (NullPointerException ex) {
+                        if (null != listener) listener.onServicesDiscovered();
+                    }
                 }, (i + 1) * 30L);
             }
         }, commandQueue * 30L);
@@ -443,9 +463,7 @@ public class PuckGattService extends Service {
             }
         }
 
-        Callbacks.add(index, () -> delayedWriteCharacteristic(
-                ("tag." + value + "\n").getBytes(CharsetCompat.UTF_8)
-        ));
+        Callbacks.add(index, () -> delayedWriteCharacteristic(("tag." + value + "\n")));
 
         if (Callbacks.size() == 1) {
             Callbacks.get(0).run();
@@ -458,46 +476,6 @@ public class PuckGattService extends Service {
 
     public void promptTagCharacteristic(String value) {
         queueTagCharacteristic(value, 0);
-    }
-
-    public static List<byte[]> byteToPortions(byte[] largeByteArray, int sizePerPortion) {
-        List<byte[]> byteArrayPortions = new ArrayList<>();
-        int offset = 0;
-        while (offset < largeByteArray.length) {
-            byte[] portion = Arrays.copyOfRange(largeByteArray, offset, offset + sizePerPortion);
-            offset += sizePerPortion;
-            byteArrayPortions.add(portion);
-        }
-        return byteArrayPortions;
-    }
-
-    public static List<String> stringToPortions(String largeString, int sizePerPortion) {
-        List<String> stringPortions = new ArrayList<>();
-        int size = largeString.length();
-        if (size <= sizePerPortion) {
-            stringPortions.add(largeString);
-        } else {
-            int index = 0;
-            while (index < size) {
-                stringPortions.add(largeString.substring(index,
-                        Math.min(index + sizePerPortion, largeString.length())));
-                index += sizePerPortion;
-            }
-        }
-        return stringPortions;
-    }
-
-    public static String stringToUnicode(String s) {
-        StringBuilder sb = new StringBuilder(s.length() * 3);
-        for (char c : s.toCharArray()) {
-            if (c < 256) {
-                sb.append(c);
-            } else {
-                String strHex = Integer.toHexString(c);
-                sb.append("\\u").append(strHex);
-            }
-        }
-        return sb.toString();
     }
 
     public boolean isJSONValid(String test) {

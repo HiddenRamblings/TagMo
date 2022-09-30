@@ -13,7 +13,7 @@
 
     <string name="no_decrypt_key">尚未匯入Decryption金鑰</string>
 
-    <string name="filter">amiibo&#8482;篩選</string>
+    <string name="filter">amiibo篩選</string>
     <string name="sorting">排序準則</string>
     <string name="display_options">顯示設定</string>
 
@@ -22,8 +22,8 @@
     <string name="amiibo_titles">遊戲使用率</string>
     <string name="amiibo_game">遊戲系列</string>
     <string name="amiibo_character">角色人物</string>
-    <string name="amiibo_series">amiibo&#8482; 系列</string>
-    <string name="amiibo_type">amiibo&#8482; 種類</string>
+    <string name="amiibo_series">amiibo 系列</string>
+    <string name="amiibo_type">amiibo 種類</string>
     <string name="amiibo_path">檔案路徑</string>
 
     <string name="pref_amiibo_characters">角色人物</string>
@@ -91,7 +91,7 @@
     <string name="view_hex">檢視Hex編碼</string>
     <string name="hex_code">Hex編碼</string>
     <string name="edit_props">編輯相關資訊</string>
-    <string name="delete_amiibo">刪除 amiibo&#8482;</string>
+    <string name="delete_amiibo">刪除 amiibo</string>
     <string name="ignore_tag_id">忽略此Tag ID #</string>
     <string name="random_serial">隨機序號</string>
     <string name="game_titles_view">檢視可支援的相關遊戲</string>
@@ -155,7 +155,7 @@
     <string name="scan_elite">掃描 N2 Elite</string>
     <string name="erase_bank">抹除 Bank</string>
     <string name="activate_bank">啟用 Bank</string>
-    <string name="amiibo_backup">備份 amiibo&#8482;</string>
+    <string name="amiibo_backup">備份 amiibo</string>
     <string name="validate_data">數據驗證</string>
     <string name="set_bank_count">設定 Bank 計數</string>
     <string name="lock_amiibo">鎖住 N2 Elite</string>
@@ -183,18 +183,18 @@
     <string name="power_tag_details">請檢視Github官方頁面提供的使用方式、相容性與限制說明。</string>
     <string name="enable_elite">啟用支援N2 Elite</string>
     <string name="elite_details">請檢視Github官方頁面提供的使用方式、相容性與限制說明。</string>
-    <string name="lock_elite_details">啟用的bank將模擬已發售的amiibo&#8482;.\n除非解除鎖定，否則無法使用其他功能。</string>
+    <string name="lock_elite_details">啟用的bank將模擬已發售的amiibo.\n除非解除鎖定，否則無法使用其他功能。</string>
     <string name="lock_elite_warning">是否鎖定N2 Elite硬體？</string>
     <string name="unlock_elite_warning">解除鎖定N2 Elite硬體</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
-    <string name="amiibo_info">amiibo&#8482; 資料庫</string>
+    <string name="amiibo_info">amiibo 資料庫</string>
     <string name="sync_amiibo_info">與 AmiiboAPI 同步資料庫</string>
-    <string name="import_json_details">載入 amiibo&#8482; 資料庫 (JSON)</string>
-    <string name="reset_amiibo_info">重置 amiibo&#8482; 資料庫快取</string>
+    <string name="import_json_details">載入 amiibo 資料庫 (JSON)</string>
+    <string name="reset_amiibo_info">重置 amiibo 資料庫快取</string>
     <string name="number_game">%1$d 個遊戲系列</string>
     <string name="number_character">%1$d 位角色人物</string>
-    <string name="number_series">%1$d 個 amiibo&#8482; 系列</string>
-    <string name="number_type">%1$d 種 amiibo&#8482; 類型</string>
+    <string name="number_series">%1$d 個 amiibo 系列</string>
+    <string name="number_type">%1$d 種 amiibo 類型</string>
     <string name="pref_advanced">進階</string>
     <string name="pref_tagmo_theme">TagMo系統主題</string>
     <string name="tagmo_theme_details">將程式背景變更為自訂主題</string>
@@ -203,22 +203,22 @@
     <string name="pref_stable_channel">檢查穩定版本更新</string>
     <string name="stable_channel_details">檢查TagMo版本更新時，僅安裝穩定性分支的版本</string>
 
-    <string name="amiibo_info_updated">amiibo&#8482; 資料庫已更新！</string>
+    <string name="amiibo_info_updated">amiibo 資料庫已更新！</string>
     <string name="sync_amiibo_process">正在與AmiiboAPI&#8230;進行同步</string>
     <string name="sync_amiibo_complete">與AmiiboAPI同步完成！</string>
     <string name="sync_amiibo_failed">AmiiboAPI同步失敗！</string>
-    <string name="removing_amiibo_info">正在清除amiibo&#8482; 快取&#8230;</string>
+    <string name="removing_amiibo_info">正在清除amiibo 快取&#8230;</string>
     <string name="update_amiibo_api">AmiiboAPI 資料庫已更新！</string>
 
     <string name="locating_keys">正在尋找Crypto金鑰&#8230;</string>
-    <string name="refreshing_list">正在搜尋amiibo&#8482;&#8230;</string>
-    <string name="amiibo_not_found">沒有找到amiibo&#8482; bins！</string>
+    <string name="refreshing_list">正在搜尋amiibo&#8230;</string>
+    <string name="amiibo_not_found">沒有找到amiibo bins！</string>
 
-    <string name="files_displayed">找到 %1$d 個檔案: ? / ? amiibo&#8482;</string>
-    <string name="amiibo_collected">找到 %1$d 個檔案: %2$d / %3$d amiibo&#8482;</string>
+    <string name="files_displayed">找到 %1$d 個檔案: ? / ? amiibo</string>
+    <string name="amiibo_collected">找到 %1$d 個檔案: %2$d / %3$d amiibo</string>
 
     <string name="view_device_options">檢視N2 Elite選項設定</string>
-    <string name="view_amiibo_details">檢視 amiibo&#8482; 相關資訊</string>
+    <string name="view_amiibo_details">檢視 amiibo 相關資訊</string>
     <string name="write_open_banks">將 %1$d Banks 寫入N2 Elite</string>
     <string name="erase_open_banks">將 %1$d Banks 從N2 Elite抹除</string>
     <string name="edit_bank_count">編輯 N2 Elite 的 Bank 計數</string>
@@ -231,13 +231,13 @@
     <string name="delete_missing">無法刪除已掃描的tag！</string>
     <string name="delete_virtual">無法刪除虛擬的tag！</string>
     <string name="erase_active">無法抹除正在使用的bank！</string>
-    <string name="backup_filename">設定 amiibo&#8482; Bin 名稱</string>
+    <string name="backup_filename">設定 amiibo Bin 名稱</string>
     <string name="document_storage_root">更新文件儲存空間</string>
     <string name="emulated_storage_root">瀏覽模擬儲存空間</string>
     <string name="physical_storage_root">瀏覽實體儲存空間</string>
     <string name="grant_file_permission">啟用 "所有檔案" 管理器</string>
     <string name="force_document_storage">啟用文件儲存空間</string>
-    <string name="refresh_amiibo">重新載入 amiibo&#8482;</string>
+    <string name="refresh_amiibo">重新載入 amiibo</string>
 
     <string name="prepare_unlock">開始掃描N2，在傳輸完成前請勿將NFC感應區移開</string>
     <string name="progress_unlock">請長按N2鈕，並保持與NFC的感應連線.</string>
@@ -254,10 +254,10 @@
     <string name="flask_disconnect">Flask 藍牙連線無法使用！</string>
     <string name="flask_paired">取消配對Flask以繼續.</string>
     <string name="flask_count">Slot %1$s 可啟用，%2$d Slots 已執行</string>
-    <string name="write_slot_file">將 amiibo&#8482; 上傳到 Bluup Flask</string>
+    <string name="write_slot_file">將 amiibo 上傳到 Bluup Flask</string>
     <string name="write_slots">將 %1$d slots 寫入 Bluup Flask</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
-    <string name="flask_upload">正在上傳 amiibo&#8482;&#8230;</string>
+    <string name="flask_upload">正在上傳 amiibo&#8230;</string>
     <string name="fail_bluetooth_adapter">藍牙裝置無法使用！</string>
     <string name="fail_permissions">無法取得執行所需的權限！</string>
     <string name="location_disclosure">特此知會您，使用Bluetooth LE掃描時必須取得定位資訊，依據Google Play商店的政策，本程序會在背景服務收集定位資訊，但絕對不會讀取、儲存或與第三人分享定位資訊。</string>
@@ -281,12 +281,12 @@
     <string name="error_data_write">寫入主要數據時發生錯誤(stage 1)</string>
     <string name="error_password_write">設定密碼時發生錯誤(stage 2)</string>
     <string name="error_lock_write">設定鎖定資訊時發生錯誤(stage 3)</string>
-    <string name="error_tag_rewrite">Tag 已經寫入 amiibo&#8482;</string>
+    <string name="error_tag_rewrite">Tag 已經寫入 amiibo</string>
     <string name="error_tag_format">Tag 並非 NTAG215</string>
     <string name="error_tag_version">Tag 版本錯誤</string>
     <string name="error_tag_faulty">NFC tag可能損壞或種類不符\n請使用其他的tags</string>
     <string name="error_version">版本相關資訊錯誤</string>
-    <string name="error_amiibo_parse">amiibo&#8482; 相關資訊解析錯誤</string>
+    <string name="error_amiibo_parse">amiibo 相關資訊解析錯誤</string>
     <string name="error_powertag_key">沒有載入Power Tag金鑰</string>
     <string name="error_elite_write">寫入數據到N2 Elite時發生錯誤</string>
     <string name="error_elite_auth">驗證N2 Elite時發生錯誤</string>
@@ -304,9 +304,9 @@
     <string name="fail_bank_oob">已選擇的bank超過上限！</string>
     <string name="fail_active_oob">可用的bank超過可啟用數量上限！</string>
     <string name="fail_parse_banks">bank解析失敗！</string>
-    <string name="fail_read_amiibo">讀取 amiibo&#8482; 數據時發生錯誤！</string>
-    <string name="fail_early_remove">讀取中請勿移開 amiibo&#8482;！</string>
-    <string name="fail_amiibo_null">請重新掃描 amiibo&#8482;</string>
+    <string name="fail_read_amiibo">讀取 amiibo 數據時發生錯誤！</string>
+    <string name="fail_early_remove">讀取中請勿移開 amiibo！</string>
+    <string name="fail_amiibo_null">請重新掃描 amiibo</string>
     <string name="fail_read">讀取失敗</string>
     <string name="fail_auth">驗證失敗</string>
     <string name="fail_decrypt">解密tag數據失敗</string>
@@ -343,13 +343,13 @@
     <string name="p10_key_missing">沒有對應此P10_ID的金鑰</string>
     <string name="power_tag_verify">Power Tag已驗證: %1$s</string>
 
-    <string name="amiibo_info_parse_error">無法解析 amiibo&#8482; 資料庫</string>
-    <string name="amiibo_info_not_loaded">尚未載入 amiibo&#8482; 資料庫</string>
-    <string name="amiibo_failure_load">amiibo&#8482; 資料庫載入失敗</string>
-    <string name="amiibo_failure_parse">amiibo&#8482; 資料庫解析失敗</string>
-    <string name="amiibo_failure_read">amiibo&#8482; 資料庫讀取失敗</string>
-    <string name="amiibo_failure_update">amiibo&#8482; 資料庫更新失敗</string>
-    <string name="amiibo_failure_parse_default">amiibo&#8482; 初始資料庫解析失敗</string>
+    <string name="amiibo_info_parse_error">無法解析 amiibo 資料庫</string>
+    <string name="amiibo_info_not_loaded">尚未載入 amiibo 資料庫</string>
+    <string name="amiibo_failure_load">amiibo 資料庫載入失敗</string>
+    <string name="amiibo_failure_parse">amiibo 資料庫解析失敗</string>
+    <string name="amiibo_failure_read">amiibo 資料庫讀取失敗</string>
+    <string name="amiibo_failure_update">amiibo 資料庫更新失敗</string>
+    <string name="amiibo_failure_parse_default">amiibo 初始資料庫解析失敗</string>
 
     <string name="firmware_update">N2 Elite 韌體已更新完成！</string>
     <string name="firmware_failed">韌體更新失敗，請再試一次！ (%1$d)</string>

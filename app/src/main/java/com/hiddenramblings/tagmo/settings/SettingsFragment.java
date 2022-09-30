@@ -11,9 +11,11 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.widget.LinearLayout;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -262,6 +264,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 prefs.settings_disable_debug().put(disableDebug.isChecked());
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
+        }
+
+        Preference disclaimer = findPreference(getString(R.string.settings_disclaimer));
+        if (null != disclaimer) {
+            try (InputStream in = getResources().openRawResource(R.raw.disclaimer);
+                 BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
+                StringBuilder total = new StringBuilder();
+                String line;
+                while (null != (line = r.readLine())) {
+                    total.append(line).append("\n");
+                }
+                disclaimer.setSummary(total.toString());
+            } catch (Exception e) {
+                Debug.Info(e);
+            }
         }
     }
 

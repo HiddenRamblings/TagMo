@@ -81,4 +81,10 @@
             android:summary="@string/disable_debug_details"
             android:title="@string/pref_disable_debug" />
     </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/pref_disclaimer">
+        <androidx.preference.Preference
+        android:key="@string/settings_disclaimer" />
+    </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

@@ -14,7 +14,7 @@
     <string name="hex_ff" translatable="false">FF</string>
     <string name="hex_ffff" translatable="false">FFFF</string>
 
-    <string name="number_foomiibo" translatable="false">Foomiibo: %1$d amiibo&#8482;</string>
+    <string name="number_foomiibo" translatable="false">Foomiibo: %1$d amiibo</string>
 
     <string name="settings_import_keys" translatable="false">import_keys</string>
     <string name="settings_tag_type_validation" translatable="false">enable_tag_type_validation</string>
@@ -32,6 +32,7 @@
     <string name="settings_tagmo_theme" translatable="false">settings_tagmo_theme</string>
     <string name="settings_disable_debug" translatable="false">settings_disable_debug</string>
     <string name="image_network_settings" translatable="false">image_network_settings</string>
+    <string name="settings_disclaimer" translatable="false">settings_disclaimer</string>
 
     <string name="filter_game_series" translatable="false">filter_game_series</string>
     <string name="filter_character" translatable="false">filter_character</string>
@@ -51,7 +52,7 @@
     </string-array>
     <string name="mimetype_zip" translatable="false">application/zip</string>
 
-    <string name="amiibo" translatable="false">amiibo&#8482;</string>
+    <string name="amiibo" translatable="false">amiibo</string>
     <string name="joy_con" translatable="false">Joy-Con</string>
 
     <string name="amiibo_api" translatable="false">AmiiboAPI</string>

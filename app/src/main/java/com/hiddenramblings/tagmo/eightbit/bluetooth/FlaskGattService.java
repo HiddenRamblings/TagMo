@@ -79,7 +79,6 @@ import android.util.Base64;
 import androidx.annotation.RequiresApi;
 
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import org.json.JSONArray;
@@ -87,7 +86,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -532,7 +530,7 @@ public class FlaskGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(byte[] value) {
-        List<byte[]> chunks = byteToPortions(value, maxTransmissionUnit);
+        List<byte[]> chunks = GattArray.byteToPortions(value, maxTransmissionUnit);
         int commandQueue = Callbacks.size() + 1 + chunks.size();
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
@@ -554,7 +552,7 @@ public class FlaskGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(String value) {
-        List<String> chunks = stringToPortions(value, maxTransmissionUnit);
+        List<String> chunks = GattArray.stringToPortions(value, maxTransmissionUnit);
         int commandQueue = Callbacks.size() + 1 + chunks.size();
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
@@ -584,9 +582,6 @@ public class FlaskGattService extends Service {
             }
         }
 
-//        Callbacks.add(index, () -> delayedWriteCharacteristic(
-//                ("tag." + value + "\n").getBytes(CharsetCompat.UTF_8)
-//        ));
         Callbacks.add(index, () -> delayedWriteCharacteristic(("tag." + value + "\n")));
 
         if (Callbacks.size() == 1) {
@@ -604,7 +599,7 @@ public class FlaskGattService extends Service {
     
     public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo) {
         delayedTagCharacteristic("startTagUpload(" + amiiboData.length + ")");
-        List<String> chunks = stringToPortions(Base64.encodeToString(
+        List<String> chunks = GattArray.stringToPortions(Base64.encodeToString(
                 amiiboData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
         ), 128);
         for (int i = 0; i < chunks.size(); i+=1) {
@@ -617,7 +612,7 @@ public class FlaskGattService extends Service {
                 Amiibo.idToHex(amiibo.id).substring(8, 16), 16
         ), 36);
         int reserved = flaskTail.length() + 3; // |tail|#
-        String nameUnicode = stringToUnicode(amiibo.name);
+        String nameUnicode = GattArray.stringToUnicode(amiibo.name);
         String amiiboName = nameUnicode.length() + reserved > 28
                 ? nameUnicode.substring(0, nameUnicode.length()
                 - ((nameUnicode.length() + reserved) - 28))
@@ -636,7 +631,7 @@ public class FlaskGattService extends Service {
             delayedTagCharacteristic("setTag(\"" + name + "||" + tail + "\")");
         } else {
             int reserved = tail.length() + 3; // |tail|#
-            String nameUnicode = stringToUnicode(name);
+            String nameUnicode = GattArray.stringToUnicode(name);
             nameCompat = nameUnicode.length() + reserved > 28
                     ? nameUnicode.substring(0, nameUnicode.length()
                     - ((nameUnicode.length() + reserved) - 28))
@@ -648,7 +643,7 @@ public class FlaskGattService extends Service {
 
     public void fixAmiiboName(String name, String tail) {
         int reserved = tail.length() + 3; // |tail|#
-        String nameUnicode = stringToUnicode(name);
+        String nameUnicode = GattArray.stringToUnicode(name);
         String amiiboName = nameUnicode.length() + reserved > 28
                 ? nameUnicode.substring(0, nameUnicode.length()
                 - ((nameUnicode.length() + reserved) - 28))
@@ -663,7 +658,7 @@ public class FlaskGattService extends Service {
             delayedTagCharacteristic("remove(\"" + name + "||" + tail + "\")");
         } else {
             int reserved = tail.length() + 3; // |tail|#
-            String nameUnicode = stringToUnicode(name);
+            String nameUnicode = GattArray.stringToUnicode(name);
             nameCompat = nameUnicode.length() + reserved > 28
                     ? nameUnicode.substring(0, nameUnicode.length()
                     - ((nameUnicode.length() + reserved) - 28))
@@ -675,7 +670,7 @@ public class FlaskGattService extends Service {
 
     public void downloadAmiibo(String name, String tail) {
         int reserved = tail.length() + 3; // |tail|#
-        String nameUnicode = stringToUnicode(name);
+        String nameUnicode = GattArray.stringToUnicode(name);
         String amiiboName = nameUnicode.length() + reserved > 28
                 ? nameUnicode.substring(0, nameUnicode.length()
                 - ((nameUnicode.length() + reserved) - 28))
@@ -695,45 +690,7 @@ public class FlaskGattService extends Service {
         delayedTagCharacteristic("createBlank()");
     }
 
-    public static List<byte[]> byteToPortions(byte[] largeByteArray, int sizePerPortion) {
-        List<byte[]> byteArrayPortions = new ArrayList<>();
-        int offset = 0;
-        while (offset < largeByteArray.length) {
-            byte[] portion = Arrays.copyOfRange(largeByteArray, offset, offset + sizePerPortion);
-            offset += sizePerPortion;
-            byteArrayPortions.add(portion);
-        }
-        return byteArrayPortions;
-    }
 
-    public static List<String> stringToPortions(String largeString, int sizePerPortion) {
-        List<String> stringPortions = new ArrayList<>();
-        int size = largeString.length();
-        if (size <= sizePerPortion) {
-            stringPortions.add(largeString);
-        } else {
-            int index = 0;
-            while (index < size) {
-                stringPortions.add(largeString.substring(index,
-                        Math.min(index + sizePerPortion, largeString.length())));
-                index += sizePerPortion;
-            }
-        }
-        return stringPortions;
-    }
-
-    public static String stringToUnicode(String s) {
-        StringBuilder sb = new StringBuilder(s.length() * 3);
-        for (char c : s.toCharArray()) {
-            if (c < 256) {
-                sb.append(c);
-            } else {
-                String strHex = Integer.toHexString(c);
-                sb.append("\\u").append(strHex);
-            }
-        }
-        return sb.toString();
-    }
 
     public boolean isJSONValid(String test) {
         if (test.startsWith("tag.") && test.endsWith(")")) return false;

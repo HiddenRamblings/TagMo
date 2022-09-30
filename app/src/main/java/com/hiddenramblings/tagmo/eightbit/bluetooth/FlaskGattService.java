@@ -197,16 +197,14 @@ public class FlaskGattService extends Service {
                         String getList = progress.substring(progress.indexOf("["),
                                 progress.lastIndexOf("]") + 1);
                         try {
-                            if (getList.contains("...")) {
-
-                            } else {
-                                String escapedList = getList
-                                        .replace("/", "\\/")
-                                        .replace("'", "\\'")
-                                        .replace("-", "\\-");
-                                JSONArray jsonArray = new JSONArray(escapedList);
-                                if (null != listener) listener.onFlaskListRetrieved(jsonArray);
-                            }
+                            String escapedList = getList
+                                    .replace("/", "\\/")
+                                    .replace("'", "\\'")
+                                    .replace("-", "\\-");
+                            if (getList.contains("..."))
+                                escapedList = escapedList.replace(" ...", "");
+                            JSONArray jsonArray = new JSONArray(escapedList);
+                            if (null != listener) listener.onFlaskListRetrieved(jsonArray);
                         } catch (JSONException e) {
                             Debug.Warn(e);
                         }

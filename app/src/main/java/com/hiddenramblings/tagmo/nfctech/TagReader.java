@@ -6,6 +6,7 @@ import android.net.Uri;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.nfc.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
 
 import java.io.DataInputStream;
@@ -40,7 +41,7 @@ public class TagReader {
         if (length == NfcByte.TAG_FILE_SIZE) {
             byte[] signed = new byte[NfcByte.TAG_FILE_SIZE];
             new DataInputStream(inputStream).readFully(signed);
-            TagArray.getDataSignature(signed);
+            Foomiibo.getDataSignature(signed);
             return Arrays.copyOfRange(signed, 0, NfcByte.TAG_DATA_SIZE);
         } else {
             byte[] tagData = new byte[NfcByte.TAG_DATA_SIZE];

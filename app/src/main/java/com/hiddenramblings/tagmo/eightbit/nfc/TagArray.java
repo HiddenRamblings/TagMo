@@ -206,7 +206,7 @@ public class TagArray {
         return (byte) (((lo - 0x61) + 0x0A) | ret);
     }
 
-    private static String hexToString(String hex) {
+    static String hexToString(String hex) {
         StringBuilder output = new StringBuilder();
         for (int i = 0; i < hex.length(); i += 2) {
             output.append((char) Integer.parseInt(hex.substring(i, i + 2), 16));
@@ -338,27 +338,6 @@ public class TagArray {
     public static byte[] getValidatedDocument(
             KeyManager keyManager, DocumentFile file) throws Exception {
         return getValidatedData(keyManager, TagReader.readTagDocument(file.getUri()));
-    }
-
-    private static final String hexSingature = "5461674d6f20382d426974204e544147";
-
-    public static byte[] getSignedData(byte[] tagData) {
-        byte[] signedData = new byte[NfcByte.TAG_FILE_SIZE];
-        System.arraycopy(tagData, 0, signedData, 0x0, tagData.length);
-        byte[] signature = hexToByteArray(hexSingature);
-        System.arraycopy(signature, 0, signedData, 0x21C, signature.length);
-        return signedData;
-    }
-
-    public static String getDataSignature(byte[] tagData) {
-        if (tagData.length == NfcByte.TAG_FILE_SIZE) {
-            String signature = bytesToHex(
-                    Arrays.copyOfRange(tagData, 540, NfcByte.TAG_FILE_SIZE)
-            ).substring(0, 32).toLowerCase(Locale.US);
-            Debug.Info(TagMo.class, hexToString(signature));
-            if (hexSingature.equals(signature)) return signature;
-        }
-        return null;
     }
 
     public static String writeBytesToFile(File directory, String name, byte[] tagData)

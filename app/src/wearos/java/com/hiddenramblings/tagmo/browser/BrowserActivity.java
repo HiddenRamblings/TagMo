@@ -1592,7 +1592,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (System.currentTimeMillis() >= oldBrowserSettings.getLastUpdatedGit() + 3600000) {
             updates = new CheckUpdatesTask(this);
-            if (TagMo.isMainstream()) {
+            if (TagMo.isGooglePlay()) {
                 updates.setPlayUpdateListener(appUpdateInfo -> {
                     appUpdate = appUpdateInfo;
                     onCreateWearOptionsMenu();

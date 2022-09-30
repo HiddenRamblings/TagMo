@@ -7,8 +7,8 @@ android {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
         targetSdkVersion 33
-        versionCode 319
-        versionName "3.1.9"
+        versionCode 320
+        versionName "3.2.0"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -27,25 +27,27 @@ android {
         project.archivesBaseName = "TagMo-" + commit
     }
 
+    flavorDimensions "source"
+    productFlavors {
+        github {
+            getIsDefault().set(true)
+        }
+
+        google { }
+    }
+
     buildTypes {
         release {
-            getIsDefault().set(true)
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".eightbit"
         }
         debug {
             initWith release
-            getIsDefault().set(false)
             debuggable true
         }
-        publish {
+        wearos {
             initWith release
-            getIsDefault().set(false)
-        }
-        watch {
-            initWith release
-            getIsDefault().set(false)
             versionNameSuffix "-wear"
         }
     }
@@ -56,10 +58,6 @@ android {
             res.srcDirs('src/shared/res')
         }
         debug {
-            java.srcDirs('src/shared/java')
-            res.srcDirs('src/shared/res')
-        }
-        publish {
             java.srcDirs('src/shared/java')
             res.srcDirs('src/shared/res')
         }
@@ -78,8 +76,7 @@ android {
         }
         buildTypes.release.signingConfig signingConfigs.document
         buildTypes.debug.signingConfig signingConfigs.document
-        buildTypes.publish.signingConfig signingConfigs.document
-        buildTypes.watch.signingConfig signingConfigs.document
+        buildTypes.wearos.signingConfig signingConfigs.document
     } catch (FileNotFoundException ignored) { }
 
     ndkVersion '21.4.7075529'
@@ -129,7 +126,7 @@ dependencies {
     // Required for Lollipop Amiibo API download compatibility
     implementation 'com.google.android.gms:play-services-safetynet:18.0.1'
 
-    watchImplementation "androidx.wear:wear:1.2.0"
+    wearosImplementation "androidx.wear:wear:1.2.0"
 }
 
 configurations {

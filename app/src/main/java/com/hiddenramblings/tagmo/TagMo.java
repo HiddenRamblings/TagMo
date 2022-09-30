@@ -19,10 +19,40 @@ import java.util.Objects;
 
 @EApplication
 public class TagMo extends Application {
-    private static SoftReference<Context> mContext;
-    private static SoftReference<Preferences_> mPrefs;
     @Pref
     Preferences_ prefs;
+
+    public static final String RENDER_RAW = "https://raw.githubusercontent.com/8BitDream/AmiiboAPI/";
+    public static final String AMIIBO_API = "https://amiiboapi.com/api/";
+
+    private static SoftReference<Context> mContext;
+    private static SoftReference<Preferences_> mPrefs;
+    public static final int uiDelay = 50;
+
+    public static Preferences_ getPrefs() {
+        return mPrefs.get();
+    }
+
+    public static Context getContext() {
+        return mContext.get();
+    }
+
+    public static boolean isGooglePlay() {
+        return Objects.equals(BuildConfig.FLAVOR, "google");
+    }
+
+    public static boolean isWearableUI() {
+        return Objects.equals(BuildConfig.BUILD_TYPE, "wearos");
+    }
+
+    public static boolean isMainstream() {
+        return isGooglePlay() || isWearableUI();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public static boolean isCompatBuild() {
+        return BuildConfig.APPLICATION_ID.endsWith(".eightbit");
+    }
 
     public void setThemePreference() {
         switch (prefs.applicationTheme().get()) {
@@ -37,18 +67,6 @@ public class TagMo extends Application {
                 break;
         }
     }
-
-    public static Preferences_ getPrefs() {
-        return mPrefs.get();
-    }
-
-    public static Context getContext() {
-        return mContext.get();
-    }
-
-    public static final String RENDER_RAW = "https://raw.githubusercontent.com/8BitDream/AmiiboAPI/";
-    public static final String AMIIBO_API = "https://amiiboapi.com/api/";
-
 
     @Override
     public void onCreate() {
@@ -67,26 +85,19 @@ public class TagMo extends Application {
             System.exit(0);
         });
 
-        if (!BuildConfig.DEBUG && !isMainstream())
+        if (!BuildConfig.DEBUG && !isGooglePlay())
             new ANRWatchDog(10000).setReportMainThreadOnly().start();
     }
 
-    public static int uiDelay = 50;
-
-    public static boolean isGooglePlay() {
-        return Objects.equals(BuildConfig.BUILD_TYPE, "publish");
-    }
-
-    public static boolean isWearableUI() {
-        return Objects.equals(BuildConfig.BUILD_TYPE, "watch");
-    }
-
-    public static boolean isMainstream() {
-        return isGooglePlay() || isWearableUI();
-    }
-
     @SuppressWarnings("ConstantConditions")
-    public static boolean isCompatBuild() {
-        return BuildConfig.APPLICATION_ID.endsWith(".eightbit");
+    public String getVersionLabel() {
+        String flavor = TagMo.isGooglePlay() ? "Google Play" : "GitHub";
+        if (isWearableUI()) {
+            return flavor + " Wear OS";
+        } else if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) {
+            return flavor + " Release";
+        } else {
+            return flavor + " Testing";
+        }
     }
 }

@@ -58,9 +58,12 @@ import static java.lang.Integer.parseInt;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.NfcByte;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.Random;
 
 public class Foomiibo {
@@ -143,5 +146,30 @@ public class Foomiibo {
 
     public byte[] generateData(long id) {
         return generateData(String.valueOf(id));
+    }
+
+    private static final String hexSingature = "5461674d6f20382d426974204e544147";
+
+    public byte[] getSignedData(byte[] tagData) {
+        byte[] signedData = new byte[NfcByte.TAG_FILE_SIZE];
+        System.arraycopy(tagData, 0, signedData, 0x0, tagData.length);
+        byte[] signature = TagArray.hexToByteArray(hexSingature);
+        System.arraycopy(signature, 0, signedData, 0x21C, signature.length);
+        return signedData;
+    }
+
+    public byte[] getSignedData(String id) {
+        return getSignedData(generateData(id));
+    }
+
+    public static String getDataSignature(byte[] tagData) {
+        if (tagData.length == NfcByte.TAG_FILE_SIZE) {
+            String signature = TagArray.bytesToHex(
+                    Arrays.copyOfRange(tagData, 540, NfcByte.TAG_FILE_SIZE)
+            ).substring(0, 32).toLowerCase(Locale.US);
+            Debug.Info(TagMo.class, TagArray.hexToString(signature));
+            if (hexSingature.equals(signature)) return signature;
+        }
+        return null;
     }
 }

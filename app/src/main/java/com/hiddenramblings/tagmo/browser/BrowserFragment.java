@@ -265,12 +265,12 @@ public class BrowserFragment extends Fragment implements
 
     private void buildFoomiiboFile(Amiibo amiibo) {
         try {
-            byte[] tagData = foomiibo.generateData(Amiibo.idToHex(amiibo.id));
+            byte[] tagData = foomiibo.getSignedData(Amiibo.idToHex(amiibo.id));
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
             TagArray.writeBytesToFile(directory, TagArray.decipherFilename(
-                    settings.getAmiiboManager(), TagArray.getSignedData(tagData), false
+                    settings.getAmiiboManager(), tagData, false
             ), tagData);
         } catch (Exception e) {
             Debug.Warn(e);
@@ -285,8 +285,9 @@ public class BrowserFragment extends Fragment implements
             File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
+            tagData = foomiibo.getSignedData(tagData);
             TagArray.writeBytesToFile(directory, TagArray.decipherFilename(
-                    settings.getAmiiboManager(), TagArray.getSignedData(tagData), false
+                    settings.getAmiiboManager(), tagData, false
             ), tagData);
             new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
                     getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT

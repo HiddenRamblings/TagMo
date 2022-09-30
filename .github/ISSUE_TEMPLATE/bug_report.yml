@@ -28,13 +28,13 @@ body:
     attributes:
       label: Usage Requirements
       description: |
-          amiibo™ binary key file(s). (Encryption keys cannot be shared for legal reasons)
+          amiibo binary key file(s). (Encryption keys cannot be shared for legal reasons)
           Blank NTAG215 tags, Power Tags, Amiiqo / N2 Elite, or Flask (Sold separately)
-          amiibo™ backups or amiibo™. (Backups cannot be shared for legal reasons)
+          amiibo backups or amiibo. (Backups cannot be shared for legal reasons)
 
-          Writing an NFC tag is effectively permanent. Overwriting breaks amiibo™ recognition.
-              Cards, coins, or stickers cannot replace rewriteable amiibo™ emulator devices.
-          Only NTAG215 is recognized as an amiibo™. No other NFC tag formats are supported.
+          Writing an NFC tag is effectively permanent. Overwriting breaks amiibo recognition.
+              Cards, coins, or stickers cannot replace rewriteable amiibo emulator devices.
+          Only NTAG215 is recognized as an amiibo. No other NFC tag formats are supported.
           Only Android phones with Android 4.1+ and NFC / Bluetooth hardware are supported.
 
           By submitting this issue, you confirm reading the usage requirements for TagMo

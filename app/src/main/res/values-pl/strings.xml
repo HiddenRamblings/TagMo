@@ -13,7 +13,7 @@
     <string name="no_decrypt_key">Klucze deszyfrujące nie zaimportowane</string>
 
     <string name="search">Szukaj</string>
-    <string name="filter">Filtry amiibo™</string>
+    <string name="filter">Filtry amiibo</string>
     <string name="sorting">Opcje sortowania</string>
     <string name="display_options">Opcje wyświetlania</string>
     <string name="refresh">Odśwież</string>
@@ -27,12 +27,12 @@
     <string name="amiibo_name">Nazwa</string>
     <string name="amiibo_game">Seria gier</string>
     <string name="amiibo_character">Postać</string>
-    <string name="amiibo_series">Seria amiibo™</string>
-    <string name="amiibo_type">Typ amiibo™</string>
+    <string name="amiibo_series">Seria amiibo</string>
+    <string name="amiibo_type">Typ amiibo</string>
     <string name="amiibo_path">Lokalizacja</string>
 
     <string name="pref_amiibo_characters">Postaci</string>
-    <string name="pref_amiibo_types">Typy amiibo™</string>
+    <string name="pref_amiibo_types">Typy amiibo</string>
 
     <string name="amiibo_name_caps">NAZWA</string>
     <string name="amiibo_id_caps">TAGID</string>
@@ -83,7 +83,7 @@
     <string name="mod_serial">Numer seryjny</string>
     <string name="view_hex">Wyświetl HEX</string>
     <string name="edit_props">Edytuj właściwości</string>
-    <string name="delete_amiibo">UUsuń amiibo™</string>
+    <string name="delete_amiibo">UUsuń amiibo</string>
     <string name="ignore_tag_id">Ignoruj nr Tag ID</string>
     <string name="random_serial">Losowy numer seryjny</string>
 
@@ -155,34 +155,34 @@
     <string name="power_tag_details">Szczegóły ograniczeń i użycia na Github-ie.</string>
     <string name="enable_elite">Włącz obsługę N2 Elite</string>
     <string name="elite_details">Szczegóły ograniczeń i użycia na Github-ie.</string>
-    <string name="lock_elite_details">Aktywny bank będzie emulował rynkowe amiibo™.\nInne funkcje będą wyłączone do odblokowania.</string>
+    <string name="lock_elite_details">Aktywny bank będzie emulował rynkowe amiibo.\nInne funkcje będą wyłączone do odblokowania.</string>
     <string name="lock_elite_warning">Blokada sprzętowa N2 Elite?</string>
     <string name="unlock_elite_warning">Odblokuj sprzętowo N2 Elite</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="sync_amiibo_info">Synchronizuj bazę danych z AmiiboAPI</string>
-    <string name="import_json_details">Załaduj bazę danych amiibo™ (JSON)</string>
-    <string name="reset_amiibo_info">Zresetuj zapisaną bazę danych amiibo™</string>
+    <string name="import_json_details">Załaduj bazę danych amiibo (JSON)</string>
+    <string name="reset_amiibo_info">Zresetuj zapisaną bazę danych amiibo</string>
     <string name="number_game">%1$d Seria gier</string>
     <string name="number_character">%1$d Postać(i)</string>
-    <string name="number_series">%1$d seria amiibo™</string>
-    <string name="number_type">%1$d typ(y) amiibo™</string>
+    <string name="number_series">%1$d seria amiibo</string>
+    <string name="number_type">%1$d typ(y) amiibo</string>
     <string name="pref_advanced">Zaawansowane</string>
     <string name="pref_disable_debug">Zablokuj logowanie błędów</string>
     <string name="disable_debug_details">May improve performance, but limits diagnostic information</string>
 
-    <string name="amiibo_info_updated">Zaktualizowano bazę amiibo™!</string>
+    <string name="amiibo_info_updated">Zaktualizowano bazę amiibo!</string>
     <string name="sync_amiibo_process">Synchronizacja z AmiiboAPI&#8230;</string>
     <string name="sync_amiibo_complete">Synchronizacja AmiiboAPI: udana!</string>
     <string name="sync_amiibo_failed">Synchronizacja AmiiboAPI: błąd!</string>
-    <string name="removing_amiibo_info">Czyszczenie pamięci podręcznej amiibo™&#8230;</string>
+    <string name="removing_amiibo_info">Czyszczenie pamięci podręcznej amiibo&#8230;</string>
     <string name="update_amiibo_api">Baza AmiiboAPI została zaktualizowana!</string>
 
     <string name="locating_keys">Lokalizuję klucze kryptograficzne&#8230;</string>
-    <string name="refreshing_list">Szukam amiibo™&#8230;</string>
-    <string name="amiibo_not_found">Pliki .bin z amiibo™ nie znalezione!</string>
+    <string name="refreshing_list">Szukam amiibo&#8230;</string>
+    <string name="amiibo_not_found">Pliki .bin z amiibo nie znalezione!</string>
 
-    <string name="files_displayed">%1$d Pliki: ? / ? amiibo™</string>
-    <string name="amiibo_collected">%1$d Pliki: %2$d / %3$d amiibo™</string>
+    <string name="files_displayed">%1$d Pliki: ? / ? amiibo</string>
+    <string name="amiibo_collected">%1$d Pliki: %2$d / %3$d amiibo</string>
 
     <string name="write_open_banks">Nagraj %1$d banków na N2 Elite</string>
     <string name="erase_open_banks">Wymaż %1$d banków z N2 Elite</string>
@@ -194,7 +194,7 @@
     <string name="warn_delete_file">Usuwanie %1$s. Na pewno?</string>
     <string name="delete_missing">Nie można usunąć zeskanowanego tagu!</string>
     <string name="erase_active">Nie można wymazać aktywnego banku!</string>
-    <string name="backup_filename">Ustaw nazwę .bin z amiibo™</string>
+    <string name="backup_filename">Ustaw nazwę .bin z amiibo</string>
     <string name="emulated_storage_root">Przeglądaj pamięć emulowaną</string>
     <string name="physical_storage_root">Przeglądaj pamięć fizyczną</string>
 
@@ -222,11 +222,11 @@
     <string name="error_data_write">Błąd przy zapisywaniu danych dłównych (faza 1)</string>
     <string name="error_password_write">Błąd rpzy ustawianiu hasła (faza 2)</string>
     <string name="error_lock_write">Błąd przy ustawianiu informacji o blokadzie (faza 3)</string>
-    <string name="error_tag_rewrite">Tag zawiera już amiibo™</string>
+    <string name="error_tag_rewrite">Tag zawiera już amiibo</string>
     <string name="error_tag_format">Tag inny niż NTAG215</string>
     <string name="error_tag_version">Błąd wersji tagu</string>
     <string name="error_version">Błąd informacji o wersji</string>
-    <string name="error_amiibo_parse">Błąd przetwarzania informacji amiibo™</string>
+    <string name="error_amiibo_parse">Błąd przetwarzania informacji amiibo</string>
     <string name="error_powertag_key">Klucze Power Tag nie załadowane</string>
     <string name="error_elite_write">Błąd przy zapisie danych do N2 Elite</string>
     <string name="error_elite_auth">Błąd przy autentykacji N2 Elite</string>
@@ -243,9 +243,9 @@
     <string name="fail_bank_oob">Wybrany bank wykracza poza zakres!</string>
     <string name="fail_active_oob">Aktywny bank poza nowym zakresem!</string>
     <string name="fail_parse_banks">Nieudane przetwarzanie banków banks!</string>
-    <string name="fail_read_amiibo">Nieudany odczyt danych amiibo™!</string>
-    <string name="fail_early_remove">amiibo™ usunięte za wcześnie!</string>
-    <string name="fail_amiibo_null">Proszę zeskanować amiibo™ ponownie</string>
+    <string name="fail_read_amiibo">Nieudany odczyt danych amiibo!</string>
+    <string name="fail_early_remove">amiibo usunięte za wcześnie!</string>
+    <string name="fail_amiibo_null">Proszę zeskanować amiibo ponownie</string>
     <string name="fail_read">Odczyt nieudany</string>
     <string name="fail_auth">Autentykacja nieudana</string>
     <string name="fail_decrypt">Nieudane deszyfrowanie danych tagu</string>
@@ -281,13 +281,13 @@
     <string name="p10_key_missing">Brak dostępnych kluczy dla P10_ID</string>
     <string name="power_tag_verify">Power Tag zidentyfikowany: %1$s</string>
 
-    <string name="amiibo_info_parse_error">Niemożliwe przetworzenie bazy danych amiibo™</string>
-    <string name="amiibo_info_not_loaded">Baza danych amiibo™ nie załadowana</string>
-    <string name="amiibo_failure_load">Nieudane ładowanie bazy danych amiibo™</string>
-    <string name="amiibo_failure_parse">Nieudane przetwarzanie bazy danych amiibo™</string>
-    <string name="amiibo_failure_read">Nieudany odczyt bazy danych amiibo™</string>
-    <string name="amiibo_failure_update">Nieudana aktualizacja bazy danych amiibo™</string>
-    <string name="amiibo_failure_parse_default">Nieudane przetwarzanie domyślnej bazy danych amiibo™</string>
+    <string name="amiibo_info_parse_error">Niemożliwe przetworzenie bazy danych amiibo</string>
+    <string name="amiibo_info_not_loaded">Baza danych amiibo nie załadowana</string>
+    <string name="amiibo_failure_load">Nieudane ładowanie bazy danych amiibo</string>
+    <string name="amiibo_failure_parse">Nieudane przetwarzanie bazy danych amiibo</string>
+    <string name="amiibo_failure_read">Nieudany odczyt bazy danych amiibo</string>
+    <string name="amiibo_failure_update">Nieudana aktualizacja bazy danych amiibo</string>
+    <string name="amiibo_failure_parse_default">Nieudane przetwarzanie domyślnej bazy danych amiibo</string>
 
     <string name="firmware_update">Firmware N2 Elite zaktuzalizowany!</string>
     <string name="firmware_failed">Aktualizacja firmware nieudana. Spróbuj ponownie! (%1$d)</string>
@@ -302,7 +302,7 @@
     <string name="erase_collection">Erase Collection</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>
     <string name="view_device_options">Switch to N2 Elite Options</string>
-    <string name="view_amiibo_details">Switch to amiibo&#8482; Details</string>
+    <string name="view_amiibo_details">Switch to amiibo Details</string>
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="flask_invalid">Not a valid Flask device!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>

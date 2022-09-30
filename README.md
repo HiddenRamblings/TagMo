@@ -3,9 +3,10 @@
 </p>
 
 <p align="center">
-TagMo is an Android app to manage NTAG215, Power Tag, N2 Elite, & Flask amiibo™ for Nintendo 3DS, WiiU, and Switch
+TagMo is an Android NTAG215, Power Tag, N2 Elite, & Flask content manager for 3DS, WiiU, and Switch
 <br /><br />
 To contribute, please address PRs to the <a href="https://github.com/HiddenRamblings/TagMo/tree/conversion">conversion</a> branch. Thank you.
+<br />
 <p align="center">
 
 ## [Instructions](https://tagmo.gitlab.io/)
@@ -34,4 +35,4 @@ Additional thanks go out to (alphabetically):
 ##
 ![TagMo Logo](assets/tagmo_feature.png)
 ###
-*TagMo is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Nintendo. No  amiibo™ or digital representations of amiibo™ are included in this project. Binaries created with this project are not intended for sale or distribution. This project is for educational and archival purposes only.*
+*TagMo is not affiliated, associated, authorized, endorsed by, or in any way connected with Nintendo. amiibo is a registered trademark of Nintendo. No official resources are included in this project. Binaries created with this project are not intended for sale or distribution. This project is for educational and archival purposes only.*

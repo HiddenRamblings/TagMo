@@ -72,9 +72,6 @@ public interface Preferences {
     @DefaultInt(0)
     int flaskActiveSlot();
 
-    @DefaultBoolean(false)
-    boolean hasAcceptedTOS();
-
     @DefaultBoolean(true)
     boolean recursiveFolders();
 

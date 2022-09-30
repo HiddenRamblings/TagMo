@@ -457,17 +457,13 @@ public class BrowserActivity extends AppCompatActivity implements
             new AlertDialog.Builder(this)
                     .setTitle(R.string.conversion_title)
                     .setMessage(R.string.conversion_message)
-                    .setOnCancelListener(dialogInterface -> onShowDisclaimerTOS())
-                    .setOnDismissListener(dialogInterface -> onShowDisclaimerTOS())
                     .setPositiveButton(R.string.proceed, (dialogInterface, i) -> {
                         startActivity(new Intent(Intent.ACTION_DELETE).setData(
                                 Uri.parse("package:com.hiddenramblings.tagmo")
                         ));
                     }).show();
 
-        } catch (PackageManager.NameNotFoundException nnf) {
-            onShowDisclaimerTOS();
-        }
+        } catch (PackageManager.NameNotFoundException ignored) { }
 
         RecyclerView foldersView = findViewById(R.id.folders_list);
         foldersView.setLayoutManager(new LinearLayoutManager(this));
@@ -574,31 +570,6 @@ public class BrowserActivity extends AppCompatActivity implements
         JoyConFragment fragmentJoyCon = JoyConFragment.newInstance();
         fragmentJoyCon.show(getSupportFragmentManager(), "dialog");
         joyConDialog = fragmentJoyCon.getDialog();
-    }
-
-    private void onShowDisclaimerTOS() {
-        if (!prefs.hasAcceptedTOS().get()) {
-            try (InputStream in = getResources().openRawResource(R.raw.disclaimer);
-                 BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
-                StringBuilder total = new StringBuilder();
-                String line;
-                while (null != (line = r.readLine())) {
-                    total.append(line).append("\n");
-                }
-                new AlertDialog.Builder(this)
-                        .setMessage(total.toString())
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.accept, (dialog, which) -> {
-                            prefs.hasAcceptedTOS().put(true);
-                            dialog.dismiss();
-                        })
-                        .show().getWindow()
-                        .setLayout(LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT);
-            } catch (Exception e) {
-                Debug.Info(e);
-            }
-        }
     }
 
     private void requestStoragePermission() {

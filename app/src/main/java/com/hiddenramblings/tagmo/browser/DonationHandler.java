@@ -323,7 +323,6 @@ public class DonationHandler {
                 @SuppressLint("InflateParams")
                 View paypal = activity.getLayoutInflater().inflate(R.layout.button_paypal, null);
                 paypal.setOnClickListener(view -> {
-                    activity.closePrefsDrawer();
                     activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
                             "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
                     )));
@@ -333,7 +332,6 @@ public class DonationHandler {
             }
             donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         } else {
-            activity.closePrefsDrawer();
             activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
                     "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
             )));

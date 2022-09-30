@@ -295,7 +295,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             imageNetworkSetting.setValue(newValue);
             imageNetworkSetting.setSummary(imageNetworkSetting.getEntry());
             BrowserActivity activity = (BrowserActivity) requireActivity();
-            activity.runOnUiThread(() -> activity.getSettings().notifyChanges());
+            activity.runOnUiThread(() -> {
+                if (null != activity.getSettings()) activity.getSettings().notifyChanges();
+            });
         }
     }
 

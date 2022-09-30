@@ -93,8 +93,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Service for managing connection and data communication with a GATT server hosted on a
- * given Bluetooth LE device.
+ * Service for managing connection and data communication with a GATT server hosted on a given
+ * Bluetooth LE device based on core/java/android/bluetooth/BluetoothGattCharacteristic.java
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
@@ -139,9 +139,8 @@ public class FlaskGattService extends Service {
     StringBuilder response = new StringBuilder();
 
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
-        final byte[] data = characteristic.getValue();
-        if (data != null && data.length > 0) {
-            String output = new String(data);
+        String output = characteristic.getStringValue(0x0);
+        if (null != output && output.length() > 0) {
             Debug.Verbose(TAG, getLogTag(characteristic.getUuid()) + " " + output);
 
             if (characteristic.getUuid().compareTo(FlaskRX) == 0) {
@@ -533,25 +532,47 @@ public class FlaskGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(byte[] value) {
-            List<byte[]> chunks = byteToPortions(value, maxTransmissionUnit);
-            int commandQueue = Callbacks.size() + 1 + chunks.size();
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                for (int i = 0; i < chunks.size(); i += 1) {
-                    final byte[] chunk = chunks.get(i);
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        mCharacteristicTX.setValue(chunk);
-                         mCharacteristicTX.setWriteType(
-                                 // BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-                                 BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                         );
-                        try {
-                            mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
-                        } catch (NullPointerException ex) {
-                            if (null != listener) listener.onServicesDiscovered();
-                        }
-                    }, (i + 1) * 30L);
-                }
-            }, commandQueue * 30L);
+        List<byte[]> chunks = byteToPortions(value, maxTransmissionUnit);
+        int commandQueue = Callbacks.size() + 1 + chunks.size();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            for (int i = 0; i < chunks.size(); i += 1) {
+                final byte[] chunk = chunks.get(i);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    mCharacteristicTX.setValue(chunk);
+                    mCharacteristicTX.setWriteType(
+                            // BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+                            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                    );
+                    try {
+                        mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
+                    } catch (NullPointerException ex) {
+                        if (null != listener) listener.onServicesDiscovered();
+                    }
+                }, (i + 1) * 30L);
+            }
+        }, commandQueue * 30L);
+    }
+
+    private void delayedWriteCharacteristic(String value) {
+        List<String> chunks = stringToPortions(value, maxTransmissionUnit);
+        int commandQueue = Callbacks.size() + 1 + chunks.size();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            for (int i = 0; i < chunks.size(); i += 1) {
+                final String chunk = chunks.get(i);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    mCharacteristicTX.setValue(chunk);
+                    mCharacteristicTX.setWriteType(
+                            // BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+                            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                    );
+                    try {
+                        mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
+                    } catch (NullPointerException ex) {
+                        if (null != listener) listener.onServicesDiscovered();
+                    }
+                }, (i + 1) * 30L);
+            }
+        }, commandQueue * 30L);
     }
 
     public void queueTagCharacteristic(String value, int index) {
@@ -563,9 +584,10 @@ public class FlaskGattService extends Service {
             }
         }
 
-        Callbacks.add(index, () -> delayedWriteCharacteristic(
-                ("tag." + value + "\n").getBytes(CharsetCompat.UTF_8)
-        ));
+//        Callbacks.add(index, () -> delayedWriteCharacteristic(
+//                ("tag." + value + "\n").getBytes(CharsetCompat.UTF_8)
+//        ));
+        Callbacks.add(index, () -> delayedWriteCharacteristic(("tag." + value + "\n")));
 
         if (Callbacks.size() == 1) {
             Callbacks.get(0).run();

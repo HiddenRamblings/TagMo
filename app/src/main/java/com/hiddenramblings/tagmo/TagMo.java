@@ -85,15 +85,14 @@ public class TagMo extends Application {
             new ANRWatchDog(10000).setReportMainThreadOnly().start();
     }
 
-    @SuppressWarnings("ConstantConditions")
     public String getVersionLabel() {
-        String flavor = TagMo.isGooglePlay() ? "Google Play" : "GitHub";
+        String flavor = "TagMo " + (TagMo.isGooglePlay() ? "Google Play" : "GitHub");
         if (isWearableUI()) {
-            return flavor + " Wear OS";
+            return flavor + " Wear OS #" + BuildConfig.COMMIT;
         } else if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) {
-            return flavor + " Release";
+            return flavor + " Release #" + BuildConfig.COMMIT;
         } else {
-            return flavor + " Testing";
+            return flavor + " Testing #" + BuildConfig.COMMIT;
         }
     }
 }

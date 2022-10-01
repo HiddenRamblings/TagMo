@@ -207,7 +207,7 @@
     <string name="disable_debug_details">May improve performance, but limits most diagnostic details</string>
     <string name="pref_stable_channel">Stable Update Checks</string>
     <string name="stable_channel_details">Only use the stable branch when checking for TagMo updates</string>
-    <string name="pref_disclaimer">Disclaimer</string>
+    <string name="pref_disclaimer">Disclaimers</string>
 
     <string name="amiibo_info_updated">Updated amiibo database!</string>
     <string name="sync_amiibo_process">Syncing with AmiiboAPI&#8230;</string>
@@ -374,4 +374,6 @@
     <string name="conversion_message">GitHub and Google Play builds are now universal.\nPlease click continue to resolve installation conflicts.</string>
 
     <string name="notice_incomplete">Coming soon!</string>
+
+    <string name="disclaimer_general">No statues were harmed in the making of this product.</string>
 </resources>

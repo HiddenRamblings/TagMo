@@ -1,8 +1,4 @@
-package com.hiddenramblings.tagmo.eightbit.bluetooth;
-
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.os.Handler;
-import android.os.Looper;
+package com.hiddenramblings.tagmo.eightbit.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;

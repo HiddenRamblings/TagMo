@@ -33,7 +33,7 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
+import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.security.SecurityHandler;
 import com.hiddenramblings.tagmo.widget.Toasty;

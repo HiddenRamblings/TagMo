@@ -15,7 +15,7 @@ import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
+import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 
 public class HexCodeViewer extends AppCompatActivity {
 

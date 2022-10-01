@@ -1,6 +1,6 @@
 package com.hiddenramblings.tagmo.nfctech;
 
-import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
+import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 
 @SuppressWarnings("unused")
 public class NfcByte {

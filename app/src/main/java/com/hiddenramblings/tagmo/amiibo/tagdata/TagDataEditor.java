@@ -40,9 +40,9 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
-import com.hiddenramblings.tagmo.eightbit.nfc.Foomiibo;
+import com.hiddenramblings.tagmo.eightbit.util.Foomiibo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.nfc.TagArray;
+import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.vicmikhailau.maskededittext.MaskedEditText;
 

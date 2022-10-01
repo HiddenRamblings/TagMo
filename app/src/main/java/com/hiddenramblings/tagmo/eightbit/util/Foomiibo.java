@@ -52,7 +52,7 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.hiddenramblings.tagmo.eightbit.nfc;
+package com.hiddenramblings.tagmo.eightbit.util;
 
 import static java.lang.Integer.parseInt;
 

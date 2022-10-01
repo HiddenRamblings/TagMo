@@ -83,7 +83,7 @@
     <string name="mod_serial">序列号</string>
     <string name="view_hex">查看 16 进制</string>
     <string name="edit_props">编辑属性</string>
-    <string name="delete_amiibo">删除此 amiibo</string>
+    <string name="delete_binary">删除二进制文件</string>
     <string name="ignore_tag_id">忽略 Tag ID #</string>
     <string name="random_serial">随机序列号</string>
 
@@ -192,7 +192,7 @@
     <string name="warn_delete_file">删除 %1$s。你确定吗？</string>
     <string name="delete_missing">不能删除扫描的标签！</string>
     <string name="erase_active">不能擦除激活的 bank ！</string>
-    <string name="backup_filename">设置 amiibo 文件名</string>
+    <string name="backup_filename">设置二进制文件名</string>
     <string name="emulated_storage_root">浏览模拟存储</string>
     <string name="physical_storage_root">浏览物理存储</string>
 

@@ -91,7 +91,7 @@
     <string name="view_hex">檢視Hex編碼</string>
     <string name="hex_code">Hex編碼</string>
     <string name="edit_props">編輯相關資訊</string>
-    <string name="delete_amiibo">刪除 amiibo</string>
+    <string name="delete_binary">删除二进制文件</string>
     <string name="ignore_tag_id">忽略此Tag ID #</string>
     <string name="random_serial">隨機序號</string>
     <string name="game_titles_view">檢視可支援的相關遊戲</string>
@@ -231,13 +231,13 @@
     <string name="delete_missing">無法刪除已掃描的tag！</string>
     <string name="delete_virtual">無法刪除虛擬的tag！</string>
     <string name="erase_active">無法抹除正在使用的bank！</string>
-    <string name="backup_filename">設定 amiibo Bin 名稱</string>
+    <string name="backup_filename">设置二进制文件名</string>
     <string name="document_storage_root">更新文件儲存空間</string>
     <string name="emulated_storage_root">瀏覽模擬儲存空間</string>
     <string name="physical_storage_root">瀏覽實體儲存空間</string>
     <string name="grant_file_permission">啟用 "所有檔案" 管理器</string>
     <string name="force_document_storage">啟用文件儲存空間</string>
-    <string name="refresh_amiibo">重新載入 amiibo</string>
+    <string name="refresh_browser">刷新浏览器</string>
 
     <string name="prepare_unlock">開始掃描N2，在傳輸完成前請勿將NFC感應區移開</string>
     <string name="progress_unlock">請長按N2鈕，並保持與NFC的感應連線.</string>
@@ -254,10 +254,10 @@
     <string name="flask_disconnect">Flask 藍牙連線無法使用！</string>
     <string name="flask_paired">取消配對Flask以繼續.</string>
     <string name="flask_count">Slot %1$s 可啟用，%2$d Slots 已執行</string>
-    <string name="write_slot_file">將 amiibo 上傳到 Bluup Flask</string>
+    <string name="write_slot_file">上传二进制文件到 Bluup Flask</string>
     <string name="write_slots">將 %1$d slots 寫入 Bluup Flask</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
-    <string name="flask_upload">正在上傳 amiibo&#8230;</string>
+    <string name="flask_upload">上传二进制文件&#8230;</string>
     <string name="fail_bluetooth_adapter">藍牙裝置無法使用！</string>
     <string name="fail_permissions">無法取得執行所需的權限！</string>
     <string name="location_disclosure">特此知會您，使用Bluetooth LE掃描時必須取得定位資訊，依據Google Play商店的政策，本程序會在背景服務收集定位資訊，但絕對不會讀取、儲存或與第三人分享定位資訊。</string>

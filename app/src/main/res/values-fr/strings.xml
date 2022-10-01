@@ -88,7 +88,7 @@
     <string name="view_hex">Voir code hexa.</string>
     <string name="hex_code">Code hexa.</string>
     <string name="edit_props">Modifier propriétés</string>
-    <string name="delete_amiibo">Supprimer amiibo</string>
+    <string name="delete_binary">Supprimer le Binaire</string>
     <string name="ignore_tag_id">Ignorer Tag ID</string>
     <string name="random_serial">Numéro de série aléatoire</string>
     <string name="game_titles_view">Afficher les jeux compatibles</string>
@@ -220,13 +220,13 @@
     <string name="delete_missing">Impossible de supprimé un Tag scanné&#160;!</string>
     <string name="delete_virtual">Impossible de supprimer un Tag virtuel&#160;!</string>
     <string name="erase_active">Impossinle d’effacer la banque active&#160;!</string>
-    <string name="backup_filename">Définir le nom du .bin de l’amiibo</string>
+    <string name="backup_filename">Définir le Nom du Fichier Binaire</string>
     <string name="document_storage_root">Mettre à jour le stockage &#171;Document&#187;</string>
     <string name="emulated_storage_root">Parcourir stockage &#171;Emulated&#187;</string>
     <string name="physical_storage_root">Parcourir stockage &#171;Physical&#187;</string>
     <string name="grant_file_permission">Autoriser permission &#171;Fichiers multimédias&#187;</string>
     <string name="force_document_storage">Activer le stockage &#171;Document&#187;</string>
-    <string name="refresh_amiibo">Actualiser amiibo</string>
+    <string name="refresh_browser">Actualiser le Navigateur</string>
 
     <string name="prepare_unlock">Une fois que le N2 sera scanné, il ne devra pas être retiré du capteur NFC jusqu’à la fin de l’opération.</string>
     <string name="progress_unlock">Appuyez et maintenez le bouton N2 sans déconnecter le NFC.</string>
@@ -238,7 +238,7 @@
     <string name="custom_tab_back">Retour à TagMo</string>
 
     <string name="create_blank">Créer un Tag NFC virtuel vide</string>
-    <string name="flask_upload">Téléversement d’amiibo&#8230;</string>
+    <string name="flask_upload">Téléversement de binaire&#8230;</string>
     <string name="location_disclosure">L’emplacement est requis pour l’analyse Bluetooth LE. Conformément à la politique de Google Play, TagMo est tenu de vous informer que des données de localisation peuvent être collectées en arrière-plan. TagMo ne lit, ne stocke ni ne partage les données de localisation. En tant que tel, cet avis est strictement une formalité.</string>
 
     <string name="data_write">Données principales écrites</string>

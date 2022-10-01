@@ -83,7 +83,7 @@
     <string name="mod_serial">Numer seryjny</string>
     <string name="view_hex">Wyświetl HEX</string>
     <string name="edit_props">Edytuj właściwości</string>
-    <string name="delete_amiibo">UUsuń amiibo</string>
+    <string name="delete_binary">Usuń Binarne</string>
     <string name="ignore_tag_id">Ignoruj nr Tag ID</string>
     <string name="random_serial">Losowy numer seryjny</string>
 
@@ -194,7 +194,7 @@
     <string name="warn_delete_file">Usuwanie %1$s. Na pewno?</string>
     <string name="delete_missing">Nie można usunąć zeskanowanego tagu!</string>
     <string name="erase_active">Nie można wymazać aktywnego banku!</string>
-    <string name="backup_filename">Ustaw nazwę .bin z amiibo</string>
+    <string name="backup_filename">Ustaw Nazwę Pliku Binarnego</string>
     <string name="emulated_storage_root">Przeglądaj pamięć emulowaną</string>
     <string name="physical_storage_root">Przeglądaj pamięć fizyczną</string>
 

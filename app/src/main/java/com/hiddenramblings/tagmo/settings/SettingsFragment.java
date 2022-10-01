@@ -264,16 +264,31 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
-        Preference disclaimer = findPreference(getString(R.string.settings_disclaimer));
-        if (null != disclaimer) {
-            try (InputStream in = getResources().openRawResource(R.raw.disclaimer);
+        Preference disclaimerFoomiibo = findPreference(getString(R.string.disclaimer_foomiibo));
+        if (null != disclaimerFoomiibo) {
+            try (InputStream in = getResources().openRawResource(R.raw.tos_foomiibo);
                  BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
                 StringBuilder total = new StringBuilder();
                 String line;
                 while (null != (line = r.readLine())) {
                     total.append(line).append("\n");
                 }
-                disclaimer.setSummary(total.toString());
+                disclaimerFoomiibo.setSummary(total.toString());
+            } catch (Exception e) {
+                Debug.Info(e);
+            }
+        }
+
+        Preference disclaimerTagMo = findPreference(getString(R.string.disclaimer_tagmo));
+        if (null != disclaimerTagMo) {
+            try (InputStream in = getResources().openRawResource(R.raw.tos_tagmo);
+                 BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
+                StringBuilder total = new StringBuilder();
+                String line;
+                while (null != (line = r.readLine())) {
+                    total.append(line).append("\n");
+                }
+                disclaimerTagMo.setSummary(total.toString());
             } catch (Exception e) {
                 Debug.Info(e);
             }

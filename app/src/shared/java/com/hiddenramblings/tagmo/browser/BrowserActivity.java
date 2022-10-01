@@ -485,9 +485,8 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        ((TextView) findViewById(R.id.build_text)).setText(getString(
-                R.string.build_details, getBuildTypeName(), BuildConfig.COMMIT
-        ));
+        ((TextView) findViewById(R.id.build_text))
+                .setText(((TagMo) getApplication()).getVersionLabel());
 
         prefsDrawer = findViewById(R.id.drawer_layout);
         prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
@@ -2661,24 +2660,6 @@ public class BrowserActivity extends AppCompatActivity implements
             Executors.newSingleThreadExecutor().execute(() ->
                     tagScanner.onTagDiscovered(BrowserActivity.this, intent));
         }
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private String getBuildTypeName() {
-        if (TagMo.isGooglePlay()) {
-            return "Google Play";
-        } else {
-            if (TagMo.isCompatBuild()) {
-                if (Objects.equals(BuildConfig.BUILD_TYPE, "debug")) {
-                    return "GitHub Testing";
-                } else if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) {
-                    return "GitHub Release";
-                }
-            } else {
-                return "GitHub Archive";
-            }
-        }
-        return "";
     }
 
     private void onBackButtonEnabled() {

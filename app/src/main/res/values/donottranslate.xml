@@ -5,7 +5,6 @@
     <string name="tagmo" translatable="false">TagMo</string>
     <string name="foomiibo" translatable="false">Foomiibo</string>
 
-    <string name="build_details" translatable="false">TagMo %1$s #%2$s</string>
     <string name="build_hash" translatable="false"> TagMo - #%1$s</string>
     <string name="git_issue_title" translatable="false">Logcat - TagMo #%1$s</string>
     <string name="install_src" translatable="false">Installed by %1$s</string>
@@ -30,7 +29,8 @@
     <string name="settings_tagmo_theme" translatable="false">settings_tagmo_theme</string>
     <string name="settings_disable_debug" translatable="false">settings_disable_debug</string>
     <string name="image_network_settings" translatable="false">image_network_settings</string>
-    <string name="settings_disclaimer" translatable="false">settings_disclaimer</string>
+    <string name="disclaimer_foomiibo" translatable="false">disclaimer_foomiibo</string>
+    <string name="disclaimer_tagmo" translatable="false">disclaimer_tagmo</string>
 
     <string name="filter_game_series" translatable="false">filter_game_series</string>
     <string name="filter_character" translatable="false">filter_character</string>

@@ -572,6 +572,7 @@ public class FlaskGattService extends Service {
         setCharacteristicNotification(mCharacteristicTX, true);
     }
 
+    @SuppressWarnings("unused")
     private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = GattArray.byteToPortions(value, maxTransmissionUnit);
         int commandQueue = Callbacks.size() + 1 + chunks.size();

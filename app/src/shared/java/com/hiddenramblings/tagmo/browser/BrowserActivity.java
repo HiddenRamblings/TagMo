@@ -67,7 +67,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
-import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
@@ -91,8 +90,8 @@ import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout;
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.nfctech.ScanTag;
@@ -121,7 +120,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
@@ -695,6 +693,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 return true;
             } else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
                     && item.getItemId() == R.id.mnu_joy_con) {
+                new Toasty(this).Short(R.string.notice_incomplete);
                 onShowJoyConFragment();
                 return true;
             }

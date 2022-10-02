@@ -602,6 +602,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 return true;
             } else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
                     && item.getItemId() == R.id.mnu_joy_con) {
+                new Toasty(this).Short(R.string.notice_incomplete);
                 onShowJoyConFragment();
                 return true;
             }

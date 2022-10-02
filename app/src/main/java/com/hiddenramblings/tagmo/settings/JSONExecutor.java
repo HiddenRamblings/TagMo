@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo.settings;
 import android.app.Activity;
 
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.browser.BrowserActivity;
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -71,7 +72,7 @@ public class JSONExecutor {
                     statusCode = conn.getResponseCode();
                 } else if (statusCode != HttpsURLConnection.HTTP_OK && isRenderAPI(conn)) {
                     conn.disconnect();
-                    conn = fixServerLocation(new URL(TagMo.AMIIBO_API + "amiibo/"));
+                    conn = fixServerLocation(new URL(AmiiboManager.AMIIBO_API + "amiibo/"));
                     statusCode = conn.getResponseCode();
                 }
 
@@ -100,7 +101,7 @@ public class JSONExecutor {
     }
 
     private boolean isRenderAPI(HttpsURLConnection urlConnection) {
-        String render = TagMo.RENDER_RAW + "render/database/amiibo.json";
+        String render = AmiiboManager.RENDER_RAW + "database/amiibo.json";
         return render.equals(urlConnection.getURL().toString());
     }
 

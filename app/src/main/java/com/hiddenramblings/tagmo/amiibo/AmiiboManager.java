@@ -9,8 +9,8 @@ import androidx.documentfile.provider.DocumentFile;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
+import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +34,9 @@ import java.util.Map;
 public class AmiiboManager {
 
     public static final String AMIIBO_DATABASE_FILE = "amiibo.json";
+    public static final String RENDER_RAW =
+            "https://raw.githubusercontent.com/8BitDream/AmiiboAPI/render/";
+    public static final String AMIIBO_API = "https://amiiboapi.com/api/";
 
     public final HashMap<Long, Amiibo> amiibos = new HashMap<>();
     public final HashMap<Long, Character> characters = new HashMap<>();

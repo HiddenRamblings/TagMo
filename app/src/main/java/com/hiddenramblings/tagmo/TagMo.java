@@ -22,9 +22,6 @@ public class TagMo extends Application {
     @Pref
     Preferences_ prefs;
 
-    public static final String RENDER_RAW = "https://raw.githubusercontent.com/8BitDream/AmiiboAPI/";
-    public static final String AMIIBO_API = "https://amiiboapi.com/api/";
-
     private static SoftReference<Context> mContext;
     private static SoftReference<Preferences_> mPrefs;
     public static final int uiDelay = 50;

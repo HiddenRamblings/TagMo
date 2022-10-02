@@ -7,7 +7,6 @@ android {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
         targetSdkVersion 33
-        versionCode 320
         versionName "3.2.0"
 
         javaCompileOptions {
@@ -36,8 +35,11 @@ android {
         google { }
     }
 
+    def versionCode = defaultConfig.versionName.replace(".","").toInteger()
+
     buildTypes {
         release {
+            defaultConfig.versionCode = versionCode * 10
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".eightbit"
@@ -48,6 +50,7 @@ android {
         }
         wearos {
             initWith release
+            defaultConfig.versionCode = (versionCode * 10) + 1
             versionNameSuffix "-wear"
         }
     }

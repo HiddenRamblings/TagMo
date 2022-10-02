@@ -14,8 +14,8 @@ import java.io.Serializable;
 
 public class Amiibo implements Comparable<Amiibo>, Parcelable {
 
-    private static final String AMIIBO_IMAGE = TagMo.RENDER_RAW
-            + "render/images/icon_%08x-%08x.png";
+    private static final String AMIIBO_IMAGE = AmiiboManager.RENDER_RAW
+            + "images/icon_%08x-%08x.png";
 
     static long HEAD_MASK = 0xFFFFFFFF00000000L;
     static long TAIL_MASK = 0x00000000FFFFFFFFL;

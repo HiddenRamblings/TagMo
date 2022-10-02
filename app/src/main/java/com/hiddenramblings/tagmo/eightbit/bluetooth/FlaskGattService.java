@@ -94,6 +94,48 @@ import java.util.UUID;
 /**
  * Service for managing connection and data communication with a GATT server hosted on a given
  * Bluetooth LE device based on core/java/android/bluetooth/BluetoothGattCharacteristic.java
+ *
+ * Android Bluetooth Low Energy Status Codes
+ *
+ * 0	0x00	BLE_HCI_STATUS_CODE_SUCCESS
+ * 1	0x01	BLE_HCI_STATUS_CODE_UNKNOWN_BTLE_COMMAND
+ * 2	0x02	BLE_HCI_STATUS_CODE_UNKNOWN_CONNECTION_IDENTIFIER
+ * 5	0x05	BLE_HCI_AUTHENTICATION_FAILURE
+ * 6	0x06	BLE_HCI_STATUS_CODE_PIN_OR_KEY_MISSING
+ * 7	0x07	BLE_HCI_MEMORY_CAPACITY_EXCEEDED
+ * 8	0x08	BLE_HCI_CONNECTION_TIMEOUT
+ * 12	0x0C	BLE_HCI_STATUS_CODE_COMMAND_DISALLOWED
+ * 18	0x12	BLE_HCI_STATUS_CODE_INVALID_BTLE_COMMAND_PARAMETERS
+ * 19	0x13	BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION
+ * 20	0x14	BLE_HCI_REMOTE_DEV_TERMINATION_DUE_TO_LOW_RESOURCES
+ * 21	0x15	BLE_HCI_REMOTE_DEV_TERMINATION_DUE_TO_POWER_OFF
+ * 22	0x16	BLE_HCI_LOCAL_HOST_TERMINATED_CONNECTION
+ * 26	0x1A	BLE_HCI_UNSUPPORTED_REMOTE_FEATURE
+ * 30	0x1E	BLE_HCI_STATUS_CODE_INVALID_LMP_PARAMETERS
+ * 31	0x1F	BLE_HCI_STATUS_CODE_UNSPECIFIED_ERROR
+ * 34	0x22	BLE_HCI_STATUS_CODE_LMP_RESPONSE_TIMEOUT
+ * 36	0x24	BLE_HCI_STATUS_CODE_LMP_PDU_NOT_ALLOWED
+ * 40	0x28	BLE_HCI_INSTANT_PASSED
+ * 41	0x29	BLE_HCI_PAIRING_WITH_UNIT_KEY_UNSUPPORTED
+ * 42	0x2A	BLE_HCI_DIFFERENT_TRANSACTION_COLLISION
+ * 58	0x3A	BLE_HCI_CONTROLLER_BUSY
+ * 59	0x3B	BLE_HCI_CONN_INTERVAL_UNACCEPTABLE
+ * 60	0x3C	BLE_HCI_DIRECTED_ADVERTISER_TIMEOUT
+ * 61	0x3D	BLE_HCI_CONN_TERMINATED_DUE_TO_MIC_FAILURE
+ * 62	0x3E	BLE_HCI_CONN_FAILED_TO_BE_ESTABLISHED
+ * 128	0x80	GATT_NO_RESSOURCES
+ * 129	0x81	GATT_INTERNAL_ERROR
+ * 130	0x82	GATT_WRONG_STATE
+ * 131	0x83	GATT_DB_FULL
+ * 132	0x84	GATT_BUSY
+ * 133	0x85	GATT_ERROR
+ * 135	0x87	GATT_ILLEGAL_PARAMETER
+ * 137	0x89	GATT_AUTH_FAIL
+ * 138	0x8A	GATT_MORE
+ * 139	0x8B	GATT_INVALID_CFG
+ * 140	0x8C	GATT_SERVICE_STARTED
+ * 141	0x8D	GATT_ENCRYPED_NO_MITM
+ * 142	0x8E	GATT_NOT_ENCRYPTED
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
@@ -294,7 +336,7 @@ public class FlaskGattService extends Service {
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status
         ) {
             Debug.Verbose(TAG, getLogTag(characteristic.getUuid())
-                    + " onCharacteristicWrite " + getStatusCode(status));
+                    + " onCharacteristicWrite " + status);
         }
 
         @Override
@@ -691,8 +733,6 @@ public class FlaskGattService extends Service {
         delayedTagCharacteristic("createBlank()");
     }
 
-
-
     public boolean isJSONValid(String test) {
         if (test.startsWith("tag.") && test.endsWith(")")) return false;
         try {
@@ -705,42 +745,6 @@ public class FlaskGattService extends Service {
             }
         }
         return true;
-    }
-
-    private String getStatusCode(int code) {
-        switch (code) {
-            case 128:
-                return "GATT_NO_RESOURCES";
-            case 129:
-                return "GATT_INTERNAL_ERROR";
-            case 130:
-                return "GATT_WRONG_STATE";
-            case 131:
-                return "GATT_DB_FULL";
-            case 132:
-                return "GATT_BUSY";
-            case 133:
-                return "GATT_ERROR";
-            case 134:
-                return "GATT_CMD_STARTED";
-            case 135:
-                return "GATT_ILLEGAL_PARAMETER";
-            case 136:
-                return "GATT_PENDING";
-            case 137:
-                return "GATT_AUTH_FAIL";
-            case 138:
-                return "GATT_MORE";
-            case 139:
-                return "GATT_INVALID_CFG";
-            case 140:
-                return "GATT_SERVICE_STARTED";
-            case 141:
-                return "GATT_ENCRYPED_NO_MITM";
-            case 142:
-                return "GATT_NOT_ENCRYPTED";
-        }
-        return "GATT_ENCRYPED_MITM"; //GATT_SUCCESS
     }
 
     private String getLogTag(UUID uuid) {

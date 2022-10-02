@@ -113,6 +113,27 @@ public class PuckGattService extends Service {
     private final static UUID PuckTX = UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1");
     private final static UUID PuckRX = UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1");
 
+    // Command, Slot, Parameters
+    private enum PUCK {
+        INFO(0x01),
+        READ(0x02),
+        WRITE(0x03),
+        SAVE(0x04),
+        MOVE(0xFD),
+        UART(0xFE),
+        NFC(0xFF); // RESTART
+
+        private final byte bytes;
+
+        PUCK(int bytes) {
+            this.bytes = (byte) bytes;
+        }
+
+        public byte getBytes() {
+            return this.bytes;
+        }
+    }
+
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
     }

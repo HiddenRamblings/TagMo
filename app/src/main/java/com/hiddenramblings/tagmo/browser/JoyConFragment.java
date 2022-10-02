@@ -132,9 +132,6 @@ public class JoyConFragment extends DialogFragment implements
             for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
                 if (device.getName().equals("Pro Controller")) {
                     addressJoyCon = device.getAddress();
-//                    Intent service = new Intent(requireContext(), JoyConGattService.class);
-//                    requireContext().startService(service);
-//                    requireContext().bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
                     try {
                         BluetoothSocket mSocket = Debug.isNewer(Build.VERSION_CODES.Q)
                                 ? device.createInsecureL2capChannel(0x11)

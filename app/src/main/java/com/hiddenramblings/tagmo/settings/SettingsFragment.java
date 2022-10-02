@@ -471,9 +471,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             try {
                 URL url;
                 if (prefs.database_source_setting().get() == 0) {
-                    url = new URL(TagMo.RENDER_RAW + "render/database/amiibo.json");
+                    url = new URL(AmiiboManager.RENDER_RAW + "database/amiibo.json");
                 } else {
-                    url = new URL(TagMo.AMIIBO_API + "amiibo/");
+                    url = new URL(AmiiboManager.AMIIBO_API + "amiibo/");
                 }
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -488,7 +488,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     statusCode = conn.getResponseCode();
                 } else if (statusCode != HttpsURLConnection.HTTP_OK && isRenderAPI(conn)) {
                     conn.disconnect();
-                    conn = fixServerLocation(new URL(TagMo.AMIIBO_API  + "amiibo/"));
+                    conn = fixServerLocation(new URL(AmiiboManager.AMIIBO_API  + "amiibo/"));
                     statusCode = conn.getResponseCode();
                 }
 
@@ -673,7 +673,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         } else {
             new JSONExecutor(requireActivity(),
-                    TagMo.AMIIBO_API, "lastupdated/"
+                    AmiiboManager.AMIIBO_API, "lastupdated/"
             ).setResultListener(result -> {
                 if (null != result) parseUpdateJSON(result, isMenuClicked);
             });
@@ -681,7 +681,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private boolean isRenderAPI(HttpsURLConnection conn) {
-        String render = TagMo.RENDER_RAW + "render/database/amiibo.json";
+        String render = AmiiboManager.RENDER_RAW + "database/amiibo.json";
         return render.equals(conn.getURL().toString());
     }
 }

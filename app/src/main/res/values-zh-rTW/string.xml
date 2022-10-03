@@ -28,6 +28,7 @@
 
     <string name="pref_amiibo_characters">角色人物</string>
     <string name="pref_amiibo_types">Amiibo 種類</string>
+    <string name="pref_amiibo_titles">可支援的遊戲</string>	
 
     <string name="amiibo_name_caps">名稱</string>
     <string name="amiibo_id_caps">TAGID</string>
@@ -125,6 +126,7 @@
     <string name="build_foomiibo_set">建立 Foomiibo</string>
     <string name="foomiibo_progress">正在建立 %1$s&#8230;</string>
     <string name="foomiibo_removing">正在清除 %1$s&#8230;</string>
+    <string name="number_foomiibo">Foomiibo資料庫: %1$d</string>
 
     <string name="wrote_file">%1$s 已儲存！</string>
     <string name="wrote_foomiibo">%1$s Foomiibo 已儲存！</string>
@@ -162,10 +164,12 @@
     <string name="write_collection">寫入 Collection</string>
     <string name="erase_collection">抹除 Collection</string>
     <string name="lego_dimensions">樂高次元</string>
+    <string name="connect_joy_con">Joy-Con 測試</string>
 
     <string name="storage_unavailable">無法存取手機的儲存空間！</string>
     <string name="allow">允許</string>
 
+    <string name="settings">設定</string>
     <string name="guides">協助</string>
     <string name="donate">捐贈</string>
 
@@ -187,6 +191,7 @@
     <string name="lock_elite_warning">是否鎖定N2 Elite硬體？</string>
     <string name="unlock_elite_warning">解除鎖定N2 Elite硬體</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
+    <string name="enable_flask">啟用支援Bluup Flask</string>
     <string name="amiibo_info">amiibo 資料庫</string>
     <string name="sync_amiibo_info">與 AmiiboAPI 同步資料庫</string>
     <string name="import_json_details">載入 amiibo 資料庫 (JSON)</string>
@@ -202,6 +207,7 @@
     <string name="disable_debug_details">可改善執行效率，但將無法完整記錄用來診斷錯誤的所有細節資訊</string>
     <string name="pref_stable_channel">檢查穩定版本更新</string>
     <string name="stable_channel_details">檢查TagMo版本更新時，僅安裝穩定性分支的版本</string>
+    <string name="pref_disclaimer">版權宣告</string>
 
     <string name="amiibo_info_updated">amiibo 資料庫已更新！</string>
     <string name="sync_amiibo_process">正在與AmiiboAPI&#8230;進行同步</string>
@@ -254,12 +260,13 @@
     <string name="flask_disconnect">Flask 藍牙連線無法使用！</string>
     <string name="flask_paired">取消配對Flask以繼續.</string>
     <string name="flask_count">Slot %1$s 可啟用，%2$d Slots 已執行</string>
-    <string name="write_slot_file">上传二进制文件到 Bluup Flask</string>
+    <string name="write_slot_file">將二進位檔案上傳到Bluup Flask</string>
     <string name="write_slots">將 %1$d slots 寫入 Bluup Flask</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
-    <string name="flask_upload">上传二进制文件&#8230;</string>
-    <string name="fail_bluetooth_adapter">藍牙裝置無法使用！</string>
-    <string name="fail_permissions">無法取得執行所需的權限！</string>
+    <string name="flask_upload">正在上傳二進位檔案&#8230;</string>
+    <string name="joy_con_invalid">不是正確的Joy-Con手把設備!</string>
+    <string name="fail_bluetooth_adapter">沒有可用的藍牙裝置!</string>
+    <string name="fail_permissions">無法取得執行所需的權限！</string>    
     <string name="location_disclosure">特此知會您，使用Bluetooth LE掃描時必須取得定位資訊，依據Google Play商店的政策，本程序會在背景服務收集定位資訊，但絕對不會讀取、儲存或與第三人分享定位資訊。</string>
 
     <string name="data_write">寫入主要數據</string>
@@ -292,7 +299,7 @@
     <string name="error_elite_auth">驗證N2 Elite時發生錯誤</string>
     <string name="error_amiitool_init">無法初始化amiitool</string>
     <string name="error_auth_null">驗證內容為空值</string>
-	<string name="error_unknown">發生了未知的錯誤\n請回傳操作日誌協助我們改善</string>
+    <string name="error_unknown">發生了未知的錯誤\n請回傳操作日誌協助我們改善</string>
 
     <string name="fail_ssl_update">OpenSSL 安全性憑證已逾期！</string>
     <string name="fail_save_data">儲存tag數據失敗</string>
@@ -365,4 +372,8 @@
 
     <string name="conversion_title">TagMo必要更新</string>
     <string name="conversion_message">目前GitHub的新版本已與Google Play商店同步更新。\n請點擊繼續，將核對版本並完成更新安裝。</string>
+	
+    <string name="notice_incomplete">開發中，敬請期待!</string>
+
+    <string name="disclaimer_general">在程式開發期間，沒有任何公仔受到傷害。</string>
 </resources>

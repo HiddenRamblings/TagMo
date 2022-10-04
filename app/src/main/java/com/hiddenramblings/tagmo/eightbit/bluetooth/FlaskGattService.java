@@ -92,8 +92,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Service for managing connection and data communication with a GATT server hosted on a given
- * Bluetooth LE device based on core/java/android/bluetooth/BluetoothGattCharacteristic.java
+ * Service for managing connection and data communication with a GATT server
+ * hosted on a given Bluetooth LE device based on core/java/android/bluetooth
  *
  * Android Bluetooth Low Energy Status Codes
  *

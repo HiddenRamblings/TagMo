@@ -1,0 +1,20 @@
+name: Feature Request
+description: Request a feature
+title: "[Feature]: "
+labels: ["OnlyFans"]
+body:
+  - type: textarea
+    id: feature-info
+    attributes:
+      label: Summarize Feature
+      description: Please explain the features being requested
+      placeholder: This is what it will do and why you need it
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Usage Confirmation
+      options:
+        - label: I confirm this is a request for a new feature, not an issue
+          required: true

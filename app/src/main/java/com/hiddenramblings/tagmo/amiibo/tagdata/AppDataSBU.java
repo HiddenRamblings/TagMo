@@ -28,7 +28,7 @@ public class AppDataSBU extends AppData {
 
     static final int EXPERIENCE_MIN_VALUE = 0x0000;
     static final int EXPERIENCE_MAX_VALUE = 0x0F48;
-    static final int EXPERIENCE_OFFSET = 0x7C;
+    static final int EXPERIENCE_OFFSET = 0x7C;  // 0140 0D
 
     public AppDataSBU(byte[] appData) throws IOException {
         super(appData);
@@ -192,14 +192,12 @@ public class AppDataSBU extends AppData {
     }
 
     // github.com/odwdinc/SSBU_Amiibo/blob/master/src/ssbu_amiibo/amiibo_class.py#L195-L245
-    private static final int[] LEVEL_THRESHOLDS = new int[]{
+    private static final int[] LEVEL_THRESHOLDS = new int[] {
             0x0000, 0x0008, 0x0016, 0x0029, 0x003F, 0x005A, 0x0078, 0x009B, 0x00C3, 0x00EE,
             0x011C, 0x014A, 0x0178, 0x01AA, 0x01DC, 0x0210, 0x0244, 0x0278, 0x02AC, 0x02E1,
             0x0316, 0x034B, 0x0380, 0x03B6, 0x03EC, 0x0422, 0x0458, 0x048F, 0x04C6, 0x04FD,
             0x053B, 0x057E, 0x05C6, 0x0613, 0x0665, 0x06BC, 0x0718, 0x0776, 0x07DC, 0x0843,
-            0x08AC, 0x0919, 0x099B, 0x0A3B, 0x0AEF, 0x0BB7, 0x0C89, 0x0D65, 0x0E55, 0x0F48,
-
-
+            0x08AC, 0x0919, 0x099B, 0x0A3B, 0x0AEF, 0x0BB7, 0x0C89, 0x0D65, 0x0E55, 0x0F48
     };
 
     public int getLevel() throws NumberFormatException {

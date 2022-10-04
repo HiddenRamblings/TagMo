@@ -1,7 +1,7 @@
-name: Logcat Email
+name: Logcat Email Log
 description: TagMo Use ONLY
 title: "[Email]:  PST"
-labels: ["logcat"]
+labels: ["Entomology"]
 body:
   - type: textarea
     id: what-happened
@@ -12,7 +12,7 @@ body:
     validations:
       required: true
   - type: textarea
-    id: logs
+    id: logcat
     attributes:
       label: Logcat Output
       description: The log attached to the email
@@ -20,9 +20,9 @@ body:
     validations:
       required: true
   - type: checkboxes
-    id: terms
+    id: authorization
     attributes:
-      label: Use Authorization
+      label: Use Authorizations
       options:
         - label: I am authorized to submit this issue by TagMo collaborators
           required: true

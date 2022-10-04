@@ -132,9 +132,6 @@
     <string name="bank_erasing">Effacement de la banque %1$d sur %2$d&#8230;</string>
     <string name="bank_select">Choisir une banque de destination&#8230;</string>
 
-    <string name="zelda_twilight">The Legend of Zelda&#160;: Twilight Princess HD</string>
-    <string name="super_smash">Super Smash Bros. pour Nintendo 3DS et Wii U</string>
-
     <string name="save_image">Sauvegarder l’image</string>
 
     <string name="unknown_type">Tag non vérifiée</string>

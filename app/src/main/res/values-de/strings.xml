@@ -16,9 +16,6 @@
 
     <string name="app">Anwendung</string>
 
-    <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
-    <string name="super_smash">Super Smash Bros. for Nintendo 3DS and Wii U</string>
-
     <string name="random_serial">Zufällige Seriennummer</string>
     <string name="game_titles_view">Kompatible Spiele anzeigen</string>
     <string name="game_titles_hide">Kompatible Spiele ausblenden</string>

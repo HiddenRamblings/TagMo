@@ -113,7 +113,7 @@ public class TagDataEditor extends AppCompatActivity {
 
     private AppDataTP appDataTP;
 
-    public static final int APP_ID_SBU = 0x000EDF00;
+    public static final int APP_ID_SBU = 0x34F80200;
 
     private EditText txtLevelSBU;
 

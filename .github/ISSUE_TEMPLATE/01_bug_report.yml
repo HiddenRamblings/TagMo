@@ -1,7 +1,7 @@
-name: Report a Bug
+name: Report a Problem
 description: File a bug report
 title: "[Issue]: "
-labels: ["logcat"]
+labels: ["Entomology"]
 body:
   - type: markdown
     attributes:
@@ -16,7 +16,7 @@ body:
     validations:
       required: true
   - type: textarea
-    id: logs
+    id: logcat
     attributes:
       label: Logcat Output
       description: Long press inside this box and select "Paste"
@@ -25,7 +25,7 @@ body:
     validations:
       required: true
   - type: checkboxes
-    id: terms
+    id: requirements
     attributes:
       label: Usage Requirements
       description: |

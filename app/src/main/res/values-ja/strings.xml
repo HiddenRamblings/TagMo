@@ -3,7 +3,7 @@
 
     <string name="nfc_unsupported">NFCはサポートされていません！</string>
     <string name="nfc_disabled">NFCを無効にしました！</string>
-    <string name="nfc_query">NFCは現在無効になっています。 NFCを有効にしますか？</string>
+    <string name="nfc_available">NFCは現在無効になっています。 NFCを有効にしますか？</string>
 
     <string name="no_decrypt_key">復号化キーがインポートされていない</string>
 

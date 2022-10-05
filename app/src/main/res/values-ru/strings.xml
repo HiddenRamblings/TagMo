@@ -3,7 +3,7 @@
 
     <string name="nfc_unsupported">NFC Не поддерживается!</string>
     <string name="nfc_disabled">NFC Отключен!</string>
-    <string name="nfc_query">NFC в настоящее время отключен. Включить NFC?</string>
+    <string name="nfc_available">NFC в настоящее время отключен. Включить NFC?</string>
 
     <string name="proceed">Продолжать</string>
     <string name="scan">Сканировать</string>

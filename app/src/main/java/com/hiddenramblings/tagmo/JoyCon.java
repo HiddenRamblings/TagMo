@@ -1,11 +1,14 @@
-package com.mumumusuc.libjoycon;
+package com.hiddenramblings.tagmo;
 
 import android.bluetooth.BluetoothDevice;
 
+import com.mumumusuc.libjoycon.BluetoothHelper;
+import com.mumumusuc.libjoycon.BluetoothHidHost;
+
 import java.security.InvalidParameterException;
 
-public final class Controller {
-    private static final String TAG = Controller.class.getSimpleName();
+public final class JoyCon {
+    private static final String TAG = JoyCon.class.getSimpleName();
     private static final char[] template = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     public static final String JOYCON_L = "Joy-Con (L)";
@@ -25,7 +28,7 @@ public final class Controller {
     public final BluetoothDevice device;
     private long mHandle;
 
-    public Controller(BluetoothHelper helper, BluetoothDevice device) {
+    public JoyCon(BluetoothHelper helper, BluetoothDevice device) {
         String name = device.getName();
         switch (name) {
             case JOYCON_L:
@@ -89,7 +92,7 @@ public final class Controller {
     }
 
     @Override
-    public void finalize() throws Throwable {
+    protected void finalize() throws Throwable {
         super.finalize();
         destroy(mHandle);
     }

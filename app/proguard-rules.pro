@@ -23,7 +23,4 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keepclassmembers class com.hiddenramblings.tagmo.JoyCon {
-   private *;
-   public *;
-}
+-keepclassmembers class com.hiddenramblings.tagmo.JoyCon { *; }

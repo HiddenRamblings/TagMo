@@ -25,13 +25,21 @@ jobs:
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Build with Gradle
+
+    - name: Retrieve commit identification
+      run: |
+        GIT_BRANCH=$(git name-rev --name-only HEAD)
+        echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
+        GIT_HASH=$(git rev-parse --short HEAD)
+        echo "GIT_HASH=${GIT_HASH}" >> $GITHUB_ENV
+
+    - name: Build Release Gradle
       run: ./gradlew assembleRelease
 
     - uses: r0adkll/sign-android-release@v1
-      name: Sign app APK
+      name: Sign Release APK
       # ID used to access action output
-      id: sign_app
+      id: sign_main
       with:
         releaseDirectory: app/build/outputs/apk/github/release
         signingKeyBase64: "MIIJcQIBAzCCCSoGCSqGSIb3DQEHAaCCCRsEggkXMIIJEzCCBWcGCSqGSIb3DQEHAaCCBVgEggVUMIIFUDCCBUwGCyqGSIb3DQEMCgECoIIE+zCCBPcwKQYKKoZIhvcNAQwBAzAbBBQLMmORsSjUTDqRDBbU7lMZR0+hKwIDAMNQBIIEyHejpFaYtbPh3YAxLysRhBkC0oHI4ylozyydxk4dGSX7/swJhBZXSku60C8W8IHyufeo/mcyylapq68IKgqjnM3kit5YS7yINFZelGjhEt5hbPoavu+EwL3RWmQhwC6DyAGT/EhO4xDT1P2W0GSp9ocA+3bc/e199x1ysfvVfWpFT7BKk6IB8cclLtFckXf//p13l5yiYA3J2TAcR+2w16UUoynR7Hm3GSHQWZDUaWYNRhOBJCSUvg23sawG7+HTwhwkqWaz0GFWEHqWS1MDq3fAQbW2WuQXQ1nZ+ugfxcV5qtzCYVXrBbZ0orhSEutJn8UYB3IpdjFqRz77IEjqT8HdJNWfzhRBcKnlekqkcNvBf4Og/xNCfbO7eK+IG8bGiCQBxfrYnJUbXKJaKyw4hw3f/M8ejENzsvuLJlLP8qqamBWYO1gc2Cv4UZNfVSchMoi5m8FZ4MMcwolez2NHohsoRm2a9Rhc8wn5IN3COT/Bld+J5Qqke1Rf/tHEwUf6j6W3z0S2EIwsdiLSbKbAEZ3MLVo/ZrUwJYRhONqqgTm1NAUcDZ1uaFGWbr+qMWzPMqb5EE3HpnZNPHKM1bQlOfyvGbHJMdPVJSz9ohBnINzNzMo0x+a9n0e1fVaUrgX1BUiyp2pdHHU8EUFmpgPbCJfkoaYFt91eqpNSp17b7HFk2WcQRG+1287uAcZhUBEf6KRYhrzYLA7II31CgzKi4sDM8Yd8Z7Loz10RIZxdeE1Wve3p1r+7wvauI8HXQUvvv3U7t/pqC2qPledcS29vZe5iO7E60hpzMN+IlBb1YjSMsFK5YxhCBHX9NVXvaMp4/VOD1UDplTolQCFVbr0P6Yddd8bcTI8f9emGhlQ/vYKJQMHatF257syjtfg1B3tx2cEsE2Nk6kr8/z5+dNOG1rYsYpTz9e6g++HccpPoAGqjyaEjHhYcGq0tQotFWo6GbnNwuXbgwIbekpszGixHB5ecotpqojHkTZqUv9QdaOQGCePNFS+bA2B70GlL0TmBE3VFUNj2mEXpQzGr+/g2W4d6FgqFLqPUROYDMzvYEu6gVpbwILH54kBehBdsDTQ2rc8jNlWhSKAMlBr4/7P7MHjz84NEbsqQaUCNzKdaTpBCDQrOTw93ObX4lZVo2wslpYCDOAXR9qyEeQhrt9v0O0ehNxCeaQJ4ibJuUuDn1E8n4P+pGK+l4oSSh0Vk3lvbTTxZ3sr2HKZobi/nwsmD35ekO0eYMux8I6SK1uNwoQ0OwltrIOi3Qb6eam8fREjvmTXUiO1P6LxjbpnGspl9HDBT7JFQ6ThzJxfNSjkAtuPMTEo251I76ANK9reD6MrXaW7Eissge9PrMvHo4RUEyfpdJXpGdvTVDCWAMPXne5Oe6b4gkCd1xwgX8bvXTttQ4DCA7Tv+f0OEXWKpMMxD5x/+ShCmnTm8j9Yh0S2b+dvoeFvCVkfUSTgMmUbsNqVaVK8iNh2VzwtDYvjegRH8mgSt0Z0y46gZVyY63r9X7hJl0LyPYQMMwKNDci7NA+U7w/8jDjGiSGR+RLAktbc4FiiByRElCqFWkPHhqddk4wb5n/6ko6yWbBn7HOSVwLj7tVatZLY3WYMvsBUy9oyRBDCyLxBWGmnZQTE+MBkGCSqGSIb3DQEJFDEMHgoAdABhAGcAbQBvMCEGCSqGSIb3DQEJFTEUBBJUaW1lIDE2MzEzMjc2MjU4OTAwggOkBgkqhkiG9w0BBwagggOVMIIDkQIBADCCA4oGCSqGSIb3DQEHATApBgoqhkiG9w0BDAEGMBsEFGnoCeS0o75Gb6bE+u+riFBXvCy2AgMAw1CAggNQi8WLQPLHYct5qbDZzHsUYnHgEAKCg3/mwCmI8LGrJNTkg05RI5/mqmEsXQyX8DZBULKfj8ShZ2VV0ldhshSdidKBxP7EOUbqstxcyIK3NN7oZPBCKcT1OAuXrMZ59RRS8cThErpYrFAt0Uqj38TjVU469Vz3oqF9G0Ko8K3TlGFFiO3CKgBwj3r5e29KzeAMO8mgbBYct34ErINbAMYDrDQwIxUYmFSElRKRhq/CvQ5FFElDG2c/cuEaxxK25JklkIl9AAwc79qEAbcyL0IuvqwhTnW8AZiTCyWCm+e4BPBV8OpFmFpoicy1Plr7Rk99rWoPsJ9rsQNBf5ZXzDfz6gNJ5yANilq8/t/vXE8DxxkopTfI+8XBMHoCzvr1SwpyF5pgbZKlKndpj9mzg/Q+15oytsSs4Mm+5OjWYcVVjnOddgo+MAr9g42vQcBy6yWAdBAA8mGH9oIhXPIe/mZJFcMZkdBAVKKn5Ac856HstoKX2i79HAP+d0GmJiHRlicbWTeJqyKECUi1jQgOBxnZ68EU7vgE1TpAtlLoaFb+8N3R64CwBtrue3Mbv/CAaWXlykgPTSIQlRPW28qMjFlPbwdZ2XmDY2uIaqBsJPGnLKNqHBLVpxhG7+SWL4/200GVK+gc39N10YaIyz9WxQamtYV1De0CZ8l0IdvZvrutESgQph8jG5Wux3AsdiEnzZYaAnU38rFiZ1WwZzekHzQrpsn2/WsIWlTVyc1PZs9wxW8WGsmR6KASd2yy6TAji6aZYKpYsgCaWZ/pX1oS0Uq7m1n2N4WL1PYufaVhSqL2/36EPY7P6428MlYynHj3AxgIY48mQ9RKe5SL9U4eW9qm/S+y4kiP/EBWW38gj07i6Ob8ZcRC+k7QBgEZZBUdpcxyvo26fOxR71qR74FV6/Wskc2k3jk1TQb2XlgW4VBzTPEMhXflx4OEgzBdvnjp/xzxd9U3ogphvJT/Yd7sebWO5Q5b8RTVvz1Dvtg9Hi/aacI/bCGCm7yUsIJSvJ/Q2ckY63CUD3APEVaBPDe/H2GWxSoU77SPhjg2baiW95LfNWSlXDAE3ya2MbhW2hTBUiZpCtAZjeZjjIKbpqTyHxN75XtvZtu65YzSD1lVXsMQS4EwPjAhMAkGBSsOAwIaBQAEFNUR07rDU6WPH04olObNQ+hvDq9yBBSLMw+5H8aDzlR8c77S0YZZbb3y2QIDAYag"
@@ -42,19 +50,29 @@ jobs:
         # override default build-tools version (29.0.3) -- optional
         BUILD_TOOLS_VERSION: "30.0.2"
 
-    - name: Retrieve commit identification
-      run: |
-         GIT_BRANCH=$(git name-rev --name-only HEAD)
-         echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
-         GIT_HASH=$(git rev-parse --short HEAD)
-         echo "GIT_HASH=${GIT_HASH}" >> $GITHUB_ENV
+    - name: Build WearOS Gradle
+      run: ./gradlew assembleWearos
 
-    # Example use of `signedReleaseFile` output -- not needed
+    - uses: r0adkll/sign-android-release@v1
+      name: Sign WearOS APK
+      # ID used to access action output
+      id: sign_wear
+      with:
+        releaseDirectory: app/build/outputs/apk/github/wearos
+        signingKeyBase64: "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"
+        alias: "tagmo"
+        keyStorePassword: "hiddenramblings"
+        keyPassword: "hiddenramblings"
+      env:
+        # override default build-tools version (29.0.3) -- optional
+        BUILD_TOOLS_VERSION: "30.0.2"
+
     - uses: actions/upload-artifact@v3
       with:
         name: TagMo-${{ env.GIT_HASH }}
-        path: ${{steps.sign_app.outputs.signedReleaseFile}}
-
+        path: |
+          ${{steps.sign_main.outputs.signedReleaseFile}}
+          ${{steps.sign_wear.outputs.signedReleaseFile}}
 
     - uses: marvinpinto/action-automatic-releases@v1.2.1
       if: github.event_name != 'pull_request'
@@ -63,4 +81,6 @@ jobs:
         automatic_release_tag: ${{ env.GIT_BRANCH }}
         prerelease: ${{ env.GIT_BRANCH != 'master' }}
         title: TagMo-${{ env.GIT_HASH }}
-        files: ${{steps.sign_app.outputs.signedReleaseFile}}
+        files: |
+          ${{steps.sign_main.outputs.signedReleaseFile}}
+          ${{steps.sign_wear.outputs.signedReleaseFile}}

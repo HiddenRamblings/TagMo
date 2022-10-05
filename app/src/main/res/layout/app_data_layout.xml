@@ -3,68 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
-        android:id="@+id/appDataTP"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:baselineAligned="false"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                style="@style/TagEditor.InputHint"
-                android:text="@string/hearts"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/txtHearts1"
-                    style="@style/TagEditor.EditNumber"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:importantForAutofill="no"
-                    tools:ignore="LabelFor" />
-
-                <Spinner
-                    android:id="@+id/txtHearts2"
-                    style="@style/TagEditor.Spinner"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"/>
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                style="@style/TagEditor.InputHint"
-                android:text="@string/level"/>
-
-            <EditText
-                android:id="@+id/txtLevelTP"
-                style="@style/TagEditor.EditNumber"
-                android:importantForAutofill="no"
-                tools:ignore="LabelFor" />
-        </LinearLayout>
-    </LinearLayout>
-
     <include
-        layout="@layout/app_data_sbu"
-        android:id="@+id/appDataSBU" />
+        layout="@layout/app_data_zelda_tp"
+        android:id="@+id/appDataZeldaTP" />
 
     <include
         layout="@layout/app_data_ssb"
         android:id="@+id/appDataSSB" />
+
+    <include
+        layout="@layout/app_data_ssbu"
+        android:id="@+id/appDataSSBU" />
 </merge>

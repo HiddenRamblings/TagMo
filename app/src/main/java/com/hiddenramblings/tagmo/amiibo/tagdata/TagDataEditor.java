@@ -86,9 +86,9 @@ public class TagDataEditor extends AppCompatActivity {
     private SwitchCompat userDataSwitch;
     private AppCompatButton generateSerial;
 
-    private LinearLayout appDataViewTP;
-    private LinearLayout appDataViewSBU;
+    private LinearLayout appDataViewZeldaTP;
     private LinearLayout appDataViewSSB;
+    private LinearLayout appDataViewSSBU;
 
     private CountryCodesAdapter countryCodeAdapter;
     private NSSpinnerAdapter appIdAdapter;
@@ -105,21 +105,15 @@ public class TagDataEditor extends AppCompatActivity {
     private Date modifiedDate;
     private Integer appId;
 
-    public static final int APP_ID_TP = 0x1019C800;
+    public static final int AppId_ZeldaTP = 0x1019C800;
 
     private EditText txtHearts1;
     private Spinner txtHearts2;
-    private EditText txtLevelTP;
+    private EditText txtLevelZeldaTP;
 
-    private AppDataTP appDataTP;
+    private AppDataZeldaTP appDataZeldaTP;
 
-    public static final int APP_ID_SBU = 0x34F80200;
-
-    private EditText txtLevelSBU;
-
-    private AppDataSBU appDataSBU;
-
-    public static final int APP_ID_SSB = 0x10110E00;
+    public static final int AppId_SSB = 0x10110E00;
 
     private Spinner spnAppearance;
     private EditText txtLevelSSB;
@@ -138,6 +132,16 @@ public class TagDataEditor extends AppCompatActivity {
     private EditText txtStatSpeed;
 
     private AppDataSSB appDataSSB;
+
+    public static final int AppId_SSBU = 0x34F80200;
+
+    private EditText txtLevelSSBU;
+
+    private AppDataSSBU appDataSSBU;
+
+    public static final int AppId_Splatoon = 0x10162B00;
+
+    private AppDataSplatoon appDataSplatoon;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -170,9 +174,9 @@ public class TagDataEditor extends AppCompatActivity {
         userDataSwitch = findViewById(R.id.userDataSwitch);
         generateSerial = findViewById(R.id.random_serial);
 
-        appDataViewTP = findViewById(R.id.appDataTP);
-        appDataViewSBU = findViewById(R.id.appDataSBU);
+        appDataViewZeldaTP = findViewById(R.id.appDataZeldaTP);
         appDataViewSSB = findViewById(R.id.appDataSSB);
+        appDataViewSSBU = findViewById(R.id.appDataSSBU);
 
         byte[] tagData = getIntent().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
 
@@ -506,17 +510,17 @@ public class TagDataEditor extends AppCompatActivity {
                 return;
             }
 
-            if (appDataSwitch.isChecked() && null != appDataTP) {
+            if (appDataSwitch.isChecked() && null != appDataZeldaTP) {
                 try {
-                    newAmiiboData.setAppData(onAppDataTPSaved());
+                    newAmiiboData.setAppData(onAppDataZeldaTPSaved());
                 } catch (Exception e) {
                     return;
                 }
             }
 
-            if (appDataSwitch.isChecked() && null != appDataSBU) {
+            if (appDataSwitch.isChecked() && null != appDataSSBU) {
                 try {
-                    newAmiiboData.setAppData(onAppDataSBUSaved());
+                    newAmiiboData.setAppData(onAppDataSSBUSaved());
                 } catch (Exception e) {
                     return;
                 }
@@ -563,11 +567,11 @@ public class TagDataEditor extends AppCompatActivity {
     }
 
     private void updateAppDataEnabled(boolean isAppDataInitialized) {
-        if (null != appDataTP)
-            onAppDataTPChecked(isUserDataInitialized && isAppDataInitialized);
+        if (null != appDataZeldaTP)
+            onAppDataZeldaTPChecked(isUserDataInitialized && isAppDataInitialized);
 
-        if (null != appDataSBU)
-            onAppDataSBUChecked(isUserDataInitialized && isAppDataInitialized);
+        if (null != appDataSSBU)
+            onAppDataSSBUChecked(isUserDataInitialized && isAppDataInitialized);
 
         if (null != appDataSSB)
             onAppDataSSBChecked(isUserDataInitialized && isAppDataInitialized);
@@ -803,21 +807,21 @@ public class TagDataEditor extends AppCompatActivity {
     };
 
     private void updateAppDataView() {
-        appDataViewTP.setVisibility(View.GONE);
-        appDataTP = null;
-        appDataViewSBU.setVisibility(View.GONE);
-        appDataSBU = null;
+        appDataViewZeldaTP.setVisibility(View.GONE);
+        appDataZeldaTP = null;
+        appDataViewSSBU.setVisibility(View.GONE);
+        appDataSSBU = null;
         appDataViewSSB.setVisibility(View.GONE);
         appDataSSB = null;
 
         if (null != appId) {
-            if (appId == APP_ID_TP) {
-                appDataViewTP.setVisibility(View.VISIBLE);
-                enableAppDataTP(amiiboData.getAppData());
-            } else if (appId == APP_ID_SBU) {
-                appDataViewSBU.setVisibility(View.VISIBLE);
-                enableAppDataSBU(amiiboData.getAppData());
-            } else if (appId == APP_ID_SSB) {
+            if (appId == AppId_ZeldaTP) {
+                appDataViewZeldaTP.setVisibility(View.VISIBLE);
+                enableAppDataZeldaTP(amiiboData.getAppData());
+            } else if (appId == AppId_SSBU) {
+                appDataViewSSBU.setVisibility(View.VISIBLE);
+                enableAppDataSSBU(amiiboData.getAppData());
+            } else if (appId == AppId_SSB) {
                 appDataViewSSB.setVisibility(View.VISIBLE);
                 enableAppDataSSB(amiiboData.getAppData());
             }
@@ -987,7 +991,7 @@ public class TagDataEditor extends AppCompatActivity {
                 txtHearts2.setSelection(0);
             }
             try {
-                appDataTP.checkHearts(hearts * 4);
+                appDataZeldaTP.checkHearts(hearts * 4);
                 txtHearts1.setError(null);
             } catch (Exception e) {
                 txtHearts1.setError(getString(R.string.error_min_max, 0, 20));
@@ -1020,57 +1024,57 @@ public class TagDataEditor extends AppCompatActivity {
         return value;
     }
 
-    private void enableAppDataTP(byte[] appData) {
+    private void enableAppDataZeldaTP(byte[] appData) {
         try {
-            appDataTP = new AppDataTP(appData);
+            appDataZeldaTP = new AppDataZeldaTP(appData);
         } catch (Exception e) {
-            appDataViewTP.setVisibility(View.GONE);
+            appDataViewZeldaTP.setVisibility(View.GONE);
             return;
         }
 
         txtHearts1 = findViewById(R.id.txtHearts1);
         txtHearts2 = findViewById(R.id.txtHearts2);
-        txtLevelTP = findViewById(R.id.txtLevelTP);
+        txtLevelZeldaTP = findViewById(R.id.txtLevelZeldaTP);
 
         setListForSpinners(new Spinner[]{ txtHearts2 }, R.array.editor_tp_hearts);
 
         int level, hearts;
         if (initialAppDataInitialized) {
             try {
-                level = appDataTP.getLevel();
+                level = appDataZeldaTP.getLevel();
             } catch (Exception e) {
                 level = 40;
             }
             try {
-                hearts = appDataTP.getHearts();
+                hearts = appDataZeldaTP.getHearts();
             } catch (Exception e) {
-                hearts = AppDataTP.HEARTS_MAX_VALUE;
+                hearts = AppDataZeldaTP.HEARTS_MAX_VALUE;
             }
         } else {
             level = 40;
-            hearts = AppDataTP.HEARTS_MAX_VALUE;
+            hearts = AppDataZeldaTP.HEARTS_MAX_VALUE;
         }
-        txtLevelTP.setText(String.valueOf(level));
+        txtLevelZeldaTP.setText(String.valueOf(level));
         txtHearts1.setText(String.valueOf((hearts / 4)));
         txtHearts2.setSelection(hearts % 4);
         txtHearts2.setEnabled((hearts / 4) < 20);
 
-        txtLevelTP.addTextChangedListener(new TextWatcher() {
+        txtLevelZeldaTP.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 try {
-                    int level = Integer.parseInt(txtLevelTP.getText().toString());
+                    int level = Integer.parseInt(txtLevelZeldaTP.getText().toString());
                     try {
-                        appDataTP.checkLevel(level);
-                        txtLevelTP.setError(null);
+                        appDataZeldaTP.checkLevel(level);
+                        txtLevelZeldaTP.setError(null);
                     } catch (Exception e) {
-                        txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
+                        txtLevelZeldaTP.setError(getString(R.string.error_min_max, 0, 40));
                     }
                 } catch (NumberFormatException e) {
-                    txtLevelTP.setError(getString(R.string.error_min_max, 0, 40));
+                    txtLevelZeldaTP.setError(getString(R.string.error_min_max, 0, 40));
                 }
             }
 
@@ -1091,54 +1095,7 @@ public class TagDataEditor extends AppCompatActivity {
             public void afterTextChanged(Editable editable) { }
         });
 
-        onAppDataTPChecked(isAppDataInitialized);
-    }
-
-    private void enableAppDataSBU(byte[] appData) {
-        try {
-            appDataSBU = new AppDataSBU(appData);
-        } catch (Exception e) {
-            appDataViewSBU.setVisibility(View.GONE);
-            return;
-        }
-
-        txtLevelSBU = findViewById(R.id.txtLevelSBU);
-
-        int level;
-        if (initialAppDataInitialized) {
-            try {
-                level = appDataSBU.getLevel();
-            } catch (Exception e) {
-                level = 50;
-            }
-        } else {
-            level = 50;
-        }
-        txtLevelSBU.setText(String.valueOf(level));
-
-        txtLevelSBU.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                try {
-                    int level = Integer.parseInt(txtLevelSBU.getText().toString());
-                    if (level < 1 || level > 50) {
-                        txtLevelSBU.setError(
-                                getString(R.string.error_min_max, 1, 50));
-                    } else {
-                        txtLevelSBU.setError(null);
-                    }
-                } catch (NumberFormatException e) {
-                    txtLevelSBU.setError(
-                            getString(R.string.error_min_max, 1, 50));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) { }
-        });
+        onAppDataZeldaTPChecked(isAppDataInitialized);
     }
 
     private void enableAppDataSSB(byte[] appData) {
@@ -1364,17 +1321,60 @@ public class TagDataEditor extends AppCompatActivity {
         onAppDataSSBChecked(isAppDataInitialized);
     }
 
-    public void onAppDataTPChecked(boolean enabled) {
+    private void enableAppDataSSBU(byte[] appData) {
+        try {
+            appDataSSBU = new AppDataSSBU(appData);
+        } catch (Exception e) {
+            appDataViewSSBU.setVisibility(View.GONE);
+            return;
+        }
+
+        txtLevelSSBU = findViewById(R.id.txtLevelSSBU);
+
+        int level;
+        if (initialAppDataInitialized) {
+            try {
+                level = appDataSSBU.getLevel();
+            } catch (Exception e) {
+                level = 50;
+            }
+        } else {
+            level = 50;
+        }
+        txtLevelSSBU.setText(String.valueOf(level));
+
+        txtLevelSSBU.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    int level = Integer.parseInt(txtLevelSSBU.getText().toString());
+                    if (level < 1 || level > 50) {
+                        txtLevelSSBU.setError(
+                                getString(R.string.error_min_max, 1, 50));
+                    } else {
+                        txtLevelSSBU.setError(null);
+                    }
+                } catch (NumberFormatException e) {
+                    txtLevelSSBU.setError(
+                            getString(R.string.error_min_max, 1, 50));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
+        });
+    }
+
+    public void onAppDataZeldaTPChecked(boolean enabled) {
         if (null == txtHearts2 )
             return;
 
         txtHearts1.setEnabled(enabled);
         onHeartsUpdate();
-        txtLevelTP.setEnabled(enabled);
-    }
-
-    public void onAppDataSBUChecked(boolean enabled) {
-        txtLevelSBU.setEnabled(enabled);
+        txtLevelZeldaTP.setEnabled(enabled);
     }
 
     public void onAppDataSSBChecked(boolean enabled) {
@@ -1395,46 +1395,28 @@ public class TagDataEditor extends AppCompatActivity {
         spnEffect3.setEnabled(enabled);
     }
 
-    public byte[] onAppDataTPSaved() {
+    public void onAppDataSSBUChecked(boolean enabled) {
+        txtLevelSSBU.setEnabled(enabled);
+    }
+
+    public byte[] onAppDataZeldaTPSaved() {
         try {
-            int level = Integer.parseInt(txtLevelTP.getText().toString());
-            appDataTP.setLevel(level);
+            int level = Integer.parseInt(txtLevelZeldaTP.getText().toString());
+            appDataZeldaTP.setLevel(level);
         } catch (NumberFormatException e) {
-            txtLevelTP.requestFocus();
+            txtLevelZeldaTP.requestFocus();
             throw e;
         }
         try {
             int hearts1 = Integer.parseInt(txtHearts1.getText().toString());
             int hearts2 = txtHearts2.getSelectedItemPosition();
-            appDataTP.setHearts((hearts1 * 4) + hearts2);
+            appDataZeldaTP.setHearts((hearts1 * 4) + hearts2);
         } catch (NumberFormatException e) {
             txtHearts1.requestFocus();
             throw e;
         }
 
-        return appDataTP.array();
-    }
-
-    public byte[] onAppDataSBUSaved() {
-        try {
-            int level = Integer.parseInt(txtLevelSBU.getText().toString());
-            Integer oldLevel;
-            try {
-                oldLevel = appDataSBU.getLevel();
-            } catch (Exception e) {
-                oldLevel = null;
-            }
-
-            //level is a granular value as such we don't want to overwrite it in case its halfway through a level
-            if (null == oldLevel  || level != oldLevel) {
-                appDataSBU.setLevel(level);
-            }
-        } catch (NumberFormatException e) {
-            txtLevelSBU.requestFocus();
-            throw e;
-        }
-
-        return appDataSBU.array();
+        return appDataZeldaTP.array();
     }
 
     public byte[] onAppDataSSBSaved() {
@@ -1537,6 +1519,28 @@ public class TagDataEditor extends AppCompatActivity {
         }
 
         return appDataSSB.array();
+    }
+
+    public byte[] onAppDataSSBUSaved() {
+        try {
+            int level = Integer.parseInt(txtLevelSSBU.getText().toString());
+            Integer oldLevel;
+            try {
+                oldLevel = appDataSSBU.getLevel();
+            } catch (Exception e) {
+                oldLevel = null;
+            }
+
+            //level is a granular value as such we don't want to overwrite it in case its halfway through a level
+            if (null == oldLevel  || level != oldLevel) {
+                appDataSSBU.setLevel(level);
+            }
+        } catch (NumberFormatException e) {
+            txtLevelSSBU.requestFocus();
+            throw e;
+        }
+
+        return appDataSSBU.array();
     }
 
     private void showErrorDialog(int msgRes) {

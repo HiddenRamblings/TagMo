@@ -133,9 +133,9 @@ public class JoyConFragment extends DialogFragment implements
                 if (device.getName().equals("Pro Controller")) {
                     addressJoyCon = device.getAddress();
                     try {
-                        BluetoothSocket mSocket = Debug.isNewer(Build.VERSION_CODES.Q)
-                                ? device.createInsecureL2capChannel(0x11)
-                                : createL2CAPBluetoothSocket(device, addressJoyCon, 0x11);
+                        BluetoothSocket mSocket = createL2CAPBluetoothSocket(
+                                device, addressJoyCon, 0x11
+                        );
                         if (mSocket != null) {
                             if (!mSocket.isConnected()) {
                                 mSocket.connect();

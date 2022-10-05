@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
+import android.bluetooth.BluetoothProfile;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,9 +25,8 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothHandler;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.widget.Toasty;
-
-import java.io.IOException;
-import java.lang.reflect.Constructor;
+import com.mumumusuc.libjoycon.BluetoothHelper;
+import com.mumumusuc.libjoycon.Controller;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class JoyConFragment extends DialogFragment implements
@@ -36,47 +35,6 @@ public class JoyConFragment extends DialogFragment implements
     private BluetoothHandler bluetoothHandler;
 
     private String addressJoyCon;
-
-    public static BluetoothSocket createL2CAPBluetoothSocket(
-            BluetoothDevice device, String address, int psm) {
-        return createBluetoothSocket(device, address, psm);
-    }
-
-    private static BluetoothSocket createBluetoothSocket(
-            BluetoothDevice device, String address, int port) {
-        Debug.Verbose(JoyConFragment.class, "Creating socket with " + address + ":" + port);
-        /*
-        android / bluetooth / BluetoothSocket.java
-
-        static final int TYPE_L2CAP = 3;
-        ...
-        private BluetoothSocket(int type, int fd, boolean auth, boolean encrypt, String address,
-        int port) throws IOException {
-            this(type, fd, auth, encrypt, new BluetoothDevice(address), port, null);
-        }
-        */
-        try {
-            Constructor<BluetoothSocket> constructor = BluetoothSocket.class.getDeclaredConstructor(
-                    int.class, int.class, boolean.class, boolean.class, String.class, int.class
-            );
-            constructor.setAccessible(true);
-            // type, fd, auth, encrypt, address, port
-            return constructor.newInstance(3, -1, false, false, address, port);
-        } catch (Exception e) {
-            try {
-                Constructor<BluetoothSocket> constructor = BluetoothSocket.class.getDeclaredConstructor(
-                        int.class, int.class, boolean.class, boolean.class,
-                        BluetoothDevice.class, String.class, int.class
-                );
-                constructor.setAccessible(true);
-                // type, fd, auth, encrypt, address, port
-                return constructor.newInstance(3, -1, false, false, device, address, port);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        return null;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -132,19 +90,20 @@ public class JoyConFragment extends DialogFragment implements
             for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
                 if (device.getName().equals("Pro Controller")) {
                     addressJoyCon = device.getAddress();
-                    try {
-                        BluetoothSocket mSocket = createL2CAPBluetoothSocket(
-                                device, addressJoyCon, 0x11
-                        );
-                        if (mSocket != null) {
-                            if (!mSocket.isConnected()) {
-                                mSocket.connect();
-                            }
+                    BluetoothHelper bluetoothHelper = new BluetoothHelper();
+                    mBluetoothAdapter.getProfileProxy(requireContext(), new BluetoothProfile.ServiceListener() {
+                        @Override
+                        public void onServiceConnected(int i, BluetoothProfile bluetoothProfile) {
+                            bluetoothHelper.setBluetoothProfile(bluetoothProfile);
+                            bluetoothHelper.connectL2cap(device);
+                            Controller proController = new Controller(bluetoothHelper, device);
                         }
-                    } catch (IOException ex) {
-                        JoyConFragment.this.dismiss();
-                        new Toasty(requireActivity()).Short(R.string.joy_con_invalid);
-                    }
+
+                        @Override
+                        public void onServiceDisconnected(int i) {
+
+                        }
+                    }, 4);
                 }
             }
         }

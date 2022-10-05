@@ -9,7 +9,7 @@
 
     <string name="nfc_unsupported">不支持 NFC！</string>
     <string name="nfc_disabled">NFC 已关闭！</string>
-    <string name="nfc_query">NFC 未开启，是否开启？</string>
+    <string name="nfc_available">NFC 未开启，是否开启？</string>
 
     <string name="no_decrypt_key">未加载加密密钥</string>
 

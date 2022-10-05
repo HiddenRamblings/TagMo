@@ -3,7 +3,7 @@
 
     <string name="nfc_unsupported">지원 안됨!</string>
     <string name="nfc_disabled">사용 안 함!</string>
-    <string name="nfc_query">현재 사용할 수 없습니다. 사용 가능?</string>
+    <string name="nfc_available">현재 사용할 수 없습니다. 사용 가능?</string>
 
     <string name="no_decrypt_key">복호화 키를 가져오지 않음</string>
 

@@ -28,6 +28,8 @@
     <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
 
+    <uses-sdk tools:overrideLibrary="me.weishu.freereflection" />
+
     <queries>
         <package android:name="com.hiddenramblings.tagmo.eightbit" />
         <package android:name="com.hiddenramblings.tagmo" />

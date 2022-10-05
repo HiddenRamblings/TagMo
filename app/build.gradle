@@ -122,6 +122,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.13.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.2'
     implementation 'com.github.SamSprung:android-issue-reporter:22a3436'
+    implementation 'com.github.tiann:FreeReflection:3.1.0'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     // Required for Lollipop Amiibo API download compatibility

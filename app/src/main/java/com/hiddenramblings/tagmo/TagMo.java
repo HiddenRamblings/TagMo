@@ -17,6 +17,8 @@ import java.io.StringWriter;
 import java.lang.ref.SoftReference;
 import java.util.Objects;
 
+import me.weishu.reflection.Reflection;
+
 @EApplication
 public class TagMo extends Application {
     @Pref
@@ -59,6 +61,12 @@ public class TagMo extends Application {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        Reflection.unseal(base);
     }
 
     @Override

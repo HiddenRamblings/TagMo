@@ -20,6 +20,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.hiddenramblings.tagmo.JoyCon;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothHandler;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -68,6 +69,14 @@ public class JoyConFragment extends DialogFragment implements
         new Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter);
     }
 
+    private byte getPlayer(int player) {
+        return (byte) ((0x1 << (player)) - 1);
+    }
+
+    private byte getFlash(int flash) {
+        return (byte) ((0x1 << (flash)) - 1);
+    }
+
     @SuppressLint("MissingPermission")
     @Override
     public void onAdapterEnabled(BluetoothAdapter mBluetoothAdapter) {
@@ -93,7 +102,9 @@ public class JoyConFragment extends DialogFragment implements
 
                     });
                     bluetoothHelper.connectL2cap(device);
-                    // Controller proController = new Controller(bluetoothHelper, device);
+                    JoyCon proController = new JoyCon(bluetoothHelper, device);
+                    proController.enableRumble(true);
+                    proController.setPlayer(getPlayer(1), getFlash(4));
                 }
             }
         }

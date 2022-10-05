@@ -140,8 +140,9 @@
     <string name="bank_select">Selecting a destination bank&#8230;</string>
 
     <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
-    <string name="smash_ultimate">Super Smash Bros. Ultimate for Switch</string>
+    <string name="splatoon">Splatoon for Switch</string>
     <string name="super_smash">Super Smash Bros. for Wii U (and 3DS)</string>
+    <string name="smash_ultimate">Super Smash Bros. Ultimate for Switch</string>
 
     <string name="save_image">Save Image</string>
 

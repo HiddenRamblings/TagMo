@@ -27,12 +27,14 @@ public class AppData {
     public static final HashMap<Integer, String> appIds = new HashMap<>();
 
     static {
-        appIds.put(TagDataEditor.APP_ID_TP,
+        appIds.put(TagDataEditor.AppId_ZeldaTP,
                 TagMo.getContext().getString(R.string.zelda_twilight));
-        appIds.put(TagDataEditor.APP_ID_SBU,
-                TagMo.getContext().getString(R.string.smash_ultimate));
-        appIds.put(TagDataEditor.APP_ID_SSB,
+        appIds.put(TagDataEditor.AppId_Splatoon,
+                TagMo.getContext().getString(R.string.splatoon));
+        appIds.put(TagDataEditor.AppId_SSB,
                 TagMo.getContext().getString(R.string.super_smash));
+        appIds.put(TagDataEditor.AppId_SSBU,
+                TagMo.getContext().getString(R.string.smash_ultimate));
         appIds.put(-1, TagMo.getContext().getString(R.string.unspecified));
     }
 }

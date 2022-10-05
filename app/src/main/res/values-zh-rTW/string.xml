@@ -9,7 +9,7 @@
 
     <string name="nfc_unsupported">裝置不支援NFC！</string>
     <string name="nfc_disabled">NFC已停用！</string>
-    <string name="nfc_query">NFC目前已停用，立刻啟用NFC？</string>
+    <string name="nfc_available">NFC目前已停用，立刻啟用NFC？</string>
 
     <string name="no_decrypt_key">尚未匯入Decryption金鑰</string>
 

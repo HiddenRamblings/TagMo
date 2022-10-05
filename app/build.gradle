@@ -1,4 +1,7 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
 
 android {
     compileSdkVersion 33
@@ -85,7 +88,7 @@ android {
     ndkVersion '21.4.7075529'
     externalNativeBuild {
         cmake {
-            path "CMakeLists.txt"
+            path "libs/CMakeLists.txt"
         }
     }
 

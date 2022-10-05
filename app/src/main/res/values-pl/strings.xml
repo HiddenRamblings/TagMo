@@ -8,7 +8,7 @@
 
     <string name="nfc_unsupported">Brak wsparcia dla NFC!</string>
     <string name="nfc_disabled">NFC wyłączone!</string>
-    <string name="nfc_query">NFC jest obecnie nieaktywne. Włączyć NFC?</string>
+    <string name="nfc_available">NFC jest obecnie nieaktywne. Włączyć NFC?</string>
 
     <string name="no_decrypt_key">Klucze deszyfrujące nie zaimportowane</string>
 

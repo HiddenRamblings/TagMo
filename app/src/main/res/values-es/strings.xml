@@ -2,7 +2,7 @@
 
     <string name="nfc_unsupported">¡No es Compatible con NFC!</string>
     <string name="nfc_disabled">NFC Desactivado!</string>
-    <string name="nfc_query">NFC está deshabilitado actualmente. ¿Habilitar NFC?</string>
+    <string name="nfc_available">NFC está deshabilitado actualmente. ¿Habilitar NFC?</string>
 
     <string name="proceed">Continuar</string>
     <string name="scan">Escanear</string>

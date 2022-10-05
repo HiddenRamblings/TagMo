@@ -625,7 +625,7 @@ public class NfcActivity extends AppCompatActivity {
         } else if (!nfcAdapter.isEnabled()) {
             showError(getString(R.string.nfc_disabled));
             new AlertDialog.Builder(this)
-                    .setMessage(R.string.nfc_query)
+                    .setMessage(R.string.nfc_available)
                     .setPositiveButton(R.string.yes, (dialog, which) -> {
                         if (Debug.isNewer(Build.VERSION_CODES.Q))
                             onNFCActivity.launch(new Intent(Settings.Panel.ACTION_NFC));

@@ -38,11 +38,9 @@ android {
         google { }
     }
 
-    def versionCode = defaultConfig.versionName.replace(".","").toInteger()
-    defaultConfig.versionCode = versionCode * 10
-
     buildTypes {
         release {
+            defaultConfig.versionCode = defaultConfig.versionName.replace(".","").toInteger() * 10
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".eightbit"

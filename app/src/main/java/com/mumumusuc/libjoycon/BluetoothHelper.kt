@@ -4,17 +4,16 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.BluetoothSocket
-import android.content.*
-import android.location.LocationManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
+import android.os.ParcelFileDescriptor
+import android.os.ParcelUuid
 import android.util.Log
 import me.weishu.reflection.Reflection
-import java.lang.RuntimeException
-import android.os.ParcelUuid
-import android.os.ParcelFileDescriptor
-import java.lang.IllegalArgumentException
 import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Method
 
 class BluetoothHelper : BluetoothProfile.ServiceListener {
     companion object {

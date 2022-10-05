@@ -101,7 +101,11 @@ android {
     }
 
     applicationVariants.all { variant ->
-        variant.outputs[0].outputFileName = project.archivesBaseName + ".apk"
+        if (variant.buildType.name == buildTypes.wearos.name) {
+            variant.outputs[0].outputFileName = project.archivesBaseName + "-WearOS.apk"
+        } else {
+            variant.outputs[0].outputFileName = project.archivesBaseName + ".apk"
+        }
     }
 }
 

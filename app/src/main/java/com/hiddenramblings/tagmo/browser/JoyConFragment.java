@@ -32,8 +32,7 @@ public class JoyConFragment extends DialogFragment implements
         BluetoothHandler.BluetoothListener {
 
     private BluetoothHandler bluetoothHandler;
-
-    private String addressJoyCon;
+    private BluetoothHelper bluetoothHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,7 +46,7 @@ public class JoyConFragment extends DialogFragment implements
     }
 
     public void delayedBluetoothEnable() {
-        if (null != addressJoyCon) return;
+        if (null != bluetoothHelper) return;
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
                     requireContext(), requireActivity().getActivityResultRegistry(),
@@ -96,8 +95,7 @@ public class JoyConFragment extends DialogFragment implements
         if (hasProController) {
             for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
                 if (device.getName().equals("Pro Controller")) {
-                    addressJoyCon = device.getAddress();
-                    BluetoothHelper bluetoothHelper = new BluetoothHelper();
+                    bluetoothHelper = new BluetoothHelper();
                     bluetoothHelper.register(requireContext(), (name, address, state) -> {
 
                     });
@@ -125,6 +123,10 @@ public class JoyConFragment extends DialogFragment implements
 
     @Override
     public void onCancel(@NonNull DialogInterface dialog) {
+        if (null != bluetoothHelper) {
+            bluetoothHelper.unregister(requireContext());
+            bluetoothHelper = null;
+        }
         super.onCancel(dialog);
     }
 }

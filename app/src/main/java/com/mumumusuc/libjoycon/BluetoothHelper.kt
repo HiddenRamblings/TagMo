@@ -12,6 +12,9 @@ import me.weishu.reflection.Reflection
 import java.lang.RuntimeException
 import android.os.ParcelUuid
 import android.os.ParcelFileDescriptor
+import java.lang.IllegalArgumentException
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
 
 class BluetoothHelper : BluetoothProfile.ServiceListener {
     companion object {
@@ -120,7 +123,7 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
     private val mAdapter: BluetoothAdapter by lazy { BluetoothAdapter.getDefaultAdapter() }
     private var mHidHost: BluetoothHidHost? = null
     private var mCallback: StateChangedCallback? = null
-    private lateinit var mLocation: LocationManager
+    // private lateinit var mLocation: LocationManager
 
     fun getHidHost(): BluetoothHidHost? {
         return mHidHost
@@ -140,10 +143,6 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
         }
     }
 
-    public fun setBluetoothProfile(p1: BluetoothProfile) {
-        mHidHost = BluetoothHidHost(p1)
-    }
-
     override fun onServiceDisconnected(p0: Int) {
         if (p0 == 4) {
             Log.d(TAG, "disconnected from hid host proxy")
@@ -154,7 +153,7 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
     fun register(context: Context, callback: StateChangedCallback?) {
         Reflection.unseal(context)
         mCallback = callback
-        mLocation = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        // mLocation = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val filter = IntentFilter()
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
@@ -227,7 +226,11 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                         it.name == "getBluetoothService"
                     }
                     getBluetoothService.isAccessible = true
-                    val bluetoothProxy = getBluetoothService.invoke(mAdapter, null)
+                    val bluetoothProxy: Any = try {
+                        getBluetoothService.invoke(mAdapter, null)
+                    } catch (ex: IllegalArgumentException) {
+                        getBluetoothService.invoke(mAdapter)
+                    }
                     val getSocketManager =
                         bluetoothProxy::class.java.getDeclaredMethod("getSocketManager")
                     getSocketManager.isAccessible = true
@@ -248,24 +251,46 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                     val SEC_FLAG_AUTH_16_DIGIT = 16
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                         dev.setPin(byteArrayOf(0, 0, 0, 0))
-                    val pfd = connectSocket.invoke(
-                        bsm,
-                        dev,
-                        3,
-                        null,
-                        17,
-                        0
-                    ) as ParcelFileDescriptor
+                    val pfd: ParcelFileDescriptor = try {
+                        connectSocket.invoke(
+                            bsm,
+                            dev,
+                            3,
+                            null,
+                            17,
+                            0
+                        ) as ParcelFileDescriptor
+                    } catch (ex: InvocationTargetException) {
+                        connectSocket.invoke(
+                            bsm,
+                            dev,
+                            3,
+                            dev.uuids[0],
+                            17,
+                            0
+                        ) as ParcelFileDescriptor
+                    }
                     val fd = pfd.fileDescriptor
                     Log.d(TAG, "pfd = $pfd, fd = {$fd}")
-                    connectSocket.invoke(
-                        bsm,
-                        dev,
-                        3,
-                        null,
-                        19,
-                        0
-                    ) as ParcelFileDescriptor
+                    try {
+                        connectSocket.invoke(
+                            bsm,
+                            dev,
+                            3,
+                            null,
+                            19,
+                            0
+                        ) as ParcelFileDescriptor
+                    } catch (ex: InvocationTargetException) {
+                        connectSocket.invoke(
+                            bsm,
+                            dev,
+                            3,
+                            dev.uuids[0],
+                            19,
+                            0
+                        ) as ParcelFileDescriptor
+                    }
                 } catch (e: Exception) {
                     Log.e(TAG, Log.getStackTraceString(e))
                 }

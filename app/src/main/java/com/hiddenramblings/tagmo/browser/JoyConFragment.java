@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothProfile;
+import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,6 +28,11 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.mumumusuc.libjoycon.BluetoothHelper;
 import com.mumumusuc.libjoycon.Controller;
+
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+
+import me.weishu.reflection.Reflection;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class JoyConFragment extends DialogFragment implements
@@ -91,18 +97,11 @@ public class JoyConFragment extends DialogFragment implements
                 if (device.getName().equals("Pro Controller")) {
                     addressJoyCon = device.getAddress();
                     BluetoothHelper bluetoothHelper = new BluetoothHelper();
-                    mBluetoothAdapter.getProfileProxy(requireContext(), new BluetoothProfile.ServiceListener() {
-                        @Override
-                        public void onServiceConnected(int i, BluetoothProfile bluetoothProfile) {
-                            bluetoothHelper.setBluetoothProfile(bluetoothProfile);
-                            bluetoothHelper.connectL2cap(device);
-                        }
+                    bluetoothHelper.register(requireContext(), (name, address, state) -> {
 
-                        @Override
-                        public void onServiceDisconnected(int i) {
-
-                        }
-                    }, 4);
+                    });
+                    bluetoothHelper.connectL2cap(device);
+                    // Controller proController = new Controller(bluetoothHelper, device);
                 }
             }
         }

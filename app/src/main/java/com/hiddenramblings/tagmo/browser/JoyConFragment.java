@@ -96,7 +96,6 @@ public class JoyConFragment extends DialogFragment implements
                         public void onServiceConnected(int i, BluetoothProfile bluetoothProfile) {
                             bluetoothHelper.setBluetoothProfile(bluetoothProfile);
                             bluetoothHelper.connectL2cap(device);
-                            Controller proController = new Controller(bluetoothHelper, device);
                         }
 
                         @Override

@@ -68,14 +68,6 @@ public class JoyConFragment extends DialogFragment implements
         new Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter);
     }
 
-    private byte getPlayer(int player) {
-        return (byte) ((0x1 << (player)) - 1);
-    }
-
-    private byte getFlash(int flash) {
-        return (byte) ((0x1 << (flash)) - 1);
-    }
-
     @SuppressLint("MissingPermission")
     @Override
     public void onAdapterEnabled(BluetoothAdapter mBluetoothAdapter) {
@@ -99,10 +91,10 @@ public class JoyConFragment extends DialogFragment implements
                     bluetoothHelper.register(requireContext(), (name, address, state) -> {
 
                     });
-                    bluetoothHelper.connectL2cap(device);
+                    // bluetoothHelper.connectL2cap(device);
                     JoyCon proController = new JoyCon(bluetoothHelper, device);
+                    proController.setPlayer(1, 4);
                     proController.enableRumble(true);
-                    proController.setPlayer(getPlayer(1), getFlash(4));
                 }
             }
         }

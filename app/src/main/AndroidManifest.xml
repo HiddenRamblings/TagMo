@@ -115,6 +115,9 @@
         <meta-data
             android:name="com.android.packageinstaller.notification.smallIcon"
             android:resource="@mipmap/ic_launcher" />
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="true" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

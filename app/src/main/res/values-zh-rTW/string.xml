@@ -289,7 +289,7 @@
     <string name="error_password_write">設定密碼時發生錯誤(stage 2)</string>
     <string name="error_lock_write">設定鎖定資訊時發生錯誤(stage 3)</string>
     <string name="error_tag_rewrite">Tag 已經寫入 amiibo</string>
-    <string name="error_tag_format">Tag 並非 NTAG215</string>
+    <string name="error_tag_specs">Tag 並非 NTAG215</string>
     <string name="error_tag_version">Tag 版本錯誤</string>
     <string name="error_tag_faulty">NFC tag可能損壞或種類不符\n請使用其他的tags</string>
     <string name="error_version">版本相關資訊錯誤</string>

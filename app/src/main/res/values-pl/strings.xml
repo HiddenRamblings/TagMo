@@ -221,7 +221,7 @@
     <string name="error_password_write">Błąd rpzy ustawianiu hasła (faza 2)</string>
     <string name="error_lock_write">Błąd przy ustawianiu informacji o blokadzie (faza 3)</string>
     <string name="error_tag_rewrite">Tag zawiera już amiibo</string>
-    <string name="error_tag_format">Tag inny niż NTAG215</string>
+    <string name="error_tag_specs">Tag inny niż NTAG215</string>
     <string name="error_tag_version">Błąd wersji tagu</string>
     <string name="error_version">Błąd informacji o wersji</string>
     <string name="error_amiibo_parse">Błąd przetwarzania informacji amiibo</string>

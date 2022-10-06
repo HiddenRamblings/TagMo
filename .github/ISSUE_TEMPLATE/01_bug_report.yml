@@ -33,10 +33,10 @@ body:
           Blank NTAG215 tags, Power Tags, Amiiqo / N2 Elite, or Flask (Sold separately)
           amiibo backups or amiibo. (Backups cannot be shared for legal reasons)
 
-          Writing an NFC tag is effectively permanent. Overwriting breaks amiibo recognition.
-              Cards, coins, or stickers cannot replace rewriteable amiibo emulator devices.
-          Only NTAG215 is recognized as an amiibo. No other NFC tag formats are supported.
-          Only Android phones with Android 4.1+ and NFC / Bluetooth hardware are supported.
+          Writing an NFC tag is effectively permanent. Overwriting breaks recognition.
+              Cards, coins, or stickers cannot be used as rewriteable emulator devices.
+          Only NTAG215 is recognized as an amiibo. No other NFC specifications work.
+          Only Android devices with 4.1+ and NFC / Bluetooth hardware are supported.
 
           By submitting this issue, you confirm reading the usage requirements for TagMo
       options:

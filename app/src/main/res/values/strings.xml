@@ -290,7 +290,7 @@
     <string name="error_password_write">Error while setting password (stage 2)</string>
     <string name="error_lock_write">Error while setting lock info (stage 3)</string>
     <string name="error_tag_rewrite">Tag already an amiibo</string>
-    <string name="error_tag_format">Tag is not an NTAG215</string>
+    <string name="error_tag_specs">Tag is not an NTAG215</string>
     <string name="error_tag_version">Tag version error</string>
     <string name="error_tag_faulty">NFC tag may be corrupt.\nPlease try different tags.</string>
     <string name="error_version">Version information error</string>

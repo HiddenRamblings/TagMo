@@ -263,7 +263,7 @@ public class TagArray {
                 if (null == versionInfo  || versionInfo.length != 8)
                     throw new Exception(context.getString(R.string.error_tag_version));
                 if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
-                    throw new FormatException(context.getString(R.string.error_tag_format));
+                    throw new FormatException(context.getString(R.string.error_tag_specs));
             } catch (Exception e) {
                 Debug.Warn(R.string.error_version, e);
                 throw e;

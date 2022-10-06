@@ -220,7 +220,7 @@
     <string name="error_password_write">设置密码时出错（2阶段）</string>
     <string name="error_lock_write">设置锁定信息时出错（3阶段）</string>
     <string name="error_tag_rewrite">Tag already an amiibo</string>
-    <string name="error_tag_format">Tag 不是 NTag215</string>
+    <string name="error_tag_specs">Tag 不是 NTag215</string>
     <string name="error_tag_version">Tag 版本错误</string>
     <string name="error_version">版本信息 error</string>
     <string name="error_amiibo_parse">amiibo 信息解析出错</string>

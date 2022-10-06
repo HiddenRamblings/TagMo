@@ -258,7 +258,7 @@
     <string name="error_password_write">Erreur lors de la définition du mot de passe (stage 2)</string>
     <string name="error_lock_write">Erreur lors de la définition des informations de verrouillage (stage 3)</string>
     <string name="error_tag_rewrite">Le Tag est déjà un amiibo</string>
-    <string name="error_tag_format">Le Tag n’est pas un NTAG215</string>
+    <string name="error_tag_specs">Le Tag n’est pas un NTAG215</string>
     <string name="error_tag_version">Erreur de version de Tag</string>
     <string name="error_tag_faulty">Le Tag NFC est peut-être corrompu.\nVeuillez essayer un autre Tag.</string>
     <string name="error_version">Erreur dans l’information de version</string>

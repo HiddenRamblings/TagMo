@@ -17,7 +17,7 @@ public final class JoyCon {
 
     public enum PollType {
         STANDARD(0x30);
-        private int type;
+        private final int type;
 
         PollType(int type) {
             this.type = type;
@@ -26,7 +26,7 @@ public final class JoyCon {
 
     private final BluetoothHelper helper;
     public final BluetoothDevice device;
-    private long mHandle;
+    private final long mHandle;
 
     public JoyCon(BluetoothHelper helper, BluetoothDevice device) {
         String name = device.getName();
@@ -87,7 +87,7 @@ public final class JoyCon {
         poll(mHandle, (byte) (type.type));
     }
 
-    public void setPlayer(byte player, byte flash) {
+    public void setPlayer(int player, int flash) {
         set_player(mHandle, player, flash);
     }
 
@@ -99,8 +99,6 @@ public final class JoyCon {
 
     private static native void classInitNative();
 
-    private native void test(long handle);
-
     private native long create(int category);
 
     private native void destroy(long handle);
@@ -111,7 +109,7 @@ public final class JoyCon {
 
     private native int set_low_power(long handle, boolean enable);
 
-    private native int set_player(long handle, byte player, byte flash);
+    private native int set_player(long handle, int player, int flash);
 
     private native int set_rumble(long handle, boolean enable);
 

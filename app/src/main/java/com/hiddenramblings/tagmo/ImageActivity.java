@@ -228,8 +228,11 @@ public class ImageActivity extends AppCompatActivity {
         File file = new File(dir, filename + ".png");
         try (FileOutputStream fos = new FileOutputStream(file)) {
             resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            new Toasty(ImageActivity.this).Short(getString(R.string.wrote_file,
-                    Storage.getRelativePath(file, TagMo.getPrefs().preferEmulated().get())));
+            new Toasty(ImageActivity.this).Short(
+                    getString(R.string.wrote_file, Storage.getRelativePath(
+                            file, TagMo.getPrefs().preferEmulated().get()
+                    ))
+            );
         } catch (IOException e) {
             Debug.Warn(e);
         }

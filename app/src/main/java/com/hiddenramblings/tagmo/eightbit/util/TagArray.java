@@ -300,9 +300,8 @@ public class TagArray {
                     name = amiibo.name.replace(File.separatorChar, '-');
                 }
             }
-
-            byte[] uid = Arrays.copyOfRange(tagData, 0, 9);
-            String uidHex = bytesToHex(uid);
+            
+            String uidHex = bytesToHex(Arrays.copyOfRange(tagData, 0, 9));
             if (verified)
                 return String.format(Locale.ROOT, "%1$s[%2$s]-%3$s.bin", name, uidHex, status);
             else

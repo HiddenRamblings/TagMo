@@ -109,6 +109,14 @@ public class TagDataEditor extends AppCompatActivity {
 
     private AppDataSplatoon appDataChibiRobo;
 
+    public static final int AppId_ZeldaTP = 0x1019C800;
+
+    private EditText txtHearts1;
+    private Spinner txtHearts2;
+    private EditText txtLevelZeldaTP;
+
+    private AppDataZeldaTP appDataZeldaTP;
+
     public static final int AppId_MHStories = 0x0016E100;
 
     private AppDataSplatoon appDataMHStories;
@@ -132,14 +140,6 @@ public class TagDataEditor extends AppCompatActivity {
     public static final int AppId_Splatoon = 0x10162B00;
 
     private AppDataSplatoon appDataSplatoon;
-
-    public static final int AppId_ZeldaTP = 0x1019C800;
-
-    private EditText txtHearts1;
-    private Spinner txtHearts2;
-    private EditText txtLevelZeldaTP;
-
-    private AppDataZeldaTP appDataZeldaTP;
 
     public static final int AppId_SSB = 0x10110E00;
 

@@ -139,10 +139,16 @@
     <string name="bank_erasing">Erasing bank %1$d of %2$d&#8230;</string>
     <string name="bank_select">Selecting a destination bank&#8230;</string>
 
+    <string name="chibi_robo">Chibi-Robo! Zip Lash</string>
     <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
-    <string name="splatoon">Splatoon for Switch</string>
-    <string name="super_smash">Super Smash Bros. for Wii U (and 3DS)</string>
-    <string name="smash_ultimate">Super Smash Bros. Ultimate for Switch</string>
+    <string name="mh_stories">Monster Hunter Stories</string>
+    <string name="ml_paper_jam">Mario &#38; Luigi: Paper Jam</string>
+    <string name="ml_superstar">Mario &#38; Luigi: Superstar Saga</string>
+    <string name="mario_tennis">Mario Tennis</string>
+    <string name="pikmin">Pikmin</string>
+    <string name="splatoon">Splatoon</string>
+    <string name="super_smash">Super Smash Bros. (Wii U / 3DS)</string>
+    <string name="smash_ultimate">Super Smash Bros. Ultimate</string>
 
     <string name="save_image">Save Image</string>
 

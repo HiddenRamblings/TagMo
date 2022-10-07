@@ -35,4 +35,4 @@ Additional thanks go out to (alphabetically):
 ##
 ![TagMo Logo](assets/tagmo_feature.png)
 ###
-*TagMo is not affiliated, associated, authorized, endorsed by, or in any way connected with Nintendo. amiibo is a registered trademark of Nintendo. No official resources are included in this project. Binaries created with this project are not intended for sale or distribution. This project is for educational and archival purposes only.*
+*TagMo is not affiliated, associated, authorized, endorsed by, or in any way connected with Nintendo. amiibo is a registered trademark of Nintendo. No official resources are included in this project. Files created with this project are not intended for sale or distribution. This project is for educational and archival purposes only.*

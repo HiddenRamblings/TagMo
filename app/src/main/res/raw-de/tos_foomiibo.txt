@@ -1,0 +1,1 @@
+Foomiibo werden aus gemeinfreien Informationen, leeren Daten und der dokumentierten Dateistruktur generiert, die eine Binärdatei darstellen. Diesen Daten werden Seriennummern mit einem Zufallszahlengenerator zugeordnet und nicht von einer bestimmten Entität bezogen. Foomiibo ist nicht dazu bestimmt, andere Produkte zu ersetzen, gekaufte oder Werbeartikel.

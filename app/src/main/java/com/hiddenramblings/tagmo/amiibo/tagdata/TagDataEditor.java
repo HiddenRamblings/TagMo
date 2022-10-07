@@ -105,6 +105,34 @@ public class TagDataEditor extends AppCompatActivity {
     private Date modifiedDate;
     private Integer appId;
 
+    public static final int AppId_ChibiRobo = 0x00152600;
+
+    private AppDataSplatoon appDataChibiRobo;
+
+    public static final int AppId_MHStories = 0x0016E100;
+
+    private AppDataSplatoon appDataMHStories;
+
+    public static final int AppId_MLPaperJam = 0x00132600;
+
+    private AppDataSplatoon appDataMLPaperJam;
+
+    public static final int AppId_MLSuperstar = 0x00194B00;
+
+    private AppDataSplatoon appDataMLSuperstar;
+
+    public static final int AppId_MarioTennis = 0x10199000;
+
+    private AppDataSplatoon appDataMarioTennis;
+
+    public static final int AppId_Pikmin = 0x001A9200;
+
+    private AppDataSplatoon appDataPikmin;
+
+    public static final int AppId_Splatoon = 0x10162B00;
+
+    private AppDataSplatoon appDataSplatoon;
+
     public static final int AppId_ZeldaTP = 0x1019C800;
 
     private EditText txtHearts1;
@@ -138,10 +166,6 @@ public class TagDataEditor extends AppCompatActivity {
     private EditText txtLevelSSBU;
 
     private AppDataSSBU appDataSSBU;
-
-    public static final int AppId_Splatoon = 0x10162B00;
-
-    private AppDataSplatoon appDataSplatoon;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

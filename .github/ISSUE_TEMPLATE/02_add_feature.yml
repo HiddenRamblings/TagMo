@@ -6,7 +6,7 @@ body:
   - type: textarea
     id: feature-info
     attributes:
-      label: Summarize Feature
+      label: Feature Explanation
       description: Please explain the features being requested
       placeholder: This is what it will do and why you need it
     validations:

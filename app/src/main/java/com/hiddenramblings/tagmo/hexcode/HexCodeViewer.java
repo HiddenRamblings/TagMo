@@ -104,7 +104,7 @@ public class HexCodeViewer extends AppCompatActivity {
             );
             return;
         }
-        File file = new File(dir, filename + ".png");
+        File file = new File(dir, filename + "-" + System.currentTimeMillis() + ".png");
         try (FileOutputStream fos = new FileOutputStream(file)) {
             viewBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             new Toasty(HexCodeViewer.this).Short(

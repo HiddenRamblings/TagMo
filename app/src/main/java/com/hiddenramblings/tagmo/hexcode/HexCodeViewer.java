@@ -5,14 +5,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.collection.LruCache;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -86,17 +89,59 @@ public class HexCodeViewer extends AppCompatActivity {
     }
 
     private void saveHexViewToFile(@NonNull RecyclerView view, String filename) {
-        Bitmap viewBitmap = Bitmap.createBitmap(
-                view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888
-        );
-        Canvas canvas = new Canvas(viewBitmap);
-        Drawable bgDrawable = view.getBackground();
-        if (null != bgDrawable)
-            bgDrawable.draw(canvas);
-        else
-            canvas.drawColor(Color.BLACK);
-        view.draw(canvas);
+        HexAdapter adapter = (HexAdapter) view.getAdapter();
+        Bitmap viewBitmap = null;
+        if (adapter != null) {
+            int size = adapter.getItemCount();
+            int height = 0;
+            Paint paint = new Paint();
+            int iHeight = 0;
+            final int cacheSize = (int) (Runtime.getRuntime().maxMemory() / 1024) / 16;
+            LruCache<String, Bitmap> bitmaCache = new LruCache<>(cacheSize);
+            for (int i = 0; i < size; i++) {
+                HexAdapter.ViewHolder holder = adapter.createViewHolder(
+                        view, adapter.getItemViewType(i)
+                );
+                adapter.onBindViewHolder(holder, i);
+                holder.itemView.measure(View.MeasureSpec.makeMeasureSpec(
+                        view.getWidth(), View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                );
+                holder.itemView.layout(
+                        0, 0,
+                        holder.itemView.getMeasuredWidth(),
+                        holder.itemView.getMeasuredHeight()
+                );
+                holder.itemView.setDrawingCacheEnabled(true);
+                holder.itemView.buildDrawingCache();
+                Bitmap drawingCache = holder.itemView.getDrawingCache();
+                if (drawingCache != null) {
 
+                    bitmaCache.put(String.valueOf(i), drawingCache);
+                }
+                height += holder.itemView.getMeasuredHeight();
+            }
+
+            viewBitmap = Bitmap.createBitmap(
+                    view.getMeasuredWidth(), height, Bitmap.Config.ARGB_8888
+            );
+            Canvas bigCanvas = new Canvas(viewBitmap);
+            bigCanvas.drawColor(Color.BLACK);
+
+            for (int i = 0; i < size; i++) {
+                Bitmap bitmap = bitmaCache.get(String.valueOf(i));
+                bigCanvas.drawBitmap(bitmap, 0f, iHeight, paint);
+                if (null != bitmap) {
+                    iHeight += bitmap.getHeight();
+                    bitmap.recycle();
+                }
+            }
+        }
+
+        if (null == viewBitmap) {
+            new Toasty(HexCodeViewer.this).Short(getString(R.string.fail_bitmap));
+            return;
+        }
         File dir = new File(Storage.getDownloadDir("TagMo"), "HexCode");
         if (!dir.exists() && !dir.mkdirs()) {
             new Toasty(HexCodeViewer.this).Short(

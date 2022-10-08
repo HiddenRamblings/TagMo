@@ -1173,6 +1173,8 @@ public class TagDataEditor extends AppCompatActivity {
                 e.printStackTrace();
             }
         });
+        if (appDataSplatoon.checkGameData(this.amiiboData.array()))
+            buttonInject.setEnabled(false);
 
         onAppDataSplatoonChecked(isAppDataInitialized);
     }

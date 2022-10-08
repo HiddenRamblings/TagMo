@@ -165,7 +165,8 @@ public class FlaskGattService extends Service {
         this.listener = listener;
     }
 
-    private final ArrayList<Runnable> Callbacks = new ArrayList<>();
+    private final ArrayList<Runnable> outgoingCallbacks = new ArrayList<>();
+    private final ArrayList<Runnable> incomingCallbacks = new ArrayList<>();
 
     public interface BluetoothGattListener {
         void onServicesDiscovered();
@@ -198,9 +199,9 @@ public class FlaskGattService extends Service {
                 if (isJSONValid(progress) || progress.endsWith(">")
                         || progress.lastIndexOf("undefined") == 0
                         || progress.lastIndexOf("\n") == 0) {
-                    if (Callbacks.size() > 0) {
-                        Callbacks.get(0).run();
-                        Callbacks.remove(0);
+                    if (outgoingCallbacks.size() > 0) {
+                        outgoingCallbacks.get(0).run();
+                        outgoingCallbacks.remove(0);
                     }
                 }
 
@@ -297,6 +298,10 @@ public class FlaskGattService extends Service {
                 }
             }
         }
+//        if (incomingCallbacks.size() > 0) {
+//            incomingCallbacks.get(0).run();
+//            incomingCallbacks.remove(0);
+//        }
     }
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -327,7 +332,14 @@ public class FlaskGattService extends Service {
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status
         ) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                getCharacteristicValue(characteristic);
+//                incomingCallbacks.add(incomingCallbacks.size(), () ->
+//                        getCharacteristicValue(characteristic));
+//
+//                if (incomingCallbacks.size() == 1) {
+//                    incomingCallbacks.get(0).run();
+//                    incomingCallbacks.remove(0);
+//                }
+                 getCharacteristicValue(characteristic);
             }
         }
 
@@ -342,7 +354,15 @@ public class FlaskGattService extends Service {
         @Override
         public void onCharacteristicChanged(
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic
-        ) { getCharacteristicValue(characteristic); }
+        ) {
+//            incomingCallbacks.add(incomingCallbacks.size(), () -> getCharacteristicValue(characteristic));
+//
+//            if (incomingCallbacks.size() == 1) {
+//                incomingCallbacks.get(0).run();
+//                incomingCallbacks.remove(0);
+//            }
+             getCharacteristicValue(characteristic);
+        }
 
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
@@ -575,7 +595,7 @@ public class FlaskGattService extends Service {
     @SuppressWarnings("unused")
     private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = GattArray.byteToPortions(value, maxTransmissionUnit);
-        int commandQueue = Callbacks.size() + 1 + chunks.size();
+        int commandQueue = outgoingCallbacks.size() + 1 + chunks.size();
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
                 final byte[] chunk = chunks.get(i);
@@ -597,7 +617,7 @@ public class FlaskGattService extends Service {
 
     private void delayedWriteCharacteristic(String value) {
         List<String> chunks = GattArray.stringToPortions(value, maxTransmissionUnit);
-        int commandQueue = Callbacks.size() + 1 + chunks.size();
+        int commandQueue = outgoingCallbacks.size() + 1 + chunks.size();
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
                 final String chunk = chunks.get(i);
@@ -626,15 +646,16 @@ public class FlaskGattService extends Service {
             }
         }
 
-        Callbacks.add(index, () -> delayedWriteCharacteristic(("tag." + value + "\n")));
+        outgoingCallbacks.add(index, () -> delayedWriteCharacteristic(("tag." + value + "\n")));
 
-        if (Callbacks.size() == 1) {
-            Callbacks.get(0).run();
+        if (outgoingCallbacks.size() == 1) {
+            outgoingCallbacks.get(0).run();
+            outgoingCallbacks.remove(0);
         }
     }
 
     public void delayedTagCharacteristic(String value) {
-        queueTagCharacteristic(value, Callbacks.size());
+        queueTagCharacteristic(value, outgoingCallbacks.size());
     }
 
     public void promptTagCharacteristic(String value) {

@@ -171,8 +171,8 @@ public class FlaskSlotFragment extends Fragment implements
                                                 .getString(i).split("\\|"));
                                         if (null != amiibo) amiibo.index = i;
                                         flaskAmiibos.add(amiibo);
-                                    } catch (JSONException jex) {
-                                        Debug.Warn(jex);
+                                    } catch (JSONException | NullPointerException ex) {
+                                        Debug.Warn(ex);
                                     }
                                 }
                                 FlaskSlotAdapter adapter = new FlaskSlotAdapter(
@@ -208,8 +208,8 @@ public class FlaskSlotFragment extends Fragment implements
                                     writeCount.setValue(maxSlots);
                                     writeSlots.setText(getString(R.string.write_slots, maxSlots));
                                 });
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                            } catch (JSONException | NullPointerException ex) {
+                                Debug.Warn(ex);
                             }
                         }
 
@@ -578,6 +578,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private Amiibo getAmiiboByTail(String[] name) {
         if (name.length < 2) return null;
+        if (name[1].length() == 0) return new FlaskTag(Long.parseLong(name[2]));
         AmiiboManager amiiboManager;
         try {
             amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
@@ -601,7 +602,7 @@ public class FlaskSlotFragment extends Fragment implements
                 }
             }
         }
-        return null != selectedAmiibo ? selectedAmiibo : new FlaskTag(Long.parseLong(name[1]));
+        return selectedAmiibo;
     }
 
     @SuppressLint({"MissingPermission", "NewApi"})

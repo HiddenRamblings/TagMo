@@ -63,6 +63,8 @@ import java.util.concurrent.Executors;
 
 public class TagDataEditor extends AppCompatActivity {
 
+    private byte[] tagData;
+
     private TextView txtError;
     private TextView txtTagId;
     private TextView txtName;
@@ -210,7 +212,7 @@ public class TagDataEditor extends AppCompatActivity {
         appDataViewSSB = findViewById(R.id.appDataSSB);
         appDataViewSSBU = findViewById(R.id.appDataSSBU);
 
-        byte[] tagData = getIntent().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
+        tagData = getIntent().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
 
         keyManager = new KeyManager(this);
         if (keyManager.isKeyMissing()) {
@@ -280,7 +282,6 @@ public class TagDataEditor extends AppCompatActivity {
             datePickerDialog.show();
         });
 
-        final byte[] finalTagData = tagData;
         Executors.newSingleThreadExecutor().execute(() -> {
             AmiiboManager amiiboManager = null;
             try {
@@ -293,7 +294,7 @@ public class TagDataEditor extends AppCompatActivity {
             if (Thread.currentThread().isInterrupted()) return;
 
             this.amiiboManager = amiiboManager;
-            runOnUiThread(() -> updateAmiiboView(finalTagData));
+            runOnUiThread(() -> updateAmiiboView(tagData));
         });
         updateAmiiboView(tagData);
 
@@ -1160,7 +1161,18 @@ public class TagDataEditor extends AppCompatActivity {
         }
 
         buttonInject = findViewById(R.id.inject_game_data);
-        buttonInject.setOnClickListener(view -> appDataSplatoon.injectGameData());
+        buttonInject.setOnClickListener(view -> {
+            try {
+                this.amiiboData = new AmiiboData(
+                        appDataSplatoon.injectGameData(this.amiiboData.array())
+                );
+                appDataSplatoon = new AppDataSplatoon(amiiboData.getAppData());
+                appDataSplatoon.injectGameData();
+                buttonInject.setEnabled(false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         onAppDataSplatoonChecked(isAppDataInitialized);
     }
@@ -1552,10 +1564,10 @@ public class TagDataEditor extends AppCompatActivity {
     }
 
     public void onAppDataSSBUChecked(boolean enabled) {
-        spnAppearanceU.setEnabled(enabled);
-        txtLevelSSBU.setEnabled(enabled);
-        txtStatAttackU.setEnabled(enabled);
-        txtStatDefenseU.setEnabled(enabled);
+//        spnAppearanceU.setEnabled(enabled);
+//        txtLevelSSBU.setEnabled(enabled);
+//        txtStatAttackU.setEnabled(enabled);
+//        txtStatDefenseU.setEnabled(enabled);
     }
 
     public byte[] onAppDataZeldaTPSaved() {

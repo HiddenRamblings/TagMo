@@ -5,7 +5,7 @@ import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 import java.io.IOException;
 
 public class AppDataSSBU extends AppData {
-    static final int APPEARANCE_OFFSET = 0x08;
+    static final int APPEARANCE_OFFSET = 0xB6;
     static final int APPEARANCE_MIN_VALUE = 0;
     static final int APPEARANCE_MAX_VALUE = 7;
 
@@ -114,35 +114,25 @@ public class AppDataSSBU extends AppData {
     }
 
     public int getStatAttack() throws NumberFormatException {
-        short value = TagArray.byteToShort(new byte[] {
-                (byte) (appData.get(STATS_ATTACK_OFFSET) & 0xFF),
-                (byte) (appData.get(STATS_ATTACK_OFFSET + 1) & 0xFF)
-        });
+        short value = AppData.getInverseShort(appData, STATS_ATTACK_OFFSET);
         checkPhysicalStats(value);
         return value;
     }
 
     public void setStatAttack(int value) throws NumberFormatException {
         checkPhysicalStats(value);
-        byte[] output = TagArray.shortToByte(value);
-        appData.put(STATS_ATTACK_OFFSET, output[0]);
-        appData.put(STATS_ATTACK_OFFSET + 1, output[1]);
+        AppData.putInverseShort(appData, STATS_ATTACK_OFFSET, value);
     }
 
     public int getStatDefense() throws NumberFormatException {
-        short value = TagArray.byteToShort(new byte[] {
-                (byte) (appData.get(STATS_DEFENSE_OFFSET) & 0xFF),
-                (byte) (appData.get(STATS_DEFENSE_OFFSET + 1) & 0xFF)
-        });
+        short value = AppData.getInverseShort(appData, STATS_DEFENSE_OFFSET);
         checkPhysicalStats(value);
         return value;
     }
 
     public void setStatDefense(int value) throws NumberFormatException {
         checkPhysicalStats(value);
-        byte[] output = TagArray.shortToByte(value);
-        appData.put(STATS_DEFENSE_OFFSET, output[0]);
-        appData.put(STATS_DEFENSE_OFFSET + 1, output[1]);
+        AppData.putInverseShort(appData, STATS_DEFENSE_OFFSET, value);
     }
 
     public int getStatSpeed() throws NumberFormatException {
@@ -200,19 +190,14 @@ public class AppDataSSBU extends AppData {
     }
 
     public int getExperience() throws NumberFormatException {
-        short value = TagArray.byteToShort(new byte[] {
-                (byte) (appData.get(EXPERIENCE_OFFSET) & 0xFF),
-                (byte) (appData.get(EXPERIENCE_OFFSET + 1) & 0xFF)
-        });
+        short value = AppData.getInverseShort(appData, EXPERIENCE_OFFSET);
         checkExperience(value);
         return value;
     }
 
     public void setExperience(int value) throws NumberFormatException {
         checkExperience(value);
-        byte[] output = TagArray.shortToByte(value);
-        appData.put(EXPERIENCE_OFFSET, output[0]);
-        appData.put(EXPERIENCE_OFFSET + 1, output[1]);
+        AppData.putInverseShort(appData, EXPERIENCE_OFFSET, value);
     }
 
     // github.com/odwdinc/SSBU_Amiibo/blob/master/src/ssbu_amiibo/amiibo_class.py#L195-L245

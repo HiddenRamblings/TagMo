@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo.amiibo.tagdata;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -22,6 +23,16 @@ public class AppData {
 
     public byte[] array() {
         return appData.array();
+    }
+
+    public static void putInverseShort(ByteBuffer appData, int offset, int input) {
+        appData.put(offset, (byte)(input & 0xff));
+        appData.put(offset + 1, (byte)((input >> 8) & 0xff));
+    }
+
+    public static short getInverseShort(ByteBuffer appData, int offset) {
+        return (short) ((byte)(appData.get(offset + 1) & 0xFF) << 8
+                | (byte)(appData.get(offset) & 0xFF) & 0xFF);
     }
 
     public static final HashMap<Integer, String> appIds = new HashMap<>();

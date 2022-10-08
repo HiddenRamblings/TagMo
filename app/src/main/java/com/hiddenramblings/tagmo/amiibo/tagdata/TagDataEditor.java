@@ -166,7 +166,9 @@ public class TagDataEditor extends AppCompatActivity {
 
     public static final int AppId_SSBU = 0x34F80200;
 
+    private Spinner spnAppearanceU;
     private EditText txtLevelSSBU;
+
     private EditText txtStatAttackU;
     private EditText txtStatDefenseU;
 
@@ -1394,14 +1396,22 @@ public class TagDataEditor extends AppCompatActivity {
             return;
         }
 
+        spnAppearanceU = findViewById(R.id.spnAppearanceU);
         txtLevelSSBU = findViewById(R.id.txtLevelSSBU);
         txtStatAttackU = findViewById(R.id.txtStatAttackU);
         txtStatDefenseU = findViewById(R.id.txtStatDefenseU);
+
+        setListForSpinners(new Spinner[]{ spnAppearanceU }, R.array.ssb_appearance_values);
 
         int appearance, level, statAttack, statDefense, statSpeed,
                 specialNeutral, specialSide, specialUp, specialDown,
                 bonusEffect1, bonusEffect2, bonusEffect3;
         if (initialAppDataInitialized) {
+            try {
+                appearance = appDataSSBU.getAppearence();
+            } catch (Exception e) {
+                appearance = 0;
+            }
             try {
                 level = appDataSSBU.getLevel();
             } catch (Exception e) {
@@ -1418,10 +1428,20 @@ public class TagDataEditor extends AppCompatActivity {
                 statDefense = 2500;
             }
         } else {
+            appearance = 0;
             level = 50;
-            statAttack = 2500;
-            statDefense = 2500;
+            statAttack = 200;
+            statDefense = 200;
+            statSpeed = 200;
+            specialNeutral = 0;
+            specialSide = 0;
+            specialUp = 0;
+            specialDown = 0;
+            bonusEffect1 = 0xFF;
+            bonusEffect2 = 0xFF;
+            bonusEffect3 = 0xFF;
         }
+        spnAppearanceU.setSelection(appearance);
         txtLevelSSBU.setText(String.valueOf(level));
         txtStatAttackU.setText(String.valueOf(statAttack));
         txtStatDefenseU.setText(String.valueOf(statDefense));
@@ -1532,6 +1552,7 @@ public class TagDataEditor extends AppCompatActivity {
     }
 
     public void onAppDataSSBUChecked(boolean enabled) {
+        spnAppearanceU.setEnabled(enabled);
         txtLevelSSBU.setEnabled(enabled);
         txtStatAttackU.setEnabled(enabled);
         txtStatDefenseU.setEnabled(enabled);
@@ -1664,6 +1685,13 @@ public class TagDataEditor extends AppCompatActivity {
     }
 
     public byte[] onAppDataSSBUSaved() {
+        try {
+            int appearance = spnAppearanceU.getSelectedItemPosition();
+            appDataSSBU.setAppearence(appearance);
+        } catch (NumberFormatException e) {
+            spnAppearanceU.requestFocus();
+            throw e;
+        }
         try {
             int level = Integer.parseInt(txtLevelSSBU.getText().toString());
             Integer oldLevel;

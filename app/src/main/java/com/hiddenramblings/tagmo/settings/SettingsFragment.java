@@ -348,9 +348,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 for (int i = 0; i < 4; i++) {
                     if (scanner.hasNextLine()) scanner.nextLine();
                 }
-                this.keyManager.evaluateKey(new ByteArrayInputStream(
-                        TagArray.hexToByteArray(scanner.nextLine()
-                                .replace(" ", ""))));
+                this.keyManager.evaluateKey(new ByteArrayInputStream(TagArray.hexToByteArray(
+                        scanner.nextLine().replace(" ", "")
+                )));
                 scanner.close();
             } catch (IOException e) {
                 Debug.Warn(e);

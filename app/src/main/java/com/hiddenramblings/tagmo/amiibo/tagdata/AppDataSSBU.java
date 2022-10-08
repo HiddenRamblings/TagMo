@@ -200,7 +200,6 @@ public class AppDataSSBU extends AppData {
         AppData.putInverseShort(appData, EXPERIENCE_OFFSET, value);
     }
 
-    // github.com/odwdinc/SSBU_Amiibo/blob/master/src/ssbu_amiibo/amiibo_class.py#L195-L245
     private static final int[] LEVEL_THRESHOLDS = new int[] {
             0x0000, 0x0008, 0x0016, 0x0029, 0x003F, 0x005A, 0x0078, 0x009B, 0x00C3, 0x00EE,
             0x011C, 0x014A, 0x0178, 0x01AA, 0x01DC, 0x0210, 0x0244, 0x0278, 0x02AC, 0x02E1,

@@ -25,7 +25,7 @@
                 android:text="@string/appearance"/>
 
             <Spinner
-                android:id="@+id/spnAppearance"
+                android:id="@+id/spnAppearanceU"
                 style="@style/TagEditor.Spinner"/>
         </LinearLayout>
 

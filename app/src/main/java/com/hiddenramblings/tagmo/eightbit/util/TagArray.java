@@ -157,6 +157,14 @@ public class TagArray {
         return compareRange(data, data2, 0, len);
     }
 
+    public static byte[] shortToByte(int input) {
+        return new byte[] { (byte)(input & 0xff), (byte)((input >> 8) & 0xff) };
+    }
+
+    public static short byteToShort(byte[] input) {
+        return (short) (input[1] << 8 | input[0] & 0xFF);
+    }
+
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {

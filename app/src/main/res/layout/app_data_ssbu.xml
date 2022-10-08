@@ -125,7 +125,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="4"
+        android:weightSum="3"
         android:baselineAligned="false">
 
         <LinearLayout
@@ -139,7 +139,7 @@
                 android:text="@string/attack"/>
 
             <EditText
-                android:id="@+id/txtStatAttack"
+                android:id="@+id/txtStatAttackU"
                 style="@style/TagEditor.EditNumber"
                 android:inputType="numberDecimal|numberSigned"
                 android:importantForAutofill="no"
@@ -157,7 +157,7 @@
                 android:text="@string/defense"/>
 
             <EditText
-                android:id="@+id/txtStatDefense"
+                android:id="@+id/txtStatDefenseU"
                 style="@style/TagEditor.EditNumber"
                 android:inputType="numberDecimal|numberSigned"
                 android:importantForAutofill="no"

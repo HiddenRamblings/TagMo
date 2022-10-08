@@ -67,7 +67,6 @@ public class AmiiboData {
         return bytes;
     }
 
-
     public void setUID(byte[] value) throws NumberFormatException {
         if (value.length != UID_LENGTH)
             throw new NumberFormatException(context.getString(R.string.invalid_uid_length));

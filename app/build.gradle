@@ -11,6 +11,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 33
         versionName "3.2.2"
+        versionCode = versionName.replace(".","").toInteger() * 10
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -40,7 +41,6 @@ android {
 
     buildTypes {
         release {
-            defaultConfig.versionCode = defaultConfig.versionName.replace(".","").toInteger() * 10
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".eightbit"

@@ -1,5 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo.tagdata;
 
+import com.hiddenramblings.tagmo.eightbit.util.TagArray;
+
 import java.io.IOException;
 
 public class AppDataSSBU extends AppData {
@@ -16,8 +18,10 @@ public class AppDataSSBU extends AppData {
 
     static final int STATS_MIN_VALUE = -200;
     static final int STATS_MAX_VALUE = 200;
-    static final int STATS_ATTACK_OFFSET = 0x10;
-    static final int STATS_DEFENSE_OFFSET = 0x12;
+    static final int PHYSICAL_MIN_VALUE = -2500;
+    static final int PHYSICAL_MAX_VALUE = 2500;
+    static final int STATS_ATTACK_OFFSET = 0x63;
+    static final int STATS_DEFENSE_OFFSET = 0x65;
     static final int STATS_SPEED_OFFSET = 0x14;
 
     static final int BONUS_MIN_VALUE = 0;
@@ -28,7 +32,7 @@ public class AppDataSSBU extends AppData {
 
     static final int EXPERIENCE_MIN_VALUE = 0x0000;
     static final int EXPERIENCE_MAX_VALUE = 0x0F48;
-    static final int EXPERIENCE_OFFSET = 0x7C;  // 0140 0D
+    static final int EXPERIENCE_OFFSET = 0x5F;
 
     public AppDataSSBU(byte[] appData) throws IOException {
         super(appData);
@@ -99,31 +103,46 @@ public class AppDataSSBU extends AppData {
         appData.put(SPECIAL_DOWN_OFFSET, (byte) value);
     }
 
+    public void checkPhysicalStats(int value) throws NumberFormatException {
+        if (value < PHYSICAL_MIN_VALUE || value > PHYSICAL_MAX_VALUE)
+            throw new NumberFormatException();
+    }
+
     public void checkStat(int value) throws NumberFormatException {
         if (value < STATS_MIN_VALUE || value > STATS_MAX_VALUE)
             throw new NumberFormatException();
     }
 
     public int getStatAttack() throws NumberFormatException {
-        int value = appData.getShort(STATS_ATTACK_OFFSET) & 0xFFFF;
-        checkStat(value);
+        short value = TagArray.byteToShort(new byte[] {
+                (byte) (appData.get(STATS_ATTACK_OFFSET) & 0xFF),
+                (byte) (appData.get(STATS_ATTACK_OFFSET + 1) & 0xFF)
+        });
+        checkPhysicalStats(value);
         return value;
     }
 
     public void setStatAttack(int value) throws NumberFormatException {
-        checkStat(value);
-        appData.putShort(STATS_ATTACK_OFFSET, (short) value);
+        checkPhysicalStats(value);
+        byte[] output = TagArray.shortToByte(value);
+        appData.put(STATS_ATTACK_OFFSET, output[0]);
+        appData.put(STATS_ATTACK_OFFSET + 1, output[1]);
     }
 
     public int getStatDefense() throws NumberFormatException {
-        int value = appData.getShort(STATS_DEFENSE_OFFSET) & 0xFFFF;
-        checkStat(value);
+        short value = TagArray.byteToShort(new byte[] {
+                (byte) (appData.get(STATS_DEFENSE_OFFSET) & 0xFF),
+                (byte) (appData.get(STATS_DEFENSE_OFFSET + 1) & 0xFF)
+        });
+        checkPhysicalStats(value);
         return value;
     }
 
     public void setStatDefense(int value) throws NumberFormatException {
-        checkStat(value);
-        appData.putShort(STATS_DEFENSE_OFFSET, (short) value);
+        checkPhysicalStats(value);
+        byte[] output = TagArray.shortToByte(value);
+        appData.put(STATS_DEFENSE_OFFSET, output[0]);
+        appData.put(STATS_DEFENSE_OFFSET + 1, output[1]);
     }
 
     public int getStatSpeed() throws NumberFormatException {
@@ -181,14 +200,19 @@ public class AppDataSSBU extends AppData {
     }
 
     public int getExperience() throws NumberFormatException {
-        int value = appData.getShort(EXPERIENCE_OFFSET) & 0xFFFF;
+        short value = TagArray.byteToShort(new byte[] {
+                (byte) (appData.get(EXPERIENCE_OFFSET) & 0xFF),
+                (byte) (appData.get(EXPERIENCE_OFFSET + 1) & 0xFF)
+        });
         checkExperience(value);
         return value;
     }
 
     public void setExperience(int value) throws NumberFormatException {
         checkExperience(value);
-        appData.putShort(EXPERIENCE_OFFSET, (short) value);
+        byte[] output = TagArray.shortToByte(value);
+        appData.put(EXPERIENCE_OFFSET, output[0]);
+        appData.put(EXPERIENCE_OFFSET + 1, output[1]);
     }
 
     // github.com/odwdinc/SSBU_Amiibo/blob/master/src/ssbu_amiibo/amiibo_class.py#L195-L245

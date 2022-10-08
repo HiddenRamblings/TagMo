@@ -2,6 +2,8 @@ package com.hiddenramblings.tagmo;
 
 import android.app.Application;
 import android.content.Context;
+import android.text.Html;
+import android.text.Spanned;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -90,14 +92,18 @@ public class TagMo extends Application {
             new ANRWatchDog(10000).setReportMainThreadOnly().start();
     }
 
-    public String getVersionLabel() {
-        String flavor = "TagMo " + (TagMo.isGooglePlay() ? "Google Play" : "GitHub");
+    public Spanned getVersionLabel() {
+        String flavor = "TagMo " + BuildConfig.VERSION_NAME + (
+                TagMo.isGooglePlay() ? " (Google Play" : " (GitHub"
+        );
+        String commit = "<a href=https://github.com/HiddenRamblings/TagMo/commit/"
+                + BuildConfig.COMMIT + ">#" + BuildConfig.COMMIT + "</a>";
         if (isWearableUI()) {
-            return flavor + " Wear OS #" + BuildConfig.COMMIT;
+            return Html.fromHtml(flavor + " Wear OS) " + commit);
         } else if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) {
-            return flavor + " Release #" + BuildConfig.COMMIT;
+            return Html.fromHtml(flavor + " Release) " + commit);
         } else {
-            return flavor + " Testing #" + BuildConfig.COMMIT;
+            return Html.fromHtml(flavor + " Debug) " + commit);
         }
     }
 }

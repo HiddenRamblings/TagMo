@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
+import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
@@ -483,8 +484,9 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        ((TextView) findViewById(R.id.build_text))
-                .setText(((TagMo) getApplication()).getVersionLabel());
+        TextView buildText = findViewById(R.id.build_text);
+        buildText.setMovementMethod(LinkMovementMethod.getInstance());
+        buildText.setText(((TagMo) getApplication()).getVersionLabel());
 
         prefsDrawer = findViewById(R.id.drawer_layout);
         prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {

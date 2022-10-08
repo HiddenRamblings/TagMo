@@ -288,7 +288,8 @@ public class BrowserActivity extends AppCompatActivity implements
                             amiibosView = fragmentElite.getAmiibosView();
                             bottomSheet = fragmentElite.getBottomSheet();
                         } else if (hasFlaskEnabled) {
-                            hideBrowserInterface();
+                            showActionButton();
+                            hideBottomSheet();
                             setTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
@@ -300,14 +301,16 @@ public class BrowserActivity extends AppCompatActivity implements
                         }
                         break;
                     case 2:
-                        hideBrowserInterface();
                         if (hasEliteEnabled && hasFlaskEnabled) {
+                            showActionButton();
+                            hideBottomSheet();
                             setTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
                             amiibosView = fragmentFlask.getAmiibosView();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
+                            hideBrowserInterface();
                             setTitle(R.string.guides);
                         }
                         break;
@@ -616,7 +619,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                         getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
                 ).show();
-                this.onRootFolderChanged(false);
+                this.onRootFolderChanged(true);
             } catch (IOException | NullPointerException e) {
                 new Toasty(this).Short(e.getMessage());
             }

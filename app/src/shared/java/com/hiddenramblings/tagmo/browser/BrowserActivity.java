@@ -1119,6 +1119,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         new IconifiedSnackbar(this, mainLayout).buildSnackbar(
                                 getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
                         ).show();
+                        this.onRootFolderChanged(true);
                     } catch (IOException e) {
                         new Toasty(this).Short(e.getMessage());
                     }
@@ -1190,7 +1191,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else if (item.getItemId() == R.id.mnu_save) {
                 fragment.buildFoomiiboFile(tagData);
                 itemView.callOnClick();
-                onRefresh(false);
+                this.onRefresh(true);
                 return true;
             } else if (item.getItemId() == R.id.mnu_edit) {
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
@@ -1219,7 +1220,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else if (item.getItemId() == R.id.mnu_delete) {
                 fragment.deleteFoomiiboFile(tagData);
                 itemView.callOnClick();
-                onRefresh(false);
+                this.onRefresh(true);
                 return true;
             } else if (item.getItemId() == R.id.mnu_ignore_tag_id) {
                 ignoreTagId = !item.isChecked();
@@ -2025,29 +2026,6 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     });
 
-    private void deleteAmiiboDocument(AmiiboFile amiiboFile) {
-        if (null != amiiboFile && null != amiiboFile.getDocUri()) {
-            String relativeDocument = Storage.getRelativeDocument(
-                    amiiboFile.getDocUri().getUri()
-            );
-            new AlertDialog.Builder(this)
-                    .setMessage(getString(R.string.warn_delete_file, relativeDocument))
-                    .setPositiveButton(R.string.delete, (dialog, which) -> {
-                        amiiboContainer.setVisibility(View.GONE);
-                        amiiboFile.getDocUri().delete();
-                        new IconifiedSnackbar(this, mainLayout).buildSnackbar(
-                                getString(R.string.delete_file, relativeDocument),
-                                Snackbar.LENGTH_SHORT
-                        ).show();
-                        this.onRootFolderChanged(true);
-                        dialog.dismiss();
-                    })
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
-        } else {
-            deleteAmiiboFile(amiiboFile);
-        }
-    }
-
     private void deleteAmiiboFile(AmiiboFile amiiboFile) {
         if (null != amiiboFile && null != amiiboFile.getFilePath()) {
             String relativeFile = Storage.getRelativePath(
@@ -2068,6 +2046,29 @@ public class BrowserActivity extends AppCompatActivity implements
                     .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
         } else {
             new Toasty(this).Short(R.string.delete_missing);
+        }
+    }
+
+    private void deleteAmiiboDocument(AmiiboFile amiiboFile) {
+        if (null != amiiboFile && null != amiiboFile.getDocUri()) {
+            String relativeDocument = Storage.getRelativeDocument(
+                    amiiboFile.getDocUri().getUri()
+            );
+            new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.warn_delete_file, relativeDocument))
+                    .setPositiveButton(R.string.delete, (dialog, which) -> {
+                        amiiboContainer.setVisibility(View.GONE);
+                        amiiboFile.getDocUri().delete();
+                        new IconifiedSnackbar(this, mainLayout).buildSnackbar(
+                                getString(R.string.delete_file, relativeDocument),
+                                Snackbar.LENGTH_SHORT
+                        ).show();
+                        this.onRootFolderChanged(true);
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
+        } else {
+            deleteAmiiboFile(amiiboFile);
         }
     }
 

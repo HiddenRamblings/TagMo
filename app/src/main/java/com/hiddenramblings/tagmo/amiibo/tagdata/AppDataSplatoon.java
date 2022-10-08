@@ -14,6 +14,7 @@ public class AppDataSplatoon extends AppData {
 
     String gameDataHex =                        "01 01 00 00" +
             "00 00 00 00 42 C0 7B 0A 36 FA 8F C1 48";
+    byte[] gameDataBytes = TagArray.hexToByteArray(gameDataHex.replace(" ", ""));
 
     String appDataHex =                            "F5 09 60" +
             "C3 8E C5 52 EE E2 9A CE 27 71 5C 65 40 5B C3 F1" +
@@ -28,17 +29,22 @@ public class AppDataSplatoon extends AppData {
             "9E F3 63 B2 BO AE DD A2 5D 09 CC 9B 9B D1 D5 3E" +
             "88 BO 6D C2 AF 9D 66 7E 20 24 77 3B 88 7C AF 7F" +
             "88 9C B6 3D";
+    byte[] appDataBytes = TagArray.hexToByteArray(appDataHex.replace(" ", ""));
+
+    public boolean checkGameData(byte[] tagData) {
+        byte[] gameData = new byte[0];
+        System.arraycopy(tagData, 0xDC, gameData, 0, gameDataBytes.length);
+        return gameDataBytes == gameData;
+    }
 
     public byte[] injectGameData(byte[] tagData) {
-        byte[] hexArray = TagArray.hexToByteArray(gameDataHex.replace(" ", ""));
-        System.arraycopy(hexArray, 0, tagData, 0xDC, hexArray.length);
+        System.arraycopy(gameDataBytes, 0, tagData, 0xDC, gameDataBytes.length);
         return tagData;
     }
 
     public void injectGameData() {
-        byte[] hexArray = TagArray.hexToByteArray(appDataHex.replace(" ", ""));
-        for (int i = 0; i < hexArray.length; i++) {
-            appData.put(GAME_DATA_OFFSET + i, hexArray[i]);
+        for (int i = 0; i < appDataBytes.length; i++) {
+            appData.put(GAME_DATA_OFFSET + i, appDataBytes[i]);
         }
     }
 }

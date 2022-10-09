@@ -81,6 +81,7 @@ import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -212,6 +213,19 @@ public class TagArray {
             output.append((char) Integer.parseInt(hex.substring(i, i + 2), 16));
         }
         return output.toString();
+    }
+
+    public static byte[] longToBytes(long x) {
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        buffer.putLong(x);
+        return buffer.array();
+    }
+
+    public static long bytesToLong(byte[] bytes) {
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        buffer.put(bytes);
+        buffer.flip();//need flip
+        return buffer.getLong();
     }
 
     public static byte[][] splitPages(byte[] data) throws Exception {

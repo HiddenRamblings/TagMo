@@ -256,7 +256,7 @@ public class Debug {
         log.append(Build.VERSION.RELEASE);
         log.append(")");
         log.append(separator).append(getDeviceRAM(context)).append(" RAM");
-        log.append(separator).append(context.getString(R.string.install_src, BuildConfig.BUILD_TYPE));
+        log.append(separator).append(context.getString(R.string.install_src, BuildConfig.FLAVOR));
         return log;
     }
 

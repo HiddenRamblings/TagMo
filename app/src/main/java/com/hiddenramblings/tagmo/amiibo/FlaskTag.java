@@ -1,8 +1,13 @@
 package com.hiddenramblings.tagmo.amiibo;
 
+import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
+import com.hiddenramblings.tagmo.eightbit.util.TagArray;
+
 public class FlaskTag extends Amiibo {
 
-    public FlaskTag(long tail) {
-        super(null, tail, "New Tag ", null);
+    public FlaskTag(String tail) {
+        super(null, TagArray.bytesToLong(
+                tail.getBytes(CharsetCompat.UTF_8)
+        ), "New Tag ", null);
     }
 }

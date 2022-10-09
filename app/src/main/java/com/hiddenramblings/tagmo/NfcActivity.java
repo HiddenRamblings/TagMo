@@ -304,7 +304,8 @@ public class NfcActivity extends AppCompatActivity {
                     showMessage(R.string.tag_scanning, getString(R.string.power_tag));
                 } else if (prefs.enable_elite_support().get()) {
                     isEliteDevice = TagArray.isElite(mifare)
-                            || NFCIntent.ACTION_UNLOCK_UNIT.equals(mode);
+                            || NFCIntent.ACTION_UNLOCK_UNIT.equals(mode)
+                            || NFCIntent.ACTION_BLIND_SCAN.equals(mode);
                     if (isEliteDevice)
                         showMessage(R.string.tag_scanning, getString(R.string.elite_n2));
                 }
@@ -544,12 +545,8 @@ public class NfcActivity extends AppCompatActivity {
             Debug.Warn(e);
             String error = e.getMessage();
             error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
-            if (null != error && prefs.enable_elite_support().get()) {
-                if (e instanceof android.nfc.TagLostException) {
-                    showMessage(R.string.speed_scan);
-                    closeTagSilently(mifare);
-                    return;
-                } else if (getString(R.string.error_tag_rewrite).equals(error)) {
+            if (null != error) {
+                if (getString(R.string.error_tag_rewrite).equals(error)) {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update);
                     setResult(Activity.RESULT_OK, new Intent(
                             NFCIntent.ACTION_UPDATE_TAG
@@ -564,34 +561,41 @@ public class NfcActivity extends AppCompatActivity {
                             })
                             .show());
                     return;
-                } else if (getString(R.string.nfc_null_array).equals(error)) {
-                    this.runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
-                            .setTitle(R.string.possible_lock)
-                            .setMessage(R.string.prepare_unlock)
-                            .setPositiveButton(R.string.unlock, (dialog, which) -> {
-                                closeTagSilently(mifare);
-                                dialog.dismiss();
-                                getIntent().setAction(NFCIntent.ACTION_UNLOCK_UNIT);
-                                recreate();
-                            })
-                            .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                                closeTagSilently(mifare);
-                                dialog.dismiss();
-                                finish();
-                            }).show());
-                    return;
-                } else if (e instanceof NullPointerException
-                        && error.contains("nfctech.NTAG215.connect()")) {
-                    this.runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
-                            .setTitle(R.string.possible_blank)
-                            .setMessage(R.string.prepare_blank)
-                            .setPositiveButton(R.string.scan, (dialog, which) -> {
-                                dialog.dismiss();
-                                getIntent().setAction(NFCIntent.ACTION_BLIND_SCAN);
-                                recreate();
-                            })
-                            .setNegativeButton(R.string.cancel, (dialog, which) ->
-                                    dialog.dismiss()).show());
+                }
+                if (prefs.enable_elite_support().get()) {
+                    if (e instanceof android.nfc.TagLostException) {
+                        showMessage(R.string.speed_scan);
+                        closeTagSilently(mifare);
+                        return;
+                    } else if (getString(R.string.nfc_null_array).equals(error)) {
+                        this.runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
+                                .setTitle(R.string.possible_lock)
+                                .setMessage(R.string.prepare_unlock)
+                                .setPositiveButton(R.string.unlock, (dialog, which) -> {
+                                    closeTagSilently(mifare);
+                                    dialog.dismiss();
+                                    getIntent().setAction(NFCIntent.ACTION_UNLOCK_UNIT);
+                                    recreate();
+                                })
+                                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                                    closeTagSilently(mifare);
+                                    dialog.dismiss();
+                                    finish();
+                                }).show());
+                        return;
+                    } else if (e instanceof NullPointerException
+                            && error.contains("nfctech.NTAG215.connect()")) {
+                        this.runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
+                                .setTitle(R.string.possible_blank)
+                                .setMessage(R.string.prepare_blank)
+                                .setPositiveButton(R.string.scan, (dialog, which) -> {
+                                    dialog.dismiss();
+                                    getIntent().setAction(NFCIntent.ACTION_BLIND_SCAN);
+                                    recreate();
+                                })
+                                .setNegativeButton(R.string.cancel, (dialog, which) ->
+                                        dialog.dismiss()).show());
+                    }
                 }
             }
             if (null != error) {

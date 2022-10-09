@@ -64,6 +64,7 @@ import com.hiddenramblings.tagmo.eightbit.bluetooth.BluetoothHandler;
 import com.hiddenramblings.tagmo.eightbit.bluetooth.FlaskGattService;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
+import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.Preferences_;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -578,7 +579,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private Amiibo getAmiiboByTail(String[] name) {
         if (name.length < 2) return null;
-        if (name[1].length() == 0) return new FlaskTag(Long.parseLong(name[2]));
+        if (name[1].length() == 0) return new FlaskTag(name[2]);
         AmiiboManager amiiboManager;
         try {
             amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
@@ -890,12 +891,12 @@ public class FlaskSlotFragment extends Fragment implements
             toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_activate) {
                     serviceFlask.setActiveAmiibo(
-                            amiibo.name, String.valueOf(amiibo.id)
+                            amiibo.name, new String(TagArray.longToBytes(amiibo.id))
                     );
                     return true;
                 } else if (item.getItemId() == R.id.mnu_delete) {
                     serviceFlask.deleteAmiibo(
-                            amiibo.name, String.valueOf(amiibo.id)
+                            amiibo.name, new String(TagArray.longToBytes(amiibo.id))
                     );
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     return true;

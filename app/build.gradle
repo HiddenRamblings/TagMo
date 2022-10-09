@@ -10,7 +10,7 @@ android {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
         targetSdkVersion 33
-        versionName "3.2.2"
+        versionName "3.2.3"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         javaCompileOptions {
@@ -53,8 +53,7 @@ android {
         wearos {
             initWith release
             versionNameSuffix "-wear"
-            manifestPlaceholders = [versionCode: defaultConfig.versionCode + 1,
-                                    overrideLibrary: "me.weishu.freereflection, androidx.wear"]
+            manifestPlaceholders = [overrideLibrary: "me.weishu.freereflection, androidx.wear"]
         }
     }
 
@@ -102,6 +101,7 @@ android {
 
     applicationVariants.all { variant ->
         if (variant.buildType.name == buildTypes.wearos.name) {
+            variant.outputs[0].versionCodeOverride = defaultConfig.versionCode + 1
             variant.outputs[0].outputFileName = project.archivesBaseName + "-WearOS.apk"
         } else {
             variant.outputs[0].outputFileName = project.archivesBaseName + ".apk"

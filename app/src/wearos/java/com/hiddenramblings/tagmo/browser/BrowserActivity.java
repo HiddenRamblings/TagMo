@@ -59,6 +59,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
@@ -420,7 +421,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
 
         onCreateWearOptionsMenu();
-        if (TagMo.isCompatBuild()) donations.retrieveDonationMenu();
+        donations.retrieveDonationMenu();
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -1562,7 +1563,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         if (System.currentTimeMillis() >= oldBrowserSettings.getLastUpdatedGit() + 3600000) {
             updates = new CheckUpdatesTask(this);
-            if (TagMo.isGooglePlay()) {
+            if (BuildConfig.GOOGLE_PLAY) {
                 updates.setPlayUpdateListener(appUpdateInfo -> {
                     appUpdate = appUpdateInfo;
                     onCreateWearOptionsMenu();

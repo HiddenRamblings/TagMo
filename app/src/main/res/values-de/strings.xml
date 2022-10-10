@@ -36,8 +36,6 @@
     <string name="mkdir_failed">Mkdir &#8217;%1$s&#8217; failed!</string>
     <string name="downloads_hidden">Downloads sind derzeit ausgeblendet!</string>
 
-    <string name="sub_button">%1$s Abonnement</string>
-    <string name="iap_button">%1$s Spenden</string>
     <string name="donation_thanks">Vielen Dank für Ihre Unterstützung!</string>
 
     <string name="conversion_title">TagMo Kritisches Update</string>

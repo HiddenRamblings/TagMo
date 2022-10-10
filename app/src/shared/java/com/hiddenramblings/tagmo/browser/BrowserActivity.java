@@ -181,7 +181,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private MenuItem menuViewLarge;
     private MenuItem menuViewImage;
     private MenuItem menuRecursiveFiles;
-    private MenuItem menuHideDownloads;
 
     private FrameLayout amiiboContainer;
     private Toolbar toolbar;
@@ -1468,23 +1467,12 @@ public class BrowserActivity extends AppCompatActivity implements
         menuViewLarge = menu.findItem(R.id.view_large);
         menuViewImage = menu.findItem(R.id.view_image);
         menuRecursiveFiles = menu.findItem(R.id.recursive);
-        menuHideDownloads = menu.findItem(R.id.hide_downloads);
 
         if (null == this.settings) return false;
 
         this.onSortChanged();
         this.onViewChanged();
         this.onRecursiveFilesChanged();
-
-        if (isDocumentStorage()) {
-            menuHideDownloads.setVisible(false);
-        } else {
-            menuHideDownloads.setVisible(true);
-            menuHideDownloads.setTitle(getString(
-                    R.string.hide_downloads, Storage.getDownloadDir(null).getName()
-            ));
-            this.onHideDownloadsChanged();
-        }
 
         menuUpdate.setVisible(null != appUpdate || null != updateUrl);
 
@@ -1548,9 +1536,6 @@ public class BrowserActivity extends AppCompatActivity implements
         } else if (item.getItemId() == R.id.install_update) {
             if (null != appUpdate) updates.downloadPlayUpdate(appUpdate);
             if (null != updateUrl) updates.installUpdateCompat(updateUrl);
-        } else if (item.getItemId() == R.id.hide_downloads) {
-            this.settings.setHideDownloads(!this.settings.isHidingDownloads());
-            this.settings.notifyChanges();
         }
         return onMenuItemClicked(item);
     }
@@ -1702,12 +1687,12 @@ public class BrowserActivity extends AppCompatActivity implements
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiibos(keyManager, rootFolder, recursiveFiles);
-            if (!this.settings.isHidingDownloads()) {
+
                 File download = Storage.getDownloadDir(null);
                 if (isDirectoryHidden(rootFolder, download, recursiveFiles))
                     amiiboFiles.addAll(AmiiboManager
                             .listAmiibos(keyManager, download, true));
-            }
+
             File foomiibo = new File(getFilesDir(), "Foomiibo");
             amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, foomiibo, true));
 
@@ -1789,10 +1774,6 @@ public class BrowserActivity extends AppCompatActivity implements
             folderChanged = true;
             onRecursiveFilesChanged();
         }
-        if (newBrowserSettings.isHidingDownloads() != oldBrowserSettings.isHidingDownloads()) {
-            folderChanged = true;
-            onHideDownloadsChanged();
-        }
         if (!BrowserSettings.equals(newBrowserSettings.getLastUpdatedAPI(),
                 oldBrowserSettings.getLastUpdatedAPI())) {
             this.loadAmiiboManager();
@@ -1861,7 +1842,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
                 .image_network_settings().put(newBrowserSettings.getImageNetworkSettings())
                 .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
-                .hideDownloads().put(newBrowserSettings.isHidingDownloads())
                 .lastUpdatedAPI().put(newBrowserSettings.getLastUpdatedAPI())
                 .lastUpdatedGit().put(newBrowserSettings.getLastUpdatedGit())
                 .apply();
@@ -1998,11 +1978,6 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onRecursiveFilesChanged() {
         if (null == menuRecursiveFiles) return;
         menuRecursiveFiles.setChecked(settings.isRecursiveEnabled());
-    }
-
-    private void onHideDownloadsChanged() {
-        if (null == menuHideDownloads) return;
-        menuHideDownloads.setChecked(settings.isHidingDownloads());
     }
 
     private void launchEliteActivity(Intent resultData) {

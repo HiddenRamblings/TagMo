@@ -238,6 +238,11 @@ public class DonationHandler {
         params.setMargins(0, padding, 0, padding);
         button.setLayoutParams(params);
         button.setTextColor(ContextCompat.getColor(activity, android.R.color.white));
+        button.setTextSize(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                8f,
+                Resources.getSystem().getDisplayMetrics()
+        ));
         button.setText(activity.getString(R.string.iap_button, skuDetail
                 .getOneTimePurchaseOfferDetails().getFormattedPrice()));
         button.setOnClickListener(view1 -> {
@@ -274,6 +279,11 @@ public class DonationHandler {
         params.setMargins(0, padding, 0, padding);
         button.setLayoutParams(params);
         button.setTextColor(ContextCompat.getColor(activity, android.R.color.white));
+        button.setTextSize(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                8f,
+                Resources.getSystem().getDisplayMetrics()
+        ));
         button.setText(activity.getString(R.string.sub_button, skuDetail
                 .getSubscriptionOfferDetails().get(0).getPricingPhases()
                 .getPricingPhaseList().get(0).getFormattedPrice()));

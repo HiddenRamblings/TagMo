@@ -36,7 +36,5 @@
 
     <string name="speed_scan">스캔을 완료하려면 태그를 약간 들어 올리십시오.</string>
 
-    <string name="sub_button">%1$s 구독</string>
-    <string name="iap_button">%1$s 기부</string>
     <string name="donation_thanks">당신의 지원을 당신을 감사하십시오!</string>
 </resources>

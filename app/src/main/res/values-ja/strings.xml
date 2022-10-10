@@ -34,7 +34,5 @@
 
     <string name="speed_scan">スキャンを終えるために札をわずかに持ち上げて下さい</string>
 
-    <string name="sub_button">%1$s 定期購読</string>
-    <string name="iap_button">%1$s 寄付</string>
     <string name="donation_thanks">あなたのサポートに感謝します！</string>
 </resources>

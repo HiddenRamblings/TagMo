@@ -135,7 +135,6 @@
     <string name="scan_elite">扫描 N2 Elite</string>
     <string name="erase_bank">擦除 Bank</string>
     <string name="activate_bank">激活 Bank</string>
-    <string name="amiibo_backup">备份 amiibo</string>
     <string name="validate_data">数据校验</string>
     <string name="set_bank_count">Set Bank Count</string>
     <string name="lock_amiibo">锁定 N2 Elite</string>

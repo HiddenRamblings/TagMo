@@ -145,7 +145,6 @@
     <string name="scan_elite">Scanner le N2 Elite</string>
     <string name="erase_bank">Effacer la banque</string>
     <string name="activate_bank">Activer la banque</string>
-    <string name="amiibo_backup">Cloner amiibo</string>
     <string name="validate_data">Valider les données</string>
     <string name="set_bank_count">Fixer le nombre de banque</string>
     <string name="lock_amiibo">Verrouiller N2 Elite</string>

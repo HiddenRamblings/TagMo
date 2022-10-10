@@ -40,7 +40,6 @@
     <string name="amiibo_path_caps">路徑</string>
 
     <string name="recursive_folders">一併搜尋子目錄</string>
-    <string name="hide_downloads">顯示 &#8217;/%1$s&#8217;</string>
 
     <string name="simple">僅文字顯示</string>
     <string name="compact">縮圖+文字顯示</string>
@@ -366,8 +365,6 @@
     <string name="mkdir_failed">新建資料夾 &#8217;%1$s&#8217; 失敗！</string>
     <string name="downloads_hidden">下載項目已經隱藏！</string>
 
-    <string name="sub_button">%1$s 訂閱</string>
-    <string name="iap_button">%1$s 捐贈</string>
     <string name="donation_thanks">非常感謝你的捐贈！</string>
 
     <string name="conversion_title">TagMo必要更新</string>

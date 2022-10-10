@@ -33,7 +33,5 @@
 
     <string name="speed_scan">Слегка приподнимите метку, чтобы завершить сканирование</string>
 
-    <string name="sub_button">%1$s Подписка</string>
-    <string name="iap_button">%1$s Пожертвование</string>
     <string name="donation_thanks">Спасибо вам за вашу поддержку!</string>
 </resources>

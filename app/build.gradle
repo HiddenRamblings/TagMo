@@ -10,7 +10,7 @@ android {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
         targetSdkVersion 33
-        versionName "3.2.4"
+        versionName "3.2.5"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         javaCompileOptions {
@@ -33,10 +33,14 @@ android {
     flavorDimensions "source"
     productFlavors {
         github {
+            manifestPlaceholders.storagePermission = "android.permission.MANAGE_EXTERNAL_STORAGE"
+            manifestPlaceholders.installPermission = "android.permission.REQUEST_INSTALL_PACKAGES"
             buildConfigField "boolean", "GOOGLE_PLAY", "false"
         }
 
         google {
+            manifestPlaceholders.storagePermission = "com.hiddenramblings.tagmo.BROWSER"
+            manifestPlaceholders.installPermission = "com.hiddenramblings.tagmo.UPDATES"
             buildConfigField "boolean", "GOOGLE_PLAY", "true"
         }
     }
@@ -46,8 +50,8 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".eightbit"
-            manifestPlaceholders = [overrideLibrary: "me.weishu.freereflection"]
-
+            manifestPlaceholders.overrideLibrary = "me.weishu.freereflection"
+            manifestPlaceholders.wearUsesFeature = "android.hardware.screen.portrait"
             buildConfigField "boolean", "WEAR_OS", "false"
         }
         debug {
@@ -57,8 +61,8 @@ android {
         wearos {
             initWith release
             versionNameSuffix "-wear"
-            manifestPlaceholders = [overrideLibrary: "me.weishu.freereflection, androidx.wear"]
-
+            manifestPlaceholders.overrideLibrary = "me.weishu.freereflection, androidx.wear"
+            manifestPlaceholders.wearUsesFeature = "android.hardware.type.watch"
             buildConfigField "boolean", "WEAR_OS", "true"
         }
     }

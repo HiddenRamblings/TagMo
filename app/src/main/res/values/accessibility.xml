@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="imageview_amiibo">amiibo Image</string>
+    <string name="imageview_amiibo">Preview Image</string>
     <string name="imageview_icon">TagMo Image</string>
     <string name="imageview_arrow">Arrow Icon</string>
     <string name="imageview_folder">Folder Icon</string>

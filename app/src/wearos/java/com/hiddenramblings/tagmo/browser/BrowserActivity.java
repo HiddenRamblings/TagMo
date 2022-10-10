@@ -1435,12 +1435,12 @@ public class BrowserActivity extends AppCompatActivity implements
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiibos(keyManager, rootFolder, recursiveFiles);
-            if (!this.settings.isHidingDownloads()) {
+
                 File download = Storage.getDownloadDir(null);
                 if (isDirectoryHidden(rootFolder, download, recursiveFiles))
                     amiiboFiles.addAll(AmiiboManager
                             .listAmiibos(keyManager, download, true));
-            }
+
             File foomiibo = new File(getFilesDir(), "Foomiibo");
             amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, foomiibo, true));
 
@@ -1590,7 +1590,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
                 .image_network_settings().put(newBrowserSettings.getImageNetworkSettings())
                 .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
-                .hideDownloads().put(newBrowserSettings.isHidingDownloads())
                 .lastUpdatedAPI().put(newBrowserSettings.getLastUpdatedAPI())
                 .lastUpdatedGit().put(newBrowserSettings.getLastUpdatedGit())
                 .apply();

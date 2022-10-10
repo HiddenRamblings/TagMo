@@ -76,9 +76,6 @@ public interface Preferences {
     boolean recursiveFolders();
 
     @DefaultBoolean(false)
-    boolean hideDownloads();
-
-    @DefaultBoolean(false)
     boolean preferEmulated();
 
     @DefaultInt(0)

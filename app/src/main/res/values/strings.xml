@@ -40,7 +40,6 @@
     <string name="amiibo_path_caps">PATH</string>
 
     <string name="recursive_folders">Recursive Search</string>
-    <string name="hide_downloads">Hide &#8217;/%1$s&#8217;</string>
 
     <string name="simple">Text Banners</string>
     <string name="compact">Snappy Cards</string>
@@ -375,8 +374,8 @@
     <string name="mkdir_failed">Mkdir &#8217;%1$s&#8217; failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>
 
-    <string name="sub_button">%1$s Subscription</string>
-    <string name="iap_button">%1$s Donation</string>
+    <string name="sub_button">%1$s Monthly Donations</string>
+    <string name="iap_button">%1$s One-Time Donation</string>
     <string name="donation_thanks">Thanks for your support!</string>
 
     <string name="conversion_title">TagMo Critical Update</string>

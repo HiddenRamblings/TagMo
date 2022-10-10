@@ -44,7 +44,6 @@
     <string name="amiibo_path_caps">文件路径</string>
 
     <string name="recursive_folders">搜索子文件夹</string>
-    <string name="hide_downloads">藏起来 &#8217;/%1$s&#8217;</string>
 
     <string name="simple">紧凑列表</string>
     <string name="compact">标准列表</string>

@@ -33,14 +33,16 @@ android {
     flavorDimensions "source"
     productFlavors {
         github {
+            dimension "source"
             manifestPlaceholders.storagePermission = "android.permission.MANAGE_EXTERNAL_STORAGE"
             manifestPlaceholders.installPermission = "android.permission.REQUEST_INSTALL_PACKAGES"
             buildConfigField "boolean", "GOOGLE_PLAY", "false"
         }
 
         google {
+            dimension "source"
             manifestPlaceholders.storagePermission = "com.hiddenramblings.tagmo.BROWSER"
-            manifestPlaceholders.installPermission = "com.hiddenramblings.tagmo.UPDATES"
+            manifestPlaceholders.installPermission = "com.hiddenramblings.tagmo.UPDATING"
             buildConfigField "boolean", "GOOGLE_PLAY", "true"
         }
     }

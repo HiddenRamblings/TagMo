@@ -33,10 +33,12 @@ android {
     flavorDimensions "source"
     productFlavors {
         github {
-            getIsDefault().set(true)
+            buildConfigField "boolean", "GOOGLE_PLAY", "false"
         }
 
-        google { }
+        google {
+            buildConfigField "boolean", "GOOGLE_PLAY", "true"
+        }
     }
 
     buildTypes {
@@ -45,6 +47,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".eightbit"
             manifestPlaceholders = [overrideLibrary: "me.weishu.freereflection"]
+
+            buildConfigField "boolean", "WEAR_OS", "false"
         }
         debug {
             initWith release
@@ -54,6 +58,8 @@ android {
             initWith release
             versionNameSuffix "-wear"
             manifestPlaceholders = [overrideLibrary: "me.weishu.freereflection, androidx.wear"]
+
+            buildConfigField "boolean", "WEAR_OS", "true"
         }
     }
 

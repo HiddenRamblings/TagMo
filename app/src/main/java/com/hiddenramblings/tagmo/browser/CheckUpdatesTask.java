@@ -56,8 +56,8 @@ public class CheckUpdatesTask {
 
     CheckUpdatesTask(BrowserActivity activity) {
         this.activity = new SoftReference<>(activity);
-        if (TagMo.isWearableUI()) return;
-        if (TagMo.isGooglePlay()) {
+        if (BuildConfig.WEAR_OS) return;
+        if (BuildConfig.GOOGLE_PLAY) {
             if (null == appUpdateManager)
                 appUpdateManager = AppUpdateManagerFactory.create(activity);
             Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();

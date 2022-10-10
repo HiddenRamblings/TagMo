@@ -35,6 +35,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchaseHistoryParams;
 import com.android.billingclient.api.QueryPurchasesParams;
+import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -300,51 +301,45 @@ public class DonationHandler {
     }
 
     void onSendDonationClicked() {
-        if (TagMo.isCompatBuild()) {
-            LinearLayout layout = (LinearLayout) activity.getLayoutInflater()
-                    .inflate(R.layout.donation_layout, null);
-            AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(
-                    activity, R.style.DialogTheme_NoActionBar
-            ));
-            LinearLayout donations = layout.findViewById(R.id.donation_layout);
-            Collections.sort(iapSkuDetails, (obj1, obj2) ->
-                    obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
-            for (ProductDetails skuDetail : iapSkuDetails) {
-                if (null == skuDetail.getOneTimePurchaseOfferDetails()) continue;
-                donations.addView(getDonationButton(skuDetail));
-            }
-            LinearLayout subscriptions = layout.findViewById(R.id.subscription_layout);
-            Collections.sort(subSkuDetails, (obj1, obj2) ->
-                    obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
-            for (ProductDetails skuDetail : subSkuDetails) {
-                if (null == skuDetail.getSubscriptionOfferDetails()) continue;
-                subscriptions.addView(getSubscriptionButton(skuDetail));
-            }
-            dialog.setOnCancelListener(dialogInterface -> {
-                donations.removeAllViewsInLayout();
-                subscriptions.removeAllViewsInLayout();
-            });
-            dialog.setOnDismissListener(dialogInterface -> {
-                donations.removeAllViewsInLayout();
-                subscriptions.removeAllViewsInLayout();
-            });
-            Dialog donateDialog = dialog.setView(layout).show();
-            if (!TagMo.isGooglePlay()) {
-                @SuppressLint("InflateParams")
-                View paypal = activity.getLayoutInflater().inflate(R.layout.button_paypal, null);
-                paypal.setOnClickListener(view -> {
-                    activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                            "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
-                    )));
-                    donateDialog.cancel();
-                });
-                layout.addView(paypal);
-            }
-            donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        } else {
-            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                    "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
-            )));
+        LinearLayout layout = (LinearLayout) activity.getLayoutInflater()
+                .inflate(R.layout.donation_layout, null);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(
+                activity, R.style.DialogTheme_NoActionBar
+        ));
+        LinearLayout donations = layout.findViewById(R.id.donation_layout);
+        Collections.sort(iapSkuDetails, (obj1, obj2) ->
+                obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
+        for (ProductDetails skuDetail : iapSkuDetails) {
+            if (null == skuDetail.getOneTimePurchaseOfferDetails()) continue;
+            donations.addView(getDonationButton(skuDetail));
         }
+        LinearLayout subscriptions = layout.findViewById(R.id.subscription_layout);
+        Collections.sort(subSkuDetails, (obj1, obj2) ->
+                obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
+        for (ProductDetails skuDetail : subSkuDetails) {
+            if (null == skuDetail.getSubscriptionOfferDetails()) continue;
+            subscriptions.addView(getSubscriptionButton(skuDetail));
+        }
+        dialog.setOnCancelListener(dialogInterface -> {
+            donations.removeAllViewsInLayout();
+            subscriptions.removeAllViewsInLayout();
+        });
+        dialog.setOnDismissListener(dialogInterface -> {
+            donations.removeAllViewsInLayout();
+            subscriptions.removeAllViewsInLayout();
+        });
+        Dialog donateDialog = dialog.setView(layout).show();
+        if (!BuildConfig.GOOGLE_PLAY) {
+            @SuppressLint("InflateParams")
+            View paypal = activity.getLayoutInflater().inflate(R.layout.button_paypal, null);
+            paypal.setOnClickListener(view -> {
+                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                        "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
+                )));
+                donateDialog.cancel();
+            });
+            layout.addView(paypal);
+        }
+        donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 }

@@ -71,6 +71,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -212,7 +213,7 @@ public class BluetoothHandler {
             ) == PackageManager.PERMISSION_GRANTED) {
                 requestBluetooth(context);
             } else {
-                if (TagMo.isGooglePlay()) {
+                if (BuildConfig.GOOGLE_PLAY) {
                     new AlertDialog.Builder(context)
                             .setMessage(R.string.location_disclosure)
                             .setCancelable(false)

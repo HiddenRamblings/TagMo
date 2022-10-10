@@ -49,6 +49,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
@@ -398,7 +399,7 @@ public class FlaskSlotFragment extends Fragment implements
         this.settings.addChangeListener(writeFileAdapter);
 
         SearchView searchView = rootLayout.findViewById(R.id.amiibo_search);
-        if (TagMo.isWearableUI()) {
+        if (BuildConfig.WEAR_OS) {
             searchView.setVisibility(View.GONE);
         } else {
             SearchManager searchManager = (SearchManager) activity

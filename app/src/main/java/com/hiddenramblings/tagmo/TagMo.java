@@ -38,19 +38,6 @@ public class TagMo extends Application {
         return mContext.get();
     }
 
-    public static boolean isGooglePlay() {
-        return Objects.equals(BuildConfig.FLAVOR, "google");
-    }
-
-    public static boolean isWearableUI() {
-        return Objects.equals(BuildConfig.BUILD_TYPE, "wearos");
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public static boolean isCompatBuild() {
-        return BuildConfig.APPLICATION_ID.endsWith(".eightbit");
-    }
-
     public void setThemePreference() {
         switch (prefs.applicationTheme().get()) {
             case 0:
@@ -88,17 +75,17 @@ public class TagMo extends Application {
             System.exit(0);
         });
 
-        if (!BuildConfig.DEBUG && !isGooglePlay())
+        if (!BuildConfig.DEBUG && !BuildConfig.GOOGLE_PLAY)
             new ANRWatchDog(10000).setReportMainThreadOnly().start();
     }
 
     public Spanned getVersionLabel() {
         String flavor = "TagMo " + BuildConfig.VERSION_NAME + (
-                TagMo.isGooglePlay() ? " (Google Play" : " (GitHub"
+                BuildConfig.GOOGLE_PLAY ? " (Google Play" : " (GitHub"
         );
         String commit = "<a href=https://github.com/HiddenRamblings/TagMo/commit/"
                 + BuildConfig.COMMIT + ">#" + BuildConfig.COMMIT + "</a>";
-        if (isWearableUI()) {
+        if (BuildConfig.WEAR_OS) {
             return Html.fromHtml(flavor + " Wear OS) " + commit);
         } else if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) {
             return Html.fromHtml(flavor + " Release) " + commit);

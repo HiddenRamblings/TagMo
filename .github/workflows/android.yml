@@ -34,7 +34,7 @@ jobs:
         echo "GIT_HASH=${GIT_HASH}" >> $GITHUB_ENV
 
     - name: Build Release Gradle
-      run: ./gradlew assembleRelease
+      run: ./gradlew assembleGithubRelease
 
     - uses: r0adkll/sign-android-release@v1
       name: Sign Release APK
@@ -51,7 +51,7 @@ jobs:
         BUILD_TOOLS_VERSION: "30.0.2"
 
     - name: Build WearOS Gradle
-      run: ./gradlew assembleWearos
+      run: ./gradlew assembleGithubWearos
 
     - uses: r0adkll/sign-android-release@v1
       name: Sign WearOS APK

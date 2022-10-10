@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
@@ -136,7 +137,7 @@ public class BrowserFragment extends Fragment implements
                 foomiiboView.getAdapter());
 
         view.findViewById(R.id.list_divider).setVisibility(View.GONE);
-        if (TagMo.isWearableUI()) amiibosView.getLayoutParams().height =
+        if (BuildConfig.WEAR_OS) amiibosView.getLayoutParams().height =
                 amiibosView.getLayoutParams().height / 3;
 
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {

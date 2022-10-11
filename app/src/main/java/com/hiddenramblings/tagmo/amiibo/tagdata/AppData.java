@@ -2,7 +2,6 @@ package com.hiddenramblings.tagmo.amiibo.tagdata;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

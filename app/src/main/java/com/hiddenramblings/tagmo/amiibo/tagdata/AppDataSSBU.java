@@ -6,8 +6,6 @@
 
 package com.hiddenramblings.tagmo.amiibo.tagdata;
 
-import com.hiddenramblings.tagmo.eightbit.util.TagArray;
-
 import java.io.IOException;
 
 public class AppDataSSBU extends AppData {

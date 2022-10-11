@@ -1164,10 +1164,10 @@ public class TagDataEditor extends AppCompatActivity {
         buttonInject.setOnClickListener(view -> {
             try {
                 this.amiiboData = new AmiiboData(
-                        appDataSplatoon.injectGameData(this.amiiboData.array())
+                        appDataSplatoon.injectAppData(this.amiiboData.array())
                 );
                 appDataSplatoon = new AppDataSplatoon(amiiboData.getAppData());
-                appDataSplatoon.injectGameData();
+                appDataSplatoon.injectAppData();
                 buttonInject.setEnabled(false);
             } catch (IOException e) {
                 e.printStackTrace();

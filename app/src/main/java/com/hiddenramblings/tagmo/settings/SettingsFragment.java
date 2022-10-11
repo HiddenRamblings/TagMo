@@ -154,7 +154,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 prefs.enable_power_tag_support().put(isEnabled);
                 if (isEnabled) {
                     ((BrowserActivity) requireActivity()).loadPTagKeyManager();
-                    ((BrowserActivity) requireActivity()).showWebsite(NFCIntent.SITE_POWERTAG_HELP);
                 }
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });

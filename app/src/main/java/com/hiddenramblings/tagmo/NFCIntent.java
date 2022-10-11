@@ -39,7 +39,6 @@ public class NFCIntent {
     public static final String EXTRA_CURRENT_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_CURRENT_BANK";
 
     public static final String SITE_GITLAB_README = "https://tagmo.gitlab.io/";
-    public static final String SITE_POWERTAG_HELP = "https://tagmo.gitlab.io/powertags.html";
 
     public static Intent getIntent(Intent intent) {
         return Debug.isNewer(Build.VERSION_CODES.N)

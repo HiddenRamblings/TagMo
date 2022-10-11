@@ -1,6 +1,6 @@
 # Built application files
-build/
-app/.externalNativeBuild/
+build
+.externalNativeBuild
 
 # Crashlytics configuations
 com_crashlytics_export_strings.xml
@@ -10,17 +10,17 @@ local.properties
 keystore.properties
 
 # Gradle generated files
-.gradle/
+.gradle
 
 # Signing files
-.signing/
+.signing
 
 # Generated
-app/.cxx/
+.cxx
 *.aab
 
 # User-specific configurations
-.idea/
+.idea
 *.iml
 
 # OS-specific files

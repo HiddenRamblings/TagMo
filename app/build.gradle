@@ -10,7 +10,7 @@ android {
         applicationId "com.hiddenramblings.tagmo"
         minSdkVersion 16
         targetSdkVersion 33
-        versionName "3.2.5"
+        versionName "3.2.6"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         javaCompileOptions {
@@ -22,6 +22,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        dexOptions {
+            javaMaxHeapSize "4g"
+        }
+
         renderscriptTargetApi 31
         renderscriptSupportModeEnabled true
 
@@ -57,11 +62,11 @@ android {
             buildConfigField "boolean", "WEAR_OS", "false"
         }
         debug {
-            initWith release
+            initWith buildTypes.release
             debuggable true
         }
         wearos {
-            initWith release
+            initWith buildTypes.release
             versionNameSuffix "-wear"
             manifestPlaceholders.overrideLibrary = "me.weishu.freereflection, androidx.wear"
             manifestPlaceholders.wearUsesFeature = "android.hardware.type.watch"

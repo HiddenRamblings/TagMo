@@ -141,6 +141,7 @@ public class TagDataEditor extends AppCompatActivity {
     private AppDataPikmin appDataPikmin;
 
     public static final int AppId_Splatoon = 0x10162B00;
+    public static final int AppId_Splatoon3 = 0x38600500;
 
     private AppCompatButton buttonInject;
 
@@ -867,6 +868,7 @@ public class TagDataEditor extends AppCompatActivity {
                     enableAppDataZeldaTP(amiiboData.getAppData());
                     break;
                 case AppId_Splatoon:
+                case AppId_Splatoon3:
                     appDataViewSplatoon.setVisibility(View.VISIBLE);
                     enableAppDataSplatoon(amiiboData.getAppData());
                     break;

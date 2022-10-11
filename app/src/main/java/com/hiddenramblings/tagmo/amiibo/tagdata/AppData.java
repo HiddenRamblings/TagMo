@@ -54,6 +54,8 @@ public class AppData {
                 TagMo.getContext().getString(R.string.pikmin));
         appIds.put(TagDataEditor.AppId_Splatoon,
                 TagMo.getContext().getString(R.string.splatoon));
+        appIds.put(TagDataEditor.AppId_Splatoon3,
+                TagMo.getContext().getString(R.string.splatoon_three));
         appIds.put(TagDataEditor.AppId_SSB,
                 TagMo.getContext().getString(R.string.super_smash));
         appIds.put(TagDataEditor.AppId_SSBU,

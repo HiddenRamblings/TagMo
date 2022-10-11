@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.eightbit.security;
+package com.hiddenramblings.tagmo.security;
 
 import android.app.Activity;
 import android.content.Intent;

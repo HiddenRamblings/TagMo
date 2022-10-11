@@ -1,5 +1,6 @@
-/* ====================================================================
- * Copyright (c) 2012-2022 AbandonedCart.  All rights reserved.
+/*
+ * ====================================================================
+ * Copyright (c) 2021-2022 AbandonedCart.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions

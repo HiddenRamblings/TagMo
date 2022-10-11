@@ -1,5 +1,6 @@
-/* ====================================================================
- * Copyright (c) 2012-2022 AbandonedCart.  All rights reserved.
+/*
+ * ====================================================================
+ * Copyright (c) 2021-2022 AbandonedCart.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -52,7 +53,7 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.hiddenramblings.tagmo.eightbit.bluetooth;
+package com.hiddenramblings.tagmo.bluetooth;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -73,7 +74,6 @@ import androidx.core.content.ContextCompat;
 
 import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import java.util.Map;

@@ -37,12 +37,12 @@ public class AppDataSplatoon extends AppData {
         return gameDataBytes == gameData;
     }
 
-    public byte[] injectGameData(byte[] tagData) {
+    public byte[] injectAppData(byte[] tagData) {
         System.arraycopy(gameDataBytes, 0, tagData, 0xDC, gameDataBytes.length);
         return tagData;
     }
 
-    public void injectGameData() {
+    public void injectAppData() {
         for (int i = 0; i < appDataBytes.length; i++) {
             appData.put(GAME_DATA_OFFSET + i, appDataBytes[i]);
         }

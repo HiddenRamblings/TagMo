@@ -6,7 +6,7 @@
 
 package com.hiddenramblings.tagmo.amiibo.tagdata;
 
-import com.hiddenramblings.tagmo.eightbit.util.TagArray;
+import com.hiddenramblings.tagmo.nfctech.TagArray;
 
 import java.io.IOException;
 import java.util.Arrays;

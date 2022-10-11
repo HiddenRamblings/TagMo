@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.eightbit.charset;
+package com.hiddenramblings.tagmo.charset;
 
 import android.os.Build;
 

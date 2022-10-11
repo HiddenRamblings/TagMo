@@ -5,9 +5,9 @@ import android.app.Activity;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.browser.BrowserActivity;
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
+import com.hiddenramblings.tagmo.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.security.SecurityHandler;
+import com.hiddenramblings.tagmo.security.SecurityHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;

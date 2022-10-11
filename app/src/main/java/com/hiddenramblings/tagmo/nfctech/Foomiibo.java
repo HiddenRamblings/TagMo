@@ -1,5 +1,6 @@
-/* ====================================================================
- * Copyright (c) 2012-2022 AbandonedCart.  All rights reserved.
+/*
+ * ====================================================================
+ * Copyright (c) 2021-2022 AbandonedCart.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -52,14 +53,13 @@
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 
-package com.hiddenramblings.tagmo.eightbit.util;
+package com.hiddenramblings.tagmo.nfctech;
 
 import static java.lang.Integer.parseInt;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.nfctech.NfcByte;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;

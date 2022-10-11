@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo.amiibo.tagdata;
 import com.hiddenramblings.tagmo.eightbit.util.TagArray;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class AppDataSplatoon extends AppData {
     static final int GAME_DATA_OFFSET = 0x0;
@@ -10,7 +11,6 @@ public class AppDataSplatoon extends AppData {
     public AppDataSplatoon(byte[] appData) throws IOException {
         super(appData);
     }
-
 
     String gameDataHex =                        "01 01 00 00" +
             "00 00 00 00 42 C0 7B 0A 36 FA 8F C1 48";
@@ -31,18 +31,18 @@ public class AppDataSplatoon extends AppData {
             "88 9C B6 3D";
     byte[] appDataBytes = TagArray.hexToByteArray(appDataHex.replace(" ", ""));
 
-    public boolean checkGameData(byte[] tagData) {
-        byte[] gameData = new byte[0];
+    public boolean checkSaveData(byte[] tagData) {
+        byte[] gameData = new byte[gameDataBytes.length];
         System.arraycopy(tagData, 0xDC, gameData, 0, gameDataBytes.length);
-        return gameDataBytes == gameData;
+        return Arrays.equals(gameDataBytes, gameData);
     }
 
-    public byte[] injectAppData(byte[] tagData) {
+    public byte[] injectSaveData(byte[] tagData) {
         System.arraycopy(gameDataBytes, 0, tagData, 0xDC, gameDataBytes.length);
         return tagData;
     }
 
-    public void injectAppData() {
+    public void injectSaveData() {
         for (int i = 0; i < appDataBytes.length; i++) {
             appData.put(GAME_DATA_OFFSET + i, appDataBytes[i]);
         }

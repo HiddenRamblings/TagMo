@@ -1164,17 +1164,15 @@ public class TagDataEditor extends AppCompatActivity {
         buttonInject.setOnClickListener(view -> {
             try {
                 this.amiiboData = new AmiiboData(
-                        appDataSplatoon.injectAppData(this.amiiboData.array())
+                        appDataSplatoon.injectSaveData(this.amiiboData.array())
                 );
                 appDataSplatoon = new AppDataSplatoon(amiiboData.getAppData());
-                appDataSplatoon.injectAppData();
+                appDataSplatoon.injectSaveData();
                 buttonInject.setEnabled(false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
-        if (appDataSplatoon.checkGameData(this.amiiboData.array()))
-            buttonInject.setEnabled(false);
 
         onAppDataSplatoonChecked(isAppDataInitialized);
     }
@@ -1544,7 +1542,7 @@ public class TagDataEditor extends AppCompatActivity {
     }
 
     public void onAppDataSplatoonChecked(boolean enabled) {
-        buttonInject.setEnabled(enabled);
+        buttonInject.setEnabled(enabled && !appDataSplatoon.checkSaveData(this.amiiboData.array()));
     }
 
     public void onAppDataSSBChecked(boolean enabled) {

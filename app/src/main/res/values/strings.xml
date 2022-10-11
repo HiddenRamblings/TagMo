@@ -94,7 +94,7 @@
     <string name="delete_binary">Delete Binary</string>
     <string name="ignore_tag_id">Ignore Tag ID #</string>
     <string name="random_serial">Random Serial Number</string>
-    <string name="inject_game_data">Inject Game Data</string>
+    <string name="inject_game_data">Inject Save Data</string>
     <string name="game_titles_view">View Compatible Games</string>
     <string name="game_titles_hide">Hide Compatible Games</string>
 

@@ -2283,38 +2283,6 @@ public class BrowserActivity extends AppCompatActivity implements
                         .show();
             });
 
-//            gameSeriesStats.setOnClickListener(view1 -> {
-//                final ArrayList<String> items = new ArrayList<>();
-//                for (GameSeries gameSeries : amiiboManager.gameSeries.values()) {
-//                    if (!items.contains(gameSeries.name))
-//                        items.add(gameSeries.name);
-//                }
-//                Collections.sort(items);
-//
-//                new android.app.AlertDialog.Builder(this)
-//                        .setTitle(R.string.amiibo_game)
-//                        .setAdapter(new ArrayAdapter<>(this,
-//                                android.R.layout.simple_list_item_1, items), null)
-//                        .setPositiveButton(R.string.close, null)
-//                        .show();
-//            });
-
-//            amiiboSeriesStats.setOnClickListener(view1 -> {
-//                final ArrayList<String> items = new ArrayList<>();
-//                for (AmiiboSeries amiiboSeries : amiiboManager.amiiboSeries.values()) {
-//                    if (!items.contains(amiiboSeries.name))
-//                        items.add(amiiboSeries.name);
-//                }
-//                Collections.sort(items);
-//
-//                new android.app.AlertDialog.Builder(this)
-//                        .setTitle(R.string.amiibo_series)
-//                        .setAdapter(new ArrayAdapter<>(this,
-//                                android.R.layout.simple_list_item_1, items), null)
-//                        .setPositiveButton(R.string.close, null)
-//                        .show();
-//            });
-
             amiiboTypeStats.setOnClickListener(view1 -> {
                 final ArrayList<AmiiboType> amiiboTypes =
                         new ArrayList<>(amiiboManager.amiiboTypes.values());

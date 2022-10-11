@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
+import com.hiddenramblings.tagmo.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.nfctech.NfcByte;
 
 import java.io.IOException;

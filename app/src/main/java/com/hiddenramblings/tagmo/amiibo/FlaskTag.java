@@ -1,6 +1,6 @@
 package com.hiddenramblings.tagmo.amiibo;
 
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat;
+import com.hiddenramblings.tagmo.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
 
 public class FlaskTag extends Amiibo {

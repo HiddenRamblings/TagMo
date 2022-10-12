@@ -37,7 +37,7 @@ public class AppDataSplatoon extends AppData {
 
     String gameDataHex2 =                        "01 01 00 00" +
             "00 00 00 00 99 24 8D 4B 4C 84 9D FO A4";
-    byte[] gameDataBytes2 = TagArray.hexToByteArray(gameDataHex.replace(" ", ""));
+    byte[] gameDataBytes2 = TagArray.hexToByteArray(gameDataHex2.replace(" ", ""));
     String appDataHex2 =                            "98 OC F5" +
             "AE D1 42 9B 40 1D 20 42 7D 85 28 77 62 OD FO C8" +
             "9E B1 B2 AO 8A D4 5A 42 39 95 6E F3 FA C4 36 FB" +
@@ -62,7 +62,8 @@ public class AppDataSplatoon extends AppData {
 
     public byte[] injectSaveData(boolean source, byte[] tagData) {
         System.arraycopy(
-                source ? gameDataBytes : gameDataBytes2, 0, tagData, 0xDC, gameDataBytes.length
+                source ? gameDataBytes : gameDataBytes2, 0,
+                tagData, 0xDC, gameDataBytes.length
         );
         return tagData;
     }

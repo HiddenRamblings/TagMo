@@ -32,7 +32,7 @@ android {
 
         def commit = 'git rev-parse --short HEAD'.execute().text.trim()
         buildConfigField "String", "COMMIT", "\""+commit+"\""
-        project.archivesBaseName = "TagMo-" + commit
+        project.archivesBaseName = "${rootProject.name}-${commit}"
     }
 
     flavorDimensions "source"

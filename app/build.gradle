@@ -22,11 +22,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
         dexOptions {
             javaMaxHeapSize "4g"
         }
-
         renderscriptTargetApi 31
         renderscriptSupportModeEnabled true
 
@@ -43,9 +41,9 @@ android {
             manifestPlaceholders.installPermission = "android.permission.REQUEST_INSTALL_PACKAGES"
             buildConfigField "boolean", "GOOGLE_PLAY", "false"
         }
-
         google {
             dimension "source"
+            isDefault true
             manifestPlaceholders.storagePermission = "com.hiddenramblings.tagmo.BROWSER"
             manifestPlaceholders.installPermission = "com.hiddenramblings.tagmo.UPDATING"
             buildConfigField "boolean", "GOOGLE_PLAY", "true"

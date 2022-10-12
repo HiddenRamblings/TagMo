@@ -59,6 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Executors;
 
 public class TagDataEditor extends AppCompatActivity {
@@ -1165,11 +1166,12 @@ public class TagDataEditor extends AppCompatActivity {
         buttonInject = findViewById(R.id.inject_game_data);
         buttonInject.setOnClickListener(view -> {
             try {
+                boolean source = new Random().nextBoolean();
                 this.amiiboData = new AmiiboData(
-                        appDataSplatoon.injectSaveData(this.amiiboData.array())
+                        appDataSplatoon.injectSaveData(source, this.amiiboData.array())
                 );
                 appDataSplatoon = new AppDataSplatoon(amiiboData.getAppData());
-                appDataSplatoon.injectSaveData();
+                appDataSplatoon.injectSaveData(source);
                 buttonInject.setEnabled(false);
             } catch (IOException e) {
                 e.printStackTrace();

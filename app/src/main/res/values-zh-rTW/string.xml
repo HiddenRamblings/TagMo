@@ -94,6 +94,7 @@
     <string name="delete_binary">删除二进制文件</string>
     <string name="ignore_tag_id">忽略此Tag ID #</string>
     <string name="random_serial">隨機序號</string>
+    <string name="inject_game_data">寫入遊戲儲存數據</string>
     <string name="game_titles_view">檢視可支援的相關遊戲</string>
     <string name="game_titles_hide">隱藏可支援的相關遊戲</string>
 
@@ -138,9 +139,17 @@
     <string name="bank_erasing">正在抹除 bank %1$d of %2$d&#8230;</string>
     <string name="bank_select">請選擇目標 bank&#8230;</string>
 
+    <string name="chibi_robo">Chibi-Robo! Zip Lash</string>
     <string name="zelda_twilight">薩爾達傳說 曙光公主HD</string>
+    <string name="mh_stories">魔物獵人物語</string>
+    <string name="ml_paper_jam">Mario &#38; Luigi: Paper Jam</string>
+    <string name="ml_superstar">Mario &#38; Luigi: Superstar Saga</string>
+    <string name="mario_tennis">瑪利歐網球</string>
+    <string name="pikmin">皮克敏</string>
+    <string name="splatoon">斯普拉遁 (1 &#38; 2)</string>
+    <string name="splatoon_three">斯普拉遁 3</string>
+    <string name="super_smash">任天堂明星大亂鬥 (Wii U / 3DS)</string>
     <string name="smash_ultimate">任天堂明星大亂鬥特別版 Switch</string>
-    <string name="super_smash">任天堂明星大亂鬥 3DS/Wii</string>
 
     <string name="save_image">儲存圖片</string>
 
@@ -156,6 +165,7 @@
     <string name="scan_elite">掃描 N2 Elite</string>
     <string name="erase_bank">抹除 Bank</string>
     <string name="activate_bank">啟用 Bank</string>
+    <string name="amiibo_backup">建立備份檔案</string>
     <string name="validate_data">數據驗證</string>
     <string name="set_bank_count">設定 Bank 計數</string>
     <string name="lock_amiibo">鎖住 N2 Elite</string>
@@ -320,6 +330,7 @@
     <string name="fail_lock">無法鎖定空白的bank!</string>
     <string name="fail_unlock">進行鎖定時發生錯誤！</string>
     <string name="fail_logcat">製作操作日誌時發生錯誤！</string>
+    <string name="fail_bitmap">製作縮圖時發生錯誤!</string>
 
     <string name="no_tag_loaded">&lt;尚未載入Tag&gt;</string>
     <string name="read_error">&lt;讀取Tag時發生錯誤&gt;</string>
@@ -364,6 +375,8 @@
     <string name="mkdir_failed">新建資料夾 &#8217;%1$s&#8217; 失敗！</string>
     <string name="downloads_hidden">下載項目已經隱藏！</string>
 
+    <string name="sub_button">%1$s 每月捐贈</string>
+    <string name="iap_button">%1$s 單次捐贈</string>
     <string name="donation_thanks">非常感謝你的捐贈！</string>
 
     <string name="conversion_title">TagMo必要更新</string>

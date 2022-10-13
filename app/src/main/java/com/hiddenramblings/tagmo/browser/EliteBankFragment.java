@@ -492,12 +492,12 @@ public class EliteBankFragment extends Fragment implements
         if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         byte[] tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
-        int current_bank = result.getData().getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition);
+        clickedPosition = result.getData().getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition);
 
         Bundle args = new Bundle();
         args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
-        if (null != amiibos.get(current_bank))
-            amiibos.get(current_bank).data = tagData;
+        if (null != amiibos.get(clickedPosition))
+            amiibos.get(clickedPosition).data = tagData;
         switch (status) {
             case NOTHING:
                 break;
@@ -506,7 +506,7 @@ public class EliteBankFragment extends Fragment implements
                 modify.putExtra(NFCIntent.EXTRA_SIGNATURE,
                         prefs.settings_elite_signature().get());
                 modify.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
-                modify.putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank);
+                modify.putExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition);
                 onUpdateTagResult.launch(modify.putExtras(args));
                 break;
             case EDIT_DATA:
@@ -531,8 +531,8 @@ public class EliteBankFragment extends Fragment implements
 
         }
         status = CLICKED.NOTHING;
-        updateAmiiboView(amiiboCard, tagData, -1, current_bank);
-        bankAdapter.notifyItemChanged(current_bank);
+        updateAmiiboView(amiiboCard, tagData, -1, clickedPosition);
+        bankAdapter.notifyItemChanged(clickedPosition);
     });
 
     private void scanAmiiboBank(int current_bank) {

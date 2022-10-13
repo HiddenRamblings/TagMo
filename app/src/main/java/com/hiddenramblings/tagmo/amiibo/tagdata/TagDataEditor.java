@@ -1174,7 +1174,7 @@ public class TagDataEditor extends AppCompatActivity {
                 appDataSplatoon.injectSaveData(source);
                 buttonInject.setEnabled(false);
             } catch (IOException e) {
-                e.printStackTrace();
+                Debug.Warn(e);
             }
         });
 
@@ -1410,6 +1410,14 @@ public class TagDataEditor extends AppCompatActivity {
         } catch (Exception e) {
             appDataViewSSBU.setVisibility(View.GONE);
             return;
+        }
+        try {
+            this.amiiboData = new AmiiboData(
+                    appDataSSBU.initializeData(this.amiiboData.array())
+            );
+            appDataSSBU = new AppDataSSBU(amiiboData.getAppData());
+        } catch (IOException e) {
+            Debug.Warn(e);
         }
 
         spnAppearanceU = findViewById(R.id.spnAppearanceU);

@@ -6,7 +6,10 @@
 
 package com.hiddenramblings.tagmo.amiibo.tagdata;
 
+import com.hiddenramblings.tagmo.nfctech.TagArray;
+
 import java.io.IOException;
+import java.util.Arrays;
 
 public class AppDataSSBU extends AppData {
     static final int APPEARANCE_OFFSET = 0xB6;
@@ -37,9 +40,19 @@ public class AppDataSSBU extends AppData {
     static final int EXPERIENCE_MIN_VALUE = 0x0000;
     static final int EXPERIENCE_MAX_VALUE = 0x0F48;
     static final int EXPERIENCE_OFFSET = 0x5F;
+    static final int EXPERIENCE_OFFSET2 = 0x5D;
 
     public AppDataSSBU(byte[] appData) throws IOException {
         super(appData);
+    }
+
+    public byte[] initializeData(byte[] tagData) {
+        byte[] initData = TagArray.hexToByteArray("01006A803016E000");
+        byte[] saveData = new byte[initData.length];
+        System.arraycopy(tagData, 0x100, saveData, 0, saveData.length);
+        if (Arrays.equals(new byte[initData.length], saveData))
+            System.arraycopy(initData, 0, tagData, 0x100, initData.length);
+        return tagData;
     }
 
     public void checkAppearence(int value) throws NumberFormatException {
@@ -202,6 +215,7 @@ public class AppDataSSBU extends AppData {
     public void setExperience(int value) throws NumberFormatException {
         checkExperience(value);
         AppData.putInverseShort(appData, EXPERIENCE_OFFSET, value);
+        AppData.putInverseShort(appData, EXPERIENCE_OFFSET2, value + 26);
     }
 
     private static final int[] LEVEL_THRESHOLDS = new int[] {

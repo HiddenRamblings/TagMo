@@ -9,10 +9,11 @@ package com.hiddenramblings.tagmo.amiibo.tagdata;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class AppDataSSBU extends AppData {
-    static final int APPEARANCE_OFFSET = 0xB6;
+    static final int GAME_CRC32_OFFSET = 0x0;
+
+    static final int APPEARANCE_OFFSET = 0xC7;
     static final int APPEARANCE_MIN_VALUE = 0;
     static final int APPEARANCE_MAX_VALUE = 7;
 
@@ -27,8 +28,8 @@ public class AppDataSSBU extends AppData {
     static final int STATS_MAX_VALUE = 200;
     static final int PHYSICAL_MIN_VALUE = -2500;
     static final int PHYSICAL_MAX_VALUE = 2500;
-    static final int STATS_ATTACK_OFFSET = 0x63;
-    static final int STATS_DEFENSE_OFFSET = 0x65;
+    static final int STATS_ATTACK_OFFSET = 0x74;
+    static final int STATS_DEFENSE_OFFSET = 0x76;
     static final int STATS_SPEED_OFFSET = 0x14;
 
     static final int BONUS_MIN_VALUE = 0;
@@ -37,22 +38,16 @@ public class AppDataSSBU extends AppData {
     static final int BONUS_EFFECT2_OFFSET = 0x0E;
     static final int BONUS_EFFECT3_OFFSET = 0x0F;
 
+    static final int LEVEL_MIN_VALUE = 1;
     static final int EXPERIENCE_MIN_VALUE = 0x0000;
     static final int EXPERIENCE_MAX_VALUE = 0x0F48;
-    static final int EXPERIENCE_OFFSET = 0x5F;
-    static final int EXPERIENCE_OFFSET2 = 0x5D;
+    static final int EXPERIENCE_OFFSET = 0x70;
+    static final int EXPERIENCE_OFFSET_CPU = 0x72;
+
+    static final int GIFT_COUNT_OFFSET = 0x7A;
 
     public AppDataSSBU(byte[] appData) throws IOException {
         super(appData);
-    }
-
-    public byte[] initializeData(byte[] tagData) {
-        byte[] initData = TagArray.hexToByteArray("01006A803016E000");
-        byte[] saveData = new byte[initData.length];
-        System.arraycopy(tagData, 0x100, saveData, 0, saveData.length);
-        if (Arrays.equals(new byte[initData.length], saveData))
-            System.arraycopy(initData, 0, tagData, 0x100, initData.length);
-        return tagData;
     }
 
     public void checkAppearence(int value) throws NumberFormatException {
@@ -69,6 +64,10 @@ public class AppDataSSBU extends AppData {
     public void setAppearence(int value) throws NumberFormatException {
         checkAppearence(value);
         appData.put(APPEARANCE_OFFSET, (byte) value);
+    }
+
+    public int getGiftCount() throws NumberFormatException {
+        return AppData.getInverseShort(appData, GIFT_COUNT_OFFSET);
     }
 
     public void checkSpecial(int value) throws NumberFormatException {
@@ -215,7 +214,10 @@ public class AppDataSSBU extends AppData {
     public void setExperience(int value) throws NumberFormatException {
         checkExperience(value);
         AppData.putInverseShort(appData, EXPERIENCE_OFFSET, value);
-        AppData.putInverseShort(appData, EXPERIENCE_OFFSET2, value + 26);
+    }
+
+    public int getExperienceCPU() throws NumberFormatException {
+        return AppData.getInverseShort(appData, EXPERIENCE_OFFSET_CPU);
     }
 
     private static final int[] LEVEL_THRESHOLDS = new int[] {
@@ -225,17 +227,34 @@ public class AppDataSSBU extends AppData {
             0x053B, 0x057E, 0x05C6, 0x0613, 0x0665, 0x06BC, 0x0718, 0x0776, 0x07DC, 0x0843,
             0x08AC, 0x0919, 0x099B, 0x0A3B, 0x0AEF, 0x0BB7, 0x0C89, 0x0D65, 0x0E55, 0x0F48
     };
+    private static final int[] LEVEL_THRESHOLDS_CPU = new int[] {
+            0x0000, 0x003F, 0x00D2, 0x01B2, 0x02ED, 0x0475, 0x0643, 0x0811, 0x0ACD
+    };
 
-    public int getLevel() throws NumberFormatException {
-        int value = getExperience();
-        for (int i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
-            if (LEVEL_THRESHOLDS[i] <= value)
+    public int experienceToLevel(int experience, int[] threshholds) throws NumberFormatException {
+        for (int i = threshholds.length - 1; i >= 0; i--) {
+            if (threshholds[i] <= experience)
                 return i + 1;
         }
         throw new NumberFormatException();
     }
 
+    public int getLevel() throws NumberFormatException {
+        return experienceToLevel(getExperience(), LEVEL_THRESHOLDS);
+    }
+
     public void setLevel(int level) throws NumberFormatException {
         setExperience(LEVEL_THRESHOLDS[level - 1]);
+    }
+
+    public int getLevelCPU() throws NumberFormatException {
+        return experienceToLevel(getExperienceCPU(), LEVEL_THRESHOLDS_CPU);
+    }
+
+    public void writeChecksum() {
+        byte[] crc32 = TagArray.intToLittleEndian(new Checksum().generate(appData.array()));
+        for (int i = 0; i < crc32.length; i++) {
+            appData.put(GAME_CRC32_OFFSET + i, crc32[i]);
+        }
     }
 }

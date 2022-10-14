@@ -45,8 +45,10 @@ public class AppData {
                 TagMo.getContext().getString(R.string.mh_stories));
         appIds.put(TagDataEditor.AppId_MLPaperJam,
                 TagMo.getContext().getString(R.string.ml_paper_jam));
-        appIds.put(TagDataEditor.AppId_MLSuperstar,
-                TagMo.getContext().getString(R.string.ml_superstar));
+        appIds.put(TagDataEditor.AppId_MLSuperstarSaga,
+                TagMo.getContext().getString(R.string.ml_superstar_saga));
+        appIds.put(TagDataEditor.AppId_MSSuperstars,
+                TagMo.getContext().getString(R.string.ms_superstars));
         appIds.put(TagDataEditor.AppId_MarioTennis,
                 TagMo.getContext().getString(R.string.mario_tennis));
         appIds.put(TagDataEditor.AppId_Pikmin,

@@ -1,19 +1,18 @@
 /*
  * ====================================================================
+ * libamiibo Copyright (C) 2018 Benjamin Krämer
+ * Data/Settings/AppData/Games/MarioSportsSuperstar.cs
  * Copyright (C) 2022 AbandonedCart @ TagMo
  * ====================================================================
  */
 
 package com.hiddenramblings.tagmo.amiibo.tagdata;
 
-import com.hiddenramblings.tagmo.nfctech.TagArray;
-
 import java.io.IOException;
-import java.util.Arrays;
 
-public class AppDataSplatoon extends AppData {
+public class AppDataMSSuperstars extends AppData {
 
-    public AppDataSplatoon(byte[] appData) throws IOException {
+    public AppDataMSSuperstars(byte[] appData) throws IOException {
         super(appData);
     }
 }

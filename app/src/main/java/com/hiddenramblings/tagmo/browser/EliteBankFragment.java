@@ -387,25 +387,22 @@ public class EliteBankFragment extends Fragment implements
         if (amiibos.isEmpty()) {
             bankAdapter.setAmiibos(amiibos);
             for (int x = 0; x < amiiboList.size(); x++) {
-                Amiibo amiibo = amiiboManager.amiibos.get(
+                amiibos.add(new EliteTag(amiiboManager.amiibos.get(
                         TagArray.hexToLong(amiiboList.get(x))
-                );
-                amiibos.add(new EliteTag(amiibo));
+                )));
                 bankAdapter.notifyItemInserted(x);
             }
         } else {
             for (int x = 0; x < amiiboList.size(); x++) {
                 long amiiboId = TagArray.hexToLong(amiiboList.get(x));
                 if (x >= amiibos.size()) {
-                    Amiibo amiibo = amiiboManager.amiibos.get(
+                    amiibos.add(new EliteTag(amiiboManager.amiibos.get(
                             TagArray.hexToLong(amiiboList.get(x))
-                    );
-                    amiibos.add(new EliteTag(amiibo));
+                    )));
                     bankAdapter.notifyItemInserted(x);
                 } else if (null == amiibos.get(x) || amiibos.get(x).index != x
                         || amiiboId != amiibos.get(x).id) {
-                    Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
-                    amiibos.set(x,new EliteTag(amiibo));
+                    amiibos.set(x, new EliteTag(amiiboManager.amiibos.get(amiiboId)));
                     bankAdapter.notifyItemChanged(x);
                 }
             }
@@ -777,9 +774,9 @@ public class EliteBankFragment extends Fragment implements
                 tagInfo = getString(R.string.blank_tag);
             } else if (null != amiiboManager) {
                 Amiibo generic = amiiboManager.amiibos.get(amiiboId);
-                if (null == generic)
-                    generic = new Amiibo(amiiboManager, amiiboId, null, null);
-                amiibo = new EliteTag(generic);
+                amiibo = new EliteTag(null != generic ? generic
+                        : new Amiibo(amiiboManager, amiiboId, null, null)
+                );
             }
         }
 

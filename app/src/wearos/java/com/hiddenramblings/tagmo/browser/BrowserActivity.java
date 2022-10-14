@@ -2081,7 +2081,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private int[] getAdapterStats(AmiiboManager amiiboManager) {
-        BrowserAdapter adapter = (BrowserAdapter) fragmentBrowser.getAmiibosView().getAdapter();
+        BrowserAdapter adapter = null != amiibosView
+                ? (BrowserAdapter) amiibosView.getAdapter() : null;
         if (null == adapter) return new int[]{0, 0};
         int size = adapter.getItemCount();
         int count = 0;

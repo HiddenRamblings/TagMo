@@ -5,7 +5,7 @@ import java.io.IOException;
 public class AppDataZeldaTP extends AppData {
     static final int LEVEL_MIN_VALUE = 0;
     static final int LEVEL_MAX_VALUE = 40;
-    static final int LEVEL_OFFSET = 0x0;
+    static final int LEVEL_OFFSET = 0x11; // 0x0
     static final int HEARTS_MIN_VALUE = 0;
     public static final int HEARTS_MAX_VALUE = 20 * 4;
     static final int HEARTS_OFFSET = LEVEL_OFFSET + 0x01;

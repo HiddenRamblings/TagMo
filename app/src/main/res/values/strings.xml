@@ -107,7 +107,9 @@
 
     <string name="hearts">Hearts</string>
     <string name="level">Level</string>
+    <string name="level_cpu">CPU Level</string>
     <string name="appearance">Appearance</string>
+    <string name="gifts">Gifts</string>
     <string name="special_neutral">Special Neutral</string>
     <string name="special_side">Special Side</string>
     <string name="special_up">Special Up</string>
@@ -143,7 +145,8 @@
     <string name="zelda_twilight">The Legend of Zelda: Twilight Princess HD</string>
     <string name="mh_stories">Monster Hunter Stories</string>
     <string name="ml_paper_jam">Mario &#38; Luigi: Paper Jam</string>
-    <string name="ml_superstar">Mario &#38; Luigi: Superstar Saga</string>
+    <string name="ml_superstar_saga">Mario &#38; Luigi: Superstar Saga</string>
+    <string name="ms_superstars">Mario Sports Superstars</string>
     <string name="mario_tennis">Mario Tennis</string>
     <string name="pikmin">Pikmin</string>
     <string name="splatoon">Splatoon (1 &#38; 2)</string>

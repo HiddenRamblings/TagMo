@@ -90,7 +90,7 @@ public class TagDataEditor extends AppCompatActivity {
     private AppCompatButton generateSerial;
 
     private LinearLayout appDataViewZeldaTP;
-    private LinearLayout appDataViewSplatoon;
+    private LinearLayout appDataViewSplatoon3;
     private LinearLayout appDataViewSSB;
     private LinearLayout appDataViewSSBU;
 
@@ -129,9 +129,13 @@ public class TagDataEditor extends AppCompatActivity {
 
     private AppDataMLPaperJam appDataMLPaperJam;
 
-    public static final int AppId_MLSuperstar = 0x00194B00;
+    public static final int AppId_MLSuperstarSaga = 0x00194B00;
 
-    private AppDataMLSuperstar appDataMLSuperstar;
+    private AppDataMLSuperstarSaga appDataMLSuperstarSaga;
+
+    public static final int AppId_MSSuperstars = 0x00188B00;
+
+    private AppDataMSSuperstars appDataMSSuperstars;
 
     public static final int AppId_MarioTennis = 0x10199000;
 
@@ -142,11 +146,14 @@ public class TagDataEditor extends AppCompatActivity {
     private AppDataPikmin appDataPikmin;
 
     public static final int AppId_Splatoon = 0x10162B00;
+
+    private AppDataSplatoon appDataSplatoon;
+
     public static final int AppId_Splatoon3 = 0x38600500;
 
     private AppCompatButton buttonInject;
 
-    private AppDataSplatoon appDataSplatoon;
+    private AppDataSplatoon3 appDataSplatoon3;
 
     public static final int AppId_SSB = 0x10110E00;
 
@@ -172,6 +179,9 @@ public class TagDataEditor extends AppCompatActivity {
 
     private Spinner spnAppearanceU;
     private EditText txtLevelSSBU;
+
+    private EditText txtGiftCount;
+    private EditText txtLevelCPU;
 
     private EditText txtStatAttackU;
     private EditText txtStatDefenseU;
@@ -210,7 +220,7 @@ public class TagDataEditor extends AppCompatActivity {
         generateSerial = findViewById(R.id.random_serial);
 
         appDataViewZeldaTP = findViewById(R.id.appDataZeldaTP);
-        appDataViewSplatoon = findViewById(R.id.appDataSplatoon);
+        appDataViewSplatoon3 = findViewById(R.id.appDataSplatoon3);
         appDataViewSSB = findViewById(R.id.appDataSSB);
         appDataViewSSBU = findViewById(R.id.appDataSSBU);
 
@@ -465,7 +475,7 @@ public class TagDataEditor extends AppCompatActivity {
 
     void onAppDataSwitchClicked(boolean isAppDataInitialized) {
         this.isAppDataInitialized = isAppDataInitialized;
-        updateAppDataEnabled(isAppDataInitialized);
+        updateAppDataEnabled(isUserDataInitialized && isAppDataInitialized);
     }
 
     private void onSaveClicked() {
@@ -553,9 +563,9 @@ public class TagDataEditor extends AppCompatActivity {
                 }
             }
 
-            if (appDataSwitch.isChecked() && null != appDataSplatoon) {
+            if (appDataSwitch.isChecked() && null != appDataSplatoon3) {
                 try {
-                    newAmiiboData.setAppData(onAppDataSplatoonSaved());
+                    newAmiiboData.setAppData(onAppDataSplatoon3Saved());
                 } catch (Exception e) {
                     return;
                 }
@@ -606,21 +616,21 @@ public class TagDataEditor extends AppCompatActivity {
         txtAppName.setEnabled(isUserDataInitialized);
 
         appDataSwitch.setEnabled(isUserDataInitialized);
-        updateAppDataEnabled(isAppDataInitialized);
+        updateAppDataEnabled(isUserDataInitialized && isAppDataInitialized);
     }
 
     private void updateAppDataEnabled(boolean isAppDataInitialized) {
         if (null != appDataZeldaTP)
-            onAppDataZeldaTPChecked(isUserDataInitialized && isAppDataInitialized);
+            onAppDataZeldaTPChecked(isAppDataInitialized);
 
-        if (null != appDataSplatoon)
-            onAppDataSplatoonChecked(isUserDataInitialized && isAppDataInitialized);
+        if (null != appDataSplatoon3)
+            onAppDataSplatoon3Checked(isAppDataInitialized);
 
         if (null != appDataSSBU)
-            onAppDataSSBUChecked(isUserDataInitialized && isAppDataInitialized);
+            onAppDataSSBUChecked(isAppDataInitialized);
 
         if (null != appDataSSB)
-            onAppDataSSBChecked(isUserDataInitialized && isAppDataInitialized);
+            onAppDataSSBChecked(isAppDataInitialized);
     }
 
     private void loadUID() {
@@ -855,8 +865,8 @@ public class TagDataEditor extends AppCompatActivity {
     private void updateAppDataView() {
         appDataViewZeldaTP.setVisibility(View.GONE);
         appDataZeldaTP = null;
-        appDataViewSplatoon.setVisibility(View.GONE);
-        appDataSplatoon = null;
+        appDataViewSplatoon3.setVisibility(View.GONE);
+        appDataSplatoon3 = null;
         appDataViewSSB.setVisibility(View.GONE);
         appDataSSB = null;
         appDataViewSSBU.setVisibility(View.GONE);
@@ -868,10 +878,9 @@ public class TagDataEditor extends AppCompatActivity {
                     appDataViewZeldaTP.setVisibility(View.VISIBLE);
                     enableAppDataZeldaTP(amiiboData.getAppData());
                     break;
-                case AppId_Splatoon:
                 case AppId_Splatoon3:
-                    appDataViewSplatoon.setVisibility(View.VISIBLE);
-                    enableAppDataSplatoon(amiiboData.getAppData());
+                    appDataViewSplatoon3.setVisibility(View.VISIBLE);
+                    enableAppDataSplatoon3(amiiboData.getAppData());
                     break;
                 case AppId_SSB:
                     appDataViewSSB.setVisibility(View.VISIBLE);
@@ -1155,30 +1164,21 @@ public class TagDataEditor extends AppCompatActivity {
         onAppDataZeldaTPChecked(isAppDataInitialized);
     }
 
-    private void enableAppDataSplatoon(byte[] appData) {
+    private void enableAppDataSplatoon3(byte[] appData) {
         try {
-            appDataSplatoon = new AppDataSplatoon(appData);
+            appDataSplatoon3 = new AppDataSplatoon3(appData);
         } catch (Exception e) {
-            appDataViewSplatoon.setVisibility(View.GONE);
+            appDataViewSplatoon3.setVisibility(View.GONE);
             return;
         }
 
         buttonInject = findViewById(R.id.inject_game_data);
         buttonInject.setOnClickListener(view -> {
-            try {
-                boolean source = new Random().nextBoolean();
-                this.amiiboData = new AmiiboData(
-                        appDataSplatoon.injectSaveData(source, this.amiiboData.array())
-                );
-                appDataSplatoon = new AppDataSplatoon(amiiboData.getAppData());
-                appDataSplatoon.injectSaveData(source);
-                buttonInject.setEnabled(false);
-            } catch (IOException e) {
-                Debug.Warn(e);
-            }
+            appDataSplatoon3.injectSaveData(new Random().nextBoolean());
+            buttonInject.setEnabled(false);
         });
 
-        onAppDataSplatoonChecked(isAppDataInitialized);
+        onAppDataSplatoon3Checked(isAppDataInitialized);
     }
 
     private void enableAppDataSSB(byte[] appData) {
@@ -1218,76 +1218,76 @@ public class TagDataEditor extends AppCompatActivity {
             try {
                 appearance = appDataSSB.getAppearence();
             } catch (Exception e) {
-                appearance = 0;
+                appearance = AppDataSSB.APPEARANCE_MIN_VALUE;
             }
             try {
                 level = appDataSSB.getLevel();
             } catch (Exception e) {
-                level = 50;
+                level = AppDataSSB.LEVEL_MAX_VALUE;
             }
             try {
                 statAttack = appDataSSB.getStatAttack();
             } catch (Exception e) {
-                statAttack = 200;
+                statAttack = AppDataSSB.STATS_MAX_VALUE;
             }
             try {
                 statDefense = appDataSSB.getStatDefense();
             } catch (Exception e) {
-                statDefense = 200;
+                statDefense = AppDataSSB.STATS_MAX_VALUE;
             }
             try {
                 statSpeed = appDataSSB.getStatSpeed();
             } catch (Exception e) {
-                statSpeed = 200;
+                statSpeed = AppDataSSB.STATS_MAX_VALUE;
             }
             try {
                 specialNeutral = appDataSSB.getSpecialNeutral();
             } catch (Exception e) {
-                specialNeutral = 0;
+                specialNeutral = AppDataSSB.SPECIAL_MIN_VALUE;
             }
             try {
                 specialSide = appDataSSB.getSpecialSide();
             } catch (Exception e) {
-                specialSide = 0;
+                specialSide = AppDataSSB.SPECIAL_MIN_VALUE;
             }
             try {
                 specialUp = appDataSSB.getSpecialUp();
             } catch (Exception e) {
-                specialUp = 0;
+                specialUp = AppDataSSB.SPECIAL_MIN_VALUE;
             }
             try {
                 specialDown = appDataSSB.getSpecialDown();
             } catch (Exception e) {
-                specialDown = 0;
+                specialDown = AppDataSSB.SPECIAL_MIN_VALUE;
             }
             try {
                 bonusEffect1 = appDataSSB.getBonusEffect1();
             } catch (Exception e) {
-                bonusEffect1 = 0xFF;
+                bonusEffect1 = AppDataSSB.BONUS_MAX_VALUE;
             }
             try {
                 bonusEffect2 = appDataSSB.getBonusEffect2();
             } catch (Exception e) {
-                bonusEffect2 = 0xFF;
+                bonusEffect2 = AppDataSSB.BONUS_MAX_VALUE;
             }
             try {
                 bonusEffect3 = appDataSSB.getBonusEffect3();
             } catch (Exception e) {
-                bonusEffect3 = 0xFF;
+                bonusEffect3 = AppDataSSB.BONUS_MAX_VALUE;
             }
         } else {
-            appearance = 0;
-            level = 50;
-            statAttack = 200;
-            statDefense = 200;
-            statSpeed = 200;
-            specialNeutral = 0;
-            specialSide = 0;
-            specialUp = 0;
-            specialDown = 0;
-            bonusEffect1 = 0xFF;
-            bonusEffect2 = 0xFF;
-            bonusEffect3 = 0xFF;
+            appearance = AppDataSSB.APPEARANCE_MIN_VALUE;
+            level = AppDataSSB.LEVEL_MAX_VALUE;
+            statAttack = AppDataSSB.STATS_MAX_VALUE;
+            statDefense = AppDataSSB.STATS_MAX_VALUE;
+            statSpeed = AppDataSSB.STATS_MAX_VALUE;
+            specialNeutral = AppDataSSB.SPECIAL_MIN_VALUE;
+            specialSide = AppDataSSB.SPECIAL_MIN_VALUE;
+            specialUp = AppDataSSB.SPECIAL_MIN_VALUE;
+            specialDown = AppDataSSB.SPECIAL_MIN_VALUE;
+            bonusEffect1 = AppDataSSB.BONUS_MAX_VALUE;
+            bonusEffect2 = AppDataSSB.BONUS_MAX_VALUE;
+            bonusEffect3 = AppDataSSB.BONUS_MAX_VALUE;
         }
         spnAppearance.setSelection(appearance);
         txtLevelSSB.setText(String.valueOf(level));
@@ -1411,52 +1411,59 @@ public class TagDataEditor extends AppCompatActivity {
             appDataViewSSBU.setVisibility(View.GONE);
             return;
         }
-        try {
-            this.amiiboData = new AmiiboData(
-                    appDataSSBU.initializeData(this.amiiboData.array())
-            );
-            appDataSSBU = new AppDataSSBU(amiiboData.getAppData());
-        } catch (IOException e) {
-            Debug.Warn(e);
-        }
 
         spnAppearanceU = findViewById(R.id.spnAppearanceU);
         txtLevelSSBU = findViewById(R.id.txtLevelSSBU);
+        txtGiftCount = findViewById(R.id.txtGiftCount);
+        txtLevelCPU = findViewById(R.id.txtLevelCPU);
         txtStatAttackU = findViewById(R.id.txtStatAttackU);
         txtStatDefenseU = findViewById(R.id.txtStatDefenseU);
 
         setListForSpinners(new Spinner[]{ spnAppearanceU }, R.array.ssb_appearance_values);
 
-        int appearance, level, statAttack, statDefense, statSpeed,
+        int appearance, level, giftCount, levelCPU,
+                statAttack, statDefense, statSpeed,
                 specialNeutral, specialSide, specialUp, specialDown,
                 bonusEffect1, bonusEffect2, bonusEffect3;
         if (initialAppDataInitialized) {
             try {
                 appearance = appDataSSBU.getAppearence();
             } catch (Exception e) {
-                appearance = 0;
+                appearance = AppDataSSBU.APPEARANCE_MIN_VALUE;
             }
             try {
                 level = appDataSSBU.getLevel();
             } catch (Exception e) {
-                level = 50;
+                level = AppDataSSBU.LEVEL_MIN_VALUE;
+            }
+            try {
+                giftCount = appDataSSBU.getGiftCount();
+            } catch (Exception e) {
+                giftCount = 0;
+            }
+            try {
+                levelCPU = appDataSSBU.getLevelCPU();
+            } catch (Exception e) {
+                levelCPU = AppDataSSBU.LEVEL_MIN_VALUE;
             }
             try {
                 statAttack = appDataSSBU.getStatAttack();
             } catch (Exception e) {
-                statAttack = 2500;
+                statAttack = 0;
             }
             try {
                 statDefense = appDataSSBU.getStatDefense();
             } catch (Exception e) {
-                statDefense = 2500;
+                statDefense = 0;
             }
         } else {
-            appearance = 0;
-            level = 50;
-            statAttack = 200;
-            statDefense = 200;
-            statSpeed = 200;
+            appearance = AppDataSSBU.APPEARANCE_MIN_VALUE;
+            level = AppDataSSBU.LEVEL_MIN_VALUE;
+            giftCount = 0;
+            levelCPU = AppDataSSBU.LEVEL_MIN_VALUE;
+            statAttack = 0;
+            statDefense = 0;
+            statSpeed = 0;
             specialNeutral = 0;
             specialSide = 0;
             specialUp = 0;
@@ -1467,6 +1474,8 @@ public class TagDataEditor extends AppCompatActivity {
         }
         spnAppearanceU.setSelection(appearance);
         txtLevelSSBU.setText(String.valueOf(level));
+        txtGiftCount.setText(String.valueOf(giftCount));
+        txtLevelCPU.setText(String.valueOf(levelCPU));
         txtStatAttackU.setText(String.valueOf(statAttack));
         txtStatDefenseU.setText(String.valueOf(statDefense));
 
@@ -1553,8 +1562,8 @@ public class TagDataEditor extends AppCompatActivity {
         txtLevelZeldaTP.setEnabled(enabled);
     }
 
-    public void onAppDataSplatoonChecked(boolean enabled) {
-        buttonInject.setEnabled(enabled && !appDataSplatoon.checkSaveData(this.amiiboData.array()));
+    public void onAppDataSplatoon3Checked(boolean enabled) {
+        buttonInject.setEnabled(enabled && !appDataSplatoon3.checkSaveData());
     }
 
     public void onAppDataSSBChecked(boolean enabled) {
@@ -1576,10 +1585,12 @@ public class TagDataEditor extends AppCompatActivity {
     }
 
     public void onAppDataSSBUChecked(boolean enabled) {
-//        spnAppearanceU.setEnabled(enabled);
-//        txtLevelSSBU.setEnabled(enabled);
-//        txtStatAttackU.setEnabled(enabled);
-//        txtStatDefenseU.setEnabled(enabled);
+        spnAppearanceU.setEnabled(enabled);
+        txtLevelSSBU.setEnabled(enabled);
+        // txtGiftCount.setEnabled(enabled);
+        // txtLevelCPU.setEnabled(enabled);
+        txtStatAttackU.setEnabled(enabled);
+        txtStatDefenseU.setEnabled(enabled);
     }
 
     public byte[] onAppDataZeldaTPSaved() {
@@ -1602,8 +1613,8 @@ public class TagDataEditor extends AppCompatActivity {
         return appDataZeldaTP.array();
     }
 
-    public byte[] onAppDataSplatoonSaved() {
-        return appDataSplatoon.array();
+    public byte[] onAppDataSplatoon3Saved() {
+        return appDataSplatoon3.array();
     }
 
     public byte[] onAppDataSSBSaved() {
@@ -1748,6 +1759,8 @@ public class TagDataEditor extends AppCompatActivity {
             txtStatDefenseU.requestFocus();
             throw e;
         }
+
+        appDataSSBU.writeChecksum();
 
         return appDataSSBU.array();
     }

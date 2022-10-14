@@ -489,7 +489,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         TextView buildText = findViewById(R.id.build_text);
         buildText.setMovementMethod(LinkMovementMethod.getInstance());
-        buildText.setText(((TagMo) getApplication()).getVersionLabel());
+        buildText.setText(TagMo.getVersionLabel(false));
 
         prefsDrawer = findViewById(R.id.drawer_layout);
         prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {

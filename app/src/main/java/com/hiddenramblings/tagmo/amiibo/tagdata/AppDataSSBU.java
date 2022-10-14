@@ -6,9 +6,9 @@
 
 package com.hiddenramblings.tagmo.amiibo.tagdata;
 
-import com.hiddenramblings.tagmo.nfctech.TagArray;
-
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class AppDataSSBU extends AppData {
     static final int GAME_CRC32_OFFSET = 0x0;
@@ -45,6 +45,8 @@ public class AppDataSSBU extends AppData {
     static final int EXPERIENCE_OFFSET_CPU = 0x72;
 
     static final int GIFT_COUNT_OFFSET = 0x7A;
+
+    // 0xE2 - 0D // 0xE3 - 01
 
     public AppDataSSBU(byte[] appData) throws IOException {
         super(appData);
@@ -251,10 +253,14 @@ public class AppDataSSBU extends AppData {
         return experienceToLevel(getExperienceCPU(), LEVEL_THRESHOLDS_CPU);
     }
 
-    public void writeChecksum() {
-        byte[] crc32 = TagArray.intToLittleEndian(new Checksum().generate(appData.array()));
+    public ByteBuffer withChecksum() {
+        ByteBuffer bb = ByteBuffer.allocate(4);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.putInt(new Checksum().generate(appData));
+        byte[] crc32 = bb.array();
         for (int i = 0; i < crc32.length; i++) {
             appData.put(GAME_CRC32_OFFSET + i, crc32[i]);
         }
+        return appData;
     }
 }

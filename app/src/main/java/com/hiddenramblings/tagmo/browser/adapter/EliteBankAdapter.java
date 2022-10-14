@@ -19,6 +19,7 @@ import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.EliteTag;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
@@ -32,7 +33,7 @@ public class EliteBankAdapter
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
-    private ArrayList<Amiibo> amiibos = new ArrayList<>();
+    private ArrayList<EliteTag> amiibos = new ArrayList<>();
 
     public EliteBankAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
         // setHasStableIds(true);
@@ -40,7 +41,7 @@ public class EliteBankAdapter
         this.listener = listener;
     }
 
-    public void setAmiibos(ArrayList<Amiibo> amiibos) {
+    public void setAmiibos(ArrayList<EliteTag> amiibos) {
         this.amiibos = amiibos;
     }
 
@@ -58,7 +59,7 @@ public class EliteBankAdapter
         return amiibos.get(i).id;
     }
 
-    public Amiibo getItem(int i) {
+    public EliteTag getItem(int i) {
         return amiibos.get(i);
     }
 
@@ -129,7 +130,7 @@ public class EliteBankAdapter
         public final TextView txtPath;
         public final AppCompatImageView imageAmiibo;
 
-        Amiibo amiiboItem = null;
+        EliteTag amiiboItem = null;
 
         private final BoldSpannable boldSpannable = new BoldSpannable();
 
@@ -175,7 +176,7 @@ public class EliteBankAdapter
         }
 
         @SuppressLint("SetTextI18n")
-        void bind(final Amiibo amiibo) {
+        void bind(final EliteTag amiibo) {
             this.amiiboItem = amiibo;
 
             String amiiboHexId = "";
@@ -185,7 +186,7 @@ public class EliteBankAdapter
             String gameSeries = "";
             // String character = "";
             String amiiboImageUrl = null;
-            boolean isAmiibo = null != amiibo;
+            boolean isAmiibo = null != amiibo.manager;
 
             String query = settings.getQuery().toLowerCase();
             String value = String.valueOf(getAbsoluteAdapterPosition() + 1);
@@ -292,8 +293,8 @@ public class EliteBankAdapter
     }
 
     public interface OnAmiiboClickListener {
-        void onAmiiboClicked(Amiibo amiibo, int position);
-        void onAmiiboImageClicked(Amiibo amiibo, int position);
-        boolean onAmiiboLongClicked(Amiibo amiibo, int position);
+        void onAmiiboClicked(EliteTag amiibo, int position);
+        void onAmiiboImageClicked(EliteTag amiibo, int position);
+        boolean onAmiiboLongClicked(EliteTag amiibo, int position);
     }
 }

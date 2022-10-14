@@ -8,8 +8,8 @@
         android:id="@+id/appDataZeldaTP" />
 
     <include
-        layout="@layout/app_data_splatoon"
-        android:id="@+id/appDataSplatoon" />
+        layout="@layout/app_data_splatoon3"
+        android:id="@+id/appDataSplatoon3" />
 
     <include
         layout="@layout/app_data_ssb"

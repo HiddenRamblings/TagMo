@@ -10,13 +10,13 @@ package com.hiddenramblings.tagmo.amiibo.tagdata;
 
 import java.io.IOException;
 
-public class AppDataMLSuperstar extends AppData {
+public class AppDataMLSuperstarSaga extends AppData {
 
     static final int EXPERIENCE_MIN_VALUE = 0x000001;
     static final int EXPERIENCE_MAX_VALUE = 0x1D892C;
     static final int EXPERIENCE_OFFSET = 0x10;
 
-    public AppDataMLSuperstar(byte[] appData) throws IOException {
+    public AppDataMLSuperstarSaga(byte[] appData) throws IOException {
         super(appData);
     }
 

@@ -3,32 +3,33 @@ package com.hiddenramblings.tagmo.amiibo.tagdata;
 import java.io.IOException;
 
 public class AppDataSSB extends AppData {
-    static final int APPEARANCE_OFFSET = 0x08;
+    static final int APPEARANCE_OFFSET = 0x19; // 0x08
     static final int APPEARANCE_MIN_VALUE = 0;
     static final int APPEARANCE_MAX_VALUE = 7;
 
     static final int SPECIAL_MIN_VALUE = 0;
     static final int SPECIAL_MAX_VALUE = 2;
-    static final int SPECIAL_NEUTRAL_OFFSET = 0x09;
-    static final int SPECIAL_SIDE_OFFSET = 0x0A;
-    static final int SPECIAL_UP_OFFSET = 0x0B;
-    static final int SPECIAL_DOWN_OFFSET = 0x0C;
+    static final int SPECIAL_NEUTRAL_OFFSET = 0x1A; // 0x09
+    static final int SPECIAL_SIDE_OFFSET = 0x1B; // 0x0A
+    static final int SPECIAL_UP_OFFSET = 0x1C; // 0x0B
+    static final int SPECIAL_DOWN_OFFSET = 0x1D; // 0x0C
 
     static final int STATS_MIN_VALUE = -200;
     static final int STATS_MAX_VALUE = 200;
-    static final int STATS_ATTACK_OFFSET = 0x10;
-    static final int STATS_DEFENSE_OFFSET = 0x12;
-    static final int STATS_SPEED_OFFSET = 0x14;
+    static final int STATS_ATTACK_OFFSET = 0x21; // 0x10
+    static final int STATS_DEFENSE_OFFSET = 0x23; // 0x12
+    static final int STATS_SPEED_OFFSET = 0x25; // 0x14
 
     static final int BONUS_MIN_VALUE = 0;
     static final int BONUS_MAX_VALUE = 0xFF;
-    static final int BONUS_EFFECT1_OFFSET = 0x0D;
-    static final int BONUS_EFFECT2_OFFSET = 0x0E;
-    static final int BONUS_EFFECT3_OFFSET = 0x0F;
+    static final int BONUS_EFFECT1_OFFSET = 0x1E; // 0x0D
+    static final int BONUS_EFFECT2_OFFSET = 0x1F; // 0x0E
+    static final int BONUS_EFFECT3_OFFSET = 0x20; // 0x0F
 
+    static final int LEVEL_MAX_VALUE = 50;
     static final int EXPERIENCE_MIN_VALUE = 0x0000;
     static final int EXPERIENCE_MAX_VALUE = 0x093E;
-    static final int EXPERIENCE_OFFSET = 0x7C;
+    static final int EXPERIENCE_OFFSET = 0x8D; // 0x7C
 
     public AppDataSSB(byte[] appData) throws IOException {
         super(appData);

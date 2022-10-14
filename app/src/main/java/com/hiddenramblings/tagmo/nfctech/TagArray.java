@@ -16,6 +16,7 @@ import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
+import android.os.Build;
 
 import androidx.documentfile.provider.DocumentFile;
 
@@ -30,6 +31,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -106,6 +108,13 @@ public class TagArray {
         return compareRange(data, data2, 0, len);
     }
 
+    public static byte[] intToLittleEndian(int value) {
+        ByteBuffer bb = ByteBuffer.allocate(4);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.putInt(value);
+        return bb.array();
+    }
+
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
@@ -124,12 +133,37 @@ public class TagArray {
         return data;
     }
 
+    public static byte[] longToBytes(long x) {
+        ByteBuffer buffer = ByteBuffer.allocate(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Long.BYTES : 8
+        );
+        buffer.putLong(x);
+        return buffer.array();
+    }
+
+    public static long bytesToLong(byte[] bytes) {
+        ByteBuffer buffer = ByteBuffer.allocate(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Long.BYTES : 8
+        );
+        buffer.put(bytes);
+        buffer.flip(); // need flip
+        return buffer.getLong();
+    }
+
     public static long hexToLong(String s) {
         long result = 0;
         for (int i = 0; i < s.length(); i++) {
             result = (result << 4) + ((long) Character.digit(s.charAt(i), 16));
         }
         return result;
+    }
+
+    static String hexToString(String hex) {
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < hex.length(); i += 2) {
+            output.append((char) Integer.parseInt(hex.substring(i, i + 2), 16));
+        }
+        return output.toString();
     }
 
     public static byte hexToByte(String hex) {
@@ -153,27 +187,6 @@ public class TagArray {
             return ret;
         }
         return (byte) (((lo - 0x61) + 0x0A) | ret);
-    }
-
-    static String hexToString(String hex) {
-        StringBuilder output = new StringBuilder();
-        for (int i = 0; i < hex.length(); i += 2) {
-            output.append((char) Integer.parseInt(hex.substring(i, i + 2), 16));
-        }
-        return output.toString();
-    }
-
-    public static byte[] longToBytes(long x) {
-        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-        buffer.putLong(x);
-        return buffer.array();
-    }
-
-    public static long bytesToLong(byte[] bytes) {
-        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-        buffer.put(bytes);
-        buffer.flip();//need flip
-        return buffer.getLong();
     }
 
     public static byte[][] splitPages(byte[] data) throws Exception {

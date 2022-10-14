@@ -15,6 +15,18 @@ import java.util.Arrays;
 
 public class TagWriter {
 
+    private static byte[][] splitPages(byte[] data) throws Exception {
+        if (data.length < NfcByte.TAG_DATA_SIZE)
+            throw new IOException(TagMo.getContext().getString(
+                    R.string.invalid_data_size, data.length, NfcByte.TAG_DATA_SIZE));
+
+        byte[][] pages = new byte[data.length / NfcByte.PAGE_SIZE][];
+        for (int i = 0, j = 0; i < data.length; i += NfcByte.PAGE_SIZE, j++) {
+            pages[j] = Arrays.copyOfRange(data, i, i + NfcByte.PAGE_SIZE);
+        }
+        return pages;
+    }
+
     public static void writeToTagRaw(
             NTAG215 mifare, byte[] tagData, boolean validateNtag
     ) throws Exception {
@@ -23,7 +35,7 @@ public class TagWriter {
         TagReader.validateBlankTag(mifare);
 
         try {
-            byte[][] pages = TagArray.splitPages(tagData);
+            byte[][] pages = splitPages(tagData);
             writePages(mifare, 3, 129, pages);
             Debug.Info(TagWriter.class, R.string.data_write);
         } catch (Exception e) {
@@ -136,7 +148,7 @@ public class TagWriter {
                 doAuth(mifare);
         }
 
-        byte[][] pages = TagArray.splitPages(tagData);
+        byte[][] pages = splitPages(tagData);
         if (isPowerTag) {
             byte[] zeropage = TagArray.hexToByteArray("00000000");
             mifare.writePage(0x86, zeropage); //PACK
@@ -191,7 +203,7 @@ public class TagWriter {
         }
 
         doAuth(mifare);
-        byte[][] pages = TagArray.splitPages(tagData);
+        byte[][] pages = splitPages(tagData);
         writePages(mifare, 4, 12, pages);
         writePages(mifare, 32, 129, pages);
     }
@@ -333,6 +345,29 @@ public class TagWriter {
         }
     }
 
+    private static byte hexToByte(String hex) {
+        byte ret = (byte) 0;
+        byte hi = (byte) hex.charAt(0);
+        byte lo = (byte) hex.charAt(1);
+        if (hi >= NfcByte.CMD_READ && hi <= NfcByte.CMD_READ_CNT) {
+            ret = (byte) (((hi - 0x30) << 4));
+        } else if (hi >= (byte) 0x41 && hi <= NfcByte.N2_LOCK) {
+            ret = (byte) ((((hi - 0x41) + 0x0A) << 4));
+        } else if (hi >= (byte) 0x61 && hi <= (byte) 0x66) {
+            ret = (byte) ((((hi - 0x61) + 0x0A) << 4));
+        }
+        if (lo >= NfcByte.CMD_READ && lo <= NfcByte.CMD_READ_CNT) {
+            return (byte) ((lo - 0x30) | ret);
+        }
+        if (lo >= (byte) 0x41 && lo <= NfcByte.N2_LOCK) {
+            return (byte) (((lo - 0x41) + 0x0A) | ret);
+        }
+        if (lo < (byte) 0x61 || lo > (byte) 0x66) {
+            return ret;
+        }
+        return (byte) (((lo - 0x61) + 0x0A) | ret);
+    }
+
     public static boolean updateFirmware(NTAG215 tag) throws Exception {
         final Context context = TagMo.getContext();
         byte[] response = new byte[1];
@@ -354,7 +389,7 @@ public class TagWriter {
                 } else if (parts[0].equals("C-APDU")) {
                     byte[] apdu_buf = new byte[(parts.length - 1)];
                     for (i = 1; i < parts.length; i++) {
-                        apdu_buf[i - 1] = TagArray.hexToByte(parts[i]);
+                        apdu_buf[i - 1] = hexToByte(parts[i]);
                     }
                     int sz = apdu_buf[4] & 0xFF;
                     byte[] iso_cmd = new byte[sz];
@@ -381,7 +416,7 @@ public class TagWriter {
                         throw new Exception(context.getString(R.string.firmware_failed, 2));
                     }
                     for (i = 1; i < parts.length; i++) {
-                        rpdu_buf[i - 1] = TagArray.hexToByte(parts[i]);
+                        rpdu_buf[i - 1] = hexToByte(parts[i]);
                     }
                     for (i = 0; i < rpdu_buf.length - 2; i++) {
                         if (rpdu_buf[i] != response[i]) {

@@ -14,4 +14,8 @@ public class AmiiboReleaseDates {
         this.europe = europe;
         this.australia = australia;
     }
+
+    public AmiiboReleaseDates() {
+        this(null, null, null, null);
+    }
 }

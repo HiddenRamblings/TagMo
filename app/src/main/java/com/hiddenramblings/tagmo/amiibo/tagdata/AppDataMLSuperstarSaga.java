@@ -36,7 +36,7 @@ public class AppDataMLSuperstarSaga extends AppData {
         appData.putShort(EXPERIENCE_OFFSET, (short) value);
     }
 
-    private static final int[] LEVEL_THRESHOLDS = new int[] {
+    private static final int[] LEVEL_THRESHOLDS = new int[]{
             0x000001, 0x000002, 0x000004, 0x000006, 0x00000A, 0x000014, 0x000028, 0x000046, 0x00006E,
             0x0000A0, 0x0000DC, 0x000122, 0x000172, 0x0001CC, 0x000230, 0x0002F8, 0x0003E8, 0x00054B,
             0x0006DB, 0x0008BB, 0x000AEB, 0x000D6B, 0x00100E, 0x0012FC, 0x0018D8, 0x0021A2, 0x002D5A,

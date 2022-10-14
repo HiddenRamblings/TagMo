@@ -38,7 +38,7 @@ public class AmiiboData {
     public static final int WRITE_COUNT_MAX_VALUE = Short.MAX_VALUE & 0xFFFF;
     private static final int WRITE_COUNT_OFFSET = 0xB4;
     private static final int APP_ID_OFFSET = 0xB6;
-    private static final int APP_DATA_OFFSET = 0xED;
+    private static final int APP_DATA_OFFSET = 0xDC; // 0xED
     private static final int APP_DATA_LENGTH = 0xD8;
 
     private final Context context = TagMo.getContext();

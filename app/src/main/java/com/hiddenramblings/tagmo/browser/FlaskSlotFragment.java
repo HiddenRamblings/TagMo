@@ -171,7 +171,6 @@ public class FlaskSlotFragment extends Fragment implements
                                     try {
                                         Amiibo amiibo = getAmiiboByTail(jsonArray
                                                 .getString(i).split("\\|"));
-                                        if (null != amiibo) amiibo.index = i;
                                         flaskAmiibos.add(amiibo);
                                     } catch (JSONException | NullPointerException ex) {
                                         Debug.Warn(ex);
@@ -218,9 +217,7 @@ public class FlaskSlotFragment extends Fragment implements
                         @Override
                         public void onFlaskFilesDownload(String dataString) {
                             try {
-                                new Amiibo(
-                                        settings.getAmiiboManager(), dataString.getBytes(), -1
-                                );
+                                byte[] tagData = dataString.getBytes();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

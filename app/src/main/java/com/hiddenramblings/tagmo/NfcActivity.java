@@ -29,6 +29,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
+import com.hiddenramblings.tagmo.amiibo.EliteTag;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
@@ -407,7 +408,7 @@ public class NfcActivity extends AppCompatActivity {
                                 TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
                             }
                         } else if (commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
-                            ArrayList<Amiibo> amiiboList = commandIntent
+                            ArrayList<EliteTag> amiiboList = commandIntent
                                     .getParcelableArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST);
                             for (int x = 0; x < amiiboList.size(); x++) {
                                 txtMessage.setText(getString(R.string.bank_writing,

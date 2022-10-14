@@ -10,6 +10,8 @@
 
 package com.hiddenramblings.tagmo.amiibo.tagdata;
 
+import java.nio.ByteBuffer;
+
 public class Checksum {
 
     private final byte[] u0;
@@ -31,9 +33,9 @@ public class Checksum {
         }
     }
 
-    public int generate(byte[] appData) {
-        byte[] checksum = new byte[0xD4];
-        System.arraycopy(appData, 0x04, checksum, 0, checksum.length);
+    public int generate(ByteBuffer appData) {
+        byte[] checksum = new byte[212]; // 0xD4
+        System.arraycopy(appData.array(), 0xE0, checksum, 0, checksum.length);
 
         int t = 0x0;
         for (byte k : checksum) {

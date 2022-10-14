@@ -1760,9 +1760,7 @@ public class TagDataEditor extends AppCompatActivity {
             throw e;
         }
 
-        appDataSSBU.writeChecksum();
-
-        return appDataSSBU.array();
+        return appDataSSBU.withChecksum().array();
     }
 
     private void showErrorDialog(int msgRes) {

@@ -238,7 +238,7 @@ public class Debug {
         String separator = System.getProperty("line.separator") != null
                 ? Objects.requireNonNull(System.getProperty("line.separator")) : "\n";
         final StringBuilder log = new StringBuilder(separator);
-        log.append(context.getString(R.string.build_hash, BuildConfig.COMMIT));
+        log.append(TagMo.getVersionLabel(true));
         log.append(separator);
         log.append("Android ");
         Field[] fields = Build.VERSION_CODES.class.getFields();
@@ -255,9 +255,7 @@ public class Debug {
         log.append(codeName);
         log.append(" (");
         log.append(Build.VERSION.RELEASE);
-        log.append(")");
-        log.append(separator).append(getDeviceRAM(context)).append(" RAM");
-        log.append(separator).append(context.getString(R.string.install_src, BuildConfig.FLAVOR));
+        log.append(") - ").append(getDeviceRAM(context)).append(" RAM");
         return log;
     }
 

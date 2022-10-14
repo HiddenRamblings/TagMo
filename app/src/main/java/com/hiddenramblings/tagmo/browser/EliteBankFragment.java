@@ -48,6 +48,7 @@ import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.amiibo.EliteTag;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
 import com.hiddenramblings.tagmo.browser.adapter.EliteBankAdapter;
@@ -96,7 +97,7 @@ public class EliteBankFragment extends Fragment implements
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private KeyManager keyManager;
 
-    private ArrayList<Amiibo> amiibos = new ArrayList<>();
+    private ArrayList<EliteTag> amiibos = new ArrayList<>();
     private SearchView searchView;
     private WriteTagAdapter writeFileAdapter;
 
@@ -386,25 +387,32 @@ public class EliteBankFragment extends Fragment implements
         if (amiibos.isEmpty()) {
             bankAdapter.setAmiibos(amiibos);
             for (int x = 0; x < amiiboList.size(); x++) {
-                amiibos.add(amiiboManager.amiibos.get(TagArray.hexToLong(amiiboList.get(x))));
+                Amiibo amiibo = amiiboManager.amiibos.get(
+                        TagArray.hexToLong(amiiboList.get(x))
+                );
+                amiibos.add(new EliteTag(amiibo));
                 bankAdapter.notifyItemInserted(x);
             }
         } else {
             for (int x = 0; x < amiiboList.size(); x++) {
                 long amiiboId = TagArray.hexToLong(amiiboList.get(x));
                 if (x >= amiibos.size()) {
-                    amiibos.add(amiiboManager.amiibos.get(TagArray.hexToLong(amiiboList.get(x))));
+                    Amiibo amiibo = amiiboManager.amiibos.get(
+                            TagArray.hexToLong(amiiboList.get(x))
+                    );
+                    amiibos.add(new EliteTag(amiibo));
                     bankAdapter.notifyItemInserted(x);
                 } else if (null == amiibos.get(x) || amiibos.get(x).index != x
                         || amiiboId != amiibos.get(x).id) {
-                    amiibos.set(x, amiiboManager.amiibos.get(amiiboId));
+                    Amiibo amiibo = amiiboManager.amiibos.get(amiiboId);
+                    amiibos.set(x,new EliteTag(amiibo));
                     bankAdapter.notifyItemChanged(x);
                 }
             }
             if (amiibos.size() > amiiboList.size()) {
                 int count = amiibos.size();
                 int size = amiiboList.size();
-                ArrayList<Amiibo> shortList = new ArrayList<>();
+                ArrayList<EliteTag> shortList = new ArrayList<>();
                 for (int x = 0; x < size; x++) {
                     shortList.add(amiibos.get(x));
                 }
@@ -753,7 +761,7 @@ public class EliteBankFragment extends Fragment implements
         String gameSeries = "";
         String amiiboImageUrl;
 
-        Amiibo amiibo = amiibos.get(current_bank);
+        EliteTag amiibo = amiibos.get(current_bank);
         if (null == amiibo) {
             if (null != tagData && tagData.length > 0) {
                 try {
@@ -768,9 +776,10 @@ public class EliteBankFragment extends Fragment implements
             } else if (amiiboId == 0) {
                 tagInfo = getString(R.string.blank_tag);
             } else if (null != amiiboManager) {
-                amiibo = amiiboManager.amiibos.get(amiiboId);
-                if (null == amiibo)
-                    amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
+                Amiibo generic = amiiboManager.amiibos.get(amiiboId);
+                if (null == generic)
+                    generic = new Amiibo(amiiboManager, amiiboId, null, null);
+                amiibo = new EliteTag(generic);
             }
         }
 
@@ -950,7 +959,7 @@ public class EliteBankFragment extends Fragment implements
     }
 
     @Override
-    public void onAmiiboClicked(Amiibo amiibo, int position) {
+    public void onAmiiboClicked(EliteTag amiibo, int position) {
         if (null == amiibo) {
             displayWriteDialog(position);
             return;
@@ -969,12 +978,12 @@ public class EliteBankFragment extends Fragment implements
     }
 
     @Override
-    public void onAmiiboImageClicked(Amiibo amiibo, int position) {
+    public void onAmiiboImageClicked(EliteTag amiibo, int position) {
         handleImageClicked(amiibo);
     }
 
     @Override
-    public boolean onAmiiboLongClicked(Amiibo amiibo, int position) {
+    public boolean onAmiiboLongClicked(EliteTag amiibo, int position) {
         if (null != amiibo )
             scanAmiiboTag(position);
         else

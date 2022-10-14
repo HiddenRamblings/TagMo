@@ -79,12 +79,13 @@ public class TagMo extends Application {
             new ANRWatchDog(10000).setReportMainThreadOnly().start();
     }
 
-    public Spanned getVersionLabel() {
+    public static Spanned getVersionLabel(boolean plain) {
         String flavor = "TagMo " + BuildConfig.VERSION_NAME + (
                 BuildConfig.GOOGLE_PLAY ? " (Google Play" : " (GitHub"
         );
-        String commit = "<a href=https://github.com/HiddenRamblings/TagMo/commit/"
-                + BuildConfig.COMMIT + ">#" + BuildConfig.COMMIT + "</a>";
+        String commit = plain ? ("#" + BuildConfig.COMMIT)
+                : ("<a href=https://github.com/HiddenRamblings/TagMo/commit/"
+                + BuildConfig.COMMIT + ">#" + BuildConfig.COMMIT + "</a>");
         if (BuildConfig.WEAR_OS) {
             return Html.fromHtml(flavor + " Wear OS) " + commit);
         } else if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) {

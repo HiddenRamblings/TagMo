@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -108,13 +107,6 @@ public class TagArray {
         return compareRange(data, data2, 0, len);
     }
 
-    public static byte[] intToLittleEndian(int value) {
-        ByteBuffer bb = ByteBuffer.allocate(4);
-        bb.order(ByteOrder.LITTLE_ENDIAN);
-        bb.putInt(value);
-        return bb.array();
-    }
-
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
@@ -166,30 +158,9 @@ public class TagArray {
         return output.toString();
     }
 
-    public static byte hexToByte(String hex) {
-        byte ret = (byte) 0;
-        byte hi = (byte) hex.charAt(0);
-        byte lo = (byte) hex.charAt(1);
-        if (hi >= NfcByte.CMD_READ && hi <= NfcByte.CMD_READ_CNT) {
-            ret = (byte) (((hi - 0x30) << 4));
-        } else if (hi >= (byte) 0x41 && hi <= NfcByte.N2_LOCK) {
-            ret = (byte) ((((hi - 0x41) + 0x0A) << 4));
-        } else if (hi >= (byte) 0x61 && hi <= (byte) 0x66) {
-            ret = (byte) ((((hi - 0x61) + 0x0A) << 4));
-        }
-        if (lo >= NfcByte.CMD_READ && lo <= NfcByte.CMD_READ_CNT) {
-            return (byte) ((lo - 0x30) | ret);
-        }
-        if (lo >= (byte) 0x41 && lo <= NfcByte.N2_LOCK) {
-            return (byte) (((lo - 0x41) + 0x0A) | ret);
-        }
-        if (lo < (byte) 0x61 || lo > (byte) 0x66) {
-            return ret;
-        }
-        return (byte) (((lo - 0x61) + 0x0A) | ret);
-    }
-
-    public static byte[][] splitPages(byte[] data) throws Exception {
+    public static void validateData(byte[] data) throws Exception {
+        final Context context = TagMo.getContext();
+        /* TagWriter.splitPages(data) */
         if (data.length < NfcByte.TAG_DATA_SIZE)
             throw new IOException(TagMo.getContext().getString(
                     R.string.invalid_data_size, data.length, NfcByte.TAG_DATA_SIZE));
@@ -198,12 +169,6 @@ public class TagArray {
         for (int i = 0, j = 0; i < data.length; i += NfcByte.PAGE_SIZE, j++) {
             pages[j] = Arrays.copyOfRange(data, i, i + NfcByte.PAGE_SIZE);
         }
-        return pages;
-    }
-
-    public static void validateData(byte[] data) throws Exception {
-        final Context context = TagMo.getContext();
-        byte[][] pages = TagArray.splitPages(data);
 
         if (pages[0][0] != (byte) 0x04)
             throw new Exception(context.getString(R.string.invalid_tag_prefix));

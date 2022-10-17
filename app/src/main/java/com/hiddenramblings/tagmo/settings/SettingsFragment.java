@@ -117,7 +117,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             enableAutomaticScan.setChecked(
                     requireContext().getPackageManager().getComponentEnabledSetting(
                             NFCIntent.FilterComponent
-                    ) != PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                    ) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED
             );
             enableAutomaticScan.setOnPreferenceClickListener(preference -> {
                 boolean isChecked = enableAutomaticScan.isChecked();

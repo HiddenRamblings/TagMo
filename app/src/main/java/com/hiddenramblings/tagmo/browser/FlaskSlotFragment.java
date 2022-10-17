@@ -67,7 +67,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.Preferences_;
+import com.hiddenramblings.tagmo.settings.Preferences;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.shawnlin.numberpicker.NumberPicker;
 
@@ -88,7 +88,7 @@ public class FlaskSlotFragment extends Fragment implements
         FlaskSlotAdapter.OnAmiiboClickListener,
         BluetoothHandler.BluetoothListener {
 
-    private final Preferences_ prefs = TagMo.getPrefs();
+    private final Preferences prefs = TagMo.getPrefs();
     private BluetoothHandler bluetoothHandler;
     private boolean isFragmentVisible = false;
 
@@ -198,7 +198,7 @@ public class FlaskSlotFragment extends Fragment implements
                                         BottomSheetBehavior.STATE_COLLAPSED)
                                     getActiveAmiibo(amiibo, amiiboCard);
                                 String index = jsonObject.getString("index");
-                                prefs.flaskActiveSlot().put(Integer.parseInt(index));
+                                prefs.flaskActiveSlot(Integer.parseInt(index));
                                 flaskDetails.post(() -> {
                                     if (null != flaskDetails.getAdapter())
                                         flaskDetails.getAdapter().notifyDataSetChanged();

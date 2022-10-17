@@ -9,10 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.github.anrwatchdog.ANRWatchDog;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.settings.Preferences_;
-
-import org.androidannotations.annotations.EApplication;
-import org.androidannotations.annotations.sharedpreferences.Pref;
+import com.hiddenramblings.tagmo.settings.Preferences;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -21,16 +18,13 @@ import java.util.Objects;
 
 import me.weishu.reflection.Reflection;
 
-@EApplication
 public class TagMo extends Application {
-    @Pref
-    Preferences_ prefs;
 
     private static SoftReference<Context> mContext;
-    private static SoftReference<Preferences_> mPrefs;
+    private static SoftReference<Preferences> mPrefs;
     public static final int uiDelay = 50;
 
-    public static Preferences_ getPrefs() {
+    public static Preferences getPrefs() {
         return mPrefs.get();
     }
 
@@ -39,7 +33,7 @@ public class TagMo extends Application {
     }
 
     public void setThemePreference() {
-        switch (prefs.applicationTheme().get()) {
+        switch (mPrefs.get().applicationTheme()) {
             case 0:
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
                 break;
@@ -61,12 +55,10 @@ public class TagMo extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-        setThemePreference();
-
-        mPrefs = new SoftReference<>(this.prefs);
         mContext = new SoftReference<>(this);
+        mPrefs = new SoftReference<>(new Preferences(this));
+        setThemePreference();
 
         Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
             StringWriter exception = new StringWriter();

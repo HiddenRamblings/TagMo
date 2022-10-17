@@ -45,7 +45,7 @@ import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.nfctech.Foomiibo;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.Preferences_;
+import com.hiddenramblings.tagmo.settings.Preferences;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnCloseClickListener;
@@ -59,7 +59,7 @@ import myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView;
 public class BrowserFragment extends Fragment implements
         FoomiiboAdapter.OnFoomiiboClickListener{
 
-    private final Preferences_ prefs = TagMo.getPrefs();
+    private final Preferences prefs = TagMo.getPrefs();
     private FlexboxLayout chipList;
     private RecyclerView amiibosView;
     private RecyclerView foomiiboView;
@@ -164,7 +164,7 @@ public class BrowserFragment extends Fragment implements
                     }
                     if (srcHeight != amiibosView.getLayoutParams().height) amiibosView.requestLayout();
                 }
-                prefs.foomiiboOffset().put(amiibosView.getLayoutParams().height);
+                prefs.foomiiboOffset(amiibosView.getLayoutParams().height);
             }
             return true;
         });
@@ -208,11 +208,11 @@ public class BrowserFragment extends Fragment implements
         if (amiibosView.getLayoutParams().height > getView().getHeight() - (int) minHeight) {
             amiibosView.getLayoutParams().height = getView().getHeight() - (int) minHeight;
         } else {
-            int valueY = prefs.foomiiboOffset().get();
+            int valueY = prefs.foomiiboOffset();
             amiibosView.getLayoutParams().height = valueY != -1
                     ? valueY : amiibosView.getLayoutParams().height;
         }
-        if (prefs.disable_foomiibo_browser().get()) {
+        if (prefs.disable_foomiibo_browser()) {
             getView().findViewById(R.id.list_divider).setVisibility(View.GONE);
             amiibosView.getLayoutParams().height = getView().getHeight();
         } else {

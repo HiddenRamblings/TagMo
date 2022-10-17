@@ -26,8 +26,8 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @SuppressLint("NewApi")
     @NonNull @Override
     public Fragment createFragment(int position) {
-        boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
-        boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
+        boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support();
+        boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support();
         switch (position) {
             case 1:
                 return BuildConfig.WEAR_OS ? fragmentSettings : hasEliteEnabled
@@ -46,8 +46,8 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @Override
     public int getItemCount() {
         int viewCount = 2;
-        if (TagMo.getPrefs().enable_elite_support().get()) viewCount += 1;
-        if (TagMo.getPrefs().enable_flask_support().get()) viewCount += 1;
+        if (TagMo.getPrefs().enable_elite_support()) viewCount += 1;
+        if (TagMo.getPrefs().enable_flask_support()) viewCount += 1;
         return viewCount;
     }
 

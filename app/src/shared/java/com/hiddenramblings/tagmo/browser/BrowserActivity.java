@@ -277,8 +277,8 @@ public class BrowserActivity extends AppCompatActivity implements
                     BrowserAdapter.resetVisible();
                     FoomiiboAdapter.resetVisible();
                 }
-                boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support();
-                boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support();
+                boolean hasEliteEnabled = TagMo.getPrefs().elite_support();
+                boolean hasFlaskEnabled = TagMo.getPrefs().flask_support();
                 switch (position) {
                     case 1:
                         if (hasEliteEnabled) {
@@ -343,8 +343,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         new TabLayoutMediator(findViewById(R.id.navigation_tabs), mainLayout, true,
                 Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2), (tab, position) -> {
-            boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support();
-            boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support();
+            boolean hasEliteEnabled = TagMo.getPrefs().elite_support();
+            boolean hasFlaskEnabled = TagMo.getPrefs().flask_support();
             switch (position) {
                 case 1:
                     if (hasEliteEnabled) {
@@ -573,7 +573,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (result.getData().hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             String signature = result.getData().getStringExtra(NFCIntent.EXTRA_SIGNATURE);
-            prefs.settings_elite_signature(signature);
+            prefs.elite_signature(signature);
             int active_bank = result.getData().getIntExtra(
                     NFCIntent.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank());
             prefs.eliteActiveBank(active_bank);
@@ -1606,7 +1606,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public void loadPTagKeyManager() {
-        if (prefs.enable_power_tag_support()) {
+        if (prefs.power_tag_support()) {
             Executors.newSingleThreadExecutor().execute(() -> {
                 try {
                     PowerTagManager.getPowerTagManager();
@@ -1843,7 +1843,7 @@ public class BrowserActivity extends AppCompatActivity implements
         prefs.filterAmiiboType(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE));
         prefs.filterGameTitles(newBrowserSettings.getFilter(FILTER.GAME_TITLES));
         prefs.browserAmiiboView(newBrowserSettings.getAmiiboView());
-        prefs.image_network_settings(newBrowserSettings.getImageNetworkSettings());
+        prefs.image_network(newBrowserSettings.getImageNetworkSettings());
         prefs.recursiveFolders(newBrowserSettings.isRecursiveEnabled());
         prefs.lastUpdatedAPI(newBrowserSettings.getLastUpdatedAPI());
         prefs.lastUpdatedGit(newBrowserSettings.getLastUpdatedGit());
@@ -1983,7 +1983,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void launchEliteActivity(Intent resultData) {
-        if (TagMo.getPrefs().enable_elite_support()
+        if (TagMo.getPrefs().elite_support()
                 && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             showElitePage(resultData.getExtras());
         }
@@ -1999,7 +1999,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
 
         // If we're supporting, didn't arrive from, but scanned an N2...
-        if (TagMo.getPrefs().enable_elite_support()
+        if (TagMo.getPrefs().elite_support()
                 && result.getData().hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             launchEliteActivity(result.getData());
         } else {
@@ -2598,7 +2598,7 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (getPackageManager().canRequestPackageInstalls())
             updates.installUpdateTask(prefs.downloadUrl());
-        prefs.remove("downloadUrl");
+        prefs.remove(prefs.downloadUrl);
     });
 
     @Override

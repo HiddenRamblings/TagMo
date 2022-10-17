@@ -88,7 +88,7 @@ public class EliteBankAdapter
     public void onBindViewHolder(@NonNull final AmiiboViewHolder holder, int position) {
         final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
         View highlight = holder.itemView.findViewById(R.id.highlight);
-        if (TagMo.getPrefs().eliteActiveBank().get() == position) {
+        if (TagMo.getPrefs().eliteActiveBank() == position) {
             highlight.setBackgroundResource(R.drawable.cardview_outline);
         } else {
             highlight.setBackgroundResource(0);

@@ -13,12 +13,6 @@ android {
         versionName "3.2.6"
         versionCode = versionName.replace(".","").toInteger() * 10
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = ["androidManifestFile": "$projectDir/src/main/AndroidManifest.xml".toString()]
-            }
-        }
-
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -157,9 +151,6 @@ dependencies {
 
     implementation 'io.github.ShawnLin013:number-picker:2.4.13'
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
-
-    implementation "org.androidannotations:androidannotations-api:4.6.0"
-    annotationProcessor "org.androidannotations:androidannotations:4.6.0"
 }
 
 configurations {

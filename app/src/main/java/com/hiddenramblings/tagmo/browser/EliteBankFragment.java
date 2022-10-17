@@ -311,7 +311,7 @@ public class EliteBankFragment extends Fragment implements
         eraseOpenBanks.setOnClickListener(view1 -> {
             Intent collection = new Intent(activity, NfcActivity.class);
             collection.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                    prefs.settings_elite_signature());
+                    prefs.elite_signature());
             collection.setAction(NFCIntent.ACTION_ERASE_ALL_TAGS);
             collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
             onOpenBanksActivity.launch(collection);
@@ -325,7 +325,7 @@ public class EliteBankFragment extends Fragment implements
             }
             Intent configure = new Intent(activity, NfcActivity.class);
             configure.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                    prefs.settings_elite_signature());
+                    prefs.elite_signature());
             configure.setAction(NFCIntent.ACTION_SET_BANK_COUNT);
             configure.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
             onOpenBanksActivity.launch(configure);
@@ -509,7 +509,7 @@ public class EliteBankFragment extends Fragment implements
             case WRITE_DATA:
                 Intent modify = new Intent(requireContext(), NfcActivity.class);
                 modify.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                        prefs.settings_elite_signature());
+                        prefs.elite_signature());
                 modify.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
                 modify.putExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition);
                 onUpdateTagResult.launch(modify.putExtras(args));
@@ -543,7 +543,7 @@ public class EliteBankFragment extends Fragment implements
     private void scanAmiiboBank(int current_bank) {
         Intent scan = new Intent(requireContext(), NfcActivity.class);
         scan.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                prefs.settings_elite_signature());
+                prefs.elite_signature());
         scan.setAction(NFCIntent.ACTION_SCAN_TAG);
         scan.putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank);
         onScanTagResult.launch(scan);
@@ -552,7 +552,7 @@ public class EliteBankFragment extends Fragment implements
     private void scanAmiiboTag(int position) {
         Intent amiiboIntent = new Intent(requireContext(), NfcActivity.class);
         amiiboIntent.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                prefs.settings_elite_signature());
+                prefs.elite_signature());
         amiiboIntent.putExtra(NFCIntent.EXTRA_CURRENT_BANK, position);
         amiiboIntent.setAction(NFCIntent.ACTION_SCAN_TAG);
         onUpdateTagResult.launch(amiiboIntent);
@@ -580,7 +580,7 @@ public class EliteBankFragment extends Fragment implements
 
         Intent intent = new Intent(requireContext(), NfcActivity.class);
         intent.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                prefs.settings_elite_signature());
+                prefs.elite_signature());
         intent.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
         intent.putExtra(NFCIntent.EXTRA_CURRENT_BANK, position);
         intent.putExtras(args);
@@ -663,7 +663,7 @@ public class EliteBankFragment extends Fragment implements
             Toasty notice = new Toasty(requireActivity());
             Intent scan = new Intent(requireContext(), NfcActivity.class);
             scan.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                    prefs.settings_elite_signature());
+                    prefs.elite_signature());
             scan.putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank);
             if (item.getItemId() == R.id.mnu_activate) {
                 scan.setAction(NFCIntent.ACTION_ACTIVATE_BANK);
@@ -868,7 +868,7 @@ public class EliteBankFragment extends Fragment implements
                     .setPositiveButton(R.string.proceed, (dialog, which) -> {
                         Intent collection = new Intent(requireContext(), NfcActivity.class);
                         collection.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                                prefs.settings_elite_signature());
+                                prefs.elite_signature());
                         collection.setAction(NFCIntent.ACTION_WRITE_ALL_TAGS);
                         collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
                         collection.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, amiiboList);

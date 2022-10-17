@@ -42,7 +42,7 @@ public class ScanTag {
             mifare = NTAG215.get(tag);
             String tagTech = TagArray.getTagTechnology(tag);
             if (mifare == null) {
-                if (prefs.enable_elite_support()) {
+                if (prefs.elite_support()) {
                     mifare = new NTAG215(NfcA.get(tag));
                     try {
                         mifare.connect();
@@ -79,7 +79,7 @@ public class ScanTag {
             try {
                 if (isEliteDevice) {
                     String signature = TagReader.getBankSignature(mifare);
-                    prefs.settings_elite_signature(signature);
+                    prefs.elite_signature(signature);
                     prefs.eliteActiveBank(active_bank);
                     prefs.eliteBankCount(bank_count);
 
@@ -103,7 +103,7 @@ public class ScanTag {
             Debug.Warn(e);
             String error = e.getMessage();
             error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
-            if (null != error && prefs.enable_elite_support()) {
+            if (null != error && prefs.elite_support()) {
                 NTAG215 finalMifare = mifare;
                 if (e instanceof android.nfc.TagLostException) {
                     new IconifiedSnackbar(activity, activity.getLayout()).buildSnackbar(

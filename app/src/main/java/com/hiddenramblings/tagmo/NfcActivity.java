@@ -27,7 +27,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.EliteTag;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
@@ -303,7 +302,7 @@ public class NfcActivity extends AppCompatActivity {
                 hasTestedElite = true;
                 if (TagArray.isPowerTag(mifare)) {
                     showMessage(R.string.tag_scanning, getString(R.string.power_tag));
-                } else if (prefs.enable_elite_support()) {
+                } else if (prefs.elite_support()) {
                     isEliteDevice = TagArray.isElite(mifare)
                             || NFCIntent.ACTION_UNLOCK_UNIT.equals(mode)
                             || NFCIntent.ACTION_BLIND_SCAN.equals(mode);
@@ -563,7 +562,7 @@ public class NfcActivity extends AppCompatActivity {
                             .show());
                     return;
                 }
-                if (prefs.enable_elite_support()) {
+                if (prefs.elite_support()) {
                     if (e instanceof android.nfc.TagLostException) {
                         showMessage(R.string.speed_scan);
                         closeTagSilently(mifare);

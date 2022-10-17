@@ -94,7 +94,7 @@ public class Debug {
     }
 
     private static boolean hasDebugging() {
-        return !TagMo.getPrefs().settings_disable_debug().get();
+        return !TagMo.getPrefs().settings_disable_debug();
     }
 
     public static String TAG(Class<?> source) {

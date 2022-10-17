@@ -230,7 +230,7 @@ public class ImageActivity extends AppCompatActivity {
             resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
             new Toasty(ImageActivity.this).Short(
                     getString(R.string.wrote_file, Storage.getRelativePath(
-                            file, TagMo.getPrefs().preferEmulated().get()
+                            file, TagMo.getPrefs().preferEmulated()
                     ))
             );
         } catch (IOException e) {

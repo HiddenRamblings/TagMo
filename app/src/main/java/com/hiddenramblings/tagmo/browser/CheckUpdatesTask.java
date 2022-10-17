@@ -175,7 +175,7 @@ public class CheckUpdatesTask {
             if (activity.get().getPackageManager().canRequestPackageInstalls()) {
                 installUpdateTask(apkUrl);
             } else {
-                TagMo.getPrefs().downloadUrl().put(apkUrl);
+                TagMo.getPrefs().downloadUrl(apkUrl);
                 Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
                 intent.setData(Uri.parse(String
                         .format("package:%s", activity.get().getPackageName())));

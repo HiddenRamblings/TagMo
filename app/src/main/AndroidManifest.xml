@@ -40,7 +40,7 @@
     </queries>
 
     <application
-        android:name=".TagMo_"
+        android:name=".TagMo"
         android:allowBackup="true"
         android:fullBackupContent="@xml/full_backup_content"
         android:dataExtractionRules="@xml/extraction_content"

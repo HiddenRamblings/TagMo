@@ -153,25 +153,25 @@ public class BrowserSettings implements Parcelable {
     }
 
     public BrowserSettings initialize() {
-        final Preferences_ prefs = TagMo.getPrefs();
+        final Preferences prefs = TagMo.getPrefs();
         this.setBrowserRootFolder(null != prefs.browserRootFolder()
-                ? new File(Storage.getFile(prefs.preferEmulated().get()),
-                prefs.browserRootFolder().get())
+                ? new File(Storage.getFile(prefs.preferEmulated()),
+                prefs.browserRootFolder())
                 : Storage.getDownloadDir(null));
         this.setBrowserRootDocument(null != prefs.browserRootDocument()
-                ? Uri.parse(prefs.browserRootDocument().get()) : null);
-        this.setQuery(prefs.query().get());
-        this.setSort(prefs.sort().get());
-        this.setFilter(FILTER.CHARACTER, prefs.filterCharacter().get());
-        this.setFilter(FILTER.GAME_SERIES, prefs.filterGameSeries().get());
-        this.setFilter(FILTER.AMIIBO_SERIES, prefs.filterAmiiboSeries().get());
-        this.setFilter(FILTER.AMIIBO_TYPE, prefs.filterAmiiboType().get());
-        this.setFilter(FILTER.GAME_TITLES, prefs.filterGameTitles().get());
-        this.setAmiiboView(prefs.browserAmiiboView().get());
-        this.setImageNetworkSettings(prefs.image_network_settings().get());
-        this.setRecursiveEnabled(prefs.recursiveFolders().get());
-        this.setLastUpdatedAPI(prefs.lastUpdatedAPI().get());
-        this.setLastUpdatedGit(prefs.lastUpdatedGit().get());
+                ? Uri.parse(prefs.browserRootDocument()) : null);
+        this.setQuery(prefs.query());
+        this.setSort(prefs.sort());
+        this.setFilter(FILTER.CHARACTER, prefs.filterCharacter());
+        this.setFilter(FILTER.GAME_SERIES, prefs.filterGameSeries());
+        this.setFilter(FILTER.AMIIBO_SERIES, prefs.filterAmiiboSeries());
+        this.setFilter(FILTER.AMIIBO_TYPE, prefs.filterAmiiboType());
+        this.setFilter(FILTER.GAME_TITLES, prefs.filterGameTitles());
+        this.setAmiiboView(prefs.browserAmiiboView());
+        this.setImageNetworkSettings(prefs.image_network_settings());
+        this.setRecursiveEnabled(prefs.recursiveFolders());
+        this.setLastUpdatedAPI(prefs.lastUpdatedAPI());
+        this.setLastUpdatedGit(prefs.lastUpdatedGit());
         return this;
     }
 

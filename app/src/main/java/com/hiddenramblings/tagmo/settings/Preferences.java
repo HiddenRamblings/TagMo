@@ -125,68 +125,68 @@ public class Preferences {
         putBoolean(enable_automatic_scan, value);
     }
 
-    private final String disable_foomiibo_browser = "disable_foomiibo_browser";
-    public boolean disable_foomiibo_browser() {
-        return getBoolean(disable_foomiibo_browser, false);
+    private final String disable_foomiibo = "disable_foomiibo_browser";
+    public boolean disable_foomiibo() {
+        return getBoolean(disable_foomiibo, false);
     }
-    public void disable_foomiibo_browser(boolean value) {
-        putBoolean(disable_foomiibo_browser, value);
-    }
-
-    private final String image_network_settings = "image_network_settings";
-    public String image_network_settings() {
-        return getString(image_network_settings, SettingsFragment.IMAGE_NETWORK_ALWAYS);
-    }
-    public void image_network_settings(String value) {
-        putString(image_network_settings, value);
+    public void disable_foomiibo(boolean value) {
+        putBoolean(disable_foomiibo, value);
     }
 
-    private final String database_source_setting = "database_source_setting";
-    public int database_source_setting() {
-        return getInt(database_source_setting, 0);
+    private final String image_network = "image_network_settings";
+    public String image_network() {
+        return getString(image_network, SettingsFragment.IMAGE_NETWORK_ALWAYS);
     }
-    public void database_source_setting(int value) {
-        putInt(database_source_setting, value);
-    }
-
-    private final String enable_power_tag_support = "enable_power_tag_support";
-    public boolean enable_power_tag_support() {
-        return getBoolean(enable_power_tag_support, false);
-    }
-    public void enable_power_tag_support(boolean value) {
-        putBoolean(enable_power_tag_support, value);
+    public void image_network(String value) {
+        putString(image_network, value);
     }
 
-    private final String enable_elite_support = "enable_elite_support";
-    public boolean enable_elite_support() {
-        return getBoolean(enable_elite_support, false);
+    private final String database_source = "database_source_setting";
+    public int database_source() {
+        return getInt(database_source, 0);
     }
-    public void enable_elite_support(boolean value) {
-        putBoolean(enable_elite_support, value);
-    }
-
-    private final String settings_elite_signature = "settings_elite_signature";
-    public String settings_elite_signature() {
-        return getString(settings_elite_signature, "");
-    }
-    public void settings_elite_signature(String value) {
-        putString(settings_elite_signature, value);
+    public void database_source(int value) {
+        putInt(database_source, value);
     }
 
-    private final String enable_flask_support = "enable_flask_support";
-    public boolean enable_flask_support() {
-        return getBoolean(enable_flask_support, false);
+    private final String power_tag_support = "enable_power_tag_support";
+    public boolean power_tag_support() {
+        return getBoolean(power_tag_support, false);
     }
-    public void enable_flask_support(boolean value) {
-        putBoolean(enable_flask_support, value);
+    public void power_tag_support(boolean value) {
+        putBoolean(power_tag_support, value);
     }
 
-    private final String settings_disable_debug = "settings_disable_debug";
-    public boolean settings_disable_debug() {
-        return getBoolean(settings_disable_debug, false);
+    private final String elite_support = "enable_elite_support";
+    public boolean elite_support() {
+        return getBoolean(elite_support, false);
     }
-    public void settings_disable_debug(boolean value) {
-        putBoolean(settings_disable_debug, value);
+    public void elite_support(boolean value) {
+        putBoolean(elite_support, value);
+    }
+
+    private final String elite_signature = "settings_elite_signature";
+    public String elite_signature() {
+        return getString(elite_signature, "");
+    }
+    public void elite_signature(String value) {
+        putString(elite_signature, value);
+    }
+
+    private final String flask_support = "enable_flask_support";
+    public boolean flask_support() {
+        return getBoolean(flask_support, false);
+    }
+    public void flask_support(boolean value) {
+        putBoolean(flask_support, value);
+    }
+
+    private final String disable_debug = "settings_disable_debug";
+    public boolean disable_debug() {
+        return getBoolean(disable_debug, false);
+    }
+    public void disable_debug(boolean value) {
+        putBoolean(disable_debug, value);
     }
 
     private final String browserRootFolder = "browserRootFolder";
@@ -261,7 +261,7 @@ public class Preferences {
         putInt(applicationTheme, value);
     }
 
-    private final String downloadUrl = "downloadUrl";
+    public final String downloadUrl = "downloadUrl";
     public String downloadUrl() {
         return getString(downloadUrl, null);
     }

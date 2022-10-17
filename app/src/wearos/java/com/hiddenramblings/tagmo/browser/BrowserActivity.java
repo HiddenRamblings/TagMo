@@ -94,7 +94,7 @@ import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListene
 import com.hiddenramblings.tagmo.settings.BrowserSettings.FILTER;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
 import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
-import com.hiddenramblings.tagmo.settings.Preferences_;
+import com.hiddenramblings.tagmo.settings.Preferences;
 import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.wajahatkarim3.easyflipviewpager.CardFlipPageTransformer2;
@@ -122,7 +122,7 @@ public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,
         BrowserAdapter.OnAmiiboClickListener {
 
-    private Preferences_ prefs;
+    private Preferences prefs;
     private KeyManager keyManager;
     private int filteredCount;
     private AmiiboFile clickedAmiibo = null;
@@ -256,7 +256,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     BrowserAdapter.resetVisible();
                     FoomiiboAdapter.resetVisible();
                 }
-                boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
+                boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support();
                 switch (position) {
                     case 1:
                     case 3:
@@ -298,8 +298,8 @@ public class BrowserActivity extends AppCompatActivity implements
 
         new TabLayoutMediator(findViewById(R.id.navigation_tabs), mainLayout, true,
                 Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2), (tab, position) -> {
-            boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support().get();
-            boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support().get();
+            boolean hasEliteEnabled = TagMo.getPrefs().enable_elite_support();
+            boolean hasFlaskEnabled = TagMo.getPrefs().enable_flask_support();
             switch (position) {
                 case 1:
                     tab.setText(R.string.settings);
@@ -446,13 +446,13 @@ public class BrowserActivity extends AppCompatActivity implements
 
         if (result.getData().hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             String signature = result.getData().getStringExtra(NFCIntent.EXTRA_SIGNATURE);
-            prefs.settings_elite_signature().put(signature);
+            prefs.settings_elite_signature(signature);
             int active_bank = result.getData().getIntExtra(
-                    NFCIntent.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank().get());
-            prefs.eliteActiveBank().put(active_bank);
+                    NFCIntent.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank());
+            prefs.eliteActiveBank(active_bank);
             int bank_count = result.getData().getIntExtra(
-                    NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount().get());
-            prefs.eliteBankCount().put(bank_count);
+                    NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount());
+            prefs.eliteBankCount(bank_count);
             showElitePage(result.getData().getExtras());
         } else {
             mainLayout.setCurrentItem(0, true);
@@ -946,8 +946,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 backup.setVisible(!relativeDocument.startsWith("/Foomiibo/"));
             } else if (null != amiiboFile.getFilePath()) {
                 String relativeFile = Storage.getRelativePath(amiiboFile.getFilePath(),
-                        TagMo.getPrefs().preferEmulated().get()).replace(
-                        TagMo.getPrefs().browserRootFolder().get(), "");
+                        TagMo.getPrefs().preferEmulated()).replace(
+                        TagMo.getPrefs().browserRootFolder(), "");
                 backup.setVisible(!relativeFile.startsWith("/Foomiibo/"));
             }
             delete.setVisible(true);
@@ -1354,7 +1354,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public void loadPTagKeyManager() {
-        if (prefs.enable_power_tag_support().get()) {
+        if (prefs.enable_power_tag_support()) {
             Executors.newSingleThreadExecutor().execute(() -> {
                 try {
                     PowerTagManager.getPowerTagManager();
@@ -1577,23 +1577,24 @@ public class BrowserActivity extends AppCompatActivity implements
             newBrowserSettings.setLastUpdatedGit(System.currentTimeMillis());
         }
 
-        prefs.edit().browserRootFolder().put(Storage.getRelativePath(
-                newBrowserSettings.getBrowserRootFolder(), prefs.preferEmulated().get()))
-                .browserRootDocument().put(null != newBrowserSettings.getBrowserRootDocument()
-                        ? newBrowserSettings.getBrowserRootDocument().toString() : null)
-                .query().put(newBrowserSettings.getQuery())
-                .sort().put(newBrowserSettings.getSort())
-                .filterCharacter().put(newBrowserSettings.getFilter(FILTER.CHARACTER))
-                .filterGameSeries().put(newBrowserSettings.getFilter(FILTER.GAME_SERIES))
-                .filterAmiiboSeries().put(newBrowserSettings.getFilter(FILTER.AMIIBO_SERIES))
-                .filterAmiiboType().put(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE))
-                .filterGameTitles().put(newBrowserSettings.getFilter(FILTER.GAME_TITLES))
-                .browserAmiiboView().put(newBrowserSettings.getAmiiboView())
-                .image_network_settings().put(newBrowserSettings.getImageNetworkSettings())
-                .recursiveFolders().put(newBrowserSettings.isRecursiveEnabled())
-                .lastUpdatedAPI().put(newBrowserSettings.getLastUpdatedAPI())
-                .lastUpdatedGit().put(newBrowserSettings.getLastUpdatedGit())
-                .apply();
+        prefs.browserRootFolder(Storage.getRelativePath(
+                newBrowserSettings.getBrowserRootFolder(), prefs.preferEmulated()
+        ));
+        prefs.browserRootDocument(null != newBrowserSettings.getBrowserRootDocument()
+                ? newBrowserSettings.getBrowserRootDocument().toString() : null
+        );
+        prefs.query(newBrowserSettings.getQuery());
+        prefs.sort(newBrowserSettings.getSort());
+        prefs.filterCharacter(newBrowserSettings.getFilter(FILTER.CHARACTER));
+        prefs.filterGameSeries(newBrowserSettings.getFilter(FILTER.GAME_SERIES));
+        prefs.filterAmiiboSeries(newBrowserSettings.getFilter(FILTER.AMIIBO_SERIES));
+        prefs.filterAmiiboType(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE));
+        prefs.filterGameTitles(newBrowserSettings.getFilter(FILTER.GAME_TITLES));
+        prefs.browserAmiiboView(newBrowserSettings.getAmiiboView());
+        prefs.image_network_settings(newBrowserSettings.getImageNetworkSettings());
+        prefs.recursiveFolders(newBrowserSettings.isRecursiveEnabled());
+        prefs.lastUpdatedAPI(newBrowserSettings.getLastUpdatedAPI());
+        prefs.lastUpdatedGit(newBrowserSettings.getLastUpdatedGit());
     }
 
     private void onSortChanged() {
@@ -1702,7 +1703,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void launchEliteActivity(Intent resultData) {
-        if (TagMo.getPrefs().enable_elite_support().get()
+        if (TagMo.getPrefs().enable_elite_support()
                 && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             showElitePage(resultData.getExtras());
         }
@@ -1718,7 +1719,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
 
         // If we're supporting, didn't arrive from, but scanned an N2...
-        if (TagMo.getPrefs().enable_elite_support().get()
+        if (TagMo.getPrefs().enable_elite_support()
                 && result.getData().hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             launchEliteActivity(result.getData());
         } else {
@@ -1730,7 +1731,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void deleteAmiiboFile(AmiiboFile amiiboFile) {
         if (null != amiiboFile && null != amiiboFile.getFilePath()) {
             String relativeFile = Storage.getRelativePath(
-                    amiiboFile.getFilePath(), prefs.preferEmulated().get());
+                    amiiboFile.getFilePath(), prefs.preferEmulated());
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.warn_delete_file, relativeFile))
                     .setPositiveButton(R.string.delete, (dialog, which) -> {
@@ -2140,7 +2141,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else {
                 File rootFolder = textSettings.getBrowserRootFolder();
                 String relativeRoot = Storage.getRelativePath(
-                        rootFolder, prefs.preferEmulated().get()
+                        rootFolder, prefs.preferEmulated()
                 );
                 relativePath = relativeRoot.length() > 1
                         ? relativeRoot : rootFolder.getAbsolutePath();
@@ -2264,8 +2265,8 @@ public class BrowserActivity extends AppCompatActivity implements
     final ActivityResultLauncher<Intent> onRequestInstall = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (getPackageManager().canRequestPackageInstalls())
-            updates.installUpdateTask(prefs.downloadUrl().get());
-        prefs.downloadUrl().remove();
+            updates.installUpdateTask(prefs.downloadUrl());
+        prefs.remove("downloadUrl");
     });
 
     @Override

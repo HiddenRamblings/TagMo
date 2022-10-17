@@ -58,7 +58,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.Preferences_;
+import com.hiddenramblings.tagmo.settings.Preferences;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.shawnlin.numberpicker.NumberPicker;
 
@@ -71,7 +71,7 @@ import java.util.ArrayList;
 public class EliteBankFragment extends Fragment implements
         EliteBankAdapter.OnAmiiboClickListener {
 
-    private final Preferences_ prefs = TagMo.getPrefs();
+    private final Preferences prefs = TagMo.getPrefs();
 
     private CoordinatorLayout rootLayout;
     private RecyclerView amiibosView;
@@ -311,21 +311,21 @@ public class EliteBankFragment extends Fragment implements
         eraseOpenBanks.setOnClickListener(view1 -> {
             Intent collection = new Intent(activity, NfcActivity.class);
             collection.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                    prefs.settings_elite_signature().get());
+                    prefs.settings_elite_signature());
             collection.setAction(NFCIntent.ACTION_ERASE_ALL_TAGS);
             collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
             onOpenBanksActivity.launch(collection);
         });
 
         rootLayout.findViewById(R.id.edit_bank_count).setOnClickListener(view1 -> {
-            if (prefs.eliteActiveBank().get() >= eliteBankCount.getValue()) {
+            if (prefs.eliteActiveBank() >= eliteBankCount.getValue()) {
                 new Toasty(activity).Short(R.string.fail_active_oob);
                 onBottomSheetChanged(true, false);
                 return;
             }
             Intent configure = new Intent(activity, NfcActivity.class);
             configure.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                    prefs.settings_elite_signature().get());
+                    prefs.settings_elite_signature());
             configure.setAction(NFCIntent.ACTION_SET_BANK_COUNT);
             configure.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
             onOpenBanksActivity.launch(configure);
@@ -436,15 +436,15 @@ public class EliteBankFragment extends Fragment implements
         if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
         int active_bank = result.getData().getIntExtra(NFCIntent.EXTRA_ACTIVE_BANK,
-                prefs.eliteActiveBank().get());
+                prefs.eliteActiveBank());
 
-        bankAdapter.notifyItemChanged(prefs.eliteActiveBank().get());
+        bankAdapter.notifyItemChanged(prefs.eliteActiveBank());
         bankAdapter.notifyItemChanged(active_bank);
 
-        prefs.eliteActiveBank().put(active_bank);
+        prefs.eliteActiveBank(active_bank);
         updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
 
-        int bank_count = prefs.eliteBankCount().get();
+        int bank_count = prefs.eliteBankCount();
         bankStats.setText(getString(R.string.bank_stats,
                 getValueForPosition(eliteBankCount, active_bank), bank_count));
         writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
@@ -476,10 +476,10 @@ public class EliteBankFragment extends Fragment implements
         }
 
         updateAmiiboView(amiiboCard, tagData, -1, clickedPosition);
-        int active_bank = prefs.eliteActiveBank().get();
+        int active_bank = prefs.eliteActiveBank();
         if (result.getData().hasExtra(NFCIntent.EXTRA_ACTIVE_BANK)) {
             active_bank = result.getData().getIntExtra(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
-            prefs.eliteActiveBank().put(active_bank);
+            prefs.eliteActiveBank(active_bank);
         }
         updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
 
@@ -509,7 +509,7 @@ public class EliteBankFragment extends Fragment implements
             case WRITE_DATA:
                 Intent modify = new Intent(requireContext(), NfcActivity.class);
                 modify.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                        prefs.settings_elite_signature().get());
+                        prefs.settings_elite_signature());
                 modify.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
                 modify.putExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition);
                 onUpdateTagResult.launch(modify.putExtras(args));
@@ -543,7 +543,7 @@ public class EliteBankFragment extends Fragment implements
     private void scanAmiiboBank(int current_bank) {
         Intent scan = new Intent(requireContext(), NfcActivity.class);
         scan.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                prefs.settings_elite_signature().get());
+                prefs.settings_elite_signature());
         scan.setAction(NFCIntent.ACTION_SCAN_TAG);
         scan.putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank);
         onScanTagResult.launch(scan);
@@ -552,7 +552,7 @@ public class EliteBankFragment extends Fragment implements
     private void scanAmiiboTag(int position) {
         Intent amiiboIntent = new Intent(requireContext(), NfcActivity.class);
         amiiboIntent.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                prefs.settings_elite_signature().get());
+                prefs.settings_elite_signature());
         amiiboIntent.putExtra(NFCIntent.EXTRA_CURRENT_BANK, position);
         amiiboIntent.setAction(NFCIntent.ACTION_SCAN_TAG);
         onUpdateTagResult.launch(amiiboIntent);
@@ -580,7 +580,7 @@ public class EliteBankFragment extends Fragment implements
 
         Intent intent = new Intent(requireContext(), NfcActivity.class);
         intent.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                prefs.settings_elite_signature().get());
+                prefs.settings_elite_signature());
         intent.setAction(NFCIntent.ACTION_WRITE_TAG_FULL);
         intent.putExtra(NFCIntent.EXTRA_CURRENT_BANK, position);
         intent.putExtras(args);
@@ -663,7 +663,7 @@ public class EliteBankFragment extends Fragment implements
             Toasty notice = new Toasty(requireActivity());
             Intent scan = new Intent(requireContext(), NfcActivity.class);
             scan.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                    prefs.settings_elite_signature().get());
+                    prefs.settings_elite_signature());
             scan.putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank);
             if (item.getItemId() == R.id.mnu_activate) {
                 scan.setAction(NFCIntent.ACTION_ACTIVATE_BANK);
@@ -683,7 +683,7 @@ public class EliteBankFragment extends Fragment implements
                 }
                 return true;
             } else if (item.getItemId() == R.id.mnu_erase_bank) {
-                if (prefs.eliteActiveBank().get() == current_bank) {
+                if (prefs.eliteActiveBank() == current_bank) {
                     notice.Short(R.string.erase_active);
                 } else {
                     scan.setAction(NFCIntent.ACTION_ERASE_BANK);
@@ -848,14 +848,14 @@ public class EliteBankFragment extends Fragment implements
                 if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
                 int bank_count = result.getData().getIntExtra(NFCIntent.EXTRA_BANK_COUNT,
-                        prefs.eliteBankCount().get());
+                        prefs.eliteBankCount());
 
-                prefs.eliteBankCount().put(bank_count);
+                prefs.eliteBankCount(bank_count);
 
                 eliteBankCount.setValue(bank_count);
                 updateEliteAdapter(result.getData().getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
                 bankStats.setText(getString(R.string.bank_stats, getValueForPosition(
-                        eliteBankCount, prefs.eliteActiveBank().get()
+                        eliteBankCount, prefs.eliteActiveBank()
                 ), bank_count));
                 writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
                 eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
@@ -868,7 +868,7 @@ public class EliteBankFragment extends Fragment implements
                     .setPositiveButton(R.string.proceed, (dialog, which) -> {
                         Intent collection = new Intent(requireContext(), NfcActivity.class);
                         collection.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                                prefs.settings_elite_signature().get());
+                                prefs.settings_elite_signature());
                         collection.setAction(NFCIntent.ACTION_WRITE_ALL_TAGS);
                         collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
                         collection.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, amiiboList);
@@ -892,9 +892,9 @@ public class EliteBankFragment extends Fragment implements
     private void onHardwareLoaded() {
         try {
             int bank_count = requireArguments().getInt(NFCIntent.EXTRA_BANK_COUNT,
-                    prefs.eliteBankCount().get());
+                    prefs.eliteBankCount());
             int active_bank = requireArguments().getInt(NFCIntent.EXTRA_ACTIVE_BANK,
-                    prefs.eliteActiveBank().get());
+                    prefs.eliteActiveBank());
 
             setBottomSheetSecure(false);
 

@@ -38,7 +38,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
-import com.hiddenramblings.tagmo.settings.Preferences_;
+import com.hiddenramblings.tagmo.settings.Preferences;
 import com.shawnlin.numberpicker.NumberPicker;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ import java.util.concurrent.Executors;
 
 public class NfcActivity extends AppCompatActivity {
 
-    private Preferences_ prefs;
+    private Preferences prefs;
 
     TextView txtMessage;
     TextView txtError;
@@ -143,7 +143,7 @@ public class NfcActivity extends AppCompatActivity {
             setPosition(bankPicker, commandIntent.getIntExtra(
                     NFCIntent.EXTRA_CURRENT_BANK, getPosition(bankPicker)));
         } else if (isEliteIntent) {
-            setPosition(bankPicker, prefs.eliteActiveBank().get());
+            setPosition(bankPicker, prefs.eliteActiveBank());
         } else {
             bankTextView.setVisibility(View.GONE);
             bankPicker.setVisibility(View.GONE);
@@ -160,7 +160,7 @@ public class NfcActivity extends AppCompatActivity {
                     bankPicker.setEnabled(false);
                     bankTextView.setVisibility(View.GONE);
                 }
-                bankPicker.setMaxValue(prefs.eliteBankCount().get());
+                bankPicker.setMaxValue(prefs.eliteBankCount());
                 break;
             case NFCIntent.ACTION_WRITE_ALL_TAGS:
             case NFCIntent.ACTION_ERASE_ALL_TAGS:
@@ -303,7 +303,7 @@ public class NfcActivity extends AppCompatActivity {
                 hasTestedElite = true;
                 if (TagArray.isPowerTag(mifare)) {
                     showMessage(R.string.tag_scanning, getString(R.string.power_tag));
-                } else if (prefs.enable_elite_support().get()) {
+                } else if (prefs.enable_elite_support()) {
                     isEliteDevice = TagArray.isElite(mifare)
                             || NFCIntent.ACTION_UNLOCK_UNIT.equals(mode)
                             || NFCIntent.ACTION_BLIND_SCAN.equals(mode);
@@ -347,7 +347,7 @@ public class NfcActivity extends AppCompatActivity {
                     case NFCIntent.ACTION_WRITE_TAG_RAW:
                         update = TagReader.readFromTag(mifare);
                         TagWriter.writeToTagRaw(mifare, data,
-                                prefs.enable_tag_type_validation().get());
+                                prefs.enable_tag_type_validation());
                         setResult(Activity.RESULT_OK);
                         break;
 
@@ -379,7 +379,7 @@ public class NfcActivity extends AppCompatActivity {
                         } else {
                             update = TagReader.readFromTag(mifare);
                             TagWriter.writeToTagAuto(mifare, data, this.keyManager,
-                                    prefs.enable_tag_type_validation().get());
+                                    prefs.enable_tag_type_validation());
                             setResult(Activity.RESULT_OK);
                         }
                         break;
@@ -388,7 +388,7 @@ public class NfcActivity extends AppCompatActivity {
                         boolean ignoreUid = commandIntent.getBooleanExtra(
                                 NFCIntent.EXTRA_IGNORE_TAG_ID, false);
                         TagWriter.restoreTag(mifare, data, ignoreUid, this.keyManager,
-                                prefs.enable_tag_type_validation().get());
+                                prefs.enable_tag_type_validation());
                         setResult(Activity.RESULT_OK);
                         break;
 
@@ -563,7 +563,7 @@ public class NfcActivity extends AppCompatActivity {
                             .show());
                     return;
                 }
-                if (prefs.enable_elite_support().get()) {
+                if (prefs.enable_elite_support()) {
                     if (e instanceof android.nfc.TagLostException) {
                         showMessage(R.string.speed_scan);
                         closeTagSilently(mifare);

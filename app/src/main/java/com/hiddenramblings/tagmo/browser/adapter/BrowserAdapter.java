@@ -458,8 +458,8 @@ public class BrowserAdapter
                     if (expanded) listener.onAmiiboRebind(itemView, amiiboFile);
 
                     String relativeFile = Storage.getRelativePath(item.getFilePath(),
-                            TagMo.getPrefs().preferEmulated().get()).replace(
-                            TagMo.getPrefs().browserRootFolder().get(), "");
+                            TagMo.getPrefs().preferEmulated()).replace(
+                            TagMo.getPrefs().browserRootFolder(), "");
                     this.itemView.setEnabled(true);
                     this.txtPath.setText(boldSpannable.IndexOf(relativeFile, query));
                     TypedValue a = new TypedValue();

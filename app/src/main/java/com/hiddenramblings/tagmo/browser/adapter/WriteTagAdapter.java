@@ -369,8 +369,8 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                 } else if (null != item.getFilePath()) {
                     this.itemView.setEnabled(true);
                     String relativeFile = Storage.getRelativePath(item.getFilePath(),
-                            TagMo.getPrefs().preferEmulated().get()).replace(
-                            TagMo.getPrefs().browserRootFolder().get(), "");
+                            TagMo.getPrefs().preferEmulated()).replace(
+                            TagMo.getPrefs().browserRootFolder(), "");
                     this.txtPath.setText(boldSpannable.IndexOf(relativeFile, query));
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(

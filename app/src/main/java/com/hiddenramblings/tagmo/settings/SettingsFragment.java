@@ -58,7 +58,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private static final int RESULT_KEYS = 8000;
     private static final int RESULT_IMPORT_AMIIBO_DATABASE = 8001;
 
-    Preferences_ prefs;
+    Preferences prefs;
 
     Preference importKeys;
     ListPreference imageNetworkSetting;
@@ -87,7 +87,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         imageNetworkSetting = findPreference(getString(R.string.image_network_settings));
         if (null != imageNetworkSetting) {
-            onImageNetworkChange(imageNetworkSetting, prefs.image_network_settings().get());
+            onImageNetworkChange(imageNetworkSetting, prefs.image_network_settings());
             imageNetworkSetting.setOnPreferenceChangeListener((preference, newValue) -> {
                 onImageNetworkChange(imageNetworkSetting, newValue.toString());
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
@@ -103,9 +103,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 getString(R.string.settings_tag_type_validation)
         );
         if (null != enableTagTypeValidation) {
-            enableTagTypeValidation.setChecked(prefs.enable_tag_type_validation().get());
+            enableTagTypeValidation.setChecked(prefs.enable_tag_type_validation());
             enableTagTypeValidation.setOnPreferenceClickListener(preference -> {
-                prefs.enable_tag_type_validation().put(enableTagTypeValidation.isChecked());
+                prefs.enable_tag_type_validation(enableTagTypeValidation.isChecked());
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
@@ -116,7 +116,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (null != enableAutomaticScan) {
             enableAutomaticScan.setOnPreferenceClickListener(preference -> {
                 boolean isChecked = enableAutomaticScan.isChecked();
-                prefs.enable_automatic_scan().put(isChecked);
+                prefs.enable_automatic_scan(isChecked);
                 if (isChecked) {
                     requireContext().getPackageManager().setComponentEnabledSetting(
                             NFCIntent.FilterComponent,
@@ -136,10 +136,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 getString(R.string.settings_hide_foomiibo_panel)
         );
         if (null != disableFoomiiboPanel && null != getActivity()) {
-            disableFoomiiboPanel.setChecked(prefs.disable_foomiibo_browser().get());
+            disableFoomiiboPanel.setChecked(prefs.disable_foomiibo_browser());
             disableFoomiiboPanel.setOnPreferenceClickListener(preference -> {
                 boolean isChecked = disableFoomiiboPanel.isChecked();
-                prefs.disable_foomiibo_browser().put(isChecked);
+                prefs.disable_foomiibo_browser(isChecked);
                 ((BrowserActivity) getActivity()).setFoomiiboPanelVisibility();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
@@ -151,7 +151,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (null != enablePowerTagSupport) {
             enablePowerTagSupport.setOnPreferenceClickListener(preference -> {
                 boolean isEnabled = enablePowerTagSupport.isChecked();
-                prefs.enable_power_tag_support().put(isEnabled);
+                prefs.enable_power_tag_support(isEnabled);
                 if (isEnabled) {
                     ((BrowserActivity) requireActivity()).loadPTagKeyManager();
                 }
@@ -163,18 +163,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 getString(R.string.settings_enable_elite_support)
         );
         if (null != enableEliteSupport) {
-            boolean isElite = prefs.enable_elite_support().get();
+            boolean isElite = prefs.enable_elite_support();
             enableEliteSupport.setChecked(isElite);
-            if (isElite && prefs.settings_elite_signature().get().length() > 1) {
+            if (isElite && prefs.settings_elite_signature().length() > 1) {
                 enableEliteSupport.setSummary(getString(
-                        R.string.elite_signature, prefs.settings_elite_signature().get()));
+                        R.string.elite_signature, prefs.settings_elite_signature()));
             }
             enableEliteSupport.setOnPreferenceClickListener(preference -> {
                 boolean isEnabled = enableEliteSupport.isChecked();
-                prefs.enable_elite_support().put(enableEliteSupport.isChecked());
-                if (isEnabled && prefs.settings_elite_signature().get().length() > 1)
+                prefs.enable_elite_support(enableEliteSupport.isChecked());
+                if (isEnabled && prefs.settings_elite_signature().length() > 1)
                     enableEliteSupport.setSummary(getString(R.string.elite_signature,
-                            prefs.settings_elite_signature().get()));
+                            prefs.settings_elite_signature()));
                 else
                     enableEliteSupport.setSummary(getString(R.string.elite_details));
                 ((BrowserActivity) requireActivity()).onTabCollectionChanged();
@@ -186,9 +186,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 getString(R.string.settings_enable_flask_support)
         );
         if (null != enableFlaskSupport) {
-            enableFlaskSupport.setChecked(prefs.enable_flask_support().get());
+            enableFlaskSupport.setChecked(prefs.enable_flask_support());
             enableFlaskSupport.setOnPreferenceClickListener(preference -> {
-                prefs.enable_flask_support().put(enableFlaskSupport.isChecked());
+                prefs.enable_flask_support(enableFlaskSupport.isChecked());
                 ((BrowserActivity) requireActivity()).onTabCollectionChanged();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
@@ -197,16 +197,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         ListPreference databaseSourceSetting = findPreference(getString(R.string.setting_database_source));
         if (null != databaseSourceSetting) {
-            databaseSourceSetting.setValueIndex(prefs.database_source_setting().get());
+            databaseSourceSetting.setValueIndex(prefs.database_source_setting());
             databaseSourceSetting.setSummary(databaseSourceSetting.getEntry());
             databaseSourceSetting.setOnPreferenceClickListener(preference -> {
-                ((ListPreference) preference).setValueIndex(prefs.database_source_setting().get());
+                ((ListPreference) preference).setValueIndex(prefs.database_source_setting());
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
             databaseSourceSetting.setOnPreferenceChangeListener((preference, newValue) -> {
                 ListPreference databaseSource = ((ListPreference) preference);
                 int index = databaseSource.findIndexOfValue(newValue.toString());
-                prefs.database_source_setting().put(index);
+                prefs.database_source_setting(index);
                 databaseSource.setSummary(databaseSource.getEntries()[index]);
                 rebuildAmiiboDatabase();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
@@ -240,14 +240,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         ListPreference themeSetting = findPreference(getString(R.string.settings_tagmo_theme));
         if (null != themeSetting) {
-            themeSetting.setValueIndex(prefs.applicationTheme().get());
+            themeSetting.setValueIndex(prefs.applicationTheme());
             themeSetting.setOnPreferenceClickListener(preference -> {
-                ((ListPreference) preference).setValueIndex(prefs.applicationTheme().get());
+                ((ListPreference) preference).setValueIndex(prefs.applicationTheme());
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
             themeSetting.setOnPreferenceChangeListener((preference, newValue) -> {
                 int index = ((ListPreference) preference).findIndexOfValue(newValue.toString());
-                prefs.applicationTheme().put(index);
+                prefs.applicationTheme(index);
                 ((TagMo) requireActivity().getApplication()).setThemePreference();
                 onApplicationThemeChanged();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
@@ -256,9 +256,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         CheckBoxPreference disableDebug = findPreference(getString(R.string.settings_disable_debug));
         if (null != disableDebug) {
-            disableDebug.setChecked(prefs.settings_disable_debug().get());
+            disableDebug.setChecked(prefs.settings_disable_debug());
             disableDebug.setOnPreferenceClickListener(preference -> {
-                prefs.settings_disable_debug().put(disableDebug.isChecked());
+                prefs.settings_disable_debug(disableDebug.isChecked());
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
@@ -303,7 +303,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (index == -1) {
             onImageNetworkChange(imageNetworkSetting, IMAGE_NETWORK_ALWAYS);
         } else {
-            prefs.image_network_settings().put(newValue);
+            prefs.image_network_settings(newValue);
             imageNetworkSetting.setValue(newValue);
             imageNetworkSetting.setSummary(imageNetworkSetting.getEntry());
             BrowserActivity activity = (BrowserActivity) requireActivity();
@@ -469,7 +469,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 URL url;
-                if (prefs.database_source_setting().get() == 0) {
+                if (prefs.database_source_setting() == 0) {
                     url = new URL(AmiiboManager.RENDER_RAW + "database/amiibo.json");
                 } else {
                     url = new URL(AmiiboManager.AMIIBO_API + "amiibo/");
@@ -665,7 +665,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void onUpdateRequested(boolean isMenuClicked) {
-        if (prefs.database_source_setting().get() == 0) {
+        if (prefs.database_source_setting() == 0) {
             new JSONExecutor(requireActivity(),
                     "https://api.github.com/repos/8BitDream/AmiiboAPI/",
                     "branches/render?path=databaset%2Famiibo.json"

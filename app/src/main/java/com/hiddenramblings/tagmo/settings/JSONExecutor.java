@@ -37,7 +37,7 @@ public class JSONExecutor {
             @Override
             public void onProviderInstallFailed() {
                 if (activity instanceof BrowserActivity) {
-                    TagMo.getPrefs().image_network_settings("NEVER");
+                    TagMo.getPrefs().image_network("NEVER");
                     activity.runOnUiThread(() ->
                             ((BrowserActivity) activity).getSettings().notifyChanges()
                     );

@@ -19,7 +19,7 @@ import com.hiddenramblings.tagmo.settings.SettingsFragment;
 public class GlideTagModule extends AppGlideModule {
 
     public RequestOptions onlyRetrieveFromCache(Context context, RequestOptions requestOptions) {
-        String imageNetworkSetting = TagMo.getPrefs().image_network_settings();
+        String imageNetworkSetting = TagMo.getPrefs().image_network();
         if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
             return requestOptions.onlyRetrieveFromCache(true);
         } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {

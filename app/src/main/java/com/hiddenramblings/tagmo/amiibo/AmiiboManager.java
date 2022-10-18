@@ -347,7 +347,7 @@ public class AmiiboManager {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
         ArrayList<Uri> uris = new AmiiboDocument(context)
                 .listFiles(rootFolder.getUri(), recursiveFiles);
-        if (uris.isEmpty()) return amiiboFiles;
+        if (null == uris || uris.isEmpty()) return amiiboFiles;
         for (Uri uri : uris) {
 
             if (Thread.currentThread().isInterrupted()) return amiiboFiles;

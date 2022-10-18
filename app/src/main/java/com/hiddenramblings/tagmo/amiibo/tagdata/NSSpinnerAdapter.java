@@ -135,7 +135,7 @@ public class NSSpinnerAdapter implements SpinnerAdapter, ListAdapter {
 
     @Override
     public boolean isEmpty() {
-        return adapter.isEmpty();
+        return null == adapter || adapter.isEmpty();
     }
 
     @Override

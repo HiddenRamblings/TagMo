@@ -329,7 +329,10 @@ public class BrowserFragment extends Fragment implements
 
     void buildFoomiiboSet() {
         AmiiboManager amiiboManager = null != settings ? settings.getAmiiboManager() : null;
-        if (null == amiiboManager) return;
+        if (null == amiiboManager) {
+            new Toasty(requireActivity()).Short(R.string.amiibo_failure_read);
+            return;
+        }
         ((BrowserActivity) requireActivity()).collapseBottomSheet();
         ProgressDialog dialog = ProgressDialog.show(requireActivity(),
                 "", "", true);

@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
@@ -2107,7 +2108,7 @@ public class BrowserActivity extends AppCompatActivity implements
             AmiiboManager amiiboManager = settings.getAmiiboManager();
             if (null != amiiboManager) {
                 int count = 0;
-                if (!settings.getQuery().isEmpty()) {
+                if (!TextUtils.isEmpty(settings.getQuery())) {
                     int[] stats = getAdapterStats(amiiboManager);
                     currentFolderView.setText(getString(R.string.amiibo_collected,
                             stats[0], stats[1], getQueryCount(settings.getQuery())));

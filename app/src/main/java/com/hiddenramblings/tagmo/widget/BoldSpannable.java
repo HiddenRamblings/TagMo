@@ -2,13 +2,13 @@ package com.hiddenramblings.tagmo.widget;
 
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 
 public class BoldSpannable {
 
     public SpannableStringBuilder IndexOf(String text, String query) {
         SpannableStringBuilder str = new SpannableStringBuilder(text);
-        if (query.isEmpty())
-            return str;
+        if (TextUtils.isEmpty(query)) return str;
 
         text = text.toLowerCase();
         int j = 0;
@@ -26,7 +26,7 @@ public class BoldSpannable {
 
     public SpannableStringBuilder StartsWith(String text, String query) {
         SpannableStringBuilder str = new SpannableStringBuilder(text);
-        if (!query.isEmpty() && text.toLowerCase().startsWith(query)) {
+        if (!TextUtils.isEmpty(query) && text.toLowerCase().startsWith(query)) {
             str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
                     0, query.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }

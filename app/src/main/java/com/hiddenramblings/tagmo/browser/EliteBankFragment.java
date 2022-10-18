@@ -384,7 +384,7 @@ public class EliteBankFragment extends Fragment implements
             return;
         }
 
-        if (amiibos.isEmpty()) {
+        if (null == amiibos || amiibos.isEmpty()) {
             bankAdapter.setAmiibos(amiibos);
             for (int x = 0; x < amiiboList.size(); x++) {
                 amiibos.add(new EliteTag(amiiboManager.amiibos.get(
@@ -921,7 +921,7 @@ public class EliteBankFragment extends Fragment implements
 
             setArguments(null);
         } catch (Exception ignored) {
-            if (amiibos.isEmpty()) setBottomSheetSecure(true);
+            if (null == amiibos || amiibos.isEmpty()) setBottomSheetSecure(true);
         }
     }
 

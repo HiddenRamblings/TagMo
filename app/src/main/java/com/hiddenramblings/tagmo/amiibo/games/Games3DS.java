@@ -27,6 +27,6 @@ public class Games3DS {
     }
 
     public boolean hasUsage(String name) {
-        return !games.isEmpty() && games.contains(name);
+        return null != games && !games.isEmpty() && games.contains(name);
     }
 }

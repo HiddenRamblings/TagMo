@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo.amiibo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
@@ -203,28 +204,28 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
 
     public static boolean matchesCharacterFilter(Character character, String characterFilter) {
         if (null != character) {
-            return characterFilter.isEmpty() || character.name.equals(characterFilter);
+            return TextUtils.isEmpty(characterFilter) || character.name.equals(characterFilter);
         }
         return true;
     }
 
     public static boolean matchesGameSeriesFilter(GameSeries gameSeries, String gameSeriesFilter) {
         if (null != gameSeries) {
-            return gameSeriesFilter.isEmpty() || gameSeries.name.equals(gameSeriesFilter);
+            return TextUtils.isEmpty(gameSeriesFilter) || gameSeries.name.equals(gameSeriesFilter);
         }
         return true;
     }
 
     public static boolean matchesAmiiboSeriesFilter(AmiiboSeries amiiboSeries, String amiiboSeriesFilter) {
         if (null != amiiboSeries) {
-            return amiiboSeriesFilter.isEmpty() || amiiboSeries.name.equals(amiiboSeriesFilter);
+            return TextUtils.isEmpty(amiiboSeriesFilter) || amiiboSeries.name.equals(amiiboSeriesFilter);
         }
         return true;
     }
 
     public static boolean matchesAmiiboTypeFilter(AmiiboType amiiboType, String amiiboTypeFilter) {
         if (null != amiiboType) {
-            return amiiboTypeFilter.isEmpty() || amiiboType.name.equals(amiiboTypeFilter);
+            return TextUtils.isEmpty(amiiboTypeFilter) || amiiboType.name.equals(amiiboTypeFilter);
         }
         return true;
     }

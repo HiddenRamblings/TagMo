@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -1519,7 +1520,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
 
         String query = settings.getQuery();
-        if (!query.isEmpty()) {
+        if (!TextUtils.isEmpty(query)) {
             menuSearch.expandActionView();
             searchView.setQuery(query, true);
             searchView.clearFocus();
@@ -2355,7 +2356,7 @@ public class BrowserActivity extends AppCompatActivity implements
             AmiiboManager amiiboManager = settings.getAmiiboManager();
             if (null != amiiboManager) {
                 int count = 0;
-                if (!settings.getQuery().isEmpty()) {
+                if (!TextUtils.isEmpty(settings.getQuery())) {
                     int[] stats = getAdapterStats(amiiboManager);
                     currentFolderView.setText(getString(R.string.amiibo_collected,
                             stats[0], stats[1], getQueryCount(settings.getQuery())));

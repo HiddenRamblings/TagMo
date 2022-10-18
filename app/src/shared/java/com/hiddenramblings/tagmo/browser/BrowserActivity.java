@@ -429,11 +429,11 @@ public class BrowserActivity extends AppCompatActivity implements
             new AlertDialog.Builder(this)
                     .setTitle(R.string.conversion_title)
                     .setMessage(R.string.conversion_message)
-                    .setPositiveButton(R.string.proceed, (dialogInterface, i) -> {
+                    .setPositiveButton(R.string.proceed, (dialogInterface, i) ->
                         startActivity(new Intent(Intent.ACTION_DELETE).setData(
                                 Uri.parse("package:com.hiddenramblings.tagmo")
-                        ));
-                    }).show();
+                        )
+                    )).show();
 
         } catch (PackageManager.NameNotFoundException ignored) { }
 

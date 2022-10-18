@@ -1,1 +1,1 @@
-Foomiibo are generated from public domain information, empty data, and the documented file structure that represent a binary. Serial numbers are assigned to this data using a random number generator and not sourced from any specific entity. Foomiibo are not intended to replace any other product, purchased or promotional.
+Fooiibo 是經由公有領域的資訊、空白數據及二進位檔案結構等內容組合而成。數據序號透過程式亂數指派，而非來自於任何特定實體。 Fooiibo 並非用於取代任何物品、商品或促銷活動。

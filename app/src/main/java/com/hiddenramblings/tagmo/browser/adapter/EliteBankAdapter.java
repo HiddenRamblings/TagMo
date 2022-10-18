@@ -231,8 +231,8 @@ public class EliteBankAdapter
                 this.imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
                 this.imageAmiibo.setVisibility(View.VISIBLE);
             } else if (null != this.imageAmiibo) {
-                GlideApp.with(itemView).clear(target);
-                GlideApp.with(itemView).asBitmap().load(amiiboImageUrl).into(target);
+                GlideApp.with(imageAmiibo).clear(imageAmiibo);
+                GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(target);
             }
         }
 

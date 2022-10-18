@@ -2283,7 +2283,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onBackButtonEnabled() {
-        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 if (null != bottomSheet && BottomSheetBehavior
@@ -2297,8 +2297,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     finishAffinity();
                 }
             }
-        };
-        getOnBackPressedDispatcher().addCallback(onBackPressedCallback);
+        });
     }
 
     @Override

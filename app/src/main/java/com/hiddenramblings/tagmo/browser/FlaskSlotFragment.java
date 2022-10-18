@@ -556,10 +556,9 @@ public class FlaskSlotFragment extends Fragment implements
                 imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
                 imageAmiibo.setVisibility(View.VISIBLE);
             } else if (null != imageAmiibo) {
-                GlideApp.with(this).clear(amiiboView == amiiboCard
-                        ? amiiboCardTarget : amiiboTileTarget);
+                GlideApp.with(imageAmiibo).clear(imageAmiibo);
                 if (null != amiiboImageUrl) {
-                    GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(
+                    GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(
                             amiiboView == amiiboCard ? amiiboCardTarget : amiiboTileTarget);
                     imageAmiibo.setOnClickListener(view -> {
                         Bundle bundle = new Bundle();

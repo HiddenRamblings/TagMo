@@ -424,9 +424,9 @@ public class TagDataEditor extends AppCompatActivity {
 
         if (null != imageAmiibo) {
             imageAmiibo.setVisibility(View.GONE);
-            GlideApp.with(this).clear(imageTarget);
+            GlideApp.with(imageAmiibo).clear(imageAmiibo);
             if (null != amiiboImageUrl) {
-                GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(imageTarget);
+                GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(imageTarget);
             }
         }
     }

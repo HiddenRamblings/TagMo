@@ -481,9 +481,9 @@ public class BrowserAdapter
                 this.txtPath.setVisibility(View.VISIBLE);
             }
             if (null != this.imageAmiibo) {
-                GlideApp.with(itemView).clear(target);
+                GlideApp.with(imageAmiibo).clear(imageAmiibo);
                 if (null != amiiboImageUrl) {
-                    GlideApp.with(itemView).asBitmap().load(amiiboImageUrl).into(target);
+                    GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(target);
                 }
             }
             if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {

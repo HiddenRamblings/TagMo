@@ -6,47 +6,48 @@ import android.util.Log
 import java.lang.reflect.Method
 
 /*
-    http://androidxref.com/9.0.0_r3/xref/frameworks/base/core/java/android/bluetooth/BluetoothHidHost.java
-*/
+ * frameworks/base/core/java/android/bluetooth/BluetoothHidHost.java
+ */
 
+@Suppress("UNCHECKED_CAST")
 class BluetoothHidHost(private val mProfile: BluetoothProfile) {
     private val TAG = "MyBluetoothHidHost"
     private val DBG = true
     private val VDBG = false
 
     companion object {
-        val ACTION_PROTOCOL_MODE_CHANGED = "android.bluetooth.input.profile.action.PROTOCOL_MODE_CHANGED"
-        val ACTION_HANDSHAKE = "android.bluetooth.input.profile.action.HANDSHAKE"
-        val ACTION_REPORT = "android.bluetooth.input.profile.action.REPORT"
-        val ACTION_VIRTUAL_UNPLUG_STATUS = "android.bluetooth.input.profile.action.VIRTUAL_UNPLUG_STATUS"
-        val ACTION_IDLE_TIME_CHANGED = "android.bluetooth.input.profile.action.IDLE_TIME_CHANGED"
-        val INPUT_DISCONNECT_FAILED_NOT_CONNECTED = 5000
-        val INPUT_CONNECT_FAILED_ALREADY_CONNECTED = 5001
-        val INPUT_CONNECT_FAILED_ATTEMPT_FAILED = 5002
-        val INPUT_OPERATION_GENERIC_FAILURE = 5003
-        val INPUT_OPERATION_SUCCESS = 5004
-        val PROTOCOL_REPORT_MODE = 0
-        val PROTOCOL_BOOT_MODE = 1
-        val PROTOCOL_UNSUPPORTED_MODE = 255
-        val REPORT_TYPE_INPUT: Byte = 1
-        val REPORT_TYPE_OUTPUT: Byte = 2
-        val REPORT_TYPE_FEATURE: Byte = 3
-        val VIRTUAL_UNPLUG_STATUS_SUCCESS = 0
-        val VIRTUAL_UNPLUG_STATUS_FAIL = 1
-        val EXTRA_PROTOCOL_MODE = "android.bluetooth.BluetoothHidHost.extra.PROTOCOL_MODE"
-        val EXTRA_REPORT_TYPE = "android.bluetooth.BluetoothHidHost.extra.REPORT_TYPE"
-        val EXTRA_REPORT_ID = "android.bluetooth.BluetoothHidHost.extra.REPORT_ID"
-        val EXTRA_REPORT_BUFFER_SIZE = "android.bluetooth.BluetoothHidHost.extra.REPORT_BUFFER_SIZE"
-        val EXTRA_REPORT = "android.bluetooth.BluetoothHidHost.extra.REPORT"
-        val EXTRA_STATUS = "android.bluetooth.BluetoothHidHost.extra.STATUS"
-        val EXTRA_VIRTUAL_UNPLUG_STATUS = "android.bluetooth.BluetoothHidHost.extra.VIRTUAL_UNPLUG_STATUS"
-        val EXTRA_IDLE_TIME = "android.bluetooth.BluetoothHidHost.extra.IDLE_TIME"
+        const val ACTION_PROTOCOL_MODE_CHANGED = "android.bluetooth.input.profile.action.PROTOCOL_MODE_CHANGED"
+        const val ACTION_HANDSHAKE = "android.bluetooth.input.profile.action.HANDSHAKE"
+        const val ACTION_REPORT = "android.bluetooth.input.profile.action.REPORT"
+        const val ACTION_VIRTUAL_UNPLUG_STATUS = "android.bluetooth.input.profile.action.VIRTUAL_UNPLUG_STATUS"
+        const val ACTION_IDLE_TIME_CHANGED = "android.bluetooth.input.profile.action.IDLE_TIME_CHANGED"
+        const val INPUT_DISCONNECT_FAILED_NOT_CONNECTED = 5000
+        const val INPUT_CONNECT_FAILED_ALREADY_CONNECTED = 5001
+        const val INPUT_CONNECT_FAILED_ATTEMPT_FAILED = 5002
+        const val INPUT_OPERATION_GENERIC_FAILURE = 5003
+        const val INPUT_OPERATION_SUCCESS = 5004
+        const val PROTOCOL_REPORT_MODE = 0
+        const val PROTOCOL_BOOT_MODE = 1
+        const val PROTOCOL_UNSUPPORTED_MODE = 255
+        const val REPORT_TYPE_INPUT: Byte = 1
+        const val REPORT_TYPE_OUTPUT: Byte = 2
+        const val REPORT_TYPE_FEATURE: Byte = 3
+        const val VIRTUAL_UNPLUG_STATUS_SUCCESS = 0
+        const val VIRTUAL_UNPLUG_STATUS_FAIL = 1
+        const val EXTRA_PROTOCOL_MODE = "android.bluetooth.BluetoothHidHost.extra.PROTOCOL_MODE"
+        const val EXTRA_REPORT_TYPE = "android.bluetooth.BluetoothHidHost.extra.REPORT_TYPE"
+        const val EXTRA_REPORT_ID = "android.bluetooth.BluetoothHidHost.extra.REPORT_ID"
+        const val EXTRA_REPORT_BUFFER_SIZE = "android.bluetooth.BluetoothHidHost.extra.REPORT_BUFFER_SIZE"
+        const val EXTRA_REPORT = "android.bluetooth.BluetoothHidHost.extra.REPORT"
+        const val EXTRA_STATUS = "android.bluetooth.BluetoothHidHost.extra.STATUS"
+        const val EXTRA_VIRTUAL_UNPLUG_STATUS = "android.bluetooth.BluetoothHidHost.extra.VIRTUAL_UNPLUG_STATUS"
+        const val EXTRA_IDLE_TIME = "android.bluetooth.BluetoothHidHost.extra.IDLE_TIME"
         private val mMethods = HashMap<String, Method>()
     }
 
     init {
         synchronized(mMethods) {
-            if (null == mMethods || mMethods.isEmpty()) {
+            if (mMethods.isEmpty()) {
                 try {
                     val cls = mProfile::class.java
                     mMethods["connect"] = cls.getDeclaredMethod("connect", BluetoothDevice::class.java)

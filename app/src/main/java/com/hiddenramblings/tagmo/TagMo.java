@@ -7,6 +7,7 @@ import android.text.Spanned;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.github.anrwatchdog.ANRError;
 import com.github.anrwatchdog.ANRWatchDog;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.settings.Preferences;
@@ -30,6 +31,11 @@ public class TagMo extends Application {
 
     public static Context getContext() {
         return mContext.get();
+    }
+
+    private boolean isNotResponding(Throwable error) {
+        return !BuildConfig.DEBUG && !BuildConfig.GOOGLE_PLAY && null != error.getCause()
+                && (error.getCause().getCause() instanceof ANRError);
     }
 
     public void setThemePreference() {
@@ -58,17 +64,24 @@ public class TagMo extends Application {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         mContext = new SoftReference<>(this);
         mPrefs = new SoftReference<>(new Preferences(this));
-        setThemePreference();
+
+        if (!BuildConfig.DEBUG && !BuildConfig.GOOGLE_PLAY) {
+            new ANRWatchDog(10000).setANRListener(error -> {
+                StringWriter exception = new StringWriter();
+                error.printStackTrace(new PrintWriter(exception));
+                Debug.processException(this, exception.toString());
+            }).start();
+        }
 
         Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
+            if (isNotResponding(error)) return;
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
             Debug.processException(this, exception.toString());
             System.exit(0);
         });
 
-        if (!BuildConfig.DEBUG && !BuildConfig.GOOGLE_PLAY)
-            new ANRWatchDog(10000).setReportMainThreadOnly().start();
+        setThemePreference();
     }
 
     public static Spanned getVersionLabel(boolean plain) {

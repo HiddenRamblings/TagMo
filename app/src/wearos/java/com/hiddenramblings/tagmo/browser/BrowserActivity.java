@@ -1145,6 +1145,13 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
                 return true;
+            } catch (SecurityException sex) {
+                try {
+                    onDocumentRequested();
+                    return true;
+                } catch (ActivityNotFoundException anf) {
+                    return false;
+                }
             } catch (IllegalArgumentException iae) {
                 return false;
             }

@@ -390,9 +390,9 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                 this.txtPath.setVisibility(View.VISIBLE);
             }
             if (null != this.imageAmiibo) {
-                GlideApp.with(itemView).clear(target);
+                GlideApp.with(imageAmiibo).clear(imageAmiibo);
                 if (null != amiiboImageUrl) {
-                    GlideApp.with(itemView).asBitmap().load(amiiboImageUrl).into(target);
+                    GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(target);
                 }
             }
         }

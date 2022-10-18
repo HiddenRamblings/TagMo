@@ -120,7 +120,7 @@ public class ImageActivity extends AppCompatActivity {
             this.amiiboManager = amiiboManager;
             runOnUiThread(() -> updateView(amiiboId));
         });
-        GlideApp.with(this).load(getImageUrl(amiiboId)).into(imageView);
+        GlideApp.with(imageView).load(getImageUrl(amiiboId)).into(imageView);
 
         findViewById(R.id.toggle).setOnClickListener(view -> {
             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {

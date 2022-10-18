@@ -328,7 +328,7 @@ public class BrowserFragment extends Fragment implements
     }
 
     void buildFoomiiboSet() {
-        AmiiboManager amiiboManager = settings.getAmiiboManager();
+        AmiiboManager amiiboManager = null != settings ? settings.getAmiiboManager() : null;
         if (null == amiiboManager) return;
         ((BrowserActivity) requireActivity()).collapseBottomSheet();
         ProgressDialog dialog = ProgressDialog.show(requireActivity(),

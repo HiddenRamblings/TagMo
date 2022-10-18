@@ -66,7 +66,7 @@ public final class JoyCon {
         //Log.d(TAG, "sendReport");
         final BluetoothHidHost host = helper.getHidHost();
         if (host != null)
-            host.setReport(device, BluetoothHidHost.Companion.getREPORT_TYPE_OUTPUT(), report);
+            host.setReport(device, BluetoothHidHost.REPORT_TYPE_OUTPUT, report);
     }
 
     private void sendData(String report) {

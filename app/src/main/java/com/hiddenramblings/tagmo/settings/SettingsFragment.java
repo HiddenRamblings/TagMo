@@ -21,6 +21,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -448,9 +449,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
             try {
                 Executors.newSingleThreadExecutor().execute(() ->
-                        Glide.get(requireActivity()).clearDiskCache());
+                        GlideApp.get(requireActivity()).clearDiskCache());
                 requireActivity().runOnUiThread(() ->
-                        Glide.get(requireActivity()).clearMemory());
+                        GlideApp.get(requireActivity()).clearMemory());
             } catch (IllegalStateException ignored) { }
             if (notify) activity.runOnUiThread(() -> buildSnackbar(
                     R.string.removing_amiibo_info, Snackbar.LENGTH_SHORT).show());

@@ -2182,9 +2182,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
             if (null != imageAmiibo) {
                 imageAmiibo.setVisibility(View.GONE);
-                GlideApp.with(BrowserActivity.this).clear(imageTarget);
+                GlideApp.with(imageAmiibo).clear(imageAmiibo);
                 if (null != amiiboImageUrl) {
-                    GlideApp.with(BrowserActivity.this).asBitmap()
+                    GlideApp.with(imageAmiibo).asBitmap()
                             .load(amiiboImageUrl).into(imageTarget);
                     final long amiiboTagId = amiiboId;
                     imageAmiibo.setOnClickListener(view -> {

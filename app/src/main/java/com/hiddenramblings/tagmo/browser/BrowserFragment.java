@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -185,7 +186,7 @@ public class BrowserFragment extends Fragment implements
         if (null == chipList) return;
         FrameLayout chipContainer = chipList.findViewWithTag(tag);
         if (null != chipContainer) chipList.removeView(chipContainer);
-        if (!text.isEmpty()) {
+        if (!TextUtils.isEmpty(text)) {
             chipContainer = (FrameLayout) getLayoutInflater().inflate(R.layout.chip_view, null);
             chipContainer.setTag(tag);
             Chip chip = chipContainer.findViewById(R.id.chip);

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -220,7 +221,7 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
         }
 
         public boolean pathContainsQuery(String path, String query) {
-            return !query.isEmpty() && settings.isFilterEmpty()
+            return !TextUtils.isEmpty(query) && settings.isFilterEmpty()
                     && path.toLowerCase().contains(query);
         }
 

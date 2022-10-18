@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -224,7 +225,7 @@ public class BrowserSettings implements Parcelable {
     }
 
     public String getFilter(FILTER filter) {
-        String filterText = "";
+        String filterText = null;
         switch (filter) {
             case CHARACTER:
                 filterText = this.filterCharacter;
@@ -242,7 +243,7 @@ public class BrowserSettings implements Parcelable {
                 filterText = this.filterGameTitles;
                 break;
         }
-        return filterText;
+        return TextUtils.isEmpty(filterText) ? "" : filterText;
     }
 
     public void setFilter(FILTER filter, String filterText) {
@@ -480,7 +481,7 @@ public class BrowserSettings implements Parcelable {
                 && !gamesManager.isGameSupported(amiibo, getFilter(FILTER.GAME_TITLES)))
             return false;
 
-        if (!query.isEmpty()) {
+        if (!TextUtils.isEmpty(query)) {
             if (Amiibo.idToHex(amiibo.id).toLowerCase().startsWith(query))
                 return true;
             else if (null != amiibo.name && amiibo.name.toLowerCase().contains(query))

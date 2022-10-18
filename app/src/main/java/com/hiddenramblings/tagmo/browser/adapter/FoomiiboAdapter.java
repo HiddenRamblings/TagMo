@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo.browser.adapter;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -231,7 +232,7 @@ public class FoomiiboAdapter
         protected FilterResults performFiltering(CharSequence constraint) {
             String query = null != constraint ? constraint.toString() : "";
             FilterResults filterResults = new FilterResults();
-            if (query.trim().isEmpty()) {
+            if (TextUtils.isEmpty(query.trim())) {
                 filterResults.count = data.size();
                 filterResults.values = data;
             }
@@ -276,7 +277,7 @@ public class FoomiiboAdapter
                         missingFiles.add(amiibo);
                     }
                 }
-                if (!missingFiles.isEmpty())
+                if (null != missingFiles && !missingFiles.isEmpty())
                     Collections.sort(missingFiles, new AmiiboComparator(settings));
 
                 filteredData.addAll(0, missingFiles);

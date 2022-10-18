@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -250,7 +251,7 @@ public class BrowserAdapter
         protected FilterResults performFiltering(CharSequence constraint) {
             String query = null != constraint ? constraint.toString() : "";
             FilterResults filterResults = new FilterResults();
-            if (query.trim().isEmpty()) {
+            if (TextUtils.isEmpty(query.trim())) {
                 filterResults.count = data.size();
                 filterResults.values = data;
             }
@@ -288,7 +289,7 @@ public class BrowserAdapter
         }
 
         public boolean pathContainsQuery(String path, String query) {
-            return !query.isEmpty() && settings.isFilterEmpty()
+            return !TextUtils.isEmpty(query) && settings.isFilterEmpty()
                     && path.toLowerCase().contains(query);
         }
 

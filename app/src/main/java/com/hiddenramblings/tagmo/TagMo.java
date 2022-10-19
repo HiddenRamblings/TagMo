@@ -33,9 +33,9 @@ public class TagMo extends Application {
         return mContext.get();
     }
 
-    private boolean isNotResponding(Throwable error) {
-        return !BuildConfig.DEBUG && !BuildConfig.GOOGLE_PLAY && null != error.getCause()
-                && (error.getCause().getCause() instanceof ANRError);
+    private final boolean isWatchingANR = !BuildConfig.DEBUG && !BuildConfig.GOOGLE_PLAY;
+    private boolean isUncaughtANR(Throwable error) {
+        return null != error.getCause() && (error.getCause().getCause() instanceof ANRError);
     }
 
     public void setThemePreference() {
@@ -65,7 +65,7 @@ public class TagMo extends Application {
         mContext = new SoftReference<>(this);
         mPrefs = new SoftReference<>(new Preferences(this));
 
-        if (!BuildConfig.DEBUG && !BuildConfig.GOOGLE_PLAY) {
+        if (isWatchingANR) {
             new ANRWatchDog(10000).setANRListener(error -> {
                 StringWriter exception = new StringWriter();
                 error.printStackTrace(new PrintWriter(exception));
@@ -74,7 +74,7 @@ public class TagMo extends Application {
         }
 
         Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
-            if (isNotResponding(error)) return;
+            if (isWatchingANR && isUncaughtANR(error)) return;
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
             Debug.processException(this, exception.toString());
@@ -84,10 +84,10 @@ public class TagMo extends Application {
         setThemePreference();
     }
 
+    private static final String flavor = "TagMo " + BuildConfig.VERSION_NAME + (
+            BuildConfig.GOOGLE_PLAY ? " (Google Play" : " (GitHub"
+    );
     public static Spanned getVersionLabel(boolean plain) {
-        String flavor = "TagMo " + BuildConfig.VERSION_NAME + (
-                BuildConfig.GOOGLE_PLAY ? " (Google Play" : " (GitHub"
-        );
         String commit = plain ? ("#" + BuildConfig.COMMIT)
                 : ("<a href=https://github.com/HiddenRamblings/TagMo/commit/"
                 + BuildConfig.COMMIT + ">#" + BuildConfig.COMMIT + "</a>");

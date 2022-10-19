@@ -93,13 +93,14 @@ public class EliteBankFragment extends Fragment implements
     private AppCompatButton writeOpenBanks;
     private AppCompatButton eraseOpenBanks;
     private LinearLayout securityOptions;
-
-    private BottomSheetBehavior<View> bottomSheetBehavior;
-    private KeyManager keyManager;
-
-    private ArrayList<EliteTag> amiibos = new ArrayList<>();
     private SearchView searchView;
+
+    private BrowserSettings settings;
+    private BottomSheetBehavior<View> bottomSheetBehavior;
     private WriteTagAdapter writeFileAdapter;
+
+    private KeyManager keyManager;
+    private ArrayList<EliteTag> amiibos = new ArrayList<>();
 
     private int clickedPosition;
     private enum CLICKED {
@@ -113,7 +114,7 @@ public class EliteBankFragment extends Fragment implements
     }
     private CLICKED status = CLICKED.NOTHING;
 
-    private BrowserSettings settings;
+    private final Handler eliteHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -914,7 +915,7 @@ public class EliteBankFragment extends Fragment implements
                 updateAmiiboView(amiiboCard, null, amiibos.get(active_bank).id, active_bank);
                 updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
                 onBottomSheetChanged(true, true);
-                new Handler(Looper.getMainLooper()).postDelayed(() -> bottomSheetBehavior
+                eliteHandler.postDelayed(() -> bottomSheetBehavior
                         .setState(BottomSheetBehavior.STATE_EXPANDED), TagMo.uiDelay);
             }
 

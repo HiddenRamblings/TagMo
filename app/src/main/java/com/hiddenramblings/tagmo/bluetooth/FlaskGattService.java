@@ -117,6 +117,8 @@ public class FlaskGattService extends Service {
     private final ArrayList<Runnable> outgoingCallbacks = new ArrayList<>();
     private final ArrayList<Runnable> incomingCallbacks = new ArrayList<>();
 
+    private final Handler flaskHandler = new Handler(Looper.getMainLooper());
+
     public interface BluetoothGattListener {
         void onServicesDiscovered();
         void onFlaskActiveChanged(JSONObject jsonObject);
@@ -545,10 +547,10 @@ public class FlaskGattService extends Service {
     private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = GattArray.byteToPortions(value, maxTransmissionUnit);
         int commandQueue = outgoingCallbacks.size() + 1 + chunks.size();
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        flaskHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
                 final byte[] chunk = chunks.get(i);
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                flaskHandler.postDelayed(() -> {
                     mCharacteristicTX.setValue(chunk);
                     mCharacteristicTX.setWriteType(
                             // BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
@@ -567,10 +569,10 @@ public class FlaskGattService extends Service {
     private void delayedWriteCharacteristic(String value) {
         List<String> chunks = GattArray.stringToPortions(value, maxTransmissionUnit);
         int commandQueue = outgoingCallbacks.size() + 1 + chunks.size();
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        flaskHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
                 final String chunk = chunks.get(i);
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                flaskHandler.postDelayed(() -> {
                     mCharacteristicTX.setValue(chunk);
                     mCharacteristicTX.setWriteType(
                             // BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT

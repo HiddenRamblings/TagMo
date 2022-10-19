@@ -89,6 +89,8 @@ public class PuckGattService extends Service {
 
     private final ArrayList<Runnable> Callbacks = new ArrayList<>();
 
+    private final Handler puckHandler = new Handler(Looper.getMainLooper());
+
     public interface BluetoothGattListener {
         void onServicesDiscovered();
         void onPuckActiveChanged(JSONObject jsonObject);
@@ -391,10 +393,10 @@ public class PuckGattService extends Service {
     private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = GattArray.byteToPortions(value, 20);
         int commandQueue = Callbacks.size() + 1 + chunks.size();
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        puckHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
                 final byte[] chunk = chunks.get(i);
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                puckHandler.postDelayed(() -> {
                     mCharacteristicTX.setValue(chunk);
                     mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
                     mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
@@ -406,10 +408,10 @@ public class PuckGattService extends Service {
     private void delayedWriteCharacteristic(String value) {
         List<String> chunks = GattArray.stringToPortions(value, maxTransmissionUnit);
         int commandQueue = Callbacks.size() + 1 + chunks.size();
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        puckHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
                 final String chunk = chunks.get(i);
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                puckHandler.postDelayed(() -> {
                     mCharacteristicTX.setValue(chunk);
                     mCharacteristicTX.setWriteType(
                             // BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT

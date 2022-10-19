@@ -5,9 +5,9 @@ import com.hiddenramblings.tagmo.nfctech.TagArray;
 
 public class FlaskTag extends Amiibo {
 
-    public FlaskTag(String tail) {
+    public FlaskTag(String[] name) {
         super(null, TagArray.bytesToLong(
-                tail.getBytes(CharsetCompat.UTF_8)
-        ), "New Tag ", null);
+                name[2].getBytes(CharsetCompat.UTF_8)
+        ), name[0], null);
     }
 }

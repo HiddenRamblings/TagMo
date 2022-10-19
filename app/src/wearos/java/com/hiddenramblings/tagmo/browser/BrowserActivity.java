@@ -180,11 +180,13 @@ public class BrowserActivity extends AppCompatActivity implements
     private TextView txtAmiiboSeries;
     private AppCompatImageView imageAmiibo;
 
-    private final Handler handler = new Handler(Looper.getMainLooper());
     NavPagerAdapter pagerAdapter = new NavPagerAdapter(this);
 
     private final ScanTag tagScanner = new ScanTag();
     private final DonationHandler donations = new DonationHandler(this);
+
+    private final Handler statsHandler = new Handler(Looper.getMainLooper());
+    private final Handler sheetHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -360,13 +362,18 @@ public class BrowserActivity extends AppCompatActivity implements
         });
 
         LinearLayout foomiiboOptions = findViewById(R.id.foomiibo_options);
-        foomiiboOptions.findViewById(R.id.clear_foomiibo_set).setOnClickListener(
-                clickView -> fragmentBrowser.clearFoomiiboSet()
-        );
+        final Handler foomiiboHandler = new Handler(Looper.getMainLooper());
+        foomiiboOptions.findViewById(R.id.clear_foomiibo_set).setOnClickListener(clickView -> {
+            collapseBottomSheet();
+            foomiiboHandler.postDelayed(() ->
+                    fragmentBrowser.clearFoomiiboSet(this.statsHandler), TagMo.uiDelay);
+        });
 
-        foomiiboOptions.findViewById(R.id.build_foomiibo_set).setOnClickListener(
-                clickView -> fragmentBrowser.buildFoomiiboSet()
-        );
+        foomiiboOptions.findViewById(R.id.build_foomiibo_set).setOnClickListener(clickView -> {
+            collapseBottomSheet();
+            foomiiboHandler.postDelayed(() ->
+                    fragmentBrowser.buildFoomiiboSet(this.statsHandler), TagMo.uiDelay);
+        });
 
         onRequestStorage.launch(PERMISSIONS_STORAGE);
 
@@ -2107,7 +2114,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void setAmiiboStats() {
-        handler.removeCallbacksAndMessages(null);
+        statsHandler.removeCallbacksAndMessages(null);
         currentFolderView.post(() -> {
             int size = settings.getAmiiboFiles().size();
             if (size <= 0) return;
@@ -2156,7 +2163,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
             this.currentFolderView.setGravity(Gravity.CENTER_VERTICAL);
             this.currentFolderView.setText(relativePath);
-            handler.postDelayed(this::setAmiiboStats, 3000);
+            statsHandler.postDelayed(this::setAmiiboStats, 3000);
         } else {
             setAmiiboStats();
         }
@@ -2201,7 +2208,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void hideBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        sheetHandler.postDelayed(() -> {
             bottomSheetBehavior.setHideable(true);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }, TagMo.uiDelay);
@@ -2228,7 +2235,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
     private void showBrowserInterface() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        new Handler(Looper.getMainLooper()).postDelayed(() ->
+        sheetHandler.postDelayed(() ->
                 bottomSheetBehavior.setHideable(false), TagMo.uiDelay);
         showActionButton();
     }

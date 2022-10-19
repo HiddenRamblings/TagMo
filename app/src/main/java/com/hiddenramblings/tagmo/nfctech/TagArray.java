@@ -30,6 +30,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Locale;
@@ -139,7 +140,11 @@ public class TagArray {
         );
         buffer.put(bytes);
         buffer.flip(); // need flip
-        return buffer.getLong();
+        try {
+            return buffer.getLong();
+        } catch (BufferUnderflowException bue) {
+            return (long) buffer.getInt();
+        }
     }
 
     public static long hexToLong(String s) {

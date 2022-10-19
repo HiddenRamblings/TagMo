@@ -267,6 +267,7 @@ public class Debug {
         ), logText));
         try {
             final Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             emailIntent.setType("text/plain");
             emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"samsprungtoo@gmail.com"});
             emailIntent.putExtra(Intent.EXTRA_SUBJECT, "TagMo Logcat");

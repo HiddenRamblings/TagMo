@@ -111,9 +111,17 @@ public class FlaskSlotFragment extends Fragment implements
     private Dialog uploadDialog;
 
     private BrowserSettings settings;
-
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private WriteTagAdapter writeFileAdapter;
+
+    private BluetoothAdapter mBluetoothAdapter;
+    private ScanCallback scanCallbackLP;
+    private BluetoothAdapter.LeScanCallback scanCallback;
+    private FlaskGattService serviceFlask;
+
+    private String profileFlask;
+    private String addressFlask;
+    private int currentCount;
 
     private enum STATE {
         NONE,
@@ -124,14 +132,9 @@ public class FlaskSlotFragment extends Fragment implements
     }
     private STATE noticeState = STATE.NONE;
 
-    private BluetoothAdapter mBluetoothAdapter;
-    private ScanCallback scanCallbackLP;
-    private BluetoothAdapter.LeScanCallback scanCallback;
-    private FlaskGattService serviceFlask;
-    private String profileFlask;
-    private String addressFlask;
 
-    private int currentCount;
+
+    private final Handler flaskHandler = new Handler(Looper.getMainLooper());
 
     protected ServiceConnection mServerConn = new ServiceConnection() {
         boolean isServiceDiscovered = false;
@@ -233,7 +236,7 @@ public class FlaskSlotFragment extends Fragment implements
 
                         @Override
                         public void onGattConnectionLost() {
-                            new Handler(Looper.getMainLooper()).postDelayed(
+                            flaskHandler.postDelayed(
                                     FlaskSlotFragment.this::showDisconnectNotice, TagMo.uiDelay
                             );
                             requireActivity().runOnUiThread(() -> bottomSheetBehavior
@@ -642,7 +645,7 @@ public class FlaskSlotFragment extends Fragment implements
             };
             mBluetoothAdapter.startLeScan(new UUID[]{ FlaskGattService.FlaskNUS }, scanCallback);
         }
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        flaskHandler.postDelayed(() -> {
             if (null == profileFlask) {
                 dismissFlaskDiscovery();
                 showPurchaseNotice();
@@ -828,7 +831,7 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     public void delayedBluetoothEnable() {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        flaskHandler.postDelayed(() -> {
             if (null != mBluetoothAdapter && mBluetoothAdapter.isEnabled()) return;
             bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
                     requireContext(), requireActivity().getActivityResultRegistry(),
@@ -859,7 +862,7 @@ public class FlaskSlotFragment extends Fragment implements
         isFragmentVisible = true;
         super.onResume();
         if (null != statusBar && statusBar.isShown()) return;
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        flaskHandler.postDelayed(() -> {
             switch (noticeState) {
                 case SCANNING:
                     showScanningNotice();

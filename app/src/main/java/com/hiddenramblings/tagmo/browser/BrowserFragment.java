@@ -250,11 +250,37 @@ public class BrowserFragment extends Fragment implements
         dir.delete();
     }
 
-    void clearFoomiiboSet() {
-        ((BrowserActivity) requireActivity()).collapseBottomSheet();
+    void deleteFoomiiboFile(byte[] tagData) {
+        try {
+            Amiibo amiibo = settings.getAmiiboManager().amiibos
+                    .get(Amiibo.dataToId(tagData));
+            if (amiibo == null) throw new Exception();
+            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            File amiiboFile = new File(directory, TagArray.decipherFilename(
+                    settings.getAmiiboManager(), tagData, false
+            ));
+            new AlertDialog.Builder(requireContext())
+                    .setMessage(getString(R.string.warn_delete_file, amiiboFile.getName()))
+                    .setPositiveButton(R.string.delete, (dialog, which) -> {
+                        if (amiiboFile.delete()) {
+                            new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
+                                    getString(R.string.delete_foomiibo, amiibo.name),
+                                    Snackbar.LENGTH_SHORT
+                            ).show();
+                        } else {
+                            new Toasty(requireActivity()).Short(R.string.delete_virtual);
+                        }
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
+        } catch (Exception e) {
+            new Toasty(requireActivity()).Short(R.string.delete_virtual);
+        }
+    }
+
+    void clearFoomiiboSet(Handler handler) {
         ProgressDialog dialog = ProgressDialog.show(requireActivity(),
                 "", "", true);
-        Handler handler = new Handler(Looper.getMainLooper());
         Executors.newSingleThreadExecutor().execute(() -> {
             deleteDir(handler, dialog, directory);
 
@@ -299,44 +325,14 @@ public class BrowserFragment extends Fragment implements
         }
     }
 
-    void deleteFoomiiboFile(byte[] tagData) {
-        try {
-            Amiibo amiibo = settings.getAmiiboManager().amiibos
-                    .get(Amiibo.dataToId(tagData));
-            if (amiibo == null) throw new Exception();
-            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
-            File amiiboFile = new File(directory, TagArray.decipherFilename(
-                    settings.getAmiiboManager(), tagData, false
-            ));
-            new AlertDialog.Builder(requireContext())
-                    .setMessage(getString(R.string.warn_delete_file, amiiboFile.getName()))
-                    .setPositiveButton(R.string.delete, (dialog, which) -> {
-                        if (amiiboFile.delete()) {
-                            new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
-                                    getString(R.string.delete_foomiibo, amiibo.name),
-                                    Snackbar.LENGTH_SHORT
-                            ).show();
-                        } else {
-                            new Toasty(requireActivity()).Short(R.string.delete_virtual);
-                        }
-                        dialog.dismiss();
-                    })
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
-        } catch (Exception e) {
-            new Toasty(requireActivity()).Short(R.string.delete_virtual);
-        }
-    }
-
-    void buildFoomiiboSet() {
+    void buildFoomiiboSet(Handler handler) {
         AmiiboManager amiiboManager = null != settings ? settings.getAmiiboManager() : null;
         if (null == amiiboManager) {
             new Toasty(requireActivity()).Short(R.string.amiibo_failure_read);
             return;
         }
-        ((BrowserActivity) requireActivity()).collapseBottomSheet();
         ProgressDialog dialog = ProgressDialog.show(requireActivity(),
                 "", "", true);
-        Handler handler = new Handler(Looper.getMainLooper());
 
         Executors.newSingleThreadExecutor().execute(() -> {
             deleteDir(null, null, directory);

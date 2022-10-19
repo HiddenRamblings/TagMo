@@ -558,6 +558,9 @@ public class FlaskSlotFragment extends Fragment implements
             if (amiiboView == amiiboTile && null == amiiboImageUrl) {
                 imageAmiibo.setImageResource(R.mipmap.ic_launcher_round);
                 imageAmiibo.setVisibility(View.VISIBLE);
+            } else if (amiiboView == amiiboCard && null == amiiboImageUrl) {
+                imageAmiibo.setImageResource(0);
+                imageAmiibo.setVisibility(View.INVISIBLE);
             } else if (null != imageAmiibo) {
                 GlideApp.with(imageAmiibo).clear(imageAmiibo);
                 if (null != amiiboImageUrl) {
@@ -579,7 +582,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private Amiibo getAmiiboByTail(String[] name) {
         if (name.length < 2) return null;
-        if (name[1].length() == 0) return new FlaskTag(name[2]);
+        if (name[1].length() == 0) return new FlaskTag(name);
         AmiiboManager amiiboManager;
         try {
             amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());

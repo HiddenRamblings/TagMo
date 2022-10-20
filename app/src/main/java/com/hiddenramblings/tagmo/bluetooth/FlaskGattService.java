@@ -175,8 +175,7 @@ public class FlaskGattService extends Service {
                                     progress.lastIndexOf("}") + 1);
                             if (null != listener) {
                                 try {
-                                    JSONObject jsonObject = new JSONObject(getAmiibo);
-                                    listener.onFlaskActiveChanged(jsonObject);
+                                    listener.onFlaskActiveChanged(new JSONObject(getAmiibo));
                                 } catch (JSONException e) {
                                     Debug.Warn(e);
                                     if (null != listener)
@@ -201,8 +200,8 @@ public class FlaskGattService extends Service {
                                 if (rangeIndex > 0) {
                                     rangeIndex = 0;
                                     escapedList = escapedList.replace(" ...", "");
-                                    JSONArray jsonArray = new JSONArray(escapedList);
-                                    if (null != listener) listener.onFlaskListRetrieved(jsonArray);
+                                    if (null != listener)
+                                        listener.onFlaskListRetrieved(new JSONArray(escapedList));
                                 } else {
                                     rangeIndex += 1;
                                     getDeviceAmiiboRange(0);
@@ -214,21 +213,21 @@ public class FlaskGattService extends Service {
                                         rangeArray.put(jsonArray.getJSONObject(i));
                                     }
                                     rangeIndex += 1;
-                                    getDeviceAmiiboRange(rangeIndex);
+                                    getDeviceAmiiboRange(rangeIndex * 10);
                                 } else {
                                     rangeIndex = 0;
                                     if (null != listener) listener.onFlaskListRetrieved(rangeArray);
                                     rangeArray = null;
                                 }
                             } else {
-                                JSONArray jsonArray = new JSONArray(escapedList);
-                                if (null != listener) listener.onFlaskListRetrieved(jsonArray);
+                                if (null != listener)
+                                    listener.onFlaskListRetrieved(new JSONArray(escapedList));
                             }
                         } catch (JSONException e) {
                             Debug.Warn(e);
                         }
                         response = new StringBuilder();
-                        if (null != listener) listener.onFlaskFilesUploaded();
+                        if (rangeIndex == 0 && null != listener) listener.onFlaskFilesUploaded();
                     }
                 } else if (progress.startsWith("tag.remove")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
@@ -735,6 +734,10 @@ public class FlaskGattService extends Service {
 
     public void createBlankTag() {
         delayedTagCharacteristic("createBlank()");
+    }
+
+    public void setFlaskFace(boolean stacked) {
+        delayedTagCharacteristic("screen.setFace(" + (stacked ? 1 : 0) + ")");
     }
 
     public boolean isJSONValid(String test) {

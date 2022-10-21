@@ -126,6 +126,7 @@ public class FlaskGattService extends Service {
         void onFlaskActiveChanged(JSONObject jsonObject);
         void onFlaskStatusChanged(JSONObject jsonObject);
         void onFlaskListRetrieved(JSONArray jsonArray);
+        void onFlaskRangeRetrieved(JSONArray jsonArray);
         void onFlaskFilesDownload(String dataString);
         void onFlaskFilesUploaded();
         void onGattConnectionLost();
@@ -133,7 +134,6 @@ public class FlaskGattService extends Service {
 
     StringBuilder response = new StringBuilder();
     private int rangeIndex = 0;
-    private JSONArray rangeArray;
 
 
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
@@ -205,20 +205,19 @@ public class FlaskGattService extends Service {
                                         listener.onFlaskListRetrieved(new JSONArray(escapedList));
                                 } else {
                                     rangeIndex += 1;
-                                    rangeArray = new JSONArray();
+                                    if (null != listener)
+                                        listener.onFlaskListRetrieved(new JSONArray());
                                     getDeviceAmiiboRange(0);
                                 }
                             } else if (rangeIndex > 0) {
                                 JSONArray jsonArray = new JSONArray(escapedList);
                                 if (jsonArray.length() > 0) {
-                                    for (int i = 0; i < jsonArray.length(); i++) {
-                                        rangeArray.put(jsonArray.getString(i));
-                                    }
+                                    if (null != listener)
+                                        listener.onFlaskRangeRetrieved(jsonArray);
                                     getDeviceAmiiboRange(rangeIndex * listCount);
                                     rangeIndex += 1;
                                 } else {
                                     rangeIndex = 0;
-                                    if (null != listener) listener.onFlaskListRetrieved(rangeArray);
                                 }
                             } else {
                                 if (null != listener)

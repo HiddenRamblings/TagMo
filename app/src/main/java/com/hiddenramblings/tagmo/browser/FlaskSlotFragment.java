@@ -186,7 +186,8 @@ public class FlaskSlotFragment extends Fragment implements
                                     dismissSnackbarNotice(true);
                                     flaskDetails.setAdapter(adapter);
                                 });
-                                serviceFlask.getActiveAmiibo();
+                                if (flaskAmiibos.size() > 0)
+                                    serviceFlask.getActiveAmiibo();
                             });
                         }
                         

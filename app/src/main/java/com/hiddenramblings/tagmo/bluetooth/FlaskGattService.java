@@ -218,6 +218,7 @@ public class FlaskGattService extends Service {
                                     rangeIndex += 1;
                                 } else {
                                     rangeIndex = 0;
+                                    getActiveAmiibo();
                                 }
                             } else {
                                 if (null != listener)

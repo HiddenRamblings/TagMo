@@ -466,6 +466,13 @@ public class FlaskSlotFragment extends Fragment implements
         });
 
         createBlank.setOnClickListener(view1 -> serviceFlask.createBlankTag());
+
+        rootLayout.findViewById(R.id.screen_layered).setOnClickListener(view1 -> {
+            serviceFlask.setFlaskFace(false);
+        });
+        rootLayout.findViewById(R.id.screen_stacked).setOnClickListener(view1 -> {
+            serviceFlask.setFlaskFace(true);
+        });
     }
 
     public RecyclerView getAmiibosView() {

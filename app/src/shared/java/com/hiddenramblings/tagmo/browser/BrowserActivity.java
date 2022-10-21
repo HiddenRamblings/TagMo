@@ -219,8 +219,6 @@ public class BrowserActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_browser);
 
-        onBackButtonEnabled();
-
         fakeSnackbar = findViewById(R.id.fake_snackbar);
         fakeSnackbarText = findViewById(R.id.snackbar_text);
         fakeSnackbarItem = findViewById(R.id.snackbar_item);
@@ -240,6 +238,8 @@ public class BrowserActivity extends AppCompatActivity implements
         txtAmiiboType = findViewById(R.id.txtAmiiboType);
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
         imageAmiibo = findViewById(R.id.imageAmiibo);
+
+        onBackButtonEnabled();
 
         if (Debug.isOlder(Build.VERSION_CODES.M)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

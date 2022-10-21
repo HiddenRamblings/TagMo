@@ -116,9 +116,10 @@ public class FlaskGattService extends Service {
     }
 
     private final ArrayList<Runnable> outgoingCallbacks = new ArrayList<>();
-    private final ArrayList<Runnable> incomingCallbacks = new ArrayList<>();
+//    private final ArrayList<Runnable> incomingCallbacks = new ArrayList<>();
 
     private final Handler flaskHandler = new Handler(Looper.getMainLooper());
+    private final int listCount = 10;
 
     public interface BluetoothGattListener {
         void onServicesDiscovered();
@@ -204,20 +205,20 @@ public class FlaskGattService extends Service {
                                         listener.onFlaskListRetrieved(new JSONArray(escapedList));
                                 } else {
                                     rangeIndex += 1;
+                                    rangeArray = new JSONArray();
                                     getDeviceAmiiboRange(0);
                                 }
                             } else if (rangeIndex > 0) {
                                 JSONArray jsonArray = new JSONArray(escapedList);
                                 if (jsonArray.length() > 0) {
                                     for (int i = 0; i < jsonArray.length(); i++) {
-                                        rangeArray.put(jsonArray.getJSONObject(i));
+                                        rangeArray.put(jsonArray.getString(i));
                                     }
+                                    getDeviceAmiiboRange(rangeIndex * listCount);
                                     rangeIndex += 1;
-                                    getDeviceAmiiboRange(rangeIndex * 10);
                                 } else {
                                     rangeIndex = 0;
                                     if (null != listener) listener.onFlaskListRetrieved(rangeArray);
-                                    rangeArray = null;
                                 }
                             } else {
                                 if (null != listener)
@@ -638,6 +639,27 @@ public class FlaskGattService extends Service {
     public void promptTagCharacteristic(String value) {
         queueTagCharacteristic(value, 0);
     }
+
+    public void queueScreenCharacteristic(String value, int index) {
+        if (null == mCharacteristicTX) {
+            try {
+                setFlaskCharacteristicTX();
+            } catch (UnsupportedOperationException e) {
+                Debug.Warn(e);
+            }
+        }
+
+        outgoingCallbacks.add(index, () -> delayedWriteCharacteristic(("screen." + value + "\n")));
+
+        if (outgoingCallbacks.size() == 1) {
+            outgoingCallbacks.get(0).run();
+            outgoingCallbacks.remove(0);
+        }
+    }
+
+    public void delayedScreenCharacteristic(String value) {
+        queueScreenCharacteristic(value, outgoingCallbacks.size());
+    }
     
     public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo) {
         delayedTagCharacteristic("startTagUpload(" + amiiboData.length + ")");
@@ -729,7 +751,7 @@ public class FlaskGattService extends Service {
     }
 
     public void getDeviceAmiiboRange(int index) {
-        delayedTagCharacteristic("getList(" + index + ",10)"); // 5 ... 5
+        delayedTagCharacteristic("getList(" + index + "," + listCount + ")"); // 5 ... 5
     }
 
     public void createBlankTag() {
@@ -737,7 +759,7 @@ public class FlaskGattService extends Service {
     }
 
     public void setFlaskFace(boolean stacked) {
-        delayedTagCharacteristic("screen.setFace(" + (stacked ? 1 : 0) + ")");
+        delayedScreenCharacteristic("setFace(" + (stacked ? 1 : 0) + ")");
     }
 
     public boolean isJSONValid(String test) {

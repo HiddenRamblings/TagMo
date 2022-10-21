@@ -194,9 +194,8 @@ public class FlaskSlotFragment extends Fragment implements
                         @Override
                         public void onFlaskRangeRetrieved(JSONArray jsonArray) {
                             Executors.newSingleThreadExecutor().execute(() -> {
-                                currentCount = jsonArray.length();
                                 ArrayList<Amiibo> flaskAmiibos = new ArrayList<>();
-                                for (int i = 0; i < currentCount; i++) {
+                                for (int i = 0; i < jsonArray.length(); i++) {
                                     try {
                                         Amiibo amiibo = getAmiiboByTail(jsonArray
                                                 .getString(i).split("\\|"));
@@ -208,11 +207,13 @@ public class FlaskSlotFragment extends Fragment implements
                                 FlaskSlotAdapter adapter = (FlaskSlotAdapter)
                                         flaskDetails.getAdapter();
                                 if (null != adapter) {
-                                    int currentCount = adapter.getItemCount();
                                     adapter.addFlaskAmiibo(flaskAmiibos);
-                                    flaskDetails.post(() -> adapter.notifyItemRangeInserted(
-                                            currentCount, flaskAmiibos.size()
-                                    ));
+                                    flaskDetails.post(() -> {
+                                        adapter.notifyItemRangeInserted(
+                                                currentCount, flaskAmiibos.size()
+                                        );
+                                        currentCount = adapter.getItemCount();
+                                    });
                                 }
                             });
                         }

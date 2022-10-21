@@ -5,6 +5,7 @@
     <string name="imageview_arrow">Arrow Icon</string>
     <string name="imageview_folder">Folder Icon</string>
     <string name="imageview_toggle">Toggle Icon</string>
+    <string name="imageview_screen">Flask Screen</string>
     <string name="nfcIconDescription">NFC Icon</string>
     <string name="movingBarDescription">Moving bar indicating the scanning process</string>
 </resources>

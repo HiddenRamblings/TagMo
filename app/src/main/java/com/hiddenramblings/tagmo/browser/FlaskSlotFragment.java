@@ -189,6 +189,32 @@ public class FlaskSlotFragment extends Fragment implements
                                 serviceFlask.getActiveAmiibo();
                             });
                         }
+                        
+                        @Override
+                        public void onFlaskRangeRetrieved(JSONArray jsonArray) {
+                            Executors.newSingleThreadExecutor().execute(() -> {
+                                currentCount = jsonArray.length();
+                                ArrayList<Amiibo> flaskAmiibos = new ArrayList<>();
+                                for (int i = 0; i < currentCount; i++) {
+                                    try {
+                                        Amiibo amiibo = getAmiiboByTail(jsonArray
+                                                .getString(i).split("\\|"));
+                                        flaskAmiibos.add(amiibo);
+                                    } catch (JSONException | NullPointerException ex) {
+                                        Debug.Warn(ex);
+                                    }
+                                }
+                                FlaskSlotAdapter adapter = (FlaskSlotAdapter)
+                                        flaskDetails.getAdapter();
+                                if (null != adapter) {
+                                    int currentCount = adapter.getItemCount();
+                                    adapter.addFlaskAmiibo(flaskAmiibos);
+                                    flaskDetails.post(() -> adapter.notifyItemRangeInserted(
+                                            currentCount, flaskAmiibos.size()
+                                    ));
+                                }
+                            });
+                        }
 
                         @SuppressLint("NotifyDataSetChanged")
                         @Override

@@ -41,6 +41,9 @@ public class FlaskSlotAdapter
     public void setFlaskAmiibo(ArrayList<Amiibo> amiibo) {
         this.flaskAmiibo = amiibo;
     }
+    public void addFlaskAmiibo(ArrayList<Amiibo> amiibo) {
+        this.flaskAmiibo.addAll(amiibo);
+    }
 
     @Override
     public void onBrowserSettingsChanged(BrowserSettings newBrowserSettings,

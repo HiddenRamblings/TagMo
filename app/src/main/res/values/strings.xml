@@ -234,7 +234,7 @@
     <string name="files_displayed">%1$d Files: ? / ? amiibo</string>
     <string name="amiibo_collected">%1$d Files: %2$d / %3$d amiibo</string>
 
-    <string name="view_device_options">Switch to N2 Elite Options</string>
+    <string name="view_device_options">Switch to Device Options</string>
     <string name="view_amiibo_details">Switch to amiibo Details</string>
     <string name="write_open_banks">Write %1$d Banks to N2 Elite</string>
     <string name="erase_open_banks">Erase %1$d Banks on N2 Elite</string>
@@ -273,6 +273,9 @@
     <string name="flask_count">Slot %1$s Active, %2$d Slots Occupied</string>
     <string name="write_slot_file">Upload binary to Bluup Flask</string>
     <string name="write_slots">Write %1$d slots to Bluup Flask</string>
+    <string name="clear_slots">Clear %1$d slots on Bluup Flask</string>
+    <string name="slots_full">All Bluup Flask slots filled</string>
+    <string name="slots_empty">Bluup Flask storage is empty</string>
     <string name="create_blank">Create blank virtual NFC tag</string>
     <string name="flask_upload">Uploading binary&#8230;</string>
     <string name="joy_con_invalid">Not a valid Joy-Con device!</string>

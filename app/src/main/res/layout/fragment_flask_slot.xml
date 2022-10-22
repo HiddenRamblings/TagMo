@@ -96,68 +96,89 @@
             layout="@layout/active_card_layout"
             android:id="@+id/active_card_layout" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/write_slot_file"
+        <LinearLayout
+            android:id="@+id/slot_options_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/write_slot_file"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/write_slot_file" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/create_blank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:text="@string/create_blank" />
+
+            <include
+                layout="@layout/number_picker"
+                android:id="@+id/number_picker" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/write_slot_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/write_slots" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/clear_slot_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/clear_slots" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="6dp"
+                android:orientation="horizontal" >
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/screen_layered"
+                    android:contentDescription="@string/imageview_screen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginEnd="3dp"
+                    app:srcCompat="@drawable/screen_layered" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/screen_stacked"
+                    android:contentDescription="@string/imageview_screen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginEnd="6dp"
+                    app:srcCompat="@drawable/screen_stacked" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/switch_menu_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="@string/write_slot_file" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/create_blank"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:text="@string/create_blank" />
-
-        <include
-            layout="@layout/number_picker"
-            android:id="@+id/number_picker" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/write_slot_count"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
             android:layout_marginBottom="10dp"
-            android:text="@string/write_slots" />
+            android:textOff="@string/view_device_options"
+            android:textOn="@string/view_amiibo_details"/>
 
         <include
             layout="@layout/write_list_layout"
             android:id="@+id/write_list_layout" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="-4dp"
-        android:layout_marginBottom="10dp"
-        android:orientation="horizontal" >
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/screen_layered"
-            android:contentDescription="@string/imageview_screen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:layout_marginLeft="6dp"
-            android:layout_marginStart="6dp"
-            android:layout_marginRight="3dp"
-            android:layout_marginEnd="3dp"
-            app:srcCompat="@drawable/screen_layered" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/screen_stacked"
-            android:contentDescription="@string/imageview_screen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:layout_marginLeft="3dp"
-            android:layout_marginStart="3dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginEnd="6dp"
-            app:srcCompat="@drawable/screen_stacked" />
-    </LinearLayout>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

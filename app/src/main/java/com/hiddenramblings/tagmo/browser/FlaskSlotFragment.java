@@ -106,10 +106,11 @@ public class FlaskSlotFragment extends Fragment implements
     private AppCompatButton writeSlots;
     private AppCompatButton clearSlots;
     private LinearLayout slotOptionsMenu;
+    private AppCompatToggleButton switchMenuOptions;
     private LinearLayout writeSlotsLayout;
     private RecyclerView amiiboFilesView;
     private Snackbar statusBar;
-    private Dialog uploadDialog;
+    private Dialog processDialog;
 
     private BrowserSettings settings;
     private BottomSheetBehavior<View> bottomSheetBehavior;
@@ -162,6 +163,8 @@ public class FlaskSlotFragment extends Fragment implements
 
                         @Override
                         public void onFlaskStatusChanged(JSONObject jsonObject) {
+                            if (null != processDialog && processDialog.isShowing())
+                                processDialog.dismiss();
                             serviceFlask.getDeviceAmiibo();
                         }
 
@@ -268,10 +271,10 @@ public class FlaskSlotFragment extends Fragment implements
                         }
 
                         @Override
-                        public void onFlaskFilesUploaded() {
+                        public void onFlaskProcessFinish() {
                             requireActivity().runOnUiThread(() -> {
-                                if (null != uploadDialog && uploadDialog.isShowing())
-                                    uploadDialog.dismiss();
+                                if (null != processDialog && processDialog.isShowing())
+                                    processDialog.dismiss();
                             });
                         }
 
@@ -378,14 +381,16 @@ public class FlaskSlotFragment extends Fragment implements
             flaskDetails.setLayoutManager(new LinearLayoutManager(activity));
 
         flaskStats = rootLayout.findViewById(R.id.flask_stats);
-        AppCompatToggleButton switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn);
+        switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn);
         slotOptionsMenu = rootLayout.findViewById(R.id.slot_options_menu);
         AppCompatButton writeFile = rootLayout.findViewById(R.id.write_slot_file);
         AppCompatButton createBlank = rootLayout.findViewById(R.id.create_blank);
         flaskSlotCount = rootLayout.findViewById(R.id.number_picker);
         flaskSlotCount.setMaxValue(maxSlotCount);
         writeSlots = rootLayout.findViewById(R.id.write_slot_count);
+        writeSlots.setText(getString(R.string.write_slots, 1));
         clearSlots = rootLayout.findViewById(R.id.clear_slot_count);
+        clearSlots.setText(getString(R.string.clear_slots, 0));
         writeSlotsLayout = rootLayout.findViewById(R.id.write_list_layout);
         amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list);
         // amiiboFilesView.setHasFixedSize(true);
@@ -491,7 +496,7 @@ public class FlaskSlotFragment extends Fragment implements
                 @Override
                 public void onAmiiboClicked(AmiiboFile amiiboFile) {
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    showUploadingNotice();
+                    showProcessingNotice(true);
                     uploadAmiiboFile(amiiboFile);
                 }
 
@@ -523,6 +528,7 @@ public class FlaskSlotFragment extends Fragment implements
 
         clearSlots.setOnClickListener(view1 -> {
             onBottomSheetChanged(false);
+            showProcessingNotice(false);
             serviceFlask.clearStorage(currentCount);
         });
 
@@ -548,8 +554,9 @@ public class FlaskSlotFragment extends Fragment implements
     private void onBottomSheetChanged(boolean hasAmiibo) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         amiiboCard.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
-        slotOptionsMenu.setVisibility(!hasAmiibo ? View.VISIBLE : View.GONE);
-        writeSlotsLayout.setVisibility(hasAmiibo ? View.GONE : View.VISIBLE);
+        switchMenuOptions.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
+        slotOptionsMenu.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
+        writeSlotsLayout.setVisibility(!hasAmiibo ? View.VISIBLE : View.GONE);
     }
 
     void setAmiiboInfoText(TextView textView, CharSequence text) {
@@ -742,9 +749,13 @@ public class FlaskSlotFragment extends Fragment implements
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
         if (null != amiiboList && amiiboList.size() == flaskSlotCount.getValue()) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            showUploadingNotice();
+            showProcessingNotice(true);
             for (int i = 0; i < amiiboList.size(); i++) {
-                uploadAmiiboFile(amiiboList.get(i), i == amiiboList.size() - 1);
+                int index = i;
+                flaskHandler.postDelayed(() ->
+                        uploadAmiiboFile(
+                                amiiboList.get(index), index == amiiboList.size() - 1
+                        ), 30L * i);
             }
         }
     }
@@ -763,9 +774,8 @@ public class FlaskSlotFragment extends Fragment implements
                     Debug.Warn(e);
                 }
             }
-            if (null != amiibo) serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo);
+            if (null != amiibo) serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo, complete);
         }
-        if (complete) serviceFlask.uploadFilesComplete();
     }
 
     private void uploadAmiiboFile(AmiiboFile amiiboFile) {
@@ -828,12 +838,16 @@ public class FlaskSlotFragment extends Fragment implements
         }
     }
 
-    private void showUploadingNotice() {
+    private void showProcessingNotice(boolean upload) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setView(R.layout.upload_dialog);
-        uploadDialog = builder.create();
-        uploadDialog.show();
-        uploadDialog.getWindow().getDecorView().setKeepScreenOn(true);
+        View view = getLayoutInflater().inflate(R.layout.dialog_process, null);
+        ((TextView) view.findViewById(R.id.process_text)).setText(
+                upload ? R.string.flask_upload : R.string.flask_remove
+        );
+        builder.setView(view);
+        processDialog = builder.create();
+        processDialog.show();
+        processDialog.getWindow().getDecorView().setKeepScreenOn(true);
     }
 
     private void showPurchaseNotice() {

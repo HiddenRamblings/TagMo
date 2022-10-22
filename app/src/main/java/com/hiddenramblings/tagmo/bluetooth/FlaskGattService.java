@@ -29,6 +29,7 @@ import android.util.Base64;
 import androidx.annotation.RequiresApi;
 
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import org.json.JSONArray;
@@ -128,7 +129,7 @@ public class FlaskGattService extends Service {
         void onFlaskListRetrieved(JSONArray jsonArray);
         void onFlaskRangeRetrieved(JSONArray jsonArray);
         void onFlaskFilesDownload(String dataString);
-        void onFlaskFilesUploaded();
+        void onFlaskProcessFinish();
         void onGattConnectionLost();
     }
 
@@ -229,7 +230,7 @@ public class FlaskGattService extends Service {
                             Debug.Warn(e);
                         }
                         response = new StringBuilder();
-                        if (rangeIndex == 0 && null != listener) listener.onFlaskFilesUploaded();
+                        if (rangeIndex == 0 && null != listener) listener.onFlaskProcessFinish();
                     }
                 } else if (progress.startsWith("tag.remove")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
@@ -576,7 +577,6 @@ public class FlaskGattService extends Service {
         setCharacteristicNotification(mCharacteristicTX, true);
     }
 
-    @SuppressWarnings("unused")
     private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = GattArray.byteToPortions(value, maxTransmissionUnit);
         int commandQueue = outgoingCallbacks.size() + 1 + chunks.size();
@@ -638,8 +638,28 @@ public class FlaskGattService extends Service {
         }
     }
 
+    public void queueByteCharacteristic(byte[] value, int index) {
+        if (null == mCharacteristicTX) {
+            try {
+                setFlaskCharacteristicTX();
+            } catch (UnsupportedOperationException e) {
+                Debug.Warn(e);
+            }
+        }
+
+        outgoingCallbacks.add(index, () -> delayedWriteCharacteristic(value));
+
+        if (outgoingCallbacks.size() == 1) {
+            outgoingCallbacks.get(0).run();
+        }
+    }
+
     public void delayedTagCharacteristic(String value) {
         queueTagCharacteristic(value, outgoingCallbacks.size());
+    }
+
+    public void delayedByteCharacteric(byte[] value) {
+        queueByteCharacteristic(value, outgoingCallbacks.size());
     }
 
     public void promptTagCharacteristic(String value) {
@@ -667,15 +687,15 @@ public class FlaskGattService extends Service {
         queueScreenCharacteristic(value, outgoingCallbacks.size());
     }
     
-    public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo) {
+    public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo, boolean complete) {
         delayedTagCharacteristic("startTagUpload(" + amiiboData.length + ")");
         List<String> chunks = GattArray.stringToPortions(Base64.encodeToString(
                 amiiboData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
         ), 128);
         for (int i = 0; i < chunks.size(); i+=1) {
             final String chunk = chunks.get(i);
-            delayedTagCharacteristic(
-                    "tagUploadChunk(\"" + chunk + "\")"
+            delayedByteCharacteric(
+                    ("tag.tagUploadChunk(\"" + chunk + "\")\n").getBytes(CharsetCompat.UTF_8)
             );
         }
         String flaskTail = Integer.toString(Integer.parseInt(
@@ -689,11 +709,10 @@ public class FlaskGattService extends Service {
                 : nameUnicode;
         delayedTagCharacteristic("saveUploadedTag(\""
                 + amiiboName + "|" + flaskTail + "|0\")");
-    }
-
-    public void uploadFilesComplete() {
-        delayedTagCharacteristic("uploadsComplete()");
-        delayedTagCharacteristic("getList()");
+        if (complete) {
+            delayedTagCharacteristic("uploadsComplete()");
+            delayedTagCharacteristic("getList()");
+        }
     }
 
     public void setActiveAmiibo(String name, String tail) {

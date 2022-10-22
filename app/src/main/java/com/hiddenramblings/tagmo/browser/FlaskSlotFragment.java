@@ -60,10 +60,10 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.FlaskTag;
-import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter;
-import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler;
 import com.hiddenramblings.tagmo.bluetooth.FlaskGattService;
+import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter;
+import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
@@ -102,13 +102,10 @@ public class FlaskSlotFragment extends Fragment implements
 
     private RecyclerView flaskDetails;
     private TextView flaskStats;
-    private AppCompatButton writeFile;
-    private AppCompatButton createBlank;
     private NumberPicker flaskSlotCount;
     private AppCompatButton writeSlots;
     private AppCompatButton clearSlots;
     private LinearLayout slotOptionsMenu;
-    private AppCompatToggleButton switchMenuOptions;
     private LinearLayout writeSlotsLayout;
     private RecyclerView amiiboFilesView;
     private Snackbar statusBar;
@@ -381,10 +378,10 @@ public class FlaskSlotFragment extends Fragment implements
             flaskDetails.setLayoutManager(new LinearLayoutManager(activity));
 
         flaskStats = rootLayout.findViewById(R.id.flask_stats);
-        switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn);
+        AppCompatToggleButton switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn);
         slotOptionsMenu = rootLayout.findViewById(R.id.slot_options_menu);
-        writeFile = rootLayout.findViewById(R.id.write_slot_file);
-        createBlank = rootLayout.findViewById(R.id.create_blank);
+        AppCompatButton writeFile = rootLayout.findViewById(R.id.write_slot_file);
+        AppCompatButton createBlank = rootLayout.findViewById(R.id.create_blank);
         flaskSlotCount = rootLayout.findViewById(R.id.number_picker);
         flaskSlotCount.setMaxValue(maxSlotCount);
         writeSlots = rootLayout.findViewById(R.id.write_slot_count);
@@ -526,14 +523,7 @@ public class FlaskSlotFragment extends Fragment implements
 
         clearSlots.setOnClickListener(view1 -> {
             onBottomSheetChanged(false);
-            serviceFlask.clearStorage();
-            FlaskSlotAdapter adapter = (FlaskSlotAdapter) flaskDetails.getAdapter();
-            if (null != adapter) {
-                adapter.setFlaskAmiibo(new ArrayList<>());
-                flaskDetails.post(() -> {
-                    adapter.notifyItemRangeRemoved(0, currentCount);
-                });
-            }
+            serviceFlask.clearStorage(currentCount);
         });
 
         createBlank.setOnClickListener(view1 -> serviceFlask.createBlankTag());

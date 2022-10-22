@@ -199,6 +199,9 @@ public class FlaskSlotFragment extends Fragment implements
                                         adapter.notifyItemRangeInserted(
                                                 0, currentCount
                                         );
+                                    } else {
+                                        amiiboTile.setVisibility(View.INVISIBLE);
+                                        getFlaskButtonState();
                                     }
                                 });
                             });
@@ -234,18 +237,22 @@ public class FlaskSlotFragment extends Fragment implements
                         @Override
                         public void onFlaskActiveChanged(JSONObject jsonObject) {
                             try {
-                                Amiibo amiibo = getAmiiboByTail(jsonObject
-                                        .getString("name").split("\\|"));
+                                String name = jsonObject.getString("name");
+                                if ("undefined".equals(name)) {
+                                    resetActiveSlot();
+                                    return;
+                                }
+                                Amiibo amiibo = getAmiiboByTail(name.split("\\|"));
+                                String index = jsonObject.getString("index");
                                 getActiveAmiibo(amiibo, amiiboTile);
                                 if (bottomSheetBehavior.getState() ==
                                         BottomSheetBehavior.STATE_COLLAPSED)
                                     getActiveAmiibo(amiibo, amiiboCard);
-                                String index = jsonObject.getString("index");
                                 prefs.flaskActiveSlot(Integer.parseInt(index));
                                 flaskDetails.post(() -> flaskStats.setText(
                                         getString(R.string.flask_count, index, currentCount)
                                 ));
-                                getFlaskDeviceStats();
+                                getFlaskButtonState();
                             } catch (JSONException | NullPointerException ex) {
                                 Debug.Warn(ex);
                             }
@@ -515,10 +522,16 @@ public class FlaskSlotFragment extends Fragment implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        eraseSlots.setOnClickListener(view1 -> {
-            showProcessingNotice(false);
-            serviceFlask.clearStorage(currentCount);
-        });
+        eraseSlots.setOnClickListener(view1 -> new AlertDialog.Builder(requireContext())
+                .setMessage(R.string.flask_erase_confirm)
+                .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                    showProcessingNotice(false);
+                    serviceFlask.clearStorage(currentCount);
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .show());
 
         createBlank.setOnClickListener(view1 -> serviceFlask.createBlankTag());
 
@@ -529,7 +542,7 @@ public class FlaskSlotFragment extends Fragment implements
             serviceFlask.setFlaskFace(true);
         });
 
-        getFlaskDeviceStats();
+        getFlaskButtonState();
         onBottomSheetChanged(SHEET.MENU);
     }
 
@@ -576,7 +589,7 @@ public class FlaskSlotFragment extends Fragment implements
         }
     }
 
-    private void getFlaskDeviceStats() {
+    private void getFlaskButtonState() {
         flaskDetails.post(() -> {
             int openSlots = maxSlotCount - currentCount;
             flaskSlotCount.setValue(openSlots);
@@ -595,6 +608,23 @@ public class FlaskSlotFragment extends Fragment implements
                 eraseSlots.setText(getString(R.string.slots_empty));
             }
         });
+    }
+
+    private void resetActiveSlot() {
+        FlaskSlotAdapter adapter = (FlaskSlotAdapter)
+                flaskDetails.getAdapter();
+        if (null != adapter) {
+            Amiibo amiibo = adapter.getItem(0);
+            if (amiibo instanceof FlaskTag) {
+                serviceFlask.setActiveAmiibo(
+                        amiibo.name, new String(TagArray.longToBytes(amiibo.id))
+                );
+            } else {
+                serviceFlask.setActiveAmiibo(
+                        amiibo.name, amiibo.getFlaskTail()
+                );
+            }
+        }
     }
 
     private void getActiveAmiibo(Amiibo active, View amiiboView) {

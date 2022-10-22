@@ -236,8 +236,8 @@
 
     <string name="view_device_options">Switch to Device Options</string>
     <string name="view_amiibo_details">Switch to amiibo Details</string>
-    <string name="write_open_banks">Write %1$d Banks</string>
-    <string name="erase_open_banks">Erase %1$d Banks</string>
+    <string name="write_open_banks">Write %1$d banks</string>
+    <string name="erase_open_banks">Erase %1$d banks</string>
     <string name="edit_bank_count">Edit Bank Count for N2 Elite</string>
     <string name="bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
     <string name="bank_number">Bank %1$d</string>

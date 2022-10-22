@@ -135,7 +135,7 @@ public class FlaskSlotFragment extends Fragment implements
     }
     private STATE noticeState = STATE.NONE;
 
-    private enum DISPLAY {
+    private enum SHEET {
         AMIIBO,
         MENU,
         WRITE
@@ -393,7 +393,7 @@ public class FlaskSlotFragment extends Fragment implements
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     if (writeSlotsLayout.getVisibility() == View.VISIBLE)
-                        onBottomSheetChanged(DISPLAY.MENU);
+                        onBottomSheetChanged(SHEET.MENU);
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
@@ -438,13 +438,11 @@ public class FlaskSlotFragment extends Fragment implements
 
         switchMenuOptions.setOnClickListener(view1 -> {
             if (slotOptionsMenu.isShown()) {
-                amiiboCard.setVisibility(View.VISIBLE);
-                slotOptionsMenu.setVisibility(View.GONE);
+                onBottomSheetChanged(SHEET.AMIIBO);
             } else {
-                slotOptionsMenu.setVisibility(View.VISIBLE);
-                amiiboCard.setVisibility(View.GONE);
+                onBottomSheetChanged(SHEET.MENU);
             }
-            flaskDetails.requestLayout();
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
         SearchView searchView = rootLayout.findViewById(R.id.amiibo_search);
@@ -479,7 +477,7 @@ public class FlaskSlotFragment extends Fragment implements
         }
 
         writeFile.setOnClickListener(view1 -> {
-            onBottomSheetChanged(DISPLAY.WRITE);
+            onBottomSheetChanged(SHEET.WRITE);
             searchView.setQuery(settings.getQuery(), true);
             searchView.clearFocus();
             writeFileAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
@@ -509,7 +507,7 @@ public class FlaskSlotFragment extends Fragment implements
         this.settings.addChangeListener(writeListAdapter);
 
         writeSlots.setOnClickListener(view1 -> {
-            onBottomSheetChanged(DISPLAY.WRITE);
+            onBottomSheetChanged(SHEET.WRITE);
             searchView.setQuery(settings.getQuery(), true);
             searchView.clearFocus();
             amiiboFilesView.setAdapter(writeListAdapter);
@@ -532,7 +530,7 @@ public class FlaskSlotFragment extends Fragment implements
         });
 
         getFlaskDeviceStats();
-        onBottomSheetChanged(DISPLAY.MENU);
+        onBottomSheetChanged(SHEET.MENU);
     }
 
     public RecyclerView getAmiibosView() {
@@ -542,9 +540,9 @@ public class FlaskSlotFragment extends Fragment implements
         return bottomSheetBehavior;
     }
 
-    private void onBottomSheetChanged(DISPLAY display) {
+    private void onBottomSheetChanged(SHEET sheet) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        switch (display) {
+        switch (sheet) {
             case AMIIBO:
                 amiiboCard.setVisibility(View.VISIBLE);
                 switchMenuOptions.setVisibility(View.VISIBLE);
@@ -998,7 +996,7 @@ public class FlaskSlotFragment extends Fragment implements
     @Override
     public void onAmiiboClicked(Amiibo amiibo) {
         getActiveAmiibo(amiibo, amiiboCard);
-        onBottomSheetChanged(DISPLAY.AMIIBO);
+        onBottomSheetChanged(SHEET.AMIIBO);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         if (amiibo instanceof FlaskTag) {
             toolbar.getMenu().findItem(R.id.mnu_backup).setVisible(false);

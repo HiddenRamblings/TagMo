@@ -239,8 +239,6 @@ public class BrowserActivity extends AppCompatActivity implements
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
         imageAmiibo = findViewById(R.id.imageAmiibo);
 
-        onBackButtonEnabled();
-
         if (Debug.isOlder(Build.VERSION_CODES.M)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
@@ -2628,7 +2626,10 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
-    private void onBackButtonEnabled() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -2646,11 +2647,5 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         });
-    }
-
-    @Override
-    protected void onRestart() {
-        onBackButtonEnabled();
-        super.onRestart();
     }
 }

@@ -114,6 +114,13 @@ public class EliteBankFragment extends Fragment implements
     }
     private CLICKED status = CLICKED.NOTHING;
 
+    private enum SHEET {
+        LOCKED,
+        AMIIBO,
+        MENU,
+        WRITE
+    }
+
     private final Handler eliteHandler = new Handler(Looper.getMainLooper());
 
     @Override
@@ -205,7 +212,7 @@ public class EliteBankFragment extends Fragment implements
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     if (writeBankLayout.getVisibility() == View.VISIBLE)
-                        onBottomSheetChanged(true, false);
+                        onBottomSheetChanged(SHEET.MENU);
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
@@ -265,13 +272,11 @@ public class EliteBankFragment extends Fragment implements
 
         switchMenuOptions.setOnClickListener(view1 -> {
             if (bankOptionsMenu.isShown()) {
-                amiiboCard.setVisibility(View.VISIBLE);
-                bankOptionsMenu.setVisibility(View.GONE);
+                onBottomSheetChanged(SHEET.AMIIBO);
             } else {
-                bankOptionsMenu.setVisibility(View.VISIBLE);
-                amiiboCard.setVisibility(View.GONE);
+                onBottomSheetChanged(SHEET.MENU);
             }
-            amiibosView.requestLayout();
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
         searchView = rootLayout.findViewById(R.id.amiibo_search);
@@ -302,7 +307,7 @@ public class EliteBankFragment extends Fragment implements
         this.settings.addChangeListener(writeListAdapter);
 
         writeOpenBanks.setOnClickListener(view1 -> {
-            onBottomSheetChanged(false, false);
+            onBottomSheetChanged(SHEET.WRITE);
             searchView.setQuery(settings.getQuery(), true);
             searchView.clearFocus();
             amiiboFilesView.setAdapter(writeListAdapter);
@@ -322,7 +327,7 @@ public class EliteBankFragment extends Fragment implements
         rootLayout.findViewById(R.id.edit_bank_count).setOnClickListener(view1 -> {
             if (prefs.eliteActiveBank() >= eliteBankCount.getValue()) {
                 new Toasty(activity).Short(R.string.fail_active_oob);
-                onBottomSheetChanged(true, false);
+                onBottomSheetChanged(SHEET.MENU);
                 return;
             }
             Intent configure = new Intent(activity, NfcActivity.class);
@@ -331,8 +336,6 @@ public class EliteBankFragment extends Fragment implements
             configure.setAction(NFCIntent.ACTION_SET_BANK_COUNT);
             configure.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
             onOpenBanksActivity.launch(configure);
-
-            onBottomSheetChanged(true, false);
         });
 
         view.findViewById(R.id.lock_elite).setOnClickListener(view1 ->
@@ -422,13 +425,38 @@ public class EliteBankFragment extends Fragment implements
         }
     }
 
-    private void onBottomSheetChanged(boolean isMenu, boolean hasAmiibo) {
+    private void onBottomSheetChanged(SHEET sheet) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        amiiboCard.setVisibility(isMenu && hasAmiibo ? View.VISIBLE : View.GONE);
-        switchMenuOptions.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
-        bankOptionsMenu.setVisibility(isMenu && !hasAmiibo ? View.VISIBLE : View.GONE);
-        securityOptions.setVisibility(isMenu || hasAmiibo ? View.VISIBLE : View.GONE);
-        writeBankLayout.setVisibility(!isMenu && !hasAmiibo ? View.VISIBLE : View.GONE);
+        switch (sheet) {
+            case LOCKED:
+                amiiboCard.setVisibility(View.GONE);
+                switchMenuOptions.setVisibility(View.GONE);
+                bankOptionsMenu.setVisibility(View.GONE);
+                securityOptions.setVisibility(View.VISIBLE);
+                writeBankLayout.setVisibility(View.GONE);
+                break;
+            case AMIIBO:
+                amiiboCard.setVisibility(View.VISIBLE);
+                switchMenuOptions.setVisibility(View.VISIBLE);
+                bankOptionsMenu.setVisibility(View.GONE);
+                securityOptions.setVisibility(View.GONE);
+                writeBankLayout.setVisibility(View.GONE);
+                break;
+            case MENU:
+                amiiboCard.setVisibility(View.GONE);
+                switchMenuOptions.setVisibility(View.VISIBLE);
+                bankOptionsMenu.setVisibility(View.VISIBLE);
+                securityOptions.setVisibility(View.VISIBLE);
+                writeBankLayout.setVisibility(View.GONE);
+                break;
+            case WRITE:
+                amiiboCard.setVisibility(View.GONE);
+                switchMenuOptions.setVisibility(View.GONE);
+                bankOptionsMenu.setVisibility(View.GONE);
+                securityOptions.setVisibility(View.GONE);
+                writeBankLayout.setVisibility(View.VISIBLE);
+                break;
+        }
         amiibosView.requestLayout();
     }
 
@@ -488,7 +516,7 @@ public class EliteBankFragment extends Fragment implements
 
         if (status == CLICKED.ERASE_BANK) {
             status = CLICKED.NOTHING;
-            onBottomSheetChanged(true, false);
+            onBottomSheetChanged(SHEET.MENU);
             amiibos.set(clickedPosition, null);
         }
     });
@@ -588,12 +616,10 @@ public class EliteBankFragment extends Fragment implements
         intent.putExtra(NFCIntent.EXTRA_CURRENT_BANK, position);
         intent.putExtras(args);
         onUpdateTagResult.launch(intent);
-        onBottomSheetChanged(true, true);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     private void displayWriteDialog(int position) {
-        onBottomSheetChanged(false, false);
+        onBottomSheetChanged(SHEET.WRITE);
         searchView.setQuery(settings.getQuery(), true);
         searchView.clearFocus();
         writeFileAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
@@ -875,12 +901,12 @@ public class EliteBankFragment extends Fragment implements
                         collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
                         collection.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, amiiboList);
                         onOpenBanksActivity.launch(collection);
-                        onBottomSheetChanged(true, false);
+                        onBottomSheetChanged(SHEET.MENU);
                         dialog.dismiss();
                     })
                     .setNegativeButton(R.string.cancel, (dialog, which) -> {
                         amiiboList.clear();
-                        onBottomSheetChanged(true, false);
+                        onBottomSheetChanged(SHEET.MENU);
                         dialog.dismiss();
                     })
                     .show();
@@ -898,8 +924,6 @@ public class EliteBankFragment extends Fragment implements
             int active_bank = requireArguments().getInt(NFCIntent.EXTRA_ACTIVE_BANK,
                     prefs.eliteActiveBank());
 
-            setBottomSheetSecure(false);
-
             ((TextView) rootLayout.findViewById(R.id.hardware_info)).setText(getString(
                     R.string.elite_signature, requireArguments().getString(NFCIntent.EXTRA_SIGNATURE)
             ));
@@ -912,18 +936,18 @@ public class EliteBankFragment extends Fragment implements
             eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
 
             if (null == amiibos.get(active_bank)) {
-                onBottomSheetChanged(true, false);
+                onBottomSheetChanged(SHEET.MENU);
             } else {
                 updateAmiiboView(amiiboCard, null, amiibos.get(active_bank).id, active_bank);
                 updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
-                onBottomSheetChanged(true, true);
+                onBottomSheetChanged(SHEET.AMIIBO);
                 eliteHandler.postDelayed(() -> bottomSheetBehavior
                         .setState(BottomSheetBehavior.STATE_EXPANDED), TagMo.uiDelay);
             }
 
             setArguments(null);
         } catch (Exception ignored) {
-            if (null == amiibos || amiibos.isEmpty()) setBottomSheetSecure(true);
+            if (null == amiibos || amiibos.isEmpty()) onBottomSheetChanged(SHEET.LOCKED);
         }
     }
 
@@ -965,7 +989,7 @@ public class EliteBankFragment extends Fragment implements
         }
         clickedPosition = position;
         status = CLICKED.NOTHING;
-        onBottomSheetChanged(true, true);
+        onBottomSheetChanged(SHEET.AMIIBO);
         if (null != amiibo.data  && amiibo.index == position) {
             updateAmiiboView(amiiboCard, amiibo.data, -1, position);
         } else if (amiibo.id != 0) {
@@ -988,13 +1012,6 @@ public class EliteBankFragment extends Fragment implements
         else
             displayWriteDialog(position);
         return true;
-    }
-
-    private void setBottomSheetSecure(boolean hidden) {
-        bankStats.setVisibility(hidden ? View.GONE : View.VISIBLE);
-        amiiboCard.setVisibility(hidden ? View.GONE : View.VISIBLE);
-        bankOptionsMenu.setVisibility(hidden ? View.GONE : View.VISIBLE);
-        switchMenuOptions.setVisibility(hidden ? View.GONE : View.VISIBLE);
     }
 }
 

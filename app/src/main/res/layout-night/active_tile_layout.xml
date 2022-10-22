@@ -53,7 +53,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="2dp"
                         android:text="@string/amiibo_name_caps"
-                        android:textColor="@android:color/white"
+                        android:textColor="@android:color/black"
                         android:textSize="16sp"/>
 
                     <LinearLayout
@@ -70,7 +70,7 @@
                             android:layout_weight="1"
                             android:gravity="start"
                             android:text="@string/amiibo_id_caps"
-                            android:textColor="@android:color/white"
+                            android:textColor="@android:color/black"
                             android:textSize="10sp"/>
 
                         <View
@@ -84,7 +84,7 @@
                             android:layout_weight="1"
                             android:gravity="end"
                             android:text="@string/amiibo_type_caps"
-                            android:textColor="@android:color/white"
+                            android:textColor="@android:color/black"
                             android:textSize="10sp"/>
                     </LinearLayout>
 
@@ -102,7 +102,7 @@
                             android:layout_weight="1"
                             android:gravity="start"
                             android:text="@string/amiibo_game_caps"
-                            android:textColor="@android:color/white"
+                            android:textColor="@android:color/black"
                             android:textSize="10sp" />
 
                         <View
@@ -116,7 +116,7 @@
                             android:layout_weight="1"
                             android:gravity="end"
                             android:text="@string/amiibo_series_caps"
-                            android:textColor="@android:color/white"
+                            android:textColor="@android:color/black"
                             android:textSize="10sp"/>
                     </LinearLayout>
                 </RelativeLayout>
@@ -128,7 +128,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:text="@string/amiibo_character_caps"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:textSize="10sp"
                 android:visibility="gone"/>
         </FrameLayout>

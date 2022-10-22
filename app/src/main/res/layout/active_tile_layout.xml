@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/divider_outline"
+            android:background="@drawable/active_outline"
             android:padding="0dp">
 
             <LinearLayout

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >
+    <solid android:color="?attr/colorAccent" />
+    <stroke android:width="2dip" android:color="@color/highlightWhite"/>
+    <corners android:radius="@dimen/card_radius"/>
+</shape>

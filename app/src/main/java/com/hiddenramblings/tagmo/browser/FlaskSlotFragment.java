@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -103,8 +104,11 @@ public class FlaskSlotFragment extends Fragment implements
     private TextView flaskStats;
     private AppCompatButton writeFile;
     private AppCompatButton createBlank;
-    private NumberPicker writeCount;
+    private NumberPicker flaskSlotCount;
     private AppCompatButton writeSlots;
+    private AppCompatButton clearSlots;
+    private LinearLayout slotOptionsMenu;
+    private AppCompatToggleButton switchMenuOptions;
     private LinearLayout writeSlotsLayout;
     private RecyclerView amiiboFilesView;
     private Snackbar statusBar;
@@ -121,6 +125,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private String profileFlask;
     private String addressFlask;
+    private int maxSlotCount = 85;
     private int currentCount;
 
     private enum STATE {
@@ -131,8 +136,6 @@ public class FlaskSlotFragment extends Fragment implements
         PURCHASE
     }
     private STATE noticeState = STATE.NONE;
-
-
 
     private final Handler flaskHandler = new Handler(Looper.getMainLooper());
 
@@ -185,9 +188,13 @@ public class FlaskSlotFragment extends Fragment implements
                                 flaskDetails.post(() -> {
                                     dismissSnackbarNotice(true);
                                     flaskDetails.setAdapter(adapter);
+                                    if (currentCount > 0) {
+                                        serviceFlask.getActiveAmiibo();
+                                        adapter.notifyItemRangeInserted(
+                                                0, currentCount
+                                        );
+                                    }
                                 });
-                                if (flaskAmiibos.size() > 0)
-                                    serviceFlask.getActiveAmiibo();
                             });
                         }
                         
@@ -218,7 +225,6 @@ public class FlaskSlotFragment extends Fragment implements
                             });
                         }
 
-                        @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onFlaskActiveChanged(JSONObject jsonObject) {
                             try {
@@ -231,14 +237,24 @@ public class FlaskSlotFragment extends Fragment implements
                                 String index = jsonObject.getString("index");
                                 prefs.flaskActiveSlot(Integer.parseInt(index));
                                 flaskDetails.post(() -> {
-                                    if (null != flaskDetails.getAdapter())
-                                        flaskDetails.getAdapter().notifyDataSetChanged();
                                     flaskStats.setText(getString(
                                             R.string.flask_count, index, currentCount));
-                                    int maxSlots = 85 - currentCount;
-                                    writeCount.setMaxValue(maxSlots);
-                                    writeCount.setValue(maxSlots);
-                                    writeSlots.setText(getString(R.string.write_slots, maxSlots));
+                                    int openSlots = maxSlotCount - currentCount;
+                                    flaskSlotCount.setValue(openSlots);
+                                    if (openSlots > 0) {
+                                        writeSlots.setEnabled(true);
+                                        writeSlots.setText(getString(R.string.write_slots, openSlots));
+                                    } else {
+                                        writeSlots.setEnabled(false);
+                                        writeSlots.setText(getString(R.string.slots_full));
+                                    }
+                                    if (currentCount > 0) {
+                                        clearSlots.setEnabled(true);
+                                        clearSlots.setText(getString(R.string.clear_slots, currentCount));
+                                    } else {
+                                        clearSlots.setEnabled(false);
+                                        clearSlots.setText(getString(R.string.slots_empty));
+                                    }
                                 });
                             } catch (JSONException | NullPointerException ex) {
                                 Debug.Warn(ex);
@@ -365,12 +381,14 @@ public class FlaskSlotFragment extends Fragment implements
             flaskDetails.setLayoutManager(new LinearLayoutManager(activity));
 
         flaskStats = rootLayout.findViewById(R.id.flask_stats);
+        switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn);
+        slotOptionsMenu = rootLayout.findViewById(R.id.slot_options_menu);
         writeFile = rootLayout.findViewById(R.id.write_slot_file);
         createBlank = rootLayout.findViewById(R.id.create_blank);
-        writeCount = rootLayout.findViewById(R.id.number_picker);
-        writeCount.setMaxValue(85);
+        flaskSlotCount = rootLayout.findViewById(R.id.number_picker);
+        flaskSlotCount.setMaxValue(maxSlotCount);
         writeSlots = rootLayout.findViewById(R.id.write_slot_count);
-
+        clearSlots = rootLayout.findViewById(R.id.clear_slot_count);
         writeSlotsLayout = rootLayout.findViewById(R.id.write_list_layout);
         amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list);
         // amiiboFilesView.setHasFixedSize(true);
@@ -426,6 +444,17 @@ public class FlaskSlotFragment extends Fragment implements
         });
         this.settings.addChangeListener(writeFileAdapter);
 
+        switchMenuOptions.setOnClickListener(view1 -> {
+            if (slotOptionsMenu.isShown()) {
+                amiiboCard.setVisibility(View.VISIBLE);
+                slotOptionsMenu.setVisibility(View.GONE);
+            } else {
+                slotOptionsMenu.setVisibility(View.VISIBLE);
+                amiiboCard.setVisibility(View.GONE);
+            }
+            flaskDetails.requestLayout();
+        });
+
         SearchView searchView = rootLayout.findViewById(R.id.amiibo_search);
         if (BuildConfig.WEAR_OS) {
             searchView.setVisibility(View.GONE);
@@ -478,8 +507,10 @@ public class FlaskSlotFragment extends Fragment implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        writeCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) ->
-                writeSlots.setText(getString(R.string.write_slots, valueNew)));
+        flaskSlotCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) -> {
+            if (maxSlotCount - currentCount > 0)
+                writeSlots.setText(getString(R.string.write_slots, valueNew));
+        });
 
         writeSlots.setOnClickListener(view1 -> {
             onBottomSheetChanged(false);
@@ -493,6 +524,18 @@ public class FlaskSlotFragment extends Fragment implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
+        clearSlots.setOnClickListener(view1 -> {
+            onBottomSheetChanged(false);
+            serviceFlask.clearStorage();
+            FlaskSlotAdapter adapter = (FlaskSlotAdapter) flaskDetails.getAdapter();
+            if (null != adapter) {
+                adapter.setFlaskAmiibo(new ArrayList<>());
+                flaskDetails.post(() -> {
+                    adapter.notifyItemRangeRemoved(0, currentCount);
+                });
+            }
+        });
+
         createBlank.setOnClickListener(view1 -> serviceFlask.createBlankTag());
 
         rootLayout.findViewById(R.id.screen_layered).setOnClickListener(view1 -> {
@@ -501,6 +544,8 @@ public class FlaskSlotFragment extends Fragment implements
         rootLayout.findViewById(R.id.screen_stacked).setOnClickListener(view1 -> {
             serviceFlask.setFlaskFace(true);
         });
+
+        slotOptionsMenu.setVisibility(View.GONE);
     }
 
     public RecyclerView getAmiibosView() {
@@ -513,10 +558,7 @@ public class FlaskSlotFragment extends Fragment implements
     private void onBottomSheetChanged(boolean hasAmiibo) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         amiiboCard.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
-        writeFile.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
-        createBlank.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
-        writeCount.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
-        writeSlots.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
+        slotOptionsMenu.setVisibility(!hasAmiibo ? View.VISIBLE : View.GONE);
         writeSlotsLayout.setVisibility(hasAmiibo ? View.GONE : View.VISIBLE);
     }
 
@@ -708,7 +750,7 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
-        if (null != amiiboList && amiiboList.size() == writeCount.getValue()) {
+        if (null != amiiboList && amiiboList.size() == flaskSlotCount.getValue()) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             showUploadingNotice();
             for (int i = 0; i < amiiboList.size(); i++) {

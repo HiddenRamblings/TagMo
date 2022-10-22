@@ -731,6 +731,10 @@ public class FlaskGattService extends Service {
         }
     }
 
+    public void clearStorage() {
+        delayedTagCharacteristic("remove()");
+    }
+
     public void downloadAmiibo(String name, String tail) {
         int reserved = tail.length() + 3; // |tail|#
         String nameUnicode = GattArray.stringToUnicode(name);

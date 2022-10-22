@@ -243,7 +243,8 @@
     <string name="bank_number">Bank %1$d</string>
 
     <string name="bank_select_details">Set Bank Number</string>
-    <string name="write_confirm">Write selections to N2 Elite?</string>
+    <string name="elite_write_confirm">Write selections to N2 Elite?</string>
+    <string name="elite_erase_confirm">Erase all banks from N2 Elite?</string>
     <string name="warn_delete_file">%1$s\nwill be deleted. Are you sure?</string>
     <string name="delete_missing">Cannot delete a scanned tag!</string>
     <string name="delete_virtual">Cannot delete a virtual tag!</string>
@@ -277,6 +278,7 @@
     <string name="slots_full">All Bluup Flask slots filled</string>
     <string name="slots_empty">Bluup Flask storage is empty</string>
     <string name="create_blank">Create blank virtual NFC tag</string>
+    <string name="flask_erase_confirm">Erase all slots from Bluup Flask?</string>
     <string name="flask_upload">Uploading binary&#8230;</string>
     <string name="flask_remove">Wiping slot data&#8230;</string>
     <string name="joy_con_invalid">Not a valid Joy-Con device!</string>

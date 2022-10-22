@@ -104,7 +104,7 @@ public class FlaskSlotFragment extends Fragment implements
     private TextView flaskStats;
     private NumberPicker flaskSlotCount;
     private AppCompatButton writeSlots;
-    private AppCompatButton clearSlots;
+    private AppCompatButton eraseSlots;
     private LinearLayout slotOptionsMenu;
     private AppCompatToggleButton switchMenuOptions;
     private LinearLayout writeSlotsLayout;
@@ -134,6 +134,12 @@ public class FlaskSlotFragment extends Fragment implements
         PURCHASE
     }
     private STATE noticeState = STATE.NONE;
+
+    private enum DISPLAY {
+        AMIIBO,
+        MENU,
+        WRITE
+    }
 
     private final Handler flaskHandler = new Handler(Looper.getMainLooper());
 
@@ -236,26 +242,10 @@ public class FlaskSlotFragment extends Fragment implements
                                     getActiveAmiibo(amiibo, amiiboCard);
                                 String index = jsonObject.getString("index");
                                 prefs.flaskActiveSlot(Integer.parseInt(index));
-                                flaskDetails.post(() -> {
-                                    flaskStats.setText(getString(
-                                            R.string.flask_count, index, currentCount));
-                                    int openSlots = maxSlotCount - currentCount;
-                                    flaskSlotCount.setValue(openSlots);
-                                    if (openSlots > 0) {
-                                        writeSlots.setEnabled(true);
-                                        writeSlots.setText(getString(R.string.write_slots, openSlots));
-                                    } else {
-                                        writeSlots.setEnabled(false);
-                                        writeSlots.setText(getString(R.string.slots_full));
-                                    }
-                                    if (currentCount > 0) {
-                                        clearSlots.setEnabled(true);
-                                        clearSlots.setText(getString(R.string.clear_slots, currentCount));
-                                    } else {
-                                        clearSlots.setEnabled(false);
-                                        clearSlots.setText(getString(R.string.slots_empty));
-                                    }
-                                });
+                                flaskDetails.post(() -> flaskStats.setText(
+                                        getString(R.string.flask_count, index, currentCount)
+                                ));
+                                getFlaskDeviceStats();
                             } catch (JSONException | NullPointerException ex) {
                                 Debug.Warn(ex);
                             }
@@ -389,8 +379,8 @@ public class FlaskSlotFragment extends Fragment implements
         flaskSlotCount.setMaxValue(maxSlotCount);
         writeSlots = rootLayout.findViewById(R.id.write_slot_count);
         writeSlots.setText(getString(R.string.write_slots, 1));
-        clearSlots = rootLayout.findViewById(R.id.clear_slot_count);
-        clearSlots.setText(getString(R.string.clear_slots, 0));
+        eraseSlots = rootLayout.findViewById(R.id.erase_slot_count);
+        eraseSlots.setText(getString(R.string.erase_slots, 0));
         writeSlotsLayout = rootLayout.findViewById(R.id.write_list_layout);
         amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list);
         // amiiboFilesView.setHasFixedSize(true);
@@ -403,7 +393,7 @@ public class FlaskSlotFragment extends Fragment implements
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     if (writeSlotsLayout.getVisibility() == View.VISIBLE)
-                        onBottomSheetChanged(true);
+                        onBottomSheetChanged(DISPLAY.MENU);
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp);
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp);
@@ -489,7 +479,7 @@ public class FlaskSlotFragment extends Fragment implements
         }
 
         writeFile.setOnClickListener(view1 -> {
-            onBottomSheetChanged(false);
+            onBottomSheetChanged(DISPLAY.WRITE);
             searchView.setQuery(settings.getQuery(), true);
             searchView.clearFocus();
             writeFileAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
@@ -514,20 +504,20 @@ public class FlaskSlotFragment extends Fragment implements
                 writeSlots.setText(getString(R.string.write_slots, valueNew));
         });
 
+        WriteTagAdapter writeListAdapter = new WriteTagAdapter(
+                settings, this::writeAmiiboCollection);
+        this.settings.addChangeListener(writeListAdapter);
+
         writeSlots.setOnClickListener(view1 -> {
-            onBottomSheetChanged(false);
+            onBottomSheetChanged(DISPLAY.WRITE);
             searchView.setQuery(settings.getQuery(), true);
             searchView.clearFocus();
-            WriteTagAdapter writeListAdapter = new WriteTagAdapter(
-                    settings, this::writeAmiiboCollection);
-            writeListAdapter.resetSelections();
-            this.settings.addChangeListener(writeListAdapter);
             amiiboFilesView.setAdapter(writeListAdapter);
+            writeListAdapter.resetSelections();
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        clearSlots.setOnClickListener(view1 -> {
-            onBottomSheetChanged(false);
+        eraseSlots.setOnClickListener(view1 -> {
             showProcessingNotice(false);
             serviceFlask.clearStorage(currentCount);
         });
@@ -541,7 +531,8 @@ public class FlaskSlotFragment extends Fragment implements
             serviceFlask.setFlaskFace(true);
         });
 
-        slotOptionsMenu.setVisibility(View.GONE);
+        getFlaskDeviceStats();
+        onBottomSheetChanged(DISPLAY.MENU);
     }
 
     public RecyclerView getAmiibosView() {
@@ -551,12 +542,29 @@ public class FlaskSlotFragment extends Fragment implements
         return bottomSheetBehavior;
     }
 
-    private void onBottomSheetChanged(boolean hasAmiibo) {
+    private void onBottomSheetChanged(DISPLAY display) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        amiiboCard.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
-        switchMenuOptions.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
-        slotOptionsMenu.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
-        writeSlotsLayout.setVisibility(!hasAmiibo ? View.VISIBLE : View.GONE);
+        switch (display) {
+            case AMIIBO:
+                amiiboCard.setVisibility(View.VISIBLE);
+                switchMenuOptions.setVisibility(View.VISIBLE);
+                slotOptionsMenu.setVisibility(View.GONE);
+                writeSlotsLayout.setVisibility(View.GONE);
+            break;
+            case MENU:
+                amiiboCard.setVisibility(View.GONE);
+                switchMenuOptions.setVisibility(View.VISIBLE);
+                slotOptionsMenu.setVisibility(View.VISIBLE);
+                writeSlotsLayout.setVisibility(View.GONE);
+                break;
+            case WRITE:
+                amiiboCard.setVisibility(View.GONE);
+                switchMenuOptions.setVisibility(View.GONE);
+                slotOptionsMenu.setVisibility(View.GONE);
+                writeSlotsLayout.setVisibility(View.VISIBLE);
+                break;
+        }
+        flaskDetails.requestLayout();
     }
 
     void setAmiiboInfoText(TextView textView, CharSequence text) {
@@ -568,6 +576,27 @@ public class FlaskSlotFragment extends Fragment implements
             textView.setText(text);
             textView.setEnabled(true);
         }
+    }
+
+    private void getFlaskDeviceStats() {
+        flaskDetails.post(() -> {
+            int openSlots = maxSlotCount - currentCount;
+            flaskSlotCount.setValue(openSlots);
+            if (openSlots > 0) {
+                writeSlots.setEnabled(true);
+                writeSlots.setText(getString(R.string.write_slots, openSlots));
+            } else {
+                writeSlots.setEnabled(false);
+                writeSlots.setText(getString(R.string.slots_full));
+            }
+            if (currentCount > 0) {
+                eraseSlots.setEnabled(true);
+                eraseSlots.setText(getString(R.string.erase_slots, currentCount));
+            } else {
+                eraseSlots.setEnabled(false);
+                eraseSlots.setText(getString(R.string.slots_empty));
+            }
+        });
     }
 
     private void getActiveAmiibo(Amiibo active, View amiiboView) {
@@ -587,7 +616,7 @@ public class FlaskSlotFragment extends Fragment implements
             String gameSeries = "";
             String amiiboImageUrl = null;
 
-            amiiboView.setVisibility(View.VISIBLE);
+            if (amiiboView == amiiboTile) amiiboView.setVisibility(View.VISIBLE);
             if (null == active) {
                 txtName.setText(R.string.no_tag_loaded);
                 txtTagId.setVisibility(View.INVISIBLE);
@@ -969,6 +998,7 @@ public class FlaskSlotFragment extends Fragment implements
     @Override
     public void onAmiiboClicked(Amiibo amiibo) {
         getActiveAmiibo(amiibo, amiiboCard);
+        onBottomSheetChanged(DISPLAY.AMIIBO);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         if (amiibo instanceof FlaskTag) {
             toolbar.getMenu().findItem(R.id.mnu_backup).setVisible(false);

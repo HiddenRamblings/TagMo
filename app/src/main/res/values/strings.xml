@@ -273,7 +273,7 @@
     <string name="flask_count">Slot %1$s Active, %2$d Slots Occupied</string>
     <string name="write_slot_file">Upload binary to Bluup Flask</string>
     <string name="write_slots">Write %1$d slots to Bluup Flask</string>
-    <string name="clear_slots">Clear %1$d slots on Bluup Flask</string>
+    <string name="erase_slots">Erase %1$d slots on Bluup Flask</string>
     <string name="slots_full">All Bluup Flask slots filled</string>
     <string name="slots_empty">Bluup Flask storage is empty</string>
     <string name="create_blank">Create blank virtual NFC tag</string>

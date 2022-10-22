@@ -297,15 +297,16 @@ public class EliteBankFragment extends Fragment implements
             }
         });
 
+        WriteTagAdapter writeListAdapter = new WriteTagAdapter(
+                settings, this::writeAmiiboCollection);
+        this.settings.addChangeListener(writeListAdapter);
+
         writeOpenBanks.setOnClickListener(view1 -> {
             onBottomSheetChanged(false, false);
             searchView.setQuery(settings.getQuery(), true);
             searchView.clearFocus();
-            WriteTagAdapter writeListAdapter = new WriteTagAdapter(
-                    settings, this::writeAmiiboCollection);
-            writeListAdapter.resetSelections();
-            this.settings.addChangeListener(writeListAdapter);
             amiiboFilesView.setAdapter(writeListAdapter);
+            writeListAdapter.resetSelections();
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
@@ -424,10 +425,11 @@ public class EliteBankFragment extends Fragment implements
     private void onBottomSheetChanged(boolean isMenu, boolean hasAmiibo) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         amiiboCard.setVisibility(isMenu && hasAmiibo ? View.VISIBLE : View.GONE);
-        switchMenuOptions.setVisibility(isMenu && hasAmiibo ? View.VISIBLE : View.GONE);
+        switchMenuOptions.setVisibility(hasAmiibo ? View.VISIBLE : View.GONE);
         bankOptionsMenu.setVisibility(isMenu && !hasAmiibo ? View.VISIBLE : View.GONE);
         securityOptions.setVisibility(isMenu || hasAmiibo ? View.VISIBLE : View.GONE);
         writeBankLayout.setVisibility(!isMenu && !hasAmiibo ? View.VISIBLE : View.GONE);
+        amiibosView.requestLayout();
     }
 
     private final ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(

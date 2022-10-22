@@ -113,31 +113,30 @@
                 android:id="@+id/create_blank"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
                 android:text="@string/create_blank" />
-
-            <include
-                layout="@layout/number_picker"
-                android:id="@+id/number_picker" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/write_slot_count"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
                 android:text="@string/write_slots" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/clear_slot_count"
+                android:id="@+id/erase_slot_count"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="@string/clear_slots" />
+                android:layout_marginBottom="6dp"
+                android:text="@string/erase_slots" />
+
+            <include
+                layout="@layout/number_picker"
+                android:id="@+id/number_picker" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="6dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="2dp"
                 android:orientation="horizontal" >
 
                 <androidx.appcompat.widget.AppCompatImageView

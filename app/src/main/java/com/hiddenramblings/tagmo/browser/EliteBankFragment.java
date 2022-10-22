@@ -427,7 +427,7 @@ public class EliteBankFragment extends Fragment implements
         switchMenuOptions.setVisibility(isMenu && hasAmiibo ? View.VISIBLE : View.GONE);
         bankOptionsMenu.setVisibility(isMenu && !hasAmiibo ? View.VISIBLE : View.GONE);
         securityOptions.setVisibility(isMenu || hasAmiibo ? View.VISIBLE : View.GONE);
-        writeBankLayout.setVisibility(isMenu || hasAmiibo ? View.GONE : View.VISIBLE);
+        writeBankLayout.setVisibility(!isMenu && !hasAmiibo ? View.VISIBLE : View.GONE);
     }
 
     private final ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(

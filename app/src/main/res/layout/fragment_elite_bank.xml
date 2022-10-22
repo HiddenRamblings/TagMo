@@ -79,12 +79,25 @@
                 android:contentDescription="@string/imageview_toggle" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/bank_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:text="@string/amiibo_not_found"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
         <LinearLayout
             android:id="@+id/security_options"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp" >
+            android:orientation="horizontal" >
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/lock_elite"
@@ -105,20 +118,6 @@
                 android:text="@string/unlock_elite" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/bank_stats"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="6dp"
-            android:gravity="center"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:text="@string/amiibo_not_found"
-            android:textColor="@android:color/white"
-            android:textSize="14sp" />
-
         <include
             layout="@layout/active_card_layout"
             android:id="@+id/active_card_layout" />
@@ -129,19 +128,27 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="6dp"
+                android:orientation="horizontal" >
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/write_open_banks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_weight="1"
                 android:text="@string/write_open_banks" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/erase_open_banks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
+                android:layout_weight="1"
                 android:text="@string/erase_open_banks" />
+            </LinearLayout>
 
             <include
                 layout="@layout/number_picker"

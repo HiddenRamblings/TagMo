@@ -187,7 +187,7 @@
     <string name="bank_number">Bank %1$d</string>
 
     <string name="bank_select_details">Ustaw numer banku</string>
-    <string name="write_confirm">Nagraj wybrane na N2 Elite?</string>
+    <string name="elite_write_confirm">Nagraj wybrane na N2 Elite?</string>
     <string name="warn_delete_file">Usuwanie %1$s. Na pewno?</string>
     <string name="delete_missing">Nie można usunąć zeskanowanego tagu!</string>
     <string name="erase_active">Nie można wymazać aktywnego banku!</string>

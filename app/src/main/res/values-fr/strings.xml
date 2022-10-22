@@ -210,7 +210,7 @@
     <string name="bank_number">Banque %1$d</string>
 
     <string name="bank_select_details">Définir le numéro de banque</string>
-    <string name="write_confirm">Envoyer la sélection au N2 Elite&#160;?</string>
+    <string name="elite_write_confirm">Envoyer la sélection au N2 Elite&#160;?</string>
     <string name="warn_delete_file">%1$s\nsera supprimé. Êtes-vous sûr ?</string>
     <string name="delete_missing">Impossible de supprimé un Tag scanné&#160;!</string>
     <string name="delete_virtual">Impossible de supprimer un Tag virtuel&#160;!</string>

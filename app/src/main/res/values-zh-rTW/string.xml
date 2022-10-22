@@ -272,7 +272,10 @@
     <string name="flask_paired">取消配對Flask以繼續.</string>
     <string name="flask_count">Slot %1$s 可啟用，%2$d Slots 已執行</string>
     <string name="write_slot_file">將二進位檔案上傳到Bluup Flask</string>
-    <string name="write_slots">將 %1$d slots 寫入 Bluup Flask</string>
+    <string name="write_slots">將 %1$d slots 寫入Bluup Flask</string>
+    <string name="clear_slots">將 %1$d slots 從Bluup Flask清除</string>
+    <string name="slots_full">所有的Bluup Flask slots都已佔用</string>
+    <string name="slots_empty">Bluup Flask的儲存空間沒有任何項目</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
     <string name="flask_upload">正在上傳二進位檔案&#8230;</string>
     <string name="joy_con_invalid">不是正確的Joy-Con手把設備!</string>

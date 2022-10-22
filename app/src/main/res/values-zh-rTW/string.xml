@@ -243,7 +243,7 @@
     <string name="bank_number">Bank %1$d</string>
 
     <string name="bank_select_details">設定Bank數量</string>
-    <string name="write_confirm">將設定參數寫入N2 Elite？</string>
+    <string name="elite_write_confirm">將設定參數寫入N2 Elite？</string>
     <string name="warn_delete_file">%1$s\n將被刪除。是否確認繼續？</string>
     <string name="delete_missing">無法刪除已掃描的tag！</string>
     <string name="delete_virtual">無法刪除虛擬的tag！</string>

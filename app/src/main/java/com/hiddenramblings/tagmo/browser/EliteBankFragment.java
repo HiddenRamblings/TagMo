@@ -315,14 +315,20 @@ public class EliteBankFragment extends Fragment implements
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
-        eraseOpenBanks.setOnClickListener(view1 -> {
-            Intent collection = new Intent(activity, NfcActivity.class);
-            collection.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                    prefs.elite_signature());
-            collection.setAction(NFCIntent.ACTION_ERASE_ALL_TAGS);
-            collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
-            onOpenBanksActivity.launch(collection);
-        });
+        eraseOpenBanks.setOnClickListener(view1 -> new AlertDialog.Builder(requireContext())
+                .setMessage(R.string.elite_erase_confirm)
+                .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                    Intent collection = new Intent(requireActivity(), NfcActivity.class);
+                    collection.putExtra(NFCIntent.EXTRA_SIGNATURE,
+                            prefs.elite_signature());
+                    collection.setAction(NFCIntent.ACTION_ERASE_ALL_TAGS);
+                    collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
+                    onOpenBanksActivity.launch(collection);
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .show());
 
         rootLayout.findViewById(R.id.edit_bank_count).setOnClickListener(view1 -> {
             if (prefs.eliteActiveBank() >= eliteBankCount.getValue()) {
@@ -892,7 +898,7 @@ public class EliteBankFragment extends Fragment implements
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
         if (null != amiiboList && amiiboList.size() == eliteBankCount.getValue()) {
             new AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.write_confirm)
+                    .setMessage(R.string.elite_write_confirm)
                     .setPositiveButton(R.string.proceed, (dialog, which) -> {
                         Intent collection = new Intent(requireContext(), NfcActivity.class);
                         collection.putExtra(NFCIntent.EXTRA_SIGNATURE,

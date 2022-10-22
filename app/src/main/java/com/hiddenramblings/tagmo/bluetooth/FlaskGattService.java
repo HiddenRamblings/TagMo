@@ -105,6 +105,7 @@ public class FlaskGattService extends Service {
 
     private String nameCompat = null;
     private String tailCompat = null;
+    private int wipeDeviceCount = 0;
 
     private int maxTransmissionUnit = 23;
     public final static UUID FlaskNUS = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
@@ -134,7 +135,6 @@ public class FlaskGattService extends Service {
 
     StringBuilder response = new StringBuilder();
     private int rangeIndex = 0;
-
 
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         String output = characteristic.getStringValue(0x0);
@@ -185,6 +185,8 @@ public class FlaskGattService extends Service {
                             }
                         } catch (StringIndexOutOfBoundsException ex) {
                             Debug.Warn(ex);
+                            if (null != listener)
+                                listener.onFlaskActiveChanged(null);
                         }
                         response = new StringBuilder();
                     }
@@ -232,7 +234,12 @@ public class FlaskGattService extends Service {
                     }
                 } else if (progress.startsWith("tag.remove")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        if (null != listener) listener.onFlaskStatusChanged(null);
+                        if (wipeDeviceCount > 0) {
+                            wipeDeviceCount -= 1;
+                            delayedTagCharacteristic("remove(tag.get().name)");
+                        } else {
+                            if (null != listener) listener.onFlaskStatusChanged(null);
+                        }
                         response = new StringBuilder();
                     }
                 } else if (progress.startsWith("tag.download")) {
@@ -732,10 +739,6 @@ public class FlaskGattService extends Service {
         }
     }
 
-    public void clearStorage() {
-        delayedTagCharacteristic("remove()");
-    }
-
     public void downloadAmiibo(String name, String tail) {
         int reserved = tail.length() + 3; // |tail|#
         String nameUnicode = GattArray.stringToUnicode(name);
@@ -760,6 +763,11 @@ public class FlaskGattService extends Service {
 
     public void createBlankTag() {
         delayedTagCharacteristic("createBlank()");
+    }
+
+    public void clearStorage(int count) {
+        wipeDeviceCount = count - 1;
+        delayedTagCharacteristic("remove(tag.get().name)");
     }
 
     public void setFlaskFace(boolean stacked) {

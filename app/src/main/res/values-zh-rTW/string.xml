@@ -236,8 +236,8 @@
 
     <string name="view_device_options">檢視N2 Elite選項設定</string>
     <string name="view_amiibo_details">檢視 amiibo 相關資訊</string>
-    <string name="write_open_banks">將 %1$d Banks 寫入N2 Elite</string>
-    <string name="erase_open_banks">將 %1$d Banks 從N2 Elite抹除</string>
+    <string name="write_open_banks">%1$d banks 寫</string>
+    <string name="erase_open_banks">%1$d banks 擦除</string>
     <string name="edit_bank_count">編輯 N2 Elite 的 Bank 計數</string>
     <string name="bank_stats">Bank %1$d 可用 ， 已啟用 %2$d Banks </string>
     <string name="bank_number">Bank %1$d</string>
@@ -272,8 +272,8 @@
     <string name="flask_paired">取消配對Flask以繼續.</string>
     <string name="flask_count">Slot %1$s 可啟用，%2$d Slots 已執行</string>
     <string name="write_slot_file">將二進位檔案上傳到Bluup Flask</string>
-    <string name="write_slots">將 %1$d slots 寫入Bluup Flask</string>
-    <string name="erase_slots">將 %1$d slots 從Bluup Flask清除</string>
+    <string name="write_slots">%1$d slots 寫</string>
+    <string name="erase_slots">%1$d slots 擦除</string>
     <string name="slots_full">所有的Bluup Flask slots都已佔用</string>
     <string name="slots_empty">Bluup Flask的儲存空間沒有任何項目</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>

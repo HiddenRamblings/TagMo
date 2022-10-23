@@ -14,7 +14,6 @@ import com.mumumusuc.libjoycon.BluetoothHidHost;
 import java.security.InvalidParameterException;
 
 public final class JoyCon {
-    private static final String TAG = JoyCon.class.getSimpleName();
     private static final char[] template = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     public static final String JOYCON_L = "Joy-Con (L)";

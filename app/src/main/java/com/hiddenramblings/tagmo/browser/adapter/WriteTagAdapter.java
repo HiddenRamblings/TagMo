@@ -83,15 +83,15 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                 !BrowserSettings.equals(newBrowserSettings.getSort(),
                         oldBrowserSettings.getSort()) ||
                 BrowserSettings.hasFilterChanged(oldBrowserSettings, newBrowserSettings);
-
+        
         if (firstRun || !BrowserSettings.equals(newBrowserSettings.getAmiiboFiles(),
                 oldBrowserSettings.getAmiiboFiles())) {
-            if (null != newBrowserSettings.getAmiiboFiles() )
-                this.amiiboFiles = new ArrayList<>(newBrowserSettings.getAmiiboFiles());
-            else
-                this.amiiboFiles.clear();
+            this.amiiboFiles = new ArrayList<>();
+            if (null != newBrowserSettings.getAmiiboFiles())
+                this.amiiboFiles.addAll(newBrowserSettings.getAmiiboFiles());
             refresh = true;
         }
+
         if (!BrowserSettings.equals(newBrowserSettings.getAmiiboManager(),
                 oldBrowserSettings.getAmiiboManager())) {
             refresh = true;

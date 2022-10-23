@@ -59,7 +59,7 @@ public class TagMo extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         if (Debug.isNewer(Build.VERSION_CODES.P))
-            HiddenApiBypass.addHiddenApiExemptions("");
+            HiddenApiBypass.addHiddenApiExemptions("LBluetooth");
         else if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
             Reflection.unseal(base);
     }

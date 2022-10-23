@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
 
@@ -11,6 +12,8 @@ import com.github.anrwatchdog.ANRError;
 import com.github.anrwatchdog.ANRWatchDog;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.settings.Preferences;
+
+import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -55,7 +58,10 @@ public class TagMo extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        Reflection.unseal(base);
+        if (Debug.isNewer(Build.VERSION_CODES.P))
+            HiddenApiBypass.addHiddenApiExemptions("");
+        else if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
+            Reflection.unseal(base);
     }
 
     @Override

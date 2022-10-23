@@ -38,6 +38,7 @@ import com.hiddenramblings.tagmo.nfctech.NTAG215;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
 import com.hiddenramblings.tagmo.nfctech.TagWriter;
 import com.hiddenramblings.tagmo.settings.Preferences;
+import com.hiddenramblings.tagmo.widget.Toasty;
 import com.shawnlin.numberpicker.NumberPicker;
 
 import java.io.IOException;
@@ -404,10 +405,16 @@ public class NfcActivity extends AppCompatActivity {
                             for (int x = 0; x < amiiboList.size(); x++) {
                                 showMessage(R.string.bank_writing, x + 1, amiiboList.size());
                                 byte[] tagData = amiiboList.get(x).getData();
-                                if (null == tagData)
-                                    tagData = TagArray.getValidatedFile(keyManager,
-                                            amiiboList.get(x).getFilePath());
-                                TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
+                                if (null == tagData) {
+                                    tagData = TagArray.getValidatedFile(
+                                            keyManager, amiiboList.get(x).getFilePath()
+                                    );
+                                }
+                                if (null != tagData) {
+                                    TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
+                                } else {
+                                    new Toasty(this).Long(getString(R.string.fail_empty, x));
+                                }
                             }
                         } else if (commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
                             ArrayList<EliteTag> amiiboList = commandIntent

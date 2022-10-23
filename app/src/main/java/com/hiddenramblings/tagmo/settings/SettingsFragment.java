@@ -381,7 +381,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             unfixedSpan = new ForegroundColorSpan(Color.RED);
         }
         SpannableStringBuilder unfixedBuilder = new SpannableStringBuilder(unfixedText);
-        unfixedBuilder.setSpan(unfixedSpan, 0, unfixedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (unfixedBuilder.length() > 0) {
+            unfixedBuilder.setSpan(
+                    unfixedSpan, 0, unfixedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+        }
 
         String fixedText;
         ForegroundColorSpan fixedSpan;
@@ -393,7 +397,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             fixedSpan = new ForegroundColorSpan(Color.RED);
         }
         SpannableStringBuilder fixedBuilder = new SpannableStringBuilder(fixedText);
-        fixedBuilder.setSpan(fixedSpan, 0, fixedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (fixedBuilder.length() > 0) {
+            fixedBuilder.setSpan(
+                    fixedSpan, 0, fixedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+        }
 
         SpannableStringBuilder keySummary = new SpannableStringBuilder();
         keySummary.append(unfixedBuilder);

@@ -258,6 +258,10 @@ public class NfcActivity extends AppCompatActivity {
         this.runOnUiThread(() -> txtMessage.setText(getString(msgRes, params)));
     }
 
+    private void showMessage(int msgRes, int params, int size) {
+        this.runOnUiThread(() -> txtMessage.setText(getString(msgRes, params, size)));
+    }
+
     private void showError(String msg) {
         this.runOnUiThread(() -> {
             txtError.setText(msg);
@@ -398,8 +402,7 @@ public class NfcActivity extends AppCompatActivity {
                             ArrayList<AmiiboFile> amiiboList = commandIntent
                                     .getParcelableArrayListExtra(NFCIntent.EXTRA_AMIIBO_FILES);
                             for (int x = 0; x < amiiboList.size(); x++) {
-                                txtMessage.setText(getString(R.string.bank_writing,
-                                        x + 1, amiiboList.size()));
+                                showMessage(R.string.bank_writing, x + 1, amiiboList.size());
                                 byte[] tagData = amiiboList.get(x).getData();
                                 if (null == tagData)
                                     tagData = TagArray.getValidatedFile(keyManager,
@@ -410,8 +413,7 @@ public class NfcActivity extends AppCompatActivity {
                             ArrayList<EliteTag> amiiboList = commandIntent
                                     .getParcelableArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST);
                             for (int x = 0; x < amiiboList.size(); x++) {
-                                txtMessage.setText(getString(R.string.bank_writing,
-                                        x + 1, amiiboList.size()));
+                                showMessage(R.string.bank_writing, x + 1, amiiboList.size());
                                 byte[] tagData = foomiibo.generateData(amiiboList.get(x).id);
                                 if (null == tagData)
                                     tagData = TagArray.getValidatedData(keyManager,
@@ -430,8 +432,7 @@ public class NfcActivity extends AppCompatActivity {
                         mifare.setBankCount(write_count);
                         mifare.activateBank(0);
                         for (int x = 1; x < write_count; x++) {
-                            txtMessage.setText(getString(R.string.bank_erasing,
-                                    x + 1, write_count));
+                            showMessage(R.string.bank_erasing, x + 1, write_count);
                             TagWriter.wipeBankData(mifare, x);
                         }
                         Intent erase = new Intent(NFCIntent.ACTION_NFC_SCANNED);

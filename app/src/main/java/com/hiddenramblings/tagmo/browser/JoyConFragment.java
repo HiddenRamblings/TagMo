@@ -27,6 +27,8 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.mumumusuc.libjoycon.BluetoothHelper;
 
+import org.lsposed.hiddenapibypass.HiddenApiBypass;
+
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class JoyConFragment extends DialogFragment implements
         BluetoothHandler.BluetoothListener {

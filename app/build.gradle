@@ -51,7 +51,6 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".eightbit"
-            manifestPlaceholders.overrideLibrary = "me.weishu.freereflection"
             manifestPlaceholders.wearUsesFeature = "android.hardware.screen.portrait"
             buildConfigField "boolean", "WEAR_OS", "false"
         }
@@ -62,7 +61,6 @@ android {
         wearos {
             initWith buildTypes.release
             versionNameSuffix "-wear"
-            manifestPlaceholders.overrideLibrary = "me.weishu.freereflection, androidx.wear"
             manifestPlaceholders.wearUsesFeature = "android.hardware.type.watch"
             buildConfigField "boolean", "WEAR_OS", "true"
         }
@@ -138,7 +136,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.13.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.2'
     implementation 'com.github.SamSprung:android-issue-reporter:22a3436'
-    implementation 'com.github.tiann:FreeReflection:3.1.0'
+    implementation 'com.github.SamSprung:FreeReflection:b87e929'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     // Required for Lollipop Amiibo API download compatibility
@@ -151,6 +149,8 @@ dependencies {
 
     implementation 'io.github.ShawnLin013:number-picker:2.4.13'
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
+
+    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
 }
 
 configurations {

@@ -18,8 +18,11 @@ public class BoldSpannable {
                 break;
 
             j = i + query.length();
-            str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
-                    i, j, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if (str.length() > 0) {
+                str.setSpan(new android.text.style.StyleSpan(
+                        android.graphics.Typeface.BOLD
+                ), i, j, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
         }
         return str;
     }
@@ -27,8 +30,9 @@ public class BoldSpannable {
     public SpannableStringBuilder StartsWith(String text, String query) {
         SpannableStringBuilder str = new SpannableStringBuilder(text);
         if (!TextUtils.isEmpty(query) && text.toLowerCase().startsWith(query)) {
-            str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
-                    0, query.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            str.setSpan(new android.text.style.StyleSpan(
+                    android.graphics.Typeface.BOLD
+            ), 0, query.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         return str;
     }

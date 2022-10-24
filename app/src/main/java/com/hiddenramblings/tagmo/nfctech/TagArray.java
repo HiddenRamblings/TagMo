@@ -23,6 +23,7 @@ import androidx.documentfile.provider.DocumentFile;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -282,6 +283,12 @@ public class TagArray {
     public static byte[] getValidatedDocument(
             KeyManager keyManager, DocumentFile file) throws Exception {
         return getValidatedData(keyManager, TagReader.readTagDocument(file.getUri()));
+    }
+
+    public static byte[] getValidatedData(KeyManager keyManager, AmiiboFile file) throws Exception {
+        return null != file.getData() ? file.getData() : null != file.getDocUri()
+                ? TagArray.getValidatedDocument(keyManager, file.getDocUri())
+                : TagArray.getValidatedFile(keyManager, file.getFilePath());
     }
 
     public static String writeBytesToFile(File directory, String name, byte[] tagData)

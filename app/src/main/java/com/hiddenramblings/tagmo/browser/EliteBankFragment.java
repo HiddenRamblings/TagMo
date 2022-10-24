@@ -897,22 +897,21 @@ public class EliteBankFragment extends Fragment implements
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
         if (null != amiiboList && amiiboList.size() == eliteBankCount.getValue()) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             new AlertDialog.Builder(requireContext())
                     .setMessage(R.string.elite_write_confirm)
                     .setPositiveButton(R.string.proceed, (dialog, which) -> {
                         Intent collection = new Intent(requireContext(), NfcActivity.class);
-                        collection.putExtra(NFCIntent.EXTRA_SIGNATURE,
-                                prefs.elite_signature());
+                        collection.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        collection.putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.elite_signature());
                         collection.setAction(NFCIntent.ACTION_WRITE_ALL_TAGS);
                         collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
                         collection.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, amiiboList);
                         onOpenBanksActivity.launch(collection);
-                        onBottomSheetChanged(SHEET.MENU);
                         dialog.dismiss();
                     })
                     .setNegativeButton(R.string.cancel, (dialog, which) -> {
                         amiiboList.clear();
-                        onBottomSheetChanged(SHEET.MENU);
                         dialog.dismiss();
                     })
                     .show();

@@ -404,16 +404,14 @@ public class NfcActivity extends AppCompatActivity {
                                     .getParcelableArrayListExtra(NFCIntent.EXTRA_AMIIBO_FILES);
                             for (int x = 0; x < amiiboList.size(); x++) {
                                 showMessage(R.string.bank_writing, x + 1, amiiboList.size());
-                                byte[] tagData = amiiboList.get(x).getData();
-                                if (null == tagData) {
-                                    tagData = TagArray.getValidatedFile(
-                                            keyManager, amiiboList.get(x).getFilePath()
-                                    );
-                                }
-                                if (null != tagData) {
+                                try {
+                                    AmiiboFile file = amiiboList.get(x);
+                                    byte[] tagData = TagArray.getValidatedData(keyManager, file);
                                     TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
-                                } else {
-                                    new Toasty(this).Long(getString(R.string.fail_empty, x));
+                                } catch (NullPointerException ex) {
+                                    new Toasty(this).Long(getString(
+                                            R.string.fail_null_data, x + 1
+                                    ));
                                 }
                             }
                         } else if (commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {

@@ -236,25 +236,26 @@
 
     <string name="view_device_options">檢視N2 Elite選項設定</string>
     <string name="view_amiibo_details">檢視 amiibo 相關資訊</string>
-    <string name="write_open_banks">%1$d banks 寫</string>
-    <string name="erase_open_banks">%1$d banks 擦除</string>
+    <string name="write_open_banks">寫入 %1$d banks</string>
+    <string name="erase_open_banks">抹除 %1$d banks</string>
     <string name="edit_bank_count">編輯 N2 Elite 的 Bank 計數</string>
     <string name="bank_stats">Bank %1$d 可用 ， 已啟用 %2$d Banks </string>
     <string name="bank_number">Bank %1$d</string>
 
     <string name="bank_select_details">設定Bank數量</string>
     <string name="elite_write_confirm">將設定參數寫入N2 Elite？</string>
+    <string name="elite_erase_confirm">將N2 Elite所有的banks進行抹除？</string>
     <string name="warn_delete_file">%1$s\n將被刪除。是否確認繼續？</string>
     <string name="delete_missing">無法刪除已掃描的tag！</string>
     <string name="delete_virtual">無法刪除虛擬的tag！</string>
     <string name="erase_active">無法抹除正在使用的bank！</string>
-    <string name="backup_filename">设置二进制文件名</string>
+    <string name="backup_filename">設定二進位檔案名稱</string>
     <string name="document_storage_root">更新文件儲存空間</string>
     <string name="emulated_storage_root">瀏覽模擬儲存空間</string>
     <string name="physical_storage_root">瀏覽實體儲存空間</string>
     <string name="grant_file_permission">啟用 "所有檔案" 管理器</string>
     <string name="force_document_storage">啟用文件儲存空間</string>
-    <string name="refresh_browser">刷新浏览器</string>
+    <string name="refresh_browser">重新整理瀏覽器</string>
 
     <string name="prepare_unlock">開始掃描N2，在傳輸完成前請勿將NFC感應區移開</string>
     <string name="progress_unlock">請長按N2鈕，並保持與NFC的感應連線.</string>
@@ -272,12 +273,14 @@
     <string name="flask_paired">取消配對Flask以繼續.</string>
     <string name="flask_count">Slot %1$s 可啟用，%2$d Slots 已執行</string>
     <string name="write_slot_file">將二進位檔案上傳到Bluup Flask</string>
-    <string name="write_slots">%1$d slots 寫</string>
-    <string name="erase_slots">%1$d slots 擦除</string>
+    <string name="write_slots">寫入 %1$d slots</string>
+    <string name="erase_slots">抹除 %1$d slots</string>
     <string name="slots_full">所有的Bluup Flask slots都已佔用</string>
     <string name="slots_empty">Bluup Flask的儲存空間沒有任何項目</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
+    <string name="flask_erase_confirm">將Bluup Flask所有的slots進行抹除？</string>
     <string name="flask_upload">正在上傳二進位檔案&#8230;</string>
+    <string name="flask_remove">正在抹除slot數據&#8230;</string>
     <string name="joy_con_invalid">不是正確的Joy-Con手把設備!</string>
     <string name="fail_bluetooth_adapter">沒有可用的藍牙裝置!</string>
     <string name="fail_permissions">無法取得執行所需的權限！</string>    

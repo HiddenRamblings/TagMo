@@ -1558,11 +1558,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onAmiiboClicked(View itemView, AmiiboFile amiiboFile) {
         if (null == amiiboFile.getDocUri() && null == amiiboFile.getFilePath()) return;
         try {
-            byte[] tagData = null != amiiboFile.getData() ? amiiboFile.getData()
-                    : null != amiiboFile.getDocUri()
-                    ? TagArray.getValidatedDocument(keyManager, amiiboFile.getDocUri())
-                    : TagArray.getValidatedFile(keyManager, amiiboFile.getFilePath());
-
+            byte[] tagData = TagArray.getValidatedData(keyManager, amiiboFile);
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 LinearLayout menuOptions = itemView.findViewById(R.id.menu_options);
                 Toolbar toolbar = menuOptions.findViewById(R.id.toolbar);

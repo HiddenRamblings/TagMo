@@ -495,9 +495,7 @@ public class FlaskSlotFragment extends Fragment implements
                 }
 
                 @Override
-                public void onAmiiboListClicked(ArrayList<AmiiboFile> amiiboList) {
-
-                }
+                public void onAmiiboListClicked(ArrayList<AmiiboFile> amiiboList) { }
             }, 1);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
@@ -513,14 +511,10 @@ public class FlaskSlotFragment extends Fragment implements
             searchView.clearFocus();
             writeTagAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
                 @Override
-                public void onAmiiboClicked(AmiiboFile amiiboFile) {
-
-                }
+                public void onAmiiboClicked(AmiiboFile amiiboFile) { }
 
                 @Override
-                public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
-
-                }
+                public void onAmiiboImageClicked(AmiiboFile amiiboFile) { }
 
                 @Override
                 public void onAmiiboListClicked(ArrayList<AmiiboFile> amiiboList) {
@@ -812,14 +806,14 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            showProcessingNotice(true);
-            for (int i = 0; i < amiiboList.size(); i++) {
-                int index = i;
-                flaskHandler.postDelayed(() -> uploadAmiiboFile(
-                        amiiboList.get(index), index == amiiboList.size() - 1
-                ), 30L * i);
-            }
+        onBottomSheetChanged(SHEET.MENU);
+        showProcessingNotice(true);
+        for (int i = 0; i < amiiboList.size(); i++) {
+            int index = i;
+            flaskHandler.postDelayed(() -> uploadAmiiboFile(
+                    amiiboList.get(index), index == amiiboList.size() - 1
+            ), 30L * i);
+        }
     }
 
     private void uploadAmiiboFile(AmiiboFile amiiboFile, boolean complete) {

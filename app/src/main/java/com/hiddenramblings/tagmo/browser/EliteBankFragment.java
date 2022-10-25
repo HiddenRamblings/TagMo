@@ -81,6 +81,7 @@ public class EliteBankFragment extends Fragment implements
     private LinearLayout writeBankLayout;
     private EliteBankAdapter bankAdapter;
     private RecyclerView amiiboFilesView;
+    private WriteTagAdapter writeTagAdapter;
 
     private CardView amiiboTile;
     private CardView amiiboCard;
@@ -259,6 +260,9 @@ public class EliteBankFragment extends Fragment implements
             amiiboFilesView.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(activity));
+        writeTagAdapter = new WriteTagAdapter(settings);
+        amiiboFilesView.setAdapter(writeTagAdapter);
+        this.settings.addChangeListener(writeTagAdapter);
 
         switchMenuOptions.setOnClickListener(view1 -> {
             if (bankOptionsMenu.isShown()) {
@@ -296,11 +300,22 @@ public class EliteBankFragment extends Fragment implements
             onBottomSheetChanged(SHEET.WRITE);
             searchView.setQuery(settings.getQuery(), true);
             searchView.clearFocus();
-            WriteTagAdapter writeListAdapter = new WriteTagAdapter(
-                    settings, this::writeAmiiboCollection);
-            amiiboFilesView.setAdapter(writeListAdapter);
-            this.settings.addChangeListener(writeListAdapter);
-            writeListAdapter.resetSelections();
+            writeTagAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
+                @Override
+                public void onAmiiboClicked(AmiiboFile amiiboFile) {
+
+                }
+
+                @Override
+                public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
+
+                }
+
+                @Override
+                public void onAmiiboListClicked(ArrayList<AmiiboFile> amiiboList) {
+                    writeAmiiboCollection(amiiboList);
+                }
+            }, eliteBankCount.getValue());
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
@@ -502,6 +517,7 @@ public class EliteBankFragment extends Fragment implements
         }
 
         updateAmiiboView(amiiboCard, tagData, -1, clickedPosition);
+        this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         int active_bank = prefs.eliteActiveBank();
         if (result.getData().hasExtra(NFCIntent.EXTRA_ACTIVE_BANK)) {
             active_bank = result.getData().getIntExtra(NFCIntent.EXTRA_ACTIVE_BANK, active_bank);
@@ -617,8 +633,7 @@ public class EliteBankFragment extends Fragment implements
         onBottomSheetChanged(SHEET.WRITE);
         searchView.setQuery(settings.getQuery(), true);
         searchView.clearFocus();
-        WriteTagAdapter writeFileAdapter = new WriteTagAdapter(
-                settings, new WriteTagAdapter.OnAmiiboClickListener() {
+        writeTagAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 if (null != amiiboFile) {
@@ -631,9 +646,12 @@ public class EliteBankFragment extends Fragment implements
             public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
                 handleImageClicked(amiiboFile);
             }
-        });
-        amiiboFilesView.setAdapter(writeFileAdapter);
-        this.settings.addChangeListener(writeFileAdapter);
+
+            @Override
+            public void onAmiiboListClicked(ArrayList<AmiiboFile> amiiboList) {
+
+            }
+        }, 1);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
@@ -894,7 +912,6 @@ public class EliteBankFragment extends Fragment implements
             });
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
-        if (null != amiiboList && amiiboList.size() == eliteBankCount.getValue()) {
             for (int i = 0; i < amiiboList.size(); i++) {
                 try {
                     AmiiboFile amiiboFile = amiiboList.get(i);
@@ -920,7 +937,6 @@ public class EliteBankFragment extends Fragment implements
                         dialog.dismiss();
                     })
                     .show();
-        }
     }
 
     public int getValueForPosition(NumberPicker picker, int value) {

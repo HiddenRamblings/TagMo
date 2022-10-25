@@ -877,8 +877,8 @@ public class EliteBankFragment extends Fragment implements
 
                 int bank_count = result.getData().getIntExtra(NFCIntent.EXTRA_BANK_COUNT,
                         prefs.eliteBankCount());
-
                 prefs.eliteBankCount(bank_count);
+                int active_bank = prefs.eliteActiveBank();
 
                 eliteBankCount.setValue(bank_count);
                 updateEliteAdapter(result.getData().getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
@@ -887,6 +887,10 @@ public class EliteBankFragment extends Fragment implements
                 ), bank_count));
                 writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
                 eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
+
+                if (null != amiibos.get(active_bank)) {
+                    updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
+                }
             });
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {

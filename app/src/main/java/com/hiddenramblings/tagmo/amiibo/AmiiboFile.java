@@ -1,11 +1,15 @@
 package com.hiddenramblings.tagmo.amiibo;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.documentfile.provider.DocumentFile;
 
+import com.hiddenramblings.tagmo.TagMo;
+
 import java.io.File;
+import java.io.Serializable;
 
 public class AmiiboFile implements Parcelable {
 
@@ -73,11 +77,15 @@ public class AmiiboFile implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeSerializable(this.filePath);
         dest.writeLong(this.id);
+        dest.writeInt(this.data.length);
+        dest.writeByteArray(this.data);
     }
 
     protected AmiiboFile(Parcel in) {
         this.filePath = (File) in.readSerializable();
         this.id = in.readLong();
+        this.data = new byte[in.readInt()];
+        in.readByteArray(this.data);
     }
 
     public static final Parcelable.Creator<AmiiboFile> CREATOR = new Parcelable.Creator<>() {

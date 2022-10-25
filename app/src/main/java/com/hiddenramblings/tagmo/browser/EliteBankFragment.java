@@ -97,7 +97,6 @@ public class EliteBankFragment extends Fragment implements
 
     private BrowserSettings settings;
     private BottomSheetBehavior<View> bottomSheetBehavior;
-    private WriteTagAdapter writeFileAdapter;
 
     private KeyManager keyManager;
     private ArrayList<EliteTag> amiibos = new ArrayList<>();
@@ -145,7 +144,7 @@ public class EliteBankFragment extends Fragment implements
         bankOptionsMenu = rootLayout.findViewById(R.id.bank_options_menu);
         writeBankLayout = rootLayout.findViewById(R.id.write_list_layout);
         amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list);
-        amiiboFilesView.setHasFixedSize(true);
+        // amiiboFilesView.setHasFixedSize(true);
 
         securityOptions = rootLayout.findViewById(R.id.security_options);
 
@@ -261,15 +260,6 @@ public class EliteBankFragment extends Fragment implements
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(activity));
 
-        writeFileAdapter = new WriteTagAdapter(settings, new WriteTagAdapter.OnAmiiboClickListener() {
-            @Override
-            public void onAmiiboClicked(AmiiboFile amiiboFile) { }
-
-            @Override
-            public void onAmiiboImageClicked(AmiiboFile amiiboFile) { }
-        });
-        this.settings.addChangeListener(writeFileAdapter);
-
         switchMenuOptions.setOnClickListener(view1 -> {
             if (bankOptionsMenu.isShown()) {
                 onBottomSheetChanged(SHEET.AMIIBO);
@@ -302,15 +292,14 @@ public class EliteBankFragment extends Fragment implements
             }
         });
 
-        WriteTagAdapter writeListAdapter = new WriteTagAdapter(
-                settings, this::writeAmiiboCollection);
-        this.settings.addChangeListener(writeListAdapter);
-
         writeOpenBanks.setOnClickListener(view1 -> {
             onBottomSheetChanged(SHEET.WRITE);
             searchView.setQuery(settings.getQuery(), true);
             searchView.clearFocus();
+            WriteTagAdapter writeListAdapter = new WriteTagAdapter(
+                    settings, this::writeAmiiboCollection);
             amiiboFilesView.setAdapter(writeListAdapter);
+            this.settings.addChangeListener(writeListAdapter);
             writeListAdapter.resetSelections();
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
@@ -628,10 +617,12 @@ public class EliteBankFragment extends Fragment implements
         onBottomSheetChanged(SHEET.WRITE);
         searchView.setQuery(settings.getQuery(), true);
         searchView.clearFocus();
-        writeFileAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
+        WriteTagAdapter writeFileAdapter = new WriteTagAdapter(
+                settings, new WriteTagAdapter.OnAmiiboClickListener() {
             @Override
             public void onAmiiboClicked(AmiiboFile amiiboFile) {
                 if (null != amiiboFile) {
+                    onBottomSheetChanged(SHEET.AMIIBO);
                     writeAmiiboFile(amiiboFile, position);
                 }
             }
@@ -642,6 +633,7 @@ public class EliteBankFragment extends Fragment implements
             }
         });
         amiiboFilesView.setAdapter(writeFileAdapter);
+        this.settings.addChangeListener(writeFileAdapter);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
@@ -881,6 +873,8 @@ public class EliteBankFragment extends Fragment implements
 
                 if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
                 int bank_count = result.getData().getIntExtra(NFCIntent.EXTRA_BANK_COUNT,
                         prefs.eliteBankCount());
 
@@ -897,7 +891,13 @@ public class EliteBankFragment extends Fragment implements
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
         if (null != amiiboList && amiiboList.size() == eliteBankCount.getValue()) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            for (int i = 0; i < amiiboList.size(); i++) {
+                try {
+                    AmiiboFile amiiboFile = amiiboList.get(i);
+                    amiiboFile.setData(TagArray.getValidatedData(keyManager, amiiboFile));
+                    amiiboList.set(i, amiiboFile);
+                } catch (Exception ignored) { }
+            }
             new AlertDialog.Builder(requireContext())
                     .setMessage(R.string.elite_write_confirm)
                     .setPositiveButton(R.string.proceed, (dialog, which) -> {
@@ -912,6 +912,7 @@ public class EliteBankFragment extends Fragment implements
                     })
                     .setNegativeButton(R.string.cancel, (dialog, which) -> {
                         amiiboList.clear();
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         dialog.dismiss();
                     })
                     .show();

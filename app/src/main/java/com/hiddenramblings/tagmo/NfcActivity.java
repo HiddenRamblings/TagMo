@@ -11,6 +11,7 @@ import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -404,13 +405,12 @@ public class NfcActivity extends AppCompatActivity {
                                     .getParcelableArrayListExtra(NFCIntent.EXTRA_AMIIBO_FILES);
                             for (int x = 0; x < amiiboList.size(); x++) {
                                 showMessage(R.string.bank_writing, x + 1, amiiboList.size());
-                                try {
-                                    AmiiboFile file = amiiboList.get(x);
-                                    byte[] tagData = TagArray.getValidatedData(keyManager, file);
+                                byte[] tagData = amiiboList.get(x).getData();
+                                if (null != tagData) {
                                     TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
-                                } catch (NullPointerException ex) {
+                                } else {
                                     new Toasty(this).Long(getString(
-                                            R.string.fail_null_data, x + 1
+                                            R.string.fail_bank_data, x + 1
                                     ));
                                 }
                             }

@@ -302,14 +302,10 @@ public class EliteBankFragment extends Fragment implements
             searchView.clearFocus();
             writeTagAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
                 @Override
-                public void onAmiiboClicked(AmiiboFile amiiboFile) {
-
-                }
+                public void onAmiiboClicked(AmiiboFile amiiboFile) { }
 
                 @Override
-                public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
-
-                }
+                public void onAmiiboImageClicked(AmiiboFile amiiboFile) { }
 
                 @Override
                 public void onAmiiboListClicked(ArrayList<AmiiboFile> amiiboList) {
@@ -648,9 +644,7 @@ public class EliteBankFragment extends Fragment implements
             }
 
             @Override
-            public void onAmiiboListClicked(ArrayList<AmiiboFile> amiiboList) {
-
-            }
+            public void onAmiiboListClicked(ArrayList<AmiiboFile> amiiboList) { }
         }, 1);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
@@ -891,12 +885,9 @@ public class EliteBankFragment extends Fragment implements
 
                 if (!NFCIntent.ACTION_NFC_SCANNED.equals(result.getData().getAction())) return;
 
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
                 int bank_count = result.getData().getIntExtra(NFCIntent.EXTRA_BANK_COUNT,
                         prefs.eliteBankCount());
                 prefs.eliteBankCount(bank_count);
-                int active_bank = prefs.eliteActiveBank();
 
                 eliteBankCount.setValue(bank_count);
                 updateEliteAdapter(result.getData().getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST));
@@ -905,38 +896,35 @@ public class EliteBankFragment extends Fragment implements
                 ), bank_count));
                 writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
                 eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
-
-                if (null != amiibos.get(active_bank)) {
-                    updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
-                }
             });
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
-            for (int i = 0; i < amiiboList.size(); i++) {
-                try {
-                    AmiiboFile amiiboFile = amiiboList.get(i);
-                    amiiboFile.setData(TagArray.getValidatedData(keyManager, amiiboFile));
-                    amiiboList.set(i, amiiboFile);
-                } catch (Exception ignored) { }
-            }
-            new AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.elite_write_confirm)
-                    .setPositiveButton(R.string.proceed, (dialog, which) -> {
-                        Intent collection = new Intent(requireContext(), NfcActivity.class);
-                        collection.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        collection.putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.elite_signature());
-                        collection.setAction(NFCIntent.ACTION_WRITE_ALL_TAGS);
-                        collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
-                        collection.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, amiiboList);
-                        onOpenBanksActivity.launch(collection);
-                        dialog.dismiss();
-                    })
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                        amiiboList.clear();
-                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                        dialog.dismiss();
-                    })
-                    .show();
+        for (int i = 0; i < amiiboList.size(); i++) {
+            try {
+                AmiiboFile amiiboFile = amiiboList.get(i);
+                amiiboFile.setData(TagArray.getValidatedData(keyManager, amiiboFile));
+                amiiboList.set(i, amiiboFile);
+            } catch (Exception ignored) { }
+        }
+        new AlertDialog.Builder(requireContext())
+                .setMessage(R.string.elite_write_confirm)
+                .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                    Intent collection = new Intent(requireContext(), NfcActivity.class);
+                    collection.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    collection.putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.elite_signature());
+                    collection.setAction(NFCIntent.ACTION_WRITE_ALL_TAGS);
+                    collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.getValue());
+                    collection.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, amiiboList);
+                    onOpenBanksActivity.launch(collection);
+                    onBottomSheetChanged(SHEET.MENU);
+                    dialog.dismiss();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    amiiboList.clear();
+                    onBottomSheetChanged(SHEET.MENU);
+                    dialog.dismiss();
+                })
+                .show();
     }
 
     public int getValueForPosition(NumberPicker picker, int value) {

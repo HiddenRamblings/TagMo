@@ -41,7 +41,7 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
         implements Filterable, BrowserSettingsListener {
     private final BrowserSettings settings;
     private OnAmiiboClickListener listener = null;
-    private int numberRequested = 1;
+    private int listSize = 1;
     private ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
     private ArrayList<AmiiboFile> filteredData;
     private AmiiboFilter filter;
@@ -56,10 +56,10 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
         this.setHasStableIds(true);
     }
 
-    public void setListener(OnAmiiboClickListener listener, int numberRequested) {
+    public void setListener(OnAmiiboClickListener listener, int listSize) {
         this.amiiboList.clear();
         this.listener = listener;
-        this.numberRequested = numberRequested;
+        this.listSize = listSize;
     }
 
     @Override
@@ -139,7 +139,7 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
 
     private void handleClickEvent(final AmiiboViewHolder holder, int position) {
         if (null != listener) {
-            if (numberRequested > 1) {
+            if (listSize > 1) {
                 if (amiiboList.contains(holder.amiiboFile)) {
                     amiiboList.remove(filteredData.get(position));
                     setIsHighlighted(holder, false);
@@ -147,7 +147,7 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                     amiiboList.add(filteredData.get(position));
                     setIsHighlighted(holder, true);
                 }
-                if (amiiboList.size() == numberRequested)
+                if (amiiboList.size() == listSize)
                     listener.onAmiiboListClicked(amiiboList);
             } else {
                 listener.onAmiiboClicked(holder.amiiboFile);

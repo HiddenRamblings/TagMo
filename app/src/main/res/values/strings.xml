@@ -340,7 +340,7 @@
     <string name="fail_unlock">Failed to prepare unlock!</string>
     <string name="fail_logcat">Failed to prepare logcat!</string>
     <string name="fail_bitmap">Failed to generate bitmap!</string>
-    <string name="fail_null_data">Binary data null!\nSkipping bank %1$d&#8230;</string>
+    <string name="fail_bank_data">Binary data empty!\nSkipping bank %1$d&#8230;</string>
 
     <string name="no_tag_loaded">&lt;No Tag Loaded&gt;</string>
     <string name="read_error">&lt;Error Reading Tag&gt;</string>

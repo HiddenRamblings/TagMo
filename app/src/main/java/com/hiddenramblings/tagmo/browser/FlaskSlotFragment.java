@@ -109,6 +109,7 @@ public class FlaskSlotFragment extends Fragment implements
     private AppCompatToggleButton switchMenuOptions;
     private LinearLayout writeSlotsLayout;
     private RecyclerView amiiboFilesView;
+    private WriteTagAdapter writeTagAdapter;
     private Snackbar statusBar;
     private Dialog processDialog;
 
@@ -432,6 +433,9 @@ public class FlaskSlotFragment extends Fragment implements
             amiiboFilesView.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
         else
             amiiboFilesView.setLayoutManager(new LinearLayoutManager(activity));
+        writeTagAdapter = new WriteTagAdapter(settings);
+        amiiboFilesView.setAdapter(writeTagAdapter);
+        this.settings.addChangeListener(writeTagAdapter);
 
         switchMenuOptions.setOnClickListener(view1 -> {
             if (slotOptionsMenu.isShown()) {
@@ -477,8 +481,7 @@ public class FlaskSlotFragment extends Fragment implements
             onBottomSheetChanged(SHEET.WRITE);
             searchView.setQuery(settings.getQuery(), true);
             searchView.clearFocus();
-            WriteTagAdapter writeFileAdapter = new WriteTagAdapter(
-                    settings, new WriteTagAdapter.OnAmiiboClickListener() {
+            writeTagAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
                 @Override
                 public void onAmiiboClicked(AmiiboFile amiiboFile) {
                     onBottomSheetChanged(SHEET.AMIIBO);
@@ -490,9 +493,12 @@ public class FlaskSlotFragment extends Fragment implements
                 public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
                     handleImageClicked(amiiboFile);
                 }
-            });
-            amiiboFilesView.setAdapter(writeFileAdapter);
-            this.settings.addChangeListener(writeFileAdapter);
+
+                @Override
+                public void onAmiiboListClicked(ArrayList<AmiiboFile> amiiboList) {
+
+                }
+            }, 1);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
@@ -505,11 +511,22 @@ public class FlaskSlotFragment extends Fragment implements
             onBottomSheetChanged(SHEET.WRITE);
             searchView.setQuery(settings.getQuery(), true);
             searchView.clearFocus();
-            WriteTagAdapter writeListAdapter = new WriteTagAdapter(
-                    settings, this::writeAmiiboCollection);
-            amiiboFilesView.setAdapter(writeListAdapter);
-            this.settings.addChangeListener(writeListAdapter);
-            writeListAdapter.resetSelections();
+            writeTagAdapter.setListener(new WriteTagAdapter.OnAmiiboClickListener() {
+                @Override
+                public void onAmiiboClicked(AmiiboFile amiiboFile) {
+
+                }
+
+                @Override
+                public void onAmiiboImageClicked(AmiiboFile amiiboFile) {
+
+                }
+
+                @Override
+                public void onAmiiboListClicked(ArrayList<AmiiboFile> amiiboList) {
+                    writeAmiiboCollection(amiiboList);
+                }
+            }, flaskSlotCount.getValue());
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
@@ -795,7 +812,6 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
-        if (null != amiiboList && amiiboList.size() == flaskSlotCount.getValue()) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             showProcessingNotice(true);
             for (int i = 0; i < amiiboList.size(); i++) {
@@ -804,7 +820,6 @@ public class FlaskSlotFragment extends Fragment implements
                         amiiboList.get(index), index == amiiboList.size() - 1
                 ), 30L * i);
             }
-        }
     }
 
     private void uploadAmiiboFile(AmiiboFile amiiboFile, boolean complete) {

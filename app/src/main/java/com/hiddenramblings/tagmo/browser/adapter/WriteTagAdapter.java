@@ -41,37 +41,25 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
         implements Filterable, BrowserSettingsListener {
     private final BrowserSettings settings;
     private OnAmiiboClickListener listener = null;
-    private OnHighlightListener collector = null;
+    private int numberRequested = 1;
     private ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
     private ArrayList<AmiiboFile> filteredData;
     private AmiiboFilter filter;
     boolean firstRun;
     private final ArrayList<AmiiboFile> amiiboList = new ArrayList<>();
 
-    public WriteTagAdapter(BrowserSettings settings, OnAmiiboClickListener listener) {
+    public WriteTagAdapter(BrowserSettings settings) {
         this.settings = settings;
-        this.listener = listener;
 
         firstRun = true;
         this.filteredData = this.amiiboFiles;
         this.setHasStableIds(true);
     }
 
-    public WriteTagAdapter(BrowserSettings settings, OnHighlightListener collector) {
-        this.settings = settings;
-        this.collector = collector;
-
-        firstRun = true;
-        this.filteredData = this.amiiboFiles;
-        this.setHasStableIds(true);
-    }
-
-    public void setListener(OnAmiiboClickListener listener) {
-        this.listener = listener;
-    }
-
-    public void resetSelections() {
+    public void setListener(OnAmiiboClickListener listener, int numberRequested) {
         this.amiiboList.clear();
+        this.listener = listener;
+        this.numberRequested = numberRequested;
     }
 
     @Override
@@ -129,14 +117,14 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
     public AmiiboViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (VIEW.valueOf(viewType)) {
             case COMPACT:
-                return new CompactViewHolder(parent, settings, listener, collector);
+                return new CompactViewHolder(parent, settings);
             case LARGE:
-                return new LargeViewHolder(parent, settings, listener, collector);
+                return new LargeViewHolder(parent, settings);
             case IMAGE:
-                return new ImageViewHolder(parent, settings, listener, collector);
+                return new ImageViewHolder(parent, settings);
             case SIMPLE:
             default:
-                return new SimpleViewHolder(parent, settings, listener, collector);
+                return new SimpleViewHolder(parent, settings);
         }
     }
 
@@ -150,17 +138,20 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
     }
 
     private void handleClickEvent(final AmiiboViewHolder holder, int position) {
-        if (null != holder.collector) {
-            if (amiiboList.contains(holder.amiiboFile)) {
-                amiiboList.remove(filteredData.get(position));
-                setIsHighlighted(holder, false);
+        if (null != listener) {
+            if (numberRequested > 1) {
+                if (amiiboList.contains(holder.amiiboFile)) {
+                    amiiboList.remove(filteredData.get(position));
+                    setIsHighlighted(holder, false);
+                } else {
+                    amiiboList.add(filteredData.get(position));
+                    setIsHighlighted(holder, true);
+                }
+                if (amiiboList.size() == numberRequested)
+                    listener.onAmiiboListClicked(amiiboList);
             } else {
-                amiiboList.add(filteredData.get(position));
-                setIsHighlighted(holder, true);
+                listener.onAmiiboClicked(holder.amiiboFile);
             }
-            holder.collector.onAmiiboClicked(amiiboList);
-        } else if (null != holder.listener) {
-            holder.listener.onAmiiboClicked(holder.amiiboFile);
         }
     }
 
@@ -172,8 +163,8 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
                     handleClickEvent(holder, clickPosition);
-                else if (null != holder.listener)
-                    holder.listener.onAmiiboImageClicked(holder.amiiboFile);
+                else if (null != listener)
+                    listener.onAmiiboImageClicked(holder.amiiboFile);
             });
         }
         holder.bind(getItem(clickPosition));
@@ -239,8 +230,6 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
 
     protected static abstract class AmiiboViewHolder extends RecyclerView.ViewHolder {
         private final BrowserSettings settings;
-        private final OnAmiiboClickListener listener;
-        private final OnHighlightListener collector;
 
         public final TextView txtError;
         public final TextView txtName;
@@ -279,14 +268,10 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
             }
         };
 
-        public AmiiboViewHolder(View itemView, BrowserSettings settings,
-                                OnAmiiboClickListener listener,
-                                OnHighlightListener collector) {
+        public AmiiboViewHolder(View itemView, BrowserSettings settings) {
             super(itemView);
 
             this.settings = settings;
-            this.listener = listener;
-            this.collector = collector;
 
             this.txtError = itemView.findViewById(R.id.txtError);
             this.txtName = itemView.findViewById(R.id.txtName);
@@ -414,49 +399,41 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
     }
 
     static class SimpleViewHolder extends AmiiboViewHolder {
-        public SimpleViewHolder(ViewGroup parent, BrowserSettings settings,
-                                OnAmiiboClickListener listener,
-                                OnHighlightListener collector) {
+        public SimpleViewHolder(ViewGroup parent, BrowserSettings settings) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_simple_card, parent, false),
-                    settings, listener, collector
+                    settings
             );
         }
     }
 
     static class CompactViewHolder extends AmiiboViewHolder {
-        public CompactViewHolder(ViewGroup parent, BrowserSettings settings,
-                                 OnAmiiboClickListener listener,
-                                 OnHighlightListener collector) {
+        public CompactViewHolder(ViewGroup parent, BrowserSettings settings) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_compact_card, parent, false),
-                    settings, listener, collector
+                    settings
             );
         }
     }
 
     static class LargeViewHolder extends AmiiboViewHolder {
-        public LargeViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnAmiiboClickListener listener,
-                               OnHighlightListener collector) {
+        public LargeViewHolder(ViewGroup parent, BrowserSettings settings) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_large_card, parent, false),
-                    settings, listener, collector
+                    settings
             );
         }
     }
 
     static class ImageViewHolder extends AmiiboViewHolder {
-        public ImageViewHolder(ViewGroup parent, BrowserSettings settings,
-                               OnAmiiboClickListener listener,
-                               OnHighlightListener collector) {
+        public ImageViewHolder(ViewGroup parent, BrowserSettings settings) {
             super(
                     LayoutInflater.from(parent.getContext()).inflate(
                             R.layout.amiibo_image_card, parent, false),
-                    settings, listener, collector
+                    settings
             );
         }
     }
@@ -464,9 +441,6 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
     public interface OnAmiiboClickListener {
         void onAmiiboClicked(AmiiboFile amiiboFile);
         void onAmiiboImageClicked(AmiiboFile amiiboFile);
-    }
-
-    public interface OnHighlightListener {
-        void onAmiiboClicked(ArrayList<AmiiboFile> amiiboList);
+        void onAmiiboListClicked(ArrayList<AmiiboFile> amiiboList);
     }
 }

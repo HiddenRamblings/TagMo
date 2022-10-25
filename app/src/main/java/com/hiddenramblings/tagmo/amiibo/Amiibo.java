@@ -240,15 +240,12 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
         dest.writeSerializable(this.name);
         dest.writeLong(this.id);
         dest.writeSerializable((Serializable) this.releaseDates);
-//        dest.writeByteArray(this.data);
     }
 
     protected Amiibo(Parcel in) {
         this.name = in.readString();
         this.id = in.readLong();
         this.releaseDates = (AmiiboReleaseDates) in.readSerializable();
-//        this.data = in.createByteArray();
-//        in.readByteArray(this.data);
     }
 
     public static final Parcelable.Creator<Amiibo> CREATOR = new Parcelable.Creator<>() {

@@ -388,7 +388,7 @@
 
     <string name="sub_button">%1$s Monthly Donations</string>
     <string name="iap_button">%1$s One-Time Donation</string>
-    <string name="donation_thanks">Thanks for your support!</string>
+    <string name="donation_thanks">Thanks for supporting TagMo!</string>
 
     <string name="conversion_title">TagMo Critical Update</string>
     <string name="conversion_message">GitHub and Google Play builds are now universal.\nPlease click continue to resolve installation conflicts.</string>

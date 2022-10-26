@@ -145,12 +145,12 @@ public class WebsiteFragment extends Fragment {
         if (null != mWebView) {
             if (null == address) address = NFCIntent.SITE_GITLAB_README;
             WebSettings webViewSettings = mWebView.getSettings();
+            webViewSettings.setSupportZoom(true);
+            webViewSettings.setBuiltInZoomControls(true);
             if (address.startsWith(NFCIntent.SITE_GITLAB_README)) {
                 webViewSettings.setUserAgentString(webViewSettings.getUserAgentString().replaceAll(
                         "(?i)" + Pattern.quote("android"), "TagMo"));
             } else {
-                webViewSettings.setBuiltInZoomControls(true);
-                webViewSettings.setSupportZoom(true);
                 webViewSettings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
             }
             mWebView.loadUrl(address);

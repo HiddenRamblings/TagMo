@@ -262,7 +262,9 @@ public class FlaskGattService extends Service {
                         if (null != listener) listener.onFlaskStatusChanged(null);
                     }
                 } else if (progress.endsWith("}")) {
-                    if (null != listener) {
+                    if (progress.startsWith("tag.saveUploadedTag")) {
+                        response = new StringBuilder();
+                    } else if (null != listener) {
                         try {
                             JSONObject jsonObject = new JSONObject(response.toString());
                             String event = jsonObject.getString("event");

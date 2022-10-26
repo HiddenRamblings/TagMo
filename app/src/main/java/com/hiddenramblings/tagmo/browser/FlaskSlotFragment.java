@@ -54,6 +54,7 @@ import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
+import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -806,14 +807,25 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
-        onBottomSheetChanged(SHEET.MENU);
-        showProcessingNotice(true);
-        for (int i = 0; i < amiiboList.size(); i++) {
-            int index = i;
-            flaskHandler.postDelayed(() -> uploadAmiiboFile(
-                    amiiboList.get(index), index == amiiboList.size() - 1
-            ), 30L * i);
-        }
+        new AlertDialog.Builder(requireContext())
+                .setMessage(R.string.flask_write_confirm)
+                .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                    onBottomSheetChanged(SHEET.MENU);
+                    showProcessingNotice(true);
+                    for (int i = 0; i < amiiboList.size(); i++) {
+                        int index = i;
+                        flaskHandler.postDelayed(() -> uploadAmiiboFile(
+                                amiiboList.get(index), index == amiiboList.size() - 1
+                        ), 30L * i);
+                    }
+                    dialog.dismiss();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    amiiboList.clear();
+                    onBottomSheetChanged(SHEET.MENU);
+                    dialog.dismiss();
+                })
+                .show();
     }
 
     private void uploadAmiiboFile(AmiiboFile amiiboFile, boolean complete) {

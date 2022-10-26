@@ -279,6 +279,7 @@
     <string name="slots_empty">Bluup Flask storage is empty</string>
     <string name="create_blank">Create blank virtual NFC tag</string>
     <string name="flask_erase_confirm">Erase all slots from Bluup Flask?</string>
+    <string name="flask_write_confirm">Write selections to Bluup Flask?</string>
     <string name="flask_upload">Uploading binary&#8230;</string>
     <string name="flask_remove">Wiping slot data&#8230;</string>
     <string name="joy_con_invalid">Not a valid Joy-Con device!</string>

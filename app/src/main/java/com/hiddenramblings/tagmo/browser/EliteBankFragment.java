@@ -896,6 +896,9 @@ public class EliteBankFragment extends Fragment implements
                 ), bank_count));
                 writeOpenBanks.setText(getString(R.string.write_open_banks, bank_count));
                 eraseOpenBanks.setText(getString(R.string.erase_open_banks, bank_count));
+
+                int active_bank = prefs.eliteActiveBank();
+                updateAmiiboView(amiiboTile, null, amiibos.get(active_bank).id, active_bank);
             });
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {

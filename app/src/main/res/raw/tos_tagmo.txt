@@ -1,1 +1,1 @@
-TagMo 與 Nintendo 並沒有任何形式上的附屬、關聯或相關授權協議。 amiibo 為任天堂的註冊商標。本專案沒有附加任何官方相關資源。經由程式建立的檔案，不得用於進行盈利、銷售或散布用途。本專案基於學術研究與備份歸檔目的而進行開發。
+TagMo is not affiliated, associated, authorized, endorsed by, or in any way connected with Nintendo. amiibo is a registered trademark of Nintendo. No official resources are included in this project. Files created with this project are not intended for sale or distribution. This project is for educational and archival purposes only.

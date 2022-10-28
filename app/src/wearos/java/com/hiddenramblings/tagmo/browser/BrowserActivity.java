@@ -325,6 +325,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
         if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
+            //noinspection deprecation
             ((BlurView) amiiboContainer).setupWith(coordinator,
                     Debug.isNewer(Build.VERSION_CODES.S)
                             ? new RenderEffectBlur()
@@ -430,6 +431,11 @@ public class BrowserActivity extends AppCompatActivity implements
 
         onCreateWearOptionsMenu();
         donations.retrieveDonationMenu();
+
+        if (!prefs.guides_prompted()) {
+            prefs.guides_prompted(true);
+            mainLayout.setCurrentItem(pagerAdapter.getItemCount() - 1, false);
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -1308,11 +1314,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onAmiiboClicked(View itemView, AmiiboFile amiiboFile) {
         if (null == amiiboFile.getDocUri() && null == amiiboFile.getFilePath()) return;
         try {
-            byte[] tagData = null != amiiboFile.getData() ? amiiboFile.getData()
-                    : null != amiiboFile.getDocUri()
-                    ? TagArray.getValidatedDocument(keyManager, amiiboFile.getDocUri())
-                    : TagArray.getValidatedFile(keyManager, amiiboFile.getFilePath());
-
+            byte[] tagData = TagArray.getValidatedData(keyManager, amiiboFile);
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 LinearLayout menuOptions = itemView.findViewById(R.id.menu_options);
                 Toolbar toolbar = menuOptions.findViewById(R.id.toolbar);

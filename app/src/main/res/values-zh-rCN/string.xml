@@ -139,10 +139,7 @@
     <string name="set_bank_count">Set Bank Count</string>
     <string name="lock_amiibo">锁定 N2 Elite</string>
 
-    <string name="allow">允许</string>
-
     <string name="guides">指南</string>
-    <string name="donate">捐款</string>
 
     <string name="enable_tag_validation">仅限 NTag215</string>
     <string name="tag_validation_details">并非所有的 NFC 芯片组都能正确验证 NFC 标签。\n关闭此选项以允许可能不兼容的标签。</string>
@@ -159,9 +156,7 @@
     <string name="sync_amiibo_info">从 AmiiboAPI 更新数据库</string>
     <string name="import_json_details">从本地加载 amiibo 数据库 (JSON)</string>
     <string name="reset_amiibo_info">重置 amiibo 数据库</string>
-    <string name="number_game">%1$d 个游戏系列</string>
     <string name="number_character">%1$d 个角色</string>
-    <string name="number_series">%1$d 个 amiibo 系列</string>
     <string name="number_type">%1$d 种 amiibo 类型</string>
     <string name="pref_advanced">高级</string>
     <string name="pref_disable_debug">关闭 Debug 日志</string>

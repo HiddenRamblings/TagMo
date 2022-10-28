@@ -124,7 +124,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private String profileFlask;
     private String addressFlask;
-    private int maxSlotCount = 85;
+    private final int maxSlotCount = 85;
     private int currentCount;
 
     private enum STATE {

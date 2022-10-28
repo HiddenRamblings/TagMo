@@ -73,8 +73,8 @@ public final class AnimatedLinearLayout extends LinearLayout {
     }
 
     public interface AnimationListener {
-        public void onAnimationStart(AnimatedLinearLayout layout);
-        public void onAnimationEnd(AnimatedLinearLayout layout);
+        void onAnimationStart(AnimatedLinearLayout layout);
+        void onAnimationEnd(AnimatedLinearLayout layout);
     }
 
     private AnimationListener mAnimationListener;

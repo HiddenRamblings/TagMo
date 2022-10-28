@@ -13,7 +13,6 @@
         android:title="@string/refresh_browser"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/filter"
         android:icon="@drawable/ic_filter_list_24dp"
         android:title="@string/filter"
         app:showAsAction="ifRoom">
@@ -71,7 +70,6 @@
         android:title="@string/install"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/sort"
         android:icon="@drawable/ic_sort_24dp"
         android:title="@string/sorting"
         app:showAsAction="never">
@@ -102,14 +100,11 @@
         </menu>
     </item>
     <item
-        android:id="@+id/view"
         android:icon="@drawable/ic_view_array_24dp"
         android:title="@string/display_options"
         app:showAsAction="never">
         <menu>
-            <group
-                android:id="@+id/layout"
-                android:checkableBehavior="single">
+            <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/view_simple"
                     android:title="@string/simple"/>

@@ -194,8 +194,6 @@ public class GamesManager {
         if (null != amiiboWiiU && amiiboWiiU.hasUsage(name))
             return true;
         GamesSwitch amiiboSwitch = gamesSwitch.get(amiibo.id);
-        if (null != amiiboSwitch && amiiboSwitch.hasUsage(name))
-            return true;
-        return false;
+        return null != amiiboSwitch && amiiboSwitch.hasUsage(name);
     }
 }

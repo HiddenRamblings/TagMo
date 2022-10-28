@@ -376,6 +376,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
         if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
+            //noinspection deprecation
             ((BlurView) amiiboContainer).setupWith(coordinator,
                     Debug.isNewer(Build.VERSION_CODES.S)
                             ? new RenderEffectBlur()
@@ -523,6 +524,11 @@ public class BrowserActivity extends AppCompatActivity implements
         });
 
         donations.retrieveDonationMenu();
+
+        if (!prefs.guides_prompted()) {
+            prefs.guides_prompted(true);
+            mainLayout.setCurrentItem(pagerAdapter.getItemCount() - 1, false);
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

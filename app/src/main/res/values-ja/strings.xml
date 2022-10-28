@@ -23,12 +23,10 @@
     <string name="game_titles_hide">互換性のあるゲームを隠す</string>
 
     <string name="guides">ガイド</string>
-    <string name="donate">寄付</string>
 
     <string name="location_disclosure">Bluetooth LEスキャンには場所が必要です。 Google Playのポリシーに従って、TagMoは、バックグラウンドで位置データが収集される可能性があることを通知する必要があります。 TagMoは位置データの読み取り、保存、または共有を行いません。 したがって、この通知は厳密に形式的です。</string>
     <string name="prefs_configuration">ブラウザのオプション</string>
     <string name="pref_import_keys">暗号キーのインポート</string>
-    <string name="allow">許可する</string>
     <string name="yes">はい。</string>
     <string name="zelda_twilight">ゼルダの伝説 トワイライトプリンセス HD</string>
 

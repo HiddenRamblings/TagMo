@@ -20,14 +20,12 @@
     <string name="game_titles_hide">Ocultar Juegos Compatibles</string>
 
     <string name="guides">Guiar</string>
-    <string name="donate">Donación</string>
 
     <string name="location_disclosure">Se requiere la ubicación para el escaneo de Bluetooth LE. De acuerdo con la política de Google Play, TagMo debe notificarle que los datos de ubicación pueden recopilarse en segundo plano. TagMo no lee, almacena ni comparte datos de ubicación. Como tal, este aviso es estrictamente una formalidad.</string>
     <string name="prefs_configuration">Opciones de Navegador</string>
     <string name="pref_import_keys">Claves de importación</string>
     <string name="update">Actualizar</string>
     <string name="topCenterTextMessage">Coloca la etiqueta debajo del teléfono</string>
-    <string name="allow">Permitir</string>
     <string name="yes">Sí</string>
 
     <string name="speed_scan">Levante la etiqueta ligeramente para finalizar el escaneo</string>

@@ -109,6 +109,14 @@ public class Preferences {
         putInt(browserAmiiboView, value);
     }
 
+    private final String guides_prompted = "guides_prompted";
+    public boolean guides_prompted() {
+        return getBoolean(guides_prompted, false);
+    }
+    public void guides_prompted(boolean value) {
+        putBoolean(guides_prompted, value);
+    }
+
     private final String enable_tag_type_validation = "enable_tag_type_validation";
     public boolean enable_tag_type_validation() {
         return getBoolean(enable_tag_type_validation, true);

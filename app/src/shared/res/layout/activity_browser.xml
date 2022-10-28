@@ -247,8 +247,6 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true">
 
-        <include
-            android:id="@+id/fragment_settings"
-            layout="@layout/fragment_settings" />
+        <include layout="@layout/fragment_settings" />
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -18,6 +18,7 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.Build;
 
+import androidx.annotation.Nullable;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.hiddenramblings.tagmo.R;
@@ -164,11 +165,14 @@ public class TagArray {
         return output.toString();
     }
 
+    @Nullable
     public static void validateData(byte[] data) throws Exception {
         final Context context = TagMo.getContext();
+        if (null == data)
+            throw new IOException(context.getString(R.string.invalid_data_null));
         /* TagWriter.splitPages(data) */
         if (data.length < NfcByte.TAG_DATA_SIZE)
-            throw new IOException(TagMo.getContext().getString(
+            throw new IOException(context.getString(
                     R.string.invalid_data_size, data.length, NfcByte.TAG_DATA_SIZE));
 
         byte[][] pages = new byte[data.length / NfcByte.PAGE_SIZE][];

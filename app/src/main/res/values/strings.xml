@@ -355,6 +355,7 @@
     <string name="invalid_key_error">No valid key in file.</string>
     <string name="key_read_error">Error reading key from storage</string>
 
+    <string name="invalid_data_null">Cannot verify empty data.</string>
     <string name="invalid_tag_prefix">Data must start with 0x04.</string>
     <string name="invalid_tag_lock">Lock signature mismatch.</string>
     <string name="invalid_tag_cc">CC signature mismatch.</string>

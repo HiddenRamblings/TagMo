@@ -31,20 +31,24 @@ public class TagReader {
 
     private static byte[] getTagData(String path, InputStream inputStream) throws Exception {
         int length = inputStream.available();
-        if (length < NfcByte.TAG_DATA_SIZE) {
-            if (length == NfcByte.KEY_FILE_SIZE) return null;
-            throw new IOException(TagMo.getContext().getString(
-                    R.string.invalid_file_size, path, length, NfcByte.TAG_DATA_SIZE));
-        }
-        if (length == NfcByte.TAG_FILE_SIZE) {
-            byte[] signed = new byte[NfcByte.TAG_FILE_SIZE];
-            new DataInputStream(inputStream).readFully(signed);
-            Foomiibo.getDataSignature(signed);
-            return Arrays.copyOfRange(signed, 0, NfcByte.TAG_DATA_SIZE);
-        } else {
-            byte[] tagData = new byte[NfcByte.TAG_DATA_SIZE];
-            new DataInputStream(inputStream).readFully(tagData);
-            return tagData;
+        switch (length) {
+            case NfcByte.KEY_FILE_SIZE:
+            case NfcByte.KEY_FILE_SIZE * 2:
+                throw new IOException(TagMo.getContext().getString(R.string.invalid_tag_key));
+            case NfcByte.TAG_FILE_SIZE:
+                byte[] signed = new byte[NfcByte.TAG_FILE_SIZE];
+                new DataInputStream(inputStream).readFully(signed);
+                Foomiibo.getDataSignature(signed);
+                return Arrays.copyOfRange(signed, 0, NfcByte.TAG_DATA_SIZE);
+            case NfcByte.TAG_DATA_SIZE:
+            case NfcByte.TAG_DATA_SIZE + 8:
+                byte[] tagData = new byte[NfcByte.TAG_DATA_SIZE];
+                new DataInputStream(inputStream).readFully(tagData);
+                return tagData;
+            default:
+                throw new IOException(TagMo.getContext().getString(
+                        R.string.invalid_file_size, path, length, NfcByte.TAG_DATA_SIZE
+                ));
         }
     }
 

@@ -646,6 +646,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             JSONObject jsonObject = new JSONObject(result);
             JSONObject render = (JSONObject) jsonObject.get("commit");
             JSONObject commit = (JSONObject) render.get("commit");
+            // JSONObject author = (JSONObject) commit.get("committer");
             JSONObject author = (JSONObject) commit.get("author");
             String lastUpdated = (String) author.get("date");
             BrowserActivity activity = (BrowserActivity) requireActivity();

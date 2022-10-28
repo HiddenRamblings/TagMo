@@ -365,6 +365,7 @@
     <string name="invalid_uid_length">Invalid UID length</string>
     <string name="invalid_file_size">%1$s size: %2$d, Expected: %3$d</string>
     <string name="invalid_data_size">Tag size: %1$d, Expected: %2$d</string>
+    <string name="invalid_tag_key">Key file detected. Tag skipped.</string>
     <string name="invalid_app_data">Invalid app data</string>
 
     <string name="uid_key_missing">No available key for UID</string>

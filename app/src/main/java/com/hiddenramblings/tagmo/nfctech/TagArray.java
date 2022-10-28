@@ -171,9 +171,12 @@ public class TagArray {
         if (null == data)
             throw new IOException(context.getString(R.string.invalid_data_null));
         /* TagWriter.splitPages(data) */
-        if (data.length < NfcByte.TAG_DATA_SIZE)
+        if (data.length == NfcByte.KEY_FILE_SIZE || data.length == NfcByte.KEY_FILE_SIZE * 2)
+            throw new IOException(context.getString(R.string.invalid_tag_key));
+        else if (data.length < NfcByte.TAG_DATA_SIZE)
             throw new IOException(context.getString(
-                    R.string.invalid_data_size, data.length, NfcByte.TAG_DATA_SIZE));
+                    R.string.invalid_data_size, data.length, NfcByte.TAG_DATA_SIZE
+            ));
 
         byte[][] pages = new byte[data.length / NfcByte.PAGE_SIZE][];
         for (int i = 0, j = 0; i < data.length; i += NfcByte.PAGE_SIZE, j++) {

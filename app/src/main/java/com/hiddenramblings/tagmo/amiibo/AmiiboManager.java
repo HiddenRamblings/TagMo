@@ -16,9 +16,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.DateFormat;
@@ -251,7 +253,6 @@ public class AmiiboManager {
         try {
             streamWriter = new OutputStreamWriter(outputStream);
             streamWriter.write(amiiboManager.toJSON().toString());
-            outputStream.flush();
         } finally {
             if (null != streamWriter) {
                 try {
@@ -260,6 +261,7 @@ public class AmiiboManager {
                     Debug.Info(e);
                 }
             }
+            outputStream.flush();
         }
     }
 
@@ -280,6 +282,37 @@ public class AmiiboManager {
         }
     }
 
+    public static String readDatabase(Context context) {
+        StringBuilder database = new StringBuilder();
+        InputStream inputStream = null;
+        BufferedReader reader = null;
+        try {
+            inputStream = context.openFileInput(AMIIBO_DATABASE_FILE);
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            for (String line; (line = reader.readLine()) != null; ) {
+                database.append(line).append('\n');
+            }
+        } catch (IOException ex) {
+            return null;
+        } finally {
+            if (null != reader) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    Debug.Info(e);
+                }
+            }
+            if (null != inputStream) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    Debug.Info(e);
+                }
+            }
+        }
+        return database.length() > 0 ? database.toString() : null;
+    }
+
     public static AmiiboManager getDefaultAmiiboManager(Context context)
             throws IOException, JSONException, ParseException {
         return AmiiboManager.parse(context.getResources().openRawResource(R.raw.amiibo));
@@ -288,7 +321,7 @@ public class AmiiboManager {
     public static AmiiboManager getAmiiboManager(Context context)
             throws IOException, JSONException, ParseException {
         AmiiboManager amiiboManager;
-        if (new File(Storage.getDownloadDir("TagMo"), AMIIBO_DATABASE_FILE).exists()) {
+       if (new File(Storage.getDownloadDir("TagMo"), AMIIBO_DATABASE_FILE).exists()) {
             try {
                 amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
             } catch (IOException | JSONException | ParseException e) {
@@ -296,7 +329,8 @@ public class AmiiboManager {
                 Debug.Warn(R.string.error_amiibo_parse, e);
             }
         } else {
-            amiiboManager = null;
+           String database = readDatabase(context);
+           amiiboManager = null != database ? AmiiboManager.parse(database) : null;
         }
         if (null == amiiboManager) {
             amiiboManager = getDefaultAmiiboManager(context);

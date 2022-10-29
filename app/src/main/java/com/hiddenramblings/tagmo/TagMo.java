@@ -8,6 +8,7 @@ import android.text.Spanned;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.hiddenramblings.tagmo.eightbit.content.ScaledContext;
 import com.github.anrwatchdog.ANRError;
 import com.github.anrwatchdog.ANRWatchDog;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -68,7 +69,13 @@ public class TagMo extends Application {
     public void onCreate() {
         super.onCreate();
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-        mContext = new SoftReference<>(this);
+        if (BuildConfig.WEAR_OS) {
+            mContext = new SoftReference<>(new ScaledContext(this).watch(2));
+            mContext.get().setTheme(R.style.AppTheme);
+        } else {
+            mContext = new SoftReference<>(this);
+        }
+
         mPrefs = new SoftReference<>(new Preferences(this));
 
         if (isWatchingANR) {

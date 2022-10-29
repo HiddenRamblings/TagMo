@@ -1,6 +1,6 @@
 [submodule "app/libs/amiitool"]
 	path = app/libs/amiitool
-	url = git@github.com:8BitDream/amiitool.git
+	url = git@github.com:8bitDream/amiitool.git
 [submodule "app/libs/libjoycon"]
 	path = app/libs/libjoycon
-	url = git@github.com:8BitDream/libjoycon.git
+	url = git@github.com:8bitDream/libjoycon.git

@@ -37,7 +37,7 @@ public class AmiiboManager {
 
     public static final String AMIIBO_DATABASE_FILE = "amiibo.json";
     public static final String RENDER_RAW =
-            "https://raw.githubusercontent.com/8BitDream/AmiiboAPI/render/";
+            "https://raw.githubusercontent.com/8bitDream/AmiiboAPI/render/";
     public static final String AMIIBO_API = "https://amiiboapi.com/api/";
 
     public final HashMap<Long, Amiibo> amiibos = new HashMap<>();

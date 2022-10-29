@@ -178,9 +178,7 @@
     <string name="sync_amiibo_info">Sync. les données avec AmiiboAPI</string>
     <string name="import_json_details">Charger la base de données amiibo (JSON)</string>
     <string name="reset_amiibo_info">Réinitialiser le cache de la base de données amiibo</string>
-    <string name="number_game">%1$d Licence(s)</string>
     <string name="number_character">%1$d Personnage(s)</string>
-    <string name="number_series">%1$d Séries d’amiibo</string>
     <string name="number_type">%1$d Types d’amiibo</string>
     <string name="pref_advanced">Avancé</string>
     <string name="pref_tagmo_theme">Thème système pour TagMo</string>

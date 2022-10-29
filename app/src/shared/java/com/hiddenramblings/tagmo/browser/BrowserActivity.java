@@ -208,7 +208,6 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = TagMo.getPrefs();
-        setTheme(R.style.AppTheme);
         keyManager = new KeyManager(this);
 
         if (null != getSupportActionBar()) {

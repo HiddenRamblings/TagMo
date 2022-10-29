@@ -19,7 +19,6 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.NFCIntent;
@@ -29,6 +28,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
 import com.hiddenramblings.tagmo.browser.BrowserActivity;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.security.SecurityHandler;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
@@ -689,7 +689,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void onUpdateRequested(boolean isMenuClicked) {
         if (prefs.database_source() == 0) {
             new JSONExecutor(requireActivity(),
-                    "https://api.github.com/repos/8BitDream/AmiiboAPI/",
+                    "https://api.github.com/repos/8bitDream/AmiiboAPI/",
                     "branches/render?path=databaset%2Famiibo.json"
             ).setResultListener(result -> {
                 if (null != result) parseCommitDate(result, isMenuClicked);

@@ -192,7 +192,6 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = TagMo.getPrefs();
-        setTheme(R.style.AppTheme);
         keyManager = new KeyManager(this);
 
         if (null != getSupportActionBar()) getSupportActionBar().hide();
@@ -238,6 +237,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }
 
+        mainLayout.setKeepScreenOn(true);
         mainLayout.setAdapter(pagerAdapter);
         CardFlipPageTransformer2 cardFlipPageTransformer = new CardFlipPageTransformer2();
         cardFlipPageTransformer.setScalable(true);
@@ -1158,13 +1158,6 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
                 return true;
-            } catch (SecurityException sex) {
-                try {
-                    onDocumentRequested();
-                    return true;
-                } catch (ActivityNotFoundException anf) {
-                    return false;
-                }
             } catch (IllegalArgumentException iae) {
                 return false;
             }

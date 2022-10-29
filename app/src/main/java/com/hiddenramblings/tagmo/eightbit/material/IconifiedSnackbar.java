@@ -7,7 +7,7 @@
  * are met:
  *
  * For the purpose of this license, the phrase "TagMo labels" shall
- * be used to refer to the labels "8-Bit Dream", "TwistedUmbrella",
+ * be used to refer to the labels "8-bit Dream", "TwistedUmbrella",
  * "TagMo" and "AbandonedCart" and these labels should be considered
  * the equivalent of any usage of the aforementioned phrase.
  *

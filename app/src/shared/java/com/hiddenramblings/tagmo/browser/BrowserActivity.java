@@ -1443,8 +1443,6 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.notifyChanges();
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
-        } else if (item.getItemId() == R.id.send_donation) {
-            donations.onSendDonationClicked();
         } else if (item.getItemId() == R.id.filter_character) {
             return onFilterCharacterClick();
         } else if (item.getItemId() == R.id.filter_game_series) {

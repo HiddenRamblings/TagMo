@@ -37,11 +37,12 @@
                     android:textColor="@color/tag_text"
                     android:textSize="16sp"/>
 
-                <RelativeLayout
+                <LinearLayout
                     xmlns:tools="http://schemas.android.com/tools"
                     android:id="@+id/amiiboInfo"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:contentDescription="@string/imageview_amiibo"
@@ -58,14 +59,12 @@
                         android:id="@+id/imageDivider"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@drawable/bottom_divider"
-                        android:layout_below="@id/imageAmiibo"/>
+                        android:background="@drawable/bottom_divider" />
 
                     <LinearLayout
                         android:id="@+id/group0"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/imageDivider"
                         android:layout_marginTop="2dp"
                         android:orientation="horizontal"
                         android:weightSum="4">
@@ -98,7 +97,6 @@
                         android:id="@+id/group1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/group0"
                         android:orientation="horizontal">
 
                         <TextView
@@ -132,7 +130,6 @@
                         android:id="@+id/group2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/group1"
                         android:orientation="horizontal">
 
                         <TextView
@@ -166,7 +163,6 @@
                         android:id="@+id/txtPath"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/group2"
                         android:text="@string/amiibo_path_caps"
                         android:textColor="@color/tag_text"
                         android:textSize="10sp"
@@ -188,7 +184,6 @@
                         android:id="@+id/txtUsageLabel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/txtPath"
                         android:textColor="@color/tag_text"
                         android:textSize="12sp"
                         android:layout_marginTop="4dp"
@@ -200,11 +195,10 @@
                         android:id="@+id/txtUsage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/txtUsageLabel"
                         android:textColor="@color/tag_text"
                         android:textSize="10sp"
                         tools:ignore="SmallSp"/>
-                </RelativeLayout>
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout

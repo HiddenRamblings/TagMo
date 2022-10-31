@@ -122,7 +122,6 @@
     <string name="bonus_three">Bonus Effect 2</string>
 	
     <string name="logcat_support">程式意見反映</string>
-    <string name="donate_support">捐款贊助開發</string>
     <string name="paypal_link">以PayPal捐款</string>
     <string name="clear_foomiibo_set">清除 Foomiibo</string>
     <string name="build_foomiibo_set">建立 Foomiibo</string>

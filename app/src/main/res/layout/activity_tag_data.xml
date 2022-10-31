@@ -54,10 +54,11 @@
                 android:textColor="@color/tag_text"
                 android:textSize="16sp"/>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/amiiboInfo"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imageAmiibo"
@@ -70,14 +71,12 @@
                     android:id="@+id/imageDivider"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_below="@id/imageAmiibo"
                     android:background="@drawable/bottom_divider"/>
 
                 <TextView
                     android:id="@+id/txtName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/imageDivider"
                     android:text="@string/amiibo_name_caps"
                     android:textColor="@color/tag_text"
                     android:textSize="16sp"/>
@@ -86,7 +85,6 @@
                     android:id="@+id/group1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/txtName"
                     android:orientation="horizontal">
 
                     <TextView
@@ -120,7 +118,6 @@
                     android:id="@+id/group2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/group1"
                     android:orientation="horizontal">
 
                     <TextView
@@ -154,7 +151,6 @@
                     android:id="@+id/txtPath"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/group2"
                     android:text="@string/amiibo_path_caps"
                     android:textColor="@color/tag_text"
                     android:textSize="10sp"
@@ -171,7 +167,7 @@
                     android:textSize="10sp"
                     android:visibility="gone"
                     tools:ignore="SmallSp" />
-            </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <TextView

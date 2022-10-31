@@ -523,6 +523,10 @@ public class BrowserActivity extends AppCompatActivity implements
         });
 
         donations.retrieveDonationMenu();
+        findViewById(R.id.donate_layout).setOnClickListener(view -> {
+            closePrefsDrawer();
+            donations.onSendDonationClicked();
+        });
 
         if (!prefs.guides_prompted()) {
             prefs.guides_prompted(true);

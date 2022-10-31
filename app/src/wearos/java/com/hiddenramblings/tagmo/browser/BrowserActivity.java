@@ -192,6 +192,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = TagMo.getPrefs();
+        prefs = TagMo.getPrefs();
         keyManager = new KeyManager(this);
 
         if (null != getSupportActionBar()) getSupportActionBar().hide();
@@ -431,6 +432,9 @@ public class BrowserActivity extends AppCompatActivity implements
 
         onCreateWearOptionsMenu();
         donations.retrieveDonationMenu();
+        findViewById(R.id.donate_layout).setOnClickListener(view -> {
+            donations.onSendDonationClicked();
+        });
 
         if (!prefs.guides_prompted()) {
             prefs.guides_prompted(true);
@@ -1247,8 +1251,6 @@ public class BrowserActivity extends AppCompatActivity implements
             this.settings.notifyChanges();
         } else if (item.getItemId() == R.id.capture_logcat) {
             onCaptureLogcatClicked();
-        } else if (item.getItemId() == R.id.send_donation) {
-            donations.onSendDonationClicked();
         } else if (item.getItemId() == R.id.filter_character) {
             return onFilterCharacterClick();
         } else if (item.getItemId() == R.id.filter_game_series) {

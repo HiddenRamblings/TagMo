@@ -41,11 +41,12 @@
                     android:layout_marginEnd="8dp"
                     android:visibility="invisible" />
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/txtName"
@@ -60,7 +61,6 @@
                         android:id="@+id/group1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/txtName"
                         android:orientation="horizontal">
 
                         <TextView
@@ -92,7 +92,6 @@
                         android:id="@+id/group2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/group1"
                         android:orientation="horizontal">
 
                         <TextView
@@ -119,7 +118,7 @@
                             android:textColor="@android:color/white"
                             android:textSize="10sp"/>
                     </LinearLayout>
-                </RelativeLayout>
+                </LinearLayout>
             </LinearLayout>
 
             <TextView

@@ -20,21 +20,22 @@
         android:animateLayoutChanges="true"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:padding="8dp">
+            android:padding="8dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/txtError"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_gravity="center"
                 android:padding="8dp"
                 android:text="@string/error_caps"
                 android:textAlignment="center"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:textColor="@color/tag_text"
                 android:textSize="16sp"/>
 
@@ -51,7 +52,6 @@
                 android:id="@+id/group1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/txtName"
                 android:orientation="horizontal">
 
                 <TextView
@@ -83,7 +83,6 @@
                 android:id="@+id/group2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/group1"
                 android:orientation="horizontal">
 
                 <TextView
@@ -115,7 +114,6 @@
                 android:id="@+id/txtPath"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/group2"
                 android:layout_marginTop="2dp"
                 android:text="@string/amiibo_path_caps"
                 android:textColor="@color/tag_text"
@@ -129,12 +127,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="2dp"
-                android:layout_below="@id/txtPath"
                 android:textColor="@color/tag_text"
                 android:textSize="10sp"
                 tools:ignore="SmallSp"
                 android:visibility="gone"/>
-        </RelativeLayout>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/txtCharacter"

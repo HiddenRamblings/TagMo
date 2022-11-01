@@ -25,8 +25,8 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.UpdateReceiver;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor;
+import com.hiddenramblings.tagmo.eightbit.os.Storage;
 
 import org.json.JSONArray;
 import org.json.JSONException;

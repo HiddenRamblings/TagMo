@@ -54,7 +54,6 @@ import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.ImageActivity;
 import com.hiddenramblings.tagmo.NFCIntent;
-import com.hiddenramblings.tagmo.NfcActivity;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
@@ -68,8 +67,6 @@ import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
-import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.Preferences;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.shawnlin.numberpicker.NumberPicker;
 

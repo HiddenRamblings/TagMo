@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.settings;
+package com.hiddenramblings.tagmo.browser;
 
 import android.net.Uri;
 import android.os.Build;

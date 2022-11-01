@@ -8,11 +8,11 @@ import android.text.Spanned;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
-import com.hiddenramblings.tagmo.eightbit.content.ScaledContext;
 import com.github.anrwatchdog.ANRError;
 import com.github.anrwatchdog.ANRWatchDog;
+import com.hiddenramblings.tagmo.browser.Preferences;
+import com.hiddenramblings.tagmo.eightbit.content.ScaledContext;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.settings.Preferences;
 
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 

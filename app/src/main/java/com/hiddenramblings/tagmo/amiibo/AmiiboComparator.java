@@ -1,7 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo;
 
-import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
+import com.hiddenramblings.tagmo.browser.BrowserSettings;
+import com.hiddenramblings.tagmo.browser.BrowserSettings.SORT;
 
 import java.util.Comparator;
 

@@ -91,7 +91,7 @@
     <string name="view_hex">檢視Hex編碼</string>
     <string name="hex_code">Hex編碼</string>
     <string name="edit_props">編輯相關資訊</string>
-    <string name="delete_binary">删除二进制文件</string>
+    <string name="delete_binary">删除二進位檔案</string>
     <string name="ignore_tag_id">忽略此Tag ID #</string>
     <string name="random_serial">隨機序號</string>
     <string name="inject_game_data">寫入遊戲儲存數據</string>
@@ -122,6 +122,7 @@
     <string name="bonus_three">Bonus Effect 2</string>
 	
     <string name="logcat_support">程式意見反映</string>
+    <string name="settings_donate">捐款贊助程式開發</string>
     <string name="paypal_link">以PayPal捐款</string>
     <string name="clear_foomiibo_set">清除 Foomiibo</string>
     <string name="build_foomiibo_set">建立 Foomiibo</string>
@@ -177,9 +178,11 @@
     <string name="connect_joy_con">Joy-Con 測試</string>
 
     <string name="storage_unavailable">無法存取手機的儲存空間！</string>
+    <string name="allow">允許</string>
 
     <string name="settings">設定</string>
     <string name="guides">協助</string>
+    <string name="donate">贊助</string>
 
     <string name="prefs_configuration">配置</string>
     <string name="pref_import_keys">匯入crypto金鑰</string>
@@ -201,11 +204,13 @@
     <string name="elite_signature">N2 Elite ID: %1$s</string>
     <string name="enable_flask">啟用支援Bluup Flask</string>
     <string name="amiibo_info">amiibo 資料庫</string>
+    <string name="pref_database_source">設定AmiiboAPI資料庫來源</string>
     <string name="sync_amiibo_info">與 AmiiboAPI 同步資料庫</string>
     <string name="import_json_details">載入 amiibo 資料庫 (JSON)</string>
     <string name="reset_amiibo_info">重置 amiibo 資料庫快取</string>
     <string name="number_character">%1$d 位角色人物</string>
     <string name="number_type">%1$d 種 amiibo 類型</string>
+    <string name="number_titles">%1$d 個可使用的遊戲</string>
     <string name="pref_advanced">進階</string>
     <string name="pref_tagmo_theme">TagMo系統主題</string>
     <string name="tagmo_theme_details">將程式背景變更為自訂主題</string>
@@ -274,6 +279,7 @@
     <string name="slots_empty">Bluup Flask的儲存空間沒有任何項目</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
     <string name="flask_erase_confirm">將Bluup Flask所有的slots進行抹除？</string>
+    <string name="flask_write_confirm">將所有選取項目寫入 Bluup Flask?</string>
     <string name="flask_upload">正在上傳二進位檔案&#8230;</string>
     <string name="flask_remove">正在抹除slot數據&#8230;</string>
     <string name="joy_con_invalid">不是正確的Joy-Con手把設備!</string>
@@ -335,6 +341,7 @@
     <string name="fail_unlock">進行鎖定時發生錯誤！</string>
     <string name="fail_logcat">製作操作日誌時發生錯誤！</string>
     <string name="fail_bitmap">製作縮圖時發生錯誤!</string>
+    <string name="fail_bank_data">空白的二進位檔案!\n正在略過 bank %1$d&#8230;</string>
 
     <string name="no_tag_loaded">&lt;尚未載入Tag&gt;</string>
     <string name="read_error">&lt;讀取Tag時發生錯誤&gt;</string>
@@ -348,6 +355,7 @@
     <string name="invalid_key_error">檔案內沒有正確的金鑰</string>
     <string name="key_read_error">讀取金鑰時發生錯誤</string>
 
+    <string name="invalid_data_null">無法驗證空白數據</string>
     <string name="invalid_tag_prefix">數據開頭必須為0x04字元</string>
     <string name="invalid_tag_lock">鎖定驗證的簽章不一致</string>
     <string name="invalid_tag_cc">CC的簽章不一致</string>
@@ -357,6 +365,7 @@
     <string name="invalid_uid_length">UID的字元長度不正確</string>
     <string name="invalid_file_size">%1$s 大小: %2$d, 應為: %3$d</string>
     <string name="invalid_data_size">Tag 大小: %1$d, 應為: %2$d</string>
+    <string name="invalid_tag_key">已偵測到金鑰檔案。點擊此處略過</string>
     <string name="invalid_app_data">app數據無效</string>
 
     <string name="uid_key_missing">沒有對應此UID的金鑰</string>
@@ -388,5 +397,5 @@
 	
     <string name="notice_incomplete">開發中，敬請期待!</string>
 
-    <string name="disclaimer_general">在程式開發期間，沒有任何公仔受到傷害。</string>
+    <string name="disclaimer_general">程式開發期間，沒有損傷任何公仔</string>
 </resources>

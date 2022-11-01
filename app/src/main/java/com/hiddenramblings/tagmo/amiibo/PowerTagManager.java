@@ -4,8 +4,8 @@ import android.util.Base64;
 
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.nfctech.TagArray;
 import com.hiddenramblings.tagmo.nfctech.NTAG215;
+import com.hiddenramblings.tagmo.nfctech.TagArray;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.settings;
+package com.hiddenramblings.tagmo.browser;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -26,12 +26,11 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
-import com.hiddenramblings.tagmo.browser.BrowserActivity;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor;
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar;
-import com.hiddenramblings.tagmo.security.SecurityHandler;
+import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
+import com.hiddenramblings.tagmo.security.SecurityHandler;
 import com.hiddenramblings.tagmo.widget.Toasty;
 
 import org.json.JSONException;

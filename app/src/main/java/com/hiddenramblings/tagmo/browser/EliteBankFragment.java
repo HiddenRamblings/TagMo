@@ -55,10 +55,8 @@ import com.hiddenramblings.tagmo.browser.adapter.EliteBankAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
-import com.hiddenramblings.tagmo.nfctech.TagArray;
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
-import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.Preferences;
+import com.hiddenramblings.tagmo.nfctech.TagArray;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.shawnlin.numberpicker.NumberPicker;
 

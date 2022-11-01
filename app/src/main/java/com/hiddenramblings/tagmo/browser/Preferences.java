@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.settings;
+package com.hiddenramblings.tagmo.browser;
 
 import android.content.Context;
 import android.content.SharedPreferences;

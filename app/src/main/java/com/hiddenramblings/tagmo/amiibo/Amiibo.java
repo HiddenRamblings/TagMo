@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
-import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData;
 
 import java.io.IOException;

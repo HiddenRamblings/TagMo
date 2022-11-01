@@ -35,6 +35,7 @@ android {
             dimension "source"
             manifestPlaceholders.storagePermission = "android.permission.MANAGE_EXTERNAL_STORAGE"
             manifestPlaceholders.installPermission = "android.permission.REQUEST_INSTALL_PACKAGES"
+            manifestPlaceholders.hasFragileUserData = "true"
             buildConfigField "boolean", "GOOGLE_PLAY", "false"
         }
         google {
@@ -42,6 +43,7 @@ android {
             isDefault true
             manifestPlaceholders.storagePermission = "com.hiddenramblings.tagmo.BROWSER"
             manifestPlaceholders.installPermission = "com.hiddenramblings.tagmo.UPDATING"
+            manifestPlaceholders.hasFragileUserData = "false"
             buildConfigField "boolean", "GOOGLE_PLAY", "true"
         }
     }

@@ -161,6 +161,7 @@ public class WebsiteFragment extends Fragment {
         }
     }
 
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private class UnZip implements Runnable {
         File archive;
         File outputDir;
@@ -170,7 +171,6 @@ public class WebsiteFragment extends Fragment {
             this.outputDir = directory;
         }
 
-        private final Handler handler = new Handler(Looper.getMainLooper());
         @SuppressWarnings("ResultOfMethodCallIgnored")
         @Override
         public void run() {

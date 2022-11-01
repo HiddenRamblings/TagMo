@@ -46,12 +46,11 @@
         android:dataExtractionRules="@xml/extraction_content"
         android:hasFragileUserData="${hasFragileUserData}"
         android:requestLegacyExternalStorage="true"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:enableOnBackInvokedCallback="true"
-        android:largeHeap="true" >
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".browser.BrowserActivity"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"

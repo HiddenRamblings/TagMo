@@ -88,6 +88,10 @@ import com.hiddenramblings.tagmo.amiibo.PowerTagManager;
 import com.hiddenramblings.tagmo.amiibo.games.GameTitles;
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
+import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.browser.BrowserSettings.FILTER;
+import com.hiddenramblings.tagmo.browser.BrowserSettings.SORT;
+import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
@@ -99,13 +103,6 @@ import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.nfctech.ScanTag;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
-import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.FILTER;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
-import com.hiddenramblings.tagmo.settings.Preferences;
-import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.wajahatkarim3.easyflipviewpager.CardFlipPageTransformer2;
 
@@ -242,6 +239,8 @@ public class BrowserActivity extends AppCompatActivity implements
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
+
+        if (Debug.isOxygenOS()) mainLayout.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
         if (null == this.settings) this.settings = new BrowserSettings().initialize();
         this.settings.addChangeListener(this);

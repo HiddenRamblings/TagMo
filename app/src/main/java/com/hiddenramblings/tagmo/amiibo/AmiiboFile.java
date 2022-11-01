@@ -1,15 +1,11 @@
 package com.hiddenramblings.tagmo.amiibo;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.documentfile.provider.DocumentFile;
 
-import com.hiddenramblings.tagmo.TagMo;
-
 import java.io.File;
-import java.io.Serializable;
 
 public class AmiiboFile implements Parcelable {
 

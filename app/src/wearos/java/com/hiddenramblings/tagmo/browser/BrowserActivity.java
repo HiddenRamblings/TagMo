@@ -79,6 +79,10 @@ import com.hiddenramblings.tagmo.amiibo.PowerTagManager;
 import com.hiddenramblings.tagmo.amiibo.games.GameTitles;
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager;
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor;
+import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.browser.BrowserSettings.FILTER;
+import com.hiddenramblings.tagmo.browser.BrowserSettings.SORT;
+import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter;
@@ -90,13 +94,6 @@ import com.hiddenramblings.tagmo.hexcode.HexCodeViewer;
 import com.hiddenramblings.tagmo.nfctech.ScanTag;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
 import com.hiddenramblings.tagmo.nfctech.TagReader;
-import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.FILTER;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.SORT;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
-import com.hiddenramblings.tagmo.settings.Preferences;
-import com.hiddenramblings.tagmo.settings.SettingsFragment;
 import com.hiddenramblings.tagmo.widget.Toasty;
 import com.wajahatkarim3.easyflipviewpager.CardFlipPageTransformer2;
 
@@ -120,7 +117,7 @@ import eightbitlab.com.blurview.RenderScriptBlur;
 import eightbitlab.com.blurview.SupportRenderScriptBlur;
 
 public class BrowserActivity extends AppCompatActivity implements
-        BrowserSettingsListener,
+        BrowserSettings.BrowserSettingsListener,
         BrowserAdapter.OnAmiiboClickListener {
 
     private Preferences prefs;
@@ -432,9 +429,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         onCreateWearOptionsMenu();
         donations.retrieveDonationMenu();
-        findViewById(R.id.donate_layout).setOnClickListener(view -> {
-            donations.onSendDonationClicked();
-        });
+        findViewById(R.id.donate_layout).setOnClickListener(view -> donations.onSendDonationClicked());
 
         if (!prefs.guides_prompted()) {
             prefs.guides_prompted(true);

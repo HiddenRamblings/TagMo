@@ -19,9 +19,9 @@ import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.FlaskTag;
-import com.hiddenramblings.tagmo.settings.BrowserSettings;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.BrowserSettingsListener;
-import com.hiddenramblings.tagmo.settings.BrowserSettings.VIEW;
+import com.hiddenramblings.tagmo.browser.BrowserSettings;
+import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener;
+import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW;
 
 import java.util.ArrayList;
 

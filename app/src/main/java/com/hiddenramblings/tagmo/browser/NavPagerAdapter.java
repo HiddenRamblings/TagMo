@@ -9,7 +9,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.TagMo;
-import com.hiddenramblings.tagmo.settings.SettingsFragment;
 
 public class NavPagerAdapter extends FragmentStateAdapter {
 

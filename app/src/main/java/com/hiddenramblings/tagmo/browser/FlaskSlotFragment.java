@@ -370,7 +370,7 @@ public class FlaskSlotFragment extends Fragment implements
         flaskContent = rootLayout.findViewById(R.id.flask_content);
         if (prefs.software_layer())
             flaskContent.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        flaskContent.setHasFixedSize(true);
+        // flaskContent.setHasFixedSize(true);
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
             flaskContent.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
         else

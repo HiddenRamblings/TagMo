@@ -243,6 +243,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
+        CheckBoxPreference softwareLayer = findPreference(getString(R.string.settings_software_layer));
+        if (null != softwareLayer) {
+            softwareLayer.setChecked(prefs.software_layer());
+            softwareLayer.setOnPreferenceClickListener(preference -> {
+                prefs.software_layer(softwareLayer.isChecked());
+                onApplicationRecreate();
+                return SettingsFragment.super.onPreferenceTreeClick(preference);
+            });
+        }
+
         ListPreference themeSetting = findPreference(getString(R.string.settings_tagmo_theme));
         if (null != themeSetting) {
             themeSetting.setValueIndex(prefs.applicationTheme());
@@ -254,7 +264,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 int index = ((ListPreference) preference).findIndexOfValue(newValue.toString());
                 prefs.applicationTheme(index);
                 ((TagMo) requireActivity().getApplication()).setThemePreference();
-                onApplicationThemeChanged();
+                onApplicationRecreate();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
         }
@@ -318,7 +328,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    private void onApplicationThemeChanged() {
+    private void onApplicationRecreate() {
+        // ((BrowserActivity) requireActivity()).closePrefsDrawer();
+        // requireActivity().recreate();
         Intent intent = requireActivity().getIntent();
         requireActivity().overridePendingTransition(0, 0);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

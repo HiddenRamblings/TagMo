@@ -20,7 +20,7 @@
             android:id="@+id/active_tile_layout" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/flask_details"
+            android:id="@+id/flask_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"

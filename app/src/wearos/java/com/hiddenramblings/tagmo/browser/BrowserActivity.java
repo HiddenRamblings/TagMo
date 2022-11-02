@@ -245,7 +245,7 @@ public class BrowserActivity extends AppCompatActivity implements
         fragmentSettings = pagerAdapter.getSettings();
         fragmentElite = pagerAdapter.getEliteBanks();
 
-        amiibosView = fragmentBrowser.getAmiibosView();
+        amiibosView = fragmentBrowser.getBrowserContent();
         foomiiboView = fragmentBrowser.getFoomiiboView();
         bottomSheet = bottomSheetBehavior;
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -269,7 +269,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             hideBottomSheet();
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
-                            amiibosView = fragmentFlask.getAmiibosView();
+                            amiibosView = fragmentFlask.getFlaskContent();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
                             hideBrowserInterface();
@@ -277,7 +277,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         break;
                     default:
                         showBrowserInterface();
-                        amiibosView = fragmentBrowser.getAmiibosView();
+                        amiibosView = fragmentBrowser.getBrowserContent();
                         foomiiboView = fragmentBrowser.getFoomiiboView();
                         bottomSheet = bottomSheetBehavior;
                         if (null == foomiiboView) break;

@@ -240,8 +240,6 @@ public class BrowserActivity extends AppCompatActivity implements
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
-        if (Debug.isOxygenOS()) mainLayout.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-
         if (null == this.settings) this.settings = new BrowserSettings().initialize();
         this.settings.addChangeListener(this);
 
@@ -264,7 +262,7 @@ public class BrowserActivity extends AppCompatActivity implements
         fragmentBrowser = pagerAdapter.getBrowser();
         fragmentElite = pagerAdapter.getEliteBanks();
 
-        amiibosView = fragmentBrowser.getAmiibosView();
+        amiibosView = fragmentBrowser.getBrowserContent();
         foomiiboView = fragmentBrowser.getFoomiiboView();
         bottomSheet = bottomSheetBehavior;
         mainLayout.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -284,7 +282,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             showActionButton();
                             hideBottomSheet();
                             setTitle(R.string.elite_n2);
-                            amiibosView = fragmentElite.getAmiibosView();
+                            amiibosView = fragmentElite.getEliteContent();
                             bottomSheet = fragmentElite.getBottomSheet();
                         } else if (hasFlaskEnabled) {
                             showActionButton();
@@ -292,7 +290,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             setTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
-                            amiibosView = fragmentFlask.getAmiibosView();
+                            amiibosView = fragmentFlask.getFlaskContent();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
                             hideBrowserInterface();
@@ -306,7 +304,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             setTitle(R.string.flask_title);
                             FlaskSlotFragment fragmentFlask = pagerAdapter.getFlaskSlots();
                             fragmentFlask.delayedBluetoothEnable();
-                            amiibosView = fragmentFlask.getAmiibosView();
+                            amiibosView = fragmentFlask.getFlaskContent();
                             bottomSheet = fragmentFlask.getBottomSheet();
                         } else {
                             hideBrowserInterface();
@@ -320,7 +318,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     default:
                         showBrowserInterface();
                         setTitle(R.string.tagmo);
-                        amiibosView = fragmentBrowser.getAmiibosView();
+                        amiibosView = fragmentBrowser.getBrowserContent();
                         foomiiboView = fragmentBrowser.getFoomiiboView();
                         bottomSheet = bottomSheetBehavior;
                         if (null == foomiiboView) break;

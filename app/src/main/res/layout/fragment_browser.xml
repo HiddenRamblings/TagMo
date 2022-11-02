@@ -32,7 +32,7 @@
         android:orientation="vertical">
 
         <myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
-            android:id="@+id/amiibos_list"
+            android:id="@+id/browser_content"
             android:layout_width="match_parent"
             android:layout_height="360dp"
             android:clipToPadding="false"

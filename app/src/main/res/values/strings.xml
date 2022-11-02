@@ -122,7 +122,7 @@
     <string name="bonus_three">Bonus Effect 2</string>
 
     <string name="logcat_support">Report Problem</string>
-    <string name="settings_donate">Support development with a donation</string>
+    <string name="settings_donate">Send a donation to support development</string>
     <string name="paypal_link">Donate with PayPal</string>
     <string name="clear_foomiibo_set">Clear Foomiibo</string>
     <string name="build_foomiibo_set">Build Foomiibo</string>
@@ -212,6 +212,8 @@
     <string name="number_type">%1$d amiibo Type(s)</string>
     <string name="number_titles">%1$d Enabled Game(s)</string>
     <string name="pref_advanced">Advanced</string>
+    <string name="pref_software_layer">Use Software Layer</string>
+    <string name="software_layer_details">List rendering with GPU may cause issues on Chinese firmware</string>
     <string name="pref_tagmo_theme">TagMo System Theme</string>
     <string name="tagmo_theme_details">Change local theme independent of system theme settings</string>
     <string name="pref_disable_debug">Disable Debug Logger</string>
@@ -397,5 +399,5 @@
 
     <string name="notice_incomplete">Coming soon!</string>
 
-    <string name="disclaimer_general">No statues were harmed in the making of this product.</string>
+    <string name="disclaimer_general">No statues were harmed in making this product.</string>
 </resources>

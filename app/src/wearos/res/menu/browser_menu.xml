@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/search"
+        android:visible="false"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/refresh"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:title="@string/refresh_browser"
@@ -59,6 +63,10 @@
             </item>
         </menu>
     </item>
+    <item
+        android:id="@+id/install_update"
+        android:visible="false"
+        app:showAsAction="never"/>
     <item
         android:id="@+id/sort"
         android:icon="@drawable/ic_sort_24dp"

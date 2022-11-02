@@ -98,7 +98,7 @@ public class FlaskSlotFragment extends Fragment implements
     CustomTarget<Bitmap> amiiboTileTarget;
     CustomTarget<Bitmap> amiiboCardTarget;
 
-    private RecyclerView flaskDetails;
+    private RecyclerView flaskContent;
     private TextView flaskStats;
     private NumberPicker flaskSlotCount;
     private AppCompatButton writeSlots;
@@ -106,7 +106,6 @@ public class FlaskSlotFragment extends Fragment implements
     private LinearLayout slotOptionsMenu;
     private AppCompatToggleButton switchMenuOptions;
     private LinearLayout writeSlotsLayout;
-    private RecyclerView amiiboFilesView;
     private WriteTagAdapter writeTagAdapter;
     private Snackbar statusBar;
     private Dialog processDialog;
@@ -189,9 +188,9 @@ public class FlaskSlotFragment extends Fragment implements
                                 FlaskSlotAdapter adapter = new FlaskSlotAdapter(
                                         settings, FlaskSlotFragment.this);
                                 adapter.setFlaskAmiibo(flaskAmiibos);
-                                flaskDetails.post(() -> {
+                                flaskContent.post(() -> {
                                     dismissSnackbarNotice(true);
-                                    flaskDetails.setAdapter(adapter);
+                                    flaskContent.setAdapter(adapter);
                                     if (currentCount > 0) {
                                         serviceFlask.getActiveAmiibo();
                                         adapter.notifyItemRangeInserted(
@@ -219,10 +218,10 @@ public class FlaskSlotFragment extends Fragment implements
                                     }
                                 }
                                 FlaskSlotAdapter adapter = (FlaskSlotAdapter)
-                                        flaskDetails.getAdapter();
+                                        flaskContent.getAdapter();
                                 if (null != adapter) {
                                     adapter.addFlaskAmiibo(flaskAmiibos);
-                                    flaskDetails.post(() -> {
+                                    flaskContent.post(() -> {
                                         adapter.notifyItemRangeInserted(
                                                 currentCount, flaskAmiibos.size()
                                         );
@@ -247,7 +246,7 @@ public class FlaskSlotFragment extends Fragment implements
                                         BottomSheetBehavior.STATE_COLLAPSED)
                                     getActiveAmiibo(amiibo, amiiboCard);
                                 prefs.flaskActiveSlot(Integer.parseInt(index));
-                                flaskDetails.post(() -> flaskStats.setText(
+                                flaskContent.post(() -> flaskStats.setText(
                                         getString(R.string.flask_count, index, currentCount)
                                 ));
                                 getFlaskButtonState();
@@ -368,12 +367,14 @@ public class FlaskSlotFragment extends Fragment implements
 
         this.settings = activity.getSettings();
 
-        flaskDetails = rootLayout.findViewById(R.id.flask_details);
-        // flaskDetails.setHasFixedSize(true);
+        flaskContent = rootLayout.findViewById(R.id.flask_content);
+        if (prefs.software_layer())
+            flaskContent.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        flaskContent.setHasFixedSize(true);
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            flaskDetails.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
+            flaskContent.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
         else
-            flaskDetails.setLayoutManager(new LinearLayoutManager(activity));
+            flaskContent.setLayoutManager(new LinearLayoutManager(activity));
 
         flaskStats = rootLayout.findViewById(R.id.flask_stats);
         switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn);
@@ -387,7 +388,11 @@ public class FlaskSlotFragment extends Fragment implements
         eraseSlots = rootLayout.findViewById(R.id.erase_slot_count);
         eraseSlots.setText(getString(R.string.erase_slots, 0));
         writeSlotsLayout = rootLayout.findViewById(R.id.write_list_layout);
-        amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list);
+        if (prefs.software_layer())
+            writeSlotsLayout.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        RecyclerView amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list);
+        if (prefs.software_layer())
+            amiiboFilesView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         // amiiboFilesView.setHasFixedSize(true);
 
         AppCompatImageView toggle = rootLayout.findViewById(R.id.toggle);
@@ -407,7 +412,7 @@ public class FlaskSlotFragment extends Fragment implements
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                ViewGroup mainLayout = rootLayout.findViewById(R.id.flask_details);
+                ViewGroup mainLayout = rootLayout.findViewById(R.id.flask_content);
                 if (mainLayout.getBottom() >= bottomSheet.getTop()) {
                     int bottomHeight = bottomSheet.getMeasuredHeight()
                             - bottomSheetBehavior.getPeekHeight();
@@ -546,8 +551,8 @@ public class FlaskSlotFragment extends Fragment implements
         onBottomSheetChanged(SHEET.MENU);
     }
 
-    public RecyclerView getAmiibosView() {
-        return flaskDetails;
+    public RecyclerView getFlaskContent() {
+        return flaskContent;
     }
     public BottomSheetBehavior<View> getBottomSheet() {
         return bottomSheetBehavior;
@@ -575,7 +580,7 @@ public class FlaskSlotFragment extends Fragment implements
                 writeSlotsLayout.setVisibility(View.VISIBLE);
                 break;
         }
-        flaskDetails.requestLayout();
+        flaskContent.requestLayout();
     }
 
     void setAmiiboInfoText(TextView textView, CharSequence text) {
@@ -590,7 +595,7 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     private void getFlaskButtonState() {
-        flaskDetails.post(() -> {
+        flaskContent.post(() -> {
             int openSlots = maxSlotCount - currentCount;
             flaskSlotCount.setValue(openSlots);
             if (openSlots > 0) {
@@ -612,7 +617,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private void resetActiveSlot() {
         FlaskSlotAdapter adapter = (FlaskSlotAdapter)
-                flaskDetails.getAdapter();
+                flaskContent.getAdapter();
         if (null != adapter) {
             Amiibo amiibo = adapter.getItem(0);
             if (amiibo instanceof FlaskTag) {

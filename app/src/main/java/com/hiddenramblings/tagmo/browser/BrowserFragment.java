@@ -59,7 +59,7 @@ public class BrowserFragment extends Fragment implements
 
     private final Preferences prefs = TagMo.getPrefs();
     private FlexboxLayout chipList;
-    private RecyclerView amiibosView;
+    private RecyclerView browserContent;
     private RecyclerView foomiiboView;
 
     private final Foomiibo foomiibo = new Foomiibo();
@@ -115,16 +115,20 @@ public class BrowserFragment extends Fragment implements
 
         chipList = view.findViewById(R.id.chip_list);
         chipList.setVisibility(View.GONE);
-        amiibosView = view.findViewById(R.id.amiibos_list);
+        browserContent = view.findViewById(R.id.browser_content);
+        if (prefs.software_layer())
+            browserContent.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         foomiiboView = view.findViewById(R.id.foomiibo_list);
+        if (prefs.software_layer())
+            foomiiboView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-        amiibosView.setLayoutManager(settings.getAmiiboView()
+        browserContent.setLayoutManager(settings.getAmiiboView()
                 == BrowserSettings.VIEW.IMAGE.getValue()
                 ? new GridLayoutManager(activity, activity.getColumnCount())
                 : new LinearLayoutManager(activity));
-        this.amiibosView.setAdapter(new BrowserAdapter(settings, activity));
+        this.browserContent.setAdapter(new BrowserAdapter(settings, activity));
         settings.addChangeListener((BrowserSettings.BrowserSettingsListener)
-                this.amiibosView.getAdapter());
+                this.browserContent.getAdapter());
 
         foomiiboView.setLayoutManager(settings.getAmiiboView()
                 == BrowserSettings.VIEW.IMAGE.getValue()
@@ -135,34 +139,34 @@ public class BrowserFragment extends Fragment implements
                 foomiiboView.getAdapter());
 
         view.findViewById(R.id.list_divider).setVisibility(View.GONE);
-        if (BuildConfig.WEAR_OS) amiibosView.getLayoutParams().height =
-                amiibosView.getLayoutParams().height / 3;
+        if (BuildConfig.WEAR_OS) browserContent.getLayoutParams().height =
+                browserContent.getLayoutParams().height / 3;
 
         view.findViewById(R.id.list_divider).setOnTouchListener((v, event) -> {
-            if (amiibosView instanceof IndexFastScrollRecyclerView) {
-                ((IndexFastScrollRecyclerView) amiibosView).setIndexBarVisibility(false);
+            if (browserContent instanceof IndexFastScrollRecyclerView) {
+                ((IndexFastScrollRecyclerView) browserContent).setIndexBarVisibility(false);
             }
             if (foomiiboView instanceof IndexFastScrollRecyclerView) {
                 ((IndexFastScrollRecyclerView) foomiiboView).setIndexBarVisibility(false);
             }
-            int srcHeight = amiibosView.getLayoutParams().height;
+            int srcHeight = browserContent.getLayoutParams().height;
             int y = (int) event.getY();
-            if (amiibosView.getLayoutParams().height + y >= -0.5f) {
+            if (browserContent.getLayoutParams().height + y >= -0.5f) {
                 if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    amiibosView.getLayoutParams().height += y;
-                    if (srcHeight != amiibosView.getLayoutParams().height) amiibosView.requestLayout();
+                    browserContent.getLayoutParams().height += y;
+                    if (srcHeight != browserContent.getLayoutParams().height) browserContent.requestLayout();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (amiibosView.getLayoutParams().height + y < 0f) {
-                        amiibosView.getLayoutParams().height = 0;
+                    if (browserContent.getLayoutParams().height + y < 0f) {
+                        browserContent.getLayoutParams().height = 0;
                     } else {
                         float minHeight = activity.getBottomSheetBehavior()
                                 .getPeekHeight() + v.getHeight() + requireContext().getResources().getDimension(R.dimen.sliding_bar_margin);
-                        if (amiibosView.getLayoutParams().height > view.getHeight() - (int) minHeight)
-                            amiibosView.getLayoutParams().height = view.getHeight() - (int) minHeight;
+                        if (browserContent.getLayoutParams().height > view.getHeight() - (int) minHeight)
+                            browserContent.getLayoutParams().height = view.getHeight() - (int) minHeight;
                     }
-                    if (srcHeight != amiibosView.getLayoutParams().height) amiibosView.requestLayout();
+                    if (srcHeight != browserContent.getLayoutParams().height) browserContent.requestLayout();
                 }
-                prefs.foomiiboOffset(amiibosView.getLayoutParams().height);
+                prefs.foomiiboOffset(browserContent.getLayoutParams().height);
             }
             return true;
         });
@@ -170,8 +174,8 @@ public class BrowserFragment extends Fragment implements
         activity.onFilterContentsLoaded();
     }
 
-    public RecyclerView getAmiibosView() {
-        return amiibosView;
+    public RecyclerView getBrowserContent() {
+        return browserContent;
     }
 
     public RecyclerView getFoomiiboView() {
@@ -203,27 +207,27 @@ public class BrowserFragment extends Fragment implements
         float minHeight = activity.getBottomSheetBehavior().getPeekHeight()
                 + getView().findViewById(R.id.list_divider).getHeight() + requireContext()
                 .getResources().getDimension(R.dimen.sliding_bar_margin);
-        if (amiibosView.getLayoutParams().height > getView().getHeight() - (int) minHeight) {
-            amiibosView.getLayoutParams().height = getView().getHeight() - (int) minHeight;
+        if (browserContent.getLayoutParams().height > getView().getHeight() - (int) minHeight) {
+            browserContent.getLayoutParams().height = getView().getHeight() - (int) minHeight;
         } else {
             int valueY = prefs.foomiiboOffset();
-            amiibosView.getLayoutParams().height = valueY != -1
-                    ? valueY : amiibosView.getLayoutParams().height;
+            browserContent.getLayoutParams().height = valueY != -1
+                    ? valueY : browserContent.getLayoutParams().height;
         }
         if (prefs.disable_foomiibo()) {
             getView().findViewById(R.id.list_divider).setVisibility(View.GONE);
-            amiibosView.getLayoutParams().height = getView().getHeight();
+            browserContent.getLayoutParams().height = getView().getHeight();
         } else {
             getView().findViewById(R.id.list_divider).setVisibility(View.VISIBLE);
         }
-        amiibosView.requestLayout();
+        browserContent.requestLayout();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         ((BrowserActivity) requireActivity()).onRootFolderChanged(false);
-        amiibosView.postDelayed(this::setFoomiiboVisibility, TagMo.uiDelay);
+        browserContent.postDelayed(this::setFoomiiboVisibility, TagMo.uiDelay);
     }
 
     private void deleteDir(Handler handler, ProgressDialog dialog, File dir) {
@@ -260,7 +264,7 @@ public class BrowserFragment extends Fragment implements
                     .setMessage(getString(R.string.warn_delete_file, amiiboFile.getName()))
                     .setPositiveButton(R.string.delete, (dialog, which) -> {
                         if (amiiboFile.delete()) {
-                            new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
+                            new IconifiedSnackbar(requireActivity(), browserContent).buildSnackbar(
                                     getString(R.string.delete_foomiibo, amiibo.name),
                                     Snackbar.LENGTH_SHORT
                             ).show();
@@ -314,7 +318,7 @@ public class BrowserFragment extends Fragment implements
             TagArray.writeBytesToFile(directory, TagArray.decipherFilename(
                     settings.getAmiiboManager(), tagData, false
             ), tagData);
-            new IconifiedSnackbar(requireActivity(), amiibosView).buildSnackbar(
+            new IconifiedSnackbar(requireActivity(), browserContent).buildSnackbar(
                     getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT
             ).show();
         } catch (Exception e) {
@@ -443,7 +447,7 @@ public class BrowserFragment extends Fragment implements
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (null == getView()) return;
-        amiibosView.postDelayed(this::setFoomiiboVisibility, TagMo.uiDelay);
+        browserContent.postDelayed(this::setFoomiiboVisibility, TagMo.uiDelay);
     }
 }
 

@@ -72,7 +72,7 @@ public class EliteBankFragment extends Fragment implements
     private final Preferences prefs = TagMo.getPrefs();
 
     private CoordinatorLayout rootLayout;
-    private RecyclerView amiibosView;
+    private RecyclerView eliteContent;
 
     private LinearLayout bankOptionsMenu;
     private AppCompatToggleButton switchMenuOptions;
@@ -136,13 +136,19 @@ public class EliteBankFragment extends Fragment implements
         BrowserActivity activity = (BrowserActivity) requireActivity();
         keyManager = new KeyManager(activity);
 
-        amiibosView = rootLayout.findViewById(R.id.amiibos_list);
-        amiibosView.setHasFixedSize(true);
+        eliteContent = rootLayout.findViewById(R.id.elite_content);
+        if (prefs.software_layer())
+            eliteContent.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        eliteContent.setHasFixedSize(true);
 
         switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn);
         bankOptionsMenu = rootLayout.findViewById(R.id.bank_options_menu);
         writeBankLayout = rootLayout.findViewById(R.id.write_list_layout);
+        if (prefs.software_layer())
+            writeBankLayout.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list);
+        if (prefs.software_layer())
+            amiiboFilesView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         // amiiboFilesView.setHasFixedSize(true);
 
         securityOptions = rootLayout.findViewById(R.id.security_options);
@@ -227,7 +233,7 @@ public class EliteBankFragment extends Fragment implements
                             ? (int) (bottomHeight * slideOffset) : 0);
                 }
                 if (slideOffset > 0)
-                    amiibosView.smoothScrollToPosition(clickedPosition);
+                    eliteContent.smoothScrollToPosition(clickedPosition);
             }
         });
 
@@ -242,11 +248,11 @@ public class EliteBankFragment extends Fragment implements
         toolbar.inflateMenu(R.menu.bank_menu);
 
         if (settings.getAmiiboView() == BrowserSettings.VIEW.IMAGE.getValue())
-            amiibosView.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
+            eliteContent.setLayoutManager(new GridLayoutManager(activity, activity.getColumnCount()));
         else
-            amiibosView.setLayoutManager(new LinearLayoutManager(activity));
+            eliteContent.setLayoutManager(new LinearLayoutManager(activity));
         bankAdapter = new EliteBankAdapter(settings, this);
-        amiibosView.setAdapter(bankAdapter);
+        eliteContent.setAdapter(bankAdapter);
         this.settings.addChangeListener(bankAdapter);
 
         eliteBankCount.setOnValueChangedListener((numberPicker, valueOld, valueNew) -> {
@@ -365,8 +371,8 @@ public class EliteBankFragment extends Fragment implements
                         }).show());
     }
 
-    public RecyclerView getAmiibosView() {
-        return amiibosView;
+    public RecyclerView getEliteContent() {
+        return eliteContent;
     }
     public BottomSheetBehavior<View> getBottomSheet() {
         return bottomSheetBehavior;
@@ -461,7 +467,7 @@ public class EliteBankFragment extends Fragment implements
                 writeBankLayout.setVisibility(View.VISIBLE);
                 break;
         }
-        amiibosView.requestLayout();
+        eliteContent.requestLayout();
     }
 
     private final ActivityResultLauncher<Intent> onActivateActivity = registerForActivityResult(

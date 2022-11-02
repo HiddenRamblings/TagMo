@@ -70,11 +70,9 @@ android {
 
     sourceSets {
         release {
-            java.srcDirs('src/shared/java')
             res.srcDirs('src/shared/res')
         }
         debug {
-            java.srcDirs('src/shared/java')
             res.srcDirs('src/shared/res')
         }
     }

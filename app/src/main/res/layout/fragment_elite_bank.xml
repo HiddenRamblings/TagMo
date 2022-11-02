@@ -20,7 +20,7 @@
             android:id="@+id/active_tile_layout" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/amiibos_list"
+            android:id="@+id/elite_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"

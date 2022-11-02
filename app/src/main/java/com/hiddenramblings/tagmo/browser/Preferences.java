@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import androidx.preference.PreferenceManager;
 
+import com.hiddenramblings.tagmo.eightbit.io.Debug;
+
 public class Preferences {
 
     private final SharedPreferences prefs;
@@ -187,6 +189,14 @@ public class Preferences {
     }
     public void flask_support(boolean value) {
         putBoolean(flask_support, value);
+    }
+
+    private final String software_layer = "settings_software_layer";
+    public boolean software_layer() {
+        return getBoolean(software_layer, Debug.isOxygenOS());
+    }
+    public void software_layer(boolean value) {
+        putBoolean(software_layer, value);
     }
 
     private final String disable_debug = "settings_disable_debug";

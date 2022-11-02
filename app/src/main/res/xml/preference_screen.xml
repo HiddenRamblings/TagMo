@@ -69,6 +69,11 @@
 
     <androidx.preference.PreferenceCategory
         android:title="@string/pref_advanced">
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/settings_software_layer"
+            android:summary="@string/software_layer_details"
+            android:title="@string/pref_software_layer" />
         <androidx.preference.ListPreference
             android:entries="@array/themeSettingNames"
             android:entryValues="@array/themeSettingValues"

@@ -330,6 +330,15 @@ public class DonationHandler {
         Dialog donateDialog = dialog.setView(layout).show();
         if (!BuildConfig.GOOGLE_PLAY) {
             @SuppressLint("InflateParams")
+            View sponsor = activity.getLayoutInflater().inflate(R.layout.button_sponsor, null);
+            sponsor.setOnClickListener(view -> {
+                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                        "https://github.com/sponsors/AbandonedCart"
+                )));
+                donateDialog.cancel();
+            });
+            layout.addView(sponsor);
+            @SuppressLint("InflateParams")
             View paypal = activity.getLayoutInflater().inflate(R.layout.button_paypal, null);
             paypal.setOnClickListener(view -> {
                 activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(

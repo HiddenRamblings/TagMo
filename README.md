@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://play.google.com/store/apps/details?id=com.hiddenramblings.tagmo.eightbit"><img src="https://github.com/HiddenRamblings/TagMo/raw/master/assets/google-play-badge.png" /></a>
+  <a href="https://play.google.com/store/apps/details?id=com.hiddenramblings.tagmo.eightbit"><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
 </p>
 
 <p align="center">

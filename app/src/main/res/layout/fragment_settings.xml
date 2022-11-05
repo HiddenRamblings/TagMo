@@ -54,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/imageview_icon"
-            app:srcCompat="@drawable/ic_google_play_24dp" />
+            app:srcCompat="@drawable/ic_github_sponsor_24dp" />
 
         <TextView
             android:id="@+id/donate_text"

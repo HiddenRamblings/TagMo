@@ -306,6 +306,7 @@ public class DonationHandler {
                 activity, R.style.DialogTheme_NoActionBar
         ));
         LinearLayout donations = layout.findViewById(R.id.donation_layout);
+        donations.removeAllViewsInLayout();
         Collections.sort(iapSkuDetails, (obj1, obj2) ->
                 obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
         for (ProductDetails skuDetail : iapSkuDetails) {
@@ -313,6 +314,7 @@ public class DonationHandler {
             donations.addView(getDonationButton(skuDetail));
         }
         LinearLayout subscriptions = layout.findViewById(R.id.subscription_layout);
+        subscriptions.removeAllViewsInLayout();
         Collections.sort(subSkuDetails, (obj1, obj2) ->
                 obj1.getProductId().compareToIgnoreCase(obj2.getProductId()));
         for (ProductDetails skuDetail : subSkuDetails) {
@@ -329,6 +331,16 @@ public class DonationHandler {
         });
         Dialog donateDialog = dialog.setView(layout).show();
         if (!BuildConfig.GOOGLE_PLAY) {
+            int padding = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    4f,
+                    Resources.getSystem().getDisplayMetrics()
+            );
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, padding, 0, padding);
             @SuppressLint("InflateParams")
             View sponsor = activity.getLayoutInflater().inflate(R.layout.button_sponsor, null);
             sponsor.setOnClickListener(view -> {
@@ -337,6 +349,7 @@ public class DonationHandler {
                 )));
                 donateDialog.cancel();
             });
+            sponsor.setLayoutParams(params);
             layout.addView(sponsor);
             @SuppressLint("InflateParams")
             View paypal = activity.getLayoutInflater().inflate(R.layout.button_paypal, null);
@@ -346,6 +359,7 @@ public class DonationHandler {
                 )));
                 donateDialog.cancel();
             });
+            paypal.setLayoutParams(params);
             layout.addView(paypal);
         }
         donateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

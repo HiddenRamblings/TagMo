@@ -293,7 +293,7 @@
     <string name="erase_collection">Erase Collection</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
-    <string name="flask_invalid">Not a valid Flask device!</string>
+    <string name="device_invalid">Not a valid Flask device!</string>
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="fail_permissions">Required permission denied!</string>
     <string name="fail_bluetooth_adapter">Bluetooth adapter unavailable!</string>

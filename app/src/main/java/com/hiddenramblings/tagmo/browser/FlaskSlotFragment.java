@@ -62,6 +62,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.FlaskTag;
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler;
 import com.hiddenramblings.tagmo.bluetooth.FlaskGattService;
+import com.hiddenramblings.tagmo.bluetooth.PuckGattService;
 import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter;
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
@@ -117,9 +118,10 @@ public class FlaskSlotFragment extends Fragment implements
     private ScanCallback scanCallbackLP;
     private BluetoothAdapter.LeScanCallback scanCallback;
     private FlaskGattService serviceFlask;
+    private PuckGattService servicePuck;
 
-    private String profileFlask;
-    private String addressFlask;
+    private String deviceProfile;
+    private String deviceAddress;
     private final int maxSlotCount = 85;
     private int currentCount;
 
@@ -138,9 +140,9 @@ public class FlaskSlotFragment extends Fragment implements
         WRITE
     }
 
-    private final Handler flaskHandler = new Handler(Looper.getMainLooper());
+    private final Handler fragmentHandler = new Handler(Looper.getMainLooper());
 
-    protected ServiceConnection mServerConn = new ServiceConnection() {
+    protected ServiceConnection flaskServerConn = new ServiceConnection() {
         boolean isServiceDiscovered = false;
 
         @Override
@@ -148,19 +150,19 @@ public class FlaskSlotFragment extends Fragment implements
             FlaskGattService.LocalBinder localBinder = (FlaskGattService.LocalBinder) binder;
             serviceFlask = localBinder.getService();
             if (serviceFlask.initialize()) {
-                if (serviceFlask.connect(addressFlask)) {
+                if (serviceFlask.connect(deviceAddress)) {
                     serviceFlask.setListener(new FlaskGattService.BluetoothGattListener() {
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
                             rootLayout.post(() -> ((TextView) rootLayout
-                                    .findViewById(R.id.hardware_info)).setText(profileFlask));
+                                    .findViewById(R.id.hardware_info)).setText(deviceProfile));
                             try {
                                 serviceFlask.setFlaskCharacteristicRX();
                                 serviceFlask.getDeviceAmiibo();
                             } catch (UnsupportedOperationException uoe) {
-                                disconnectFlask();
-                                new Toasty(requireActivity()).Short(R.string.flask_invalid);
+                                disconnectService();
+                                new Toasty(requireActivity()).Short(R.string.device_invalid);
                             }
                         }
 
@@ -274,25 +276,86 @@ public class FlaskSlotFragment extends Fragment implements
 
                         @Override
                         public void onGattConnectionLost() {
-                            flaskHandler.postDelayed(
+                            fragmentHandler.postDelayed(
                                     FlaskSlotFragment.this::showDisconnectNotice, TagMo.uiDelay
                             );
                             requireActivity().runOnUiThread(() -> bottomSheetBehavior
                                     .setState(BottomSheetBehavior.STATE_COLLAPSED));
-                            addressFlask = null;
-                            stopFlaskService();
+                            deviceAddress = null;
+                            stopGattService();
                         }
                     });
                 } else {
-                    stopFlaskService();
-                    new Toasty(requireActivity()).Short(R.string.flask_invalid);
+                    stopGattService();
+                    new Toasty(requireActivity()).Short(R.string.device_invalid);
                 }
             }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            stopFlaskService();
+            stopGattService();
+            if (!isServiceDiscovered) {
+                showPurchaseNotice();
+            }
+        }
+    };
+
+    protected ServiceConnection puckServerConn = new ServiceConnection() {
+        boolean isServiceDiscovered = false;
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            PuckGattService.LocalBinder localBinder = (PuckGattService.LocalBinder) binder;
+            servicePuck = localBinder.getService();
+            if (servicePuck.initialize()) {
+                if (servicePuck.connect(deviceAddress)) {
+                    servicePuck.setListener(new PuckGattService.BluetoothGattListener() {
+                        @Override
+                        public void onServicesDiscovered() {
+                            isServiceDiscovered = true;
+                        }
+
+                        @Override
+                        public void onPuckActiveChanged(JSONObject jsonObject) {
+
+                        }
+
+                        @Override
+                        public void onPuckStatusChanged(JSONObject jsonObject) {
+
+                        }
+
+                        @Override
+                        public void onPuckListRetrieved(JSONArray jsonArray) {
+
+                        }
+
+                        @Override
+                        public void onPuckFilesDownload(String dataString) {
+
+                        }
+
+                        @Override
+                        public void onPuckFilesUploaded() {
+
+                        }
+
+                        @Override
+                        public void onGattConnectionLost() {
+
+                        }
+                    });
+                } else {
+                    stopGattService();
+                    new Toasty(requireActivity()).Short(R.string.device_invalid);
+                }
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            stopGattService();
             if (!isServiceDiscovered) {
                 showPurchaseNotice();
             }
@@ -755,7 +818,7 @@ public class FlaskSlotFragment extends Fragment implements
             return;
         }
         showScanningNotice();
-        profileFlask = null;
+        deviceProfile = null;
         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
             ParcelUuid FlaskUUID = new ParcelUuid(FlaskGattService.FlaskNUS);
@@ -766,9 +829,9 @@ public class FlaskSlotFragment extends Fragment implements
                 @Override
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
-                    profileFlask = result.getDevice().getName();
-                    addressFlask = result.getDevice().getAddress();
-                    dismissFlaskDiscovery();
+                    deviceProfile = result.getDevice().getName();
+                    deviceAddress = result.getDevice().getAddress();
+                    dismissGattDiscovery();
                     showConnectionNotice();
                     startFlaskService();
                 }
@@ -776,17 +839,17 @@ public class FlaskSlotFragment extends Fragment implements
             scanner.startScan(Collections.singletonList(filter), settings, scanCallbackLP);
         } else {
             scanCallback = (bluetoothDevice, i, bytes) -> {
-                profileFlask = bluetoothDevice.getName();
-                addressFlask = bluetoothDevice.getAddress();
-                dismissFlaskDiscovery();
+                deviceProfile = bluetoothDevice.getName();
+                deviceAddress = bluetoothDevice.getAddress();
+                dismissGattDiscovery();
                 showConnectionNotice();
                 startFlaskService();
             };
             mBluetoothAdapter.startLeScan(new UUID[]{ FlaskGattService.FlaskNUS }, scanCallback);
         }
-        flaskHandler.postDelayed(() -> {
-            if (null == profileFlask) {
-                dismissFlaskDiscovery();
+        fragmentHandler.postDelayed(() -> {
+            if (null == deviceProfile) {
+                dismissGattDiscovery();
                 showPurchaseNotice();
             }
         }, 20000);
@@ -798,8 +861,8 @@ public class FlaskSlotFragment extends Fragment implements
         for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
             if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
                 isDevicePaired = true;
-                profileFlask = device.getName();
-                addressFlask = device.getAddress();
+                deviceProfile = device.getName();
+                deviceAddress = device.getAddress();
                 showConnectionNotice();
                 startFlaskService();
                 break;
@@ -816,7 +879,7 @@ public class FlaskSlotFragment extends Fragment implements
                     showProcessingNotice(true);
                     for (int i = 0; i < amiiboList.size(); i++) {
                         int index = i;
-                        flaskHandler.postDelayed(() -> uploadAmiiboFile(
+                        fragmentHandler.postDelayed(() -> uploadAmiiboFile(
                                 amiiboList.get(index), index == amiiboList.size() - 1
                         ), 30L * i);
                     }
@@ -939,26 +1002,38 @@ public class FlaskSlotFragment extends Fragment implements
     public void startFlaskService() {
         Intent service = new Intent(requireContext(), FlaskGattService.class);
         requireContext().startService(service);
-        requireContext().bindService(service, mServerConn, Context.BIND_AUTO_CREATE);
+        requireContext().bindService(service, flaskServerConn, Context.BIND_AUTO_CREATE);
     }
 
-    public void disconnectFlask() {
+    public void startPuckService() {
+        Intent service = new Intent(requireContext(), PuckGattService.class);
+        requireContext().startService(service);
+        requireContext().bindService(service, puckServerConn, Context.BIND_AUTO_CREATE);
+    }
+
+    public void disconnectService() {
         dismissSnackbarNotice(true);
         if (null != serviceFlask)
             serviceFlask.disconnect();
+        if (null != servicePuck)
+            servicePuck.disconnect();
         else
-            stopFlaskService();
+            stopGattService();
     }
 
-    public void stopFlaskService() {
+    public void stopGattService() {
         try {
-            requireContext().unbindService(mServerConn);
+            requireContext().unbindService(flaskServerConn);
+            requireContext().stopService(new Intent(requireContext(), FlaskGattService.class));
+        } catch (IllegalArgumentException ignored) { }
+        try {
+            requireContext().unbindService(flaskServerConn);
             requireContext().stopService(new Intent(requireContext(), FlaskGattService.class));
         } catch (IllegalArgumentException ignored) { }
     }
 
     @SuppressLint("MissingPermission")
-    private void dismissFlaskDiscovery() {
+    private void dismissGattDiscovery() {
         mBluetoothAdapter = null != mBluetoothAdapter ? mBluetoothAdapter
                 : bluetoothHandler.getBluetoothAdapter(requireContext());
         if (null != mBluetoothAdapter) {
@@ -985,7 +1060,7 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     public void delayedBluetoothEnable() {
-        flaskHandler.postDelayed(() -> {
+        fragmentHandler.postDelayed(() -> {
             if (null != mBluetoothAdapter && mBluetoothAdapter.isEnabled()) return;
             bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
                     requireContext(), requireActivity().getActivityResultRegistry(),
@@ -1005,9 +1080,9 @@ public class FlaskSlotFragment extends Fragment implements
     @Override
     public void onDestroy() {
         try {
-            dismissFlaskDiscovery();
+            dismissGattDiscovery();
         } catch (NullPointerException ignored) { }
-        disconnectFlask();
+        disconnectService();
         super.onDestroy();
     }
 
@@ -1016,7 +1091,7 @@ public class FlaskSlotFragment extends Fragment implements
         isFragmentVisible = true;
         super.onResume();
         if (null != statusBar && statusBar.isShown()) return;
-        flaskHandler.postDelayed(() -> {
+        fragmentHandler.postDelayed(() -> {
             switch (noticeState) {
                 case SCANNING:
                     showScanningNotice();

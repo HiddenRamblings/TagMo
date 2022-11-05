@@ -299,7 +299,7 @@
     <string name="view_device_options">Switch to N2 Elite Options</string>
     <string name="view_amiibo_details">Switch to amiibo Details</string>
     <string name="custom_tab_back">Back to TagMo</string>
-    <string name="flask_invalid">Not a valid Flask device!</string>
+    <string name="device_invalid">Not a valid Bluetooth device!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
     <string name="fail_bluetooth_adapter">Bluetooth adapter unavailable!</string>
     <string name="fail_permissions">Required permission denied!</string>

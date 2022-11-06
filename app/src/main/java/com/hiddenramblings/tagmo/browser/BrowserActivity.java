@@ -47,6 +47,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.PopupMenu;
@@ -1565,11 +1566,18 @@ public class BrowserActivity extends AppCompatActivity implements
         toolbar.setOnMenuItemClickListener(this::onMenuItemClicked);
     }
 
+    @SuppressLint("RestrictedApi")
+    private void setOptionalIconsVisible(Menu menu) {
+        if (menu instanceof MenuBuilder)
+            ((MenuBuilder) menu).setOptionalIconsVisible(true);
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (BuildConfig.WEAR_OS) return super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.browser_menu, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
+        setOptionalIconsVisible(menu);
 
         MenuItem menuSearch = menu.findItem(R.id.search);
         MenuItem menuUpdate = menu.findItem(R.id.install_update);

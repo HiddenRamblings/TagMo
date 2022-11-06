@@ -1571,7 +1571,7 @@ public class BrowserActivity extends AppCompatActivity implements
         if (menu instanceof MenuBuilder)
             ((MenuBuilder) menu).setOptionalIconsVisible(true);
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (BuildConfig.WEAR_OS) return super.onCreateOptionsMenu(menu);

@@ -100,7 +100,7 @@
     </item>
     <item
         android:id="@+id/view"
-        android:icon="@drawable/ic_view_array_24dp"
+        android:icon="@drawable/ic_baseline_display_settings_24"
         android:title="@string/display_options"
         app:showAsAction="never">
         <menu>

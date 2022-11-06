@@ -565,13 +565,10 @@ public class NfcActivity extends AppCompatActivity {
                                 finish();
                             })
                             .show());
-                    return;
-                }
-                if (prefs.elite_support()) {
+                } else if (prefs.elite_support()) {
                     if (e instanceof android.nfc.TagLostException) {
                         showMessage(R.string.speed_scan);
                         closeTagSilently(mifare);
-                        return;
                     } else if (getString(R.string.nfc_null_array).equals(error)) {
                         this.runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                                 .setTitle(R.string.possible_lock)
@@ -587,9 +584,7 @@ public class NfcActivity extends AppCompatActivity {
                                     dialog.dismiss();
                                     finish();
                                 }).show());
-                        return;
-                    } else if (e instanceof NullPointerException
-                            && error.contains("nfctech.NTAG215.connect()")) {
+                    } else if (e instanceof NullPointerException && error.contains(NTAG215.CONNECT)) {
                         this.runOnUiThread(() -> new AlertDialog.Builder(NfcActivity.this)
                                 .setTitle(R.string.possible_blank)
                                 .setMessage(R.string.prepare_blank)
@@ -601,14 +596,12 @@ public class NfcActivity extends AppCompatActivity {
                                 .setNegativeButton(R.string.cancel, (dialog, which) ->
                                         dialog.dismiss()).show());
                     }
+                } else {
+                    if (e instanceof NullPointerException && error.contains(NTAG215.CONNECT)) {
+                        error = getString(R.string.error_tag_faulty);
+                    }
+                    showError(error);
                 }
-            }
-            if (null != error) {
-                if (e instanceof NullPointerException
-                        && error.contains("nfctech.NTAG215.connect()")) {
-                    error = getString(R.string.error_tag_faulty);
-                }
-                showError(error);
             } else {
                 showError(getString(R.string.error_unknown));
             }

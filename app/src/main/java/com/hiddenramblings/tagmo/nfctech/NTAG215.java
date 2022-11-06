@@ -11,7 +11,8 @@ import java.io.IOException;
 
 public class NTAG215 implements TagTechnology {
 
-    public static final String CONNECT = NTAG215.class.getName() + ".connect()";
+    public static final String CONNECT =
+            NTAG215.class.getName() + ".connect()";
 
     private static final int NXP_MANUFACTURER_ID = 0x04;
     private static final int MAX_PAGE_COUNT = 256;

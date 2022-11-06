@@ -298,7 +298,7 @@ public class NfcActivity extends AppCompatActivity {
         byte[] update = new byte[0];
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            mifare = NFCIntent.ACTION_BLIND_SCAN.equals(mode) || isEliteIntent
+            mifare = (NFCIntent.ACTION_BLIND_SCAN.equals(mode) || isEliteIntent)
                     ? NTAG215.getBlind(tag) : NTAG215.get(tag);
             tagTech = TagArray.getTagTechnology(tag);
             showMessage(R.string.tag_scanning, tagTech);

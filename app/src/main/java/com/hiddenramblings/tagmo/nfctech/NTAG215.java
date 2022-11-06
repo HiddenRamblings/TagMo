@@ -34,24 +34,18 @@ public class NTAG215 implements TagTechnology {
     }
 
     public static NTAG215 get(Tag tag) {
-        NfcA nfcA = NfcA.get(tag);
-        if (null != nfcA) {
-            if (nfcA.getSak() == 0x00 && tag.getId()[0] == NXP_MANUFACTURER_ID)
-                return new NTAG215(nfcA);
-        }
         MifareUltralight mifare = MifareUltralight.get(tag);
-        if (null != mifare)
-            return new NTAG215(mifare);
-
+        if (null != mifare) return new NTAG215(mifare);
+        NfcA nfcA = NfcA.get(tag);
+        if (null != nfcA) return (
+                nfcA.getSak() == 0x00 && tag.getId()[0] == NXP_MANUFACTURER_ID
+        ) ? new NTAG215(nfcA) : null;
         return null;
     }
 
     public static NTAG215 getBlind(Tag tag) {
         NfcA nfcA = NfcA.get(tag);
-        if (null != nfcA) {
-            return new NTAG215(nfcA);
-        }
-        return null;
+        return null != nfcA ? new NTAG215(nfcA) : null;
     }
 
     @SuppressWarnings("unused")

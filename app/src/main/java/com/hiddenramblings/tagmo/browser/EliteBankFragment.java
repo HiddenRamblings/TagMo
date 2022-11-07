@@ -675,7 +675,7 @@ public class EliteBankFragment extends Fragment implements
                     ), input.getText().toString(), tagData);
                 }
                 new Toasty(requireActivity()).Long(getString(R.string.wrote_file, fileName));
-                activity.loadStoredAmiibo();
+                activity.loadAmiiboBackground();
             } catch (IOException e) {
                 new Toasty(requireActivity()).Short(e.getMessage());
             }

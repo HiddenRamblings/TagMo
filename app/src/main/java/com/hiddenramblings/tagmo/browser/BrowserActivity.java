@@ -287,10 +287,6 @@ public class BrowserActivity extends AppCompatActivity implements
                 if (BuildConfig.WEAR_OS) {
                     switch (position) {
                         case 1:
-                        case 3:
-                            hideBrowserInterface();
-                            break;
-                        case 2:
                             if (hasFlaskEnabled) {
                                 showActionButton();
                                 hideBottomSheet();
@@ -301,6 +297,10 @@ public class BrowserActivity extends AppCompatActivity implements
                             } else {
                                 hideBrowserInterface();
                             }
+                            break;
+                        case 2:
+                        case 3:
+                            hideBrowserInterface();
                             break;
                         default:
                             showBrowserInterface();
@@ -388,14 +388,14 @@ public class BrowserActivity extends AppCompatActivity implements
             if (BuildConfig.WEAR_OS) {
                 switch (position) {
                     case 1:
-                        tab.setText(R.string.settings);
-                        break;
-                    case 2:
                         if (hasFlaskEnabled) {
                             tab.setText(R.string.flask_title);
                         } else {
-                            tab.setText(R.string.guides);
+                            tab.setText(R.string.settings);
                         }
+                        break;
+                    case 2:
+                        tab.setText(R.string.settings);
                         break;
                     case 3:
                         tab.setText(R.string.guides);

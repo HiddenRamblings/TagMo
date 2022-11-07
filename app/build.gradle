@@ -133,8 +133,8 @@ dependencies {
     implementation 'com.android.billingclient:billing:5.0.0'
 
     implementation 'com.github.anrwatchdog:anrwatchdog:1.4.0'
-    implementation 'com.github.bumptech.glide:glide:4.13.2'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.2'
+    implementation 'com.github.bumptech.glide:glide:4.14.2'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
     implementation 'com.github.SamSprung:android-issue-reporter:22a3436'
     implementation 'com.github.SamSprung:FreeReflection:b87e929'
 

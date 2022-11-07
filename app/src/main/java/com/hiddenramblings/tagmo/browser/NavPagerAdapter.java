@@ -13,9 +13,9 @@ import com.hiddenramblings.tagmo.TagMo;
 public class NavPagerAdapter extends FragmentStateAdapter {
 
     private final BrowserFragment fragmentBrowser = new BrowserFragment();
-    private final SettingsFragment fragmentSettings = new SettingsFragment();
     private final EliteBankFragment fragmentElite = new EliteBankFragment();
     private final FlaskSlotFragment fragmentFlask = new FlaskSlotFragment();
+    private final SettingsFragment fragmentSettings = new SettingsFragment();
     private final WebsiteFragment fragmentWebsite = new WebsiteFragment();
 
     public NavPagerAdapter(FragmentActivity fa) {
@@ -25,16 +25,14 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @SuppressLint("NewApi")
     @NonNull @Override
     public Fragment createFragment(int position) {
-        boolean hasEliteEnabled = TagMo.getPrefs().elite_support();
+        boolean hasEliteEnabled = !BuildConfig.WEAR_OS && TagMo.getPrefs().elite_support();
         boolean hasFlaskEnabled = TagMo.getPrefs().flask_support();
         switch (position) {
             case 1:
-                return BuildConfig.WEAR_OS ? fragmentSettings : hasEliteEnabled
-                        ? fragmentElite : hasFlaskEnabled
-                        ? fragmentFlask : fragmentWebsite;
+                return hasEliteEnabled ? fragmentElite
+                        : hasFlaskEnabled ? fragmentFlask : fragmentSettings;
             case 2:
-                return (BuildConfig.WEAR_OS || hasEliteEnabled) && hasFlaskEnabled
-                        ? fragmentFlask : fragmentWebsite;
+                return (hasEliteEnabled && hasFlaskEnabled) ? fragmentFlask : fragmentSettings;
             case 3:
                 return fragmentWebsite;
             default:
@@ -54,16 +52,16 @@ public class NavPagerAdapter extends FragmentStateAdapter {
         return fragmentBrowser;
     }
 
-    public SettingsFragment getSettings() {
-        return fragmentSettings;
-    }
-
     public EliteBankFragment getEliteBanks() {
         return fragmentElite;
     }
 
     public FlaskSlotFragment getFlaskSlots() {
         return fragmentFlask;
+    }
+
+    public SettingsFragment getSettings() {
+        return fragmentSettings;
     }
 
     public WebsiteFragment getWebsite() {

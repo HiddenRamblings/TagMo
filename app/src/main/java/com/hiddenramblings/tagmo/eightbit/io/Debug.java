@@ -282,13 +282,15 @@ public class Debug {
         ), logText));
         try {
             final Intent emailIntent = new Intent(Intent.ACTION_SEND);
-            emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             emailIntent.setType("text/plain");
             emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"samsprungtoo@gmail.com"});
             emailIntent.putExtra(Intent.EXTRA_SUBJECT, "TagMo Logcat");
             emailIntent.putExtra(Intent.EXTRA_TEXT, logText);
             emailIntent.setType("message/rfc822");
-            context.startActivity(Intent.createChooser(emailIntent, "Email logcat via..."));
+            context.startActivity(
+                    Intent.createChooser(emailIntent, "Email log using...")
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            );
         } catch (ActivityNotFoundException ex) {
             try {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));

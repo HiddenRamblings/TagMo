@@ -41,12 +41,12 @@
 
     <application
         android:name=".TagMo"
+        android:enableOnBackInvokedCallback="true"
         android:allowBackup="true"
         android:fullBackupContent="@xml/full_backup_content"
         android:dataExtractionRules="@xml/extraction_content"
         android:hasFragileUserData="${hasFragileUserData}"
         android:requestLegacyExternalStorage="true"
-        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"

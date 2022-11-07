@@ -31,7 +31,7 @@ public class AmiiboDocument {
         contentResolver = context.getContentResolver();
     }
 
-    public ArrayList<Uri> listFiles(Uri uri, boolean recursiveFiles) {
+    public ArrayList<Uri> listFiles(Uri uri, boolean recursiveFiles) throws SecurityException {
         String docId = DocumentsContract.getTreeDocumentId(uri);
 
         if (BuildConfig.DEBUG) {
@@ -71,7 +71,8 @@ public class AmiiboDocument {
 
     private void listFiles(
             Uri rootUri, String documentId, Queue<String> queue,
-            MutableInteger fileCount, boolean recursiveFiles) {
+            MutableInteger fileCount, boolean recursiveFiles
+    ) throws SecurityException {
         List<String> binFiles = Arrays.asList(resources.getStringArray(R.array.mimetype_bin));
         Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(rootUri, documentId);
 

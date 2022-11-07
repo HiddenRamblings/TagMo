@@ -1834,7 +1834,8 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @SuppressLint("NewApi")
-    private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
+    private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles)
+            throws SecurityException {
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiiboDocuments(this, keyManager, rootFolder, recursiveFiles);
@@ -1851,12 +1852,14 @@ public class BrowserActivity extends AppCompatActivity implements
         });
     }
 
-    void loadStoredAmiibo() {
+    void loadAmiiboBackground() {
         if (isDocumentStorage()) {
             DocumentFile rootDocument = DocumentFile.fromTreeUri(
                     BrowserActivity.this, settings.getBrowserRootDocument()
             );
-            loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
+            try {
+                loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
+            } catch (SecurityException ignored) { }
         } else {
             loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
         }
@@ -2063,7 +2066,13 @@ public class BrowserActivity extends AppCompatActivity implements
                     this.settings.getBrowserRootDocument());
             if (!keyManager.isKeyMissing()) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
-                this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
+                try {
+                    this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
+                } catch (SecurityException sx) {
+                    try {
+                        onDocumentRequested();
+                    } catch (ActivityNotFoundException ignored) { }
+                }
             }
         } else {
             File rootFolder = this.settings.getBrowserRootFolder();

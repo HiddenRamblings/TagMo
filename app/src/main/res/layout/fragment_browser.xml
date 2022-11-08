@@ -88,7 +88,7 @@
                 android:scaleType="fitCenter"
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/imageview_toggle"
-                app:srcCompat="@drawable/ic_baseline_expand_24" />
+                app:srcCompat="@drawable/ic_baseline_move_up_24" />
         </LinearLayout>
 
         <myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView

@@ -18,11 +18,15 @@ import com.hiddenramblings.tagmo.browser.SettingsFragment;
 @GlideModule
 public class GlideTagModule extends AppGlideModule {
 
+    public static final String IMAGE_NETWORK_NEVER = "NEVER";
+    public static final String IMAGE_NETWORK_WIFI = "WIFI_ONLY";
+    public static final String IMAGE_NETWORK_ALWAYS = "ALWAYS";
+
     public RequestOptions onlyRetrieveFromCache(Context context, RequestOptions requestOptions) {
         String imageNetworkSetting = TagMo.getPrefs().image_network();
-        if (SettingsFragment.IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
+        if (IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
             return requestOptions.onlyRetrieveFromCache(true);
-        } else if (SettingsFragment.IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
+        } else if (IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {
             ConnectivityManager cm = (ConnectivityManager) context
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();

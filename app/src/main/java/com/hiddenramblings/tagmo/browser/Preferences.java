@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import androidx.preference.PreferenceManager;
 
+import com.hiddenramblings.tagmo.GlideTagModule;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 public class Preferences {
@@ -145,7 +146,7 @@ public class Preferences {
 
     private final String image_network = "image_network_settings";
     public String image_network() {
-        return getString(image_network, SettingsFragment.IMAGE_NETWORK_ALWAYS);
+        return getString(image_network, GlideTagModule.IMAGE_NETWORK_ALWAYS);
     }
     public void image_network(String value) {
         putString(image_network, value);

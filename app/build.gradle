@@ -10,7 +10,7 @@ android {
         applicationId 'com.hiddenramblings.tagmo'
         minSdkVersion 16
         targetSdkVersion 33
-        versionName "3.3.7"
+        versionName "3.3.8"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         vectorDrawables {
@@ -123,6 +123,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation "androidx.browser:browser:1.4.0"
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.core:core:1.9.0'
     implementation 'androidx.fragment:fragment:1.5.4'
     implementation 'androidx.preference:preference:1.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'

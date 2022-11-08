@@ -21,6 +21,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenramblings.tagmo.GlideApp;
+import com.hiddenramblings.tagmo.GlideTagModule;
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
@@ -50,10 +51,6 @@ import java.util.concurrent.Executors;
 import javax.net.ssl.HttpsURLConnection;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
-
-    public static final String IMAGE_NETWORK_NEVER = "NEVER";
-    public static final String IMAGE_NETWORK_WIFI = "WIFI_ONLY";
-    public static final String IMAGE_NETWORK_ALWAYS = "ALWAYS";
 
     private static final int RESULT_KEYS = 8000;
     private static final int RESULT_IMPORT_AMIIBO_DATABASE = 8001;
@@ -316,7 +313,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void onImageNetworkChange(ListPreference imageNetworkSetting, String newValue) {
         int index = imageNetworkSetting.findIndexOfValue(newValue);
         if (index == -1) {
-            onImageNetworkChange(imageNetworkSetting, IMAGE_NETWORK_ALWAYS);
+            onImageNetworkChange(imageNetworkSetting, GlideTagModule.IMAGE_NETWORK_ALWAYS);
         } else {
             prefs.image_network(newValue);
             imageNetworkSetting.setValue(newValue);
@@ -584,7 +581,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             @Override
             public void onProviderInstallFailed() {
-                onImageNetworkChange(imageNetworkSetting, IMAGE_NETWORK_NEVER);
+                onImageNetworkChange(imageNetworkSetting, GlideTagModule.IMAGE_NETWORK_NEVER);
                 new Toasty(requireActivity()).Short(R.string.fail_ssl_update);
             }
         });

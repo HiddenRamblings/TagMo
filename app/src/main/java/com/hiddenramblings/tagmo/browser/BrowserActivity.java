@@ -2099,7 +2099,7 @@ public class BrowserActivity extends AppCompatActivity implements
         fragmentBrowser.addFilterItemView(filterText, filterTag, v -> {
             settings.setFilter(filter, "");
             settings.notifyChanges();
-            setAmiiboStats();
+            if (mainLayout.getCurrentItem() == 0) setAmiiboStats();
         });
     }
 

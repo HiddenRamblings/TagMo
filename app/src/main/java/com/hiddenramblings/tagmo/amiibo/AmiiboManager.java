@@ -377,7 +377,7 @@ public class AmiiboManager {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static ArrayList<AmiiboFile> listAmiiboDocuments(
             Context context, KeyManager keyManager, DocumentFile rootFolder, boolean recursiveFiles
-    ) throws SecurityException {
+    ) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
         ArrayList<Uri> uris = new AmiiboDocument(context)
                 .listFiles(rootFolder.getUri(), recursiveFiles);

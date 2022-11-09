@@ -123,7 +123,9 @@
 
     <string name="logcat_support">程式意見反映</string>
     <string name="settings_donate">捐款贊助程式開發</string>
-    <string name="paypal_link">以PayPal捐款</string>
+    <string name="google_link">透過Google Play捐款</string>
+    <string name="sponsor_link">透過GitHub捐款</string>
+    <string name="paypal_link">透過PayPal捐款</string>
     <string name="clear_foomiibo_set">清除 Foomiibo</string>
     <string name="build_foomiibo_set">建立 Foomiibo</string>
     <string name="foomiibo_progress">正在建立 %1$s&#8230;</string>
@@ -212,6 +214,8 @@
     <string name="number_type">%1$d 種 amiibo 類型</string>
     <string name="number_titles">%1$d 個可使用的遊戲</string>
     <string name="pref_advanced">進階</string>
+    <string name="pref_software_layer">改用軟體描繪圖層</string>
+    <string name="software_layer_details">以GPU轉譯描繪項目列表時，在某些搭載中文韌體的裝置設備上有可能造成錯誤</string>
     <string name="pref_tagmo_theme">TagMo系統主題</string>
     <string name="tagmo_theme_details">將程式背景變更為自訂主題</string>
     <string name="pref_disable_debug">停用除錯日誌記錄</string>

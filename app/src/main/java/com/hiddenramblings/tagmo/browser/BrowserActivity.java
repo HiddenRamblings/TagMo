@@ -1387,7 +1387,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onStorageEnabled() {
         if (BuildConfig.WEAR_OS) {
             if (keyManager.isKeyMissing()) {
-                if (null != fragmentSettings) fragmentSettings.verifyKeyFiles();
+                showSettingsPage();
             } else {
                 this.onRefresh(true);
             }
@@ -1420,7 +1420,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     switchStorageType.setVisibility(View.GONE);
                 }
                 if (keyManager.isKeyMissing()) {
-                    if (null != fragmentSettings) fragmentSettings.verifyKeyFiles();
+                    showSettingsPage();
                 } else {
                     this.onRefresh(true);
                 }
@@ -2619,6 +2619,16 @@ public class BrowserActivity extends AppCompatActivity implements
             return true;
         }
         return false;
+    }
+
+    public void showSettingsPage() {
+        if (BuildConfig.WEAR_OS) {
+            mainLayout.post(() -> mainLayout.setCurrentItem(
+                    prefs.flask_support() ? 2 : 1, false
+            ));
+        } else {
+            prefsDrawer.openDrawer(GravityCompat.START);
+        }
     }
 
     public void showElitePage(Bundle extras) {

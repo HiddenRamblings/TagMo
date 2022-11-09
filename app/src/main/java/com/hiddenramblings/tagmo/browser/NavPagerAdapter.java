@@ -29,10 +29,11 @@ public class NavPagerAdapter extends FragmentStateAdapter {
         boolean hasFlaskEnabled = TagMo.getPrefs().flask_support();
         switch (position) {
             case 1:
-                return hasEliteEnabled ? fragmentElite
-                        : hasFlaskEnabled ? fragmentFlask : fragmentSettings;
+                return hasEliteEnabled ? fragmentElite : hasFlaskEnabled ? fragmentFlask
+                        : BuildConfig.WEAR_OS ? fragmentSettings : fragmentWebsite;
             case 2:
-                return (hasEliteEnabled && hasFlaskEnabled) ? fragmentFlask : fragmentSettings;
+                return (hasEliteEnabled && hasFlaskEnabled) ? fragmentFlask
+                        : BuildConfig.WEAR_OS ? fragmentSettings : fragmentWebsite;
             case 3:
                 return fragmentWebsite;
             default:

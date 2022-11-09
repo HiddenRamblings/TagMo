@@ -13,6 +13,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.cache.ExternalPreferredCacheDiskCacheFactory;
 import com.bumptech.glide.module.AppGlideModule;
 import com.bumptech.glide.request.RequestOptions;
+import com.hiddenramblings.tagmo.browser.Preferences;
 import com.hiddenramblings.tagmo.browser.SettingsFragment;
 
 @GlideModule
@@ -23,7 +24,7 @@ public class GlideTagModule extends AppGlideModule {
     public static final String IMAGE_NETWORK_ALWAYS = "ALWAYS";
 
     public RequestOptions onlyRetrieveFromCache(Context context, RequestOptions requestOptions) {
-        String imageNetworkSetting = TagMo.getPrefs().image_network();
+        String imageNetworkSetting = new Preferences(context.getApplicationContext()).image_network();
         if (IMAGE_NETWORK_NEVER.equals(imageNetworkSetting)) {
             return requestOptions.onlyRetrieveFromCache(true);
         } else if (IMAGE_NETWORK_WIFI.equals(imageNetworkSetting)) {

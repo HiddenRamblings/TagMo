@@ -205,7 +205,7 @@ public class BrowserActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        prefs = TagMo.getPrefs();
+        prefs = new Preferences(getApplicationContext());
         keyManager = new KeyManager(this);
 
         if (null != getSupportActionBar()) {
@@ -283,7 +283,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     BrowserAdapter.resetVisible();
                     FoomiiboAdapter.resetVisible();
                 }
-                boolean hasFlaskEnabled = TagMo.getPrefs().flask_support();
+                boolean hasFlaskEnabled = prefs.flask_support();
                 if (BuildConfig.WEAR_OS) {
                     switch (position) {
                         case 1:
@@ -315,7 +315,7 @@ public class BrowserActivity extends AppCompatActivity implements
                             break;
                     }
                 } else {
-                    boolean hasEliteEnabled = TagMo.getPrefs().elite_support();
+                    boolean hasEliteEnabled = prefs.elite_support();
                     switch (position) {
                         case 1:
                             if (hasEliteEnabled) {
@@ -384,7 +384,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         new TabLayoutMediator(findViewById(R.id.navigation_tabs), mainLayout, true,
                 Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2), (tab, position) -> {
-            boolean hasFlaskEnabled = TagMo.getPrefs().flask_support();
+            boolean hasFlaskEnabled = prefs.flask_support();
             if (BuildConfig.WEAR_OS) {
                 switch (position) {
                     case 1:
@@ -405,7 +405,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         break;
                 }
             } else {
-                boolean hasEliteEnabled = TagMo.getPrefs().elite_support();
+                boolean hasEliteEnabled = prefs.elite_support();
                 switch (position) {
                     case 1:
                         if (hasEliteEnabled) {
@@ -1159,8 +1159,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 backup.setVisible(!relativeDocument.startsWith("/Foomiibo/"));
             } else if (null != amiiboFile.getFilePath()) {
                 String relativeFile = Storage.getRelativePath(amiiboFile.getFilePath(),
-                        TagMo.getPrefs().preferEmulated()).replace(
-                        TagMo.getPrefs().browserRootFolder(), "");
+                        prefs.preferEmulated()).replace(prefs.browserRootFolder(), "");
                 backup.setVisible(!relativeFile.startsWith("/Foomiibo/"));
             }
             delete.setVisible(true);
@@ -2141,8 +2140,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
 
         // If we're supporting, didn't arrive from, but scanned an N2...
-        if (TagMo.getPrefs().elite_support()
-                && result.getData().hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
+        if (prefs.elite_support() && result.getData().hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             launchEliteActivity(result.getData());
         } else {
             updateAmiiboView(result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA));

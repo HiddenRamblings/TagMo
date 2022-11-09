@@ -21,6 +21,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
+import com.hiddenramblings.tagmo.browser.Preferences;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.widget.Toasty;
@@ -54,6 +55,8 @@ public class ImageActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Preferences prefs = new Preferences(getApplicationContext());
+
         setContentView(R.layout.activity_image);
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -77,7 +80,7 @@ public class ImageActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> finish());
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.mnu_save) {
-                onSaveClicked(amiiboId);
+                onSaveClicked(prefs, amiiboId);
                 return true;
             }
             return false;
@@ -192,7 +195,7 @@ public class ImageActivity extends AppCompatActivity {
         return Amiibo.getImageUrl(amiiboId);
     }
 
-    void onSaveClicked(long amiiboId) {
+    void onSaveClicked(Preferences prefs, long amiiboId) {
         final View view = this.getLayoutInflater().inflate(R.layout.edit_text, null);
         final EditText editText = view.findViewById(R.id.editText);
         if (null != amiibo) {
@@ -210,14 +213,14 @@ public class ImageActivity extends AppCompatActivity {
                                 .into(new CustomTarget<Bitmap>() {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
-                saveImageToFile(resource, editText.getText().toString());
+                saveImageToFile(prefs, resource, editText.getText().toString());
             }
             @Override
             public void onLoadCleared(@Nullable Drawable placeholder) { }
         })).setNegativeButton(R.string.cancel, null).setView(view).show();
     }
 
-    private void saveImageToFile(@NonNull Bitmap resource, String filename) {
+    private void saveImageToFile(Preferences prefs, @NonNull Bitmap resource, String filename) {
         File dir = new File(Storage.getDownloadDir("TagMo"), "Images");
         if (!dir.exists() && !dir.mkdirs()) {
             new Toasty(ImageActivity.this).Short(
@@ -228,11 +231,9 @@ public class ImageActivity extends AppCompatActivity {
         File file = new File(dir, filename + ".png");
         try (FileOutputStream fos = new FileOutputStream(file)) {
             resource.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            new Toasty(ImageActivity.this).Short(
-                    getString(R.string.wrote_file, Storage.getRelativePath(
-                            file, TagMo.getPrefs().preferEmulated()
-                    ))
-            );
+            new Toasty(ImageActivity.this).Short(getString(
+                    R.string.wrote_file, Storage.getRelativePath(file, prefs.preferEmulated())
+            ));
         } catch (IOException e) {
             Debug.Warn(e);
         }

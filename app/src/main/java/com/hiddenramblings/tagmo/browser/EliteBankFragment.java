@@ -69,7 +69,7 @@ import java.util.ArrayList;
 public class EliteBankFragment extends Fragment implements
         EliteBankAdapter.OnAmiiboClickListener {
 
-    private final Preferences prefs = TagMo.getPrefs();
+    private Preferences prefs;
 
     private CoordinatorLayout rootLayout;
     private RecyclerView eliteContent;
@@ -134,6 +134,7 @@ public class EliteBankFragment extends Fragment implements
         rootLayout = (CoordinatorLayout) view;
 
         BrowserActivity activity = (BrowserActivity) requireActivity();
+        prefs = new Preferences(activity.getApplicationContext());
         keyManager = new KeyManager(activity);
 
         eliteContent = rootLayout.findViewById(R.id.elite_content);

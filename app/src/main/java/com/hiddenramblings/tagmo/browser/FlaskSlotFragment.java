@@ -88,7 +88,7 @@ public class FlaskSlotFragment extends Fragment implements
         FlaskSlotAdapter.OnAmiiboClickListener,
         BluetoothHandler.BluetoothListener {
 
-    private final Preferences prefs = TagMo.getPrefs();
+    private Preferences prefs;
     private BluetoothHandler bluetoothHandler;
     private boolean isFragmentVisible = false;
 
@@ -376,6 +376,7 @@ public class FlaskSlotFragment extends Fragment implements
         rootLayout = (CoordinatorLayout) view;
 
         BrowserActivity activity = (BrowserActivity) requireActivity();
+        prefs = new Preferences(activity.getApplicationContext());
 
         amiiboTile = rootLayout.findViewById(R.id.active_tile_layout);
 

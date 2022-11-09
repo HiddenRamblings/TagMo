@@ -433,8 +433,6 @@ public class BrowserActivity extends AppCompatActivity implements
             }
         }).attach();
 
-        if (!BuildConfig.WEAR_OS) onLoadSettingsFragment();
-
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
         if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
             //noinspection deprecation
@@ -473,6 +471,41 @@ public class BrowserActivity extends AppCompatActivity implements
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+
+        if (BuildConfig.WEAR_OS) {
+            onCreateWearOptionsMenu();
+        } else {
+            onLoadSettingsFragment();
+
+            TextView buildText = findViewById(R.id.build_text);
+            buildText.setMovementMethod(LinkMovementMethod.getInstance());
+            buildText.setText(TagMo.getVersionLabel(false));
+
+            prefsDrawer = findViewById(R.id.drawer_layout);
+            prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                @Override
+                public void onDrawerOpened(View drawerView) {
+                    super.onDrawerOpened(drawerView);
+                    findViewById(R.id.build_layout).setOnClickListener(view -> {
+                        closePrefsDrawer();
+                        String repository = "https://github.com/HiddenRamblings/TagMo";
+                        showWebsite(repository);
+                    });
+                    if (null != appUpdate) {
+                        findViewById(R.id.build_layout).setOnClickListener(view -> {
+                            closePrefsDrawer();
+                            updates.downloadPlayUpdate(appUpdate);
+                        });
+                    }
+                    if (null != updateUrl) {
+                        findViewById(R.id.build_layout).setOnClickListener(view -> {
+                            closePrefsDrawer();
+                            updates.installUpdateCompat(updateUrl);
+                        });
+                    }
+                }
+            });
+        }
 
         LinearLayout foomiiboOptions = findViewById(R.id.foomiibo_options);
         final Handler foomiiboHandler = new Handler(Looper.getMainLooper());
@@ -560,39 +593,6 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        if (BuildConfig.WEAR_OS) {
-            onCreateWearOptionsMenu();
-        } else {
-            TextView buildText = findViewById(R.id.build_text);
-            buildText.setMovementMethod(LinkMovementMethod.getInstance());
-            buildText.setText(TagMo.getVersionLabel(false));
-
-            prefsDrawer = findViewById(R.id.drawer_layout);
-            prefsDrawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-                @Override
-                public void onDrawerOpened(View drawerView) {
-                    super.onDrawerOpened(drawerView);
-                    findViewById(R.id.build_layout).setOnClickListener(view -> {
-                        closePrefsDrawer();
-                        String repository = "https://github.com/HiddenRamblings/TagMo";
-                        showWebsite(repository);
-                    });
-                    if (null != appUpdate) {
-                        findViewById(R.id.build_layout).setOnClickListener(view -> {
-                            closePrefsDrawer();
-                            updates.downloadPlayUpdate(appUpdate);
-                        });
-                    }
-                    if (null != updateUrl) {
-                        findViewById(R.id.build_layout).setOnClickListener(view -> {
-                            closePrefsDrawer();
-                            updates.installUpdateCompat(updateUrl);
-                        });
-                    }
-                }
-            });
-        }
-
         donations.retrieveDonationMenu();
         findViewById(R.id.donate_layout).setOnClickListener(view -> {
             if (!BuildConfig.WEAR_OS) closePrefsDrawer();
@@ -609,16 +609,6 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onTabCollectionChanged() {
         mainLayout.setCurrentItem(0, false);
         pagerAdapter.notifyDataSetChanged();
-    }
-
-    private void onLoadSettingsFragment() {
-        if (null == fragmentSettings) fragmentSettings = new SettingsFragment();
-        if (!fragmentSettings.isAdded()) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.preferences, fragmentSettings)
-                    .commit();
-        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -1387,7 +1377,7 @@ public class BrowserActivity extends AppCompatActivity implements
     private void onStorageEnabled() {
         if (BuildConfig.WEAR_OS) {
             if (keyManager.isKeyMissing()) {
-                showSettingsPage();
+                onShowSettingsFragment();
             } else {
                 this.onRefresh(true);
             }
@@ -1420,7 +1410,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     switchStorageType.setVisibility(View.GONE);
                 }
                 if (keyManager.isKeyMissing()) {
-                    showSettingsPage();
+                    onShowSettingsFragment();
                 } else {
                     this.onRefresh(true);
                 }
@@ -2614,7 +2604,17 @@ public class BrowserActivity extends AppCompatActivity implements
         return false;
     }
 
-    public void showSettingsPage() {
+    private void onLoadSettingsFragment() {
+        if (null == fragmentSettings) fragmentSettings = new SettingsFragment();
+        if (!fragmentSettings.isAdded()) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.preferences, fragmentSettings)
+                    .commit();
+        }
+    }
+
+    public void onShowSettingsFragment() {
         if (BuildConfig.WEAR_OS) {
             mainLayout.post(() -> mainLayout.setCurrentItem(
                     prefs.flask_support() ? 2 : 1, false

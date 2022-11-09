@@ -57,9 +57,11 @@ package com.hiddenramblings.tagmo.eightbit.net;
 
 import android.app.Activity;
 
+import com.hiddenramblings.tagmo.GlideTagModule;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.browser.BrowserActivity;
+import com.hiddenramblings.tagmo.browser.Preferences;
 import com.hiddenramblings.tagmo.charset.CharsetCompat;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.security.SecurityHandler;
@@ -92,7 +94,8 @@ public class JSONExecutor {
             @Override
             public void onProviderInstallFailed() {
                 if (activity instanceof BrowserActivity) {
-                    TagMo.getPrefs().image_network("NEVER");
+                    new Preferences(activity.getApplicationContext())
+                            .image_network(GlideTagModule.IMAGE_NETWORK_NEVER);
                     activity.runOnUiThread(() ->
                             ((BrowserActivity) activity).getSettings().notifyChanges()
                     );

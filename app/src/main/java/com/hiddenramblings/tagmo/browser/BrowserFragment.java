@@ -57,7 +57,7 @@ import myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView;
 public class BrowserFragment extends Fragment implements
         FoomiiboAdapter.OnFoomiiboClickListener{
 
-    private final Preferences prefs = TagMo.getPrefs();
+    private Preferences prefs;
     private FlexboxLayout chipList;
     private RecyclerView browserContent;
     private RecyclerView foomiiboView;
@@ -106,6 +106,7 @@ public class BrowserFragment extends Fragment implements
         super.onViewCreated(view, savedInstanceState);
 
         BrowserActivity activity = (BrowserActivity) requireActivity();
+        prefs = new Preferences(activity.getApplicationContext());
         keyManager = new KeyManager(activity);
         settings = activity.getSettings();
 

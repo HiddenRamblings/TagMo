@@ -72,7 +72,7 @@ public class NfcActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        prefs = TagMo.getPrefs();
+        prefs = new Preferences(getApplicationContext());
         setContentView(R.layout.activity_nfc);
 
         ActionBar actionBar = getSupportActionBar();

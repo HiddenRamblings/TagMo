@@ -20,9 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiddenramblings.tagmo.NFCIntent;
 import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.browser.Preferences;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.nfctech.TagArray;
@@ -38,6 +38,8 @@ public class HexCodeViewer extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Preferences prefs = new Preferences(getApplicationContext());
 
         setContentView(R.layout.activity_hex_viewer);
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -75,9 +77,9 @@ public class HexCodeViewer extends AppCompatActivity {
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.mnu_save) {
                 try {
-                    saveHexViewToFile(listView, Amiibo.idToHex(Amiibo.dataToId(tagData)));
+                    saveHexViewToFile(prefs, listView, Amiibo.idToHex(Amiibo.dataToId(tagData)));
                 } catch (IOException e) {
-                    saveHexViewToFile(listView, TagArray.bytesToHex(
+                    saveHexViewToFile(prefs, listView, TagArray.bytesToHex(
                             Arrays.copyOfRange(tagData, 0, 9))
                     );
                 }
@@ -87,7 +89,7 @@ public class HexCodeViewer extends AppCompatActivity {
         });
     }
 
-    private void saveHexViewToFile(@NonNull RecyclerView view, String filename) {
+    private void saveHexViewToFile(Preferences prefs, @NonNull RecyclerView view, String filename) {
         HexAdapter adapter = (HexAdapter) view.getAdapter();
         Bitmap viewBitmap = null;
         if (adapter != null) {
@@ -151,11 +153,9 @@ public class HexCodeViewer extends AppCompatActivity {
         File file = new File(dir, filename + "-" + System.currentTimeMillis() + ".png");
         try (FileOutputStream fos = new FileOutputStream(file)) {
             viewBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            new Toasty(HexCodeViewer.this).Short(
-                    getString(R.string.wrote_file, Storage.getRelativePath(
-                            file, TagMo.getPrefs().preferEmulated()
-                    ))
-            );
+            new Toasty(HexCodeViewer.this).Short(getString(
+                    R.string.wrote_file, Storage.getRelativePath(file, prefs.preferEmulated())
+            ));
         } catch (IOException e) {
             Debug.Warn(e);
         }

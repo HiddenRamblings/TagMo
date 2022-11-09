@@ -35,7 +35,7 @@ public class ScanTag {
     }
 
     public void onTagDiscovered(BrowserActivity activity, Intent intent) {
-        Preferences prefs = TagMo.getPrefs();
+        Preferences prefs = new Preferences(activity.getApplicationContext());
         NTAG215 mifare = null;
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);

@@ -1833,8 +1833,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     @SuppressLint("NewApi")
-    private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles)
-            throws SecurityException {
+    private void loadAmiiboDocuments(DocumentFile rootFolder, boolean recursiveFiles) {
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiiboDocuments(this, keyManager, rootFolder, recursiveFiles);
@@ -2065,13 +2064,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     this.settings.getBrowserRootDocument());
             if (!keyManager.isKeyMissing()) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list));
-                try {
-                    this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
-                } catch (SecurityException sx) {
-                    try {
-                        onDocumentRequested();
-                    } catch (ActivityNotFoundException ignored) { }
-                }
+                this.loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
             }
         } else {
             File rootFolder = this.settings.getBrowserRootFolder();

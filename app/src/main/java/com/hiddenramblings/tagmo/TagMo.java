@@ -88,6 +88,8 @@ public class TagMo extends Application {
 
         Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
             if (isWatchingANR && isUncaughtANR(error)) return;
+            if (error instanceof SecurityException)
+                getPrefs().browserRootDocument(null);
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
             Debug.processException(this, exception.toString());

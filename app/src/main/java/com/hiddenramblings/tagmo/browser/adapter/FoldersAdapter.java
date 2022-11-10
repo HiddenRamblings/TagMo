@@ -86,7 +86,7 @@ public class FoldersAdapter
     }
 
     public boolean showParentFolder() {
-        boolean internal = TagMo.getPrefs().preferEmulated();
+        boolean internal = null != TagMo.getPrefs() && TagMo.getPrefs().preferEmulated();
         return (null != rootFolder && !Storage.getFile(internal).equals(rootFolder))
                 && rootFolder.getAbsolutePath().startsWith(Storage.getPath(internal));
     }

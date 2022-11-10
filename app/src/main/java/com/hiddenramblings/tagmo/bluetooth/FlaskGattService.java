@@ -641,6 +641,10 @@ public class FlaskGattService extends Service {
         }
     }
 
+    public void delayedTagCharacteristic(String value) {
+        queueTagCharacteristic(value, outgoingCallbacks.size());
+    }
+
     public void queueByteCharacteristic(byte[] value, int index) {
         if (null == mCharacteristicTX) {
             try {
@@ -655,10 +659,6 @@ public class FlaskGattService extends Service {
         if (outgoingCallbacks.size() == 1) {
             outgoingCallbacks.get(0).run();
         }
-    }
-
-    public void delayedTagCharacteristic(String value) {
-        queueTagCharacteristic(value, outgoingCallbacks.size());
     }
 
     public void delayedByteCharacteric(byte[] value) {
@@ -690,10 +690,10 @@ public class FlaskGattService extends Service {
         queueScreenCharacteristic(value, outgoingCallbacks.size());
     }
     
-    public void uploadAmiiboFile(byte[] amiiboData, Amiibo amiibo, boolean complete) {
-        delayedTagCharacteristic("startTagUpload(" + amiiboData.length + ")");
+    public void uploadAmiiboFile(byte[] tagData, Amiibo amiibo, boolean complete) {
+        delayedTagCharacteristic("startTagUpload(" + tagData.length + ")");
         List<String> chunks = GattArray.stringToPortions(Base64.encodeToString(
-                amiiboData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
+                tagData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
         ), 128);
         for (int i = 0; i < chunks.size(); i+=1) {
             final String chunk = chunks.get(i);

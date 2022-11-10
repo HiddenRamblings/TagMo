@@ -29,6 +29,7 @@ import android.os.Looper;
 import androidx.annotation.RequiresApi;
 
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.nfctech.NfcByte;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -84,35 +85,58 @@ public class PuckGattService extends Service {
     }
 
     private int currentSlot = 0;
+    private int slotCount;
 
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
     }
 
-    private final ArrayList<Runnable> Callbacks = new ArrayList<>();
+    private final ArrayList<Runnable> outgoingCallbacks = new ArrayList<>();
 
     private final Handler puckHandler = new Handler(Looper.getMainLooper());
 
     public interface BluetoothGattListener {
         void onServicesDiscovered();
-        void onPuckActiveChanged(JSONObject jsonObject);
-        void onPuckStatusChanged(JSONObject jsonObject);
-        void onPuckListRetrieved(JSONArray jsonArray);
-        void onPuckFilesDownload(String dataString);
+        void onPuckActiveChanged(int slot);
+        void onPuckCountRetrieved(int count);
+        void onPuckListRetrieved(ArrayList<byte[]> slotData);
+        void onPuckFilesDownload(byte[] tagData);
         void onPuckFilesUploaded();
         void onGattConnectionLost();
     }
 
-    StringBuilder response = new StringBuilder();
+    byte[] readResponse = new byte[NfcByte.TAG_FILE_SIZE];
+    byte[] infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
+    ArrayList<byte[]> puckArray = new ArrayList<>();
 
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
-            String output = new String(data);
-            Debug.Verbose(TAG, getLogTag(characteristic.getUuid()) + " " + output);
-
             if (characteristic.getUuid().compareTo(PuckRX) == 0) {
-
+                if (data[0] == PUCK.INFO.getBytes()) {
+                    if (data.length > 3) {
+                        System.arraycopy(infoResponse, 0, data, 2, data.length);
+                        puckArray.add(data);
+                        infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
+                        if (puckArray.size() == slotCount) {
+                            if (null != listener) listener.onPuckListRetrieved(puckArray);
+                            puckArray = new ArrayList<>();
+                        }
+                    } else {
+                        slotCount = data[2];
+                        if (null != listener) listener.onPuckCountRetrieved(data[2]);
+                    }
+                } else if (data[0] == PUCK.READ.getBytes()) {
+                    if (data[2] == 0) {
+                        System.arraycopy(readResponse, 0, data, 4, data.length);
+                    } else if (data[2] > 62 && data[2] < 126) {
+                        System.arraycopy(readResponse, 252, data, 4, data.length);
+                    } else {
+                        System.arraycopy(readResponse, 504, data, 4, data.length);
+                        if (null != listener) listener.onPuckFilesDownload(readResponse);
+                        readResponse = new byte[NfcByte.TAG_FILE_SIZE];
+                    }
+                }
             }
         }
     }
@@ -394,7 +418,7 @@ public class PuckGattService extends Service {
 
     private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = GattArray.byteToPortions(value, 20);
-        int commandQueue = Callbacks.size() + 1 + chunks.size();
+        int commandQueue = outgoingCallbacks.size() + 1 + chunks.size();
         puckHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
                 final byte[] chunk = chunks.get(i);
@@ -407,50 +431,24 @@ public class PuckGattService extends Service {
         }, commandQueue * 30L);
     }
 
-    private void delayedWriteCharacteristic(String value) {
-        List<String> chunks = GattArray.stringToPortions(value, maxTransmissionUnit);
-        int commandQueue = Callbacks.size() + 1 + chunks.size();
-        puckHandler.postDelayed(() -> {
-            for (int i = 0; i < chunks.size(); i += 1) {
-                final String chunk = chunks.get(i);
-                puckHandler.postDelayed(() -> {
-                    mCharacteristicTX.setValue(chunk);
-                    mCharacteristicTX.setWriteType(
-                            // BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-                            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                    );
-                    try {
-                        mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
-                    } catch (NullPointerException ex) {
-                        if (null != listener) listener.onServicesDiscovered();
-                    }
-                }, (i + 1) * 30L);
-            }
-        }, commandQueue * 30L);
-    }
-
-    public void queueTagCharacteristic(String value, int index) {
+    public void queueByteCharacteristic(byte[] value, int index) {
         if (null == mCharacteristicTX) {
             try {
                 setPuckCharacteristicTX();
             } catch (UnsupportedOperationException e) {
-                e.printStackTrace();
+                Debug.Warn(e);
             }
         }
 
-        Callbacks.add(index, () -> delayedWriteCharacteristic(("tag." + value + "\n")));
+        outgoingCallbacks.add(index, () -> delayedWriteCharacteristic(value));
 
-        if (Callbacks.size() == 1) {
-            Callbacks.get(0).run();
+        if (outgoingCallbacks.size() == 1) {
+            outgoingCallbacks.get(0).run();
         }
     }
 
-    public void delayedTagCharacteristic(String value) {
-        queueTagCharacteristic(value, Callbacks.size());
-    }
-
-    public void promptTagCharacteristic(String value) {
-        queueTagCharacteristic(value, 0);
+    public void delayedByteCharacteric(byte[] value) {
+        queueByteCharacteristic(value, outgoingCallbacks.size());
     }
 
     private void sendCommand(byte[] params, byte[] data) {
@@ -458,13 +456,21 @@ public class PuckGattService extends Service {
             byte[] command = new byte[params.length + data.length];
             System.arraycopy(params, 0, command, 0, params.length);
             System.arraycopy(data, params.length, command, 0, data.length);
-            delayedWriteCharacteristic(command);
+            delayedByteCharacteric(command);
         } else {
-            delayedWriteCharacteristic(params);
+            delayedByteCharacteric(params);
         }
     }
 
-    private void writeBytes(byte[] tagData, int slot) {
+    private void getSlotCount() {
+        sendCommand(new byte[] { PUCK.INFO.getBytes() }, null);
+    }
+
+    private void getSlotDetails(int slot) {
+        sendCommand(new byte[] { PUCK.INFO.getBytes(), (byte) (slot - 1) }, null);
+    }
+
+    private void uploadSlotAmiibo(byte[] tagData, int slot) {
         for (int i = 0; i < tagData.length % 16; i ++) {
             byte[] data = new byte[16];
             System.arraycopy(tagData, i * 16, data, 0, data.length);
@@ -474,17 +480,19 @@ public class PuckGattService extends Service {
                 new byte[] { PUCK.SAVE.getBytes(), (byte) (slot - 1) },
                 currentSlot == slot ? new byte[] { PUCK.NFC.getBytes() } : null
         );
+        if (null != listener) listener.onPuckFilesUploaded();
     }
 
-    private void readBytes(int slot) {
+    private void downloadSlotData(int slot) {
         sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) (slot - 1), 0x00, 0x3F }, null);
         sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) (slot - 1), 0x3F, 0x3F }, null);
         sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) (slot - 1), 0x7E, 0x11 }, null);
     }
 
-    private void changeSlot(int slot) {
+    private void setActiveSlot(int slot) {
         currentSlot = slot - 1;
         sendCommand(new byte[] { PUCK.NFC.getBytes(), (byte) currentSlot }, null);
+        if (null != listener) listener.onPuckActiveChanged(currentSlot);
     }
 
     private String getLogTag(UUID uuid) {

@@ -320,22 +320,22 @@ public class FlaskSlotFragment extends Fragment implements
                         }
 
                         @Override
-                        public void onPuckActiveChanged(JSONObject jsonObject) {
+                        public void onPuckActiveChanged(int slot) {
 
                         }
 
                         @Override
-                        public void onPuckStatusChanged(JSONObject jsonObject) {
+                        public void onPuckCountRetrieved(int count) {
 
                         }
 
                         @Override
-                        public void onPuckListRetrieved(JSONArray jsonArray) {
+                        public void onPuckListRetrieved(ArrayList<byte[]> slotData) {
 
                         }
 
                         @Override
-                        public void onPuckFilesDownload(String dataString) {
+                        public void onPuckFilesDownload(byte[] tagData) {
 
                         }
 

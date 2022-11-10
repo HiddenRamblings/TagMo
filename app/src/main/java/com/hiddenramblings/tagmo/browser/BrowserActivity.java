@@ -593,11 +593,13 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ignored) {}
         }
 
-        donations.retrieveDonationMenu();
-        findViewById(R.id.donate_layout).setOnClickListener(view -> {
-            if (!BuildConfig.WEAR_OS) closePrefsDrawer();
-            donations.onSendDonationClicked();
-        });
+        if (!BuildConfig.WEAR_OS) {
+            donations.retrieveDonationMenu();
+            findViewById(R.id.donate_layout).setOnClickListener(view -> {
+                closePrefsDrawer();
+                donations.onSendDonationClicked();
+            });
+        }
 
         if (!prefs.guides_prompted()) {
             prefs.guides_prompted(true);

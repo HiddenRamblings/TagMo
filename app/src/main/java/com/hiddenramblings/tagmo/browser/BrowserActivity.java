@@ -2109,8 +2109,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void launchEliteActivity(Intent resultData) {
-        if (TagMo.getPrefs().elite_support()
-                && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
+        if (prefs.elite_support() && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             showElitePage(resultData.getExtras());
         }
     }

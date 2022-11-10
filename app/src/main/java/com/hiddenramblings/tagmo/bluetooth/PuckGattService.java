@@ -29,6 +29,7 @@ import android.os.Looper;
 import androidx.annotation.RequiresApi;
 
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
+import com.hiddenramblings.tagmo.nfctech.NfcByte;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -452,18 +453,29 @@ public class PuckGattService extends Service {
         queueTagCharacteristic(value, 0);
     }
 
-    public boolean isJSONValid(String test) {
-        if (test.startsWith("tag.") && test.endsWith(")")) return false;
-        try {
-            new JSONObject(test);
-        } catch (JSONException ex) {
-            try {
-                new JSONArray(test);
-            } catch (JSONException jex) {
-                return false;
-            }
+    private void sendCommand(byte[] params, byte[] data) {
+        if (null != data) {
+            byte[] command = new byte[params.length + data.length];
+            System.arraycopy(params, 0, command, 0, params.length);
+            System.arraycopy(data, params.length, command, 0, data.length);
+            delayedWriteCharacteristic(command);
+        } else {
+            delayedWriteCharacteristic(params);
         }
-        return true;
+    }
+
+    private void writeBytes(byte[] tagData) {
+        for (int i = 0; i < tagData.length % 16; i ++) {
+            byte[] data = new byte[16];
+            System.arraycopy(tagData, i * 16, data, 0, data.length);
+            sendCommand(new byte[] {PUCK.WRITE.getBytes(), 0x00, (byte) (i * 4)}, data);
+        }
+    }
+
+    private void readBytes() {
+        sendCommand(new byte[] {PUCK.READ.getBytes(), 0x00, 0x00, 0x3F}, null);
+        sendCommand(new byte[] {PUCK.READ.getBytes(), 0x00, 0x3F, 0x3F}, null);
+        sendCommand(new byte[] {PUCK.READ.getBytes(), 0x00, 0x7E, 0x11}, null);
     }
 
     private String getLogTag(UUID uuid) {

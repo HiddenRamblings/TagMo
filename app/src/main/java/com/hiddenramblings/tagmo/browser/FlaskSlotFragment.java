@@ -29,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -115,9 +116,11 @@ public class FlaskSlotFragment extends Fragment implements
     private BottomSheetBehavior<View> bottomSheetBehavior;
 
     private BluetoothAdapter mBluetoothAdapter;
-    private ScanCallback scanCallbackLP;
-    private BluetoothAdapter.LeScanCallback scanCallback;
+    private ScanCallback scanCallbackFlaskLP;
+    private BluetoothAdapter.LeScanCallback scanCallbackFlask;
     private FlaskGattService serviceFlask;
+    private ScanCallback scanCallbackPuckLP;
+    private BluetoothAdapter.LeScanCallback scanCallbackPuck;
     private PuckGattService servicePuck;
 
     private String deviceProfile;
@@ -822,11 +825,11 @@ public class FlaskSlotFragment extends Fragment implements
         deviceProfile = null;
         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
-            ParcelUuid FlaskUUID = new ParcelUuid(FlaskGattService.FlaskNUS);
-            ScanFilter filter = new ScanFilter.Builder().setServiceUuid(FlaskUUID).build();
             ScanSettings settings = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-            scanCallbackLP = new ScanCallback() {
+            ParcelUuid FlaskUUID = new ParcelUuid(FlaskGattService.FlaskNUS);
+            ScanFilter filterFlask = new ScanFilter.Builder().setServiceUuid(FlaskUUID).build();
+            scanCallbackFlaskLP = new ScanCallback() {
                 @Override
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
@@ -837,16 +840,38 @@ public class FlaskSlotFragment extends Fragment implements
                     startFlaskService();
                 }
             };
-            scanner.startScan(Collections.singletonList(filter), settings, scanCallbackLP);
+            scanner.startScan(Collections.singletonList(filterFlask), settings, scanCallbackFlaskLP);
+            ParcelUuid PuckUUID = new ParcelUuid(PuckGattService.PuckNUS);
+            ScanFilter filterPuck = new ScanFilter.Builder().setServiceUuid(PuckUUID).build();
+            scanCallbackPuckLP = new ScanCallback() {
+                @Override
+                public void onScanResult(int callbackType, ScanResult result) {
+                    super.onScanResult(callbackType, result);
+                    deviceProfile = result.getDevice().getName();
+                    deviceAddress = result.getDevice().getAddress();
+                    dismissGattDiscovery();
+                    showConnectionNotice();
+                    startFlaskService();
+                }
+            };
+            scanner.startScan(Collections.singletonList(filterPuck), settings, scanCallbackPuckLP);
         } else {
-            scanCallback = (bluetoothDevice, i, bytes) -> {
+            scanCallbackFlask = (bluetoothDevice, i, bytes) -> {
                 deviceProfile = bluetoothDevice.getName();
                 deviceAddress = bluetoothDevice.getAddress();
                 dismissGattDiscovery();
                 showConnectionNotice();
                 startFlaskService();
             };
-            mBluetoothAdapter.startLeScan(new UUID[]{ FlaskGattService.FlaskNUS }, scanCallback);
+            mBluetoothAdapter.startLeScan(new UUID[]{ FlaskGattService.FlaskNUS }, scanCallbackFlask);
+            scanCallbackPuck = (bluetoothDevice, i, bytes) -> {
+                deviceProfile = bluetoothDevice.getName();
+                deviceAddress = bluetoothDevice.getAddress();
+                dismissGattDiscovery();
+                showConnectionNotice();
+                startPuckService();
+            };
+            mBluetoothAdapter.startLeScan(new UUID[]{ PuckGattService.PuckNUS }, scanCallbackPuck);
         }
         fragmentHandler.postDelayed(() -> {
             if (null == deviceProfile) {
@@ -856,12 +881,51 @@ public class FlaskSlotFragment extends Fragment implements
         }, 20000);
     }
 
+    private void displayDevices(ArrayList<BluetoothDevice> devices) {
+        final LinearLayout view = (LinearLayout) this.getLayoutInflater()
+                .inflate(R.layout.devices_dialog, null);
+        AlertDialog deviceDialog = (new AlertDialog.Builder(requireActivity())).setView(view).show();
+        for (BluetoothDevice device : devices) {
+            final View item = this.getLayoutInflater().inflate(R.layout.device_bluetooth, null);
+            ((TextView) item.findViewById(R.id.device_name)).setText(device.getName());
+            ((TextView) item.findViewById(R.id.device_address)).setText(
+                    requireActivity().getString(R.string.device_address, device.getAddress())
+            );
+            item.findViewById(R.id.connect_flask).setOnClickListener(flask -> {
+                deviceDialog.dismiss();
+                deviceProfile = device.getName();
+                deviceAddress = device.getAddress();
+                showConnectionNotice();
+                startFlaskService();
+            });
+            item.findViewById(R.id.connect_puck).setOnClickListener(puck -> {
+                deviceDialog.dismiss();
+                deviceProfile = device.getName();
+                deviceAddress = device.getAddress();
+                showConnectionNotice();
+                startPuckService();
+            });
+            view.addView(item);
+        }
+        final View item = this.getLayoutInflater().inflate(R.layout.device_bluetooth, null);
+        ((TextView) item.findViewById(R.id.device_name)).setText(R.string.scan_heading);
+        item.findViewById(R.id.device_address).setVisibility(View.GONE);
+        ((AppCompatButton) item.findViewById(R.id.connect_flask)).setText(R.string.scan_devices);
+        item.findViewById(R.id.connect_puck).setVisibility(View.GONE);
+        item.setOnClickListener(view1 -> {
+            deviceDialog.dismiss();
+            scanBluetoothServices();
+        });
+        view.addView(item);
+    }
+
     @SuppressLint("MissingPermission")
     private void selectBluetoothDevice() {
-        boolean isDevicePaired = false;
+        ArrayList<BluetoothDevice> devices = new ArrayList<>(mBluetoothAdapter.getBondedDevices());
+        boolean isFlaskPaired = false;
         for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
             if (device.getName().toLowerCase(Locale.ROOT).startsWith("flask")) {
-                isDevicePaired = true;
+                isFlaskPaired = true;
                 deviceProfile = device.getName();
                 deviceAddress = device.getAddress();
                 showConnectionNotice();
@@ -869,7 +933,7 @@ public class FlaskSlotFragment extends Fragment implements
                 break;
             }
         }
-        if (!isDevicePaired) scanBluetoothServices();
+        if (!isFlaskPaired) displayDevices(devices);
     }
 
     private void writeAmiiboCollection(ArrayList<AmiiboFile> amiiboList) {
@@ -1039,11 +1103,15 @@ public class FlaskSlotFragment extends Fragment implements
                 : bluetoothHandler.getBluetoothAdapter(requireContext());
         if (null != mBluetoothAdapter) {
             if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
-                if (null != scanCallbackLP)
-                    mBluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallbackLP);
+                if (null != scanCallbackFlaskLP)
+                    mBluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallbackFlaskLP);
+                if (null != scanCallbackPuckLP)
+                    mBluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallbackPuckLP);
             } else {
-                if (null != scanCallback)
-                    mBluetoothAdapter.stopLeScan(scanCallback);
+                if (null != scanCallbackFlask)
+                    mBluetoothAdapter.stopLeScan(scanCallbackFlask);
+                if (null != scanCallbackPuck)
+                    mBluetoothAdapter.stopLeScan(scanCallbackPuck);
             }
         }
     }

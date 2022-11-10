@@ -29,10 +29,8 @@ import android.os.Looper;
 import androidx.annotation.RequiresApi;
 
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
-import com.hiddenramblings.tagmo.nfctech.NfcByte;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;

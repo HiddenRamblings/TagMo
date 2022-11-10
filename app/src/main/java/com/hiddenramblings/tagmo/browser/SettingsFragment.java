@@ -662,11 +662,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 onDownloadRequested(lastUpdated);
             } else if (null == activity.getSettings().getLastUpdatedAPI()
                     || !activity.getSettings().getLastUpdatedAPI().equals(lastUpdated)) {
-                try {
-                    activity.runOnUiThread(() -> buildSnackbar(
-                            activity,  R.string.update_amiibo_api, Snackbar.LENGTH_LONG
-                    ).setAction(R.string.sync, v -> onDownloadRequested(lastUpdated)).show());
-                } catch (IllegalStateException ignored) { }
+                activity.runOnUiThread(() -> {
+                    try {
+                        buildSnackbar(
+                                activity,  R.string.update_amiibo_api, Snackbar.LENGTH_LONG
+                        ).setAction(R.string.sync, v -> onDownloadRequested(lastUpdated)).show();
+                    } catch (IllegalStateException ignored) { }
+                });
             }
         } catch (Exception e) {
             Debug.Warn(e);

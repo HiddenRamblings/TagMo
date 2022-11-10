@@ -27,6 +27,7 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.KeyManager;
+import com.hiddenramblings.tagmo.browser.Preferences;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import java.io.File;
@@ -79,8 +80,10 @@ public class TagArray {
         return type;
     }
 
+    private static Preferences mPrefs = new Preferences(TagMo.getContext());
+
     public static boolean isPowerTag(NTAG215 mifare) {
-        if (TagMo.getPrefs().power_tag_support()) {
+        if (mPrefs.power_tag_support()) {
             byte[] signature = mifare.transceive(NfcByte.POWERTAG_SIG);
             return null != signature && TagArray.compareRange(signature,
                     NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.length);
@@ -89,7 +92,7 @@ public class TagArray {
     }
 
     public static boolean isElite(NTAG215 mifare) {
-        if (TagMo.getPrefs().elite_support()) {
+        if (mPrefs.elite_support()) {
             byte[] signature = mifare.readSignature(false);
             byte[] page10 = TagArray.hexToByteArray("FFFFFFFFFF");
             return null != signature && TagArray.compareRange(signature, page10,

@@ -70,6 +70,7 @@ import com.heinrichreimersoftware.androidissuereporter.IssueReporterLauncher;
 import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.browser.Preferences;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -86,6 +87,7 @@ public class Debug {
     private static Context getContext() {
         return TagMo.getContext();
     }
+    private static Preferences mPrefs = new Preferences(getContext());
 
     public static boolean isNewer(int versionCode) {
         return Build.VERSION.SDK_INT >= versionCode;
@@ -109,7 +111,7 @@ public class Debug {
     }
 
     private static boolean hasDebugging() {
-        return !TagMo.getPrefs().disable_debug();
+        return !mPrefs.disable_debug();
     }
 
     public static String TAG(Class<?> source) {

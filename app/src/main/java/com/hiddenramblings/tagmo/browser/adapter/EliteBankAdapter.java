@@ -23,6 +23,7 @@ import com.hiddenramblings.tagmo.amiibo.EliteTag;
 import com.hiddenramblings.tagmo.browser.BrowserSettings;
 import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW;
+import com.hiddenramblings.tagmo.browser.Preferences;
 import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ import java.util.ArrayList;
 public class EliteBankAdapter
         extends RecyclerView.Adapter<EliteBankAdapter.AmiiboViewHolder>
         implements BrowserSettingsListener {
+
+    Preferences mPrefs = new Preferences(TagMo.getContext());
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
@@ -88,7 +91,7 @@ public class EliteBankAdapter
     public void onBindViewHolder(@NonNull final AmiiboViewHolder holder, int position) {
         final int clickPosition = hasStableIds() ? holder.getBindingAdapterPosition() : position;
         View highlight = holder.itemView.findViewById(R.id.highlight);
-        if (TagMo.getPrefs().eliteActiveBank() == position) {
+        if (mPrefs.eliteActiveBank() == position) {
             highlight.setBackgroundResource(R.drawable.cardview_outline);
         } else {
             highlight.setBackgroundResource(0);

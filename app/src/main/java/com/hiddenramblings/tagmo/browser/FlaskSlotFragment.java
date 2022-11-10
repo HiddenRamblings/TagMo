@@ -507,6 +507,12 @@ public class FlaskSlotFragment extends Fragment implements
         amiiboFilesView.setAdapter(writeTagAdapter);
         this.settings.addChangeListener(writeTagAdapter);
 
+        view.findViewById(R.id.switch_devices).setOnClickListener(change -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            disconnectService();
+            selectBluetoothDevice();
+        });
+
         switchMenuOptions.setOnClickListener(view1 -> {
             if (slotOptionsMenu.isShown()) {
                 onBottomSheetChanged(SHEET.AMIIBO);
@@ -900,19 +906,26 @@ public class FlaskSlotFragment extends Fragment implements
             });
             item.findViewById(R.id.connect_puck).setOnClickListener(puck -> {
                 deviceDialog.dismiss();
-                deviceProfile = device.getName();
-                deviceAddress = device.getAddress();
-                showConnectionNotice();
-                startPuckService();
+//                deviceProfile = device.getName();
+//                deviceAddress = device.getAddress();
+//                showConnectionNotice();
+//                startPuckService();
+                new Toasty(requireActivity()).Short(R.string.notice_incomplete);
+
             });
             view.addView(item);
         }
         final View item = this.getLayoutInflater().inflate(R.layout.device_bluetooth, null);
         ((TextView) item.findViewById(R.id.device_name)).setText(R.string.scan_heading);
         item.findViewById(R.id.device_address).setVisibility(View.GONE);
-        ((AppCompatButton) item.findViewById(R.id.connect_flask)).setText(R.string.scan_devices);
+        AppCompatButton connect = item.findViewById(R.id.connect_flask);
+        connect.setText(R.string.scan_devices);
         item.findViewById(R.id.connect_puck).setVisibility(View.GONE);
         item.setOnClickListener(view1 -> {
+            deviceDialog.dismiss();
+            scanBluetoothServices();
+        });
+        connect.setOnClickListener(selected -> {
             deviceDialog.dismiss();
             scanBluetoothServices();
         });

@@ -30,6 +30,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.browser.BrowserSettings;
 import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW;
+import com.hiddenramblings.tagmo.browser.Preferences;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 import com.hiddenramblings.tagmo.widget.BoldSpannable;
@@ -39,6 +40,9 @@ import java.util.Collections;
 
 public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.AmiiboViewHolder>
         implements Filterable, BrowserSettingsListener {
+
+    static Preferences mPrefs = new Preferences(TagMo.getContext());
+
     private final BrowserSettings settings;
     private OnAmiiboClickListener listener = null;
     private int listSize = 1;
@@ -355,8 +359,8 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                 } else if (null != item.getFilePath()) {
                     this.itemView.setEnabled(true);
                     String relativeFile = Storage.getRelativePath(item.getFilePath(),
-                            TagMo.getPrefs().preferEmulated()).replace(
-                            TagMo.getPrefs().browserRootFolder(), "");
+                            mPrefs.preferEmulated()).replace(
+                            mPrefs.browserRootFolder(), "");
                     this.txtPath.setText(boldSpannable.IndexOf(relativeFile, query));
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(

@@ -26,12 +26,7 @@ import me.weishu.reflection.Reflection;
 public class TagMo extends Application {
 
     private static SoftReference<Context> mContext;
-    private static SoftReference<Preferences> mPrefs;
     public static final int uiDelay = 50;
-
-    public static Preferences getPrefs() {
-        return mPrefs.get();
-    }
 
     public static Context getContext() {
         return mContext.get();
@@ -43,7 +38,7 @@ public class TagMo extends Application {
     }
 
     public void setThemePreference() {
-        switch (mPrefs.get().applicationTheme()) {
+        switch (new Preferences(getApplicationContext()).applicationTheme()) {
             case 0:
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
                 break;
@@ -59,6 +54,12 @@ public class TagMo extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        if (BuildConfig.WEAR_OS) {
+            mContext = new SoftReference<>(new ScaledContext(this).watch(2));
+            mContext.get().setTheme(R.style.AppTheme);
+        } else {
+            mContext = new SoftReference<>(this);
+        }
         if (Debug.isNewer(Build.VERSION_CODES.P))
             HiddenApiBypass.addHiddenApiExemptions("LBluetooth");
         else if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
@@ -69,14 +70,7 @@ public class TagMo extends Application {
     public void onCreate() {
         super.onCreate();
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-        if (BuildConfig.WEAR_OS) {
-            mContext = new SoftReference<>(new ScaledContext(this).watch(2));
-            mContext.get().setTheme(R.style.AppTheme);
-        } else {
-            mContext = new SoftReference<>(this);
-        }
-
-        mPrefs = new SoftReference<>(new Preferences(this));
+        if (BuildConfig.WEAR_OS) mContext.get().setTheme(R.style.AppTheme);
 
         if (isWatchingANR) {
             new ANRWatchDog(10000).setANRListener(error -> {
@@ -89,7 +83,7 @@ public class TagMo extends Application {
         Thread.setDefaultUncaughtExceptionHandler((t, error) -> {
             if (isWatchingANR && isUncaughtANR(error)) return;
             if (error instanceof SecurityException)
-                getPrefs().browserRootDocument(null);
+                new Preferences(getApplicationContext()).browserRootDocument(null);
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
             Debug.processException(this, exception.toString());

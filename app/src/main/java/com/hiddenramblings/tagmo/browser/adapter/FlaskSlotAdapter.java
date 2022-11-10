@@ -22,12 +22,15 @@ import com.hiddenramblings.tagmo.amiibo.FlaskTag;
 import com.hiddenramblings.tagmo.browser.BrowserSettings;
 import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener;
 import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW;
+import com.hiddenramblings.tagmo.browser.Preferences;
 
 import java.util.ArrayList;
 
 public class FlaskSlotAdapter
         extends RecyclerView.Adapter<FlaskSlotAdapter.FlaskViewHolder>
         implements BrowserSettingsListener {
+
+    Preferences mPrefs = new Preferences(TagMo.getContext());
 
     private final BrowserSettings settings;
     private final OnAmiiboClickListener listener;
@@ -87,7 +90,7 @@ public class FlaskSlotAdapter
     @Override
     public void onBindViewHolder(final FlaskViewHolder holder, int position) {
         View highlight = holder.itemView.findViewById(R.id.highlight);
-        if (TagMo.getPrefs().flaskActiveSlot() == position) {
+        if (mPrefs.flaskActiveSlot() == position) {
             highlight.setBackgroundResource(R.drawable.cardview_outline);
         } else {
             highlight.setBackgroundResource(0);

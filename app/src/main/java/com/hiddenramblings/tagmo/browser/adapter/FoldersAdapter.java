@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.browser.BrowserSettings;
+import com.hiddenramblings.tagmo.browser.Preferences;
 import com.hiddenramblings.tagmo.eightbit.os.Storage;
 
 import java.io.File;
@@ -20,8 +21,11 @@ import java.util.ArrayList;
 public class FoldersAdapter
         extends RecyclerView.Adapter<FoldersAdapter.FolderViewHolder>
         implements BrowserSettings.BrowserSettingsListener {
+
     static final int PARENT_FOLDER_VIEW_TYPE = 0;
     static final int CHILD_FOLDER_VIEW_TYPE = 1;
+
+    Preferences mPrefs = new Preferences(TagMo.getContext());
 
     BrowserSettings settings;
     ArrayList<File> data;
@@ -86,7 +90,7 @@ public class FoldersAdapter
     }
 
     public boolean showParentFolder() {
-        boolean internal = null != TagMo.getPrefs() && TagMo.getPrefs().preferEmulated();
+        boolean internal =  mPrefs.preferEmulated();
         return (null != rootFolder && !Storage.getFile(internal).equals(rootFolder))
                 && rootFolder.getAbsolutePath().startsWith(Storage.getPath(internal));
     }

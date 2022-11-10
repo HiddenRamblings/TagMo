@@ -85,6 +85,8 @@ public class PuckGattService extends Service {
         }
     }
 
+    private int currentSlot = 0;
+
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
     }
@@ -464,18 +466,27 @@ public class PuckGattService extends Service {
         }
     }
 
-    private void writeBytes(byte[] tagData) {
+    private void writeBytes(byte[] tagData, int slot) {
         for (int i = 0; i < tagData.length % 16; i ++) {
             byte[] data = new byte[16];
             System.arraycopy(tagData, i * 16, data, 0, data.length);
-            sendCommand(new byte[] {PUCK.WRITE.getBytes(), 0x00, (byte) (i * 4)}, data);
+            sendCommand(new byte[] { PUCK.WRITE.getBytes(), (byte) (slot - 1), (byte) (i * 4) }, data);
         }
+        sendCommand(
+                new byte[] { PUCK.SAVE.getBytes(), (byte) (slot - 1) },
+                currentSlot == slot ? new byte[] { PUCK.NFC.getBytes() } : null
+        );
     }
 
-    private void readBytes() {
-        sendCommand(new byte[] {PUCK.READ.getBytes(), 0x00, 0x00, 0x3F}, null);
-        sendCommand(new byte[] {PUCK.READ.getBytes(), 0x00, 0x3F, 0x3F}, null);
-        sendCommand(new byte[] {PUCK.READ.getBytes(), 0x00, 0x7E, 0x11}, null);
+    private void readBytes(int slot) {
+        sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) (slot - 1), 0x00, 0x3F }, null);
+        sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) (slot - 1), 0x3F, 0x3F }, null);
+        sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) (slot - 1), 0x7E, 0x11 }, null);
+    }
+
+    private void changeSlot(int slot) {
+        currentSlot = slot - 1;
+        sendCommand(new byte[] { PUCK.NFC.getBytes(), (byte) currentSlot }, null);
     }
 
     private String getLogTag(UUID uuid) {

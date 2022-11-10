@@ -96,13 +96,6 @@
             layout="@layout/active_card_layout"
             android:id="@+id/active_card_layout" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/switch_devices"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/switch_devices" />
-
         <LinearLayout
             android:id="@+id/slot_options_menu"
             android:layout_width="match_parent"
@@ -187,9 +180,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="10dp"
             android:textOff="@string/view_device_options"
             android:textOn="@string/view_amiibo_details"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/switch_devices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/switch_devices" />
 
         <include
             layout="@layout/write_list_layout"

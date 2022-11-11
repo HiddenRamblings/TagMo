@@ -10,7 +10,7 @@ body:
       description: The body content of the email
       placeholder:
     validations:
-      required: true
+      required: false
   - type: textarea
     id: logcat
     attributes:

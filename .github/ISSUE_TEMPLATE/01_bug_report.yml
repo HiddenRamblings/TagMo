@@ -14,7 +14,7 @@ body:
       description: Please describe the issue in your own words
       placeholder: This is how you would see the problem again
     validations:
-      required: true
+      required: false
   - type: textarea
     id: logcat
     attributes:

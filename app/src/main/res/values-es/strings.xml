@@ -31,8 +31,8 @@
     <string name="speed_scan">Levante la etiqueta ligeramente para finalizar el escaneo</string>
 
     <string name="donation_thanks">Gracias por su apoyo!</string>
-    <string name="fixed_key_found">&#171;Locked Key&#187; en caché / cargada.</string>
-    <string name="fixed_key_missing">Sin &#171;Locked Key&#187;!</string>
-    <string name="unfixed_key_found">&#171;Unfixed Key&#187; en caché / cargada.</string>
-    <string name="unfixed_key_missing">Sin &#171;Unfixed Key&#187;!</string>
+    <string name="fixed_key_found">&#171;locked-secret&#187; en caché / cargada.</string>
+    <string name="fixed_key_missing">Sin &#171;locked-secret&#187;!</string>
+    <string name="unfixed_key_found">&#171;unfixed-info&#187; en caché / cargada.</string>
+    <string name="unfixed_key_missing">Sin &#171;unfixed-info&#187;!</string>
 </resources>

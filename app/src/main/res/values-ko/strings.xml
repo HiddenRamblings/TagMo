@@ -35,4 +35,8 @@
     <string name="speed_scan">스캔을 완료하려면 태그를 약간 들어 올리십시오.</string>
 
     <string name="donation_thanks">당신의 지원을 당신을 감사하십시오!</string>
+    <string name="fixed_key_found">&#171;Locked Key&#187;캐시/로드.</string>
+    <string name="fixed_key_missing">&#171;Locked Key&#187;가 없습니다!</string>
+    <string name="unfixed_key_found">&#171;Unfixed Key&#187;캐시/로드.</string>
+    <string name="unfixed_key_missing">&#171;Unfixed Key&#187;가 없습니다!</string>
 </resources>

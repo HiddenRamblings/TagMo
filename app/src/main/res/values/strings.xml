@@ -1,6 +1,6 @@
 <resources>
     <string name="topCenterTextMessage">Place the tag under the phone</string>
-    <string name="middleCenterError"> </string>
+    <string translatable="false" name="middleCenterError"> </string>
 
     <string name="fixed_key_found">Locked Key cached / loaded.</string>
     <string name="fixed_key_missing">No Locked Key!</string>

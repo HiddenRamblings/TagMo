@@ -2,10 +2,10 @@
 
     <string name="topCenterTextMessage">请把 Tag 卡片放到手机后面</string>
 
-    <string name="fixed_key_found">已缓存/已加载锁定密钥。</string>
-    <string name="fixed_key_missing">锁定密钥缺失！</string>
-    <string name="unfixed_key_found">已缓存/已加载未修复密钥。</string>
-    <string name="unfixed_key_missing">未修复密钥缺失！</string>
+    <string name="fixed_key_found">已缓存/已加载&#171;Locked Key&#187;。</string>
+    <string name="fixed_key_missing">&#171;Locked Key&#187;密钥缺失！</string>
+    <string name="unfixed_key_found">已缓存/已加载&#171;Unfixed Key&#187;。</string>
+    <string name="unfixed_key_missing">&#171;Unfixed Key&#187;密钥缺失！</string>
 
     <string name="nfc_unsupported">不支持 NFC！</string>
     <string name="nfc_disabled">NFC 已关闭！</string>

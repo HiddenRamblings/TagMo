@@ -674,13 +674,13 @@ public class BrowserActivity extends AppCompatActivity implements
         byte[] tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
 
         View view = getLayoutInflater().inflate(
-                R.layout.dialog_backup, mainLayout, false
+                R.layout.dialog_save_item, mainLayout, false
         );
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        final EditText input = view.findViewById(R.id.backup_entry);
+        final EditText input = view.findViewById(R.id.save_item_entry);
         input.setText(TagArray.decipherFilename(settings.getAmiiboManager(), tagData, true));
         Dialog backupDialog = dialog.setView(view).create();
-        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
+        view.findViewById(R.id.button_save).setOnClickListener(v -> {
             try {
                 String fileName = input.getText().toString() + ".bin";
                 if (isDocumentStorage()) {
@@ -703,7 +703,7 @@ public class BrowserActivity extends AppCompatActivity implements
             }
             backupDialog.dismiss();
         });
-        view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+        view.findViewById(R.id.button_cancel).setOnClickListener(v -> backupDialog.dismiss());
         backupDialog.show();
     });
 
@@ -1179,12 +1179,12 @@ public class BrowserActivity extends AppCompatActivity implements
                 onUpdateTagResult.launch(scan.putExtras(args));
                 return true;
             } else if (item.getItemId() == R.id.mnu_save) {
-                View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
+                View view = getLayoutInflater().inflate(R.layout.dialog_save_item, null);
                 AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                final EditText input = view.findViewById(R.id.backup_entry);
+                final EditText input = view.findViewById(R.id.save_item_entry);
                 input.setText(TagArray.decipherFilename(settings.getAmiiboManager(), tagData, true));
                 Dialog backupDialog = dialog.setView(view).create();
-                view.findViewById(R.id.save_backup).setOnClickListener(v -> {
+                view.findViewById(R.id.button_save).setOnClickListener(v -> {
                     try {
                         String fileName = input.getText().toString() + ".bin";
                         if (isDocumentStorage()) {
@@ -1207,7 +1207,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                     backupDialog.dismiss();
                 });
-                view.findViewById(R.id.cancel_backup).setOnClickListener(v ->
+                view.findViewById(R.id.button_cancel).setOnClickListener(v ->
                         backupDialog.dismiss());
                 backupDialog.show();
                 return true;

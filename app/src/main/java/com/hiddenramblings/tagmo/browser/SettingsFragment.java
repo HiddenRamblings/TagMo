@@ -359,14 +359,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void keyEntryDialog(String hexString) {
-        View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
+        View view = getLayoutInflater().inflate(R.layout.dialog_save_item, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(requireContext());
-        ((TextView) view.findViewById(R.id.backup_label)).setText(R.string.key_hex_entry);
-        final EditText input = view.findViewById(R.id.backup_entry);
+        ((TextView) view.findViewById(R.id.save_item_label)).setText(R.string.key_hex_entry);
+        final EditText input = view.findViewById(R.id.save_item_entry);
         input.setText(hexString);
         Dialog scannerDialog = dialog.setView(view).create();
         scannerDialog.setCancelable(false);
-        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
+        view.findViewById(R.id.button_save).setOnClickListener(v -> {
             try {
                 this.keyManager.evaluateKey(new ByteArrayInputStream(TagArray.hexToByteArray(
                         input.getText().toString().replace(" ", "")
@@ -378,7 +378,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
             scannerDialog.dismiss();
         });
-        view.findViewById(R.id.cancel_backup).setOnClickListener(v ->
+        view.findViewById(R.id.button_cancel).setOnClickListener(v ->
                 scannerDialog.dismiss());
         scannerDialog.show();
     }

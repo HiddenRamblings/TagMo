@@ -156,8 +156,6 @@
     <string name="super_smash">Super Smash Bros. (Wii U / 3DS)</string>
     <string name="smash_ultimate">Super Smash Bros. Ultimate</string>
 
-    <string name="save_image">Save Image</string>
-
     <string name="unknown_type">Unverified Tag</string>
     <string name="write_raw">Write to Tag (Raw)</string>
     <string name="write_auto">Write to Tag (Auto)</string>
@@ -232,7 +230,6 @@
     <string name="update_amiibo_api">AmiiboAPI database updated!</string>
 
     <string name="locating_keys">Locating Crypto Keys&#8230;</string>
-    <string name="key_hex_entry">Input Hexidecimal Key</string>
     <string name="refreshing_list">Searching for amiibo&#8230;</string>
     <string name="amiibo_not_found">No amiibo bins found!</string>
 
@@ -254,13 +251,16 @@
     <string name="delete_missing">Cannot delete a scanned tag!</string>
     <string name="delete_virtual">Cannot delete a virtual tag!</string>
     <string name="erase_active">Cannot erase the active bank!</string>
-    <string name="backup_filename">Set Binary File Name</string>
     <string name="document_storage_root">Update Document Storage</string>
     <string name="emulated_storage_root">Browse Emulated Storage</string>
     <string name="physical_storage_root">Browse Physical Storage</string>
     <string name="grant_file_permission">Enable "All Files" Manager</string>
     <string name="force_document_storage">Enable Document Storage</string>
     <string name="refresh_browser">Refresh Browser</string>
+
+    <string name="hint_filename">Set Binary File Name</string>
+    <string name="key_hex_entry">Input Hexidecimal Key</string>
+    <string name="save_image">Set Image File Name</string>
 
     <string name="prepare_unlock">Once the N2 is scanned, it cannot be removed from the NFC field until the operation is complete.</string>
     <string name="progress_unlock">Press and hold the N2 button without disconnecting from NFC.</string>

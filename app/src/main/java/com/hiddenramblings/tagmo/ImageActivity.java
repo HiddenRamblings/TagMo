@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo;
 
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -196,28 +197,36 @@ public class ImageActivity extends AppCompatActivity {
     }
 
     void onSaveClicked(Preferences prefs, long amiiboId) {
-        final View view = this.getLayoutInflater().inflate(R.layout.edit_text, null);
-        final EditText editText = view.findViewById(R.id.editText);
+        View view = getLayoutInflater().inflate(R.layout.dialog_save_item, null);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        ((TextView) view.findViewById(R.id.save_item_label)).setText(R.string.save_image);
+        final EditText input = view.findViewById(R.id.save_item_entry);
         if (null != amiibo) {
-            editText.setText(amiibo.name);
+            input.setText(amiibo.name);
         } else {
-            editText.setText(Amiibo.idToHex(amiiboId));
+            input.setText(Amiibo.idToHex(amiiboId));
         }
-
-        (new AlertDialog.Builder(this)).setTitle(R.string.save_image)
-                .setPositiveButton(R.string.save, (dialogInterface, i) ->
-                        GlideApp.with(ImageActivity.this).asBitmap()
-                                .load(getImageUrl(amiiboId))
-                                .skipMemoryCache(true)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .into(new CustomTarget<Bitmap>() {
-            @Override
-            public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
-                saveImageToFile(prefs, resource, editText.getText().toString());
-            }
-            @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) { }
-        })).setNegativeButton(R.string.cancel, null).setView(view).show();
+        Dialog imageDialog = dialog.setView(view).create();
+        imageDialog.setCancelable(false);
+        view.findViewById(R.id.button_save).setOnClickListener(v -> {
+            CustomTarget<Bitmap> saveImageTarget = new CustomTarget<>() {
+                @Override
+                public void onResourceReady(@NonNull Bitmap resource, Transition transition) {
+                    saveImageToFile(prefs, resource, input.getText().toString());
+                }
+                @Override
+                public void onLoadCleared(@Nullable Drawable placeholder) { }
+            };
+            GlideApp.with(ImageActivity.this).asBitmap()
+                    .load(getImageUrl(amiiboId))
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(saveImageTarget);
+            imageDialog.dismiss();
+        });
+        view.findViewById(R.id.button_cancel).setOnClickListener(v ->
+                imageDialog.dismiss());
+        imageDialog.show();
     }
 
     private void saveImageToFile(Preferences prefs, @NonNull Bitmap resource, String filename) {

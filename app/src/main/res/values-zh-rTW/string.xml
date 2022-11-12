@@ -253,7 +253,7 @@
     <string name="delete_missing">無法刪除已掃描的tag！</string>
     <string name="delete_virtual">無法刪除虛擬的tag！</string>
     <string name="erase_active">無法抹除正在使用的bank！</string>
-    <string name="backup_filename">設定二進位檔案名稱</string>
+    <string name="hint_filename">設定二進位檔案名稱</string>
     <string name="document_storage_root">更新文件儲存空間</string>
     <string name="emulated_storage_root">瀏覽模擬儲存空間</string>
     <string name="physical_storage_root">瀏覽實體儲存空間</string>

@@ -231,9 +231,9 @@ public class WebsiteFragment extends Fragment {
     private void setBinName(String base64File, String mimeType) {
         byte[] tagData = Base64.decode(base64File.replaceFirst(
                 "^data:" + mimeType + ";base64,", ""), 0);
-        View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
+        View view = getLayoutInflater().inflate(R.layout.dialog_save_item, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(requireContext());
-        final EditText input = view.findViewById(R.id.backup_entry);
+        final EditText input = view.findViewById(R.id.save_item_entry);
         try {
             AmiiboManager amiiboManager = AmiiboManager
                     .getAmiiboManager(requireContext().getApplicationContext());
@@ -242,11 +242,11 @@ public class WebsiteFragment extends Fragment {
             Debug.Warn(e);
         }
         Dialog backupDialog = dialog.setView(view).create();
-        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
+        view.findViewById(R.id.button_save).setOnClickListener(v -> {
             saveBinFile(tagData, input.getText().toString());
             backupDialog.dismiss();
         });
-        view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+        view.findViewById(R.id.button_cancel).setOnClickListener(v -> backupDialog.dismiss());
         backupDialog.show();
     }
 

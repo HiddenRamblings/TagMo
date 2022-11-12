@@ -1149,7 +1149,7 @@ public class FlaskSlotFragment extends Fragment implements
                     FlaskSlotFragment.this
             );
             bluetoothHandler.requestPermissions(requireActivity());
-        }, 100);
+        }, 125);
     }
 
     @Override

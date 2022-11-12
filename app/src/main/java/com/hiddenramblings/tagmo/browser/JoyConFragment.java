@@ -53,7 +53,7 @@ public class JoyConFragment extends DialogFragment implements
                     JoyConFragment.this
             );
             bluetoothHandler.requestPermissions(requireActivity());
-        }, 100);
+        }, 125);
     }
 
     @Override
@@ -93,8 +93,16 @@ public class JoyConFragment extends DialogFragment implements
                     });
                     // bluetoothHelper.connectL2cap(device);
                     JoyCon proController = new JoyCon(bluetoothHelper, device);
-                    proController.setPlayer(1, 4);
+                    // proController.poll(JoyCon.PollType.STANDARD);
+                    proController.setPlayer(0, 0);
+                    proController.setPlayer(0, 4);
+                    new Toasty(requireActivity()).Short(
+                            "1, 2, 3, 4. I'm connected. Is there more?"
+                    );
                     proController.enableRumble(true);
+                    byte[] rumbleData = new byte[8];
+                    rumbleData[0] = 0x1;
+                    proController.rumble(rumbleData);
                 }
             }
         }

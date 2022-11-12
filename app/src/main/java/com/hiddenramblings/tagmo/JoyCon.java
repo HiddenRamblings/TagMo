@@ -80,6 +80,10 @@ public final class JoyCon {
         set_rumble(mHandle, enable);
     }
 
+    public void rumble(byte[] data) {
+        rumble(mHandle, data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
+    }
+
     public void rumble(byte hf_l, byte hfa_l, byte lf_l, byte lfa_l, byte hf_r, byte hfa_r, byte lf_r, byte lfa_r) {
         rumble(mHandle, hf_l, hfa_l, lf_l, lfa_l, hf_r, hfa_r, lf_r, lfa_r);
     }

@@ -45,15 +45,16 @@ public class JoyConFragment extends DialogFragment implements
         super.onViewCreated(view, savedInstanceState);
     }
 
-    public void delayedBluetoothEnable() {
+    private void isBluetoothEnabled() {
         if (null != bluetoothHelper) return;
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
-                    requireContext(), requireActivity().getActivityResultRegistry(),
-                    JoyConFragment.this
-            );
-            bluetoothHandler.requestPermissions(requireActivity());
-        }, 125);
+        bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
+                requireContext(), requireActivity().getActivityResultRegistry(), JoyConFragment.this
+        );
+        bluetoothHandler.requestPermissions(requireActivity());
+    }
+
+    public void delayedBluetoothEnable() {
+        new Handler(Looper.getMainLooper()).postDelayed(this::isBluetoothEnabled, 125);
     }
 
     @Override

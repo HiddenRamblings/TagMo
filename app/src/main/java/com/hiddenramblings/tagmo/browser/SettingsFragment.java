@@ -365,6 +365,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         final EditText input = view.findViewById(R.id.backup_entry);
         input.setText(hexString);
         Dialog scannerDialog = dialog.setView(view).create();
+        scannerDialog.setCancelable(false);
         view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
                 this.keyManager.evaluateKey(new ByteArrayInputStream(TagArray.hexToByteArray(

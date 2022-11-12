@@ -189,7 +189,7 @@
     <string name="warn_delete_file">Usuwanie %1$s. Na pewno?</string>
     <string name="delete_missing">Nie można usunąć zeskanowanego tagu!</string>
     <string name="erase_active">Nie można wymazać aktywnego banku!</string>
-    <string name="backup_filename">Ustaw Nazwę Pliku Binarnego</string>
+    <string name="hint_filename">Ustaw Nazwę Pliku Binarnego</string>
     <string name="emulated_storage_root">Przeglądaj pamięć emulowaną</string>
     <string name="physical_storage_root">Przeglądaj pamięć fizyczną</string>
 

@@ -213,7 +213,7 @@
     <string name="delete_missing">Impossible de supprimé un Tag scanné&#160;!</string>
     <string name="delete_virtual">Impossible de supprimer un Tag virtuel&#160;!</string>
     <string name="erase_active">Impossinle d’effacer la banque active&#160;!</string>
-    <string name="backup_filename">Définir le Nom du Fichier Binaire</string>
+    <string name="hint_filename">Définir le Nom du Fichier Binaire</string>
     <string name="document_storage_root">Mettre à jour le stockage &#171;Document&#187;</string>
     <string name="emulated_storage_root">Parcourir stockage &#171;Emulated&#187;</string>
     <string name="physical_storage_root">Parcourir stockage &#171;Physical&#187;</string>

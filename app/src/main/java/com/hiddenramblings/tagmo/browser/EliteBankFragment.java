@@ -655,12 +655,12 @@ public class EliteBankFragment extends Fragment implements
     }
 
     private void displayBackupDialog(byte[] tagData) {
-        View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
+        View view = getLayoutInflater().inflate(R.layout.dialog_save_item, null);
         AlertDialog.Builder dialog = new AlertDialog.Builder(requireContext());
-        final EditText input = view.findViewById(R.id.backup_entry);
+        final EditText input = view.findViewById(R.id.save_item_entry);
         input.setText(TagArray.decipherFilename(settings.getAmiiboManager(), tagData, true));
         Dialog backupDialog = dialog.setView(view).create();
-        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
+        view.findViewById(R.id.button_save).setOnClickListener(v -> {
             try {
                 String fileName;
                 BrowserActivity activity = (BrowserActivity) requireActivity();
@@ -682,7 +682,7 @@ public class EliteBankFragment extends Fragment implements
             }
             backupDialog.dismiss();
         });
-        view.findViewById(R.id.cancel_backup).setOnClickListener(v -> backupDialog.dismiss());
+        view.findViewById(R.id.button_cancel).setOnClickListener(v -> backupDialog.dismiss());
         backupDialog.show();
     }
 

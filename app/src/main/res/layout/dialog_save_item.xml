@@ -8,7 +8,7 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/backup_label"
+        android:id="@+id/save_item_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -16,16 +16,16 @@
         android:singleLine="true"
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
-        android:text="@string/backup_filename"
+        android:text="@string/hint_filename"
         android:textSize="16sp"/>
 
     <EditText
-        android:id="@+id/backup_entry"
+        android:id="@+id/save_item_entry"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
-        android:autofillHints="@string/backup_filename"
+        android:autofillHints="@string/hint_filename"
         android:inputType="textMultiLine"
         android:scrollbars="vertical"
         tools:ignore="LabelFor,TextFields">
@@ -36,13 +36,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/save_backup"
+            android:id="@+id/button_save"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/save" />
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/cancel_backup"
+            android:id="@+id/button_cancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

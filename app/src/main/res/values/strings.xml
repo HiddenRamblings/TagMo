@@ -2,10 +2,10 @@
     <string name="topCenterTextMessage">Place the tag under the phone</string>
     <string translatable="false" name="middleCenterError"> </string>
 
-    <string name="fixed_key_found">Locked Key cached / loaded.</string>
-    <string name="fixed_key_missing">No Locked Key!</string>
-    <string name="unfixed_key_found">Unfixed Key cached / loaded.</string>
-    <string name="unfixed_key_missing">No Unfixed Key!</string>
+    <string name="fixed_key_found">&#171;locked-secret&#187; cached / loaded.</string>
+    <string name="fixed_key_missing">\\&#171;locked-secret&#187; missing!</string>
+    <string name="unfixed_key_found">&#171;unfixed-info&#187; cached / loaded.</string>
+    <string name="unfixed_key_missing">&#171;unfixed-info&#187; missing!</string>
 
     <string name="nfc_unsupported">NFC support was not found!</string>
     <string name="nfc_disabled">NFC is currently disabled!</string>

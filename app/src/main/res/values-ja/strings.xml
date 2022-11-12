@@ -33,8 +33,8 @@
     <string name="speed_scan">スキャンを終えるために札をわずかに持ち上げて下さい</string>
 
     <string name="donation_thanks">あなたのサポートに感謝します！</string>
-    <string name="fixed_key_found">&#171;Locked Key&#187;キャッシュ/ロードされます。</string>
-    <string name="fixed_key_missing">&#171;Locked Key&#187;はありません！</string>
-    <string name="unfixed_key_found">&#171;Unfixed Key&#187;キャッシュ/ロードされます。</string>
-    <string name="unfixed_key_missing">&#171;Unfixed Key&#187;はありません！</string>
+    <string name="fixed_key_found">&#171;locked-secret&#187;キャッシュ/ロードされます。</string>
+    <string name="fixed_key_missing">&#171;locked-secret&#187;はありません！</string>
+    <string name="unfixed_key_found">&#171;unfixed-info&#187;キャッシュ/ロードされます。</string>
+    <string name="unfixed_key_missing">&#171;unfixed-info&#187;はありません！</string>
 </resources>

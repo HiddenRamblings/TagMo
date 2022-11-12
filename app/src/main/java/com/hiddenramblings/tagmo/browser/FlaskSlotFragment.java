@@ -29,7 +29,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -510,7 +509,7 @@ public class FlaskSlotFragment extends Fragment implements
         view.findViewById(R.id.switch_devices).setOnClickListener(change -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             disconnectService();
-            selectBluetoothDevice();
+            if (isBluetoothEnabled()) selectBluetoothDevice();
         });
 
         switchMenuOptions.setOnClickListener(view1 -> {
@@ -921,11 +920,11 @@ public class FlaskSlotFragment extends Fragment implements
         AppCompatButton connect = item.findViewById(R.id.connect_flask);
         connect.setText(R.string.scan_devices);
         item.findViewById(R.id.connect_puck).setVisibility(View.GONE);
-        item.setOnClickListener(view1 -> {
+        item.setOnClickListener(layout -> {
             deviceDialog.dismiss();
             scanBluetoothServices();
         });
-        connect.setOnClickListener(selected -> {
+        connect.setOnClickListener(button -> {
             deviceDialog.dismiss();
             scanBluetoothServices();
         });
@@ -1141,15 +1140,17 @@ public class FlaskSlotFragment extends Fragment implements
         }
     }
 
+    private boolean isBluetoothEnabled() {
+        if (null != mBluetoothAdapter && mBluetoothAdapter.isEnabled()) return true;
+        bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
+                requireContext(), requireActivity().getActivityResultRegistry(), FlaskSlotFragment.this
+        );
+        bluetoothHandler.requestPermissions(requireActivity());
+        return false;
+    }
+
     public void delayedBluetoothEnable() {
-        fragmentHandler.postDelayed(() -> {
-            if (null != mBluetoothAdapter && mBluetoothAdapter.isEnabled()) return;
-            bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
-                    requireContext(), requireActivity().getActivityResultRegistry(),
-                    FlaskSlotFragment.this
-            );
-            bluetoothHandler.requestPermissions(requireActivity());
-        }, 125);
+        fragmentHandler.postDelayed(this::isBluetoothEnabled, 125);
     }
 
     @Override

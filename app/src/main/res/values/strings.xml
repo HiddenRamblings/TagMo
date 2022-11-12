@@ -232,6 +232,7 @@
     <string name="update_amiibo_api">AmiiboAPI database updated!</string>
 
     <string name="locating_keys">Locating Crypto Keys&#8230;</string>
+    <string name="key_hex_entry">Input Hexidecimal Key</string>
     <string name="refreshing_list">Searching for amiibo&#8230;</string>
     <string name="amiibo_not_found">No amiibo bins found!</string>
 

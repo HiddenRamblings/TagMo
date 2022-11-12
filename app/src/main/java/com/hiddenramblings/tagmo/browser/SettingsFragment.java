@@ -1,6 +1,7 @@
 package com.hiddenramblings.tagmo.browser;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,9 +12,13 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -353,29 +358,28 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    public void verifyKeyFiles() {
-        Executors.newSingleThreadExecutor().execute(() -> {
+    private void keyEntryDialog(String hexString) {
+        View view = getLayoutInflater().inflate(R.layout.dialog_backup, null);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(requireContext());
+        ((TextView) view.findViewById(R.id.backup_label)).setText(R.string.key_hex_entry);
+        final EditText input = view.findViewById(R.id.backup_entry);
+        input.setText(hexString);
+        Dialog scannerDialog = dialog.setView(view).create();
+        view.findViewById(R.id.save_backup).setOnClickListener(v -> {
             try {
-                Scanner scanner = new Scanner(new URL(
-                        "https://pastebin.com/raw/aV23ha3X").openStream());
-                for (int i = 0; i < 4; i++) {
-                    if (scanner.hasNextLine()) scanner.nextLine();
-                }
                 this.keyManager.evaluateKey(new ByteArrayInputStream(TagArray.hexToByteArray(
-                        scanner.nextLine().replace(" ", "")
+                        input.getText().toString().replace(" ", "")
                 )));
-                scanner.close();
-            } catch (IOException e) {
-                Debug.Warn(e);
-            }
-
-            if (Thread.currentThread().isInterrupted()) return;
-
-            requireActivity().runOnUiThread(() -> {
                 ((BrowserActivity) requireActivity()).onKeysLoaded(true);
                 updateKeySummary();
-            });
+            } catch (IOException e) {
+                new Toasty(requireActivity()).Short(e.getMessage());
+            }
+            scannerDialog.dismiss();
         });
+        view.findViewById(R.id.cancel_backup).setOnClickListener(v ->
+                scannerDialog.dismiss());
+        scannerDialog.show();
     }
 
     public void updateKeySummary() {
@@ -590,7 +594,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private final ActivityResultLauncher<Intent> onLoadKeys = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
-            verifyKeyFiles();
+            Executors.newSingleThreadExecutor().execute(() -> {
+                try {
+                    Scanner scanner = new Scanner(new URL(
+                            "https://pastebin.com/raw/aV23ha3X").openStream());
+                    for (int i = 0; i < 4; i++) {
+                        if (scanner.hasNextLine()) scanner.nextLine();
+                    }
+                    requireActivity().runOnUiThread(() -> keyEntryDialog(scanner.nextLine()));
+                    scanner.close();
+                } catch (IOException e) {
+                    Debug.Warn(e);
+                }
+            });
         } else if (null != result.getData().getClipData()) {
             for (int i = 0; i < result.getData().getClipData().getItemCount(); i++) {
                 validateKeys(result.getData().getClipData().getItemAt(i).getUri());

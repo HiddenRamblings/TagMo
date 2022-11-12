@@ -8,6 +8,7 @@
     android:orientation="vertical" >
 
     <TextView
+        android:id="@+id/backup_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -25,7 +26,8 @@
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
         android:autofillHints="@string/backup_filename"
-        android:inputType="textCapSentences"
+        android:inputType="textMultiLine"
+        android:scrollbars="vertical"
         tools:ignore="LabelFor,TextFields">
     </EditText>
 

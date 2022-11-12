@@ -888,7 +888,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private void displayDevices(ArrayList<BluetoothDevice> devices) {
         final LinearLayout view = (LinearLayout) this.getLayoutInflater()
-                .inflate(R.layout.devices_dialog, null);
+                .inflate(R.layout.dialog_devices, null);
         AlertDialog deviceDialog = (new AlertDialog.Builder(requireActivity())).setView(view).show();
         for (BluetoothDevice device : devices) {
             final View item = this.getLayoutInflater().inflate(R.layout.device_bluetooth, null);

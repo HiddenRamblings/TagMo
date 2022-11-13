@@ -11,7 +11,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      JVM_OPTS: -Xmx6G
+      JVM_OPTS: -Xmx4G
 
     steps:
     - uses: actions/checkout@v3

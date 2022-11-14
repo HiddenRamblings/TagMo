@@ -27,15 +27,15 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @SuppressLint("NewApi")
     @NonNull @Override
     public Fragment createFragment(int position) {
-        boolean hasEliteEnabled = !BuildConfig.WEAR_OS && mPrefs.elite_support();
+        boolean hasEliteEnabled = mPrefs.elite_support();
         boolean hasFlaskEnabled = mPrefs.flask_support();
         switch (position) {
             case 1:
-                return hasEliteEnabled ? fragmentElite : hasFlaskEnabled ? fragmentFlask
-                        : BuildConfig.WEAR_OS ? fragmentSettings : fragmentWebsite;
+                return (!BuildConfig.WEAR_OS && hasEliteEnabled) ? fragmentElite : hasFlaskEnabled
+                        ? fragmentFlask : BuildConfig.WEAR_OS ? fragmentSettings : fragmentWebsite;
             case 2:
-                return (hasEliteEnabled && hasFlaskEnabled) ? fragmentFlask
-                        : BuildConfig.WEAR_OS ? fragmentSettings : fragmentWebsite;
+                return ((!BuildConfig.WEAR_OS && hasEliteEnabled) && hasFlaskEnabled)
+                        ? fragmentFlask : BuildConfig.WEAR_OS ? fragmentSettings : fragmentWebsite;
             case 3:
                 return fragmentWebsite;
             default:

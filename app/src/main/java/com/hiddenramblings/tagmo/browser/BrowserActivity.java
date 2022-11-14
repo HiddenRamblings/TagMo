@@ -1829,6 +1829,10 @@ public class BrowserActivity extends AppCompatActivity implements
         Executors.newSingleThreadExecutor().execute(() -> {
             final ArrayList<AmiiboFile> amiiboFiles = AmiiboManager
                     .listAmiiboDocuments(this, keyManager, rootFolder, recursiveFiles);
+            if (amiiboFiles.isEmpty() && null == prefs.browserRootDocument()) {
+                onDocumentRequested();
+                return;
+            }
             File foomiibo = new File(getFilesDir(), "Foomiibo");
             amiiboFiles.addAll(AmiiboManager.listAmiibos(keyManager, foomiibo, true));
 

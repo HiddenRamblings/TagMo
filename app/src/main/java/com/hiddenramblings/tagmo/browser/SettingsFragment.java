@@ -602,7 +602,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     for (int i = 0; i < 4; i++) {
                         if (scanner.hasNextLine()) scanner.nextLine();
                     }
-                    requireActivity().runOnUiThread(() -> keyEntryDialog(scanner.nextLine()));
+                    String hexString = scanner.nextLine();
+                    requireActivity().runOnUiThread(() -> keyEntryDialog(hexString));
                     scanner.close();
                 } catch (IOException e) {
                     Debug.Warn(e);

@@ -122,6 +122,7 @@
     <string name="bonus_three">Bonus Effect 2</string>
 
     <string name="logcat_support">程式意見反映</string>
+    <string name="submit_logcat">出現嚴重錯誤，是否上傳操作日誌?</string>
     <string name="settings_donate">捐款贊助程式開發</string>
     <string name="google_link">透過Google Play捐款</string>
     <string name="sponsor_link">透過GitHub捐款</string>
@@ -155,8 +156,6 @@
     <string name="splatoon_three">斯普拉遁 3</string>
     <string name="super_smash">任天堂明星大亂鬥 (Wii U / 3DS)</string>
     <string name="smash_ultimate">任天堂明星大亂鬥特別版 Switch</string>
-
-    <string name="save_image">儲存圖片</string>
 
     <string name="unknown_type">未經驗證的Tag卡</string>
     <string name="write_raw">寫入Tag卡(Raw)</string>
@@ -253,7 +252,6 @@
     <string name="delete_missing">無法刪除已掃描的tag！</string>
     <string name="delete_virtual">無法刪除虛擬的tag！</string>
     <string name="erase_active">無法抹除正在使用的bank！</string>
-    <string name="hint_filename">設定二進位檔案名稱</string>
     <string name="document_storage_root">更新文件儲存空間</string>
     <string name="emulated_storage_root">瀏覽模擬儲存空間</string>
     <string name="physical_storage_root">瀏覽實體儲存空間</string>
@@ -261,6 +259,10 @@
     <string name="force_document_storage">啟用文件儲存空間</string>
     <string name="refresh_browser">重新整理瀏覽器</string>
 
+    <string name="hint_filename">設定二進位檔案名稱</string>
+    <string name="key_hex_entry">請輸入十六進位Key</string>
+    <string name="save_image">請設定檔案名稱</string>
+    
     <string name="prepare_unlock">開始掃描N2，在傳輸完成前請勿將NFC感應區移開</string>
     <string name="progress_unlock">請長按N2鈕，並保持與NFC的感應連線.</string>
     <string name="prepare_blank">發現啟用項目含有空白bank，N2 Elite驗證失敗</string>
@@ -290,6 +292,13 @@
     <string name="fail_permissions">無法取得執行所需的權限！</string>
     <string name="location_disclosure">特此知會您，使用Bluetooth LE掃描時必須取得定位資訊，依據Google Play商店的政策，本程序會在背景服務收集定位資訊，但絕對不會讀取、儲存或與第三人分享定位資訊。</string>
 
+    <string name="scan_heading">解除與Flask 或 Puck.js 裝置的配對?</string>
+    <string name="scan_devices">掃描Bluetooth LE裝置狀態</string>
+    <string name="device_address">MAC: %1$s</string>
+    <string name="connect_flask">連接 Flask</string>
+    <string name="connect_puck">連接 Puck.js</string>
+    <string name="switch_devices">連接其他裝置</string>
+    
     <string name="data_write">寫入主要數據</string>
     <string name="password_write">寫入密碼</string>
     <string name="lock_write">寫入鎖定資訊</string>

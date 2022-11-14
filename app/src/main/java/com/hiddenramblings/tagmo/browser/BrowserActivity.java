@@ -128,7 +128,6 @@ import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderEffectBlur;
 import eightbitlab.com.blurview.RenderScriptBlur;
 import eightbitlab.com.blurview.SupportRenderScriptBlur;
-import myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView;
 
 public class BrowserActivity extends AppCompatActivity implements
         BrowserSettingsListener,
@@ -1978,25 +1977,6 @@ public class BrowserActivity extends AppCompatActivity implements
         prefs.lastUpdatedGit(newBrowserSettings.getLastUpdatedGit());
     }
 
-    private void setIndexFastScrollRecyclerListener(RecyclerView amiibosView) {
-        if (BuildConfig.WEAR_OS) return;
-        if (amiibosView instanceof IndexFastScrollRecyclerView) {
-            IndexFastScrollRecyclerView indexView = (IndexFastScrollRecyclerView) amiibosView;
-            //noinspection deprecation
-            indexView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                        indexView.setIndexBarVisibility(true);
-                    } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        indexView.setIndexBarVisibility(false);
-                    }
-                }
-            });
-        }
-    }
-
     private void onSortChanged() {
         if (null == menuSortId)
             return;
@@ -2006,28 +1986,18 @@ public class BrowserActivity extends AppCompatActivity implements
                 break;
             case NAME:
                 menuSortName.setChecked(true);
-                setIndexFastScrollRecyclerListener(amiibosView);
-                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case CHARACTER:
                 menuSortCharacter.setChecked(true);
-                setIndexFastScrollRecyclerListener(amiibosView);
-                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case GAME_SERIES:
                 menuSortGameSeries.setChecked(true);
-                setIndexFastScrollRecyclerListener(amiibosView);
-                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case AMIIBO_SERIES:
                 menuSortAmiiboSeries.setChecked(true);
-                setIndexFastScrollRecyclerListener(amiibosView);
-                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case AMIIBO_TYPE:
                 menuSortAmiiboType.setChecked(true);
-                setIndexFastScrollRecyclerListener(amiibosView);
-                setIndexFastScrollRecyclerListener(foomiiboView);
                 break;
             case FILE_PATH:
                 menuSortFilePath.setChecked(true);

@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -90,6 +91,13 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
                     mEnabled = true;
                     if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarShown)) {
                         mEnabled = typedArray.getBoolean(R.styleable.IndexFastScrollRecyclerView_setIndexBarShown, mEnabled);
+                    }
+
+                    if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setTransientIndexBar)) {
+                        if (typedArray.getBoolean(R.styleable.IndexFastScrollRecyclerView_setIndexBarShown, true))
+                            setTransientIndexBar();
+                    } else {
+                        setTransientIndexBar();
                     }
 
                     if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor)) {
@@ -309,6 +317,31 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
     public void setIndexBarVisibility(boolean shown) {
         mScroller.setIndexBarVisibility(shown);
         mEnabled = shown;
+    }
+
+    public void setIndexBarVisibilityDelayed(boolean shown, int timeout) {
+        this.postDelayed(() -> {
+            if (mEnabled != shown) {
+                mScroller.setIndexBarVisibility(shown);
+                mEnabled = shown;
+            }
+        }, timeout);
+    }
+
+    public void setTransientIndexBar() {
+        //noinspection deprecation
+        setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    setIndexBarVisibility(true);
+                } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    setIndexBarVisibility(false);
+                    // setIndexBarVisibilityDelayed(false, 1000);
+                }
+            }
+        });
     }
 
     /**

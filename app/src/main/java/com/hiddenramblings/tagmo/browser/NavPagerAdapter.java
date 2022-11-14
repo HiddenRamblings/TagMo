@@ -34,8 +34,8 @@ public class NavPagerAdapter extends FragmentStateAdapter {
                 return (!BuildConfig.WEAR_OS && hasEliteEnabled) ? fragmentElite : hasFlaskEnabled
                         ? fragmentFlask : BuildConfig.WEAR_OS ? fragmentSettings : fragmentWebsite;
             case 2:
-                return ((!BuildConfig.WEAR_OS && hasEliteEnabled) && hasFlaskEnabled)
-                        ? fragmentFlask : BuildConfig.WEAR_OS ? fragmentSettings : fragmentWebsite;
+                return ((!BuildConfig.WEAR_OS && hasEliteEnabled) && hasFlaskEnabled) ? fragmentFlask
+                        : (BuildConfig.WEAR_OS && hasFlaskEnabled) ? fragmentSettings : fragmentWebsite;
             case 3:
                 return fragmentWebsite;
             default:
@@ -46,6 +46,7 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @Override
     public int getItemCount() {
         int viewCount = 2;
+        if (BuildConfig.WEAR_OS) viewCount += 1;
         if (mPrefs.elite_support()) viewCount += 1;
         if (mPrefs.flask_support()) viewCount += 1;
         return viewCount;

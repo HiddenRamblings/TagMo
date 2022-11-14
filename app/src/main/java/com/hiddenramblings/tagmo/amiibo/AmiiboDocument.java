@@ -12,6 +12,8 @@ import androidx.annotation.RequiresApi;
 
 import com.hiddenramblings.tagmo.BuildConfig;
 import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.TagMo;
+import com.hiddenramblings.tagmo.browser.Preferences;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 
 import java.util.ArrayDeque;
@@ -87,11 +89,16 @@ public class AmiiboDocument {
                             DocumentsContract.Document.COLUMN_DOCUMENT_ID },
                     DocumentsContract.Document.COLUMN_MIME_TYPE, selectionArgs, null);
         } catch (SecurityException ex) {
-            cursor = contentResolver.query(childrenUri, new String[] {
-                            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                            DocumentsContract.Document.COLUMN_MIME_TYPE,
-                            DocumentsContract.Document.COLUMN_DOCUMENT_ID },
-                    null, null, null);
+            try {
+                cursor = contentResolver.query(childrenUri, new String[] {
+                                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                                DocumentsContract.Document.COLUMN_MIME_TYPE,
+                                DocumentsContract.Document.COLUMN_DOCUMENT_ID },
+                        null, null, null);
+            } catch (SecurityException sx) {
+                new Preferences(TagMo.getContext()).browserRootDocument(null);
+                return;
+            }
         }
         try {
             while (cursor.moveToNext()) {

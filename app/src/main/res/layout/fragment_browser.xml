@@ -45,7 +45,8 @@
             app:setIndexBarStrokeColor="@color/colorPrimary"
             app:setPreviewColor="@color/colorPrimaryDark"
             app:setPreviewTextColor="@android:color/white"
-            app:setIndexBarShown="false"/>
+            app:setIndexBarShown="false"
+            app:setTransientIndexBar="true"/>
 
         <LinearLayout
             android:id="@+id/list_divider"
@@ -106,7 +107,8 @@
             app:setIndexBarStrokeColor="@color/colorPrimary"
             app:setPreviewColor="@color/colorPrimaryDark"
             app:setPreviewTextColor="@android:color/white"
-            app:setIndexBarShown="false"/>
+            app:setIndexBarShown="false"
+            app:setTransientIndexBar="true"/>
     </LinearLayout>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

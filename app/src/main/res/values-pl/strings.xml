@@ -174,7 +174,7 @@
 
     <string name="locating_keys">Lokalizuję klucze kryptograficzne&#8230;</string>
     <string name="refreshing_list">Szukam amiibo&#8230;</string>
-    <string name="amiibo_not_found">Pliki .bin z amiibo nie znalezione!</string>
+    <string name="device_not_found">Nie znaleziono urządzenia / tagów!</string>
 
     <string name="files_displayed">%1$d Pliki: ? / ? amiibo</string>
     <string name="amiibo_collected">%1$d Pliki: %2$d / %3$d amiibo</string>

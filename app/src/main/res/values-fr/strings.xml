@@ -194,7 +194,7 @@
 
     <string name="locating_keys">Recherche des clés de chiffrage&#8230;</string>
     <string name="refreshing_list">Recherche d’amiibo&#8230;</string>
-    <string name="amiibo_not_found">Aucun fichier .bin d’amiibo trouvé&#160;!</string>
+    <string name="device_not_found">Aucun appareil / tag trouvé!</string>
 
     <string name="files_displayed">%1$d Fichiers&#160;: ? / ? amiibo</string>
     <string name="amiibo_collected">%1$d Fichiers&#160;: %2$d / %3$d amiibo</string>

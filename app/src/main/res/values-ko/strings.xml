@@ -39,4 +39,5 @@
     <string name="fixed_key_missing">&#171;locked-secret&#187;가 없습니다!</string>
     <string name="unfixed_key_found">&#171;unfixed-info&#187;캐시/로드.</string>
     <string name="unfixed_key_missing">&#171;unfixed-info&#187;가 없습니다!</string>
+    <string name="device_not_found">장치/태그를 찾을 수 없습니다!</string>
 </resources>

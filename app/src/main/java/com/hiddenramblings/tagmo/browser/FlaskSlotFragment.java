@@ -137,6 +137,7 @@ public class FlaskSlotFragment extends Fragment implements
     private STATE noticeState = STATE.NONE;
 
     private enum SHEET {
+        LOCKED,
         AMIIBO,
         MENU,
         WRITE
@@ -157,6 +158,7 @@ public class FlaskSlotFragment extends Fragment implements
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
+                            onBottomSheetChanged(SHEET.MENU);
                             rootLayout.post(() -> ((TextView) rootLayout
                                     .findViewById(R.id.hardware_info)).setText(deviceProfile));
                             try {
@@ -283,7 +285,6 @@ public class FlaskSlotFragment extends Fragment implements
                             );
                             requireActivity().runOnUiThread(() -> bottomSheetBehavior
                                     .setState(BottomSheetBehavior.STATE_COLLAPSED));
-                            deviceAddress = null;
                             stopGattService();
                         }
                     });
@@ -316,6 +317,7 @@ public class FlaskSlotFragment extends Fragment implements
                         @Override
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
+                            onBottomSheetChanged(SHEET.MENU);
                         }
 
                         @Override
@@ -612,15 +614,12 @@ public class FlaskSlotFragment extends Fragment implements
 
         createBlank.setOnClickListener(view1 -> serviceFlask.createBlankTag());
 
-        rootLayout.findViewById(R.id.screen_layered).setOnClickListener(view1 -> {
-            serviceFlask.setFlaskFace(false);
-        });
-        rootLayout.findViewById(R.id.screen_stacked).setOnClickListener(view1 -> {
-            serviceFlask.setFlaskFace(true);
-        });
+        rootLayout.findViewById(R.id.screen_layered)
+                .setOnClickListener(view1 -> serviceFlask.setFlaskFace(false));
+        rootLayout.findViewById(R.id.screen_stacked)
+                .setOnClickListener(view1 -> serviceFlask.setFlaskFace(true));
 
         getFlaskButtonState();
-        onBottomSheetChanged(SHEET.MENU);
     }
 
     public RecyclerView getFlaskContent() {
@@ -633,6 +632,12 @@ public class FlaskSlotFragment extends Fragment implements
     private void onBottomSheetChanged(SHEET sheet) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         switch (sheet) {
+            case LOCKED:
+                amiiboCard.setVisibility(View.GONE);
+                switchMenuOptions.setVisibility(View.GONE);
+                slotOptionsMenu.setVisibility(View.GONE);
+                writeSlotsLayout.setVisibility(View.GONE);
+                break;
             case AMIIBO:
                 amiiboCard.setVisibility(View.VISIBLE);
                 switchMenuOptions.setVisibility(View.VISIBLE);
@@ -1069,9 +1074,12 @@ public class FlaskSlotFragment extends Fragment implements
                     R.drawable.ic_bluup_flask_24dp,
                     Snackbar.LENGTH_INDEFINITE
             );
-            statusBar.setAction(R.string.purchase, v -> startActivity(
-                    new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/flask/"))
-            ));
+            statusBar.setAction(R.string.purchase, v ->  {
+                startActivity(new Intent(
+                        Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/flask/")
+                ));
+                statusBar.dismiss();
+            });
             statusBar.show();
         }
     }
@@ -1099,6 +1107,8 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     public void stopGattService() {
+        onBottomSheetChanged(SHEET.LOCKED);
+        deviceAddress = null;
         try {
             requireContext().unbindService(flaskServerConn);
             requireContext().stopService(new Intent(requireContext(), FlaskGattService.class));
@@ -1192,6 +1202,10 @@ public class FlaskSlotFragment extends Fragment implements
                     break;
             }
         }, TagMo.uiDelay);
+        if (null == deviceAddress)
+            onBottomSheetChanged(SHEET.LOCKED);
+        else
+            onBottomSheetChanged(SHEET.MENU);
     }
 
     @Override

@@ -88,7 +88,7 @@
             android:singleLine="true"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
-            android:text="@string/amiibo_not_found"
+            android:text="@string/device_not_found"
             android:textColor="@android:color/white"
             android:textSize="14sp"/>
 

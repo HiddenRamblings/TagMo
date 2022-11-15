@@ -232,7 +232,7 @@
 
     <string name="locating_keys">Locating Crypto Keys&#8230;</string>
     <string name="refreshing_list">Searching for amiibo&#8230;</string>
-    <string name="amiibo_not_found">No amiibo bins found!</string>
+    <string name="device_not_found">No device / tags found!</string>
 
     <string name="files_displayed">%1$d Files: ? / ? amiibo</string>
     <string name="amiibo_collected">%1$d Files: %2$d / %3$d amiibo</string>
@@ -297,7 +297,7 @@
     <string name="device_address">MAC: %1$s</string>
     <string name="connect_flask">Connect Flask</string>
     <string name="connect_puck">Connect Puck.js</string>
-    <string name="switch_devices">Connect a different device</string>
+    <string name="switch_devices">Connect a Bluetooth device</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>

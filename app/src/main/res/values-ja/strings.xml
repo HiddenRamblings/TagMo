@@ -37,4 +37,5 @@
     <string name="fixed_key_missing">&#171;locked-secret&#187;はありません！</string>
     <string name="unfixed_key_found">&#171;unfixed-info&#187;キャッシュ/ロードされます。</string>
     <string name="unfixed_key_missing">&#171;unfixed-info&#187;はありません！</string>
+    <string name="device_not_found">デバイス/タグが見つかりません！</string>
 </resources>

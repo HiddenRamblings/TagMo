@@ -35,4 +35,5 @@
     <string name="fixed_key_missing">Sin &#171;locked-secret&#187;!</string>
     <string name="unfixed_key_found">&#171;unfixed-info&#187; en caché / cargada.</string>
     <string name="unfixed_key_missing">Sin &#171;unfixed-info&#187;!</string>
+    <string name="device_not_found">No se encontraron dispositivos / etiquetas!</string>
 </resources>

@@ -171,7 +171,7 @@
 
     <string name="locating_keys">正在查找加密密钥&#8230;</string>
     <string name="refreshing_list">正在查找 amiibo&#8230;</string>
-    <string name="amiibo_not_found">未找到 amiibo bin 文件！</string>
+    <string name="device_not_found">没有找到设备/标签！</string>
 
     <string name="files_displayed">找到 %1$d 个文件: ? / ? amiibo</string>
     <string name="amiibo_collected">找到 %1$d 个文件: %2$d / %3$d amiibo</string>

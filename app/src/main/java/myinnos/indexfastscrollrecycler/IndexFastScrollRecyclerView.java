@@ -31,6 +31,7 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
     private GestureDetector mGestureDetector = null;
 
     private boolean mEnabled = true;
+    private boolean mTransient = false;
 
     public int setIndexTextSize = 12;
     public float mIndexbarWidth = 20;
@@ -93,12 +94,11 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
                         mEnabled = typedArray.getBoolean(R.styleable.IndexFastScrollRecyclerView_setIndexBarShown, mEnabled);
                     }
 
+                    mTransient = false;
                     if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setTransientIndexBar)) {
-                        if (typedArray.getBoolean(R.styleable.IndexFastScrollRecyclerView_setIndexBarShown, true))
-                            setTransientIndexBar();
-                    } else {
-                        setTransientIndexBar();
+                        mTransient = typedArray.getBoolean(R.styleable.IndexFastScrollRecyclerView_setTransientIndexBar, mTransient);
                     }
+                    setTransientIndexBar(mTransient);
 
                     if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor)) {
                         TypedValue tv = new TypedValue();
@@ -319,29 +319,31 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
         mEnabled = shown;
     }
 
-    public void setIndexBarVisibilityDelayed(boolean shown, int timeout) {
-        this.postDelayed(() -> {
-            if (mEnabled != shown) {
-                mScroller.setIndexBarVisibility(shown);
-                mEnabled = shown;
+    private final Runnable scrollRunnable = () -> {
+        mScroller.setIndexBarVisibility(false);
+        invalidate();
+    };
+    private final OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                recyclerView.removeCallbacks(scrollRunnable);
+                mScroller.setIndexBarVisibility(true);
+            } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                recyclerView.postDelayed(scrollRunnable, 1000);
             }
-        }, timeout);
-    }
-
-    public void setTransientIndexBar() {
-        //noinspection deprecation
-        setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    setIndexBarVisibility(true);
-                } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    setIndexBarVisibility(false);
-                    // setIndexBarVisibilityDelayed(false, 1000);
-                }
-            }
-        });
+        }
+    };
+    public void setTransientIndexBar(boolean enabled) {
+        if (!enabled && null != scrollListener) {
+            removeCallbacks(scrollRunnable);
+            removeOnScrollListener(scrollListener);
+        } else {
+            //noinspection deprecation
+            setOnScrollListener(scrollListener);
+        }
+        mTransient = enabled;
     }
 
     /**

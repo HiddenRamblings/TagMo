@@ -117,9 +117,13 @@ public class BrowserFragment extends Fragment implements
         chipList = view.findViewById(R.id.chip_list);
         chipList.setVisibility(View.GONE);
         browserContent = view.findViewById(R.id.browser_content);
+        if (browserContent instanceof IndexFastScrollRecyclerView)
+            ((IndexFastScrollRecyclerView) browserContent).setTransientIndexBar(!BuildConfig.WEAR_OS);
         if (prefs.software_layer())
             browserContent.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         foomiiboView = view.findViewById(R.id.foomiibo_list);
+        if (foomiiboView instanceof IndexFastScrollRecyclerView)
+            ((IndexFastScrollRecyclerView) foomiiboView).setTransientIndexBar(!BuildConfig.WEAR_OS);
         if (prefs.software_layer())
             foomiiboView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 

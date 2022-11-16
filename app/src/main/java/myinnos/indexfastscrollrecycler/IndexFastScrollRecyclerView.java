@@ -336,12 +336,12 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
         }
     };
     public void setTransientIndexBar(boolean enabled) {
-        if (!enabled && null != scrollListener) {
-            removeCallbacks(scrollRunnable);
-            removeOnScrollListener(scrollListener);
-        } else {
+        if (enabled) {
             //noinspection deprecation
             setOnScrollListener(scrollListener);
+        } else {
+            removeCallbacks(scrollRunnable);
+            removeOnScrollListener(scrollListener);
         }
         mTransient = enabled;
     }

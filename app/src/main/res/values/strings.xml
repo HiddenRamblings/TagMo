@@ -122,7 +122,7 @@
     <string name="bonus_three">Bonus Effect 2</string>
 
     <string name="logcat_support">Report Problem</string>
-    <string name="submit_logcat">Fatal error. Submit a log?</string>
+    <string name="logcat_crash">Fatal error. Submit a log?</string>
     <string name="settings_donate">Send a donation to support development</string>
     <string name="google_link">Donate with Google Play</string>
     <string name="sponsor_link">Sponsor on GitHub</string>

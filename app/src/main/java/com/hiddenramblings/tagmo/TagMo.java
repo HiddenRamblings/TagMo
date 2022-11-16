@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -84,6 +85,7 @@ public class TagMo extends Application {
             if (isWatchingANR && isUncaughtANR(error)) return;
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
+            Toast.makeText(this, R.string.logcat_crash, Toast.LENGTH_SHORT).show();
             Debug.processException(this, exception.toString());
             System.exit(0);
         });

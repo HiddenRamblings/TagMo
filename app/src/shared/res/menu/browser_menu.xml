@@ -123,8 +123,7 @@
                 <item
                     android:id="@+id/recursive"
                     android:checkable="true"
-                    android:title="@string/recursive_folders"
-                    app:showAsAction="ifRoom"/>
+                    android:title="@string/recursive_folders"/>
             </group>
         </menu>
     </item>

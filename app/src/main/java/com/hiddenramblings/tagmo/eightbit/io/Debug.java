@@ -88,7 +88,7 @@ public class Debug {
     private static Context getContext() {
         return TagMo.getContext();
     }
-    private static Preferences mPrefs = new Preferences(getContext());
+    private static final Preferences mPrefs = new Preferences(getContext());
 
     public static boolean isNewer(int versionCode) {
         return Build.VERSION.SDK_INT >= versionCode;
@@ -278,23 +278,23 @@ public class Debug {
     }
 
     private static void submitLogcat(Context context, String logText) {
+        if (BuildConfig.WEAR_OS) return;
+        String subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT);
         ClipboardManager clipboard = (ClipboardManager) context
                 .getSystemService(Context.CLIPBOARD_SERVICE);
-        clipboard.setPrimaryClip(ClipData.newPlainText(
-                context.getString(R.string.git_issue_title, BuildConfig.COMMIT
-        ), logText));
+        clipboard.setPrimaryClip(ClipData.newPlainText(subject, logText));
+        Toast.makeText(context, R.string.submit_logcat, Toast.LENGTH_SHORT).show();
         try {
             final Intent emailIntent = new Intent(Intent.ACTION_SEND);
             emailIntent.setType("text/plain");
             emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"samsprungtoo@gmail.com"});
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "TagMo Logcat");
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
             emailIntent.putExtra(Intent.EXTRA_TEXT, logText);
             emailIntent.setType("message/rfc822");
             context.startActivity(
                     Intent.createChooser(emailIntent, context.getString(R.string.submit_logcat))
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             );
-            Toast.makeText(context, R.string.submit_logcat, Toast.LENGTH_SHORT).show();
         } catch (ActivityNotFoundException ex) {
             try {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));

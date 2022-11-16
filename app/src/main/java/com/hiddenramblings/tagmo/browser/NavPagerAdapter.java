@@ -46,7 +46,6 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @Override
     public int getItemCount() {
         int viewCount = 2;
-        if (BuildConfig.WEAR_OS) viewCount += 1;
         if (mPrefs.elite_support()) viewCount += 1;
         if (mPrefs.flask_support()) viewCount += 1;
         return viewCount;

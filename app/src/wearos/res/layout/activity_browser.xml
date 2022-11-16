@@ -1,275 +1,280 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.wear.widget.BoxInsetLayout
+<androidx.wear.widget.drawer.WearableDrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <androidx.wear.widget.BoxInsetLayout
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_width="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/colorPrimary">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/drawer_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/button_height_min"
-                app:contentInsetLeft="0dp"
-                app:contentInsetStart="0dp"
-                app:contentInsetRight="0dp"
-                app:contentInsetEnd="0dp"
-                android:minHeight="?attr/actionBarSize"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:theme="@style/PopupThemeOverlay"
-                app:popupTheme="@style/PopupTheme" />
-        </LinearLayout>
-
-        <com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
-            android:id="@+id/fake_snackbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorAccent"
-            android:orientation="horizontal"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp"
-            android:visibility="gone">
-
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/colorPrimary">
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/snackbar_icon"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
-                    android:contentDescription="@string/imageview_icon"
-                    app:srcCompat="@drawable/ic_stat_notice_24dp" />
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/drawer_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/button_height_min"
+                    app:contentInsetLeft="0dp"
+                    app:contentInsetStart="0dp"
+                    app:contentInsetRight="0dp"
+                    app:contentInsetEnd="0dp"
+                    android:minHeight="?attr/actionBarSize"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:theme="@style/PopupThemeOverlay"
+                    app:popupTheme="@style/PopupTheme" />
+            </LinearLayout>
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/snackbar_item"
+            <com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
+                android:id="@+id/fake_snackbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorAccent"
+                android:orientation="horizontal"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/snackbar_icon"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginRight="4dp"
+                        android:contentDescription="@string/imageview_icon"
+                        app:srcCompat="@drawable/ic_stat_notice_24dp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/snackbar_item"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginLeft="4dp"
+                        android:visibility="invisible" />
+
+                    <TextView
+                        android:id="@+id/snackbar_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_toStartOf="@id/snackbar_item"
+                        android:layout_toEndOf="@id/snackbar_icon"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+            </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/navigation_tabs"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                app:tabMaxWidth="0dp"
+                app:tabGravity="fill"
+                app:tabMode="fixed"
+                app:tabTextColor="@android:color/white"
+                app:tabTextAppearance="@style/WearTabText"
+                android:background="?attr/colorPrimaryDark" />
+
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/coordinator"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/amiibo_pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <FrameLayout
+                    android:id="@+id/amiiboContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="92dp"
+                    android:visibility="gone"
+                    app:blurOverlayColor="@color/bottomSheetTint">
+
+                    <include
+                        android:id="@+id/active_card_layout"
+                        layout="@layout/active_card_layout" />
+                </FrameLayout>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/nfc_fab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:visibility="invisible" />
-
-                <TextView
-                    android:id="@+id/snackbar_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_toStartOf="@id/snackbar_item"
-                    android:layout_toEndOf="@id/snackbar_icon"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp" />
-            </RelativeLayout>
-        </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/navigation_tabs"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            app:tabMaxWidth="0dp"
-            app:tabGravity="fill"
-            app:tabMode="fixed"
-            app:tabTextColor="@android:color/white"
-            app:tabTextAppearance="@style/WearTabText"
-            android:background="?attr/colorPrimaryDark" />
-
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/coordinator"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/amiibo_pager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <FrameLayout
-                android:id="@+id/amiiboContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="16dp"
-                android:paddingTop="16dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="92dp"
-                android:visibility="gone"
-                app:blurOverlayColor="@color/bottomSheetTint">
-
-                <include
-                    android:id="@+id/active_card_layout"
-                    layout="@layout/active_card_layout" />
-            </FrameLayout>
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/nfc_fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="48dp"
-                android:clickable="true"
-                android:contentDescription="@string/nfcIconDescription"
-                android:focusable="true"
-                app:fabSize="mini"
-                app:layout_anchor="@+id/bottom_sheet"
-                app:layout_anchorGravity="bottom|end"
-                app:maxImageSize="56dp"
-                app:srcCompat="@mipmap/ic_nfc_icon"
-                tools:ignore="RelativeOverlap" />
-
-            <LinearLayout
-                android:id="@+id/bottom_sheet"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/bottomSheetTint"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                app:behavior_peekHeight="32dp"
-                app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="48dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/nfcIconDescription"
+                    android:focusable="true"
+                    app:fabSize="mini"
+                    app:layout_anchor="@+id/bottom_sheet"
+                    app:layout_anchorGravity="bottom|end"
+                    app:maxImageSize="56dp"
+                    app:srcCompat="@mipmap/ic_nfc_icon"
+                    tools:ignore="RelativeOverlap" />
 
                 <LinearLayout
+                    android:id="@+id/bottom_sheet"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginVertical="6dp"
-                    android:orientation="horizontal">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/icon"
-                        android:layout_width="@dimen/wear_drawable_size"
-                        android:layout_height="@dimen/wear_drawable_size"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="4dp"
-                        android:layout_marginRight="4dp"
-                        android:contentDescription="@string/imageview_folder"
-                        app:srcCompat="@drawable/ic_folder_open_white_24dp" />
-
-                    <TextView
-                        android:id="@+id/current_folder"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:ellipsize="marquee"
-                        android:singleLine="true"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/toggle"
-                        android:layout_width="@dimen/wear_drawable_size"
-                        android:layout_height="@dimen/wear_drawable_size"
-                        android:layout_gravity="center_vertical"
-                        android:contentDescription="@string/imageview_toggle"
-                        app:srcCompat="@drawable/ic_expand_less_white_24dp" />
-                </LinearLayout>
-
-                <androidx.core.widget.NestedScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:background="@color/bottomSheetTint"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:orientation="vertical"
+                    app:behavior_peekHeight="32dp"
+                    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginVertical="6dp"
+                        android:orientation="horizontal">
 
-                        <androidx.appcompat.widget.AppCompatButton
-                            android:id="@+id/switch_storage_root"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:visibility="gone"/>
-
-                        <androidx.appcompat.widget.AppCompatButton
-                            android:id="@+id/switch_storage_type"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:visibility="gone" />
-
-                        <TextView
-                            android:id="@+id/stats_character"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:singleLine="true"
-                            android:textColor="@android:color/white"
-                            android:textSize="14sp"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="6dp" />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/icon"
+                            android:layout_width="@dimen/wear_drawable_size"
+                            android:layout_height="@dimen/wear_drawable_size"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="4dp"
+                            android:layout_marginRight="4dp"
+                            android:contentDescription="@string/imageview_folder"
+                            app:srcCompat="@drawable/ic_folder_open_white_24dp" />
 
                         <TextView
-                            android:id="@+id/stats_amiibo_type"
-                            android:layout_width="match_parent"
+                            android:id="@+id/current_folder"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:ellipsize="marquee"
                             android:singleLine="true"
                             android:textColor="@android:color/white"
-                            android:textSize="14sp"
-                            android:layout_marginBottom="6dp" />
+                            android:textSize="12sp" />
 
-                        <TextView
-                            android:id="@+id/stats_amiibo_titles"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:singleLine="true"
-                            android:textColor="@android:color/white"
-                            android:textSize="14sp"
-                            android:layout_marginBottom="8dp" />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/toggle"
+                            android:layout_width="@dimen/wear_drawable_size"
+                            android:layout_height="@dimen/wear_drawable_size"
+                            android:layout_gravity="center_vertical"
+                            android:contentDescription="@string/imageview_toggle"
+                            app:srcCompat="@drawable/ic_expand_less_white_24dp" />
+                    </LinearLayout>
+
+                    <androidx.core.widget.NestedScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
                         <LinearLayout
-                            android:id="@+id/foomiibo_options"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
                             <androidx.appcompat.widget.AppCompatButton
-                                android:id="@+id/clear_foomiibo_set"
+                                android:id="@+id/switch_storage_root"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginRight="-2dp"
-                                android:layout_marginEnd="-2dp"
-                                android:layout_weight="1"
-                                android:textSize="12sp"
-                                android:text="@string/clear_foomiibo_set" />
+                                android:visibility="gone"/>
 
                             <androidx.appcompat.widget.AppCompatButton
-                                android:id="@+id/build_foomiibo_set"
+                                android:id="@+id/switch_storage_type"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="-2dp"
-                                android:layout_marginStart="-2dp"
-                                android:layout_weight="1"
-                                android:textSize="12sp"
-                                android:text="@string/build_foomiibo_set" />
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/stats_character"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:singleLine="true"
+                                android:textColor="@android:color/white"
+                                android:textSize="14sp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="6dp" />
+
+                            <TextView
+                                android:id="@+id/stats_amiibo_type"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:singleLine="true"
+                                android:textColor="@android:color/white"
+                                android:textSize="14sp"
+                                android:layout_marginBottom="6dp" />
+
+                            <TextView
+                                android:id="@+id/stats_amiibo_titles"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:singleLine="true"
+                                android:textColor="@android:color/white"
+                                android:textSize="14sp"
+                                android:layout_marginBottom="8dp" />
+
+                            <LinearLayout
+                                android:id="@+id/foomiibo_options"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/clear_foomiibo_set"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="-2dp"
+                                    android:layout_marginEnd="-2dp"
+                                    android:layout_weight="1"
+                                    android:textSize="12sp"
+                                    android:text="@string/clear_foomiibo_set" />
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/build_foomiibo_set"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="-2dp"
+                                    android:layout_marginStart="-2dp"
+                                    android:layout_weight="1"
+                                    android:textSize="12sp"
+                                    android:text="@string/build_foomiibo_set" />
+                            </LinearLayout>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/folders_list"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
                         </LinearLayout>
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/folders_list"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
-                    </LinearLayout>
-                </androidx.core.widget.NestedScrollView>
-            </LinearLayout>
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-    </LinearLayout>
-</androidx.wear.widget.BoxInsetLayout>
+                    </androidx.core.widget.NestedScrollView>
+                </LinearLayout>
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </LinearLayout>
+    </androidx.wear.widget.BoxInsetLayout>
+</androidx.wear.widget.drawer.WearableDrawerLayout>

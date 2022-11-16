@@ -65,7 +65,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.heinrichreimersoftware.androidissuereporter.IssueReporterLauncher;
 import com.hiddenramblings.tagmo.BuildConfig;
@@ -283,7 +282,6 @@ public class Debug {
         ClipboardManager clipboard = (ClipboardManager) context
                 .getSystemService(Context.CLIPBOARD_SERVICE);
         clipboard.setPrimaryClip(ClipData.newPlainText(subject, logText));
-        Toast.makeText(context, R.string.submit_logcat, Toast.LENGTH_SHORT).show();
         try {
             final Intent emailIntent = new Intent(Intent.ACTION_SEND);
             emailIntent.setType("text/plain");
@@ -292,7 +290,7 @@ public class Debug {
             emailIntent.putExtra(Intent.EXTRA_TEXT, logText);
             emailIntent.setType("message/rfc822");
             context.startActivity(
-                    Intent.createChooser(emailIntent, context.getString(R.string.submit_logcat))
+                    Intent.createChooser(emailIntent, context.getString(R.string.logcat_crash))
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             );
         } catch (ActivityNotFoundException ex) {

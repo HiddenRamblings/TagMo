@@ -77,7 +77,6 @@
 
     <string name="error_caps">ERREUR</string>
 
-    <string name="uid">UID</string>
     <string name="country_code">Code pays</string>
     <string name="init_date">Date d’initialisation</string>
     <string name="mod_date">Date de modificaiton</string>
@@ -94,7 +93,6 @@
     <string name="game_titles_hide">Masquer les jeux compatibles</string>
 
     <string name="properties">Propriétés</string>
-    <string name="mii">Mii</string>
     <string name="mii_name">Nom du Mii</string>
     <string name="app">Application</string>
     <string name="app_id">ID application</string>

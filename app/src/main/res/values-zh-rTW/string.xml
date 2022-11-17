@@ -81,7 +81,6 @@
 
     <string name="error_caps">錯誤</string>
 
-    <string name="uid">UID</string>
     <string name="country_code">國碼</string>
     <string name="init_date">初始化日期</string>
     <string name="mod_date">修改日期</string>
@@ -99,7 +98,6 @@
     <string name="game_titles_hide">隱藏可支援的相關遊戲</string>
 
     <string name="properties">相關資訊</string>
-    <string name="mii">Mii</string>
     <string name="mii_name">Mii名稱</string>
     <string name="app">應用程式</string>
     <string name="app_id">App ID</string>

@@ -232,7 +232,7 @@
 
     <string name="locating_keys">正在尋找Crypto金鑰&#8230;</string>
     <string name="refreshing_list">正在搜尋amiibo&#8230;</string>
-    <string name="device_not_found">沒有找到设备/标签！</string>
+    <string name="device_not_found">沒有偵測到 裝置/tags！</string>
 
     <string name="files_displayed">找到 %1$d 個檔案: ? / ? amiibo</string>
     <string name="amiibo_collected">找到 %1$d 個檔案: %2$d / %3$d amiibo</string>

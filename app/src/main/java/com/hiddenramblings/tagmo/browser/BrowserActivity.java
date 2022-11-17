@@ -1850,9 +1850,7 @@ public class BrowserActivity extends AppCompatActivity implements
             DocumentFile rootDocument = DocumentFile.fromTreeUri(
                     BrowserActivity.this, settings.getBrowserRootDocument()
             );
-            try {
-                loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
-            } catch (SecurityException ignored) { }
+            loadAmiiboDocuments(rootDocument, settings.isRecursiveEnabled());
         } else {
             loadAmiiboFiles(settings.getBrowserRootFolder(), settings.isRecursiveEnabled());
         }

@@ -74,7 +74,7 @@ public class TagMo extends Application {
         if (BuildConfig.WEAR_OS) mContext.get().setTheme(R.style.AppTheme);
 
         if (isWatchingANR) {
-            new ANRWatchDog(10000).setANRListener(error -> {
+            new ANRWatchDog(30000).setANRListener(error -> {
                 StringWriter exception = new StringWriter();
                 error.printStackTrace(new PrintWriter(exception));
                 Debug.processException(this, exception.toString());

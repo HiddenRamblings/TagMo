@@ -73,7 +73,6 @@
 
     <string name="error_caps">BŁĄD</string>
 
-    <string name="uid">UID</string>
     <string name="country_code">Kod kraju</string>
     <string name="init_date">Data inicjalizacji</string>
     <string name="mod_date">Data modyfikacji</string>

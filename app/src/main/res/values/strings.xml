@@ -81,7 +81,7 @@
 
     <string name="error_caps">ERROR</string>
 
-    <string name="uid">UID</string>
+    <string name="uid" translatable="false">UID</string>
     <string name="country_code">Country Code</string>
     <string name="init_date">Initialized Date</string>
     <string name="mod_date">Modified Date</string>
@@ -99,7 +99,7 @@
     <string name="game_titles_hide">Hide Compatible Games</string>
 
     <string name="properties">Properties</string>
-    <string name="mii">Mii</string>
+    <string name="mii" translatable="false">Mii</string>
     <string name="mii_name">Mii Name</string>
     <string name="app">Application</string>
     <string name="app_id">App ID</string>

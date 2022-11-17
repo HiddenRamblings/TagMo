@@ -36,7 +36,7 @@
     <string name="pref_amiibo_types">Amiibo 类型</string>
 
     <string name="amiibo_name_caps">名称</string>
-    <string name="amiibo_id_caps">TagID</string>
+    <string name="amiibo_id_caps">TAGID</string>
     <string name="amiibo_type_caps">AMIIBO 类型</string>
     <string name="amiibo_game_caps">游戏</string>
     <string name="amiibo_series_caps">AMIIBO 系列</string>
@@ -73,10 +73,7 @@
 
     <string name="error_caps">出错</string>
 
-    <string name="uid">UID</string>
     <string name="country_code">国家码</string>
-    <string name="init_date">Initialized Date</string>
-    <string name="mod_date">Modified Date</string>
     <string name="nickname">别名</string>
     <string name="write_count">写入计数</string>
     <string name="mod_serial">序列号</string>
@@ -87,8 +84,6 @@
     <string name="random_serial">随机序列号</string>
 
     <string name="properties">属性</string>
-    <string name="mii">Mii</string>
-    <string name="mii_name">Mii Name</string>
     <string name="app">申请表格</string>
     <string name="app_id">App ID</string>
     <string name="app_data">App Data</string>
@@ -130,13 +125,10 @@
     <string name="scan_tag">读取 NFC Tag</string>
     <string name="lock_elite">锁定 N2 Elite</string>
     <string name="unlock_elite">解锁 N2 Elite</string>
-    <string name="scan_bank_no">Scan Bank %1$d</string>
-    <string name="scan_bank">Scan Bank %1$s</string>
     <string name="scan_elite">扫描 N2 Elite</string>
     <string name="erase_bank">擦除 Bank</string>
     <string name="activate_bank">激活 Bank</string>
     <string name="validate_data">数据校验</string>
-    <string name="set_bank_count">Set Bank Count</string>
     <string name="lock_amiibo">锁定 N2 Elite</string>
 
     <string name="guides">指南</string>
@@ -176,7 +168,6 @@
     <string name="files_displayed">找到 %1$d 个文件: ? / ? amiibo</string>
     <string name="amiibo_collected">找到 %1$d 个文件: %2$d / %3$d amiibo</string>
 
-    <string name="erase_open_banks">Erase %1$d Banks on N2 Elite</string>
     <string name="bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
     <string name="bank_number">Bank %1$d</string>
 
@@ -230,7 +221,6 @@
     <string name="fail_mismatch_uid">源 UID 与目标不匹配!</string>
     <string name="fail_invalid_size">读取结果大小无效</string>
     <string name="fail_powertag_keys">加载 Power Tag 密钥失败</string>
-    <string name="fail_bank_oob">Selected bank exceeds count!</string>
     <string name="fail_active_oob">活动的 bank 超出了新的计数！</string>
     <string name="fail_parse_banks">解析 banks 失败！</string>
     <string name="fail_read_amiibo">amiibo 数据读取失败！</string>
@@ -287,16 +277,9 @@
     <string name="downloads_hidden">目前已隐藏 Downloads 文件夹！</string>
     <string name="speed_scan">Tag 卡片离手机远点试试</string>
     <string name="accept">明白</string>
-    <string name="game_titles_view">View Compatible Games</string>
-    <string name="game_titles_hide">Hide Compatible Games</string>
     <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
-    <string name="erase_collection">Erase Collection</string>
-    <string name="storage_unavailable">Device storage inaccessible!</string>
     <string name="flask_located">Connecting Bluup Flask&#8230;</string>
-    <string name="device_invalid">Not a valid Flask device!</string>
-    <string name="custom_tab_back">Back to TagMo</string>
     <string name="fail_permissions">Required permission denied!</string>
-    <string name="fail_bluetooth_adapter">Bluetooth adapter unavailable!</string>
 
     <string name="prefs_configuration">浏览器选项</string>
     <string name="pref_import_keys">导入加密密钥</string>

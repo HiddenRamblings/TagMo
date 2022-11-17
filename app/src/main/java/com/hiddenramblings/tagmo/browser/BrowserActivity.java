@@ -2293,8 +2293,9 @@ public class BrowserActivity extends AppCompatActivity implements
                     });
                 }
             }
-            if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000"))
-                txtTagId.setEnabled(false);
+            String spoofRange = amiiboHexId.substring(8, 12).toLowerCase(Locale.US);
+            if ((spoofRange.equals("0000") || spoofRange.equals("ffff"))
+                    && !amiiboHexId.startsWith("00000000")) txtTagId.setEnabled(false);
         });
     }
 

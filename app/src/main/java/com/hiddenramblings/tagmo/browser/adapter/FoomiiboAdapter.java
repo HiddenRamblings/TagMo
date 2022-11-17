@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 public class FoomiiboAdapter
         extends RecyclerView.Adapter<FoomiiboAdapter.FoomiiboViewHolder>
@@ -416,7 +417,9 @@ public class FoomiiboAdapter
                     GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(target);
                 }
             }
-            if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
+            String spoofRange = amiiboHexId.substring(8, 12).toLowerCase(Locale.US);
+            if ((spoofRange.equals("0000") || spoofRange.equals("ffff"))
+                    && !amiiboHexId.startsWith("00000000")) {
                 if (null != txtTagId) txtTagId.setEnabled(false);
             }
         }

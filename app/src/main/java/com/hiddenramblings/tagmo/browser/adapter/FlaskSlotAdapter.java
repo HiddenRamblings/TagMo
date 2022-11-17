@@ -25,6 +25,7 @@ import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW;
 import com.hiddenramblings.tagmo.browser.Preferences;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class FlaskSlotAdapter
         extends RecyclerView.Adapter<FlaskSlotAdapter.FlaskViewHolder>
@@ -209,9 +210,10 @@ public class FlaskSlotAdapter
                     setAmiiboInfoText(txtAmiiboSeries, amiiboSeries);
                     setAmiiboInfoText(txtAmiiboType, amiiboType);
                     setAmiiboInfoText(txtGameSeries, gameSeries);
-                    if (amiiboHexId.endsWith("00000002") && !amiiboHexId.startsWith("00000000")) {
-                        txtTagId.setEnabled(false);
-                    }
+
+                    String spoofRange = amiiboHexId.substring(8, 12).toLowerCase(Locale.US);
+                    if ((spoofRange.equals("0000") || spoofRange.equals("ffff"))
+                            && !amiiboHexId.startsWith("00000000")) txtTagId.setEnabled(false);
                 }
             }
 

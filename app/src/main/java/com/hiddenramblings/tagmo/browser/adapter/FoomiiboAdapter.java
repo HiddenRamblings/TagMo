@@ -276,10 +276,10 @@ public class FoomiiboAdapter
                         missingFiles.add(amiibo);
                     }
                 }
-                if (null != missingFiles && !missingFiles.isEmpty())
+                if (!missingFiles.isEmpty()) {
                     Collections.sort(missingFiles, new AmiiboComparator(settings));
-
-                filteredData.addAll(0, missingFiles);
+                    filteredData.addAll(0, missingFiles);
+                }
             }
 
             notifyDataSetChanged();

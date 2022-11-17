@@ -13,6 +13,8 @@ import com.hiddenramblings.tagmo.TagMo;
 public class NavPagerAdapter extends FragmentStateAdapter {
 
     Preferences mPrefs = new Preferences(TagMo.getContext());
+    boolean hasEliteEnabled = mPrefs.elite_support();
+    boolean hasFlaskEnabled = mPrefs.flask_support();
 
     private final BrowserFragment fragmentBrowser = new BrowserFragment();
     private final EliteBankFragment fragmentElite = new EliteBankFragment();
@@ -27,8 +29,6 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @SuppressLint("NewApi")
     @NonNull @Override
     public Fragment createFragment(int position) {
-        boolean hasEliteEnabled = mPrefs.elite_support();
-        boolean hasFlaskEnabled = mPrefs.flask_support();
         switch (position) {
             case 1:
                 return (!BuildConfig.WEAR_OS && hasEliteEnabled) ? fragmentElite : hasFlaskEnabled
@@ -46,8 +46,8 @@ public class NavPagerAdapter extends FragmentStateAdapter {
     @Override
     public int getItemCount() {
         int viewCount = 2;
-        if (mPrefs.elite_support()) viewCount += 1;
-        if (mPrefs.flask_support()) viewCount += 1;
+        if (hasEliteEnabled) viewCount += 1;
+        if (hasFlaskEnabled) viewCount += 1;
         return viewCount;
     }
 

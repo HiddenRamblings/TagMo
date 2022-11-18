@@ -82,8 +82,9 @@ public class PuckGattService extends Service {
         }
     }
 
+    private int activeSlot = 0;
     private int currentSlot = 0;
-    private int slotCount = 32;
+    private int slotCount = 0;
 
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
@@ -96,8 +97,7 @@ public class PuckGattService extends Service {
     public interface BluetoothGattListener {
         void onServicesDiscovered();
         void onPuckActiveChanged(int slot);
-        void onPuckCountRetrieved(int count);
-        void onPuckListRetrieved(ArrayList<byte[]> slotData);
+        void onPuckListRetrieved(ArrayList<byte[]> slotData, int active);
         void onPuckFilesDownload(byte[] tagData);
         void onPuckProcessFinish();
         void onGattConnectionLost();
@@ -116,15 +116,21 @@ public class PuckGattService extends Service {
             if (characteristic.getUuid().compareTo(PuckRX) == 0) {
                 if (data[0] == PUCK.INFO.getBytes()) {
                     if (data.length == 3) {
+                        activeSlot = data[1];
                         slotCount = data[2];
-                        if (null != listener) listener.onPuckCountRetrieved(data[2]);
+                        currentSlot = 0;
+                        sendCommand(new byte[]{PUCK.INFO.getBytes(), (byte) (currentSlot)}, null);
                     } else {
                         System.arraycopy(data, 2, infoResponse, 0, NfcByte.KEY_FILE_SIZE);
                         puckArray.add(infoResponse);
+                        currentSlot += 1;
                         infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
-                        if (puckArray.size() == slotCount) {
-                            if (null != listener) listener.onPuckListRetrieved(puckArray);
+                        if (currentSlot == slotCount || slotCount == 0) {
+                            if (null != listener)
+                                listener.onPuckListRetrieved(puckArray, activeSlot);
                             puckArray = new ArrayList<>();
+                        } else {
+                            sendCommand(new byte[]{PUCK.INFO.getBytes(), (byte) (currentSlot)}, null);
                         }
                     }
                 } else if (data[0] == PUCK.READ.getBytes()) {
@@ -418,7 +424,7 @@ public class PuckGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(byte[] value) {
-        List<byte[]> chunks = GattArray.byteToPortions(value, 20);
+        List<byte[]> chunks = GattArray.byteToPortions(value, maxTransmissionUnit - 3);
         int commandQueue = outgoingCallbacks.size() + 1 + chunks.size();
         puckHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
@@ -471,13 +477,6 @@ public class PuckGattService extends Service {
         sendCommand(new byte[] { PUCK.INFO.getBytes(), (byte) (slot - 1) }, null);
     }
 
-    public void getDeviceSlots(int count) {
-        slotCount = count;
-        for (int i = 0; i < slotCount; i ++) {
-            sendCommand(new byte[]{PUCK.INFO.getBytes(), (byte) (i)}, null);
-        }
-    }
-
     public void uploadSlotAmiibo(byte[] tagData, int slot) {
         for (int i = 0; i < tagData.length % 16; i ++) {
             byte[] data = new byte[16];
@@ -486,7 +485,7 @@ public class PuckGattService extends Service {
         }
         sendCommand(
                 new byte[] { PUCK.SAVE.getBytes(), (byte) (slot - 1) },
-                currentSlot == slot ? new byte[] { PUCK.NFC.getBytes() } : null
+                activeSlot == slot ? new byte[] { PUCK.NFC.getBytes() } : null
         );
         if (null != listener) listener.onPuckProcessFinish();
     }
@@ -498,9 +497,9 @@ public class PuckGattService extends Service {
     }
 
     private void setActiveSlot(int slot) {
-        currentSlot = slot - 1;
-        sendCommand(new byte[] { PUCK.NFC.getBytes(), (byte) currentSlot }, null);
-        if (null != listener) listener.onPuckActiveChanged(currentSlot);
+        activeSlot = slot - 1;
+        sendCommand(new byte[] { PUCK.NFC.getBytes(), (byte) activeSlot}, null);
+        if (null != listener) listener.onPuckActiveChanged(activeSlot);
     }
 
     private String getLogTag(UUID uuid) {

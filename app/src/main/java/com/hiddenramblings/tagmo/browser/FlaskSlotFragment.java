@@ -107,6 +107,7 @@ public class FlaskSlotFragment extends Fragment implements
     private AppCompatButton writeSlots;
     private AppCompatButton eraseSlots;
     private LinearLayout slotOptionsMenu;
+    private AppCompatButton createBlank;
     private AppCompatToggleButton switchMenuOptions;
     private LinearLayout writeSlotsLayout;
     private WriteTagAdapter writeTagAdapter;
@@ -161,8 +162,11 @@ public class FlaskSlotFragment extends Fragment implements
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
                             onBottomSheetChanged(SHEET.MENU);
-                            rootLayout.post(() -> ((TextView) rootLayout
-                                    .findViewById(R.id.hardware_info)).setText(deviceProfile));
+                            rootLayout.post(() -> {
+                                createBlank.setVisibility(View.VISIBLE);
+                                ((TextView) rootLayout.findViewById(R.id.hardware_info))
+                                        .setText(deviceProfile);
+                            });
                             try {
                                 serviceFlask.setFlaskCharacteristicRX();
                                 serviceFlask.getDeviceAmiibo();
@@ -320,12 +324,15 @@ public class FlaskSlotFragment extends Fragment implements
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
                             onBottomSheetChanged(SHEET.MENU);
-                            rootLayout.post(() -> ((TextView) rootLayout
-                                    .findViewById(R.id.hardware_info)).setText(deviceProfile));
+                            rootLayout.post(() -> {
+                                createBlank.setVisibility(View.GONE);
+                                ((TextView) rootLayout.findViewById(R.id.hardware_info))
+                                        .setText(deviceProfile);
+                            });
                             try {
                                 servicePuck.setPuckCharacteristicRX();
-                                // servicePuck.getSlotCount();
-                                servicePuck.getDeviceSlots(1);
+                                servicePuck.getSlotCount();
+                                // servicePuck.getDeviceSlots(32);
                             } catch (UnsupportedOperationException uoe) {
                                 disconnectService();
                                 new Toasty(requireActivity()).Short(R.string.device_invalid);
@@ -334,16 +341,24 @@ public class FlaskSlotFragment extends Fragment implements
 
                         @Override
                         public void onPuckActiveChanged(int slot) {
-
+                            FlaskSlotAdapter adapter = (FlaskSlotAdapter)
+                                    flaskContent.getAdapter();
+                            if (null != adapter) {
+                                Amiibo amiibo = adapter.getItem(slot);
+                                getActiveAmiibo(amiibo, amiiboTile);
+                                if (bottomSheetBehavior.getState() ==
+                                        BottomSheetBehavior.STATE_COLLAPSED)
+                                    getActiveAmiibo(amiibo, amiiboCard);
+                                prefs.flaskActiveSlot(slot);
+                                getFlaskButtonState();
+                                flaskContent.post(() -> flaskStats.setText(getString(
+                                        R.string.flask_count, String.valueOf(slot), currentCount
+                                )));
+                            }
                         }
 
                         @Override
-                        public void onPuckCountRetrieved(int count) {
-                            servicePuck.getDeviceSlots(count);
-                        }
-
-                        @Override
-                        public void onPuckListRetrieved(ArrayList<byte[]> slotData) {
+                        public void onPuckListRetrieved(ArrayList<byte[]> slotData, int active) {
                             Executors.newSingleThreadExecutor().execute(() -> {
                                 currentCount = slotData.size();
                                 ArrayList<Amiibo> flaskAmiibos = new ArrayList<>();
@@ -365,6 +380,7 @@ public class FlaskSlotFragment extends Fragment implements
                                         adapter.notifyItemRangeInserted(
                                                 0, currentCount
                                         );
+                                        onPuckActiveChanged(active);
                                     } else {
                                         amiiboTile.setVisibility(View.INVISIBLE);
                                         getFlaskButtonState();
@@ -494,7 +510,7 @@ public class FlaskSlotFragment extends Fragment implements
         switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn);
         slotOptionsMenu = rootLayout.findViewById(R.id.slot_options_menu);
         AppCompatButton writeFile = rootLayout.findViewById(R.id.write_slot_file);
-        AppCompatButton createBlank = rootLayout.findViewById(R.id.create_blank);
+        createBlank = rootLayout.findViewById(R.id.create_blank);
         flaskSlotCount = rootLayout.findViewById(R.id.number_picker);
         flaskSlotCount.setMaxValue(maxSlotCount);
         writeSlots = rootLayout.findViewById(R.id.write_slot_count);
@@ -1063,7 +1079,7 @@ public class FlaskSlotFragment extends Fragment implements
             }
             if (null != amiibo) {
                 if (null != serviceFlask)
-                serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo, complete);
+                    serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo, complete);
                 if (null != servicePuck)
                     servicePuck.uploadSlotAmiibo(amiiboFile.getData(), 1);
             }

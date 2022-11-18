@@ -658,6 +658,7 @@ public class FlaskGattService extends Service {
 
         if (outgoingCallbacks.size() == 1) {
             outgoingCallbacks.get(0).run();
+            outgoingCallbacks.remove(0);
         }
     }
 

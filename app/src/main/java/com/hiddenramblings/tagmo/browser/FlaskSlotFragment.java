@@ -1089,7 +1089,7 @@ public class FlaskSlotFragment extends Fragment implements
                 if (null != serviceFlask)
                     serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo, complete);
                 if (null != servicePuck)
-                    servicePuck.uploadSlotAmiibo(amiiboFile.getData(), flaskSlotCount.getValue());
+                    servicePuck.uploadSlotAmiibo(amiiboFile.getData(), flaskSlotCount.getValue() - 1);
             }
         }
     }

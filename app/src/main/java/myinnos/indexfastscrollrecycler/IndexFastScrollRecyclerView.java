@@ -74,106 +74,104 @@ public class IndexFastScrollRecyclerView extends RecyclerView {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        
+
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.IndexFastScrollRecyclerView);
-            
-                try {
-                    setIndexTextSize = typedArray.getInt(R.styleable.IndexFastScrollRecyclerView_setIndexTextSize, setIndexTextSize);
-                    mIndexbarWidth = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexbarWidth, mIndexbarWidth);
-                    mIndexbarMarginLeft = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexbarMargin, mIndexbarMarginLeft);
-                    mIndexbarMarginRight = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexbarMargin, mIndexbarMarginRight);
-                    mIndexbarMarginTop = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexbarMargin, mIndexbarMarginTop);
-                    mIndexbarMarginBottom = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexbarMargin, mIndexbarMarginBottom);
-                    mPreviewPadding = typedArray.getInt(R.styleable.IndexFastScrollRecyclerView_setPreviewPadding, mPreviewPadding);
-                    mIndexBarCornerRadius = typedArray.getInt(R.styleable.IndexFastScrollRecyclerView_setIndexBarCornerRadius, mIndexBarCornerRadius);
-                    mIndexBarTransparentValue = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexBarTransparentValue, mIndexBarTransparentValue);
 
-                    mEnabled = true;
-                    if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarShown)) {
-                        mEnabled = typedArray.getBoolean(R.styleable.IndexFastScrollRecyclerView_setIndexBarShown, mEnabled);
-                    }
+            try {
+                setIndexTextSize = typedArray.getInt(R.styleable.IndexFastScrollRecyclerView_setIndexTextSize, setIndexTextSize);
+                mIndexbarWidth = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexbarWidth, mIndexbarWidth);
+                mIndexbarMarginLeft = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexbarMargin, mIndexbarMarginLeft);
+                mIndexbarMarginRight = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexbarMargin, mIndexbarMarginRight);
+                mIndexbarMarginTop = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexbarMargin, mIndexbarMarginTop);
+                mIndexbarMarginBottom = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexbarMargin, mIndexbarMarginBottom);
+                mPreviewPadding = typedArray.getInt(R.styleable.IndexFastScrollRecyclerView_setPreviewPadding, mPreviewPadding);
+                mIndexBarCornerRadius = typedArray.getInt(R.styleable.IndexFastScrollRecyclerView_setIndexBarCornerRadius, mIndexBarCornerRadius);
+                mIndexBarTransparentValue = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setIndexBarTransparentValue, mIndexBarTransparentValue);
 
-                    mTransient = false;
-                    if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setTransientIndexBar)) {
-                        mTransient = typedArray.getBoolean(R.styleable.IndexFastScrollRecyclerView_setTransientIndexBar, mTransient);
-                    }
-                    setTransientIndexBar(mTransient);
-
-                    if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor)) {
-                        TypedValue tv = new TypedValue();
-                        typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
-                        if (tv.type == TypedValue.TYPE_STRING) {
-                            mIndexbarBackgroudColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor));
-                        } else {
-                            mIndexbarBackgroudColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, mIndexbarBackgroudColor);
-                        }
-                    }
-
-                    if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarTextColor)) {
-                        TypedValue tv = new TypedValue();
-                        typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
-                        if (tv.type == TypedValue.TYPE_STRING) {
-                            mIndexbarTextColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setIndexBarTextColor));
-                        } else {
-                            mIndexbarTextColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setIndexBarTextColor, mIndexbarTextColor);
-                        }
-                    }
-
-                    if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarHighlightTextColor)) {
-                        TypedValue tv = new TypedValue();
-                        typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
-                        if (tv.type == TypedValue.TYPE_STRING) {
-                            indexbarHighLightTextColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setIndexBarHighlightTextColor));
-                        } else {
-                            indexbarHighLightTextColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setIndexBarHighlightTextColor, indexbarHighLightTextColor);
-                        }
-                    }
-
-                    mPreviewTextSize = typedArray.getInt(R.styleable.IndexFastScrollRecyclerView_setPreviewTextSize, mPreviewTextSize);
-                    mPreviewTransparentValue = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setPreviewTransparentValue, mPreviewTransparentValue);
-
-                    if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setPreviewColor)) {
-                        TypedValue tv = new TypedValue();
-                        typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
-                        if (tv.type == TypedValue.TYPE_STRING) {
-                            mPreviewBackgroudColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setPreviewColor));
-                        } else {
-                            mPreviewBackgroudColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setPreviewColor, mPreviewBackgroudColor);
-                        }
-                    }
-
-                    if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setPreviewTextColor)) {
-                        TypedValue tv = new TypedValue();
-                        typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
-                        if (tv.type == TypedValue.TYPE_STRING) {
-                            mPreviewTextColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setPreviewTextColor));
-                        } else {
-                            mPreviewTextColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setPreviewTextColor, mPreviewTextColor);
-                        }
-                    }
-
-                    if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarStrokeWidth)) {
-                        mIndexBarStrokeWidth = typedArray.getInt(R.styleable.IndexFastScrollRecyclerView_setIndexBarStrokeWidth, mIndexBarStrokeWidth);
-                    }
-
-                    if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarStrokeColor)) {
-                        TypedValue tv = new TypedValue();
-                        typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
-                        if (tv.type == TypedValue.TYPE_STRING) {
-                            mSetIndexBarStrokeColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setIndexBarStrokeColor));
-                        } else {
-                            mSetIndexBarStrokeColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setIndexBarStrokeColor, mSetIndexBarStrokeColor);
-                        }
-                    }
-
-                } finally {
-                    typedArray.recycle();
+                if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarShown)) {
+                    mEnabled = typedArray.getBoolean(R.styleable.IndexFastScrollRecyclerView_setIndexBarShown, mEnabled);
                 }
-                
-                // This line here is neccesary else the attributes won't be updated if a value is passed from XML
-                mScroller = new IndexFastScrollRecyclerSection(context, this);
-                mScroller.setIndexBarVisibility(mEnabled);
+
+                if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setTransientIndexBar)) {
+                    mTransient = typedArray.getBoolean(R.styleable.IndexFastScrollRecyclerView_setTransientIndexBar, mTransient);
+                }
+                setTransientIndexBar(mTransient);
+
+                if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor)) {
+                    TypedValue tv = new TypedValue();
+                    typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
+                    if (tv.type == TypedValue.TYPE_STRING) {
+                        mIndexbarBackgroudColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor));
+                    } else {
+                        mIndexbarBackgroudColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, mIndexbarBackgroudColor);
+                    }
+                }
+
+                if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarTextColor)) {
+                    TypedValue tv = new TypedValue();
+                    typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
+                    if (tv.type == TypedValue.TYPE_STRING) {
+                        mIndexbarTextColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setIndexBarTextColor));
+                    } else {
+                        mIndexbarTextColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setIndexBarTextColor, mIndexbarTextColor);
+                    }
+                }
+
+                if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarHighlightTextColor)) {
+                    TypedValue tv = new TypedValue();
+                    typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
+                    if (tv.type == TypedValue.TYPE_STRING) {
+                        indexbarHighLightTextColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setIndexBarHighlightTextColor));
+                    } else {
+                        indexbarHighLightTextColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setIndexBarHighlightTextColor, indexbarHighLightTextColor);
+                    }
+                }
+
+                mPreviewTextSize = typedArray.getInt(R.styleable.IndexFastScrollRecyclerView_setPreviewTextSize, mPreviewTextSize);
+                mPreviewTransparentValue = typedArray.getFloat(R.styleable.IndexFastScrollRecyclerView_setPreviewTransparentValue, mPreviewTransparentValue);
+
+                if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setPreviewColor)) {
+                    TypedValue tv = new TypedValue();
+                    typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
+                    if (tv.type == TypedValue.TYPE_STRING) {
+                        mPreviewBackgroudColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setPreviewColor));
+                    } else {
+                        mPreviewBackgroudColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setPreviewColor, mPreviewBackgroudColor);
+                    }
+                }
+
+                if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setPreviewTextColor)) {
+                    TypedValue tv = new TypedValue();
+                    typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
+                    if (tv.type == TypedValue.TYPE_STRING) {
+                        mPreviewTextColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setPreviewTextColor));
+                    } else {
+                        mPreviewTextColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setPreviewTextColor, mPreviewTextColor);
+                    }
+                }
+
+                if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarStrokeWidth)) {
+                    mIndexBarStrokeWidth = typedArray.getInt(R.styleable.IndexFastScrollRecyclerView_setIndexBarStrokeWidth, mIndexBarStrokeWidth);
+                }
+
+                if (typedArray.hasValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarStrokeColor)) {
+                    TypedValue tv = new TypedValue();
+                    typedArray.getValue(R.styleable.IndexFastScrollRecyclerView_setIndexBarColor, tv);
+                    if (tv.type == TypedValue.TYPE_STRING) {
+                        mSetIndexBarStrokeColor = Color.parseColor(typedArray.getString(R.styleable.IndexFastScrollRecyclerView_setIndexBarStrokeColor));
+                    } else {
+                        mSetIndexBarStrokeColor = typedArray.getColor(R.styleable.IndexFastScrollRecyclerView_setIndexBarStrokeColor, mSetIndexBarStrokeColor);
+                    }
+                }
+
+            } finally {
+                typedArray.recycle();
+            }
+
+            // This line here is neccesary else the attributes won't be updated if a value is passed from XML
+            mScroller = new IndexFastScrollRecyclerSection(context, this);
+            mScroller.setIndexBarVisibility(mEnabled);
         }
     }
 

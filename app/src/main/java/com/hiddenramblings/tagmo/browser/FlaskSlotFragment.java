@@ -60,7 +60,6 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.FlaskTag;
-import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData;
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler;
 import com.hiddenramblings.tagmo.bluetooth.FlaskGattService;
 import com.hiddenramblings.tagmo.bluetooth.PuckGattService;
@@ -104,6 +103,7 @@ public class FlaskSlotFragment extends Fragment implements
     private RecyclerView flaskContent;
     private TextView flaskStats;
     private NumberPicker flaskSlotCount;
+    private LinearLayout screenOptions;
     private AppCompatButton writeSlots;
     private AppCompatButton eraseSlots;
     private LinearLayout slotOptionsMenu;
@@ -127,7 +127,7 @@ public class FlaskSlotFragment extends Fragment implements
 
     private String deviceProfile;
     private String deviceAddress;
-    private final int maxSlotCount = 85;
+    private int maxSlotCount = 85;
     private int currentCount;
 
     private enum STATE {
@@ -162,7 +162,10 @@ public class FlaskSlotFragment extends Fragment implements
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
                             onBottomSheetChanged(SHEET.MENU);
+                            maxSlotCount = 85;
                             rootLayout.post(() -> {
+                                flaskSlotCount.setMaxValue(maxSlotCount);
+                                screenOptions.setVisibility(View.VISIBLE);
                                 createBlank.setVisibility(View.VISIBLE);
                                 ((TextView) rootLayout.findViewById(R.id.hardware_info))
                                         .setText(deviceProfile);
@@ -324,14 +327,18 @@ public class FlaskSlotFragment extends Fragment implements
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
                             onBottomSheetChanged(SHEET.MENU);
+                            maxSlotCount = 32;
                             rootLayout.post(() -> {
+                                flaskSlotCount.setMaxValue(maxSlotCount);
+                                screenOptions.setVisibility(View.GONE);
                                 createBlank.setVisibility(View.GONE);
                                 ((TextView) rootLayout.findViewById(R.id.hardware_info))
                                         .setText(deviceProfile);
+                                flaskSlotCount.setMaxValue(maxSlotCount);
                             });
                             try {
                                 servicePuck.setPuckCharacteristicRX();
-                                servicePuck.getSlotCount();
+                                servicePuck.getDeviceAmiibo();
                                 // servicePuck.getDeviceSlots(32);
                             } catch (UnsupportedOperationException uoe) {
                                 disconnectService();
@@ -513,6 +520,7 @@ public class FlaskSlotFragment extends Fragment implements
         createBlank = rootLayout.findViewById(R.id.create_blank);
         flaskSlotCount = rootLayout.findViewById(R.id.number_picker);
         flaskSlotCount.setMaxValue(maxSlotCount);
+        screenOptions = rootLayout.findViewById(R.id.screen_options);
         writeSlots = rootLayout.findViewById(R.id.write_slot_count);
         writeSlots.setText(getString(R.string.write_slots, 1));
         eraseSlots = rootLayout.findViewById(R.id.erase_slot_count);
@@ -1081,7 +1089,7 @@ public class FlaskSlotFragment extends Fragment implements
                 if (null != serviceFlask)
                     serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo, complete);
                 if (null != servicePuck)
-                    servicePuck.uploadSlotAmiibo(amiiboFile.getData(), 1);
+                    servicePuck.uploadSlotAmiibo(amiiboFile.getData(), flaskSlotCount.getValue());
             }
         }
     }

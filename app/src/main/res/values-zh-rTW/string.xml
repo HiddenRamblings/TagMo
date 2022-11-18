@@ -274,7 +274,6 @@
     <string name="flask_scanning">正在掃描Bluup Flask&#8230;</string>
     <string name="flask_located">正在連接Bluup Flask&#8230;</string>
     <string name="flask_disconnect">Flask 藍牙連線無法使用！</string>
-    <string name="flask_paired">取消配對Flask以繼續.</string>
     <string name="flask_count">Slot %1$s 可啟用，%2$d Slots 已執行</string>
     <string name="write_slot_file">將二進位檔案上傳到Bluup Flask</string>
     <string name="write_slots">寫入 %1$d slots</string>

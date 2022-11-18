@@ -273,12 +273,11 @@
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="flask_missing">GATT device cannot be located!</string>
     <string name="device_invalid">Not a valid GATT device!</string>
-    <string name="flask_scanning">Scanning for GATT device&#8230;</string>
-    <string name="flask_located">Connecting to GATT device&#8230;</string>
+    <string name="flask_scanning">Scanning for Bluetooth GATT&#8230;</string>
+    <string name="flask_located">Connecting to Bluetooth GATT&#8230;</string>
     <string name="flask_disconnect">GATT device connection lost!</string>
-    <string name="flask_paired">Unpair device to continue.</string>
     <string name="flask_count">Slot %1$s Active, %2$d Slots Occupied</string>
-    <string name="write_slot_file">Upload binary to Bluup Flask</string>
+    <string name="write_slot_file">Upload binary to GATT device</string>
     <string name="write_slots">Write %1$d slots</string>
     <string name="erase_slots">Erase %1$d slots</string>
     <string name="slots_full">All Bluup Flask slots filled</string>

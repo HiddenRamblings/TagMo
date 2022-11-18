@@ -83,8 +83,8 @@ public class PuckGattService extends Service {
     }
 
     private int activeSlot = 0;
-    private int currentSlot = 0;
-    private int slotCount = 0;
+    private int selectSlot = 0;
+    private int slotsCount = 0;
 
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
@@ -113,23 +113,27 @@ public class PuckGattService extends Service {
                     + " " + Arrays.toString(data));
 
             if (characteristic.getUuid().compareTo(PuckRX) == 0) {
+                if (outgoingCallbacks.size() > 0) {
+                    outgoingCallbacks.get(0).run();
+                    outgoingCallbacks.remove(0);
+                }
                 if (data[0] == PUCK.INFO.getBytes()) {
                     if (data.length == 3) {
                         activeSlot = data[1];
-                        slotCount = data[2];
-                        currentSlot = 0;
+                        slotsCount = data[2];
+                        selectSlot = 0;
                         puckArray = new ArrayList<>();
-                        sendCommand(new byte[]{PUCK.INFO.getBytes(), (byte) (currentSlot)}, null);
+                        sendCommand(new byte[]{PUCK.INFO.getBytes(), (byte) (selectSlot)}, null);
                     } else {
                         byte[] infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
                         System.arraycopy(data, 2, infoResponse, 0, NfcByte.KEY_FILE_SIZE);
                         puckArray.add(infoResponse);
-                        currentSlot += 1;
-                        if (currentSlot == slotCount || slotCount == 0) {
+                        selectSlot += 1;
+                        if (selectSlot == slotsCount || slotsCount == 0) {
                             if (null != listener)
                                 listener.onPuckListRetrieved(puckArray, activeSlot);
                         } else {
-                            sendCommand(new byte[]{PUCK.INFO.getBytes(), (byte) (currentSlot)}, null);
+                            getSlotSummary(selectSlot);
                         }
                     }
                 } else if (data[0] == PUCK.READ.getBytes()) {
@@ -453,6 +457,7 @@ public class PuckGattService extends Service {
 
         if (outgoingCallbacks.size() == 1) {
             outgoingCallbacks.get(0).run();
+            outgoingCallbacks.remove(0);
         }
     }
 
@@ -475,31 +480,31 @@ public class PuckGattService extends Service {
         sendCommand(new byte[] { PUCK.INFO.getBytes() }, null);
     }
 
-    public void getSlotDetails(int slot) {
-        sendCommand(new byte[] { PUCK.INFO.getBytes(), (byte) (slot - 1) }, null);
+    public void getSlotSummary(int slot) {
+        sendCommand(new byte[] { PUCK.INFO.getBytes(), (byte) slot }, null);
     }
 
     public void uploadSlotAmiibo(byte[] tagData, int slot) {
         for (int i = 0; i < tagData.length % 16; i ++) {
             byte[] data = new byte[16];
             System.arraycopy(tagData, i * 16, data, 0, data.length);
-            sendCommand(new byte[] { PUCK.WRITE.getBytes(), (byte) (slot - 1), (byte) (i * 4) }, data);
+            sendCommand(new byte[] { PUCK.WRITE.getBytes(), (byte) slot, (byte) (i * 4) }, data);
         }
         sendCommand(
-                new byte[] { PUCK.SAVE.getBytes(), (byte) (slot - 1) },
+                new byte[] { PUCK.SAVE.getBytes(), (byte) slot },
                 activeSlot == slot ? new byte[] { PUCK.NFC.getBytes() } : null
         );
     }
 
     private void downloadSlotData(int slot) {
-        sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) (slot - 1), 0x00, 0x3F }, null);
-        sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) (slot - 1), 0x3F, 0x3F }, null);
-        sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) (slot - 1), 0x7E, 0x11 }, null);
+        sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) slot, 0x00, 0x3F }, null);
+        sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) slot, 0x3F, 0x3F }, null);
+        sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) slot, 0x7E, 0x11 }, null);
     }
 
     private void setActiveSlot(int slot) {
-        activeSlot = slot - 1;
-        sendCommand(new byte[] { PUCK.NFC.getBytes(), (byte) activeSlot}, null);
+        activeSlot = slot;
+        sendCommand(new byte[] { PUCK.NFC.getBytes(), (byte) activeSlot }, null);
         if (null != listener) listener.onPuckActiveChanged(activeSlot);
     }
 

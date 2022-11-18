@@ -356,6 +356,7 @@
 
     <string name="no_tag_loaded">&lt;No Tag Loaded&gt;</string>
     <string name="read_error">&lt;Error Reading Tag&gt;</string>
+    <string name="empty_tag">&lt;Empty Tag&gt;</string>
     <string name="blank_tag">&lt;Blank Tag&gt;</string>
     <string name="blank_bank">%1$s: &lt;Blank Bank&gt;</string>
 

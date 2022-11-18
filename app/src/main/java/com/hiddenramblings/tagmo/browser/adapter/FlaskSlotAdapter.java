@@ -181,6 +181,15 @@ public class FlaskSlotAdapter
 
             if (amiibo instanceof FlaskTag)  {
                 setAmiiboInfoText(txtName, TagMo.getContext().getString(R.string.blank_tag));
+            } else if (null == amiibo) {
+                setAmiiboInfoText(txtName, TagMo.getContext().getString(R.string.empty_tag));
+                this.txtError.setVisibility(View.GONE);
+                this.txtPath.setVisibility(View.GONE);
+                this.txtTagId.setVisibility(View.GONE);
+                this.txtAmiiboSeries.setVisibility(View.GONE);
+                this.txtAmiiboType.setVisibility(View.GONE);
+                this.txtGameSeries.setVisibility(View.GONE);
+                return;
             } else {
                 setAmiiboInfoText(txtName, amiibo.name);
                 amiiboImageUrl = amiibo.getImageUrl();

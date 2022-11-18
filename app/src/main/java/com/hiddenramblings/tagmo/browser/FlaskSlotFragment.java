@@ -375,6 +375,7 @@ public class FlaskSlotFragment extends Fragment implements
                                         flaskAmiibos.add(amiibo);
                                     } catch (NullPointerException ex) {
                                         Debug.Warn(ex);
+                                        flaskAmiibos.add(null);
                                     }
                                 }
                                 FlaskSlotAdapter adapter = new FlaskSlotAdapter(

@@ -31,10 +31,8 @@ import androidx.annotation.RequiresApi;
 import com.hiddenramblings.tagmo.eightbit.io.Debug;
 import com.hiddenramblings.tagmo.nfctech.NfcByte;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -85,7 +83,7 @@ public class PuckGattService extends Service {
     }
 
     private int currentSlot = 0;
-    private int slotCount;
+    private int slotCount = 32;
 
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
@@ -101,7 +99,7 @@ public class PuckGattService extends Service {
         void onPuckCountRetrieved(int count);
         void onPuckListRetrieved(ArrayList<byte[]> slotData);
         void onPuckFilesDownload(byte[] tagData);
-        void onPuckFilesUploaded();
+        void onPuckProcessFinish();
         void onGattConnectionLost();
     }
 
@@ -112,19 +110,22 @@ public class PuckGattService extends Service {
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
+            Debug.Verbose(TAG, getLogTag(characteristic.getUuid())
+                    + " " + Arrays.toString(data));
+
             if (characteristic.getUuid().compareTo(PuckRX) == 0) {
                 if (data[0] == PUCK.INFO.getBytes()) {
-                    if (data.length > 3) {
-                        System.arraycopy(infoResponse, 0, data, 2, data.length);
-                        puckArray.add(data);
+                    if (data.length == 3) {
+                        slotCount = data[2];
+                        if (null != listener) listener.onPuckCountRetrieved(data[2]);
+                    } else {
+                        System.arraycopy(data, 2, infoResponse, 0, NfcByte.KEY_FILE_SIZE);
+                        puckArray.add(infoResponse);
                         infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
                         if (puckArray.size() == slotCount) {
                             if (null != listener) listener.onPuckListRetrieved(puckArray);
                             puckArray = new ArrayList<>();
                         }
-                    } else {
-                        slotCount = data[2];
-                        if (null != listener) listener.onPuckCountRetrieved(data[2]);
                     }
                 } else if (data[0] == PUCK.READ.getBytes()) {
                     if (data[2] == 0) {
@@ -455,22 +456,29 @@ public class PuckGattService extends Service {
         if (null != data) {
             byte[] command = new byte[params.length + data.length];
             System.arraycopy(params, 0, command, 0, params.length);
-            System.arraycopy(data, params.length, command, 0, data.length);
+            System.arraycopy(data, 0, command, params.length, data.length);
             delayedByteCharacteric(command);
         } else {
             delayedByteCharacteric(params);
         }
     }
 
-    private void getSlotCount() {
+    public void getSlotCount() {
         sendCommand(new byte[] { PUCK.INFO.getBytes() }, null);
     }
 
-    private void getSlotDetails(int slot) {
+    public void getSlotDetails(int slot) {
         sendCommand(new byte[] { PUCK.INFO.getBytes(), (byte) (slot - 1) }, null);
     }
 
-    private void uploadSlotAmiibo(byte[] tagData, int slot) {
+    public void getDeviceSlots(int count) {
+        slotCount = count;
+        for (int i = 0; i < slotCount; i ++) {
+            sendCommand(new byte[]{PUCK.INFO.getBytes(), (byte) (i)}, null);
+        }
+    }
+
+    public void uploadSlotAmiibo(byte[] tagData, int slot) {
         for (int i = 0; i < tagData.length % 16; i ++) {
             byte[] data = new byte[16];
             System.arraycopy(tagData, i * 16, data, 0, data.length);
@@ -480,7 +488,7 @@ public class PuckGattService extends Service {
                 new byte[] { PUCK.SAVE.getBytes(), (byte) (slot - 1) },
                 currentSlot == slot ? new byte[] { PUCK.NFC.getBytes() } : null
         );
-        if (null != listener) listener.onPuckFilesUploaded();
+        if (null != listener) listener.onPuckProcessFinish();
     }
 
     private void downloadSlotData(int slot) {

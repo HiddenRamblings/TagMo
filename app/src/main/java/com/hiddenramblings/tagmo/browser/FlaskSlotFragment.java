@@ -60,6 +60,7 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo;
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile;
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.FlaskTag;
+import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData;
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler;
 import com.hiddenramblings.tagmo.bluetooth.FlaskGattService;
 import com.hiddenramblings.tagmo.bluetooth.PuckGattService;
@@ -76,6 +77,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -184,7 +186,7 @@ public class FlaskSlotFragment extends Fragment implements
                                 ArrayList<Amiibo> flaskAmiibos = new ArrayList<>();
                                 for (int i = 0; i < currentCount; i++) {
                                     try {
-                                        Amiibo amiibo = getAmiiboByTail(jsonArray
+                                        Amiibo amiibo = getAmiiboFromTail(jsonArray
                                                 .getString(i).split("\\|"));
                                         flaskAmiibos.add(amiibo);
                                     } catch (JSONException | NullPointerException ex) {
@@ -216,7 +218,7 @@ public class FlaskSlotFragment extends Fragment implements
                                 ArrayList<Amiibo> flaskAmiibos = new ArrayList<>();
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     try {
-                                        Amiibo amiibo = getAmiiboByTail(jsonArray
+                                        Amiibo amiibo = getAmiiboFromTail(jsonArray
                                                 .getString(i).split("\\|"));
                                         flaskAmiibos.add(amiibo);
                                     } catch (JSONException | NullPointerException ex) {
@@ -245,7 +247,7 @@ public class FlaskSlotFragment extends Fragment implements
                                     resetActiveSlot();
                                     return;
                                 }
-                                Amiibo amiibo = getAmiiboByTail(name.split("\\|"));
+                                Amiibo amiibo = getAmiiboFromTail(name.split("\\|"));
                                 String index = jsonObject.getString("index");
                                 getActiveAmiibo(amiibo, amiiboTile);
                                 if (bottomSheetBehavior.getState() ==
@@ -318,6 +320,16 @@ public class FlaskSlotFragment extends Fragment implements
                         public void onServicesDiscovered() {
                             isServiceDiscovered = true;
                             onBottomSheetChanged(SHEET.MENU);
+                            rootLayout.post(() -> ((TextView) rootLayout
+                                    .findViewById(R.id.hardware_info)).setText(deviceProfile));
+                            try {
+                                servicePuck.setPuckCharacteristicRX();
+                                // servicePuck.getSlotCount();
+                                servicePuck.getDeviceSlots(1);
+                            } catch (UnsupportedOperationException uoe) {
+                                disconnectService();
+                                new Toasty(requireActivity()).Short(R.string.device_invalid);
+                            }
                         }
 
                         @Override
@@ -327,12 +339,38 @@ public class FlaskSlotFragment extends Fragment implements
 
                         @Override
                         public void onPuckCountRetrieved(int count) {
-
+                            servicePuck.getDeviceSlots(count);
                         }
 
                         @Override
                         public void onPuckListRetrieved(ArrayList<byte[]> slotData) {
-
+                            Executors.newSingleThreadExecutor().execute(() -> {
+                                currentCount = slotData.size();
+                                ArrayList<Amiibo> flaskAmiibos = new ArrayList<>();
+                                for (int i = 0; i < currentCount; i++) {
+                                    try {
+                                        Amiibo amiibo = getAmiiboFromHead(slotData.get(i));
+                                        flaskAmiibos.add(amiibo);
+                                    } catch (NullPointerException ex) {
+                                        Debug.Warn(ex);
+                                    }
+                                }
+                                FlaskSlotAdapter adapter = new FlaskSlotAdapter(
+                                        settings, FlaskSlotFragment.this);
+                                adapter.setFlaskAmiibo(flaskAmiibos);
+                                flaskContent.post(() -> {
+                                    dismissSnackbarNotice(true);
+                                    flaskContent.setAdapter(adapter);
+                                    if (currentCount > 0) {
+                                        adapter.notifyItemRangeInserted(
+                                                0, currentCount
+                                        );
+                                    } else {
+                                        amiiboTile.setVisibility(View.INVISIBLE);
+                                        getFlaskButtonState();
+                                    }
+                                });
+                            });
                         }
 
                         @Override
@@ -341,13 +379,21 @@ public class FlaskSlotFragment extends Fragment implements
                         }
 
                         @Override
-                        public void onPuckFilesUploaded() {
-
+                        public void onPuckProcessFinish() {
+                            requireActivity().runOnUiThread(() -> {
+                                if (null != processDialog && processDialog.isShowing())
+                                    processDialog.dismiss();
+                            });
                         }
 
                         @Override
                         public void onGattConnectionLost() {
-
+                            fragmentHandler.postDelayed(
+                                    FlaskSlotFragment.this::showDisconnectNotice, TagMo.uiDelay
+                            );
+                            requireActivity().runOnUiThread(() -> bottomSheetBehavior
+                                    .setState(BottomSheetBehavior.STATE_COLLAPSED));
+                            stopGattService();
                         }
                     });
                 } else {
@@ -631,33 +677,35 @@ public class FlaskSlotFragment extends Fragment implements
 
     private void onBottomSheetChanged(SHEET sheet) {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        switch (sheet) {
-            case LOCKED:
-                amiiboCard.setVisibility(View.GONE);
-                switchMenuOptions.setVisibility(View.GONE);
-                slotOptionsMenu.setVisibility(View.GONE);
-                writeSlotsLayout.setVisibility(View.GONE);
-                break;
-            case AMIIBO:
-                amiiboCard.setVisibility(View.VISIBLE);
-                switchMenuOptions.setVisibility(View.VISIBLE);
-                slotOptionsMenu.setVisibility(View.GONE);
-                writeSlotsLayout.setVisibility(View.GONE);
-            break;
-            case MENU:
-                amiiboCard.setVisibility(View.GONE);
-                switchMenuOptions.setVisibility(View.VISIBLE);
-                slotOptionsMenu.setVisibility(View.VISIBLE);
-                writeSlotsLayout.setVisibility(View.GONE);
-                break;
-            case WRITE:
-                amiiboCard.setVisibility(View.GONE);
-                switchMenuOptions.setVisibility(View.GONE);
-                slotOptionsMenu.setVisibility(View.GONE);
-                writeSlotsLayout.setVisibility(View.VISIBLE);
-                break;
-        }
-        flaskContent.requestLayout();
+        requireActivity().runOnUiThread(() -> {
+            switch (sheet) {
+                case LOCKED:
+                    amiiboCard.setVisibility(View.GONE);
+                    switchMenuOptions.setVisibility(View.GONE);
+                    slotOptionsMenu.setVisibility(View.GONE);
+                    writeSlotsLayout.setVisibility(View.GONE);
+                    break;
+                case AMIIBO:
+                    amiiboCard.setVisibility(View.VISIBLE);
+                    switchMenuOptions.setVisibility(View.VISIBLE);
+                    slotOptionsMenu.setVisibility(View.GONE);
+                    writeSlotsLayout.setVisibility(View.GONE);
+                    break;
+                case MENU:
+                    amiiboCard.setVisibility(View.GONE);
+                    switchMenuOptions.setVisibility(View.VISIBLE);
+                    slotOptionsMenu.setVisibility(View.VISIBLE);
+                    writeSlotsLayout.setVisibility(View.GONE);
+                    break;
+                case WRITE:
+                    amiiboCard.setVisibility(View.GONE);
+                    switchMenuOptions.setVisibility(View.GONE);
+                    slotOptionsMenu.setVisibility(View.GONE);
+                    writeSlotsLayout.setVisibility(View.VISIBLE);
+                    break;
+            }
+            flaskContent.requestLayout();
+        });
     }
 
     void setAmiiboInfoText(TextView textView, CharSequence text) {
@@ -793,7 +841,7 @@ public class FlaskSlotFragment extends Fragment implements
         });
     }
 
-    private Amiibo getAmiiboByTail(String[] name) {
+    private Amiibo getAmiiboFromTail(String[] name) {
         if (name.length < 2) return null;
         if (name[1].length() == 0) return new FlaskTag(name);
         AmiiboManager amiiboManager;
@@ -817,6 +865,31 @@ public class FlaskSlotFragment extends Fragment implements
                     selectedAmiibo = amiibo;
                     break;
                 }
+            }
+        }
+        return selectedAmiibo;
+    }
+
+    private Amiibo getAmiiboFromHead(byte[] tagData) {
+        AmiiboManager amiiboManager;
+        try {
+            amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
+        } catch (IOException | JSONException | ParseException e) {
+            Debug.Warn(e);
+            amiiboManager = null;
+            new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
+        }
+
+        if (Thread.currentThread().isInterrupted()) return null;
+
+        Amiibo selectedAmiibo = null;
+        if (null != amiiboManager) {
+            try {
+                ByteBuffer headData = ByteBuffer.wrap(tagData);
+                long amiiboId = headData.getLong(0x28);
+                selectedAmiibo = amiiboManager.amiibos.get(amiiboId);
+            } catch (Exception e) {
+                Debug.Info(e);
             }
         }
         return selectedAmiibo;
@@ -861,7 +934,7 @@ public class FlaskSlotFragment extends Fragment implements
                     deviceAddress = result.getDevice().getAddress();
                     dismissGattDiscovery();
                     showConnectionNotice();
-                    startFlaskService();
+                    startPuckService();
                 }
             };
             scanner.startScan(Collections.singletonList(filterPuck), settings, scanCallbackPuckLP);
@@ -910,11 +983,10 @@ public class FlaskSlotFragment extends Fragment implements
             });
             item.findViewById(R.id.connect_puck).setOnClickListener(puck -> {
                 deviceDialog.dismiss();
-//                deviceProfile = device.getName();
-//                deviceAddress = device.getAddress();
-//                showConnectionNotice();
-//                startPuckService();
-                new Toasty(requireActivity()).Short(R.string.notice_incomplete);
+                deviceProfile = device.getName();
+                deviceAddress = device.getAddress();
+                showConnectionNotice();
+                startPuckService();
 
             });
             view.addView(item);
@@ -989,7 +1061,12 @@ public class FlaskSlotFragment extends Fragment implements
                     Debug.Warn(e);
                 }
             }
-            if (null != amiibo) serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo, complete);
+            if (null != amiibo) {
+                if (null != serviceFlask)
+                serviceFlask.uploadAmiiboFile(amiiboFile.getData(), amiibo, complete);
+                if (null != servicePuck)
+                    servicePuck.uploadSlotAmiibo(amiiboFile.getData(), 1);
+            }
         }
     }
 

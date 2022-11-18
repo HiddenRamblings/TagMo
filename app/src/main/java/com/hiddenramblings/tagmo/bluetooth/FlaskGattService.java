@@ -109,6 +109,7 @@ public class FlaskGattService extends Service {
     private int wipeDeviceCount = 0;
 
     private int maxTransmissionUnit = 23;
+    private final long chunkTimeout = 30L;
     public final static UUID FlaskNUS = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
     private final static UUID FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
@@ -354,13 +355,13 @@ public class FlaskGattService extends Service {
 
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
-            if (null != listener) listener.onServicesDiscovered();
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Debug.Verbose(TAG, "onMtuChange complete: " + mtu);
                 maxTransmissionUnit = mtu - 3;
             } else {
                 Debug.Warn(TAG, "onMtuChange received: " + status);
             }
+            if (null != listener) listener.onServicesDiscovered();
         }
     };
 
@@ -597,9 +598,9 @@ public class FlaskGattService extends Service {
                     } catch (NullPointerException ex) {
                         if (null != listener) listener.onServicesDiscovered();
                     }
-                }, (i + 1) * 30L);
+                }, (i + 1) * chunkTimeout);
             }
-        }, commandQueue * 30L);
+        }, commandQueue * chunkTimeout);
     }
 
     private void delayedWriteCharacteristic(String value) {
@@ -619,9 +620,9 @@ public class FlaskGattService extends Service {
                     } catch (NullPointerException ex) {
                         if (null != listener) listener.onServicesDiscovered();
                     }
-                }, (i + 1) * 30L);
+                }, (i + 1) * chunkTimeout);
             }
-        }, commandQueue * 30L);
+        }, commandQueue * chunkTimeout);
     }
 
     public void queueTagCharacteristic(String value, int index) {

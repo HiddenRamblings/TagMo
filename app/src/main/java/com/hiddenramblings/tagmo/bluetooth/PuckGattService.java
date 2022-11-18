@@ -57,6 +57,7 @@ public class PuckGattService extends Service {
     BluetoothGattCharacteristic mCharacteristicTX = null;
 
     private int maxTransmissionUnit = 23;
+    private final long chunkTimeout = 30L;
     public final static UUID PuckNUS = UUID.fromString("78290001-d52e-473f-a9f4-f03da7c67dd1");
     private final static UUID PuckTX = UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1");
     private final static UUID PuckRX = UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1");
@@ -83,8 +84,7 @@ public class PuckGattService extends Service {
     }
 
     private int activeSlot = 0;
-    private int selectSlot = 0;
-    private int slotsCount = 0;
+    private int slotsCount = 32;
 
     public void setListener(BluetoothGattListener listener) {
         this.listener = listener;
@@ -113,27 +113,23 @@ public class PuckGattService extends Service {
                     + " " + Arrays.toString(data));
 
             if (characteristic.getUuid().compareTo(PuckRX) == 0) {
-                if (outgoingCallbacks.size() > 0) {
-                    outgoingCallbacks.get(0).run();
-                    outgoingCallbacks.remove(0);
-                }
                 if (data[0] == PUCK.INFO.getBytes()) {
                     if (data.length == 3) {
                         activeSlot = data[1];
                         slotsCount = data[2];
-                        selectSlot = 0;
-                        puckArray = new ArrayList<>();
-                        sendCommand(new byte[]{PUCK.INFO.getBytes(), (byte) (selectSlot)}, null);
+                        getDeviceSlots(slotsCount);
                     } else {
-                        byte[] infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
-                        System.arraycopy(data, 2, infoResponse, 0, NfcByte.KEY_FILE_SIZE);
-                        puckArray.add(infoResponse);
-                        selectSlot += 1;
-                        if (selectSlot == slotsCount || slotsCount == 0) {
+                        if (data.length > 2) {
+                            byte[] infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
+                            System.arraycopy(data, 2, infoResponse, 0, NfcByte.KEY_FILE_SIZE);
+                            puckArray.add(infoResponse);
+                        } else {
+                            puckArray.add(null);
+                        }
+                        if (puckArray.size() == slotsCount) {
                             if (null != listener)
                                 listener.onPuckListRetrieved(puckArray, activeSlot);
-                        } else {
-                            getSlotSummary(selectSlot);
+                            puckArray = new ArrayList<>();
                         }
                     }
                 } else if (data[0] == PUCK.READ.getBytes()) {
@@ -149,6 +145,10 @@ public class PuckGattService extends Service {
                 } else if (data[0] == PUCK.SAVE.getBytes()) {
                     if (null != listener) listener.onPuckProcessFinish();
                     getDeviceAmiibo();
+                }
+                if (outgoingCallbacks.size() > 0) {
+                    outgoingCallbacks.get(0).run();
+                    outgoingCallbacks.remove(0);
                 }
             }
         }
@@ -203,13 +203,13 @@ public class PuckGattService extends Service {
 
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
-            if (null != listener) listener.onServicesDiscovered();
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Debug.Verbose(TAG, "onMtuChange complete: " + mtu);
                 maxTransmissionUnit = mtu;
             } else {
                 Debug.Warn(TAG, "onMtuChange received: " + status);
             }
+            if (null != listener) listener.onServicesDiscovered();
         }
     };
 
@@ -439,9 +439,9 @@ public class PuckGattService extends Service {
                     mCharacteristicTX.setValue(chunk);
                     mCharacteristicTX.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
                     mBluetoothGatt.writeCharacteristic(mCharacteristicTX);
-                }, (i + 1) * 30L);
+                }, (i + 1) * chunkTimeout);
             }
-        }, commandQueue * 30L);
+        }, commandQueue * chunkTimeout);
     }
 
     public void queueByteCharacteristic(byte[] value, int index) {
@@ -477,11 +477,18 @@ public class PuckGattService extends Service {
     }
 
     public void getDeviceAmiibo() {
-        sendCommand(new byte[] { PUCK.INFO.getBytes() }, null);
+        // sendCommand(new byte[] { PUCK.INFO.getBytes() }, null);
+        getDeviceSlots(slotsCount);
     }
 
     public void getSlotSummary(int slot) {
         sendCommand(new byte[] { PUCK.INFO.getBytes(), (byte) slot }, null);
+    }
+
+    private void getDeviceSlots(int total) {
+        for (int i = 0; i < total; i++) {
+            getSlotSummary(i);
+        }
     }
 
     public void uploadSlotAmiibo(byte[] tagData, int slot) {

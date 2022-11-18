@@ -96,6 +96,7 @@ public class AmiiboDocument {
                                 DocumentsContract.Document.COLUMN_DOCUMENT_ID },
                         null, null, null);
             } catch (SecurityException sx) {
+                new Preferences(TagMo.getContext()).browserRootDocument(null);
                 return;
             }
         }

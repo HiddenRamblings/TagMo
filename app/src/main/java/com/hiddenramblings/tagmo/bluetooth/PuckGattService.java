@@ -103,9 +103,8 @@ public class PuckGattService extends Service {
         void onGattConnectionLost();
     }
 
-    byte[] readResponse = new byte[NfcByte.TAG_FILE_SIZE];
-    byte[] infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
     ArrayList<byte[]> puckArray = new ArrayList<>();
+    byte[] readResponse = new byte[NfcByte.TAG_FILE_SIZE];
 
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         final byte[] data = characteristic.getValue();
@@ -119,30 +118,33 @@ public class PuckGattService extends Service {
                         activeSlot = data[1];
                         slotCount = data[2];
                         currentSlot = 0;
+                        puckArray = new ArrayList<>();
                         sendCommand(new byte[]{PUCK.INFO.getBytes(), (byte) (currentSlot)}, null);
                     } else {
+                        byte[] infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
                         System.arraycopy(data, 2, infoResponse, 0, NfcByte.KEY_FILE_SIZE);
                         puckArray.add(infoResponse);
                         currentSlot += 1;
-                        infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
                         if (currentSlot == slotCount || slotCount == 0) {
                             if (null != listener)
                                 listener.onPuckListRetrieved(puckArray, activeSlot);
-                            puckArray = new ArrayList<>();
                         } else {
                             sendCommand(new byte[]{PUCK.INFO.getBytes(), (byte) (currentSlot)}, null);
                         }
                     }
                 } else if (data[0] == PUCK.READ.getBytes()) {
                     if (data[2] == 0) {
-                        System.arraycopy(readResponse, 0, data, 4, data.length);
+                        System.arraycopy(data, 4, readResponse, 0, data.length);
                     } else if (data[2] > 62 && data[2] < 126) {
-                        System.arraycopy(readResponse, 252, data, 4, data.length);
+                        System.arraycopy(data, 4, readResponse, 252, data.length);
                     } else {
-                        System.arraycopy(readResponse, 504, data, 4, data.length);
+                        System.arraycopy(data, 4, readResponse, 504, data.length);
                         if (null != listener) listener.onPuckFilesDownload(readResponse);
                         readResponse = new byte[NfcByte.TAG_FILE_SIZE];
                     }
+                } else if (data[0] == PUCK.SAVE.getBytes()) {
+                    if (null != listener) listener.onPuckProcessFinish();
+                    getDeviceAmiibo();
                 }
             }
         }
@@ -469,7 +471,7 @@ public class PuckGattService extends Service {
         }
     }
 
-    public void getSlotCount() {
+    public void getDeviceAmiibo() {
         sendCommand(new byte[] { PUCK.INFO.getBytes() }, null);
     }
 
@@ -487,7 +489,6 @@ public class PuckGattService extends Service {
                 new byte[] { PUCK.SAVE.getBytes(), (byte) (slot - 1) },
                 activeSlot == slot ? new byte[] { PUCK.NFC.getBytes() } : null
         );
-        if (null != listener) listener.onPuckProcessFinish();
     }
 
     private void downloadSlotData(int slot) {

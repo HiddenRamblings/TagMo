@@ -502,9 +502,9 @@ public class PuckGattService extends Service {
         sendCommand(new byte[] { PUCK.READ.getBytes(), (byte) slot, 0x7E, 0x11 }, null);
     }
 
-    private void setActiveSlot(int slot) {
+    public void setActiveSlot(int slot) {
+        sendCommand(new byte[] { PUCK.NFC.getBytes(), (byte) slot }, null);
         activeSlot = slot;
-        sendCommand(new byte[] { PUCK.NFC.getBytes(), (byte) activeSlot }, null);
         if (null != listener) listener.onPuckActiveChanged(activeSlot);
     }
 

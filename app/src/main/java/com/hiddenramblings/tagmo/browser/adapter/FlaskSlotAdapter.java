@@ -98,14 +98,16 @@ public class FlaskSlotAdapter
         }
         holder.itemView.setOnClickListener(view -> {
             if (null != holder.listener) {
-                holder.listener.onAmiiboClicked(holder.amiibo);
+                holder.listener.onAmiiboClicked(holder.amiibo, holder.getBindingAdapterPosition());
             }
         });
         if (null != holder.imageAmiibo) {
             holder.imageAmiibo.setOnClickListener(view -> {
                 if (null != holder.listener) {
                     if (settings.getAmiiboView() == VIEW.IMAGE.getValue())
-                        holder.listener.onAmiiboClicked(holder.amiibo);
+                        holder.listener.onAmiiboClicked(
+                                holder.amiibo, holder.getBindingAdapterPosition()
+                        );
                     else
                         holder.listener.onAmiiboImageClicked(holder.amiibo);
                 }
@@ -296,7 +298,7 @@ public class FlaskSlotAdapter
     }
 
     public interface OnAmiiboClickListener {
-        void onAmiiboClicked(Amiibo amiibo);
+        void onAmiiboClicked(Amiibo amiibo, int position);
 
         void onAmiiboImageClicked(Amiibo amiibo);
     }

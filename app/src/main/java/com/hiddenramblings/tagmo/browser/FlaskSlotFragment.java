@@ -1310,7 +1310,7 @@ public class FlaskSlotFragment extends Fragment implements
     }
 
     @Override
-    public void onAmiiboClicked(Amiibo amiibo) {
+    public void onAmiiboClicked(Amiibo amiibo, int position) {
         getActiveAmiibo(amiibo, amiiboCard);
         onBottomSheetChanged(SHEET.AMIIBO);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -1318,9 +1318,14 @@ public class FlaskSlotFragment extends Fragment implements
             toolbar.getMenu().findItem(R.id.mnu_backup).setVisible(false);
             toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_activate) {
-                    serviceFlask.setActiveAmiibo(
-                            amiibo.name, new String(TagArray.longToBytes(amiibo.id))
-                    );
+                    if (null != serviceFlask) {
+                        serviceFlask.setActiveAmiibo(
+                                amiibo.name, new String(TagArray.longToBytes(amiibo.id))
+                        );
+                    }
+                    if (null != servicePuck) {
+                        servicePuck.setActiveSlot(position);
+                    }
                     return true;
                 } else if (item.getItemId() == R.id.mnu_delete) {
                     serviceFlask.deleteAmiibo(
@@ -1335,9 +1340,14 @@ public class FlaskSlotFragment extends Fragment implements
             toolbar.getMenu().findItem(R.id.mnu_backup).setVisible(true);
             toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.mnu_activate) {
-                    serviceFlask.setActiveAmiibo(
-                            amiibo.name, amiibo.getFlaskTail()
-                    );
+                    if (null != serviceFlask) {
+                        serviceFlask.setActiveAmiibo(
+                                amiibo.name, amiibo.getFlaskTail()
+                        );
+                    }
+                    if (null != servicePuck) {
+                        servicePuck.setActiveSlot(position);
+                    }
                     return true;
                 } else if (item.getItemId() == R.id.mnu_delete) {
                     serviceFlask.deleteAmiibo(

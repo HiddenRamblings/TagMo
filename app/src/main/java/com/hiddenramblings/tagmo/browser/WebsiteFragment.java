@@ -51,6 +51,7 @@ import java.util.zip.ZipInputStream;
 
 public class WebsiteFragment extends Fragment {
 
+    private final Handler webHandler = new Handler(Looper.getMainLooper());
     private WebView mWebView;
     private ProgressDialog dialog;
 
@@ -156,12 +157,10 @@ public class WebsiteFragment extends Fragment {
             mWebView.loadUrl(address);
         } else {
             final String delayedUrl = address;
-            new Handler(Looper.getMainLooper()).postDelayed(() ->
-                    loadWebsite(delayedUrl), TagMo.uiDelay);
+            webHandler.postDelayed(() -> loadWebsite(delayedUrl), TagMo.uiDelay);
         }
     }
 
-    private final Handler handler = new Handler(Looper.getMainLooper());
     private class UnZip implements Runnable {
         File archive;
         File outputDir;
@@ -179,8 +178,9 @@ public class WebsiteFragment extends Fragment {
                 ZipEntry entry;
                 while (null != (entry = zipIn.getNextEntry())) {
                     ZipEntry finalEntry = entry;
-                    handler.post(() -> dialog.setMessage(
-                            getString(R.string.unzip_item, finalEntry.getName())));
+                    webHandler.post(() -> dialog.setMessage(
+                            getString(R.string.unzip_item, finalEntry.getName()))
+                    );
                     if (finalEntry.isDirectory()) {
                         File dir = new File(outputDir, finalEntry.getName()
                                 .replace("/", ""));
@@ -210,7 +210,10 @@ public class WebsiteFragment extends Fragment {
     }
 
     private void unzipFile(File zipFile) {
-        dialog = ProgressDialog.show(requireContext(), "", "", true);
+        webHandler.post(() -> dialog = ProgressDialog.show(
+                requireContext(), "", "", true
+
+        ));
         new Thread(new UnZip(zipFile, Storage.getDownloadDir(
                 "TagMo", "Downloads"))).start();
     }

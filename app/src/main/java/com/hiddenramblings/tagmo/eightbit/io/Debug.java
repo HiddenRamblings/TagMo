@@ -276,27 +276,42 @@ public class Debug {
         return log;
     }
 
+    private static Intent setEmailParams(Intent emailIntent, String subject, String text) {
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"samsprungtoo@gmail.com"});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, text);
+        return emailIntent;
+    }
+
     private static void submitLogcat(Context context, String logText) {
         if (BuildConfig.WEAR_OS) return;
         String subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT);
         ClipboardManager clipboard = (ClipboardManager) context
                 .getSystemService(Context.CLIPBOARD_SERVICE);
         clipboard.setPrimaryClip(ClipData.newPlainText(subject, logText));
+
         try {
-            final Intent emailIntent = new Intent(Intent.ACTION_SEND);
-            emailIntent.setType("text/plain");
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"samsprungtoo@gmail.com"});
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-            emailIntent.putExtra(Intent.EXTRA_TEXT, logText);
-            emailIntent.setType("message/rfc822");
+            Intent emailIntent = setEmailParams(new Intent(Intent.ACTION_SENDTO), subject, logText);
+            emailIntent.setData(Uri.parse("mailto:samsprungtoo@gmail.com"));
             context.startActivity(
                     Intent.createChooser(emailIntent, context.getString(R.string.logcat_crash))
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             );
-        } catch (ActivityNotFoundException ex) {
+        } catch (ActivityNotFoundException anf) {
             try {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
-            } catch (Exception ignored) { }
+                Intent emailIntent = setEmailParams(new Intent(Intent.ACTION_SEND), subject, logText);
+                emailIntent.setType("text/plain");
+                emailIntent.setType("message/rfc822");
+                context.startActivity(
+                        Intent.createChooser(emailIntent, context.getString(R.string.logcat_crash))
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                );
+            } catch (ActivityNotFoundException ex) {
+                try {
+                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)));
+                } catch (Exception ignored) {
+                }
+            }
         }
     }
 

@@ -181,9 +181,7 @@ public class FlaskSlotAdapter
             String gameSeries = "";
             String amiiboImageUrl = null;
 
-            if (amiibo instanceof FlaskTag)  {
-                setAmiiboInfoText(txtName, TagMo.getContext().getString(R.string.blank_tag));
-            } else if (null == amiibo) {
+            if (null == amiibo) {
                 setAmiiboInfoText(txtName, TagMo.getContext().getString(R.string.empty_tag));
                 this.txtError.setVisibility(View.GONE);
                 this.txtPath.setVisibility(View.GONE);
@@ -192,6 +190,8 @@ public class FlaskSlotAdapter
                 this.txtAmiiboType.setVisibility(View.GONE);
                 this.txtGameSeries.setVisibility(View.GONE);
                 return;
+            } else if (amiibo instanceof FlaskTag)  {
+                setAmiiboInfoText(txtName, TagMo.getContext().getString(R.string.blank_tag));
             } else {
                 setAmiiboInfoText(txtName, amiibo.name);
                 amiiboImageUrl = amiibo.getImageUrl();

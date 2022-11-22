@@ -41,13 +41,16 @@ import com.hiddenramblings.tagmo.widget.Toasty;
 import org.json.JSONException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
+import java.util.Enumeration;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 
 public class WebsiteFragment extends Fragment {
 
@@ -170,36 +173,46 @@ public class WebsiteFragment extends Fragment {
             this.outputDir = directory;
         }
 
-        @SuppressWarnings("ResultOfMethodCallIgnored")
-        @Override
-        public void run() {
-            try {
-                ZipInputStream zipIn = new ZipInputStream(new FileInputStream(this.archive));
-                ZipEntry entry;
-                while (null != (entry = zipIn.getNextEntry())) {
-                    ZipEntry finalEntry = entry;
-                    webHandler.post(() -> dialog.setMessage(
-                            getString(R.string.unzip_item, finalEntry.getName()))
-                    );
-                    if (finalEntry.isDirectory()) {
-                        File dir = new File(outputDir, finalEntry.getName()
-                                .replace("/", ""));
-                        if (!dir.exists() && !dir.mkdirs())
-                            throw new RuntimeException(
-                                    getString(R.string.mkdir_failed, dir.getName())
-                            );
+        private void decompress() throws IOException {
+            ZipFile zipIn = new ZipFile(this.archive);
+            Enumeration<? extends ZipEntry> entries = zipIn.entries();
+            while (entries.hasMoreElements()) {
+                // get the zip entry
+                ZipEntry finalEntry = entries.nextElement();
+                webHandler.post(() -> dialog.setMessage(
+                        getString(R.string.unzip_item, finalEntry.getName()))
+                );
+                if (finalEntry.isDirectory()) {
+                    File dir = new File(outputDir, finalEntry.getName()
+                            .replace("/", ""));
+                    if (!dir.exists() && !dir.mkdirs())
+                        throw new RuntimeException(
+                                getString(R.string.mkdir_failed, dir.getName())
+                        );
+                } else {
+                    InputStream is = zipIn.getInputStream(finalEntry);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        Files.copy(is, Paths.get(outputDir.getAbsolutePath(), finalEntry.getName()));
                     } else {
                         FileOutputStream fileOut = new FileOutputStream(
                                 new File(outputDir, finalEntry.getName()));
                         byte[] buffer = new byte[8192];
                         int len;
-                        while ((len = zipIn.read(buffer)) != -1)
+                        while ((len = is.read(buffer)) != -1)
                             fileOut.write(buffer, 0, len);
                         fileOut.close();
-                        zipIn.closeEntry();
                     }
+                    is.close();
                 }
-                zipIn.close();
+            }
+            zipIn.close();
+        }
+
+        @SuppressWarnings("ResultOfMethodCallIgnored")
+        @Override
+        public void run() {
+            try {
+                decompress();
             } catch (IOException e) {
                 Debug.Warn(e);
             } finally {
@@ -207,16 +220,6 @@ public class WebsiteFragment extends Fragment {
                 this.archive.delete();
             }
         }
-    }
-
-    private void unzipFile(File zipFile) {
-        webHandler.post(() -> dialog = ProgressDialog.show(
-                requireContext(), "", "", true
-
-        ));
-        new Thread(new UnZip(zipFile, Storage.getDownloadDir(
-                "TagMo", "Downloads"
-        ))).start();
     }
 
     private void saveBinFile(byte[] tagData, String name) {
@@ -290,7 +293,12 @@ public class WebsiteFragment extends Fragment {
                         "^data:" + zipType + ";base64,", ""
                 ), 0));
                 os.flush();
-                unzipFile(filePath);
+                webHandler.post(() -> dialog = ProgressDialog.show(
+                        requireContext(), "", "", true
+                ));
+                new Thread(new UnZip(filePath, Storage.getDownloadDir(
+                        "TagMo", "Downloads"
+                ))).start();
             } else {
                 String[] binTypes = getResources().getStringArray(R.array.mimetype_bin);
                 for (String binType : binTypes) {

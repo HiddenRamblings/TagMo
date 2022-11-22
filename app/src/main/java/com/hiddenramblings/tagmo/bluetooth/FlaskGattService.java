@@ -118,8 +118,7 @@ public class FlaskGattService extends Service {
         this.listener = listener;
     }
 
-    private final ArrayList<Runnable> outgoingCallbacks = new ArrayList<>();
-//    private final ArrayList<Runnable> incomingCallbacks = new ArrayList<>();
+    private final ArrayList<Runnable> commandCallbacks = new ArrayList<>();
 
     private final Handler flaskHandler = new Handler(Looper.getMainLooper());
     private final int listCount = 10;
@@ -157,9 +156,9 @@ public class FlaskGattService extends Service {
                 if (isJSONValid(progress) || progress.endsWith(">")
                         || progress.lastIndexOf("undefined") == 0
                         || progress.lastIndexOf("\n") == 0) {
-                    if (outgoingCallbacks.size() > 0) {
-                        outgoingCallbacks.get(0).run();
-                        outgoingCallbacks.remove(0);
+                    if (commandCallbacks.size() > 0) {
+                        commandCallbacks.get(0).run();
+                        commandCallbacks.remove(0);
                     }
                 }
 
@@ -287,10 +286,6 @@ public class FlaskGattService extends Service {
                 }
             }
         }
-//        if (incomingCallbacks.size() > 0) {
-//            incomingCallbacks.get(0).run();
-//            incomingCallbacks.remove(0);
-//        }
     }
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -321,13 +316,6 @@ public class FlaskGattService extends Service {
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status
         ) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-//                incomingCallbacks.add(incomingCallbacks.size(), () ->
-//                        getCharacteristicValue(characteristic));
-//
-//                if (incomingCallbacks.size() == 1) {
-//                    incomingCallbacks.get(0).run();
-//                    incomingCallbacks.remove(0);
-//                }
                  getCharacteristicValue(characteristic);
             }
         }
@@ -344,12 +332,6 @@ public class FlaskGattService extends Service {
         public void onCharacteristicChanged(
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic
         ) {
-//            incomingCallbacks.add(incomingCallbacks.size(), () -> getCharacteristicValue(characteristic));
-//
-//            if (incomingCallbacks.size() == 1) {
-//                incomingCallbacks.get(0).run();
-//                incomingCallbacks.remove(0);
-//            }
              getCharacteristicValue(characteristic);
         }
 
@@ -583,7 +565,7 @@ public class FlaskGattService extends Service {
 
     private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = GattArray.byteToPortions(value, maxTransmissionUnit);
-        int commandQueue = outgoingCallbacks.size() + 1 + chunks.size();
+        int commandQueue = commandCallbacks.size() + 1 + chunks.size();
         flaskHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
                 final byte[] chunk = chunks.get(i);
@@ -605,7 +587,7 @@ public class FlaskGattService extends Service {
 
     private void delayedWriteCharacteristic(String value) {
         List<String> chunks = GattArray.stringToPortions(value, maxTransmissionUnit);
-        int commandQueue = outgoingCallbacks.size() + 1 + chunks.size();
+        int commandQueue = commandCallbacks.size() + 1 + chunks.size();
         flaskHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
                 final String chunk = chunks.get(i);
@@ -634,16 +616,16 @@ public class FlaskGattService extends Service {
             }
         }
 
-        outgoingCallbacks.add(index, () -> delayedWriteCharacteristic(("tag." + value + "\n")));
+        commandCallbacks.add(index, () -> delayedWriteCharacteristic(("tag." + value + "\n")));
 
-        if (outgoingCallbacks.size() == 1) {
-            outgoingCallbacks.get(0).run();
-            outgoingCallbacks.remove(0);
+        if (commandCallbacks.size() == 1) {
+            commandCallbacks.get(0).run();
+            commandCallbacks.remove(0);
         }
     }
 
     public void delayedTagCharacteristic(String value) {
-        queueTagCharacteristic(value, outgoingCallbacks.size());
+        queueTagCharacteristic(value, commandCallbacks.size());
     }
 
     public void queueByteCharacteristic(byte[] value, int index) {
@@ -655,16 +637,16 @@ public class FlaskGattService extends Service {
             }
         }
 
-        outgoingCallbacks.add(index, () -> delayedWriteCharacteristic(value));
+        commandCallbacks.add(index, () -> delayedWriteCharacteristic(value));
 
-        if (outgoingCallbacks.size() == 1) {
-            outgoingCallbacks.get(0).run();
-            outgoingCallbacks.remove(0);
+        if (commandCallbacks.size() == 1) {
+            commandCallbacks.get(0).run();
+            commandCallbacks.remove(0);
         }
     }
 
     public void delayedByteCharacteric(byte[] value) {
-        queueByteCharacteristic(value, outgoingCallbacks.size());
+        queueByteCharacteristic(value, commandCallbacks.size());
     }
 
     public void promptTagCharacteristic(String value) {
@@ -680,16 +662,16 @@ public class FlaskGattService extends Service {
             }
         }
 
-        outgoingCallbacks.add(index, () -> delayedWriteCharacteristic(("screen." + value + "\n")));
+        commandCallbacks.add(index, () -> delayedWriteCharacteristic(("screen." + value + "\n")));
 
-        if (outgoingCallbacks.size() == 1) {
-            outgoingCallbacks.get(0).run();
-            outgoingCallbacks.remove(0);
+        if (commandCallbacks.size() == 1) {
+            commandCallbacks.get(0).run();
+            commandCallbacks.remove(0);
         }
     }
 
     public void delayedScreenCharacteristic(String value) {
-        queueScreenCharacteristic(value, outgoingCallbacks.size());
+        queueScreenCharacteristic(value, commandCallbacks.size());
     }
     
     public void uploadAmiiboFile(byte[] tagData, Amiibo amiibo, boolean complete) {

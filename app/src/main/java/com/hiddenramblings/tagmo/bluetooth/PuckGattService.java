@@ -90,7 +90,7 @@ public class PuckGattService extends Service {
         this.listener = listener;
     }
 
-    private final ArrayList<Runnable> outgoingCallbacks = new ArrayList<>();
+    private final ArrayList<Runnable> commandCallbacks = new ArrayList<>();
 
     private final Handler puckHandler = new Handler(Looper.getMainLooper());
 
@@ -119,7 +119,7 @@ public class PuckGattService extends Service {
                         slotsCount = data[2];
                         getDeviceSlots(slotsCount);
                     } else {
-                        if (data.length > 2) {
+                        if (data.length > 80) {
                             byte[] infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
                             System.arraycopy(data, 2, infoResponse, 0, NfcByte.KEY_FILE_SIZE);
                             puckArray.add(infoResponse);
@@ -145,9 +145,9 @@ public class PuckGattService extends Service {
                     if (null != listener) listener.onPuckProcessFinish();
                     getDeviceAmiibo();
                 }
-                if (outgoingCallbacks.size() > 0) {
-                    outgoingCallbacks.get(0).run();
-                    outgoingCallbacks.remove(0);
+                if (commandCallbacks.size() > 0) {
+                    commandCallbacks.get(0).run();
+                    commandCallbacks.remove(0);
                 }
             }
         }
@@ -430,7 +430,7 @@ public class PuckGattService extends Service {
 
     private void delayedWriteCharacteristic(byte[] value) {
         List<byte[]> chunks = GattArray.byteToPortions(value, maxTransmissionUnit - 3);
-        int commandQueue = outgoingCallbacks.size() + 1 + chunks.size();
+        int commandQueue = commandCallbacks.size() + 1 + chunks.size();
         puckHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
                 final byte[] chunk = chunks.get(i);
@@ -452,16 +452,16 @@ public class PuckGattService extends Service {
             }
         }
 
-        outgoingCallbacks.add(index, () -> delayedWriteCharacteristic(value));
+        commandCallbacks.add(index, () -> delayedWriteCharacteristic(value));
 
-        if (outgoingCallbacks.size() == 1) {
-            outgoingCallbacks.get(0).run();
-            outgoingCallbacks.remove(0);
+        if (commandCallbacks.size() == 1) {
+            commandCallbacks.get(0).run();
+            commandCallbacks.remove(0);
         }
     }
 
     public void delayedByteCharacteric(byte[] value) {
-        queueByteCharacteristic(value, outgoingCallbacks.size());
+        queueByteCharacteristic(value, commandCallbacks.size());
     }
 
     private void sendCommand(byte[] params, byte[] data) {

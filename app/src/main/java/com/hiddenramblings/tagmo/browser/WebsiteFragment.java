@@ -215,7 +215,8 @@ public class WebsiteFragment extends Fragment {
 
         ));
         new Thread(new UnZip(zipFile, Storage.getDownloadDir(
-                "TagMo", "Downloads"))).start();
+                "TagMo", "Downloads"
+        ))).start();
     }
 
     private void saveBinFile(byte[] tagData, String name) {

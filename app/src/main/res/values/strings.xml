@@ -3,7 +3,7 @@
     <string translatable="false" name="middleCenterError"> </string>
 
     <string name="fixed_key_found">&#171;locked-secret&#187; cached / loaded.</string>
-    <string name="fixed_key_missing">\\&#171;locked-secret&#187; missing!</string>
+    <string name="fixed_key_missing">&#171;locked-secret&#187; missing!</string>
     <string name="unfixed_key_found">&#171;unfixed-info&#187; cached / loaded.</string>
     <string name="unfixed_key_missing">&#171;unfixed-info&#187; missing!</string>
 
@@ -122,7 +122,7 @@
     <string name="bonus_three">Bonus Effect 2</string>
 
     <string name="logcat_support">Report Problem</string>
-    <string name="logcat_crash">Fatal error. Submit a log?</string>
+    <string name="logcat_crash">Unrecoverable error. Submit a log?</string>
     <string name="settings_donate">Send a donation to support development</string>
     <string name="google_link">Donate with Google Play</string>
     <string name="sponsor_link">Sponsor on GitHub</string>

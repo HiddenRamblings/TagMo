@@ -277,7 +277,7 @@ public class Debug {
     }
 
     private static Intent setEmailParams(Intent emailIntent, String subject, String text) {
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"samsprungtoo@gmail.com"});
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{ "samsprungtoo@gmail.com" });
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(Intent.EXTRA_TEXT, text);
         return emailIntent;

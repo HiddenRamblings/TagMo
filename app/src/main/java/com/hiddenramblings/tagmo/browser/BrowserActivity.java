@@ -606,10 +606,28 @@ public class BrowserActivity extends AppCompatActivity implements
         }
     }
 
+    public void onApplicationRecreate() {
+        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+            closePrefsDrawer();
+            recreate();
+        } else {
+            Intent intent = getIntent();
+            overridePendingTransition(0, 0);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            finish();
+            overridePendingTransition(0, 0);
+            startActivity(intent);
+        }
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     public void onTabCollectionChanged() {
-        mainLayout.setCurrentItem(0, false);
-        pagerAdapter.notifyDataSetChanged();
+        if (mainLayout.getCurrentItem() != 0)
+            mainLayout.setCurrentItem(0, false);
+        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU))
+            onApplicationRecreate();
+        else
+            pagerAdapter.notifyDataSetChanged();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -2081,7 +2099,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void launchEliteActivity(Intent resultData) {
-        if (prefs.elite_support() && resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
+        if (resultData.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             showElitePage(resultData.getExtras());
         }
     }
@@ -2599,6 +2617,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public void showElitePage(Bundle extras) {
+        if (!prefs.elite_support()) return;
         mainLayout.post(() -> {
             fragmentElite.setArguments(extras);
             mainLayout.setCurrentItem(1, true);

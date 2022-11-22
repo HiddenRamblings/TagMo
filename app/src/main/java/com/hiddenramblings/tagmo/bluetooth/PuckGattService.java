@@ -129,7 +129,6 @@ public class PuckGattService extends Service {
                         if (puckArray.size() == slotsCount) {
                             if (null != listener)
                                 listener.onPuckListRetrieved(puckArray, activeSlot);
-                            puckArray = new ArrayList<>();
                         }
                     }
                 } else if (data[0] == PUCK.READ.getBytes()) {
@@ -477,6 +476,7 @@ public class PuckGattService extends Service {
     }
 
     public void getDeviceAmiibo() {
+        puckArray = new ArrayList<>();
         // sendCommand(new byte[] { PUCK.INFO.getBytes() }, null);
         getDeviceSlots(slotsCount);
     }

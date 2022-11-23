@@ -100,6 +100,7 @@ public class AmiiboDocument {
                 return;
             }
         }
+        if (null == cursor) return;
         try {
             while (cursor.moveToNext()) {
                 fileCount.increment();

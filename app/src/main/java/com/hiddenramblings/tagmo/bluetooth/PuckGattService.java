@@ -119,10 +119,8 @@ public class PuckGattService extends Service {
                         slotsCount = data[2];
                         getDeviceSlots(slotsCount);
                     } else {
-                        if (data.length > 80) {
-                            byte[] infoResponse = new byte[NfcByte.KEY_FILE_SIZE];
-                            System.arraycopy(data, 2, infoResponse, 0, NfcByte.KEY_FILE_SIZE);
-                            puckArray.add(infoResponse);
+                        if (data.length > 2) {
+                            puckArray.add(Arrays.copyOfRange(data, 2, data.length));
                         } else {
                             puckArray.add(null);
                         }

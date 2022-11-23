@@ -271,7 +271,7 @@
     <string name="tag_update_only">Previously written tags require \&#34;Update\&#34;</string>
 
     <string name="custom_tab_back">Back to TagMo</string>
-    <string name="flask_missing">No GATT devices were located nearby!</string>
+    <string name="flask_missing">No nearby GATT devices located!</string>
     <string name="device_invalid">Not a valid GATT device!</string>
     <string name="flask_scanning">Scanning for Bluetooth GATT&#8230;</string>
     <string name="flask_located">Connecting to Bluetooth GATT&#8230;</string>

@@ -16,9 +16,10 @@ public class GattArray {
         List<byte[]> byteArrayPortions = new ArrayList<>();
         int offset = 0;
         while (offset < largeByteArray.length) {
-            byte[] portion = Arrays.copyOfRange(largeByteArray, offset, offset + sizePerPortion);
+            byteArrayPortions.add(largeByteArray.length - offset > sizePerPortion
+                    ? Arrays.copyOfRange(largeByteArray, offset, offset + sizePerPortion)
+                    : Arrays.copyOfRange(largeByteArray, offset, largeByteArray.length));
             offset += sizePerPortion;
-            byteArrayPortions.add(portion);
         }
         return byteArrayPortions;
     }

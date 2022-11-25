@@ -249,7 +249,22 @@ public class BluetoothHandler {
     public BluetoothAdapter getBluetoothAdapter(Context context) {
         if (null == context) return null;
         if (null != mBluetoothAdapter) {
-            if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
+            if (!mBluetoothAdapter.isEnabled()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    new AlertDialog.Builder(context)
+                            .setMessage(R.string.tiramisu_bluetooth)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                                context.startActivity(new Intent(
+                                        android.provider.Settings.ACTION_BLUETOOTH_SETTINGS
+                                ));
+                                dialog.dismiss();
+                            }).setNegativeButton(R.string.cancel, (dialog, which) ->
+                                    listener.onAdapterMissing()).show();
+                } else {
+                    mBluetoothAdapter.enable();
+                }
+            }
             return mBluetoothAdapter;
         } else {
             if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
@@ -260,7 +275,22 @@ public class BluetoothHandler {
                 mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             }
             if (null != mBluetoothAdapter) {
-                if (!mBluetoothAdapter.isEnabled()) mBluetoothAdapter.enable();
+                if (!mBluetoothAdapter.isEnabled()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        new AlertDialog.Builder(context)
+                                .setMessage(R.string.tiramisu_bluetooth)
+                                .setCancelable(false)
+                                .setPositiveButton(R.string.proceed, (dialog, which) -> {
+                                    context.startActivity(new Intent(
+                                            android.provider.Settings.ACTION_BLUETOOTH_SETTINGS
+                                    ));
+                                    dialog.dismiss();
+                                }).setNegativeButton(R.string.cancel, (dialog, which) ->
+                                        listener.onAdapterMissing()).show();
+                    } else {
+                        mBluetoothAdapter.enable();
+                    }
+                }
                 return mBluetoothAdapter;
             }
         }

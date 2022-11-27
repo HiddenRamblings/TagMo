@@ -2445,20 +2445,22 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private int[] getAdapterStats(AmiiboManager amiiboManager) {
-        BrowserAdapter adapter = null != amiibosView
-                ? (BrowserAdapter) amiibosView.getAdapter() : null;
-        if (null == adapter) return new int[]{0, 0};
-        int size = adapter.getItemCount();
-        int count = 0;
-        for (Amiibo amiibo : amiiboManager.amiibos.values()) {
-            for (int x = 0; x < size; x++) {
-                if (amiibo.id == adapter.getItemId(x)) {
-                    count += 1;
-                    break;
+        if (null != amiibosView && null != amiibosView.getAdapter()
+                && amiibosView.getAdapter() instanceof BrowserAdapter) {
+            BrowserAdapter adapter = (BrowserAdapter) amiibosView.getAdapter();
+            int size = adapter.getItemCount();
+            int count = 0;
+            for (Amiibo amiibo : amiiboManager.amiibos.values()) {
+                for (int x = 0; x < size; x++) {
+                    if (amiibo.id == adapter.getItemId(x)) {
+                        count += 1;
+                        break;
+                    }
                 }
             }
+            return new int[]{size, count};
         }
-        return new int[]{size, count};
+        return new int[]{0, 0};
     }
 
     private void setAmiiboStats() {

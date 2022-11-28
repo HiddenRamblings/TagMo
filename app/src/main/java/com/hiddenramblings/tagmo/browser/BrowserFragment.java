@@ -362,7 +362,7 @@ public class BrowserFragment extends Fragment implements
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 long amiiboId = Amiibo.dataToId(tagData);
-                GamesManager gamesManager = GamesManager.getGamesManager(requireContext());
+                GamesManager gamesManager = GamesManager.Companion.getGamesManager(requireContext());
                 String usage = gamesManager.getGamesCompatibility(amiiboId);
                 txtUsage.post(() -> txtUsage.setText(usage));
             } catch (Exception ex) {

@@ -1113,7 +1113,7 @@ public class BrowserActivity extends AppCompatActivity implements
         Set<String> items = new HashSet<>();
         if (null != gamesManager) {
             for (GameTitles gameTitle : gamesManager.getGameTitles()) {
-                items.add(gameTitle.name);
+                items.add(gameTitle.getName());
             }
         }
 
@@ -1765,7 +1765,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
             GamesManager gamesManager;
             try {
-                gamesManager = GamesManager.getGamesManager(this);
+                gamesManager = GamesManager.Companion.getGamesManager(this);
             } catch (IOException | JSONException | ParseException e) {
                 Debug.Warn(e);
                 gamesManager = null;
@@ -2429,8 +2429,8 @@ public class BrowserActivity extends AppCompatActivity implements
                 final Collection<GameTitles> amiiboTitles = gamesManager.getGameTitles();
                 final ArrayList<String> items = new ArrayList<>();
                 for (GameTitles amiiboTitle : amiiboTitles) {
-                    if (!items.contains(amiiboTitle.name))
-                        items.add(amiiboTitle.name);
+                    if (!items.contains(amiiboTitle.getName()))
+                        items.add(amiiboTitle.getName());
                 }
                 Collections.sort(items);
 

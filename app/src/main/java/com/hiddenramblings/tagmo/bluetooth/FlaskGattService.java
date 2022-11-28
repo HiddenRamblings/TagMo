@@ -100,6 +100,7 @@ public class FlaskGattService extends Service {
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
+    private final GattArray gattArray = new GattArray();
 
     BluetoothGattCharacteristic mCharacteristicRX = null;
     BluetoothGattCharacteristic mCharacteristicTX = null;
@@ -564,7 +565,7 @@ public class FlaskGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(byte[] value) {
-        List<byte[]> chunks = GattArray.byteToPortions(value, maxTransmissionUnit);
+        List<byte[]> chunks = gattArray.byteToPortions(value, maxTransmissionUnit);
         int commandQueue = commandCallbacks.size() + 1 + chunks.size();
         flaskHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
@@ -586,7 +587,7 @@ public class FlaskGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(String value) {
-        List<String> chunks = GattArray.stringToPortions(value, maxTransmissionUnit);
+        List<String> chunks = gattArray.stringToPortions(value, maxTransmissionUnit);
         int commandQueue = commandCallbacks.size() + 1 + chunks.size();
         flaskHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
@@ -676,7 +677,7 @@ public class FlaskGattService extends Service {
     
     public void uploadAmiiboFile(byte[] tagData, Amiibo amiibo, boolean complete) {
         delayedTagCharacteristic("startTagUpload(" + tagData.length + ")");
-        List<String> chunks = GattArray.stringToPortions(Base64.encodeToString(
+        List<String> chunks = gattArray.stringToPortions(Base64.encodeToString(
                 tagData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
         ), 128);
         for (int i = 0; i < chunks.size(); i+=1) {
@@ -689,7 +690,7 @@ public class FlaskGattService extends Service {
                 Amiibo.idToHex(amiibo.id).substring(8, 16), 16
         ), 36);
         int reserved = flaskTail.length() + 3; // |tail|#
-        String nameUnicode = GattArray.stringToUnicode(amiibo.name);
+        String nameUnicode = gattArray.stringToUnicode(amiibo.name);
         String amiiboName = nameUnicode.length() + reserved > 28
                 ? nameUnicode.substring(0, nameUnicode.length()
                 - ((nameUnicode.length() + reserved) - 28))
@@ -707,7 +708,7 @@ public class FlaskGattService extends Service {
             delayedTagCharacteristic("setTag(\"" + name + "||" + tail + "\")");
         } else {
             int reserved = tail.length() + 3; // |tail|#
-            String nameUnicode = GattArray.stringToUnicode(name);
+            String nameUnicode = gattArray.stringToUnicode(name);
             nameCompat = nameUnicode.length() + reserved > 28
                     ? nameUnicode.substring(0, nameUnicode.length()
                     - ((nameUnicode.length() + reserved) - 28))
@@ -719,7 +720,7 @@ public class FlaskGattService extends Service {
 
     public void fixAmiiboName(String name, String tail) {
         int reserved = tail.length() + 3; // |tail|#
-        String nameUnicode = GattArray.stringToUnicode(name);
+        String nameUnicode = gattArray.stringToUnicode(name);
         String amiiboName = nameUnicode.length() + reserved > 28
                 ? nameUnicode.substring(0, nameUnicode.length()
                 - ((nameUnicode.length() + reserved) - 28))
@@ -734,7 +735,7 @@ public class FlaskGattService extends Service {
             delayedTagCharacteristic("remove(\"" + name + "||" + tail + "\")");
         } else {
             int reserved = tail.length() + 3; // |tail|#
-            String nameUnicode = GattArray.stringToUnicode(name);
+            String nameUnicode = gattArray.stringToUnicode(name);
             nameCompat = nameUnicode.length() + reserved > 28
                     ? nameUnicode.substring(0, nameUnicode.length()
                     - ((nameUnicode.length() + reserved) - 28))
@@ -746,7 +747,7 @@ public class FlaskGattService extends Service {
 
     public void downloadAmiibo(String name, String tail) {
         int reserved = tail.length() + 3; // |tail|#
-        String nameUnicode = GattArray.stringToUnicode(name);
+        String nameUnicode = gattArray.stringToUnicode(name);
         String amiiboName = nameUnicode.length() + reserved > 28
                 ? nameUnicode.substring(0, nameUnicode.length()
                 - ((nameUnicode.length() + reserved) - 28))

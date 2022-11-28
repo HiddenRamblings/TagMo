@@ -52,6 +52,7 @@ public class PuckGattService extends Service {
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
+    private final GattArray gattArray = new GattArray();
 
     BluetoothGattCharacteristic mCharacteristicRX = null;
     BluetoothGattCharacteristic mCharacteristicTX = null;
@@ -427,7 +428,7 @@ public class PuckGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(byte[] value) {
-        List<byte[]> chunks = GattArray.byteToPortions(value, maxTransmissionUnit - 3);
+        List<byte[]> chunks = gattArray.byteToPortions(value, maxTransmissionUnit - 3);
         int commandQueue = commandCallbacks.size() + 1 + chunks.size();
         puckHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {

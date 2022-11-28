@@ -18,6 +18,7 @@ import com.hiddenramblings.tagmo.GlideApp;
 import com.hiddenramblings.tagmo.R;
 import com.hiddenramblings.tagmo.TagMo;
 import com.hiddenramblings.tagmo.amiibo.Amiibo;
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager;
 import com.hiddenramblings.tagmo.amiibo.FlaskTag;
 import com.hiddenramblings.tagmo.browser.BrowserSettings;
 import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener;
@@ -222,9 +223,8 @@ public class FlaskSlotAdapter
                     setAmiiboInfoText(txtAmiiboType, amiiboType);
                     setAmiiboInfoText(txtGameSeries, gameSeries);
 
-                    String spoofRange = amiiboHexId.substring(8, 12).toLowerCase(Locale.US);
-                    if ((spoofRange.equals("0000") || spoofRange.equals("ffff"))
-                            && !amiiboHexId.startsWith("00000000")) txtTagId.setEnabled(false);
+                    if (AmiiboManager.hasSpoofData(amiiboHexId))
+                        txtTagId.setEnabled(false);
                 }
             }
 

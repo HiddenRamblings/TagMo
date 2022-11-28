@@ -411,16 +411,14 @@ public class FoomiiboAdapter
                         .setVisibility(expanded ? View.VISIBLE : View.GONE);
                 if (expanded) listener.onFoomiiboRebind(itemView, foomiibo);
             }
+            if (AmiiboManager.hasSpoofData(amiiboHexId) && null != txtTagId)
+                txtTagId.setEnabled(false);
+
             if (null != this.imageAmiibo) {
                 GlideApp.with(imageAmiibo).clear(imageAmiibo);
                 if (null != amiiboImageUrl) {
                     GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(target);
                 }
-            }
-            String spoofRange = amiiboHexId.substring(8, 12).toLowerCase(Locale.US);
-            if ((spoofRange.equals("0000") || spoofRange.equals("ffff"))
-                    && !amiiboHexId.startsWith("00000000")) {
-                if (null != txtTagId) txtTagId.setEnabled(false);
             }
         }
 

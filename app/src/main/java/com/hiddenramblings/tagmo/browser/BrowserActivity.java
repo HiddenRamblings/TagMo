@@ -2292,6 +2292,8 @@ public class BrowserActivity extends AppCompatActivity implements
             } catch (Exception ex) {
                 Debug.Warn(ex);
             }
+            if (AmiiboManager.hasSpoofData(amiiboHexId) && null != txtTagId)
+                txtTagId.setEnabled(false);
 
             if (null != imageAmiibo) {
                 imageAmiibo.setVisibility(View.GONE);
@@ -2311,9 +2313,6 @@ public class BrowserActivity extends AppCompatActivity implements
                     });
                 }
             }
-            String spoofRange = amiiboHexId.substring(8, 12).toLowerCase(Locale.US);
-            if ((spoofRange.equals("0000") || spoofRange.equals("ffff"))
-                    && !amiiboHexId.startsWith("00000000")) txtTagId.setEnabled(false);
         });
     }
 
@@ -2640,7 +2639,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private boolean keyNameMatcher(String name) {
-        boolean isValid = AmiiboManager.binFileMatcher(name);
+        boolean isValid = AmiiboManager.binFileMatches(name);
         return name.toLowerCase(Locale.ROOT).endsWith("retail.bin") ||
                 (isValid && (name.toLowerCase(Locale.ROOT).startsWith("locked")
                         || name.toLowerCase(Locale.ROOT).startsWith("unfixed")));

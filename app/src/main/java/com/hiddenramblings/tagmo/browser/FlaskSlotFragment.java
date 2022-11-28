@@ -836,9 +836,8 @@ public class FlaskSlotFragment extends Fragment implements
                 setAmiiboInfoText(txtAmiiboType, amiiboType);
                 setAmiiboInfoText(txtGameSeries, gameSeries);
 
-                String spoofRange = amiiboHexId.substring(8, 12).toLowerCase(Locale.US);
-                if ((spoofRange.equals("0000") || spoofRange.equals("ffff"))
-                        && !amiiboHexId.startsWith("00000000")) txtTagId.setEnabled(false);
+                if (AmiiboManager.hasSpoofData(amiiboHexId) && null != txtTagId)
+                    txtTagId.setEnabled(false);
             }
 
             if (amiiboView == amiiboTile && null == amiiboImageUrl) {

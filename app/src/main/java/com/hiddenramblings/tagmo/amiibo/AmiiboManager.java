@@ -339,15 +339,22 @@ public class AmiiboManager {
         return amiiboManager;
     }
 
-    public static boolean binFileMatcher(String name) {
+    public static boolean binFileMatches(String name) {
         return name.toLowerCase(Locale.ROOT).endsWith(".bin");
+    }
+
+    public static boolean hasSpoofData(String amiiboHexId) {
+        if (amiiboHexId.length() < 12) return false;
+        String spoofRange = amiiboHexId.substring(8, 12).toLowerCase(Locale.US);
+        return !amiiboHexId.startsWith("00000000")
+                && (spoofRange.equals("0000") || spoofRange.equals("ffff"));
     }
 
     public static ArrayList<AmiiboFile> listAmiibos(
             KeyManager keyManager, File rootFolder, boolean recursiveFiles
     ) {
         ArrayList<AmiiboFile> amiiboFiles = new ArrayList<>();
-        File[] files = rootFolder.listFiles((dir, name) -> binFileMatcher(name));
+        File[] files = rootFolder.listFiles((dir, name) -> binFileMatches(name));
         if (null != files && files.length > 0) {
             for (File file : files) {
 

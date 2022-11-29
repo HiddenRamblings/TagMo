@@ -107,9 +107,15 @@ public class ScanTag {
                 if (prefs.elite_support()) {
                     NTAG215 finalMifare = mifare;
                     if (e instanceof android.nfc.TagLostException) {
-                        new IconifiedSnackbar(activity, activity.getLayout()).buildSnackbar(
-                                R.string.speed_scan, Snackbar.LENGTH_SHORT
-                        ).show();
+                        if (isEliteDevice) {
+                            activity.onNFCActivity.launch(new Intent(
+                                    activity, NfcActivity.class
+                            ).setAction(NFCIntent.ACTION_BLIND_SCAN));
+                        } else {
+                            new IconifiedSnackbar(activity, activity.getLayout()).buildSnackbar(
+                                    R.string.speed_scan, Snackbar.LENGTH_SHORT
+                            ).show();
+                        }
                         closeTagSilently(finalMifare);
                     } else if (activity.getString(R.string.nfc_null_array).equals(error)) {
                         activity.runOnUiThread(() -> new AlertDialog.Builder(activity)

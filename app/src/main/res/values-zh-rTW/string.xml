@@ -81,6 +81,7 @@
 
     <string name="error_caps">錯誤</string>
 
+    <string name="uid" translatable="false">UID</string>
     <string name="country_code">國碼</string>
     <string name="init_date">初始化日期</string>
     <string name="mod_date">修改日期</string>
@@ -98,12 +99,13 @@
     <string name="game_titles_hide">隱藏可支援的相關遊戲</string>
 
     <string name="properties">相關資訊</string>
+    <string name="mii" translatable="false">Mii</string>
     <string name="mii_name">Mii名稱</string>
     <string name="app">應用程式</string>
     <string name="app_id">App ID</string>
     <string name="app_data">App 數據</string>
 
-     <string name="hearts">Hearts</string>
+    <string name="hearts">Hearts</string>
     <string name="level">Level</string>
     <string name="level_cpu">CPU Level</string>
     <string name="appearance">Appearance</string>
@@ -286,6 +288,7 @@
     <string name="flask_upload">正在上傳二進位檔案&#8230;</string>
     <string name="flask_remove">正在抹除slot數據&#8230;</string>
     <string name="fail_bluetooth_adapter">沒有可用的藍牙裝置!</string>
+    <string name="tiramisu_bluetooth">Android 13需要手動啟用藍牙. 是否開啟設定頁面來啟用藍牙?</string>
     <string name="fail_permissions">無法取得執行所需的權限！</string>
     <string name="location_disclosure">特此知會您，使用Bluetooth LE掃描時必須取得定位資訊，依據Google Play商店的政策，本程序會在背景服務收集定位資訊，但絕對不會讀取、儲存或與第三人分享定位資訊。</string>
 
@@ -354,6 +357,7 @@
 
     <string name="no_tag_loaded">&lt;尚未載入Tag&gt;</string>
     <string name="read_error">&lt;讀取Tag時發生錯誤&gt;</string>
+    <string name="empty_tag">&lt;空的Tag&gt;</string>
     <string name="blank_tag">&lt;空白的Tag&gt;</string>
     <string name="blank_bank">%1$s: &lt;空白的Bank&gt;</string>
 

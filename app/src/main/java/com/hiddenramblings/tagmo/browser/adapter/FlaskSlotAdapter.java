@@ -208,11 +208,11 @@ public class FlaskSlotAdapter
                 } else {
                     amiiboHexId = Amiibo.idToHex(amiibo.id);
                     if (null != amiibo.getAmiiboSeries())
-                        amiiboSeries = amiibo.getAmiiboSeries().name;
+                        amiiboSeries = amiibo.getAmiiboSeries().getName();
                     if (null != amiibo.getAmiiboType())
-                        amiiboType = amiibo.getAmiiboType().name;
+                        amiiboType = amiibo.getAmiiboType().getName();
                     if (null != amiibo.getGameSeries())
-                        gameSeries = amiibo.getGameSeries().name;
+                        gameSeries = amiibo.getGameSeries().getName();
 
                     this.txtTagId.setVisibility(View.VISIBLE);
                     this.txtAmiiboSeries.setVisibility(View.VISIBLE);

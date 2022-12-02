@@ -37,6 +37,7 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.AmiiboViewHolder>
         implements Filterable, BrowserSettingsListener {
@@ -314,11 +315,11 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                 if (null != amiibo.name )
                     amiiboName = amiibo.name;
                 if (null != amiibo.getAmiiboSeries() )
-                    amiiboSeries = amiibo.getAmiiboSeries().name;
+                    amiiboSeries = amiibo.getAmiiboSeries().getName();
                 if (null != amiibo.getAmiiboType() )
-                    amiiboType = amiibo.getAmiiboType().name;
+                    amiiboType = amiibo.getAmiiboType().getName();
                 if (null != amiibo.getGameSeries() )
-                    gameSeries = amiibo.getGameSeries().name;
+                    gameSeries = amiibo.getGameSeries().getName();
             } else {
                 tagInfo = "ID: " + Amiibo.idToHex(amiiboId);
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId);
@@ -358,9 +359,9 @@ public class WriteTagAdapter extends RecyclerView.Adapter<WriteTagAdapter.Amiibo
                     }
                 } else if (null != item.getFilePath()) {
                     this.itemView.setEnabled(true);
-                    String relativeFile = Storage.getRelativePath(item.getFilePath(),
-                            mPrefs.preferEmulated()).replace(
-                            mPrefs.browserRootFolder(), "");
+                    String relativeFile = Storage.getRelativePath(
+                            item.getFilePath(), mPrefs.preferEmulated()
+                    ).replace(Objects.requireNonNull(mPrefs.browserRootFolder()), "");
                     this.txtPath.setText(boldSpannable.indexOf(relativeFile, query));
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(

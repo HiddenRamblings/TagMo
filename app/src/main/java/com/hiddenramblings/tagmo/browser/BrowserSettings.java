@@ -486,13 +486,13 @@ public class BrowserSettings implements Parcelable {
                 return true;
             else if (null != amiibo.name && amiibo.name.toLowerCase().contains(query))
                 return true;
-            else if (null != character && character.name.toLowerCase().contains(query))
+            else if (null != character && character.getName().toLowerCase().contains(query))
                 return true;
-            else if (null != gameSeries && gameSeries.name.toLowerCase().contains(query))
+            else if (null != gameSeries && gameSeries.getName().toLowerCase().contains(query))
                 return true;
-            else if (null != amiiboSeries && amiiboSeries.name.toLowerCase().contains(query))
+            else if (null != amiiboSeries && amiiboSeries.getName().toLowerCase().contains(query))
                 return true;
-            else return null != amiiboType && amiiboType.name.toLowerCase().contains(query);
+            else return null != amiiboType && amiiboType.getName().toLowerCase().contains(query);
         }
         return true;
     }

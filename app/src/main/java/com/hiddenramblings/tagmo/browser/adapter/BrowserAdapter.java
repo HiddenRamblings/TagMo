@@ -140,22 +140,22 @@ public class BrowserAdapter
                             break;
                         case CHARACTER:
                             if (null != amiibo.getCharacter()) {
-                                heading = amiibo.getCharacter().name;
+                                heading = amiibo.getCharacter().getName();
                             }
                             break;
                         case GAME_SERIES:
                             if (null != amiibo.getGameSeries()) {
-                                heading = amiibo.getGameSeries().name;
+                                heading = amiibo.getGameSeries().getName();
                             }
                             break;
                         case AMIIBO_SERIES:
                             if (null != amiibo.getAmiiboSeries()) {
-                                heading = amiibo.getAmiiboSeries().name;
+                                heading = amiibo.getAmiiboSeries().getName();
                             }
                             break;
                         case AMIIBO_TYPE:
                             if (null != amiibo.getAmiiboType()) {
-                                heading = amiibo.getAmiiboType().name;
+                                heading = amiibo.getAmiiboType().getName();
                             }
                             break;
                     }
@@ -399,11 +399,11 @@ public class BrowserAdapter
                 if (null != amiibo.name)
                     amiiboName = amiibo.name;
                 if (null != amiibo.getAmiiboSeries())
-                    amiiboSeries = amiibo.getAmiiboSeries().name;
+                    amiiboSeries = amiibo.getAmiiboSeries().getName();
                 if (null != amiibo.getAmiiboType())
-                    amiiboType = amiibo.getAmiiboType().name;
+                    amiiboType = amiibo.getAmiiboType().getName();
                 if (null != amiibo.getGameSeries())
-                    gameSeries = amiibo.getGameSeries().name;
+                    gameSeries = amiibo.getGameSeries().getName();
             } else {
                 amiiboHexId = Amiibo.idToHex(amiiboId);
                 tagInfo = "ID: " + amiiboHexId;

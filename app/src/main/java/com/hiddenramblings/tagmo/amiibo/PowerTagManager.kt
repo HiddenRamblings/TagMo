@@ -73,13 +73,11 @@ object PowerTagManager {
         uidc[4] = (uid[4].toInt() and 0xFE).toByte()
         uidc[5] = (uid[5].toInt() and 0xFE).toByte()
         uidc[6] = (uid[6].toInt() and 0xFE).toByte()
-        val keymap = keys!![TagArray.bytesToHex(uidc)]
-            ?: throw NullPointerException(
-                TagMo.getContext().getString(R.string.uid_key_missing)
-            )
-        return keymap[page10bytes]
-            ?: throw NullPointerException(
-                TagMo.getContext().getString(R.string.p10_key_missing)
-            )
+        val keymap = keys!![TagArray.bytesToHex(uidc)] ?: throw NullPointerException(
+            TagMo.getContext().getString(R.string.uid_key_missing)
+        )
+        return keymap[page10bytes] ?: throw NullPointerException(
+            TagMo.getContext().getString(R.string.p10_key_missing)
+        )
     }
 }

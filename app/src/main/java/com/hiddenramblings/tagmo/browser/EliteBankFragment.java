@@ -831,11 +831,11 @@ public class EliteBankFragment extends Fragment implements
             if (null != amiibo.name)
                 amiiboName = amiibo.name;
             if (null != amiibo.getAmiiboSeries())
-                amiiboSeries = amiibo.getAmiiboSeries().name;
+                amiiboSeries = amiibo.getAmiiboSeries().getName();
             if (null != amiibo.getAmiiboType())
-                amiiboType = amiibo.getAmiiboType().name;
+                amiiboType = amiibo.getAmiiboType().getName();
             if (null != amiibo.getGameSeries())
-                gameSeries = amiibo.getGameSeries().name;
+                gameSeries = amiibo.getGameSeries().getName();
         } else {
             tagInfo = "ID: " + Amiibo.idToHex(amiiboId);
             amiiboImageUrl = Amiibo.getImageUrl(amiiboId);

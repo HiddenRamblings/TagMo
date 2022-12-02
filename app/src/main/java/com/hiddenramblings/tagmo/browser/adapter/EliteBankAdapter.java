@@ -201,11 +201,11 @@ public class EliteBankAdapter
                 if (null != amiibo.name)
                     amiiboName = amiibo.name;
                 if (null != amiibo.getAmiiboSeries())
-                    amiiboSeries = amiibo.getAmiiboSeries().name;
+                    amiiboSeries = amiibo.getAmiiboSeries().getName();
                 if (null != amiibo.getAmiiboType())
-                    amiiboType = amiibo.getAmiiboType().name;
+                    amiiboType = amiibo.getAmiiboType().getName();
                 if (null != amiibo.getGameSeries())
-                    gameSeries = amiibo.getGameSeries().name;
+                    gameSeries = amiibo.getGameSeries().getName();
                 setAmiiboInfoText(this.txtName, value + ": " + amiiboName);
             } else {
                 setAmiiboInfoText(this.txtName, TagMo.getContext()

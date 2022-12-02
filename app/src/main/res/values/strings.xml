@@ -327,7 +327,7 @@
     <string name="error_powertag_key">Power Tag keys not loaded</string>
     <string name="error_elite_write">Error while writing data to N2 Elite</string>
     <string name="error_elite_auth">Error while authenticating N2 Elite</string>
-    <string name="error_amiitool_init">Failed to initialise amiitool</string>
+    <string name="error_amiitool_init">Failed to initialize amiitool</string>
     <string name="error_auth_null">Auth result was null</string>
     <string name="error_unknown">An unknown error has occurred.\nPlease submit a support logcat.</string>
 

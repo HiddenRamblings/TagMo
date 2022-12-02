@@ -261,7 +261,7 @@ public class BrowserFragment extends Fragment implements
             Amiibo amiibo = settings.getAmiiboManager().amiibos
                     .get(Amiibo.dataToId(tagData));
             if (amiibo == null) throw new Exception();
-            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            File directory = new File(this.directory, amiibo.getAmiiboSeries().getName());
             File amiiboFile = new File(directory, TagArray.decipherFilename(
                     settings.getAmiiboManager(), tagData, false
             ));
@@ -300,7 +300,7 @@ public class BrowserFragment extends Fragment implements
     private void buildFoomiiboFile(Amiibo amiibo) {
         try {
             byte[] tagData = foomiibo.getSignedData(Amiibo.idToHex(amiibo.id));
-            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            File directory = new File(this.directory, amiibo.getAmiiboSeries().getName());
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
             TagArray.writeBytesToFile(directory, TagArray.decipherFilename(
@@ -316,7 +316,7 @@ public class BrowserFragment extends Fragment implements
             Amiibo amiibo = settings.getAmiiboManager().amiibos
                     .get(Amiibo.dataToId(tagData));
             if (null == amiibo) return;
-            File directory = new File(this.directory, amiibo.getAmiiboSeries().name);
+            File directory = new File(this.directory, amiibo.getAmiiboSeries().getName());
             //noinspection ResultOfMethodCallIgnored
             directory.mkdirs();
             tagData = foomiibo.getSignedData(tagData);
@@ -348,7 +348,7 @@ public class BrowserFragment extends Fragment implements
             for (Amiibo amiibo : amiiboManager.amiibos.values()) {
                 buildFoomiiboFile(amiibo);
                 handler.post(() -> dialog.setMessage(getString(
-                        R.string.foomiibo_progress, amiibo.getCharacter().name)));
+                        R.string.foomiibo_progress, amiibo.getCharacter().getName())));
             }
 
             handler.post(() -> {

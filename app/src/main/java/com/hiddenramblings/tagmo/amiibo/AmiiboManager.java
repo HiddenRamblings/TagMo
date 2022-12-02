@@ -81,7 +81,7 @@ public class AmiiboManager {
             String name = gameSeriesJSON.getString(key);
 
             GameSeries gameSeries = new GameSeries(manager, key, name);
-            manager.gameSeries.put(gameSeries.id, gameSeries);
+            manager.gameSeries.put(gameSeries.getId(), gameSeries);
         }
 
         JSONObject characterJSON = json.getJSONObject("characters");
@@ -90,7 +90,7 @@ public class AmiiboManager {
             String name = characterJSON.getString(key);
 
             Character character = new Character(manager, key, name);
-            manager.characters.put(character.id, character);
+            manager.characters.put(character.getId(), character);
         }
 
         JSONObject amiiboTypeJSON = json.getJSONObject("types");
@@ -99,7 +99,7 @@ public class AmiiboManager {
             String name = amiiboTypeJSON.getString(key);
 
             AmiiboType amiiboType = new AmiiboType(manager, key, name);
-            manager.amiiboTypes.put(amiiboType.id, amiiboType);
+            manager.amiiboTypes.put(amiiboType.getId(), amiiboType);
         }
 
         JSONObject amiiboSeriesJSON = json.getJSONObject("amiibo_series");
@@ -108,7 +108,7 @@ public class AmiiboManager {
             String name = amiiboSeriesJSON.getString(key);
 
             AmiiboSeries amiiboSeries = new AmiiboSeries(manager, key, name);
-            manager.amiiboSeries.put(amiiboSeries.id, amiiboSeries);
+            manager.amiiboSeries.put(amiiboSeries.getId(), amiiboSeries);
         }
 
         return manager;
@@ -205,10 +205,14 @@ public class AmiiboManager {
             amiiboJSON.put("name", amiibo.name);
 
             JSONObject releaseJSON = new JSONObject();
-            releaseJSON.put("na", null == amiibo.releaseDates.northAmerica ? null : iso8601.format(amiibo.releaseDates.northAmerica));
-            releaseJSON.put("jp", null == amiibo.releaseDates.japan ? null : iso8601.format(amiibo.releaseDates.japan));
-            releaseJSON.put("eu", null == amiibo.releaseDates.europe ? null : iso8601.format(amiibo.releaseDates.europe));
-            releaseJSON.put("au", null == amiibo.releaseDates.australia ? null : iso8601.format(amiibo.releaseDates.australia));
+            releaseJSON.put("na", null == amiibo.releaseDates.northAmerica ? null
+                    : iso8601.format(amiibo.releaseDates.northAmerica));
+            releaseJSON.put("jp", null == amiibo.releaseDates.japan ? null
+                    : iso8601.format(amiibo.releaseDates.japan));
+            releaseJSON.put("eu", null == amiibo.releaseDates.europe ? null
+                    : iso8601.format(amiibo.releaseDates.europe));
+            releaseJSON.put("au", null == amiibo.releaseDates.australia ? null
+                    : iso8601.format(amiibo.releaseDates.australia));
             amiiboJSON.put("release", releaseJSON);
 
             amiibosJSON.put(String.format("0x%016X", amiibo.id), amiiboJSON);
@@ -218,29 +222,36 @@ public class AmiiboManager {
         JSONObject gameSeriesJSON = new JSONObject();
         for (Map.Entry<Long, GameSeries> entry : this.gameSeries.entrySet()) {
             GameSeries gameSeries = entry.getValue();
-            gameSeriesJSON.put(String.format("0x%03X", gameSeries.id >> GameSeries.BITSHIFT), gameSeries.name);
+            gameSeriesJSON.put(String.format(
+                    "0x%03X", gameSeries.getId() >> GameSeries.BITSHIFT
+            ), gameSeries.getName());
         }
         outputJSON.put("game_series", gameSeriesJSON);
 
         JSONObject charactersJSON = new JSONObject();
         for (Map.Entry<Long, Character> entry : this.characters.entrySet()) {
             Character characters = entry.getValue();
-            charactersJSON.put(String.format("0x%04X", characters.id >> Character.BITSHIFT), characters.name);
+            charactersJSON.put(String.format(
+                    "0x%04X", characters.getId() >> Character.BITSHIFT
+            ), characters.getName());
         }
         outputJSON.put("characters", charactersJSON);
 
         JSONObject amiiboTypesJSON = new JSONObject();
         for (Map.Entry<Long, AmiiboType> entry : this.amiiboTypes.entrySet()) {
             AmiiboType amiiboType = entry.getValue();
-            amiiboTypesJSON.put(String.format("0x%02X", amiiboType.id >> AmiiboType.BITSHIFT), amiiboType.name);
+            amiiboTypesJSON.put(String.format(
+                    "0x%02X", amiiboType.getId() >> AmiiboType.BITSHIFT
+            ), amiiboType.getName());
         }
         outputJSON.put("types", amiiboTypesJSON);
 
         JSONObject amiiboSeriesJSON = new JSONObject();
         for (Map.Entry<Long, AmiiboSeries> entry : this.amiiboSeries.entrySet()) {
             AmiiboSeries amiiboSeries = entry.getValue();
-            amiiboSeriesJSON.put(String.format("0x%02X",
-                    amiiboSeries.id >> AmiiboSeries.BITSHIFT), amiiboSeries.name);
+            amiiboSeriesJSON.put(String.format(
+                    "0x%02X", amiiboSeries.getId() >> AmiiboSeries.BITSHIFT
+            ), amiiboSeries.getName());
         }
         outputJSON.put("amiibo_series", amiiboSeriesJSON);
 

@@ -824,11 +824,11 @@ public class FlaskSlotFragment extends Fragment implements
                 amiiboName = active.name;
                 amiiboImageUrl = active.getImageUrl();
                 if (null != active.getAmiiboSeries())
-                    amiiboSeries = active.getAmiiboSeries().name;
+                    amiiboSeries = active.getAmiiboSeries().getName();
                 if (null != active.getAmiiboType())
-                    amiiboType = active.getAmiiboType().name;
+                    amiiboType = active.getAmiiboType().getName();
                 if (null != active.getGameSeries())
-                    gameSeries = active.getGameSeries().name;
+                    gameSeries = active.getGameSeries().getName();
 
                 setAmiiboInfoText(txtName, amiiboName);
                 setAmiiboInfoText(txtTagId, amiiboHexId);

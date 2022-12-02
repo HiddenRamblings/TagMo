@@ -61,9 +61,9 @@ public class TagMo extends Application {
         } else {
             mContext = new SoftReference<>(this);
         }
-        if (Debug.isNewer(Build.VERSION_CODES.P))
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.P))
             HiddenApiBypass.addHiddenApiExemptions("LBluetooth");
-        else if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
+        else if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.LOLLIPOP))
             Reflection.unseal(base);
     }
 
@@ -77,7 +77,7 @@ public class TagMo extends Application {
             new ANRWatchDog(30000).setANRListener(error -> {
                 StringWriter exception = new StringWriter();
                 error.printStackTrace(new PrintWriter(exception));
-                Debug.processException(this, exception.toString());
+                Debug.INSTANCE.processException(this, exception.toString());
             }).start();
         }
 
@@ -86,7 +86,7 @@ public class TagMo extends Application {
             StringWriter exception = new StringWriter();
             error.printStackTrace(new PrintWriter(exception));
             Toast.makeText(this, R.string.logcat_crash, Toast.LENGTH_SHORT).show();
-            Debug.processException(this, exception.toString());
+            Debug.INSTANCE.processException(this, exception.toString());
             System.exit(0);
         });
 

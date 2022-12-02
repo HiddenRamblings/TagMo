@@ -258,7 +258,7 @@ public class AmiiboManager {
                 try {
                     streamWriter.close();
                 } catch (IOException e) {
-                    Debug.Info(e);
+                    Debug.INSTANCE.Info(e);
                 }
             }
             outputStream.flush();
@@ -276,7 +276,7 @@ public class AmiiboManager {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
-                    Debug.Info(e);
+                    Debug.INSTANCE.Info(e);
                 }
             }
         }
@@ -299,14 +299,14 @@ public class AmiiboManager {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    Debug.Info(e);
+                    Debug.INSTANCE.Info(e);
                 }
             }
             if (null != inputStream) {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    Debug.Info(e);
+                    Debug.INSTANCE.Info(e);
                 }
             }
         }
@@ -326,7 +326,7 @@ public class AmiiboManager {
                 amiiboManager = AmiiboManager.parse(context.openFileInput(AMIIBO_DATABASE_FILE));
             } catch (IOException | JSONException | ParseException e) {
                 amiiboManager = null;
-                Debug.Warn(R.string.error_amiibo_parse, e);
+                Debug.INSTANCE.Warn(R.string.error_amiibo_parse, e);
             }
         } else {
            String database = readDatabase(context);
@@ -367,7 +367,7 @@ public class AmiiboManager {
                                 Amiibo.dataToId(data), data));
                     }
                 } catch (Exception e) {
-                    Debug.Info(e);
+                    Debug.INSTANCE.Info(e);
                 }
             }
         } else if (recursiveFiles) {
@@ -402,7 +402,7 @@ public class AmiiboManager {
                     ));
                 }
             } catch (Exception e) {
-                Debug.Info(e);
+                Debug.INSTANCE.Info(e);
             }
         }
         return amiiboFiles;

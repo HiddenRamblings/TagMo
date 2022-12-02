@@ -39,7 +39,6 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class BrowserAdapter
         extends RecyclerView.Adapter<BrowserAdapter.AmiiboViewHolder>
@@ -421,13 +420,13 @@ public class BrowserAdapter
                 } else {
                     this.txtError.setVisibility(View.GONE);
                 }
-                setAmiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query), hasTagInfo);
+                setAmiiboInfoText(this.txtTagId, boldSpannable.startsWith(amiiboHexId, query), hasTagInfo);
                 setAmiiboInfoText(this.txtAmiiboSeries,
-                        boldSpannable.IndexOf(amiiboSeries, query), hasTagInfo);
+                        boldSpannable.indexOf(amiiboSeries, query), hasTagInfo);
                 setAmiiboInfoText(this.txtAmiiboType,
-                        boldSpannable.IndexOf(amiiboType, query), hasTagInfo);
+                        boldSpannable.indexOf(amiiboType, query), hasTagInfo);
                 setAmiiboInfoText(this.txtGameSeries,
-                        boldSpannable.IndexOf(gameSeries, query), hasTagInfo);
+                        boldSpannable.indexOf(gameSeries, query), hasTagInfo);
 
                 if (null != item.getDocUri()) {
                     String relativeDocument = Storage.getRelativeDocument(
@@ -441,11 +440,11 @@ public class BrowserAdapter
                     if (expanded) listener.onAmiiboRebind(itemView, amiiboFile);
 
                     this.itemView.setEnabled(true);
-                    this.txtPath.setText(boldSpannable.IndexOf(relativeDocument, query));
+                    this.txtPath.setText(boldSpannable.indexOf(relativeDocument, query));
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(
                             android.R.attr.textColor, a, true);
-                    if (Debug.isNewer(Build.VERSION_CODES.Q) && a.isColorType()) {
+                    if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.Q) && a.isColorType()) {
                         this.txtPath.setTextColor(a.data);
                     } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
@@ -464,11 +463,11 @@ public class BrowserAdapter
                             mPrefs.preferEmulated()).replace(
                             mPrefs.browserRootFolder(), "");
                     this.itemView.setEnabled(true);
-                    this.txtPath.setText(boldSpannable.IndexOf(relativeFile, query));
+                    this.txtPath.setText(boldSpannable.indexOf(relativeFile, query));
                     TypedValue a = new TypedValue();
                     this.txtPath.getContext().getTheme().resolveAttribute(
                             android.R.attr.textColor, a, true);
-                    if (Debug.isNewer(Build.VERSION_CODES.Q) && a.isColorType()) {
+                    if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.Q) && a.isColorType()) {
                         this.txtPath.setTextColor(a.data);
                     } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {

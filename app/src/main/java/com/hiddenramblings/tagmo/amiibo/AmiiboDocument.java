@@ -51,7 +51,7 @@ public class AmiiboDocument {
                 while (docCursor.moveToNext()) {
                     String displayName = docCursor.getString(0);
                     String mimeType = docCursor.getString(1);
-                    Debug.Verbose(this.getClass(), "Primary doc="
+                    Debug.INSTANCE.Verbose(this.getClass(), "Primary doc="
                             + displayName + ", mime=" + mimeType);
                 }
             } finally {
@@ -107,7 +107,7 @@ public class AmiiboDocument {
                 String displayName = cursor.getString(0);
                 String mimeType = cursor.getString(1);
                 String childDocumentId = cursor.getString(2);
-                Debug.Verbose(this.getClass(), "Child doc=" + displayName
+                Debug.INSTANCE.Verbose(this.getClass(), "Child doc=" + displayName
                         + ", parent=" + documentId + ", mime=" + mimeType);
                 if (DocumentsContract.Document.MIME_TYPE_DIR.equals(mimeType) && recursiveFiles) {
                     queue.add(childDocumentId);

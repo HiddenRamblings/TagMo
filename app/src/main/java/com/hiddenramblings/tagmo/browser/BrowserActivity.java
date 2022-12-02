@@ -241,7 +241,7 @@ public class BrowserActivity extends AppCompatActivity implements
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries);
         imageAmiibo = findViewById(R.id.imageAmiibo);
 
-        if (Debug.isOlder(Build.VERSION_CODES.M)) {
+        if (Debug.INSTANCE.isOlder(Build.VERSION_CODES.M)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
@@ -251,7 +251,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         if (null != intent) {
-            if (getComponentName().equals(NFCIntent.FilterComponent)) {
+            if (getComponentName().equals(NFCIntent.INSTANCE.getFilterComponent())) {
                 Intent browser = new Intent(this, BrowserActivity.class);
                 browser.setAction(intent.getAction());
                 browser.putExtras(intent.getExtras());
@@ -382,7 +382,7 @@ public class BrowserActivity extends AppCompatActivity implements
         });
 
         new TabLayoutMediator(findViewById(R.id.navigation_tabs), mainLayout, true,
-                Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2), (tab, position) -> {
+                Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2), (tab, position) -> {
             boolean hasFlaskEnabled = prefs.flask_support();
             if (BuildConfig.WEAR_OS) {
                 switch (position) {
@@ -433,12 +433,12 @@ public class BrowserActivity extends AppCompatActivity implements
         }).attach();
 
         CoordinatorLayout coordinator = findViewById(R.id.coordinator);
-        if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
             //noinspection deprecation
             ((BlurView) amiiboContainer).setupWith(coordinator,
-                    Debug.isNewer(Build.VERSION_CODES.S)
+                            Debug.INSTANCE.isNewer(Build.VERSION_CODES.S)
                             ? new RenderEffectBlur()
-                            : Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)
+                            : Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)
                             ? new RenderScriptBlur(this)
                             : new SupportRenderScriptBlur(this))
                     .setFrameClearDrawable(getWindow().getDecorView().getBackground())
@@ -548,7 +548,7 @@ public class BrowserActivity extends AppCompatActivity implements
 
         this.loadPTagKeyManager();
 
-        PopupMenu popup = Debug.isNewer(Build.VERSION_CODES.LOLLIPOP_MR1)
+        PopupMenu popup = Debug.INSTANCE.isNewer(Build.VERSION_CODES.LOLLIPOP_MR1)
                     ? new PopupMenu(this, nfcFab, Gravity.END, 0, R.style.PopupMenu)
                     : new PopupMenu(this, nfcFab);
         try {
@@ -565,7 +565,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 }
             }
         } catch (Exception e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
         }
         popup.getMenuInflater().inflate(R.menu.action_menu, popup.getMenu());
         nfcFab.setOnClickListener(view -> showPopupMenu(popup));
@@ -607,7 +607,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public void onApplicationRecreate() {
-        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.TIRAMISU)) {
             closePrefsDrawer();
             recreate();
         } else {
@@ -624,7 +624,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public void onTabCollectionChanged() {
         if (mainLayout.getCurrentItem() != 0)
             mainLayout.setCurrentItem(0, false);
-        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU))
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.TIRAMISU))
             onApplicationRecreate();
         else
             pagerAdapter.notifyDataSetChanged();
@@ -639,7 +639,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void requestStoragePermission() {
-        if (Debug.isNewer(Build.VERSION_CODES.R)) {
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.R)) {
             if (BuildConfig.GOOGLE_PLAY) {
                 this.onDocumentEnabled();
             } else {
@@ -653,7 +653,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     requestScopedStorage();
                 }
             }
-        } else if (Debug.isNewer(Build.VERSION_CODES.M)) {
+        } else if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.M)) {
             onRequestStorage.launch(PERMISSIONS_STORAGE);
         } else {
             this.onStorageEnabled();
@@ -752,7 +752,7 @@ public class BrowserActivity extends AppCompatActivity implements
         validateItem.setEnabled(false);
         legoItem.setEnabled(false);
         joyConItem.setEnabled(false);
-        joyConItem.setVisible(Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2));
+        joyConItem.setVisible(Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2));
 
         popup.show();
         Handler popupHandler = new Handler(Looper.getMainLooper()) {
@@ -763,7 +763,7 @@ public class BrowserActivity extends AppCompatActivity implements
         };
         popupHandler.postDelayed(() -> {
             int baseDelay = 0;
-            if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                 baseDelay = 75;
                 popupHandler.sendEmptyMessageDelayed(R.id.mnu_joy_con, baseDelay);
             }
@@ -791,7 +791,7 @@ public class BrowserActivity extends AppCompatActivity implements
             } else if (item.getItemId() == R.id.mnu_lego) {
                 new Toasty(this).Short(R.string.notice_incomplete);
                 return true;
-            } else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
+            } else if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
                     && item.getItemId() == R.id.mnu_joy_con) {
                 new Toasty(this).Short(R.string.notice_incomplete);
                 onShowJoyConFragment();
@@ -809,7 +809,7 @@ public class BrowserActivity extends AppCompatActivity implements
         }
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                if (!Debug.processLogcat(this )) {
+                if (!Debug.INSTANCE.processLogcat(this )) {
                     runOnUiThread(() -> showWebsite(null));
                 }
             } catch (IOException e) {
@@ -1148,7 +1148,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 Amiibo.dataToId(tagData);
             } catch (Exception e) {
                 available = false;
-                Debug.Info(e);
+                Debug.INSTANCE.Info(e);
             }
         }
         toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(available);
@@ -1341,7 +1341,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     String usage = gamesManager.getGamesCompatibility(amiiboId);
                     txtUsage.post(() -> txtUsage.setText(usage));
                 } catch (Exception ex) {
-                    Debug.Warn(ex);
+                    Debug.INSTANCE.Warn(ex);
                 }
             });
         } else {
@@ -1360,7 +1360,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     public boolean isDocumentStorage() {
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.LOLLIPOP)
                 && null != this.settings.getBrowserRootDocument()) {
             try {
                 DocumentFile.fromTreeUri(this, this.settings.getBrowserRootDocument());
@@ -1373,7 +1373,7 @@ public class BrowserActivity extends AppCompatActivity implements
     }
 
     private void onDocumentRequested() throws ActivityNotFoundException {
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
             intent.putExtra("android.content.extra.FANCY", true);
@@ -1412,7 +1412,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 });
-                if (Debug.isNewer(Build.VERSION_CODES.R) && !BuildConfig.GOOGLE_PLAY) {
+                if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.R) && !BuildConfig.GOOGLE_PLAY) {
                     switchStorageType.setVisibility(View.VISIBLE);
                     switchStorageType.setText(R.string.grant_file_permission);
                     switchStorageType.setOnClickListener(view -> {
@@ -1452,7 +1452,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 } else {
                     switchStorageRoot.setVisibility(View.GONE);
                 }
-                if (Debug.isNewer(Build.VERSION_CODES.R)) {
+                if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.R)) {
                     switchStorageType.setVisibility(View.VISIBLE);
                     switchStorageType.setText(R.string.force_document_storage);
                     switchStorageType.setOnClickListener(view -> {
@@ -1704,7 +1704,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 updateAmiiboView(tagData, amiiboFile);
             }
         } catch (Exception e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
         }
     }
 
@@ -1724,7 +1724,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 updateAmiiboView(tagData, amiiboFile);
             }
         } catch (Exception e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
         }
     }
 
@@ -1745,7 +1745,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 try {
                     PowerTagManager.getPowerTagManager();
                 } catch (Exception e) {
-                    Debug.Warn(e);
+                    Debug.INSTANCE.Warn(e);
                     new Toasty(this).Short(R.string.fail_powertag_keys);
                 }
             });
@@ -1758,7 +1758,7 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
-                Debug.Warn(e);
+                Debug.INSTANCE.Warn(e);
                 amiiboManager = null;
                 new Toasty(this).Short(R.string.amiibo_info_parse_error);
             }
@@ -1767,7 +1767,7 @@ public class BrowserActivity extends AppCompatActivity implements
             try {
                 gamesManager = GamesManager.Companion.getGamesManager(this);
             } catch (IOException | JSONException | ParseException e) {
-                Debug.Warn(e);
+                Debug.INSTANCE.Warn(e);
                 gamesManager = null;
             }
 
@@ -1880,7 +1880,7 @@ public class BrowserActivity extends AppCompatActivity implements
             return;
 
         Uri treeUri = result.getData().getData();
-        if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.KITKAT))
             getContentResolver().takePersistableUriPermission(treeUri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION
                             | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -2224,7 +2224,7 @@ public class BrowserActivity extends AppCompatActivity implements
                 try {
                     amiiboId = Amiibo.dataToId(tagData);
                 } catch (Exception e) {
-                    Debug.Info(e);
+                    Debug.INSTANCE.Info(e);
                 }
             }
 
@@ -2290,7 +2290,7 @@ public class BrowserActivity extends AppCompatActivity implements
                     }
                 });
             } catch (Exception ex) {
-                Debug.Warn(ex);
+                Debug.INSTANCE.Warn(ex);
             }
             if (AmiiboManager.hasSpoofData(amiiboHexId) && null != txtTagId)
                 txtTagId.setEnabled(false);
@@ -2323,7 +2323,7 @@ public class BrowserActivity extends AppCompatActivity implements
     public int getColumnCount() {
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
             mWindowManager.getDefaultDisplay().getRealMetrics(metrics);
         else
             mWindowManager.getDefaultDisplay().getMetrics(metrics);
@@ -2654,7 +2654,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         this.keyManager.evaluateKey(inputStream);
                         hideFakeSnackbar();
                     } catch (Exception e) {
-                        Debug.Warn(e);
+                        Debug.INSTANCE.Warn(e);
                     }
                 }
             } else {
@@ -2677,7 +2677,7 @@ public class BrowserActivity extends AppCompatActivity implements
                         this.keyManager.evaluateKey(inputStream);
                         hideFakeSnackbar();
                     } catch (Exception e) {
-                        Debug.Warn(e);
+                        Debug.INSTANCE.Warn(e);
                     }
                 }
             } else {
@@ -2741,7 +2741,7 @@ public class BrowserActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(), result -> {
         if (getPackageManager().canRequestPackageInstalls())
             updates.installUpdateTask(prefs.downloadUrl());
-        prefs.remove(prefs.downloadUrl);
+        prefs.remove(prefs.getDownloadUrl());
     });
 
     @Override

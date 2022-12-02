@@ -21,12 +21,12 @@ public class TagReader {
 
     static void validateBlankTag(NTAG215 mifare) throws IOException {
         byte[] lockPage = mifare.readPages(0x02);
-        Debug.Info(TagWriter.class, TagArray.bytesToHex(lockPage));
+        Debug.INSTANCE.Info(TagWriter.class, TagArray.bytesToHex(lockPage));
         if (lockPage[2] == (byte) 0x0F && lockPage[3] == (byte) 0xE0) {
             throw new IOException(TagMo.getContext()
                     .getString(R.string.error_tag_rewrite));
         }
-        Debug.Info(TagWriter.class, R.string.validation_success);
+        Debug.INSTANCE.Info(TagWriter.class, R.string.validation_success);
     }
 
     private static byte[] getTagData(String path, InputStream inputStream) throws Exception {
@@ -38,7 +38,7 @@ public class TagReader {
             case NfcByte.TAG_FILE_SIZE:
                 byte[] signed = new byte[NfcByte.TAG_FILE_SIZE];
                 new DataInputStream(inputStream).readFully(signed);
-                Foomiibo.getDataSignature(signed);
+                Foomiibo.Companion.getDataSignature(signed);
                 return Arrays.copyOfRange(signed, 0, NfcByte.TAG_DATA_SIZE);
             case NfcByte.TAG_DATA_SIZE:
             case NfcByte.TAG_DATA_SIZE + 8:
@@ -82,7 +82,7 @@ public class TagReader {
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount);
         }
 
-        Debug.Info(TagReader.class, TagArray.bytesToHex(tagData));
+        Debug.INSTANCE.Info(TagReader.class, TagArray.bytesToHex(tagData));
         return tagData;
     }
 
@@ -102,7 +102,7 @@ public class TagReader {
                 tags.add(TagArray.bytesToHex(tagData));
                 i++;
             } catch (Exception e) {
-                Debug.Warn(TagReader.class, TagMo.getContext()
+                Debug.INSTANCE.Warn(TagReader.class, TagMo.getContext()
                         .getString(R.string.fail_parse_banks));
             }
         }
@@ -151,7 +151,7 @@ public class TagReader {
                 throw new NullPointerException(context.getString(R.string.fail_read_amiibo));
             }
             System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_DATA_SIZE);
-            Debug.Info(TagReader.class, TagArray.bytesToHex(tagData));
+            Debug.INSTANCE.Info(TagReader.class, TagArray.bytesToHex(tagData));
             return tagData;
         } catch (IllegalStateException e) {
             throw new IllegalStateException(context.getString(R.string.fail_early_remove));

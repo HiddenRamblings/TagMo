@@ -75,7 +75,7 @@ public class NTAG215 implements TagTechnology {
                 return m_nfcA.transceive(data);
             }
         } catch (IOException e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
         }
         return null;
     }

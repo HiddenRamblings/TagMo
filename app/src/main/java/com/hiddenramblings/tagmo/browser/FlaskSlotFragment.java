@@ -197,7 +197,7 @@ public class FlaskSlotFragment extends Fragment implements
                                                 .getString(i).split("\\|"));
                                         flaskAmiibos.add(amiibo);
                                     } catch (JSONException | NullPointerException ex) {
-                                        Debug.Warn(ex);
+                                        Debug.INSTANCE.Warn(ex);
                                     }
                                 }
                                 FlaskSlotAdapter adapter = new FlaskSlotAdapter(
@@ -229,7 +229,7 @@ public class FlaskSlotFragment extends Fragment implements
                                                 .getString(i).split("\\|"));
                                         flaskAmiibos.add(amiibo);
                                     } catch (JSONException | NullPointerException ex) {
-                                        Debug.Warn(ex);
+                                        Debug.INSTANCE.Warn(ex);
                                     }
                                 }
                                 FlaskSlotAdapter adapter = (FlaskSlotAdapter)
@@ -266,7 +266,7 @@ public class FlaskSlotFragment extends Fragment implements
                                 ));
                                 getFlaskButtonState();
                             } catch (JSONException | NullPointerException ex) {
-                                Debug.Warn(ex);
+                                Debug.INSTANCE.Warn(ex);
                             }
                         }
 
@@ -374,7 +374,7 @@ public class FlaskSlotFragment extends Fragment implements
                                         Amiibo amiibo = getAmiiboFromHead(slotData.get(i));
                                         flaskAmiibos.add(amiibo);
                                     } catch (NullPointerException ex) {
-                                        Debug.Warn(ex);
+                                        Debug.INSTANCE.Warn(ex);
                                         flaskAmiibos.add(null);
                                     }
                                 }
@@ -872,7 +872,7 @@ public class FlaskSlotFragment extends Fragment implements
         try {
             amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
             amiiboManager = null;
             new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
         }
@@ -899,7 +899,7 @@ public class FlaskSlotFragment extends Fragment implements
         try {
             amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
             amiiboManager = null;
             new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
         }
@@ -913,7 +913,7 @@ public class FlaskSlotFragment extends Fragment implements
                 long amiiboId = headData.getLong(0x28);
                 selectedAmiibo = amiiboManager.amiibos.get(amiiboId);
             } catch (Exception e) {
-                Debug.Info(e);
+                Debug.INSTANCE.Info(e);
             }
         }
         return selectedAmiibo;
@@ -930,7 +930,7 @@ public class FlaskSlotFragment extends Fragment implements
         }
         showScanningNotice();
         deviceProfile = null;
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
             ScanSettings settings = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
@@ -1082,7 +1082,7 @@ public class FlaskSlotFragment extends Fragment implements
                     if (null == amiibo)
                         amiibo = new Amiibo(amiiboManager, amiiboId, null, null);
                 } catch (Exception e) {
-                    Debug.Warn(e);
+                    Debug.INSTANCE.Warn(e);
                 }
             }
             if (null != amiibo) {
@@ -1225,7 +1225,7 @@ public class FlaskSlotFragment extends Fragment implements
         mBluetoothAdapter = null != mBluetoothAdapter ? mBluetoothAdapter
                 : bluetoothHandler.getBluetoothAdapter(requireContext());
         if (null != mBluetoothAdapter) {
-            if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+            if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
                 if (null != scanCallbackFlaskLP)
                     mBluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallbackFlaskLP);
                 if (null != scanCallbackPuckLP)

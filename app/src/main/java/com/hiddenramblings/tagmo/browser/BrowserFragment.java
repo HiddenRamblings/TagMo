@@ -307,7 +307,7 @@ public class BrowserFragment extends Fragment implements
                     settings.getAmiiboManager(), tagData, false
             ), tagData);
         } catch (Exception e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
         }
     }
 
@@ -327,7 +327,7 @@ public class BrowserFragment extends Fragment implements
                     getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT
             ).show();
         } catch (Exception e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
         }
     }
 
@@ -366,7 +366,7 @@ public class BrowserFragment extends Fragment implements
                 String usage = gamesManager.getGamesCompatibility(amiiboId);
                 txtUsage.post(() -> txtUsage.setText(usage));
             } catch (Exception ex) {
-                Debug.Warn(ex);
+                Debug.INSTANCE.Warn(ex);
             }
         });
     }

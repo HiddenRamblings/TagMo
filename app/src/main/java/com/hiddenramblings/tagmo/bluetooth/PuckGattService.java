@@ -52,7 +52,6 @@ public class PuckGattService extends Service {
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
-    private final GattArray gattArray = new GattArray();
 
     BluetoothGattCharacteristic mCharacteristicRX = null;
     BluetoothGattCharacteristic mCharacteristicTX = null;
@@ -110,7 +109,7 @@ public class PuckGattService extends Service {
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
-            Debug.Verbose(TAG, getLogTag(characteristic.getUuid())
+            Debug.INSTANCE.Verbose(TAG, getLogTag(characteristic.getUuid())
                     + " " + Arrays.toString(data));
 
             if (characteristic.getUuid().compareTo(PuckRX) == 0) {
@@ -167,11 +166,11 @@ public class PuckGattService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
+                if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.LOLLIPOP))
                     mBluetoothGatt.requestMtu(512); // Maximum: 517
                 else if (null != listener) listener.onServicesDiscovered();
             } else {
-                Debug.Warn(TAG, "onServicesDiscovered received: " + status);
+                Debug.INSTANCE.Warn(TAG, "onServicesDiscovered received: " + status);
             }
         }
 
@@ -188,7 +187,7 @@ public class PuckGattService extends Service {
         public void onCharacteristicWrite(
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status
         ) {
-            Debug.Verbose(TAG, getLogTag(characteristic.getUuid())
+            Debug.INSTANCE.Verbose(TAG, getLogTag(characteristic.getUuid())
                     + " onCharacteristicWrite " + status);
         }
 
@@ -202,10 +201,10 @@ public class PuckGattService extends Service {
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Debug.Verbose(TAG, "onMtuChange complete: " + mtu);
+                Debug.INSTANCE.Verbose(TAG, "onMtuChange complete: " + mtu);
                 maxTransmissionUnit = mtu;
             } else {
-                Debug.Warn(TAG, "onMtuChange received: " + status);
+                Debug.INSTANCE.Warn(TAG, "onMtuChange received: " + status);
             }
             if (null != listener) listener.onServicesDiscovered();
         }
@@ -352,7 +351,7 @@ public class PuckGattService extends Service {
                 UUID customUUID = customRead.getUuid();
                 /*get the read characteristic from the service*/
                 if (customUUID.compareTo(PuckRX) == 0) {
-                    Debug.Verbose(TAG, "GattReadCharacteristic: " + customUUID);
+                    Debug.INSTANCE.Verbose(TAG, "GattReadCharacteristic: " + customUUID);
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
                 }
@@ -375,7 +374,7 @@ public class PuckGattService extends Service {
             }
 
             for (BluetoothGattService customService : services) {
-                Debug.Verbose(TAG, "GattReadService: " + customService.getUuid().toString());
+                Debug.INSTANCE.Verbose(TAG, "GattReadService: " + customService.getUuid().toString());
                 /*get the read characteristic from the service*/
                 mCharacteristicRX = getCharacteristicRX(customService);
                 break;
@@ -394,7 +393,7 @@ public class PuckGattService extends Service {
                 UUID customUUID = customWrite.getUuid();
                 /*get the write characteristic from the service*/
                 if (customUUID.compareTo(PuckTX) == 0) {
-                    Debug.Verbose(TAG, "GattWriteCharacteristic: " + customUUID);
+                    Debug.INSTANCE.Verbose(TAG, "GattWriteCharacteristic: " + customUUID);
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
                 }
@@ -417,7 +416,7 @@ public class PuckGattService extends Service {
             }
 
             for (BluetoothGattService customService : services) {
-                Debug.Verbose(TAG, "GattWriteService: " + customService.getUuid().toString());
+                Debug.INSTANCE.Verbose(TAG, "GattWriteService: " + customService.getUuid().toString());
                 /*get the read characteristic from the service*/
                 mCharacteristicTX = getCharacteristicTX(customService);
             }
@@ -428,7 +427,9 @@ public class PuckGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(byte[] value) {
-        List<byte[]> chunks = gattArray.byteToPortions(value, maxTransmissionUnit - 3);
+        List<byte[]> chunks = GattArray.INSTANCE.byteToPortions(
+                value, maxTransmissionUnit - 3
+        );
         int commandQueue = commandCallbacks.size() + 1 + chunks.size();
         puckHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
@@ -447,7 +448,7 @@ public class PuckGattService extends Service {
             try {
                 setPuckCharacteristicTX();
             } catch (UnsupportedOperationException e) {
-                Debug.Warn(e);
+                Debug.INSTANCE.Warn(e);
             }
         }
 

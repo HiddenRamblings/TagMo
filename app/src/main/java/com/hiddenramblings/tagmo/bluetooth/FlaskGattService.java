@@ -140,7 +140,7 @@ public class FlaskGattService extends Service {
     private void getCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         String output = characteristic.getStringValue(0x0);
         if (null != output && output.length() > 0) {
-            Debug.INSTANCE.Verbose(TAG, getLogTag(characteristic.getUuid()) + " " + output);
+            Debug.Verbose(TAG, getLogTag(characteristic.getUuid()) + " " + output);
 
             if (characteristic.getUuid().compareTo(FlaskRX) == 0) {
                 if (output.contains(">tag.")) {
@@ -179,13 +179,13 @@ public class FlaskGattService extends Service {
                                 try {
                                     listener.onFlaskActiveChanged(new JSONObject(getAmiibo));
                                 } catch (JSONException e) {
-                                    Debug.INSTANCE.Warn(e);
+                                    Debug.Warn(e);
                                     if (null != listener)
                                         listener.onFlaskActiveChanged(null);
                                 }
                             }
                         } catch (StringIndexOutOfBoundsException ex) {
-                            Debug.INSTANCE.Warn(ex);
+                            Debug.Warn(ex);
                             if (null != listener)
                                 listener.onFlaskActiveChanged(null);
                         }
@@ -228,7 +228,7 @@ public class FlaskGattService extends Service {
                                     listener.onFlaskListRetrieved(new JSONArray(escapedList));
                             }
                         } catch (JSONException e) {
-                            Debug.INSTANCE.Warn(e);
+                            Debug.Warn(e);
                         }
                         response = new StringBuilder();
                         if (rangeIndex == 0 && null != listener) listener.onFlaskProcessFinish();
@@ -276,7 +276,7 @@ public class FlaskGattService extends Service {
                             if (null != e.getMessage() && e.getMessage().contains("tag.setTag")) {
                                 getActiveAmiibo();
                             } else {
-                                Debug.INSTANCE.Warn(e);
+                                Debug.Warn(e);
                             }
                         }
                     }
@@ -303,11 +303,11 @@ public class FlaskGattService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.LOLLIPOP))
+                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
                     mBluetoothGatt.requestMtu(512); // Maximum: 517
                 else if (null != listener) listener.onServicesDiscovered();
             } else {
-                Debug.INSTANCE.Warn(TAG, "onServicesDiscovered received: " + status);
+                Debug.Warn(TAG, "onServicesDiscovered received: " + status);
             }
         }
 
@@ -324,7 +324,7 @@ public class FlaskGattService extends Service {
         public void onCharacteristicWrite(
                 BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status
         ) {
-            Debug.INSTANCE.Verbose(TAG, getLogTag(characteristic.getUuid())
+            Debug.Verbose(TAG, getLogTag(characteristic.getUuid())
                     + " onCharacteristicWrite " + status);
         }
 
@@ -338,10 +338,10 @@ public class FlaskGattService extends Service {
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Debug.INSTANCE.Verbose(TAG, "onMtuChange complete: " + mtu);
+                Debug.Verbose(TAG, "onMtuChange complete: " + mtu);
                 maxTransmissionUnit = mtu - 3;
             } else {
-                Debug.INSTANCE.Warn(TAG, "onMtuChange received: " + status);
+                Debug.Warn(TAG, "onMtuChange received: " + status);
             }
             if (null != listener) listener.onServicesDiscovered();
         }
@@ -488,7 +488,7 @@ public class FlaskGattService extends Service {
                 UUID customUUID = customRead.getUuid();
                 /*get the read characteristic from the service*/
                 if (customUUID.compareTo(FlaskRX) == 0) {
-                    Debug.INSTANCE.Verbose(TAG, "GattReadCharacteristic: " + customUUID);
+                    Debug.Verbose(TAG, "GattReadCharacteristic: " + customUUID);
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
                 }
@@ -511,7 +511,7 @@ public class FlaskGattService extends Service {
             }
 
             for (BluetoothGattService customService : services) {
-                Debug.INSTANCE.Verbose(TAG, "GattReadService: " + customService.getUuid().toString());
+                Debug.Verbose(TAG, "GattReadService: " + customService.getUuid().toString());
                 /*get the read characteristic from the service*/
                 mCharacteristicRX = getCharacteristicRX(customService);
                 break;
@@ -530,7 +530,7 @@ public class FlaskGattService extends Service {
                 UUID customUUID = customWrite.getUuid();
                 /*get the write characteristic from the service*/
                 if (customUUID.compareTo(FlaskTX) == 0) {
-                    Debug.INSTANCE.Verbose(TAG, "GattWriteCharacteristic: " + customUUID);
+                    Debug.Verbose(TAG, "GattWriteCharacteristic: " + customUUID);
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID);
                     break;
                 }
@@ -553,7 +553,7 @@ public class FlaskGattService extends Service {
             }
 
             for (BluetoothGattService customService : services) {
-                Debug.INSTANCE.Verbose(TAG, "GattWriteService: " + customService.getUuid().toString());
+                Debug.Verbose(TAG, "GattWriteService: " + customService.getUuid().toString());
                 /*get the read characteristic from the service*/
                 mCharacteristicTX = getCharacteristicTX(customService);
             }
@@ -564,7 +564,7 @@ public class FlaskGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(byte[] value) {
-        List<byte[]> chunks = GattArray.INSTANCE.byteToPortions(value, maxTransmissionUnit);
+        List<byte[]> chunks = GattArray.byteToPortions(value, maxTransmissionUnit);
         int commandQueue = commandCallbacks.size() + 1 + chunks.size();
         flaskHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
@@ -586,7 +586,7 @@ public class FlaskGattService extends Service {
     }
 
     private void delayedWriteCharacteristic(String value) {
-        List<String> chunks = GattArray.INSTANCE.stringToPortions(value, maxTransmissionUnit);
+        List<String> chunks = GattArray.stringToPortions(value, maxTransmissionUnit);
         int commandQueue = commandCallbacks.size() + 1 + chunks.size();
         flaskHandler.postDelayed(() -> {
             for (int i = 0; i < chunks.size(); i += 1) {
@@ -612,7 +612,7 @@ public class FlaskGattService extends Service {
             try {
                 setFlaskCharacteristicTX();
             } catch (UnsupportedOperationException e) {
-                Debug.INSTANCE.Warn(e);
+                Debug.Warn(e);
             }
         }
 
@@ -633,7 +633,7 @@ public class FlaskGattService extends Service {
             try {
                 setFlaskCharacteristicTX();
             } catch (UnsupportedOperationException e) {
-                Debug.INSTANCE.Warn(e);
+                Debug.Warn(e);
             }
         }
 
@@ -658,7 +658,7 @@ public class FlaskGattService extends Service {
             try {
                 setFlaskCharacteristicTX();
             } catch (UnsupportedOperationException e) {
-                Debug.INSTANCE.Warn(e);
+                Debug.Warn(e);
             }
         }
 
@@ -676,7 +676,7 @@ public class FlaskGattService extends Service {
     
     public void uploadAmiiboFile(byte[] tagData, Amiibo amiibo, boolean complete) {
         delayedTagCharacteristic("startTagUpload(" + tagData.length + ")");
-        List<String> chunks = GattArray.INSTANCE.stringToPortions(Base64.encodeToString(
+        List<String> chunks = GattArray.stringToPortions(Base64.encodeToString(
                 tagData, Base64.NO_PADDING | Base64.NO_CLOSE | Base64.NO_WRAP
         ), 128);
         for (int i = 0; i < chunks.size(); i+=1) {
@@ -689,7 +689,7 @@ public class FlaskGattService extends Service {
                 Amiibo.idToHex(amiibo.id).substring(8, 16), 16
         ), 36);
         int reserved = flaskTail.length() + 3; // |tail|#
-        String nameUnicode = GattArray.INSTANCE.stringToUnicode(amiibo.name);
+        String nameUnicode = GattArray.stringToUnicode(amiibo.name);
         String amiiboName = nameUnicode.length() + reserved > 28
                 ? nameUnicode.substring(0, nameUnicode.length()
                 - ((nameUnicode.length() + reserved) - 28))
@@ -707,7 +707,7 @@ public class FlaskGattService extends Service {
             delayedTagCharacteristic("setTag(\"" + name + "||" + tail + "\")");
         } else {
             int reserved = tail.length() + 3; // |tail|#
-            String nameUnicode = GattArray.INSTANCE.stringToUnicode(name);
+            String nameUnicode = GattArray.stringToUnicode(name);
             nameCompat = nameUnicode.length() + reserved > 28
                     ? nameUnicode.substring(0, nameUnicode.length()
                     - ((nameUnicode.length() + reserved) - 28))
@@ -719,7 +719,7 @@ public class FlaskGattService extends Service {
 
     public void fixAmiiboName(String name, String tail) {
         int reserved = tail.length() + 3; // |tail|#
-        String nameUnicode = GattArray.INSTANCE.stringToUnicode(name);
+        String nameUnicode = GattArray.stringToUnicode(name);
         String amiiboName = nameUnicode.length() + reserved > 28
                 ? nameUnicode.substring(0, nameUnicode.length()
                 - ((nameUnicode.length() + reserved) - 28))
@@ -734,7 +734,7 @@ public class FlaskGattService extends Service {
             delayedTagCharacteristic("remove(\"" + name + "||" + tail + "\")");
         } else {
             int reserved = tail.length() + 3; // |tail|#
-            String nameUnicode = GattArray.INSTANCE.stringToUnicode(name);
+            String nameUnicode = GattArray.stringToUnicode(name);
             nameCompat = nameUnicode.length() + reserved > 28
                     ? nameUnicode.substring(0, nameUnicode.length()
                     - ((nameUnicode.length() + reserved) - 28))
@@ -746,7 +746,7 @@ public class FlaskGattService extends Service {
 
     public void downloadAmiibo(String name, String tail) {
         int reserved = tail.length() + 3; // |tail|#
-        String nameUnicode = GattArray.INSTANCE.stringToUnicode(name);
+        String nameUnicode = GattArray.stringToUnicode(name);
         String amiiboName = nameUnicode.length() + reserved > 28
                 ? nameUnicode.substring(0, nameUnicode.length()
                 - ((nameUnicode.length() + reserved) - 28))

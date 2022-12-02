@@ -195,7 +195,7 @@ public class EliteBankAdapter
             String value = String.valueOf(getAbsoluteAdapterPosition() + 1);
 
             if (isAmiibo) {
-                this.amiiboItem.index = getAbsoluteAdapterPosition();
+                this.amiiboItem.setIndex(getAbsoluteAdapterPosition());
                 amiiboHexId = Amiibo.idToHex(amiibo.id);
                 amiiboImageUrl = amiibo.getImageUrl();
                 if (null != amiibo.name)

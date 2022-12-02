@@ -118,7 +118,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (null != enableAutomaticScan) {
             enableAutomaticScan.setChecked(
                     requireContext().getPackageManager().getComponentEnabledSetting(
-                            NFCIntent.INSTANCE.getFilterComponent()
+                            NFCIntent.getFilterComponent()
                     ) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED
             );
             enableAutomaticScan.setOnPreferenceClickListener(preference -> {
@@ -126,12 +126,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 prefs.enable_automatic_scan(isChecked);
                 if (isChecked) {
                     requireContext().getPackageManager().setComponentEnabledSetting(
-                            NFCIntent.INSTANCE.getFilterComponent(),
+                            NFCIntent.getFilterComponent(),
                             PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                             PackageManager.DONT_KILL_APP);
                 } else {
                     requireContext().getPackageManager().setComponentEnabledSetting(
-                            NFCIntent.INSTANCE.getFilterComponent(),
+                            NFCIntent.getFilterComponent(),
                             PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                             PackageManager.DONT_KILL_APP);
                 }
@@ -199,7 +199,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 ((BrowserActivity) requireActivity()).onTabCollectionChanged();
                 return SettingsFragment.super.onPreferenceTreeClick(preference);
             });
-            enableFlaskSupport.setVisible(Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2));
+            enableFlaskSupport.setVisible(Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2));
         }
 
         ListPreference databaseSourceSetting = findPreference(getString(R.string.setting_database_source));
@@ -291,7 +291,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 }
                 disclaimerFoomiibo.setSummary(total.toString());
             } catch (Exception e) {
-                Debug.INSTANCE.Info(e);
+                Debug.Info(e);
             }
         }
 
@@ -306,7 +306,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 }
                 disclaimerTagMo.setSummary(total.toString());
             } catch (Exception e) {
-                Debug.INSTANCE.Info(e);
+                Debug.Info(e);
             }
         }
     }
@@ -342,7 +342,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     updateKeySummary();
                 });
             } catch (Exception e) {
-                Debug.INSTANCE.Info(e);
+                Debug.Info(e);
             }
         });
     }
@@ -425,7 +425,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             try {
                 amiiboManager = AmiiboManager.parse(requireContext(), data);
             } catch (JSONException | ParseException | IOException e) {
-                Debug.INSTANCE.Warn(e);
+                Debug.Warn(e);
                 new Toasty(requireActivity()).Short(R.string.amiibo_failure_parse);
                 return;
             }
@@ -435,7 +435,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             try {
                 AmiiboManager.saveDatabase(amiiboManager, requireContext().getApplicationContext());
             } catch (JSONException | IOException e) {
-                Debug.INSTANCE.Warn(e);
+                Debug.Warn(e);
                 new Toasty(requireActivity()).Short(R.string.amiibo_failure_update);
                 return;
             }
@@ -526,7 +526,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             try {
                                 reader.close();
                             } catch (IOException e) {
-                                Debug.INSTANCE.Info(e);
+                                Debug.Info(e);
                             }
                         }
                         conn.disconnect();
@@ -552,7 +552,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     throw new Exception(String.valueOf(statusCode));
                 }
             } catch (Exception e) {
-                Debug.INSTANCE.Warn(e);
+                Debug.Warn(e);
                 activity.runOnUiThread(() -> {
                     if (syncMessage.isShown()) syncMessage.dismiss();
                     buildSnackbar(
@@ -595,7 +595,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     requireActivity().runOnUiThread(() -> keyEntryDialog(hexString));
                     scanner.close();
                 } catch (IOException e) {
-                    Debug.INSTANCE.Warn(e);
+                    Debug.Warn(e);
                 }
             });
         } else if (null != result.getData().getClipData()) {
@@ -615,36 +615,36 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     });
 
     private void showFileChooser(String title, int resultCode) {
-        Intent intent = new Intent(Debug.INSTANCE.isNewer(Build.VERSION_CODES.KITKAT)
+        Intent intent = new Intent(Debug.isNewer(Build.VERSION_CODES.KITKAT)
                 ? Intent.ACTION_OPEN_DOCUMENT : Intent.ACTION_GET_CONTENT)
                 .putExtra("android.content.extra.SHOW_ADVANCED", true)
                 .putExtra("android.content.extra.FANCY", true);
 
         switch(resultCode) {
             case RESULT_KEYS:
-                if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2))
+                if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2))
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 try {
-                    if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.KITKAT)) {
+                    if (Debug.isNewer(Build.VERSION_CODES.KITKAT)) {
                         intent.putExtra(Intent.EXTRA_MIME_TYPES,
                                 getResources().getStringArray(R.array.mimetype_bin));
                     }
                     onLoadKeys.launch(Intent.createChooser(
-                            NFCIntent.INSTANCE.getIntent(intent), title));
+                            NFCIntent.getIntent(intent), title));
                 } catch (ActivityNotFoundException ex) {
-                    Debug.INSTANCE.Info(ex);
+                    Debug.Info(ex);
                 }
                 break;
             case RESULT_IMPORT_AMIIBO_DATABASE:
                 try {
-                    if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.KITKAT)) {
+                    if (Debug.isNewer(Build.VERSION_CODES.KITKAT)) {
                         intent.putExtra(Intent.EXTRA_MIME_TYPES,
                                 getResources().getStringArray(R.array.mimetype_json));
                     }
                     onImportAmiiboDatabase.launch(Intent.createChooser(
-                            NFCIntent.INSTANCE.getIntent(intent), title));
+                            NFCIntent.getIntent(intent), title));
                 } catch (ActivityNotFoundException ex) {
-                    Debug.INSTANCE.Info(ex);
+                    Debug.Info(ex);
                 }
                 break;
         }
@@ -678,7 +678,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 });
             }
         } catch (Exception e) {
-            Debug.INSTANCE.Warn(e);
+            Debug.Warn(e);
         }
     }
 
@@ -699,7 +699,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 ).setAction(R.string.sync, v -> onDownloadRequested(lastUpdated)).show());
             }
         } catch (Exception e) {
-            Debug.INSTANCE.Warn(e);
+            Debug.Warn(e);
         }
     }
 

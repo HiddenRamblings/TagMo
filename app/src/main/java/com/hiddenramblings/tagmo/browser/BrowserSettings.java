@@ -44,7 +44,7 @@ public class BrowserSettings implements Parcelable {
         }
 
         public static SORT valueOf(int value) {
-            if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.N)) {
+            if (Debug.isNewer(Build.VERSION_CODES.N)) {
                 Optional<SORT> optional = Arrays.stream(values()).filter(
                         SORT -> SORT.value == value).findFirst();
                 if (optional.isPresent()) return optional.get();
@@ -81,7 +81,7 @@ public class BrowserSettings implements Parcelable {
         }
 
         public static VIEW valueOf(int value) {
-            if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.N)) {
+            if (Debug.isNewer(Build.VERSION_CODES.N)) {
                 Optional<VIEW> optional = Arrays.stream(values()).filter(
                         VIEW -> VIEW.value == value).findFirst();
                 if (optional.isPresent()) return optional.get();

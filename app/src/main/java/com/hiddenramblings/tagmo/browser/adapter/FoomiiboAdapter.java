@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 public class FoomiiboAdapter
         extends RecyclerView.Adapter<FoomiiboAdapter.FoomiiboViewHolder>
@@ -393,13 +392,13 @@ public class FoomiiboAdapter
                 } else {
                     this.txtError.setVisibility(View.GONE);
                 }
-                setFoomiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query), hasTagInfo);
+                setFoomiiboInfoText(this.txtTagId, boldSpannable.startsWith(amiiboHexId, query), hasTagInfo);
                 setFoomiiboInfoText(this.txtAmiiboSeries,
-                        boldSpannable.IndexOf(amiiboSeries, query), hasTagInfo);
+                        boldSpannable.indexOf(amiiboSeries, query), hasTagInfo);
                 setFoomiiboInfoText(this.txtAmiiboType,
-                        boldSpannable.IndexOf(amiiboType, query), hasTagInfo);
+                        boldSpannable.indexOf(amiiboType, query), hasTagInfo);
                 setFoomiiboInfoText(this.txtGameSeries,
-                        boldSpannable.IndexOf(gameSeries, query), hasTagInfo);
+                        boldSpannable.indexOf(gameSeries, query), hasTagInfo);
                 // setAmiiboInfoText(this.txtCharacter,
                 // boldText.Matching(character, query), hasTagInfo);
                 this.txtPath.setVisibility(View.GONE);

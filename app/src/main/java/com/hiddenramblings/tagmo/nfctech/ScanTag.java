@@ -47,7 +47,7 @@ public class ScanTag {
                     try {
                         mifare.connect();
                     } catch (Exception ex) {
-                        Debug.Info(ex);
+                        Debug.INSTANCE.Info(ex);
                     }
                     if (TagReader.needsFirmware(mifare)) {
                         if (TagWriter.updateFirmware(mifare))
@@ -100,7 +100,7 @@ public class ScanTag {
                 mifare.close();
             }
         } catch (Exception e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
             String error = e.getMessage();
             error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
             if (null != error) {

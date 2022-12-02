@@ -112,7 +112,7 @@ public class IconifiedSnackbar {
                 ));
                 break;
         }
-        if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
             textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     drawable, 0, 0, 0);
         } else {

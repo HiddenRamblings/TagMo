@@ -75,7 +75,7 @@ public class JoyConFragment extends DialogFragment implements
         boolean hasProController = false;
         int[] gamepads = InputDevice.getDeviceIds();
         for (int gamepad: gamepads) {
-            Debug.Verbose(JoyConFragment.class, "ID: " + gamepad + ", Name: "
+            Debug.INSTANCE.Verbose(JoyConFragment.class, "ID: " + gamepad + ", Name: "
                     + InputDevice.getDevice(gamepad).getName() + ", Descriptor: "
                     + InputDevice.getDevice(gamepad).getDescriptor());
 

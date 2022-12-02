@@ -215,13 +215,13 @@ public class EliteBankAdapter
             if (settings.getAmiiboView() != VIEW.IMAGE.getValue()) {
                 this.txtError.setVisibility(View.GONE);
                 if (isAmiibo) {
-                    setAmiiboInfoText(this.txtTagId, boldSpannable.StartsWith(amiiboHexId, query));
+                    setAmiiboInfoText(this.txtTagId, boldSpannable.startsWith(amiiboHexId, query));
                     setAmiiboInfoText(this.txtAmiiboSeries,
-                            boldSpannable.IndexOf(amiiboSeries, query));
+                            boldSpannable.indexOf(amiiboSeries, query));
                     setAmiiboInfoText(this.txtAmiiboType,
-                            boldSpannable.IndexOf(amiiboType, query));
+                            boldSpannable.indexOf(amiiboType, query));
                     setAmiiboInfoText(this.txtGameSeries,
-                            boldSpannable.IndexOf(gameSeries, query));
+                            boldSpannable.indexOf(gameSeries, query));
                 } else {
                     this.txtTagId.setVisibility(View.GONE);
                     this.txtAmiiboSeries.setVisibility(View.GONE);

@@ -221,7 +221,7 @@ public class TagArray {
                 if (versionInfo[0x02] != (byte) 0x04 || versionInfo[0x06] != (byte) 0x11)
                     throw new FormatException(context.getString(R.string.error_tag_specs));
             } catch (Exception e) {
-                Debug.Warn(R.string.error_version, e);
+                Debug.INSTANCE.Warn(R.string.error_version, e);
                 throw e;
             }
         }
@@ -233,7 +233,7 @@ public class TagArray {
         if (!TagArray.compareRange(pages, tagData, 9))
             throw new Exception(context.getString(R.string.fail_mismatch_uid));
 
-        Debug.Info(TagWriter.class, R.string.validation_success);
+        Debug.INSTANCE.Info(TagWriter.class, R.string.validation_success);
     }
 
     public static String decipherFilename(AmiiboManager amiiboManager, byte[] tagData, boolean verified) {
@@ -243,7 +243,7 @@ public class TagArray {
                 validateData(tagData);
                 status = "Validated";
             } catch (Exception e) {
-                Debug.Warn(e);
+                Debug.INSTANCE.Warn(e);
                 status = e.getMessage();
             }
         }
@@ -263,7 +263,7 @@ public class TagArray {
             else
                 return String.format(Locale.ROOT, "%1$s[%2$s].bin", name, uidHex);
         } catch (Exception ex) {
-            Debug.Warn(ex);
+            Debug.INSTANCE.Warn(ex);
         }
         return "";
     }
@@ -310,7 +310,7 @@ public class TagArray {
                     new String[] { binFile.getAbsolutePath() },
                     null, null);
         } catch (Exception e) {
-            Debug.Info(e);
+            Debug.INSTANCE.Info(e);
         }
         return binFile.getAbsolutePath();
     }

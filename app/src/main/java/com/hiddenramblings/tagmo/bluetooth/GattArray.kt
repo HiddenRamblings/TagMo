@@ -8,14 +8,14 @@ package com.hiddenramblings.tagmo.bluetooth
 import java.lang.StringBuilder
 import java.util.*
 
-class GattArray {
+object GattArray {
     fun byteToPortions(largeByteArray: ByteArray, sizePerPortion: Int): List<ByteArray> {
         val byteArrayPortions: MutableList<ByteArray> = ArrayList()
         var offset = 0
         while (offset < largeByteArray.size) {
             byteArrayPortions.add(
-                if (largeByteArray.size - offset > sizePerPortion)
-                    largeByteArray.copyOfRange(offset, offset + sizePerPortion
+                if (largeByteArray.size - offset > sizePerPortion) largeByteArray.copyOfRange(
+                    offset, offset + sizePerPortion
                 ) else largeByteArray.copyOfRange(offset, largeByteArray.size)
             )
             offset += sizePerPortion
@@ -32,8 +32,8 @@ class GattArray {
             var index = 0
             while (index < size) {
                 stringPortions.add(
-                    largeString.substring(index,
-                        (index + sizePerPortion).coerceAtMost(largeString.length)
+                    largeString.substring(
+                        index, (index + sizePerPortion).coerceAtMost(largeString.length)
                     )
                 )
                 index += sizePerPortion

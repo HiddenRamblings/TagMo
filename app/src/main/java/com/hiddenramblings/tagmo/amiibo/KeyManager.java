@@ -47,7 +47,7 @@ public class KeyManager {
                 throw new IOException(context.getString(R.string.key_size_invalid));
             return key;
         } catch (Exception e) {
-            Debug.Warn(R.string.key_read_error, e);
+            Debug.INSTANCE.Warn(R.string.key_read_error, e);
         }
         return null;
     }
@@ -103,7 +103,7 @@ public class KeyManager {
             byte[] result = digest.digest(data);
             md5 = TagArray.bytesToHex(result);
         } catch (NoSuchAlgorithmException e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
         }
         if (FIXED_KEY_MD5.equals(md5)) {
             saveKeyFile(FIXED_KEY_MD5, data);

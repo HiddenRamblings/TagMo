@@ -100,11 +100,11 @@ public class WebsiteFragment extends Fragment {
         webViewSettings.setJavaScriptEnabled(true);
         webViewSettings.setDomStorageEnabled(true);
         webViewSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        if (Debug.isOlder(Build.VERSION_CODES.KITKAT)) {
+        if (Debug.INSTANCE.isOlder(Build.VERSION_CODES.KITKAT)) {
             webViewSettings.setPluginState(WebSettings.PluginState.ON);
         }
 
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             final WebViewAssetLoader assetLoader =
                     new WebViewAssetLoader.Builder().addPathHandler("/assets/",
                             new WebViewAssetLoader.AssetsPathHandler(requireContext())).build();
@@ -137,7 +137,7 @@ public class WebsiteFragment extends Fragment {
         mWebView.addJavascriptInterface(download, "Android");
         mWebView.setDownloadListener((url, userAgent, contentDisposition, mimeType, contentLength) -> {
             if (url.startsWith("blob") || url.startsWith("data")) {
-                Debug.Verbose(WebsiteFragment.class, url);
+                Debug.INSTANCE.Verbose(WebsiteFragment.class, url);
                 mWebView.loadUrl(download.getBase64StringFromBlob(url, mimeType));
             }
         });
@@ -214,7 +214,7 @@ public class WebsiteFragment extends Fragment {
             try {
                 decompress();
             } catch (IOException e) {
-                Debug.Warn(e);
+                Debug.INSTANCE.Warn(e);
             } finally {
                 dialog.dismiss();
                 this.archive.delete();
@@ -231,7 +231,7 @@ public class WebsiteFragment extends Fragment {
             os.write(tagData);
             os.flush();
         } catch (IOException e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
         }
     }
 
@@ -246,7 +246,7 @@ public class WebsiteFragment extends Fragment {
                     .getAmiiboManager(requireContext().getApplicationContext());
             input.setText(TagArray.decipherFilename(amiiboManager, tagData, true));
         } catch (IOException | JSONException | ParseException e) {
-            Debug.Warn(e);
+            Debug.INSTANCE.Warn(e);
         }
         Dialog backupDialog = dialog.setView(view).create();
         view.findViewById(R.id.button_save).setOnClickListener(v -> {

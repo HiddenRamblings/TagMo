@@ -1253,10 +1253,16 @@ public class FlaskSlotFragment extends Fragment implements
 
     private boolean isBluetoothEnabled() {
         if (null != mBluetoothAdapter && mBluetoothAdapter.isEnabled()) return true;
-        bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
-                requireContext(), requireActivity().getActivityResultRegistry(), FlaskSlotFragment.this
-        );
-        bluetoothHandler.requestPermissions(requireActivity());
+        if (null != getContext()) {
+            bluetoothHandler = null != bluetoothHandler ? bluetoothHandler : new BluetoothHandler(
+                    requireContext(),
+                    requireActivity().getActivityResultRegistry(),
+                    FlaskSlotFragment.this
+            );
+            bluetoothHandler.requestPermissions(requireActivity());
+        } else {
+            fragmentHandler.postDelayed(this::isBluetoothEnabled, 125);
+        }
         return false;
     }
 

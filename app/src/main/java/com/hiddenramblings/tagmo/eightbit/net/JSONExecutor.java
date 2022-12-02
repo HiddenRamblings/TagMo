@@ -153,7 +153,7 @@ public class JSONExecutor {
                 in.close();
                 conn.disconnect();
             } catch (IOException e) {
-                Debug.INSTANCE.Warn(e);
+                Debug.Warn(e);
             }
         });
     }

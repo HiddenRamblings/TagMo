@@ -163,12 +163,12 @@ class AmiiboData(tagData: ByteArray) {
         private const val MII_NAME_LENGTH = 0x14
         private const val TITLE_ID_OFFSET = 0xB6 - 0x8A + 0x80
         const val WRITE_COUNT_MIN_VALUE = 0
-        public val WRITE_COUNT_MAX_VALUE: Int = Short.MAX_VALUE.toInt() and 0xFFFF
+        const val WRITE_COUNT_MAX_VALUE: Int = Short.MAX_VALUE.toInt() and 0xFFFF
         private const val WRITE_COUNT_OFFSET = 0xB4
         private const val APP_ID_OFFSET = 0xB6
         private const val APP_DATA_OFFSET = 0xDC // 0xED
         private const val APP_DATA_LENGTH = 0xD8
-        public val countryCodes = HashMap<Int, String>()
+        val countryCodes = HashMap<Int, String>()
 
         init {
             countryCodes[0] = "Unset"
@@ -320,6 +320,7 @@ class AmiiboData(tagData: ByteArray) {
             bb.put(bytes)
         }
 
+        @Suppress("SameParameterValue")
         private fun getBitSet(bb: ByteBuffer, offset: Int, length: Int): BitSet {
             val bitSet = BitSet(length * 8)
             val bytes = getBytes(bb, offset, length)
@@ -331,6 +332,7 @@ class AmiiboData(tagData: ByteArray) {
             return bitSet
         }
 
+        @Suppress("SameParameterValue")
         private fun putBitSet(bb: ByteBuffer, offset: Int, length: Int, bitSet: BitSet) {
             val bytes = ByteArray(length)
             for (i in bytes.indices) {

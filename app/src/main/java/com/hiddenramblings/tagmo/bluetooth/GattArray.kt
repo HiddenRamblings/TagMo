@@ -9,6 +9,7 @@ import java.lang.StringBuilder
 import java.util.*
 
 object GattArray {
+    @JvmStatic
     fun byteToPortions(largeByteArray: ByteArray, sizePerPortion: Int): List<ByteArray> {
         val byteArrayPortions: MutableList<ByteArray> = ArrayList()
         var offset = 0
@@ -23,6 +24,7 @@ object GattArray {
         return byteArrayPortions
     }
 
+    @JvmStatic
     fun stringToPortions(largeString: String, sizePerPortion: Int): List<String> {
         val stringPortions: MutableList<String> = ArrayList()
         val size = largeString.length
@@ -42,6 +44,7 @@ object GattArray {
         return stringPortions
     }
 
+    @JvmStatic
     fun stringToUnicode(s: String): String {
         val sb = StringBuilder(s.length * 3)
         for (c in s.toCharArray()) {

@@ -6,7 +6,8 @@ import android.content.Intent
 import android.os.Build
 
 object NFCIntent {
-    var FilterComponent = ComponentName(
+    @JvmStatic
+    val FilterComponent = ComponentName(
         BuildConfig.APPLICATION_ID,
         "com.hiddenramblings.tagmo.NFCIntentFilter"
     )
@@ -37,6 +38,7 @@ object NFCIntent {
     const val EXTRA_BANK_COUNT = BuildConfig.APPLICATION_ID + ".EXTRA_BANK_COUNT"
     const val EXTRA_CURRENT_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_CURRENT_BANK"
     const val SITE_GITLAB_README = "https://tagmo.gitlab.io/"
+    @JvmStatic
     fun getIntent(intent: Intent): Intent {
         return if (Debug.isNewer(Build.VERSION_CODES.N)) intent.addCategory(Intent.CATEGORY_OPENABLE)
             .setType("*/*")

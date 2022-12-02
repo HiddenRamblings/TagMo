@@ -385,7 +385,7 @@ public class EliteBankFragment extends Fragment implements
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(requireContext().getApplicationContext());
             } catch (IOException | JSONException | ParseException e) {
-                Debug.INSTANCE.Warn(e);
+                Debug.Warn(e);
                 new Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error);
             }
 
@@ -416,7 +416,7 @@ public class EliteBankFragment extends Fragment implements
                             TagArray.hexToLong(amiiboList.get(x))
                     )));
                     bankAdapter.notifyItemInserted(x);
-                } else if (null == amiibos.get(x) || amiibos.get(x).index != x
+                } else if (null == amiibos.get(x) || amiibos.get(x).getIndex() != x
                         || amiiboId != amiibos.get(x).id) {
                     amiibos.set(x, new EliteTag(amiiboManager.amiibos.get(amiiboId)));
                     bankAdapter.notifyItemChanged(x);
@@ -506,11 +506,11 @@ public class EliteBankFragment extends Fragment implements
         }
 
         byte[] tagData = null != amiibos.get(clickedPosition)
-                ? amiibos.get(clickedPosition).data : null;
+                ? amiibos.get(clickedPosition).getData() : null;
 
         if (result.getData().hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
             tagData = result.getData().getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA);
-            if (null != amiibos.get(clickedPosition)) amiibos.get(clickedPosition).data = tagData;
+            if (null != amiibos.get(clickedPosition)) amiibos.get(clickedPosition).setData(tagData);
         }
 
         if (result.getData().hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
@@ -545,7 +545,7 @@ public class EliteBankFragment extends Fragment implements
         Bundle args = new Bundle();
         args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData);
         if (null != amiibos.get(clickedPosition))
-            amiibos.get(clickedPosition).data = tagData;
+            amiibos.get(clickedPosition).setData(tagData);
         switch (status) {
             case NOTHING:
                 break;
@@ -609,7 +609,7 @@ public class EliteBankFragment extends Fragment implements
                         : TagArray.getValidatedDocument(keyManager, amiiboFile.getDocUri());
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
             } catch (Exception e) {
-                Debug.INSTANCE.Warn(e);
+                Debug.Warn(e);
             }
         } else {
             try {
@@ -617,7 +617,7 @@ public class EliteBankFragment extends Fragment implements
                         : TagArray.getValidatedFile(keyManager, amiiboFile.getFilePath());
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data);
             } catch (Exception e) {
-                Debug.INSTANCE.Warn(e);
+                Debug.Warn(e);
             }
         }
 
@@ -808,7 +808,7 @@ public class EliteBankFragment extends Fragment implements
                 try {
                     amiiboId = Amiibo.dataToId(tagData);
                 } catch (Exception e) {
-                    Debug.INSTANCE.Info(e);
+                    Debug.Info(e);
                 }
             }
             AmiiboManager amiiboManager = settings.getAmiiboManager();
@@ -1012,8 +1012,8 @@ public class EliteBankFragment extends Fragment implements
         clickedPosition = position;
         status = CLICKED.NOTHING;
         onBottomSheetChanged(SHEET.AMIIBO);
-        if (null != amiibo.data  && amiibo.index == position) {
-            updateAmiiboView(amiiboCard, amiibo.data, -1, position);
+        if (null != amiibo.getData() && amiibo.getIndex() == position) {
+            updateAmiiboView(amiiboCard, amiibo.getData(), -1, position);
         } else if (amiibo.id != 0) {
             updateAmiiboView(amiiboCard, null, amiibo.id, position);
         } else {

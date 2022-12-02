@@ -418,10 +418,10 @@ public class NfcActivity extends AppCompatActivity {
                                     .getParcelableArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST);
                             for (int x = 0; x < amiiboList.size(); x++) {
                                 showMessage(R.string.bank_writing, x + 1, amiiboList.size());
-                                byte[] tagData = foomiibo.generateData(amiiboList.get(x).id);
+                                byte[] tagData = TagArray.getValidatedData(keyManager,
+                                        amiiboList.get(x).getData());
                                 if (null == tagData)
-                                    tagData = TagArray.getValidatedData(keyManager,
-                                            amiiboList.get(x).data);
+                                    tagData = foomiibo.generateData(amiiboList.get(x).id);
                                 TagWriter.writeEliteAuto(mifare, tagData, keyManager, x);
                             }
                         }
@@ -547,7 +547,7 @@ public class NfcActivity extends AppCompatActivity {
             }
             finish();
         } catch (Exception e) {
-            Debug.INSTANCE.Warn(e);
+            Debug.Warn(e);
             String error = e.getMessage();
             error = null != e.getCause() ? error + "\n" + e.getCause().toString() : error;
             if (null != error) {
@@ -629,7 +629,7 @@ public class NfcActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setMessage(R.string.nfc_available)
                     .setPositiveButton(R.string.yes, (dialog, which) -> {
-                        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.Q))
+                        if (Debug.isNewer(Build.VERSION_CODES.Q))
                             onNFCActivity.launch(new Intent(Settings.Panel.ACTION_NFC));
                         else
                             onNFCActivity.launch(new Intent(Settings.ACTION_NFC_SETTINGS));
@@ -638,7 +638,7 @@ public class NfcActivity extends AppCompatActivity {
                     .show();
         } else {
             // monitor nfc status
-            if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                 IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
                 this.registerReceiver(mReceiver, filter);
             }
@@ -652,7 +652,7 @@ public class NfcActivity extends AppCompatActivity {
                 nfcAdapter.disableForegroundDispatch(this);
             } catch (RuntimeException ignored) { }
         }
-        if (Debug.INSTANCE.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+        if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
             try {
                 this.unregisterReceiver(mReceiver);
             } catch (IllegalArgumentException ignored) { }
@@ -662,7 +662,7 @@ public class NfcActivity extends AppCompatActivity {
     private void listenForTags() {
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(getApplicationContext(),
                 0, new Intent(getApplicationContext(), this.getClass()),
-                Debug.INSTANCE.isNewer(Build.VERSION_CODES.S)
+                Debug.isNewer(Build.VERSION_CODES.S)
                         ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
                         : PendingIntent.FLAG_UPDATE_CURRENT
         );
@@ -678,7 +678,7 @@ public class NfcActivity extends AppCompatActivity {
             nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent,
                     new IntentFilter[]{filter}, nfcTechList);
         } catch (RuntimeException ex) {
-            Debug.INSTANCE.Warn(ex);
+            Debug.Warn(ex);
             cancelAction();
         }
     }

@@ -74,10 +74,12 @@ object Debug {
         get() = TagMo.getContext()
     private val mPrefs = Preferences(context)
 
+    @JvmStatic
     fun isNewer(versionCode: Int): Boolean {
         return Build.VERSION.SDK_INT >= versionCode
     }
 
+    @JvmStatic
     fun isOlder(versionCode: Int): Boolean {
         return Build.VERSION.SDK_INT < versionCode
     }
@@ -100,18 +102,22 @@ object Debug {
         return source.simpleName
     }
 
+    @JvmStatic
     fun Error(source: Class<*>, params: String?) {
         if (hasDebugging()) Log.e(TAG(source), params!!)
     }
 
+    @JvmStatic
     fun Error(source: Class<*>, resource: Int) {
         Error(source, context.getString(resource))
     }
 
+    @JvmStatic
     fun Error(source: Class<*>, resource: Int, params: String?) {
         Error(source, context.getString(resource, params))
     }
 
+    @JvmStatic
     fun Error(ex: Exception) {
         if (!hasDebugging()) return
         if (ex.stackTrace.isNotEmpty()) {
@@ -121,22 +127,27 @@ object Debug {
         }
     }
 
+    @JvmStatic
     fun Error(resource: Int, ex: Exception) {
         if (hasDebugging()) Log.e(TAG(ex.javaClass), context.getString(resource), ex)
     }
 
+    @JvmStatic
     fun Warn(source: Class<*>, params: String?) {
         if (hasDebugging()) Log.w(TAG(source), params!!)
     }
 
+    @JvmStatic
     fun Warn(source: Class<*>, resource: Int) {
         Warn(source, context.getString(resource))
     }
 
+    @JvmStatic
     fun Warn(source: Class<*>, resource: Int, params: String?) {
         Warn(source, context.getString(resource, params))
     }
 
+    @JvmStatic
     fun Warn(ex: Exception) {
         if (!hasDebugging()) return
         if (ex.stackTrace.isNotEmpty()) {
@@ -146,22 +157,27 @@ object Debug {
         }
     }
 
+    @JvmStatic
     fun Warn(resource: Int, ex: Exception) {
         if (hasDebugging()) Log.w(TAG(ex.javaClass), context.getString(resource), ex)
     }
 
+    @JvmStatic
     fun Info(source: Class<*>, params: String?) {
         if (hasDebugging()) Log.i(TAG(source), params!!)
     }
 
+    @JvmStatic
     fun Info(source: Class<*>, resource: Int) {
         Info(source, context.getString(resource))
     }
 
+    @JvmStatic
     fun Info(source: Class<*>, resource: Int, params: String?) {
         Info(source, context.getString(resource, params))
     }
 
+    @JvmStatic
     fun Info(ex: Exception) {
         if (!hasDebugging()) return
         if (ex.stackTrace.isNotEmpty()) {
@@ -171,31 +187,37 @@ object Debug {
         }
     }
 
+    @JvmStatic
     fun Info(resource: Int, ex: Exception) {
         if (hasDebugging()) Log.i(TAG(ex.javaClass), context.getString(resource), ex)
     }
 
+    @JvmStatic
     fun Verbose(source: Class<*>, params: String?) {
         if (BuildConfig.DEBUG && hasDebugging()) Log.d(TAG(source), params!!)
     }
 
+    @JvmStatic
     fun Verbose(source: Class<*>, resource: Int) {
         Verbose(source, context.getString(resource))
     }
 
+    @JvmStatic
     fun Verbose(source: Class<*>, resource: Int, params: String?) {
         Verbose(source, context.getString(resource, params))
     }
 
+    @JvmStatic
     fun Verbose(ex: Exception) {
         if (!hasDebugging()) return
-        if (ex.stackTrace.size > 0) {
+        if (ex.stackTrace.isNotEmpty()) {
             val exception = StringWriter()
             ex.printStackTrace(PrintWriter(exception))
             Verbose(ex.javaClass, exception.toString())
         }
     }
 
+    @JvmStatic
     fun Verbose(resource: Int, ex: Exception) {
         if (hasDebugging()) Log.d(TAG(ex.javaClass), context.getString(resource), ex)
     }
@@ -309,6 +331,7 @@ object Debug {
         }
     }
 
+    @JvmStatic
     fun processException(context: Context, exception: String?) {
         val separator = if (System.getProperty("line.separator") != null) Objects.requireNonNull(
             System.getProperty("line.separator")
@@ -318,6 +341,7 @@ object Debug {
         submitLogcat(context, log.toString())
     }
 
+    @JvmStatic
     @Throws(IOException::class)
     fun processLogcat(context: Context): Boolean {
         val project = context.getString(R.string.tagmo)

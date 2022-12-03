@@ -57,9 +57,9 @@ class NfcActivity : AppCompatActivity() {
     private lateinit var imgNfcCircle: AppCompatImageView
     private lateinit var bankPicker: NumberPicker
     private lateinit var bankTextView: TextView
-    private var nfcAdapter: NfcAdapter? = null
     private lateinit var nfcAnimation: Animation
 
+    private var nfcAdapter: NfcAdapter? = null
     private lateinit var keyManager: KeyManager
     private val foomiibo = Foomiibo()
 
@@ -84,8 +84,6 @@ class NfcActivity : AppCompatActivity() {
         imgNfcCircle = findViewById(R.id.imgNfcCircle)
         bankPicker = findViewById(R.id.number_picker)
         bankTextView = findViewById(R.id.bank_number_details)
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        keyManager = KeyManager(this)
         configureInterface()
         bankPicker.setBackgroundResource(R.drawable.picker_border)
         nfcAnimation = AnimationUtils.loadAnimation(this, R.anim.nfc_scanning)
@@ -94,6 +92,8 @@ class NfcActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         clearError()
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        keyManager = KeyManager(this)
         when (intent.action) {
             NFCIntent.ACTION_WRITE_TAG_FULL, NFCIntent.ACTION_WRITE_TAG_DATA -> {
                 if (keyManager.isKeyMissing) {

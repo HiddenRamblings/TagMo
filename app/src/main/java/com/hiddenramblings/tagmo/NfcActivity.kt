@@ -51,8 +51,8 @@ class NfcActivity : AppCompatActivity() {
     }
 
     private var prefs: Preferences? = null
-    lateinit var txtMessage: TextView
-    lateinit var txtError: TextView
+    private lateinit var txtMessage: TextView
+    private lateinit var txtError: TextView
     private lateinit var imgNfcBar: AppCompatImageView
     private lateinit var imgNfcCircle: AppCompatImageView
     private lateinit var bankPicker: NumberPicker

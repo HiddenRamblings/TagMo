@@ -53,7 +53,7 @@ class HexCodeViewer : AppCompatActivity() {
             listView.adapter = adapter
         } catch (e: Exception) {
             try {
-                adapter = HexAdapter(TagArray.getValidatedData(keyManager, tagData))
+                adapter = HexAdapter(TagArray.getValidatedData(keyManager, tagData)!!)
                 listView.layoutManager = LinearLayoutManager(this)
                 listView.adapter = adapter
             } catch (ex: Exception) {
@@ -65,16 +65,14 @@ class HexCodeViewer : AppCompatActivity() {
         toolbar.setTitle(R.string.hex_code)
         toolbar.inflateMenu(R.menu.save_menu)
         toolbar.setNavigationIcon(android.R.drawable.ic_menu_revert)
-        toolbar.setNavigationOnClickListener { v: View? -> finish() }
+        toolbar.setNavigationOnClickListener { finish() }
         toolbar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.mnu_save) {
                 try {
                     saveHexViewToFile(prefs, listView, Amiibo.idToHex(Amiibo.dataToId(tagData)))
                 } catch (e: IOException) {
                     saveHexViewToFile(
-                        prefs, listView, TagArray.bytesToHex(
-                            tagData?.copyOfRange(0, 9)
-                        )
+                        prefs, listView, TagArray.bytesToHex(tagData?.copyOfRange(0, 9))
                     )
                 }
                 return@setOnMenuItemClickListener true
@@ -83,7 +81,11 @@ class HexCodeViewer : AppCompatActivity() {
         }
     }
 
-    private fun saveHexViewToFile(prefs: Preferences, view: RecyclerView, filename: String) {
+    private fun saveHexViewToFile(prefs: Preferences, view: RecyclerView, filename: String?) {
+        if (filename.isNullOrEmpty()) {
+            Toasty(this@HexCodeViewer).Short(getString(R.string.fail_bitmap))
+            return
+        }
         val adapter = view.adapter as HexAdapter?
         var viewBitmap: Bitmap? = null
         if (adapter != null) {

@@ -32,20 +32,20 @@ import java.text.ParseException
 import java.util.concurrent.Executors
 
 class ImageActivity : AppCompatActivity() {
-    private var imageView: AppCompatImageView? = null
-    private var bottomSheet: View? = null
-    private var toggle: AppCompatImageView? = null
-    private var txtTagId: TextView? = null
-    private var txtName: TextView? = null
-    private var txtGameSeries: TextView? = null
-
+    private lateinit var imageView: AppCompatImageView
+    private lateinit var bottomSheet: View
+    private lateinit var toggle: AppCompatImageView
+    private lateinit var txtTagId: TextView
+    private lateinit var txtName: TextView
+    private lateinit var txtGameSeries: TextView
     // private TextView txtCharacter;
-    private var txtAmiiboType: TextView? = null
-    private var txtAmiiboSeries: TextView? = null
-    private var bottomSheetBehavior: BottomSheetBehavior<View?>? = null
-    private var amiibo: Amiibo? = null
-    private var amiiboManager: AmiiboManager? = null
+    private lateinit var txtAmiiboType: TextView
+    private lateinit var txtAmiiboSeries: TextView
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View?>
+
     private var amiiboId: Long = 0
+    private var amiiboManager: AmiiboManager? = null
+    private var amiibo: Amiibo? = null
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val prefs = Preferences(applicationContext)
@@ -76,17 +76,15 @@ class ImageActivity : AppCompatActivity() {
             }
             false
         }
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet as View)
-        bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
-        bottomSheetBehavior!!.addBottomSheetCallback(
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetBehavior.addBottomSheetCallback(
             object : BottomSheetCallback() {
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
                     if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                        (toggle as AppCompatImageView)
-                            .setImageResource(R.drawable.ic_expand_less_white_24dp)
+                        toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
                     } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                        (toggle as AppCompatImageView)
-                            .setImageResource(R.drawable.ic_expand_more_white_24dp)
+                        toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
                     }
                 }
 
@@ -94,11 +92,11 @@ class ImageActivity : AppCompatActivity() {
             })
         findViewById<View>(R.id.group0).addOnLayoutChangeListener {
                 view: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
-            val height = view.height + bottomSheet!!.paddingTop
+            val height = view.height + bottomSheet.paddingTop
             bottomSheetBehavior!!.peekHeight = height
-            imageView!!.setPadding(
-                imageView!!.paddingLeft, imageView!!.paddingTop,
-                imageView!!.paddingRight, imageView!!.paddingTop + height
+            imageView.setPadding(
+                imageView.paddingLeft, imageView.paddingTop,
+                imageView.paddingRight, imageView.paddingTop + height
             )
         }
         Executors.newSingleThreadExecutor().execute {
@@ -116,12 +114,12 @@ class ImageActivity : AppCompatActivity() {
             this.amiiboManager = amiiboManager
             runOnUiThread { updateView(amiiboId) }
         }
-        GlideApp.with(imageView!!).load(getImageUrl(amiiboId)).into(imageView!!)
+        GlideApp.with(imageView).load(getImageUrl(amiiboId)).into(imageView)
         findViewById<View>(R.id.toggle).setOnClickListener {
-            if (bottomSheetBehavior!!.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                bottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_EXPANDED)
+            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
             } else {
-                bottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
             }
         }
     }
@@ -161,17 +159,17 @@ class ImageActivity : AppCompatActivity() {
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
     }
 
-    private fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {
+    private fun setAmiiboInfoText(textView: TextView, text: CharSequence?, hasTagInfo: Boolean) {
         if (hasTagInfo) {
-            textView!!.visibility = View.GONE
+            textView.visibility = View.GONE
         } else {
-            textView!!.visibility = View.VISIBLE
-            if (text!!.isEmpty()) {
-                textView.setText(R.string.unknown)
-                textView.isEnabled = false
-            } else {
+            textView.visibility = View.VISIBLE
+            if (!text.isNullOrEmpty()) {
                 textView.text = text
                 textView.isEnabled = true
+            } else {
+                textView.setText(R.string.unknown)
+                textView.isEnabled = false
             }
         }
     }

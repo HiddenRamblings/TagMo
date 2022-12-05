@@ -55,7 +55,8 @@ open class AppData(appData: ByteArray) {
                 TagMo.getContext().getString(R.string.splatoon_three)
             appIds[TagDataEditor.AppId_SSB] = TagMo.getContext().getString(R.string.super_smash)
             appIds[TagDataEditor.AppId_SSBU] = TagMo.getContext().getString(R.string.smash_ultimate)
-            appIds[-1] = TagMo.getContext().getString(R.string.unspecified)
+            appIds[TagDataEditor.AppId_Unspecified] =
+                TagMo.getContext().getString(R.string.unspecified)
         }
     }
 }

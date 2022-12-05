@@ -1,10 +1,10 @@
 package com.hiddenramblings.tagmo.browser
 
 import android.content.Context
-import com.hiddenramblings.tagmo.eightbit.io.Debug
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.hiddenramblings.tagmo.GlideTagModule
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 
 class Preferences(context: Context?) {
     private val prefs: SharedPreferences

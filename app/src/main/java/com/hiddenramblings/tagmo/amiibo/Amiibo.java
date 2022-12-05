@@ -54,7 +54,7 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
     }
 
     public Character getCharacter() {
-        return this.manager.characters.get(this.getCharacterId());
+        return this.manager.getCharacters().get(this.getCharacterId());
     }
 
     public long getGameSeriesId() {
@@ -62,7 +62,7 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
     }
 
     public GameSeries getGameSeries() {
-        return this.manager.gameSeries.get(this.getGameSeriesId());
+        return this.manager.getGameSeries().get(this.getGameSeriesId());
     }
 
     @SuppressWarnings("unused")
@@ -75,7 +75,7 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
     }
 
     public AmiiboType getAmiiboType() {
-        return this.manager.amiiboTypes.get(this.getAmiiboTypeId());
+        return this.manager.getAmiiboTypes().get(this.getAmiiboTypeId());
     }
 
     @SuppressWarnings("unused")
@@ -88,7 +88,7 @@ public class Amiibo implements Comparable<Amiibo>, Parcelable {
     }
 
     public AmiiboSeries getAmiiboSeries() {
-        return this.manager.amiiboSeries.get(this.getAmiiboSeriesId());
+        return this.manager.getAmiiboSeries().get(this.getAmiiboSeriesId());
     }
 
     @SuppressWarnings("unused")

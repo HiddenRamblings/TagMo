@@ -20,6 +20,7 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.UpdateReceiver
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
+import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor.ResultListener
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import org.json.JSONArray
 import org.json.JSONException
@@ -32,6 +33,7 @@ import java.io.IOException
 import java.lang.ref.SoftReference
 import java.net.URL
 import java.util.concurrent.Executors
+
 
 class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
     private var listener: CheckUpdateListener? = null
@@ -84,7 +86,11 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
         Executors.newSingleThreadExecutor().execute {
             JSONExecutor(
                 activity, TAGMO_GIT_API, "releases/tags/master"
-            ).setResultListener { result: String? -> result?.let { parseUpdateJSON(it) } }
+            ).setResultListener(object : ResultListener {
+                override fun onResults(result: String?) {
+                    result?.let { parseUpdateJSON(it) }
+                }
+            })
         }
     }
 

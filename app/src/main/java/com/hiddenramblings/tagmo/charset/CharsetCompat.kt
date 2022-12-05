@@ -1,8 +1,7 @@
 package com.hiddenramblings.tagmo.charset
 
-import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
 import android.os.Build
-import com.hiddenramblings.tagmo.charset.CharsetCompat
+import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 

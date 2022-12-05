@@ -1,9 +1,9 @@
 package com.hiddenramblings.tagmo
 
-import com.hiddenramblings.tagmo.eightbit.io.Debug
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 
 object NFCIntent {
     @JvmStatic

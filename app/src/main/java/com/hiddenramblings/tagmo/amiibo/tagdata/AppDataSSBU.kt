@@ -5,10 +5,6 @@
  */
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
-import com.hiddenramblings.tagmo.amiibo.tagdata.AppData
-import kotlin.Throws
-import com.hiddenramblings.tagmo.amiibo.tagdata.AppDataSSBU
-import java.lang.NumberFormatException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 

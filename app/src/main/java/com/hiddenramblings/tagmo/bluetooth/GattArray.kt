@@ -5,9 +5,6 @@
  */
 package com.hiddenramblings.tagmo.bluetooth
 
-import java.lang.StringBuilder
-import java.util.*
-
 object GattArray {
     @JvmStatic
     fun byteToPortions(largeByteArray: ByteArray, sizePerPortion: Int): List<ByteArray> {

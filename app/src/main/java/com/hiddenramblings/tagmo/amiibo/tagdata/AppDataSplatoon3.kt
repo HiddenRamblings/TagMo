@@ -5,11 +5,7 @@
  */
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
-import com.hiddenramblings.tagmo.amiibo.tagdata.AppData
-import kotlin.Throws
-import com.hiddenramblings.tagmo.amiibo.tagdata.AppDataMLSuperstarSaga
 import com.hiddenramblings.tagmo.nfctech.TagArray
-import com.hiddenramblings.tagmo.amiibo.tagdata.AppDataSplatoon3
 import java.util.*
 
 class AppDataSplatoon3(appData: ByteArray?) : AppData(appData!!) {

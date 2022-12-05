@@ -72,8 +72,8 @@ class TagDataEditor : AppCompatActivity() {
     private lateinit var appDataViewSplatoon3: LinearLayout
     private lateinit var appDataViewSSB: LinearLayout
     private lateinit var appDataViewSSBU: LinearLayout
-    private lateinit var countryCodeAdapter: CountryCodesAdapter
-    private lateinit var appIdAdapter: NSSpinnerAdapter
+    private var countryCodeAdapter: CountryCodesAdapter? = null
+    private var appIdAdapter: AppIdAdapter? = null
     private var ignoreAppNameSelected = false
 
     private var tagData: ByteArray? = null
@@ -247,9 +247,7 @@ class TagDataEditor : AppCompatActivity() {
         txtAppId.addTextChangedListener(onAppIdChange)
         countryCodeAdapter = CountryCodesAdapter(AmiiboData.countryCodes)
         txtCountryCode.adapter = countryCodeAdapter
-        appIdAdapter = NSSpinnerAdapter(
-            AppIdAdapter(appIds), R.layout.nothing_spinner_text
-        )
+        appIdAdapter = AppIdAdapter(appIds)
         txtAppName.adapter = appIdAdapter
         txtWriteCounter.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
@@ -342,17 +340,17 @@ class TagDataEditor : AppCompatActivity() {
         }
     }
 
-    private fun setAmiiboInfoText(textView: TextView?, text: CharSequence, hasTagInfo: Boolean) {
+    private fun setAmiiboInfoText(textView: TextView, text: CharSequence?, hasTagInfo: Boolean) {
         if (hasTagInfo) {
-            textView!!.visibility = View.GONE
+            textView.visibility = View.GONE
         } else {
-            textView!!.visibility = View.VISIBLE
-            if (text.isEmpty()) {
-                textView.setText(R.string.unknown)
-                textView.isEnabled = false
-            } else {
+            textView.visibility = View.VISIBLE
+             if (!text.isNullOrEmpty()) {
                 textView.text = text
                 textView.isEnabled = true
+            } else {
+                textView.setText(R.string.unknown)
+                textView.isEnabled = false
             }
         }
     }
@@ -532,11 +530,13 @@ class TagDataEditor : AppCompatActivity() {
             0
         }
         var index = 0
-        for (i in 0 until countryCodeAdapter.count) {
-            val (key) = countryCodeAdapter.getItem(i)
-            if (key == countryCode) {
-                index = i
-                break
+        if (null != countryCodeAdapter) {
+            for (i in 0 until countryCodeAdapter!!.count) {
+                val (key) = countryCodeAdapter!!.getItem(i)
+                if (key == countryCode) {
+                    index = i
+                    break
+                }
             }
         }
         txtCountryCode.setSelection(index)
@@ -685,9 +685,9 @@ class TagDataEditor : AppCompatActivity() {
 
     private fun updateAppNameView() {
         var index = 0
-        for (i in 0 until appIdAdapter.count) {
-            if (null != appIdAdapter.getItem(i)) {
-                val item = appIdAdapter.getItem(i) as Map.Entry<*, *>
+        if (null != appIdAdapter) {
+            for (i in 0 until appIdAdapter!!.count) {
+                val item = appIdAdapter!!.getItem(i) as Map.Entry<*, *>
                 if (item.key == appId) {
                     index = i
                 }
@@ -778,22 +778,20 @@ class TagDataEditor : AppCompatActivity() {
             return data[i].key.toLong()
         }
 
-        override fun getDropDownView(position: Int, view: View?, parent: ViewGroup): View {
+        override fun getDropDownView(position: Int, view: View?, parent: ViewGroup): View? {
             var viewItem = view
             if (null == viewItem) {
-                viewItem = LayoutInflater
-                    .from(parent.context)
+                viewItem = LayoutInflater.from(parent.context)
                     .inflate(android.R.layout.simple_dropdown_item_1line, parent, false)
             }
-            (viewItem?.findViewById(android.R.id.text1) as TextView).text = getItem(position).value
+            viewItem?.findViewById<TextView>(android.R.id.text1)?.text = getItem(position).value
             return viewItem
         }
 
         override fun getView(position: Int, view: View?, parent: ViewGroup): View {
             var viewItem = view
             if (null == view) {
-                viewItem = LayoutInflater
-                    .from(parent.context)
+                viewItem = LayoutInflater.from(parent.context)
                     .inflate(R.layout.spinner_text, parent, false)
             }
             (viewItem as TextView).text = getItem(position).value
@@ -836,9 +834,7 @@ class TagDataEditor : AppCompatActivity() {
                 Collections.sort(this.data, java.util.Map.Entry.comparingByKey())
             } else {
                 this.data.sortWith { (key): Map.Entry<Int, String>, (key1): Map.Entry<Int, String> ->
-                    key.compareTo(
-                        key1
-                    )
+                    key.compareTo(key1)
                 }
             }
         }
@@ -855,17 +851,29 @@ class TagDataEditor : AppCompatActivity() {
             return data[i].key.toLong()
         }
 
-        override fun getDropDownView(position: Int, view: View, parent: ViewGroup): View {
-            (view.findViewById<View>(R.id.text1) as TextView).text =
-                getItem(position).value
-            (view.findViewById<View>(R.id.text2) as TextView).text =
+        override fun getDropDownView(position: Int, view: View?, parent: ViewGroup): View? {
+            var viewItem = view
+            if (null == viewItem) {
+                viewItem = LayoutInflater.from(parent.context)
+                    .inflate(android.R.layout.simple_dropdown_item_1line, parent, false)
+            }
+            viewItem?.findViewById<TextView>(android.R.id.text1)?.text = getItem(position).value
+            viewItem?.findViewById<TextView>(android.R.id.text2)?.text =
                 String.format("%08X", getItem(position).key)
-            return view
+            return viewItem
         }
 
-        override fun getView(position: Int, view: View, parent: ViewGroup): View {
-            (view as TextView).text = getItem(position).value
-            return view
+        override fun getView(position: Int, view: View?, parent: ViewGroup): View? {
+            var viewItem = view
+            if (null == view) {
+                viewItem = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.spinner_text2, parent, false)
+            }
+            viewItem?.findViewById<TextView>(R.id.text1)?.text =
+                getItem(position).value
+            viewItem?.findViewById<TextView>(R.id.text2)?.text =
+                String.format("%08X", getItem(position).key)
+            return viewItem
         }
     }
 
@@ -1545,6 +1553,7 @@ class TagDataEditor : AppCompatActivity() {
         const val AppId_Splatoon3 = 0x38600500
         const val AppId_SSB = 0x10110E00
         const val AppId_SSBU = 0x34F80200
+        const val AppId_Unspecified = 0xFFFFFFFF.toInt()
         private fun getDateString(date: Date): String {
             return SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date)
         }

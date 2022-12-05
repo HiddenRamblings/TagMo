@@ -1,10 +1,5 @@
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
-import com.hiddenramblings.tagmo.amiibo.tagdata.AppData
-import kotlin.Throws
-import com.hiddenramblings.tagmo.amiibo.tagdata.AppDataSSB
-import java.lang.NumberFormatException
-
 class AppDataSSB(appData: ByteArray?) : AppData(appData!!) {
     @Throws(NumberFormatException::class)
     fun checkAppearence(value: Int) {

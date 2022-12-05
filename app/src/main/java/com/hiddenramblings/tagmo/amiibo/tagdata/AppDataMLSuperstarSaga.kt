@@ -7,13 +7,6 @@
  */
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
-import com.hiddenramblings.tagmo.amiibo.tagdata.AppData
-import kotlin.Throws
-import com.hiddenramblings.tagmo.amiibo.tagdata.AppDataMLSuperstarSaga
-import com.hiddenramblings.tagmo.nfctech.TagArray
-import com.hiddenramblings.tagmo.amiibo.tagdata.AppDataSplatoon3
-import java.lang.NumberFormatException
-
 class AppDataMLSuperstarSaga(appData: ByteArray?) : AppData(appData!!) {
     @Throws(NumberFormatException::class)
     fun checkExperience(value: Int) {

@@ -93,6 +93,18 @@ class WebsiteFragment : Fragment() {
                 ): WebResourceResponse? {
                     return assetLoader.shouldInterceptRequest(request.url)
                 }
+
+                override fun shouldOverrideUrlLoading(
+                    view: WebView,
+                    request: WebResourceRequest
+                ): Boolean {
+                    return if (request.url.lastPathSegment.equals("donate.html")) {
+                        (requireActivity() as BrowserActivity).showDonationPanel()
+                        true
+                    } else {
+                        super.shouldOverrideUrlLoading(view, request)
+                    }
+                }
             }
             if (WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USAGE)) {
                 ServiceWorkerControllerCompat.getInstance().setServiceWorkerClient(

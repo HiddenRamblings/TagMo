@@ -2583,6 +2583,10 @@ public class BrowserActivity extends AppCompatActivity implements
         if (null != behavior) behavior.setAutoHideEnabled(true);
     }
 
+    void showDonationPanel() {
+        donations.onSendDonationClicked();
+    }
+
     private void showBrowserInterface() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         sheetHandler.postDelayed(() ->

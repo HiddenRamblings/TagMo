@@ -14,6 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package com.wajahatkarim3.easyflipviewpager
 
 import android.view.View
@@ -21,19 +22,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import kotlin.math.abs
 
-/**
- * A card based page flip animation PageTransformer implementation for ViewPager2
- *
- * Set the object of this transformer to any ViewPager2 object.
- * For example, myViewPager.setPageTransformer(true, new CardFlipPageTransformer());
- *
- * @see [CardFlipPageTransformer2](http://github.com/wajahatkarim3/EasyFlipViewPager)
- *
- *
- * @author Wajahat Karim (http://wajahatkarim.com)
- */
 class CardFlipPageTransformer2 : ViewPager2.PageTransformer {
     var isScalable = false
+
     override fun transformPage(page: View, position: Float) {
         val percentage = 1 - abs(position)
         page.cameraDistance = 30000f
@@ -52,7 +43,7 @@ class CardFlipPageTransformer2 : ViewPager2.PageTransformer {
     }
 
     private fun setTranslation(page: View) {
-        val viewPager = requireViewPager(page)
+        val viewPager: ViewPager2 = requireViewPager(page)
         if (viewPager.orientation == ViewPager2.ORIENTATION_HORIZONTAL) {
             val scroll = viewPager.scrollX - page.left
             page.translationX = scroll.toFloat()
@@ -71,22 +62,28 @@ class CardFlipPageTransformer2 : ViewPager2.PageTransformer {
     }
 
     private fun setRotation(page: View, position: Float, percentage: Float) {
-        val viewPager = requireViewPager(page)
+        val viewPager: ViewPager2 = requireViewPager(page)
         if (viewPager.orientation == ViewPager2.ORIENTATION_HORIZONTAL) {
-            if (position > 0) page.rotationY = -180 * (percentage + 1) else page.rotationY =
-                180 * (percentage + 1)
+            if (position > 0) {
+                page.rotationY = -180 * (percentage + 1)
+            } else {
+                page.rotationY = 180 * (percentage + 1)
+            }
         } else {
-            if (position > 0) page.rotationX = -180 * (percentage + 1) else page.rotationX =
-                180 * (percentage + 1)
+            if (position > 0) {
+                page.rotationX = -180 * (percentage + 1)
+            } else {
+                page.rotationX = 180 * (percentage + 1)
+            }
         }
     }
 
     private fun requireViewPager(page: View): ViewPager2 {
         val parent = page.parent
         val parentParent = parent.parent
-        if (parent is RecyclerView && parentParent is ViewPager2) return parentParent
-        throw IllegalStateException(
-            "Expected page view to be managed by a ViewPager2 instance."
-        )
+        if (parent is RecyclerView && parentParent is ViewPager2) {
+            return parentParent
+        }
+        throw IllegalStateException("Expected page view to be managed by a ViewPager2 instance.")
     }
 }

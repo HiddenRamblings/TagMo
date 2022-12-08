@@ -139,6 +139,8 @@
                 android:id="@+id/write_open_banks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="-2dp"
+                android:layout_marginEnd="-2dp"
                 android:layout_weight="1"
                 android:text="@string/write_open_banks" />
 
@@ -146,6 +148,8 @@
                 android:id="@+id/erase_open_banks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="-2dp"
+                android:layout_marginStart="-2dp"
                 android:layout_weight="1"
                 android:text="@string/erase_open_banks" />
             </LinearLayout>

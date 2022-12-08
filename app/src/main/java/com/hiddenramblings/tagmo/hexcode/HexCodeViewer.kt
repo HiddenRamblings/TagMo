@@ -72,7 +72,7 @@ class HexCodeViewer : AppCompatActivity() {
                     saveHexViewToFile(prefs, listView, Amiibo.idToHex(Amiibo.dataToId(tagData)))
                 } catch (e: IOException) {
                     saveHexViewToFile(
-                        prefs, listView, TagArray.bytesToHex(tagData?.copyOfRange(0, 9))
+                        prefs, listView, TagArray.bytesToHex(tagData!!.copyOfRange(0, 9))
                     )
                 }
                 return@setOnMenuItemClickListener true
@@ -163,7 +163,7 @@ class HexCodeViewer : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle(R.string.error_caps)
             .setMessage(msgRes)
-            .setPositiveButton(R.string.close) { dialog: DialogInterface?, which: Int -> finish() }
+            .setPositiveButton(R.string.close) { _: DialogInterface?, _: Int -> finish() }
             .show()
         setResult(RESULT_OK, Intent(NFCIntent.ACTION_FIX_BANK_DATA))
     }

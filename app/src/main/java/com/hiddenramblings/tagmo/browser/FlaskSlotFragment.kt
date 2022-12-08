@@ -127,16 +127,17 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             }
                             try {
                                 serviceFlask!!.setFlaskCharacteristicRX()
-                                serviceFlask!!.getDeviceAmiibo()
+                                serviceFlask!!.deviceAmiibo
                             } catch (uoe: UnsupportedOperationException) {
                                 disconnectService()
                                 Toasty(requireActivity()).Short(R.string.device_invalid)
                             }
                         }
 
-                        override fun onFlaskStatusChanged(jsonObject: JSONObject) {
-                            if (null != processDialog && processDialog!!.isShowing) processDialog!!.dismiss()
-                            serviceFlask!!.getDeviceAmiibo()
+                        override fun onFlaskStatusChanged(jsonObject: JSONObject?) {
+                            if (null != processDialog && processDialog!!.isShowing)
+                                processDialog!!.dismiss()
+                            serviceFlask!!.deviceAmiibo
                         }
 
                         override fun onFlaskListRetrieved(jsonArray: JSONArray) {
@@ -163,7 +164,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     dismissSnackbarNotice(true)
                                     flaskContent!!.adapter = adapter
                                     if (currentCount > 0) {
-                                        serviceFlask!!.getActiveAmiibo()
+                                        serviceFlask!!.activeAmiibo
                                         adapter.notifyItemRangeInserted(
                                             0, currentCount
                                         )
@@ -203,7 +204,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             }
                         }
 
-                        override fun onFlaskActiveChanged(jsonObject: JSONObject) {
+                        override fun onFlaskActiveChanged(jsonObject: JSONObject?) {
+                            if (null == jsonObject) return
                             try {
                                 val name = jsonObject.getString("name")
                                 if ("undefined" == name) {
@@ -290,7 +292,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             }
                             try {
                                 servicePuck!!.setPuckCharacteristicRX()
-                                servicePuck!!.getDeviceAmiibo()
+                                servicePuck!!.deviceAmiibo
                                 // servicePuck!!.getDeviceSlots(32);
                             } catch (uoe: UnsupportedOperationException) {
                                 disconnectService()
@@ -317,7 +319,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onPuckListRetrieved(
-                            slotData: ArrayList<ByteArray>, active: Int
+                            slotData: ArrayList<ByteArray?>, active: Int
                         ) {
                             Executors.newSingleThreadExecutor().execute {
                                 currentCount = slotData.size
@@ -536,21 +538,21 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             searchBar.gravity = Gravity.CENTER_VERTICAL
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
-                    settings!!.setQuery(query)
-                    settings!!.notifyChanges()
+                    settings?.query = query
+                    settings?.notifyChanges()
                     return false
                 }
 
                 override fun onQueryTextChange(query: String): Boolean {
-                    settings!!.setQuery(query)
-                    settings!!.notifyChanges()
+                    settings?.query = query
+                    settings?.notifyChanges()
                     return true
                 }
             })
         }
         writeFile.setOnClickListener {
             onBottomSheetChanged(SHEET.WRITE)
-            searchView.setQuery(settings!!.getQuery(), true)
+            searchView.setQuery(settings?.query, true)
             searchView.clearFocus()
             writeTagAdapter!!.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
                 override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {
@@ -573,7 +575,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
         writeSlots!!.setOnClickListener {
             onBottomSheetChanged(SHEET.WRITE)
-            searchView.setQuery(settings!!.getQuery(), true)
+            searchView.setQuery(settings?.query, true)
             searchView.clearFocus()
             writeTagAdapter!!.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
                 override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {}
@@ -692,7 +694,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         val txtUsageLabel = amiiboView.findViewById<TextView>(R.id.txtUsageLabel)
         amiiboView.post {
             val amiiboHexId: String
-            val amiiboName: String
+            val amiiboName: String?
             var amiiboSeries = ""
             var amiiboType = ""
             var gameSeries = ""
@@ -721,9 +723,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 amiiboHexId = Amiibo.idToHex(active.id)
                 amiiboName = active.name
                 amiiboImageUrl = active.imageUrl
-                if (null != active.amiiboSeries) amiiboSeries = active.amiiboSeries.name
-                if (null != active.amiiboType) amiiboType = active.amiiboType.name
-                if (null != active.gameSeries) gameSeries = active.gameSeries.name
+                if (null != active.amiiboSeries) amiiboSeries = active.amiiboSeries!!.name
+                if (null != active.amiiboType) amiiboType = active.amiiboType!!.name
+                if (null != active.gameSeries) gameSeries = active.gameSeries!!.name
                 setAmiiboInfoText(txtName, amiiboName)
                 setAmiiboInfoText(txtTagId, amiiboHexId)
                 setAmiiboInfoText(txtAmiiboSeries, amiiboSeries)
@@ -788,7 +790,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         return selectedAmiibo
     }
 
-    private fun getAmiiboFromHead(tagData: ByteArray): Amiibo? {
+    private fun getAmiiboFromHead(tagData: ByteArray?): Amiibo? {
         var amiiboManager: AmiiboManager?
         try {
             amiiboManager = getAmiiboManager(requireContext().applicationContext)
@@ -809,7 +811,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         var selectedAmiibo: Amiibo? = null
         if (null != amiiboManager) {
             try {
-                val headData = ByteBuffer.wrap(tagData)
+                val headData = ByteBuffer.wrap(tagData!!)
                 val amiiboId = headData.getLong(0x28)
                 selectedAmiibo = amiiboManager.amiibos[amiiboId]
             } catch (e: Exception) {
@@ -980,7 +982,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     private fun uploadAmiiboFile(amiiboFile: AmiiboFile?, complete: Boolean = true) {
         if (null != amiiboFile) {
             var amiibo: Amiibo? = null
-            val amiiboManager = settings!!.getAmiiboManager()
+            val amiiboManager = settings!!.amiiboManager
             if (null != amiiboManager) {
                 try {
                     val amiiboId = Amiibo.dataToId(amiiboFile.data)
@@ -990,15 +992,12 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     Debug.Warn(e)
                 }
             }
-            if (null != amiibo) {
+            if (null != amiibo && null != amiiboFile.data) {
                 if (null != serviceFlask) serviceFlask!!.uploadAmiiboFile(
-                    amiiboFile.data,
-                    amiibo,
-                    complete
+                    amiiboFile.data!!, amiibo, complete
                 )
                 if (null != servicePuck) servicePuck!!.uploadSlotAmiibo(
-                    amiiboFile.data,
-                    flaskSlotCount!!.value - 1
+                    amiiboFile.data!!, flaskSlotCount!!.value - 1
                 )
             }
         }

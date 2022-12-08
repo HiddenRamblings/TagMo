@@ -41,30 +41,30 @@ class FoomiiboAdapter(
     ) {
         if (null == newBrowserSettings || null == oldBrowserSettings) return
         var refresh = firstRun ||
-                !equals(
+                !BrowserSettings.equals(
                     newBrowserSettings.query,
                     oldBrowserSettings.query
                 ) ||
-                !equals(
+                !BrowserSettings.equals(
                     newBrowserSettings.sort,
                     oldBrowserSettings.sort
                 ) ||
-                hasFilterChanged(newBrowserSettings, oldBrowserSettings)
-        if (!equals(
+                BrowserSettings.hasFilterChanged(newBrowserSettings, oldBrowserSettings)
+        if (!BrowserSettings.equals(
                 newBrowserSettings.amiiboFiles,
                 oldBrowserSettings.amiiboFiles
             )
         ) {
             refresh = true
         }
-        if (!equals(
+        if (!BrowserSettings.equals(
                 newBrowserSettings.amiiboManager,
                 oldBrowserSettings.amiiboManager
             )
         ) {
             refresh = true
         }
-        if (!equals(
+        if (!BrowserSettings.equals(
                 newBrowserSettings.amiiboView,
                 oldBrowserSettings.amiiboView
             )
@@ -117,16 +117,16 @@ class FoomiiboAdapter(
                 when (SORT.valueOf(settings.sort)) {
                     SORT.NAME -> heading = amiibo.name
                     SORT.CHARACTER -> if (null != amiibo.character) {
-                        heading = amiibo.character.name
+                        heading = amiibo.character!!.name
                     }
                     SORT.GAME_SERIES -> if (null != amiibo.gameSeries) {
-                        heading = amiibo.gameSeries.name
+                        heading = amiibo.gameSeries!!.name
                     }
                     SORT.AMIIBO_SERIES -> if (null != amiibo.amiiboSeries) {
-                        heading = amiibo.amiiboSeries.name
+                        heading = amiibo.amiiboSeries!!.name
                     }
                     SORT.AMIIBO_TYPE -> if (null != amiibo.amiiboType) {
-                        heading = amiibo.amiiboType.name
+                        heading = amiibo.amiiboType!!.name
                     }
                     else -> {}
                 }
@@ -169,21 +169,16 @@ class FoomiiboAdapter(
                 settings,
                 listener
             )
-            else -> SimpleViewHolder(
-                parent,
-                settings,
-                listener
-            )
         }
     }
 
     private fun handleClickEvent(holder: FoomiiboViewHolder) {
         if (null != holder.listener) {
             if (settings.amiiboView != VIEW.IMAGE.value) {
-                if (foomiiboId.contains(holder.foomiibo!!.id)) {
-                    foomiiboId.remove(holder.foomiibo!!.id)
+                if (foomiiboId.contains(holder.foomiibo.id)) {
+                    foomiiboId.remove(holder.foomiibo.id)
                 } else {
-                    foomiiboId.add(holder.foomiibo!!.id)
+                    foomiiboId.add(holder.foomiibo.id)
                 }
             } else {
                 foomiiboId.clear()
@@ -225,7 +220,7 @@ class FoomiiboAdapter(
             }
             settings.query = query
             if (null != settings.amiiboManager) data =
-                ArrayList(settings.amiiboManager.amiibos.values) else data.clear()
+                ArrayList(settings.amiiboManager?.amiibos!!.values) else data.clear()
             val tempList = ArrayList<Amiibo>()
             val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
             for (amiibo in data) {
@@ -245,7 +240,7 @@ class FoomiiboAdapter(
                 val missingFiles = ArrayList<Amiibo>()
                 val amiiboIds = HashSet<Long>()
                 for (amiiboFile in settings.amiiboFiles) {
-                    amiiboIds.add(amiiboFile.id)
+                    amiiboIds.add(amiiboFile!!.id)
                 }
                 val iterator = filteredData!!.iterator()
                 while (iterator.hasNext()) {
@@ -331,16 +326,16 @@ class FoomiiboAdapter(
             if (null != amiibo) {
                 amiiboHexId = Amiibo.idToHex(amiibo.id)
                 amiiboImageUrl = amiibo.imageUrl
-                if (null != amiibo.name) amiiboName = amiibo.name
-                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries.name
-                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType.name
-                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries.name
+                if (null != amiibo.name) amiiboName = amiibo.name!!
+                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
+                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
+                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
             } else {
                 amiiboHexId = Amiibo.idToHex(amiiboId)
                 tagInfo = "ID: $amiiboHexId"
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
             }
-            val query = settings.query.lowercase(Locale.getDefault())
+            val query = settings.query?.lowercase(Locale.getDefault())
             setFoomiiboInfoText(txtName, amiiboName, false)
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 val hasTagInfo = null != tagInfo

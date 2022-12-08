@@ -140,9 +140,9 @@ class ImageActivity : AppCompatActivity() {
         if (null != amiibo) {
             amiiboHexId = Amiibo.idToHex(amiibo!!.id)
             if (null != amiibo!!.name) amiiboName = amiibo!!.name
-            if (null != amiibo!!.amiiboSeries) amiiboSeries = amiibo!!.amiiboSeries.name
-            if (null != amiibo!!.amiiboType) amiiboType = amiibo!!.amiiboType.name
-            if (null != amiibo!!.gameSeries) gameSeries = amiibo!!.gameSeries.name
+            if (null != amiibo!!.amiiboSeries) amiiboSeries = amiibo!!.amiiboSeries!!.name
+            if (null != amiibo!!.amiiboType) amiiboType = amiibo!!.amiiboType!!.name
+            if (null != amiibo!!.gameSeries) gameSeries = amiibo!!.gameSeries!!.name
         } else {
             tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
         }

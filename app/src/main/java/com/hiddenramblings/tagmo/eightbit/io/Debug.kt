@@ -71,7 +71,7 @@ import java.util.*
 
 object Debug {
     private val context: Context
-        get() = TagMo.getContext()
+        get() = TagMo.appContext
     private val mPrefs = Preferences(context)
 
     @JvmStatic

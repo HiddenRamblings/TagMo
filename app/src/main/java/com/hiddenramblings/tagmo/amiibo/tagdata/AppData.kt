@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
+import android.content.Context
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import java.io.IOException
@@ -13,7 +14,7 @@ open class AppData(appData: ByteArray) {
 
     init {
         if (appData.size < APP_FILE_SIZE) throw IOException(
-            TagMo.getContext().getString(R.string.invalid_app_data)
+            TagMo.appContext.getString(R.string.invalid_app_data)
         )
         this.appData = ByteBuffer.wrap(appData)
     }
@@ -30,33 +31,35 @@ open class AppData(appData: ByteArray) {
                     or (appData[offset].toInt() and 0xFF) and 0xFF).toShort()
         }
 
+        private val context: Context
+            get() = TagMo.appContext
         val appIds = HashMap<Int, String>()
 
         init {
             appIds[TagDataEditor.AppId_ChibiRobo] =
-                TagMo.getContext().getString(R.string.chibi_robo)
+                context.getString(R.string.chibi_robo)
             appIds[TagDataEditor.AppId_ZeldaTP] =
-                TagMo.getContext().getString(R.string.zelda_twilight)
+                context.getString(R.string.zelda_twilight)
             appIds[TagDataEditor.AppId_MHStories] =
-                TagMo.getContext().getString(R.string.mh_stories)
+                context.getString(R.string.mh_stories)
             appIds[TagDataEditor.AppId_MLPaperJam] =
-                TagMo.getContext().getString(R.string.ml_paper_jam)
+                context.getString(R.string.ml_paper_jam)
             appIds[TagDataEditor.AppId_MLSuperstarSaga] =
-                TagMo.getContext().getString(R.string.ml_superstar_saga)
+                context.getString(R.string.ml_superstar_saga)
             appIds[TagDataEditor.AppId_MSSuperstars] =
-                TagMo.getContext().getString(R.string.ms_superstars)
+                context.getString(R.string.ms_superstars)
             appIds[TagDataEditor.AppId_MarioTennis] =
-                TagMo.getContext().getString(R.string.mario_tennis)
+                context.getString(R.string.mario_tennis)
             appIds[TagDataEditor.AppId_Pikmin] =
-                TagMo.getContext().getString(R.string.pikmin)
+                context.getString(R.string.pikmin)
             appIds[TagDataEditor.AppId_Splatoon] =
-                TagMo.getContext().getString(R.string.splatoon)
+                context.getString(R.string.splatoon)
             appIds[TagDataEditor.AppId_Splatoon3] =
-                TagMo.getContext().getString(R.string.splatoon_three)
-            appIds[TagDataEditor.AppId_SSB] = TagMo.getContext().getString(R.string.super_smash)
-            appIds[TagDataEditor.AppId_SSBU] = TagMo.getContext().getString(R.string.smash_ultimate)
+                context.getString(R.string.splatoon_three)
+            appIds[TagDataEditor.AppId_SSB] = context.getString(R.string.super_smash)
+            appIds[TagDataEditor.AppId_SSBU] = context.getString(R.string.smash_ultimate)
             appIds[TagDataEditor.AppId_Unspecified] =
-                TagMo.getContext().getString(R.string.unspecified)
+                context.getString(R.string.unspecified)
         }
     }
 }

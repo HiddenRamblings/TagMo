@@ -26,15 +26,15 @@ import java.util.*
 class EliteBankAdapter     // setHasStableIds(true);
     (private val settings: BrowserSettings, private val listener: OnAmiiboClickListener) :
     RecyclerView.Adapter<EliteBankAdapter.AmiiboViewHolder>(), BrowserSettingsListener {
-    var mPrefs = Preferences(TagMo.getContext())
-    private var amiibos = ArrayList<EliteTag>()
-    fun setAmiibos(amiibos: ArrayList<EliteTag>) {
+    var mPrefs = Preferences(TagMo.appContext)
+    private var amiibos = ArrayList<EliteTag?>()
+    fun setAmiibos(amiibos: ArrayList<EliteTag?>) {
         this.amiibos = amiibos
     }
 
     override fun onBrowserSettingsChanged(
-        newBrowserSettings: BrowserSettings,
-        oldBrowserSettings: BrowserSettings
+        newBrowserSettings: BrowserSettings?,
+        oldBrowserSettings: BrowserSettings?
     ) {
     }
 
@@ -43,10 +43,10 @@ class EliteBankAdapter     // setHasStableIds(true);
     }
 
     override fun getItemId(i: Int): Long {
-        return amiibos[i].id
+        return amiibos[i]?.id!!.toLong()
     }
 
-    fun getItem(i: Int): EliteTag {
+    fun getItem(i: Int): EliteTag? {
         return amiibos[i]
     }
 
@@ -142,7 +142,7 @@ class EliteBankAdapter     // setHasStableIds(true);
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo!!.visibility = View.VISIBLE
+                imageAmiibo?.visibility = View.VISIBLE
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
@@ -164,7 +164,7 @@ class EliteBankAdapter     // setHasStableIds(true);
         }
 
         @SuppressLint("SetTextI18n")
-        fun bind(amiibo: EliteTag) {
+        fun bind(amiibo: EliteTag?) {
             amiiboItem = amiibo
             var amiiboHexId: String? = ""
             var amiiboName = ""
@@ -173,22 +173,21 @@ class EliteBankAdapter     // setHasStableIds(true);
             var gameSeries = ""
             // String character = "";
             var amiiboImageUrl: String? = null
-            val isAmiibo = null != amiibo.manager
-            val query = settings.query.lowercase(Locale.getDefault())
+            val isAmiibo = null != amiibo?.manager
+            val query = settings.query?.lowercase(Locale.getDefault())
             val value = (absoluteAdapterPosition + 1).toString()
             if (isAmiibo) {
                 amiiboItem!!.index = absoluteAdapterPosition
-                amiiboHexId = Amiibo.idToHex(amiibo.id)
+                amiiboHexId = Amiibo.idToHex(amiibo!!.id)
                 amiiboImageUrl = amiibo.imageUrl
                 if (null != amiibo.name) amiiboName = amiibo.name
-                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries.name
-                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType.name
-                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries.name
+                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
+                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
+                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
                 setAmiiboInfoText(txtName, "$value: $amiiboName")
             } else {
                 setAmiiboInfoText(
-                    txtName, TagMo.getContext()
-                        .getString(R.string.blank_bank, value)
+                    txtName, TagMo.appContext.getString(R.string.blank_bank, value)
                 )
             }
             if (settings.amiiboView != VIEW.IMAGE.value) {

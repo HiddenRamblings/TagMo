@@ -12,8 +12,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
 import java.net.URISyntaxException
 
 class UpdateReceiver : BroadcastReceiver() {
-    private inline fun <reified T : Parcelable>
-            Intent.parcelable(key: String): T? = when {
+    private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
         isNewer(Build.VERSION_CODES.TIRAMISU) ->
             getParcelableExtra(key, T::class.java)
         else ->

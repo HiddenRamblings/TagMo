@@ -34,19 +34,31 @@ class AmiiboManager {
             val releaseJSON = JSONObject()
             releaseJSON.put(
                 "na",
-                if (null == amiibo.releaseDates.northAmerica) null else iso8601.format(amiibo.releaseDates.northAmerica)
+                if (null == amiibo.releaseDates?.northAmerica)
+                    null
+                else
+                    iso8601.format(amiibo.releaseDates.northAmerica)
             )
             releaseJSON.put(
                 "jp",
-                if (null == amiibo.releaseDates.japan) null else iso8601.format(amiibo.releaseDates.japan)
+                if (null == amiibo.releaseDates?.japan)
+                    null
+                else
+                    iso8601.format(amiibo.releaseDates.japan)
             )
             releaseJSON.put(
                 "eu",
-                if (null == amiibo.releaseDates.europe) null else iso8601.format(amiibo.releaseDates.europe)
+                if (null == amiibo.releaseDates?.europe)
+                    null
+                else
+                    iso8601.format(amiibo.releaseDates.europe)
             )
             releaseJSON.put(
                 "au",
-                if (null == amiibo.releaseDates.australia) null else iso8601.format(amiibo.releaseDates.australia)
+                if (null == amiibo.releaseDates?.australia)
+                    null
+                else
+                    iso8601.format(amiibo.releaseDates.australia)
             )
             amiiboJSON.put("release", releaseJSON)
             amiibosJSON.put(String.format("0x%016X", amiibo.id), amiiboJSON)
@@ -350,18 +362,18 @@ class AmiiboManager {
             return name.lowercase().endsWith(".bin")
         }
 
-        fun hasSpoofData(amiiboHexId: String): Boolean {
-            if (amiiboHexId.length < 12) return false
+        fun hasSpoofData(amiiboHexId: String?): Boolean {
+            if (amiiboHexId?.length!! < 12) return false
             val spoofRange = amiiboHexId.substring(8, 12).lowercase()
             return (!amiiboHexId.startsWith("00000000")
                     && (spoofRange == "0000" || spoofRange == "ffff"))
         }
 
         fun listAmiibos(
-            keyManager: KeyManager?, rootFolder: File, recursiveFiles: Boolean
-        ): ArrayList<AmiiboFile> {
-            val amiiboFiles = ArrayList<AmiiboFile>()
-            val files = rootFolder.listFiles { dir: File?, name: String -> binFileMatches(name) }
+            keyManager: KeyManager?, rootFolder: File?, recursiveFiles: Boolean
+        ): ArrayList<AmiiboFile?> {
+            val amiiboFiles = ArrayList<AmiiboFile?>()
+            val files = rootFolder?.listFiles { _: File?, name: String -> binFileMatches(name) }
             if (!files.isNullOrEmpty()) {
                 for (file in files) {
                     if (Thread.currentThread().isInterrupted) return amiiboFiles
@@ -377,7 +389,7 @@ class AmiiboManager {
                     }
                 }
             } else if (recursiveFiles) {
-                val directories = rootFolder.listFiles()
+                val directories = rootFolder?.listFiles()
                 if (directories == null || directories.isEmpty()) return amiiboFiles
                 for (directory in directories) {
                     if (directory.isDirectory) amiiboFiles
@@ -389,12 +401,9 @@ class AmiiboManager {
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         fun listAmiiboDocuments(
-            context: Context?,
-            keyManager: KeyManager?,
-            rootFolder: DocumentFile,
-            recursiveFiles: Boolean
-        ): ArrayList<AmiiboFile> {
-            val amiiboFiles = ArrayList<AmiiboFile>()
+            context: Context?, keyManager: KeyManager?, rootFolder: DocumentFile, recursiveFiles: Boolean
+        ): ArrayList<AmiiboFile?> {
+            val amiiboFiles = ArrayList<AmiiboFile?>()
             val uris = AmiiboDocument(context!!)
                 .listFiles(rootFolder.uri, recursiveFiles)
             if (uris.isEmpty()) return amiiboFiles

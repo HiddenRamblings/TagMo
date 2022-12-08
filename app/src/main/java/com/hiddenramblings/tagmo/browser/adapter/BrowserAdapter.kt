@@ -38,8 +38,8 @@ class BrowserAdapter(
     private val listener: OnAmiiboClickListener
 ) : RecyclerView.Adapter<BrowserAdapter.AmiiboViewHolder>(), Filterable, BrowserSettingsListener,
     SectionIndexer {
-    private var data = ArrayList<AmiiboFile>()
-    private var filteredData: ArrayList<AmiiboFile>?
+    private var data = ArrayList<AmiiboFile?>()
+    private var filteredData: ArrayList<AmiiboFile?>?
     private var filter: AmiiboFilter? = null
     private var firstRun = true
     override fun onBrowserSettingsChanged(
@@ -48,32 +48,31 @@ class BrowserAdapter(
     ) {
         if (null == newBrowserSettings || null == oldBrowserSettings) return
         var refresh = firstRun ||
-                !equals(
+                !BrowserSettings.equals(
                     newBrowserSettings.query,
                     oldBrowserSettings.query
                 ) ||
-                !equals(
+                !BrowserSettings.equals(
                     newBrowserSettings.sort,
                     oldBrowserSettings.sort
                 ) ||
-                hasFilterChanged(oldBrowserSettings, newBrowserSettings)
-        if (firstRun || !equals(
+                BrowserSettings.hasFilterChanged(oldBrowserSettings, newBrowserSettings)
+        if (firstRun || !BrowserSettings.equals(
                 newBrowserSettings.amiiboFiles,
                 oldBrowserSettings.amiiboFiles
             )
         ) {
-            data = ArrayList()
-            if (null != newBrowserSettings.amiiboFiles) data.addAll(newBrowserSettings.amiiboFiles)
+            data = newBrowserSettings.amiiboFiles
             refresh = true
         }
-        if (!equals(
+        if (!BrowserSettings.equals(
                 newBrowserSettings.amiiboManager,
                 oldBrowserSettings.amiiboManager
             )
         ) {
             refresh = true
         }
-        if (!equals(
+        if (!BrowserSettings.equals(
                 newBrowserSettings.amiiboView,
                 oldBrowserSettings.amiiboView
             )
@@ -91,11 +90,11 @@ class BrowserAdapter(
     }
 
     override fun getItemId(i: Int): Long {
-        return filteredData!![i].id
+        return filteredData?.get(i)?.id!!.toLong()
     }
 
-    fun getItem(i: Int): AmiiboFile {
-        return filteredData!![i]
+    fun getItem(i: Int): AmiiboFile? {
+        return filteredData?.get(i)
     }
 
     private var mSectionPositions: ArrayList<Int>? = null
@@ -118,24 +117,24 @@ class BrowserAdapter(
                 var i = 0
                 val size = filteredData!!.size
                 while (i < size) {
-                    val amiiboId = filteredData!![i].id
+                    val amiiboId = filteredData?.get(i)?.id
                     var amiibo = amiiboManager.amiibos[amiiboId]
-                    if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                    if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId!!, null, null)
                     var heading: String? = null
                     var section: String? = null
                     when (SORT.valueOf(settings.sort)) {
                         SORT.NAME -> heading = amiibo.name
                         SORT.CHARACTER -> if (null != amiibo.character) {
-                            heading = amiibo.character.name
+                            heading = amiibo.character!!.name
                         }
                         SORT.GAME_SERIES -> if (null != amiibo.gameSeries) {
-                            heading = amiibo.gameSeries.name
+                            heading = amiibo.gameSeries!!.name
                         }
                         SORT.AMIIBO_SERIES -> if (null != amiibo.amiiboSeries) {
-                            heading = amiibo.amiiboSeries.name
+                            heading = amiibo.amiiboSeries!!.name
                         }
                         SORT.AMIIBO_TYPE -> if (null != amiibo.amiiboType) {
-                            heading = amiibo.amiiboType.name
+                            heading = amiibo.amiiboType!!.name
                         }
                         else -> {}
                     }
@@ -193,10 +192,10 @@ class BrowserAdapter(
 
     private fun handleClickEvent(holder: AmiiboViewHolder) {
         if (null != holder.listener) {
-            val uri = if (null != holder.amiiboFile.docUri)
-                holder.amiiboFile.docUri.uri.toString() else null
-            val path = if (null != holder.amiiboFile.filePath)
-                holder.amiiboFile.filePath.absolutePath else null
+            val uri = if (null != holder.amiiboFile?.docUri)
+                holder.amiiboFile!!.docUri!!.uri.toString() else null
+            val path = if (null != holder.amiiboFile?.filePath)
+                holder.amiiboFile!!.filePath!!.absolutePath else null
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 if (amiiboPath.contains(uri) || amiiboPath.contains(path)) {
                     if (null != uri) amiiboPath.remove(uri)
@@ -244,8 +243,7 @@ class BrowserAdapter(
                 filterResults.values = data
             }
             settings.query = query
-            if (null != settings.amiiboFiles) data =
-                ArrayList(settings.amiiboFiles) else data.clear()
+            data = ArrayList(settings.amiiboFiles)
             val tempList = ArrayList<AmiiboFile>()
             val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
             val amiiboManager = settings.amiiboManager
@@ -253,18 +251,18 @@ class BrowserAdapter(
             for (amiiboFile in amiiboFiles) {
                 var add = false
                 if (null != amiiboManager) {
-                    var amiibo = amiiboManager.amiibos[amiiboFile.id]
+                    var amiibo = amiiboManager.amiibos[amiiboFile!!.id]
                     if (null == amiibo) amiibo = Amiibo(
                         amiiboManager, amiiboFile.id,
                         null, null
                     )
                     add = settings.amiiboContainsQuery(amiibo, queryText)
                 }
-                if (!add && null != amiiboFile.docUri) add =
-                    pathContainsQuery(amiiboFile.docUri.toString(), queryText)
-                if (!add && null != amiiboFile.filePath) add =
-                    pathContainsQuery(amiiboFile.filePath.absolutePath, queryText)
-                if (add) tempList.add(amiiboFile)
+                if (!add && null != amiiboFile?.docUri)
+                    add = pathContainsQuery(amiiboFile.docUri.toString(), queryText)
+                if (!add && null != amiiboFile?.filePath)
+                    add = pathContainsQuery(amiiboFile.filePath!!.absolutePath, queryText)
+                if (add) tempList.add(amiiboFile!!)
             }
             filterResults.count = tempList.size
             filterResults.values = tempList
@@ -279,7 +277,7 @@ class BrowserAdapter(
         @SuppressLint("NotifyDataSetChanged")
         override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
             if (null != filteredData && filteredData === filterResults.values) return
-            filteredData = filterResults.values as ArrayList<AmiiboFile>
+            filteredData = filterResults.values as ArrayList<AmiiboFile?>
             if (itemCount > 0) Collections.sort(
                 filteredData, AmiiboFileComparator(settings)
             )
@@ -302,7 +300,7 @@ class BrowserAdapter(
         // public final TextView txtCharacter;
         val txtPath: TextView
         var imageAmiibo: AppCompatImageView? = null
-        lateinit var amiiboFile: AmiiboFile
+        var amiiboFile: AmiiboFile? = null
         private val boldSpannable = BoldSpannable()
         var target: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
             override fun onLoadStarted(placeholder: Drawable?) {
@@ -344,36 +342,37 @@ class BrowserAdapter(
             imageAmiibo = itemView.findViewById(R.id.imageAmiibo)
         }
 
-        fun bind(item: AmiiboFile) {
+        fun bind(item: AmiiboFile?) {
             amiiboFile = item
             var tagInfo: String? = null
-            val amiiboHexId: String
+            var amiiboHexId: String? = ""
             var amiiboName = ""
             var amiiboSeries = ""
             var amiiboType = ""
             var gameSeries = ""
             // String character = "";
-            val amiiboImageUrl: String?
-            val amiiboId = item.id
+            var amiiboImageUrl: String? = null
+            val amiiboId = item?.id
             var amiibo: Amiibo? = null
             val amiiboManager = settings.amiiboManager
             if (null != amiiboManager) {
                 amiibo = amiiboManager.amiibos[amiiboId]
-                if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                if (null == amiibo && null != amiiboId)
+                    amiibo = Amiibo(amiiboManager, amiiboId, null, null)
             }
             if (null != amiibo) {
                 amiiboHexId = Amiibo.idToHex(amiibo.id)
                 amiiboImageUrl = amiibo.imageUrl
-                if (null != amiibo.name) amiiboName = amiibo.name
-                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries.name
-                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType.name
-                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries.name
-            } else {
+                if (null != amiibo.name) amiiboName = amiibo.name!!
+                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
+                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
+                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
+            } else if (null != amiiboId) {
                 amiiboHexId = Amiibo.idToHex(amiiboId)
                 tagInfo = "ID: $amiiboHexId"
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
             }
-            val query = settings.query.lowercase(Locale.getDefault())
+            val query = settings.query?.lowercase(Locale.getDefault())
             setAmiiboInfoText(txtName, amiiboName, false)
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 val hasTagInfo = null != tagInfo
@@ -399,10 +398,8 @@ class BrowserAdapter(
                     txtGameSeries,
                     boldSpannable.indexOf(gameSeries, query), hasTagInfo
                 )
-                if (null != item.docUri) {
-                    val relativeDocument = Storage.getRelativeDocument(
-                        item.docUri.uri
-                    )
+                if (null != item?.docUri) {
+                    val relativeDocument = Storage.getRelativeDocument(item.docUri!!.uri)
                     val expanded = amiiboPath.contains(relativeDocument)
                     itemView.findViewById<View>(R.id.menu_options).visibility =
                         if (expanded) View.VISIBLE else View.GONE
@@ -423,8 +420,8 @@ class BrowserAdapter(
                         txtPath.setTextColor(a.data)
                     }
                     setIsHighlighted(relativeDocument.startsWith("/Foomiibo/"))
-                } else if (null != item.filePath) {
-                    val expanded = amiiboPath.contains(item.filePath.absolutePath)
+                } else if (null != item?.filePath) {
+                    val expanded = amiiboPath.contains(item.filePath!!.absolutePath)
                     itemView.findViewById<View>(R.id.menu_options).visibility =
                         if (expanded) View.VISIBLE else View.GONE
                     itemView.findViewById<View>(R.id.txtUsage).visibility =
@@ -532,7 +529,7 @@ class BrowserAdapter(
     }
 
     companion object {
-        var mPrefs = Preferences(TagMo.getContext())
+        var mPrefs = Preferences(TagMo.appContext)
         private val amiiboPath = ArrayList<String?>()
         fun resetVisible() {
             amiiboPath.clear()

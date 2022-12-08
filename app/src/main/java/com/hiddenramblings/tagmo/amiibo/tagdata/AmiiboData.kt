@@ -11,7 +11,7 @@ import java.nio.charset.Charset
 import java.util.*
 
 class AmiiboData(tagData: ByteArray) {
-    private val context = TagMo.getContext()
+    private val context = TagMo.appContext
     private val tagData: ByteBuffer
     fun array(): ByteArray {
         return tagData.array()

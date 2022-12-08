@@ -3,7 +3,7 @@ package com.hiddenramblings.tagmo.amiibo
 import android.content.Context
 import com.hiddenramblings.tagmo.AmiiTool
 import com.hiddenramblings.tagmo.R
-import com.hiddenramblings.tagmo.eightbit.io.Debug.Warn
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import java.io.DataInputStream
@@ -13,8 +13,8 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 class KeyManager(var context: Context) {
-    var fixedKey: ByteArray? = null
-    var unfixedKey: ByteArray? = null
+    private var fixedKey: ByteArray? = null
+    private var unfixedKey: ByteArray? = null
 
     init {
         isKeyMissing
@@ -36,18 +36,20 @@ class KeyManager(var context: Context) {
                 return key
             }
         } catch (e: Exception) {
-            Warn(R.string.key_read_error, e)
+            Debug.Warn(R.string.key_read_error, e)
         }
         return null
     }
 
     fun hasFixedKey(): Boolean {
-        if (hasLocalFile(FIXED_KEY_MD5)) fixedKey = loadKeyFromStorage(FIXED_KEY_MD5)
+        if (hasLocalFile(FIXED_KEY_MD5))
+            fixedKey = loadKeyFromStorage(FIXED_KEY_MD5)
         return null != fixedKey
     }
 
     fun hasUnFixedKey(): Boolean {
-        if (hasLocalFile(UNFIXED_KEY_MD5)) unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5)
+        if (hasLocalFile(UNFIXED_KEY_MD5))
+            unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5)
         return null != unfixedKey
     }
 
@@ -59,43 +61,42 @@ class KeyManager(var context: Context) {
         context.openFileOutput(file, Context.MODE_PRIVATE).use { fos -> fos.write(key) }
     }
 
-    @Throws(IOException::class)
+    @Throws(IOException::class, NoSuchAlgorithmException::class)
     fun evaluateKey(strm: InputStream) {
         val length = strm.available()
-        if (length <= 0) {
-            throw IOException(context.getString(R.string.invalid_key_error))
-        } else if (length == NfcByte.KEY_FILE_SIZE * 2) {
-            val data = ByteArray(NfcByte.KEY_FILE_SIZE * 2)
-            DataInputStream(strm).readFully(data)
-            val key2 = ByteArray(NfcByte.KEY_FILE_SIZE)
-            System.arraycopy(data, NfcByte.KEY_FILE_SIZE, key2, 0, NfcByte.KEY_FILE_SIZE)
-            readKey(key2)
-            val key1 = ByteArray(NfcByte.KEY_FILE_SIZE)
-            System.arraycopy(data, 0, key1, 0, NfcByte.KEY_FILE_SIZE)
-            readKey(key1)
-        } else if (length == NfcByte.KEY_FILE_SIZE) {
-            val data = ByteArray(NfcByte.KEY_FILE_SIZE)
-            DataInputStream(strm).readFully(data)
-            readKey(data)
-        } else {
-            throw IOException(context.getString(R.string.key_size_error))
+        when {
+            length <= 0 -> {
+                throw IOException(context.getString(R.string.invalid_key_error))
+            }
+            length == NfcByte.KEY_RETAIL_SZ -> {
+                val data = ByteArray(NfcByte.KEY_RETAIL_SZ)
+                DataInputStream(strm).readFully(data)
+                val key2 = ByteArray(NfcByte.KEY_FILE_SIZE)
+                System.arraycopy(data, NfcByte.KEY_FILE_SIZE, key2, 0, NfcByte.KEY_FILE_SIZE)
+                readKey(key2)
+                val key1 = ByteArray(NfcByte.KEY_FILE_SIZE)
+                System.arraycopy(data, 0, key1, 0, NfcByte.KEY_FILE_SIZE)
+                readKey(key1)
+            }
+            length == NfcByte.KEY_FILE_SIZE -> {
+                val data = ByteArray(NfcByte.KEY_FILE_SIZE)
+                DataInputStream(strm).readFully(data)
+                readKey(data)
+            }
+            else -> {
+                throw IOException(context.getString(R.string.key_size_error))
+            }
         }
     }
 
-    @Throws(IOException::class)
+    @Throws(IOException::class, NoSuchAlgorithmException::class)
     private fun readKey(data: ByteArray) {
-        var md5: String? = null
-        try {
-            val digest = MessageDigest.getInstance("MD5")
-            val result = digest.digest(data)
-            md5 = TagArray.bytesToHex(result)
-        } catch (e: NoSuchAlgorithmException) {
-            Warn(e)
-        }
-        if (FIXED_KEY_MD5 == md5) {
+        val md5 = MessageDigest.getInstance("MD5")
+        val hex = TagArray.bytesToHex(md5.digest(data)).uppercase()
+        if (FIXED_KEY_MD5 == hex) {
             saveKeyFile(FIXED_KEY_MD5, data)
             fixedKey = loadKeyFromStorage(FIXED_KEY_MD5)
-        } else if (UNFIXED_KEY_MD5 == md5) {
+        } else if (UNFIXED_KEY_MD5 == hex) {
             saveKeyFile(UNFIXED_KEY_MD5, data)
             unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5)
         } else {
@@ -110,20 +111,13 @@ class KeyManager(var context: Context) {
         if (!hasFixedKey() || !hasUnFixedKey())
             throw Exception(context.getString(R.string.key_not_present))
         val tool = AmiiTool()
-        if (tool.setKeysFixed(
-                fixedKey,
-                fixedKey!!.size
-            ) == 0
-        ) throw Exception(context.getString(R.string.error_amiitool_init))
-        if (tool.setKeysUnfixed(
-                unfixedKey,
-                unfixedKey!!.size
-            ) == 0
-        ) throw Exception(context.getString(R.string.error_amiitool_init))
+        if (tool.setKeysFixed(fixedKey, fixedKey!!.size) == 0)
+            throw Exception(context.getString(R.string.error_amiitool_init))
+        if (tool.setKeysUnfixed(unfixedKey, unfixedKey!!.size) == 0)
+            throw Exception(context.getString(R.string.error_amiitool_init))
         val decrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
-        if (tool.unpack(tagData, tagData.size, decrypted, decrypted.size) == 0) throw Exception(
-            context.getString(R.string.fail_decrypt)
-        )
+        if (tool.unpack(tagData, tagData.size, decrypted, decrypted.size) == 0)
+            throw Exception(context.getString(R.string.fail_decrypt))
         return decrypted
     }
 

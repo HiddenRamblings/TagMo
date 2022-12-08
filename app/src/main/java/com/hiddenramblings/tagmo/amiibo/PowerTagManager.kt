@@ -17,7 +17,7 @@ object PowerTagManager {
     val powerTagManager: Unit
         get() {
             if (null != keys) return
-            TagMo.getContext().resources.openRawResource(R.raw.keytable).use { stream ->
+            TagMo.appContext.resources.openRawResource(R.raw.keytable).use { stream ->
                 val data = ByteArray(stream.available())
                 stream.read(data)
                 val obj = JSONObject(String(data))
@@ -48,7 +48,7 @@ object PowerTagManager {
     @Suppress("UNUSED")
     fun resetPowerTag(): Boolean {
         try {
-            TagMo.getContext().resources.openRawResource(R.raw.powertag).use { stream ->
+            TagMo.appContext.resources.openRawResource(R.raw.powertag).use { stream ->
                 val data = ByteArray(stream.available())
                 stream.read(data)
                 return true
@@ -62,8 +62,7 @@ object PowerTagManager {
     @Throws(NullPointerException::class)
     fun getPowerTagKey(uid: ByteArray, page10bytes: String): ByteArray {
         if (null == keys) throw NullPointerException(
-            TagMo.getContext()
-                .getString(R.string.error_powertag_key)
+            TagMo.appContext.getString(R.string.error_powertag_key)
         )
         val uidc = ByteArray(7)
         uidc[0] = (uid[0].toInt() and 0xFE).toByte()
@@ -74,10 +73,10 @@ object PowerTagManager {
         uidc[5] = (uid[5].toInt() and 0xFE).toByte()
         uidc[6] = (uid[6].toInt() and 0xFE).toByte()
         val keymap = keys!![TagArray.bytesToHex(uidc)] ?: throw NullPointerException(
-            TagMo.getContext().getString(R.string.uid_key_missing)
+            TagMo.appContext.getString(R.string.uid_key_missing)
         )
         return keymap[page10bytes] ?: throw NullPointerException(
-            TagMo.getContext().getString(R.string.p10_key_missing)
+            TagMo.appContext.getString(R.string.p10_key_missing)
         )
     }
 }

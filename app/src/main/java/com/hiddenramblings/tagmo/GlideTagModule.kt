@@ -19,7 +19,7 @@ class GlideTagModule : AppGlideModule() {
     private fun isConnectionWiFi(context: Context): Boolean {
         var result = false
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
-        if (Debug.isNewer(Build.VERSION_CODES.M)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             cm?.run {
                 cm.getNetworkCapabilities(cm.activeNetwork)?.run {
                     result = when {
@@ -64,7 +64,7 @@ class GlideTagModule : AppGlideModule() {
         )
         builder.setLogLevel(Log.ERROR)
         val requestOptions = onlyRetrieveFromCache(
-            context,
+            context.applicationContext,
             RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
         )
         builder.setDefaultRequestOptions(requestOptions)

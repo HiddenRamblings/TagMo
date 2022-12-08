@@ -91,7 +91,7 @@ class AmiiboDocument(context: Context) {
                     null, null, null
                 )
             } catch (sx: SecurityException) {
-                Preferences(TagMo.getContext()).browserRootDocument(null)
+                Preferences(TagMo.appContext).browserRootDocument(null)
                 return
             }
         } ?: return
@@ -115,7 +115,7 @@ class AmiiboDocument(context: Context) {
         }
     }
 
-    fun closeQuietly(closeable: AutoCloseable?) {
+    private fun closeQuietly(closeable: AutoCloseable?) {
         if (null != closeable) {
             try {
                 closeable.close()

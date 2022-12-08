@@ -36,8 +36,8 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     RecyclerView.Adapter<WriteTagAdapter.AmiiboViewHolder>(), Filterable, BrowserSettingsListener {
     private var listener: OnAmiiboClickListener? = null
     private var listSize = 1
-    private var amiiboFiles = ArrayList<AmiiboFile>()
-    private var filteredData: ArrayList<AmiiboFile>?
+    private var amiiboFiles = ArrayList<AmiiboFile?>()
+    private var filteredData: ArrayList<AmiiboFile?>?
     private var filter: AmiiboFilter? = null
     private var firstRun = true
     private val amiiboList = ArrayList<AmiiboFile?>()
@@ -54,38 +54,39 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     }
 
     override fun onBrowserSettingsChanged(
-        newBrowserSettings: BrowserSettings,
-        oldBrowserSettings: BrowserSettings
+        newBrowserSettings: BrowserSettings?,
+        oldBrowserSettings: BrowserSettings?
     ) {
         var refresh = firstRun ||
                 !BrowserSettings.equals(
-                    newBrowserSettings.query,
-                    oldBrowserSettings.query
+                    newBrowserSettings?.query,
+                    oldBrowserSettings?.query
                 ) ||
                 !BrowserSettings.equals(
-                    newBrowserSettings.sort,
-                    oldBrowserSettings.sort
+                    newBrowserSettings?.sort,
+                    oldBrowserSettings?.sort
                 ) ||
                 BrowserSettings.hasFilterChanged(oldBrowserSettings, newBrowserSettings)
         if (firstRun || !BrowserSettings.equals(
-                newBrowserSettings.amiiboFiles,
-                oldBrowserSettings.amiiboFiles
+                newBrowserSettings?.amiiboFiles,
+                oldBrowserSettings?.amiiboFiles
             )
         ) {
             amiiboFiles = ArrayList()
-            if (null != newBrowserSettings.amiiboFiles) amiiboFiles.addAll(newBrowserSettings.amiiboFiles)
+            if (null != newBrowserSettings?.amiiboFiles)
+                amiiboFiles.addAll(newBrowserSettings.amiiboFiles)
             refresh = true
         }
         if (!BrowserSettings.equals(
-                newBrowserSettings.amiiboManager,
-                oldBrowserSettings.amiiboManager
+                newBrowserSettings?.amiiboManager,
+                oldBrowserSettings?.amiiboManager
             )
         ) {
             refresh = true
         }
         if (!BrowserSettings.equals(
-                newBrowserSettings.amiiboView,
-                oldBrowserSettings.amiiboView
+                newBrowserSettings?.amiiboView,
+                oldBrowserSettings?.amiiboView
             )
         ) {
             refresh = true
@@ -100,11 +101,11 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     }
 
     override fun getItemId(i: Int): Long {
-        return filteredData!![i].id
+        return filteredData?.get(i)?.id!!.toLong()
     }
 
-    fun getItem(i: Int): AmiiboFile {
-        return filteredData!![i]
+    fun getItem(i: Int): AmiiboFile? {
+        return filteredData?.get(i)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -173,12 +174,12 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             else if (null != listener)
                 listener!!.onAmiiboImageClicked(holder.amiiboFile)
         }
-        holder.bind(getItem(clickPosition))
+        holder.bind(getItem(clickPosition)!!)
         setIsHighlighted(holder, amiiboList.contains(holder.amiiboFile))
     }
 
     fun refresh() {
-        getFilter().filter(settings!!.query)
+        getFilter().filter(settings?.query)
     }
 
     override fun getFilter(): AmiiboFilter {
@@ -192,20 +193,20 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         override fun performFiltering(constraint: CharSequence): FilterResults {
             val filterResults = FilterResults()
             val tempList = ArrayList<AmiiboFile>()
-            val queryText = settings!!.query.trim { it <= ' ' }.lowercase(Locale.getDefault())
+            val queryText = settings?.query!!.trim { it <= ' ' }.lowercase(Locale.getDefault())
             val amiiboManager = settings.amiiboManager
             for (amiiboFile in amiiboFiles) {
                 var add = false
                 if (null != amiiboManager) {
-                    var amiibo = amiiboManager.amiibos[amiiboFile.id]
-                    if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboFile.id, null, null)
+                    var amiibo = amiiboManager.amiibos[amiiboFile?.id]
+                    if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboFile!!.id, null, null)
                     add = settings.amiiboContainsQuery(amiibo, queryText)
                 }
-                if (!add && null != amiiboFile.docUri) add =
+                if (!add && null != amiiboFile?.docUri) add =
                     pathContainsQuery(amiiboFile.docUri.toString(), queryText)
-                if (!add && null != amiiboFile.filePath) add =
-                    pathContainsQuery(amiiboFile.filePath.absolutePath, queryText)
-                if (add) tempList.add(amiiboFile)
+                if (!add && null != amiiboFile?.filePath) add =
+                    pathContainsQuery(amiiboFile.filePath!!.absolutePath, queryText)
+                if (add) tempList.add(amiiboFile!!)
             }
             filterResults.count = tempList.size
             filterResults.values = tempList
@@ -220,7 +221,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         @SuppressLint("NotifyDataSetChanged")
         override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
             if (null != filteredData && filteredData === filterResults.values) return
-            filteredData = filterResults.values as ArrayList<AmiiboFile>
+            filteredData = filterResults.values as ArrayList<AmiiboFile?>
             if (null != filteredData && null != settings) Collections.sort(
                 filteredData, AmiiboFileComparator(settings)
             )
@@ -275,7 +276,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             imageAmiibo = itemView.findViewById(R.id.imageAmiibo)
         }
 
-        fun bind(item: AmiiboFile) {
+        fun bind(item: AmiiboFile?) {
             amiiboFile = item
             var tagInfo: String? = null
             var amiiboHexId: String? = ""
@@ -284,26 +285,27 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             var amiiboType = ""
             var gameSeries = ""
             // String character = "";
-            val amiiboImageUrl: String?
-            val amiiboId = item.id
+            var amiiboImageUrl: String? = null
+            val amiiboId = item?.id
             var amiibo: Amiibo? = null
             val amiiboManager = settings!!.amiiboManager
             if (null != amiiboManager) {
                 amiibo = amiiboManager.amiibos[amiiboId]
-                if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                if (null == amiibo && null != amiiboId)
+                    amiibo = Amiibo(amiiboManager, amiiboId, null, null)
             }
             if (null != amiibo) {
                 amiiboHexId = Amiibo.idToHex(amiibo.id)
                 amiiboImageUrl = amiibo.imageUrl
-                if (null != amiibo.name) amiiboName = amiibo.name
-                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries.name
-                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType.name
-                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries.name
-            } else {
+                if (null != amiibo.name) amiiboName = amiibo.name!!
+                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
+                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
+                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
+            } else if (null != amiiboId) {
                 tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
             }
-            val query = settings.query.lowercase(Locale.getDefault())
+            val query = settings.query?.lowercase(Locale.getDefault())
             setAmiiboInfoText(txtName, amiiboName, false)
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 val hasTagInfo = null != tagInfo
@@ -314,7 +316,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                 }
                 setAmiiboInfoText(
                     txtTagId,
-                    boldSpannable.startsWith(amiiboHexId!!, query),
+                    boldSpannable.startsWith(amiiboHexId, query),
                     hasTagInfo
                 )
                 setAmiiboInfoText(
@@ -329,10 +331,10 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                     txtGameSeries,
                     boldSpannable.indexOf(gameSeries, query), hasTagInfo
                 )
-                if (null != item.docUri) {
+                if (null != item?.docUri) {
                     itemView.isEnabled = true
                     val relativeDocument = Storage.getRelativeDocument(
-                        item.docUri.uri
+                        item.docUri!!.uri
                     )
                     txtPath.text = boldSpannable.indexOf(relativeDocument, query)
                     val a = TypedValue()
@@ -346,7 +348,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                     ) {
                         txtPath.setTextColor(a.data)
                     }
-                } else if (null != item.filePath) {
+                } else if (null != item?.filePath) {
                     itemView.isEnabled = true
                     var relativeFile = Storage.getRelativePath(
                         item.filePath, mPrefs.preferEmulated()
@@ -435,6 +437,6 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     }
 
     companion object {
-        var mPrefs = Preferences(TagMo.getContext())
+        var mPrefs = Preferences(TagMo.appContext)
     }
 }

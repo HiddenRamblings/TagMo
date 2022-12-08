@@ -327,7 +327,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             imageNetworkSetting.summary = imageNetworkSetting.entry
             val activity = requireActivity() as BrowserActivity
             if (null != activity.settings) {
-                activity.runOnUiThread { activity.settings.notifyChanges() }
+                activity.runOnUiThread { activity.settings!!.notifyChanges() }
             }
         }
     }
@@ -360,11 +360,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         view.findViewById<View>(R.id.button_save).setOnClickListener {
             try {
                 keyManager.evaluateKey(ByteArrayInputStream(TagArray.hexToByteArray(
-                            input.text.toString().replace(" ", "")
+                            input.text.toString().filter { !it.isWhitespace() }
                 )))
                 (requireActivity() as BrowserActivity).onKeysLoaded(true)
                 updateKeySummary()
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 e.message?.let { Toasty(requireActivity()).Short(it) }
             }
             scannerDialog.dismiss()
@@ -451,7 +451,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 buildSnackbar(
                     activity, R.string.amiibo_info_updated, Snackbar.LENGTH_SHORT
                 ).show()
-                activity.settings.notifyChanges()
+                activity.settings!!.notifyChanges()
             }
         }
     }
@@ -462,8 +462,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val activity = requireActivity() as BrowserActivity
             if (notify) {
                 activity.runOnUiThread {
-                    activity.settings.setLastUpdatedAPI(null)
-                    activity.settings.notifyChanges()
+                    activity.settings!!.lastUpdatedAPI = null
+                    activity.settings!!.notifyChanges()
                 }
             }
             try {
@@ -548,8 +548,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         buildSnackbar(
                             activity, R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT
                         ).show()
-                        activity.settings.setLastUpdatedAPI(lastUpdated)
-                        activity.settings.notifyChanges()
+                        activity.settings!!.lastUpdatedAPI = lastUpdated
+                        activity.settings!!.notifyChanges()
                     }
                 } else {
                     conn.disconnect()
@@ -686,8 +686,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val activity = requireActivity() as BrowserActivity
             if (isMenuClicked) {
                 onDownloadRequested(lastUpdated)
-            } else if (null == activity.settings.getLastUpdatedAPI()
-                || activity.settings.getLastUpdatedAPI() != lastUpdated
+            } else if (null == activity.settings!!.lastUpdatedAPI
+                || activity.settings!!.lastUpdatedAPI != lastUpdated
             ) {
                 activity.runOnUiThread {
                     try {
@@ -712,8 +712,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val activity = requireActivity() as BrowserActivity
             if (isMenuClicked) {
                 onDownloadRequested(lastUpdated)
-            } else if (null == activity.settings.getLastUpdatedAPI()
-                || activity.settings.getLastUpdatedAPI() != lastUpdated
+            } else if (null == activity.settings!!.lastUpdatedAPI
+                || activity.settings!!.lastUpdatedAPI != lastUpdated
             ) {
                 activity.runOnUiThread {
                     buildSnackbar(

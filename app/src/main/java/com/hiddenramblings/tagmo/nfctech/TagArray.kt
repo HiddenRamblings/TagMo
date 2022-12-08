@@ -20,6 +20,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.browser.Preferences
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.io.Debug.Info
 import com.hiddenramblings.tagmo.eightbit.io.Debug.Warn
 import java.io.File
@@ -32,53 +33,58 @@ import java.util.*
 object TagArray {
     @JvmStatic
     fun getTagTechnology(tag: Tag?): String {
-        val context = TagMo.getContext()
+        val context = TagMo.appContext
         var type = context.getString(R.string.unknown_type)
         if (null == tag) return type
         for (tech in tag.techList) {
-            if (MifareClassic::class.java.name == tech) {
-                type = when (MifareClassic.get(tag).type) {
-                    MifareClassic.TYPE_CLASSIC -> context.getString(R.string.mifare_classic)
-                    MifareClassic.TYPE_PLUS -> context.getString(R.string.mifare_plus)
-                    MifareClassic.TYPE_PRO -> context.getString(R.string.mifare_pro)
-                    else -> context.getString(R.string.mifare_classic)
+            when {
+                MifareClassic::class.java.name == tech -> {
+                    type = when (MifareClassic.get(tag).type) {
+                        MifareClassic.TYPE_CLASSIC -> context.getString(R.string.mifare_classic)
+                        MifareClassic.TYPE_PLUS -> context.getString(R.string.mifare_plus)
+                        MifareClassic.TYPE_PRO -> context.getString(R.string.mifare_pro)
+                        else -> context.getString(R.string.mifare_classic)
+                    }
+                    return type
                 }
-                return type
-            } else if (MifareUltralight::class.java.name == tech) {
-                type = when (MifareUltralight.get(tag).type) {
-                    MifareUltralight.TYPE_ULTRALIGHT -> context.getString(R.string.mifare_ultralight)
-                    MifareUltralight.TYPE_ULTRALIGHT_C -> context.getString(R.string.mifare_ultralight_c)
-                    else -> context.getString(R.string.mifare_ultralight)
+                MifareUltralight::class.java.name == tech -> {
+                    type = when (MifareUltralight.get(tag).type) {
+                        MifareUltralight.TYPE_ULTRALIGHT -> context.getString(R.string.mifare_ultralight)
+                        MifareUltralight.TYPE_ULTRALIGHT_C -> context.getString(R.string.mifare_ultralight_c)
+                        else -> context.getString(R.string.mifare_ultralight)
+                    }
+                    return type
                 }
-                return type
-            } else if (IsoDep::class.java.name == tech) {
-                return context.getString(R.string.isodep)
-            } else if (Ndef::class.java.name == tech) {
-                return context.getString(R.string.ndef)
-            } else if (NdefFormatable::class.java.name == tech) {
-                return context.getString(R.string.ndef_formatable)
+                IsoDep::class.java.name == tech -> {
+                    return context.getString(R.string.isodep)
+                }
+                Ndef::class.java.name == tech -> {
+                    return context.getString(R.string.ndef)
+                }
+                NdefFormatable::class.java.name == tech -> {
+                    return context.getString(R.string.ndef_formatable)
+                }
             }
         }
         return type
     }
 
-    private val mPrefs = Preferences(TagMo.getContext())
+    private val mPrefs = Preferences(TagMo.appContext)
     @JvmStatic
-    fun isPowerTag(mifare: NTAG215): Boolean {
+    fun isPowerTag(mifare: NTAG215?): Boolean {
         if (mPrefs.power_tag_support()) {
-            val signature = mifare.transceive(NfcByte.POWERTAG_SIG)
+            val signature = mifare?.transceive(NfcByte.POWERTAG_SIG)
             return null != signature && compareRange(
-                signature,
-                NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.size
+                signature, NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.size
             )
         }
         return false
     }
 
     @JvmStatic
-    fun isElite(mifare: NTAG215): Boolean {
+    fun isElite(mifare: NTAG215?): Boolean {
         if (mPrefs.elite_support()) {
-            val signature = mifare.readSignature(false)
+            val signature = mifare?.readSignature(false)
             val page10 = hexToByteArray("FFFFFFFFFF")
             return null != signature && compareRange(
                 signature, page10,
@@ -106,7 +112,7 @@ object TagArray {
 
     @JvmStatic
     fun bytesToHex(bytes: ByteArray?): String {
-        val sb = StringBuilder()
+        val sb = java.lang.StringBuilder()
         if (null != bytes) {
             for (b in bytes) {
                 sb.append(String.format("%02X", b))
@@ -117,15 +123,9 @@ object TagArray {
 
     @JvmStatic
     fun hexToByteArray(s: String): ByteArray {
-        val len = s.length
-        val data = ByteArray(len / 2)
-        var i = 0
-        while (i < len) {
-            data[i / 2] = ((s[i].digitToIntOrNull(16)
-                ?: (-1 shl 4)) + s[i + 1].digitToIntOrNull(16)!!).toByte()
-            i += 2
+        return ByteArray(s.length / 2) {
+            Integer.parseInt(s, it * 2, (it + 1) * 2, 16).toByte()
         }
-        return data
     }
 
     fun longToBytes(x: Long): ByteArray {
@@ -138,7 +138,7 @@ object TagArray {
 
     fun bytesToLong(bytes: ByteArray?): Long {
         val buffer = ByteBuffer.allocate(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) java.lang.Long.BYTES else 8
+            if (Debug.isNewer(Build.VERSION_CODES.N)) java.lang.Long.BYTES else 8
         )
         if (bytes != null) {
             buffer.put(bytes)
@@ -152,11 +152,7 @@ object TagArray {
     }
 
     fun hexToLong(s: String): Long {
-        var result: Long = 0
-        for (element in s) {
-            result = (result shl 4) + (element.digitToIntOrNull(16) ?: -1).toLong()
-        }
-        return result
+        return java.lang.Long.parseLong(s, 16)
     }
 
     fun hexToString(hex: String): String {
@@ -172,15 +168,15 @@ object TagArray {
     @JvmStatic
     @Throws(Exception::class)
     fun validateData(data: ByteArray?) {
-        val context = TagMo.getContext()
+        val context = TagMo.appContext
         if (null == data) throw IOException(context.getString(R.string.invalid_data_null))
-        /* TagWriter.splitPages(data) */if (data.size == NfcByte.KEY_FILE_SIZE || data.size == NfcByte.KEY_FILE_SIZE * 2) throw IOException(
-            context.getString(R.string.invalid_tag_key)
-        ) else if (data.size < NfcByte.TAG_DATA_SIZE) throw IOException(
-            context.getString(
+        /* TagWriter.splitPages(data) */
+        if (data.size == NfcByte.KEY_FILE_SIZE || data.size == NfcByte.KEY_RETAIL_SZ)
+            throw IOException(context.getString(R.string.invalid_tag_key))
+        else if (data.size < NfcByte.TAG_DATA_SIZE)
+            throw IOException(context.getString(
                 R.string.invalid_data_size, data.size, NfcByte.TAG_DATA_SIZE
-            )
-        )
+            ))
         val pages = arrayOfNulls<ByteArray>(data.size / NfcByte.PAGE_SIZE)
         var i = 0
         var j = 0
@@ -190,27 +186,26 @@ object TagArray {
             j++
         }
         if (pages[0]!![0] != 0x04.toByte()) throw Exception(context.getString(R.string.invalid_tag_prefix))
-        if (pages[2]!![2] != 0x0F.toByte() || pages[2]!![3] != 0xE0.toByte()) throw Exception(
-            context.getString(R.string.invalid_tag_lock)
-        )
-        if (pages[3]!![0] != 0xF1.toByte() || pages[3]!![1] != 0x10.toByte() || pages[3]!![2] != 0xFF.toByte() || pages[3]!![3] != 0xEE.toByte()) throw Exception(
-            context.getString(R.string.invalid_tag_cc)
-        )
-        if (pages[0x82]!![0] != 0x01.toByte() || pages[0x82]!![1] != 0x0.toByte() || pages[0x82]!![2] != 0x0F.toByte()) throw Exception(
-            context.getString(R.string.invalid_tag_dynamic)
-        )
-        if (pages[0x83]!![0] != 0x0.toByte() || pages[0x83]!![1] != 0x0.toByte() || pages[0x83]!![2] != 0x0.toByte() || pages[0x83]!![3] != 0x04.toByte()) throw Exception(
-            context.getString(R.string.invalid_tag_cfg_zero)
-        )
-        if (pages[0x84]!![0] != 0x5F.toByte() || pages[0x84]!![1] != 0x0.toByte() || pages[0x84]!![2] != 0x0.toByte() || pages[0x84]!![3] != 0x00.toByte()) throw Exception(
-            context.getString(R.string.invalid_tag_cfg_one)
-        )
+        if (pages[2]!![2] != 0x0F.toByte() || pages[2]!![3] != 0xE0.toByte())
+            throw Exception(context.getString(R.string.invalid_tag_lock))
+        if (pages[3]!![0] != 0xF1.toByte() || pages[3]!![1] != 0x10.toByte()
+            || pages[3]!![2] != 0xFF.toByte() || pages[3]!![3] != 0xEE.toByte())
+            throw Exception(context.getString(R.string.invalid_tag_cc))
+        if (pages[0x82]!![0] != 0x01.toByte() || pages[0x82]!![1] != 0x0.toByte()
+            || pages[0x82]!![2] != 0x0F.toByte())
+            throw Exception(context.getString(R.string.invalid_tag_dynamic))
+        if (pages[0x83]!![0] != 0x0.toByte() || pages[0x83]!![1] != 0x0.toByte()
+            || pages[0x83]!![2] != 0x0.toByte() || pages[0x83]!![3] != 0x04.toByte())
+            throw Exception(context.getString(R.string.invalid_tag_cfg_zero))
+        if (pages[0x84]!![0] != 0x5F.toByte() || pages[0x84]!![1] != 0x0.toByte()
+            || pages[0x84]!![2] != 0x0.toByte() || pages[0x84]!![3] != 0x00.toByte())
+            throw Exception(context.getString(R.string.invalid_tag_cfg_one))
     }
 
     @JvmStatic
     @Throws(Exception::class)
     fun validateNtag(mifare: NTAG215, tagData: ByteArray?, validateNtag: Boolean) {
-        val context = TagMo.getContext()
+        val context = TagMo.appContext
         if (null == tagData) throw IOException(context.getString(R.string.no_source_data))
         if (validateNtag) {
             try {
@@ -229,17 +224,12 @@ object TagArray {
             }
         }
         val pages = mifare.readPages(0)
-        if (null == pages || pages.size != NfcByte.PAGE_SIZE * 4) throw Exception(
-            context.getString(
+        if (null == pages || pages.size != NfcByte.PAGE_SIZE * 4)
+            throw Exception(context.getString(
                 R.string.fail_read_size
-            )
-        )
-        if (!compareRange(
-                pages,
-                tagData,
-                9
-            )
-        ) throw Exception(context.getString(R.string.fail_mismatch_uid))
+            ))
+        if (!compareRange(pages, tagData, 9))
+            throw Exception(context.getString(R.string.fail_mismatch_uid))
         Info(TagWriter::class.java, R.string.validation_success)
     }
 
@@ -296,12 +286,12 @@ object TagArray {
 
     @JvmStatic
     @Throws(Exception::class)
-    fun getValidatedFile(keyManager: KeyManager?, file: File?): ByteArray? {
+    fun getValidatedFile(keyManager: KeyManager?, file: File): ByteArray? {
         return getValidatedData(keyManager, TagReader.readTagFile(file))
     }
 
     @Throws(Exception::class)
-    fun getValidatedDocument(keyManager: KeyManager?, fileUri: Uri?): ByteArray? {
+    fun getValidatedDocument(keyManager: KeyManager?, fileUri: Uri): ByteArray? {
         return getValidatedData(keyManager, TagReader.readTagDocument(fileUri))
     }
 
@@ -315,10 +305,9 @@ object TagArray {
     @JvmStatic
     @Throws(Exception::class)
     fun getValidatedData(keyManager: KeyManager?, file: AmiiboFile): ByteArray {
-        return if (null != file.data) file.data else (if (null != file.docUri) getValidatedDocument(
-            keyManager,
-            file.docUri
-        ) else getValidatedFile(keyManager, file.filePath))!!
+        return if (null != file.data) file.data!! else (
+                if (null != file.docUri) getValidatedDocument(keyManager, file.docUri!!
+        ) else getValidatedFile(keyManager, file.filePath!!))!!
     }
 
     @JvmStatic
@@ -328,7 +317,7 @@ object TagArray {
         FileOutputStream(binFile).write(tagData)
         try {
             MediaScannerConnection.scanFile(
-                TagMo.getContext(), arrayOf(binFile.absolutePath),
+                TagMo.appContext, arrayOf(binFile.absolutePath),
                 null, null
             )
         } catch (e: Exception) {

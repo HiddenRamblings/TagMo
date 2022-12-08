@@ -220,7 +220,7 @@ class IndexFastScrollRecyclerSection(
         if (adapter is SectionIndexer) {
             adapter.registerAdapterDataObserver(this)
             mIndexer = adapter
-            mSections = mIndexer!!.sections as Array<String>
+            mSections = mIndexer?.sections as Array<String>
         }
     }
 
@@ -230,7 +230,7 @@ class IndexFastScrollRecyclerSection(
     }
 
     fun updateSections() {
-        mSections = mIndexer!!.sections as Array<String>
+        mSections = mIndexer?.sections as Array<String>
     }
 
     fun contains(x: Float, y: Float): Boolean {

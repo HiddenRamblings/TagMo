@@ -5,12 +5,13 @@ import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.SORT
 import java.io.File
 
-class AmiiboFileComparator(var settings: BrowserSettings) : Comparator<AmiiboFile> {
-    override fun compare(amiiboFile1: AmiiboFile, amiiboFile2: AmiiboFile): Int {
+class AmiiboFileComparator(var settings: BrowserSettings) : Comparator<AmiiboFile?> {
+    override fun compare(amiiboFile1: AmiiboFile?, amiiboFile2: AmiiboFile?): Int {
         var value = 0
+        if (null == amiiboFile1 || null == amiiboFile2) return 0
         val sort = settings.sort
-        val filePath1 = amiiboFile1.getFilePath()
-        val filePath2 = amiiboFile2.getFilePath()
+        val filePath1 = amiiboFile1.filePath
+        val filePath2 = amiiboFile2.filePath
         val docPath1 = amiiboFile1.docUri
         val docPath2 = amiiboFile2.docUri
         if (null != docPath1 && null != docPath2) {
@@ -20,8 +21,8 @@ class AmiiboFileComparator(var settings: BrowserSettings) : Comparator<AmiiboFil
             if (sort == SORT.FILE_PATH.value && !(null == filePath1 && null == filePath2)) value =
                 compareFilePath(filePath1, filePath2)
         }
-        val amiiboId1 = amiiboFile1.getId()
-        val amiiboId2 = amiiboFile2.getId()
+        val amiiboId1 = amiiboFile1.id
+        val amiiboId2 = amiiboFile2.id
         if (sort == SORT.ID.value) {
             value = compareAmiiboId(amiiboId1, amiiboId2)
         } else if (value == 0) {
@@ -29,8 +30,13 @@ class AmiiboFileComparator(var settings: BrowserSettings) : Comparator<AmiiboFil
             if (null != amiiboManager) {
                 val amiibo1 = amiiboManager.amiibos[amiiboId1]
                 val amiibo2 = amiiboManager.amiibos[amiiboId2]
-                if (null == amiibo1 && null == amiibo2) value = 0 else if (null == amiibo1) value =
-                    1 else if (null == amiibo2) value = -1 else if (sort == SORT.NAME.value) {
+                if (null == amiibo1 && null == amiibo2)
+                    value = 0
+                else if (null == amiibo1)
+                    value = 1
+                else if (null == amiibo2)
+                    value = -1
+                else if (sort == SORT.NAME.value) {
                     value = compareAmiiboName(amiibo1, amiibo2)
                 } else if (sort == SORT.AMIIBO_SERIES.value) {
                     value = compareAmiiboSeries(amiibo1, amiibo2)
@@ -41,7 +47,7 @@ class AmiiboFileComparator(var settings: BrowserSettings) : Comparator<AmiiboFil
                 } else if (sort == SORT.CHARACTER.value) {
                     value = compareCharacter(amiibo1, amiibo2)
                 }
-                if (value == 0 && null != amiibo1) value = amiibo1.compareTo(amiibo2)
+                if (value == 0 && null != amiibo1) value = amiibo1.compareTo(amiibo2!!)
             }
             if (value == 0) value = compareAmiiboId(amiiboId1, amiiboId2)
         }

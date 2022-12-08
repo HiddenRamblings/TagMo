@@ -16,8 +16,13 @@ class AmiiboComparator(var settings: BrowserSettings) : Comparator<Amiibo> {
             if (null != amiiboManager) {
                 val amiibo1 = amiiboManager.amiibos[amiiboId1]
                 val amiibo2 = amiiboManager.amiibos[amiiboId2]
-                if (null == amiibo1 && null == amiibo2) value = 0 else if (null == amiibo1) value =
-                    1 else if (null == amiibo2) value = -1 else if (sort == SORT.NAME.value) {
+                if (null == amiibo1 && null == amiibo2)
+                    value = 0
+                else if (null == amiibo1)
+                    value = 1
+                else if (null == amiibo2)
+                    value = -1
+                else if (sort == SORT.NAME.value) {
                     value = compareAmiiboName(amiibo1, amiibo2)
                 } else if (sort == SORT.AMIIBO_SERIES.value) {
                     value = compareAmiiboSeries(amiibo1, amiibo2)
@@ -28,7 +33,7 @@ class AmiiboComparator(var settings: BrowserSettings) : Comparator<Amiibo> {
                 } else if (sort == SORT.CHARACTER.value) {
                     value = compareCharacter(amiibo1, amiibo2)
                 }
-                if (value == 0 && null != amiibo1) value = amiibo1.compareTo(amiibo2)
+                if (value == 0 && null != amiibo1) value = amiibo1.compareTo(amiibo2!!)
             }
             if (value == 0) value = compareAmiiboId(amiiboId1, amiiboId2)
         }

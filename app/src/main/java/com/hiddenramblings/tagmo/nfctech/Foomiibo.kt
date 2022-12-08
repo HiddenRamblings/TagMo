@@ -36,7 +36,7 @@ class Foomiibo {
         )
         val year = random.nextInt(9 + 1).toString()
         val identifier = serial.substring(3, 7)
-        val facility = TagMo.getContext().resources.getStringArray(
+        val facility = TagMo.appContext.resources.getStringArray(
             R.array.production_factory
         )[random.nextInt(3 + 1)]
         return week + year + "000" + identifier + facility

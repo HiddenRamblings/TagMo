@@ -8,13 +8,13 @@ import android.text.style.StyleSpan
 import java.util.*
 
 class BoldSpannable {
-    fun indexOf(text: String, query: String): SpannableStringBuilder {
+    fun indexOf(text: String, query: String?): SpannableStringBuilder {
         val str = SpannableStringBuilder(text)
         if (TextUtils.isEmpty(query)) return str
         val lower = text.lowercase(Locale.getDefault())
         var j = 0
         while (j < lower.length) {
-            val i = lower.indexOf(query, j)
+            val i = lower.indexOf(query!!, j)
             if (i == -1) break
             j = i + query.length
             if (str.isNotEmpty()) {
@@ -26,9 +26,9 @@ class BoldSpannable {
         return str
     }
 
-    fun startsWith(text: String, query: String): SpannableStringBuilder {
+    fun startsWith(text: String?, query: String?): SpannableStringBuilder {
         val str = SpannableStringBuilder(text)
-        if (!TextUtils.isEmpty(query) && text.lowercase(Locale.getDefault()).startsWith(query)) {
+        if (!TextUtils.isEmpty(query) && text?.lowercase()!!.startsWith(query!!)) {
             str.setSpan(
                 StyleSpan(Typeface.BOLD), 0, query.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )

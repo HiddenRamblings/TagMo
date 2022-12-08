@@ -105,6 +105,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
     lint {
         abortOnError false
     }
@@ -135,8 +138,8 @@ dependencies {
 
     implementation 'com.github.anrwatchdog:anrwatchdog:1.4.0'
     implementation 'com.github.bumptech.glide:glide:4.14.2'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
     kapt 'com.github.bumptech.glide:compiler:4.14.2'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
 
     implementation 'com.github.SamSprung:android-issue-reporter:aa71db4'
     implementation 'com.github.SamSprung:FreeReflection:b87e929'

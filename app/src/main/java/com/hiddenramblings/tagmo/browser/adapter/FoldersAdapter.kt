@@ -17,8 +17,8 @@ import java.io.File
 
 class FoldersAdapter(var settings: BrowserSettings) : RecyclerView.Adapter<FolderViewHolder>(),
     BrowserSettingsListener {
-    var mPrefs = Preferences(TagMo.getContext())
-    var data: ArrayList<File>? = null
+    var mPrefs = Preferences(TagMo.appContext)
+    var data: ArrayList<File?>? = null
     private var rootFolder: File? = null
     private var showUpFolder = false
     private var firstRun = true
@@ -58,16 +58,16 @@ class FoldersAdapter(var settings: BrowserSettings) : RecyclerView.Adapter<Folde
 
     override fun onBindViewHolder(holder: FolderViewHolder, position: Int) {
         var target = position
-        val folder: File
+        val folder: File?
         if (holder is ParentFolderViewHolder) {
-            folder = rootFolder!!.parentFile as File
+            folder = rootFolder?.parentFile
         } else {
             if (showUpFolder) {
                 target -= 1
             }
-            folder = data!![target]
+            folder = data?.get(target)
         }
-        holder.bind(settings, folder)
+        holder.bind(settings, folder as File)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -80,8 +80,9 @@ class FoldersAdapter(var settings: BrowserSettings) : RecyclerView.Adapter<Folde
 
     private fun showParentFolder(): Boolean {
         val internal = mPrefs.preferEmulated()
+        val storage = Storage.getPath(internal)
         return (null != rootFolder && Storage.getFile(internal) != rootFolder
-                && rootFolder!!.absolutePath.startsWith(Storage.getPath(internal)))
+                && (null != storage && rootFolder!!.absolutePath.startsWith(storage)))
     }
 
     override fun getItemCount(): Int {

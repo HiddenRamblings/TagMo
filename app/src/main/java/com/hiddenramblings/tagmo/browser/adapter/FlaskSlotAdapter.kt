@@ -26,7 +26,7 @@ class FlaskSlotAdapter(
     private val settings: BrowserSettings,
     private val listener: OnAmiiboClickListener
 ) : RecyclerView.Adapter<FlaskViewHolder>(), BrowserSettingsListener {
-    var mPrefs = Preferences(TagMo.getContext())
+    var mPrefs = Preferences(TagMo.appContext)
     private var flaskAmiibo: ArrayList<Amiibo?> = ArrayList()
     fun setFlaskAmiibo(amiibo: ArrayList<Amiibo?>) {
         flaskAmiibo = amiibo
@@ -37,8 +37,8 @@ class FlaskSlotAdapter(
     }
 
     override fun onBrowserSettingsChanged(
-        newBrowserSettings: BrowserSettings,
-        oldBrowserSettings: BrowserSettings
+        newBrowserSettings: BrowserSettings?,
+        oldBrowserSettings: BrowserSettings?
     ) {
     }
 
@@ -76,11 +76,6 @@ class FlaskSlotAdapter(
                 listener
             )
             VIEW.SIMPLE -> SimpleViewHolder(
-                parent,
-                settings,
-                listener
-            )
-            else -> SimpleViewHolder(
                 parent,
                 settings,
                 listener
@@ -162,7 +157,7 @@ class FlaskSlotAdapter(
             var amiiboImageUrl: String? = null
             when (amiibo) {
                 null -> {
-                    setAmiiboInfoText(txtName, TagMo.getContext().getString(R.string.empty_tag))
+                    setAmiiboInfoText(txtName, TagMo.appContext.getString(R.string.empty_tag))
                     txtError.visibility = View.GONE
                     txtPath.visibility = View.GONE
                     txtTagId.visibility = View.GONE
@@ -172,7 +167,7 @@ class FlaskSlotAdapter(
                     return
                 }
                 is FlaskTag -> {
-                    setAmiiboInfoText(txtName, TagMo.getContext().getString(R.string.blank_tag))
+                    setAmiiboInfoText(txtName, TagMo.appContext.getString(R.string.blank_tag))
                 }
                 else -> {
                     setAmiiboInfoText(txtName, amiibo!!.name)
@@ -189,9 +184,9 @@ class FlaskSlotAdapter(
                     txtGameSeries.visibility = View.GONE
                 } else {
                     amiiboHexId = Amiibo.idToHex(amiibo!!.id)
-                    if (null != amiibo!!.amiiboSeries) amiiboSeries = amiibo!!.amiiboSeries.name
-                    if (null != amiibo!!.amiiboType) amiiboType = amiibo!!.amiiboType.name
-                    if (null != amiibo!!.gameSeries) gameSeries = amiibo!!.gameSeries.name
+                    if (null != amiibo!!.amiiboSeries) amiiboSeries = amiibo!!.amiiboSeries!!.name
+                    if (null != amiibo!!.amiiboType) amiiboType = amiibo!!.amiiboType!!.name
+                    if (null != amiibo!!.gameSeries) gameSeries = amiibo!!.gameSeries!!.name
                     txtTagId.visibility = View.VISIBLE
                     txtAmiiboSeries.visibility = View.VISIBLE
                     txtAmiiboType.visibility = View.VISIBLE

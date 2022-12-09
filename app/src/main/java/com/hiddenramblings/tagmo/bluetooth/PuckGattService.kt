@@ -70,10 +70,9 @@ class PuckGattService : Service() {
         fun onGattConnectionLost()
     }
 
-    var puckArray = ArrayList<ByteArray?>()
-    var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
-    private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic) {
-        val data = characteristic.value
+    private var puckArray = ArrayList<ByteArray?>()
+    private var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
+    private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data != null && data.isNotEmpty()) {
             Debug.Verbose(
                 this.javaClass, getLogTag(characteristic.uuid) + " " + Arrays.toString(data)
@@ -119,6 +118,10 @@ class PuckGattService : Service() {
         }
     }
 
+    fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic) {
+        getCharacteristicValue(characteristic, characteristic.value)
+    }
+
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
     private val mGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
@@ -140,6 +143,14 @@ class PuckGattService : Service() {
         }
 
         override fun onCharacteristicRead(
+            gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int
+        ) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                getCharacteristicValue(characteristic, value)
+            }
+        }
+
+        override fun onCharacteristicRead(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -153,6 +164,12 @@ class PuckGattService : Service() {
             Debug.Verbose(
                 this.javaClass, getLogTag(characteristic.uuid) + " onCharacteristicWrite " + status
             )
+        }
+
+        override fun onCharacteristicChanged(
+            gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray
+        ) {
+            getCharacteristicValue(characteristic, value)
         }
 
         override fun onCharacteristicChanged(
@@ -256,16 +273,30 @@ class PuckGattService : Service() {
             val descriptorTX = characteristic!!.getDescriptor(
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             )
-            descriptorTX.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-            mBluetoothGatt!!.writeDescriptor(descriptorTX)
+            val value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+            if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+                mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
+            } else {
+                @Suppress("DEPRECATION")
+                descriptorTX.value = value
+                @Suppress("DEPRECATION")
+                mBluetoothGatt!!.writeDescriptor(descriptorTX)
+            }
         } catch (ignored: Exception) {
         }
         try {
             val descriptorTX = characteristic!!.getDescriptor(
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             )
-            descriptorTX.value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
-            mBluetoothGatt!!.writeDescriptor(descriptorTX)
+            val value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
+            if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+                mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
+            } else {
+                @Suppress("DEPRECATION")
+                descriptorTX.value = value
+                @Suppress("DEPRECATION")
+                mBluetoothGatt!!.writeDescriptor(descriptorTX)
+            }
         } catch (ignored: Exception) {
         }
     }
@@ -338,19 +369,17 @@ class PuckGattService : Service() {
 
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mWriteCharacteristic = mCustomService.getCharacteristic(PuckTX)
-        if (!mBluetoothGatt!!.writeCharacteristic(mWriteCharacteristic)) {
+        // if (!mBluetoothGatt!!.writeCharacteristic(mWriteCharacteristic)) {
             for (customWrite in mCustomService.characteristics) {
                 val customUUID = customWrite.uuid
-                /*get the write characteristic from the service*/if (customUUID.compareTo(
-                        PuckTX
-                    ) == 0
-                ) {
+                /*get the write characteristic from the service*/
+                if (customUUID.compareTo(PuckTX) == 0) {
                     Debug.Verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
                 }
             }
-        }
+        // }
         return mWriteCharacteristic
     }
 
@@ -386,10 +415,19 @@ class PuckGattService : Service() {
             while (i < chunks.size) {
                 val chunk = chunks[i]
                 puckHandler.postDelayed({
-                    mCharacteristicTX!!.value = chunk
-                    mCharacteristicTX!!.writeType =
-                        BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                    mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+                    if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+                        mBluetoothGatt!!.writeCharacteristic(
+                            mCharacteristicTX!!, chunk,
+                            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                        )
+                    } else {
+                        @Suppress("DEPRECATION")
+                        mCharacteristicTX!!.value = chunk
+                        mCharacteristicTX!!.writeType =
+                            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                        @Suppress("DEPRECATION")
+                        mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+                    }
                 }, (i + 1) * chunkTimeout)
                 i += 1
             }

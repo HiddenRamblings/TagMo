@@ -14,7 +14,6 @@ import android.os.*
 import android.util.Base64
 import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.amiibo.Amiibo
-import com.hiddenramblings.tagmo.bluetooth.FlaskGattService
 import com.hiddenramblings.tagmo.bluetooth.GattArray.byteToPortions
 import com.hiddenramblings.tagmo.bluetooth.GattArray.stringToPortions
 import com.hiddenramblings.tagmo.bluetooth.GattArray.stringToUnicode
@@ -303,8 +302,7 @@ class FlaskGattService : Service() {
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
             Debug.Verbose(
-                this.javaClass, getLogTag(characteristic.uuid)
-                        + " onCharacteristicWrite " + status
+                this.javaClass, getLogTag(characteristic.uuid) + " onCharacteristicWrite " + status
             )
         }
 
@@ -415,16 +413,30 @@ class FlaskGattService : Service() {
             val descriptorTX = characteristic!!.getDescriptor(
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             )
-            descriptorTX.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-            mBluetoothGatt!!.writeDescriptor(descriptorTX)
+            val value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+            if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+                mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
+            } else {
+                @Suppress("DEPRECATION")
+                descriptorTX.value = value
+                @Suppress("DEPRECATION")
+                mBluetoothGatt!!.writeDescriptor(descriptorTX)
+            }
         } catch (ignored: Exception) {
         }
         try {
             val descriptorTX = characteristic!!.getDescriptor(
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             )
-            descriptorTX.value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
-            mBluetoothGatt!!.writeDescriptor(descriptorTX)
+            val value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
+            if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+                mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
+            } else {
+                @Suppress("DEPRECATION")
+                descriptorTX.value = value
+                @Suppress("DEPRECATION")
+                mBluetoothGatt!!.writeDescriptor(descriptorTX)
+            }
         } catch (ignored: Exception) {
         }
     }
@@ -459,10 +471,8 @@ class FlaskGattService : Service() {
         if (!mBluetoothGatt!!.readCharacteristic(mReadCharacteristic)) {
             for (customRead in mCustomService.characteristics) {
                 val customUUID = customRead.uuid
-                /*get the read characteristic from the service*/if (customUUID.compareTo(
-                        FlaskRX
-                    ) == 0
-                ) {
+                /*get the read characteristic from the service*/
+                if (customUUID.compareTo(FlaskRX) == 0) {
                     Debug.Verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
@@ -495,21 +505,19 @@ class FlaskGattService : Service() {
         setCharacteristicNotification(mCharacteristicRX, true)
     }
 
-    fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
+    private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mWriteCharacteristic = mCustomService.getCharacteristic(FlaskTX)
-        if (!mBluetoothGatt!!.writeCharacteristic(mWriteCharacteristic)) {
+        // if (!mBluetoothGatt!!.writeCharacteristic(mWriteCharacteristic)) {
             for (customWrite in mCustomService.characteristics) {
                 val customUUID = customWrite.uuid
-                /*get the write characteristic from the service*/if (customUUID.compareTo(
-                        FlaskTX
-                    ) == 0
-                ) {
+                /*get the write characteristic from the service*/
+                if (customUUID.compareTo(FlaskTX) == 0) {
                     Debug.Verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
                 }
             }
-        }
+        // }
         return mWriteCharacteristic
     }
 
@@ -543,11 +551,20 @@ class FlaskGattService : Service() {
             while (i < chunks.size) {
                 val chunk = chunks[i]
                 flaskHandler.postDelayed({
-                    mCharacteristicTX!!.value = chunk
-                    mCharacteristicTX!!.writeType =
-                        BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                     try {
-                        mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+                        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+                            mBluetoothGatt!!.writeCharacteristic(
+                                mCharacteristicTX!!, chunk,
+                                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                            )
+                        } else {
+                            @Suppress("DEPRECATION")
+                            mCharacteristicTX!!.value = chunk
+                            mCharacteristicTX!!.writeType =
+                                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                            @Suppress("DEPRECATION")
+                            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+                        }
                     } catch (ex: NullPointerException) {
                         listener?.onServicesDiscovered()
                     }
@@ -565,11 +582,20 @@ class FlaskGattService : Service() {
             while (i < chunks.size) {
                 val chunk = chunks[i]
                 flaskHandler.postDelayed({
-                    mCharacteristicTX!!.setValue(chunk)
-                    mCharacteristicTX!!.writeType =
-                        BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                     try {
-                        mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+                        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+                            mBluetoothGatt!!.writeCharacteristic(
+                                mCharacteristicTX!!, chunk.encodeToByteArray(),
+                                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                            )
+                        } else {
+                            @Suppress("DEPRECATION")
+                            mCharacteristicTX!!.value = chunk.encodeToByteArray()
+                            mCharacteristicTX!!.writeType =
+                                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                            @Suppress("DEPRECATION")
+                            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+                        }
                     } catch (ex: NullPointerException) {
                         listener?.onServicesDiscovered()
                     }

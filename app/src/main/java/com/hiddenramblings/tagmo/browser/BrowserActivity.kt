@@ -11,11 +11,13 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.nfc.NfcAdapter
 import android.os.*
 import android.provider.Settings
+import android.provider.Settings.System.getConfiguration
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.util.DisplayMetrics
@@ -1490,8 +1492,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 settings!!.notifyChanges()
             }
             R.id.view_image -> {
-                if (null != amiibosView) amiibosView!!.layoutManager =
-                    GridLayoutManager(this, columnCount)
+                if (null != amiibosView)
+                    amiibosView!!.layoutManager = GridLayoutManager(this, columnCount)
                 foomiiboView!!.layoutManager = GridLayoutManager(this, columnCount)
                 settings!!.amiiboView = VIEW.IMAGE.value
                 settings!!.notifyChanges()
@@ -2251,15 +2253,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         get() {
             val metrics = DisplayMetrics()
             val mWindowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-            if (Debug.isNewer(Build.VERSION_CODES.S))
-                mWindowManager.currentWindowMetrics
-            else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
-                @Suppress("DEPRECATION")
-                mWindowManager.defaultDisplay.getRealMetrics(metrics)
-            else
-                @Suppress("DEPRECATION")
-                mWindowManager.defaultDisplay.getMetrics(metrics)
-            return (metrics.widthPixels / metrics.density / 112 + 0.5).toInt()
+            val columns = if (Debug.isNewer(Build.VERSION_CODES.S)) {
+                val bounds: Rect = mWindowManager.currentWindowMetrics.bounds
+                ((bounds.width() / (resources.configuration.densityDpi / 160)) + 0.5) / 112
+            } else {
+                if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                    @Suppress("DEPRECATION")
+                    mWindowManager.defaultDisplay.getRealMetrics(metrics)
+                else
+                    @Suppress("DEPRECATION")
+                    mWindowManager.defaultDisplay.getMetrics(metrics)
+                ((metrics.widthPixels / metrics.density) + 0.5) / 112
+            }
+            return if (columns < 1) 3 else columns.toInt()
         }
 
     private fun setViewPagerSensitivity(viewPager: ViewPager2?, sensitivity: Int) {

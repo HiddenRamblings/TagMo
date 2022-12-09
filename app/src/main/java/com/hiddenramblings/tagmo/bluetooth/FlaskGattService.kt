@@ -19,9 +19,7 @@ import com.hiddenramblings.tagmo.bluetooth.GattArray.byteToPortions
 import com.hiddenramblings.tagmo.bluetooth.GattArray.stringToPortions
 import com.hiddenramblings.tagmo.bluetooth.GattArray.stringToUnicode
 import com.hiddenramblings.tagmo.charset.CharsetCompat
-import com.hiddenramblings.tagmo.eightbit.io.Debug.Verbose
-import com.hiddenramblings.tagmo.eightbit.io.Debug.Warn
-import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -109,10 +107,9 @@ class FlaskGattService : Service() {
 
     var response = StringBuilder()
     private var rangeIndex = 0
-    private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic) {
-        val output = characteristic.getStringValue(0x0)
+    private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
-            Verbose(this.javaClass, getLogTag(characteristic.uuid) + " " + output)
+            Debug.Verbose(this.javaClass, getLogTag(characteristic.uuid) + " " + output)
             if (characteristic.uuid.compareTo(FlaskRX) == 0) {
                 if (output.contains(">tag.")) {
                     response = StringBuilder()
@@ -152,12 +149,12 @@ class FlaskGattService : Service() {
                                 try {
                                     listener?.onFlaskActiveChanged(JSONObject(getAmiibo))
                                 } catch (e: JSONException) {
-                                    Warn(e)
+                                    Debug.Warn(e)
                                     listener?.onFlaskActiveChanged(null)
                                 }
                             }
                         } catch (ex: StringIndexOutOfBoundsException) {
-                            Warn(ex)
+                            Debug.Warn(ex)
                             listener?.onFlaskActiveChanged(null)
                         }
                         response = StringBuilder()
@@ -203,7 +200,7 @@ class FlaskGattService : Service() {
                                 )
                             }
                         } catch (e: JSONException) {
-                            Warn(e)
+                            Debug.Warn(e)
                         }
                         response = StringBuilder()
                         if (rangeIndex == 0 && null != listener) listener!!.onFlaskProcessFinish()
@@ -250,7 +247,7 @@ class FlaskGattService : Service() {
                             if (null != e.message && e.message!!.contains("tag.setTag")) {
                                 activeAmiibo
                             } else {
-                                Warn(e)
+                                Debug.Warn(e)
                             }
                         }
                     }
@@ -260,6 +257,10 @@ class FlaskGattService : Service() {
                 }
             }
         }
+    }
+
+    fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic) {
+        getCharacteristicValue(characteristic, characteristic.getStringValue(0x0))
     }
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -275,10 +276,18 @@ class FlaskGattService : Service() {
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (isNewer(Build.VERSION_CODES.LOLLIPOP)) mBluetoothGatt!!.requestMtu(512) // Maximum: 517
+                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) mBluetoothGatt!!.requestMtu(512) // Maximum: 517
                 else listener?.onServicesDiscovered()
             } else {
-                Warn(this.javaClass, "onServicesDiscovered received: $status")
+                Debug.Warn(this.javaClass, "onServicesDiscovered received: $status")
+            }
+        }
+
+        override fun onCharacteristicRead(
+            gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int
+        ) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                getCharacteristicValue(characteristic, value.decodeToString())
             }
         }
 
@@ -293,10 +302,16 @@ class FlaskGattService : Service() {
         override fun onCharacteristicWrite(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            Verbose(
+            Debug.Verbose(
                 this.javaClass, getLogTag(characteristic.uuid)
                         + " onCharacteristicWrite " + status
             )
+        }
+
+        override fun onCharacteristicChanged(
+            gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray
+        ) {
+            getCharacteristicValue(characteristic, value.decodeToString())
         }
 
         override fun onCharacteristicChanged(
@@ -307,10 +322,10 @@ class FlaskGattService : Service() {
 
         override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Verbose(this.javaClass, "onMtuChange complete: $mtu")
+                Debug.Verbose(this.javaClass, "onMtuChange complete: $mtu")
                 maxTransmissionUnit = mtu - 3
             } else {
-                Warn(this.javaClass, "onMtuChange received: $status")
+                Debug.Warn(this.javaClass, "onMtuChange received: $status")
             }
             if (null != listener) listener?.onServicesDiscovered()
         }
@@ -448,7 +463,7 @@ class FlaskGattService : Service() {
                         FlaskRX
                     ) == 0
                 ) {
-                    Verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
+                    Debug.Verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
                 }
@@ -469,7 +484,7 @@ class FlaskGattService : Service() {
                 throw UnsupportedOperationException()
             }
             for (customService in services) {
-                Verbose(this.javaClass, "GattReadService: " + customService.uuid.toString())
+                Debug.Verbose(this.javaClass, "GattReadService: " + customService.uuid.toString())
                 /*get the read characteristic from the service*/mCharacteristicRX =
                     getCharacteristicRX(customService)
                 break
@@ -489,7 +504,7 @@ class FlaskGattService : Service() {
                         FlaskTX
                     ) == 0
                 ) {
-                    Verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
+                    Debug.Verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
                 }
@@ -510,7 +525,7 @@ class FlaskGattService : Service() {
                 throw UnsupportedOperationException()
             }
             for (customService in services) {
-                Verbose(this.javaClass, "GattWriteService: " + customService.uuid.toString())
+                Debug.Verbose(this.javaClass, "GattWriteService: " + customService.uuid.toString())
                 /*get the read characteristic from the service*/mCharacteristicTX =
                     getCharacteristicTX(customService)
             }
@@ -569,7 +584,7 @@ class FlaskGattService : Service() {
             try {
                 setFlaskCharacteristicTX()
             } catch (e: UnsupportedOperationException) {
-                Warn(e)
+                Debug.Warn(e)
             }
         }
         commandCallbacks.add(index, Runnable { delayedWriteCharacteristic("tag.$value\n") })
@@ -588,7 +603,7 @@ class FlaskGattService : Service() {
             try {
                 setFlaskCharacteristicTX()
             } catch (e: UnsupportedOperationException) {
-                Warn(e)
+                Debug.Warn(e)
             }
         }
         commandCallbacks.add(index, Runnable { delayedWriteCharacteristic(value) })
@@ -611,7 +626,7 @@ class FlaskGattService : Service() {
             try {
                 setFlaskCharacteristicTX()
             } catch (e: UnsupportedOperationException) {
-                Warn(e)
+                Debug.Warn(e)
             }
         }
         commandCallbacks.add(index, Runnable { delayedWriteCharacteristic("screen.$value\n") })

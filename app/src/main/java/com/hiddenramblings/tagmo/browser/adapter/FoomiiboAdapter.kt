@@ -263,15 +263,15 @@ class FoomiiboAdapter(
         itemView: View, private val settings: BrowserSettings,
         val listener: OnFoomiiboClickListener?
     ) : RecyclerView.ViewHolder(itemView) {
-        val txtError: TextView
-        val txtName: TextView
+        val txtError: TextView?
+        val txtName: TextView?
         val txtTagId: TextView?
-        val txtAmiiboSeries: TextView
-        val txtAmiiboType: TextView
-        val txtGameSeries: TextView
+        val txtAmiiboSeries: TextView?
+        val txtAmiiboType: TextView?
+        val txtGameSeries: TextView?
 
         // public final TextView txtCharacter;
-        val txtPath: TextView
+        val txtPath: TextView?
         var imageAmiibo: AppCompatImageView? = null
         lateinit var foomiibo: Amiibo
         private val boldSpannable = BoldSpannable()
@@ -342,7 +342,7 @@ class FoomiiboAdapter(
                 if (hasTagInfo) {
                     setFoomiiboInfoText(txtError, tagInfo, false)
                 } else {
-                    txtError.visibility = View.GONE
+                    txtError?.visibility = View.GONE
                 }
                 setFoomiiboInfoText(
                     txtTagId,
@@ -363,7 +363,7 @@ class FoomiiboAdapter(
                 )
                 // setAmiiboInfoText(this.txtCharacter,
                 // boldText.Matching(character, query), hasTagInfo);
-                txtPath.visibility = View.GONE
+                txtPath?.visibility = View.GONE
                 val expanded = foomiiboId.contains(foomiibo.id)
                 itemView.findViewById<View>(R.id.menu_options).visibility =
                     if (expanded) View.VISIBLE else View.GONE

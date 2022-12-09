@@ -112,9 +112,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     .setTransientIndexBar(!BuildConfig.WEAR_OS)
         if (prefs.software_layer())
             foomiiboView!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        browserContent!!.layoutManager = if (settings!!.amiiboView
-            == BrowserSettings.VIEW.IMAGE.value
-        ) GridLayoutManager(activity, activity.columnCount) else LinearLayoutManager(activity)
+        browserContent!!.layoutManager = if (settings!!.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+            GridLayoutManager(activity, activity.columnCount)
+        else LinearLayoutManager(activity)
         browserContent!!.adapter = BrowserAdapter(settings!!, activity)
         settings!!.addChangeListener(browserContent!!.adapter as BrowserSettingsListener?)
         foomiiboView!!.layoutManager = if (settings!!.amiiboView == BrowserSettings.VIEW.IMAGE.value)

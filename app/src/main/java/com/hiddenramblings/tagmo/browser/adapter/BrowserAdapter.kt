@@ -290,15 +290,15 @@ class BrowserAdapter(
         private val settings: BrowserSettings,
         val listener: OnAmiiboClickListener?
     ) : RecyclerView.ViewHolder(itemView) {
-        val txtError: TextView
-        val txtName: TextView
+        val txtError: TextView?
+        val txtName: TextView?
         val txtTagId: TextView?
-        val txtAmiiboSeries: TextView
-        val txtAmiiboType: TextView
-        val txtGameSeries: TextView
+        val txtAmiiboSeries: TextView?
+        val txtAmiiboType: TextView?
+        val txtGameSeries: TextView?
 
         // public final TextView txtCharacter;
-        val txtPath: TextView
+        val txtPath: TextView?
         var imageAmiibo: AppCompatImageView? = null
         var amiiboFile: AmiiboFile? = null
         private val boldSpannable = BoldSpannable()
@@ -379,7 +379,7 @@ class BrowserAdapter(
                 if (hasTagInfo) {
                     setAmiiboInfoText(txtError, tagInfo, false)
                 } else {
-                    txtError.visibility = View.GONE
+                    txtError?.visibility = View.GONE
                 }
                 setAmiiboInfoText(
                     txtTagId,
@@ -407,7 +407,7 @@ class BrowserAdapter(
                         if (expanded) View.VISIBLE else View.GONE
                     if (expanded) listener!!.onAmiiboRebind(itemView, amiiboFile)
                     itemView.isEnabled = true
-                    txtPath.text = boldSpannable.indexOf(relativeDocument, query)
+                    txtPath!!.text = boldSpannable.indexOf(relativeDocument, query)
                     val a = TypedValue()
                     txtPath.context.theme.resolveAttribute(
                         android.R.attr.textColor, a, true
@@ -437,7 +437,7 @@ class BrowserAdapter(
                         )
                     }
                     itemView.isEnabled = true
-                    txtPath.text = boldSpannable.indexOf(relativeFile, query)
+                    txtPath!!.text = boldSpannable.indexOf(relativeFile, query)
                     val a = TypedValue()
                     txtPath.context.theme.resolveAttribute(
                         android.R.attr.textColor, a, true
@@ -452,7 +452,7 @@ class BrowserAdapter(
                     setIsHighlighted(relativeFile.startsWith("/Foomiibo/"))
                 } else {
                     itemView.isEnabled = false
-                    txtPath.text = ""
+                    txtPath!!.text = ""
                     txtPath.setTextColor(ContextCompat.getColor(txtPath.context, R.color.tag_text))
                 }
                 txtPath.visibility = View.VISIBLE

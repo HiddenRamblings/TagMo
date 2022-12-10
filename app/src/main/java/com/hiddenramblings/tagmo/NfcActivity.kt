@@ -17,6 +17,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -68,6 +69,21 @@ class NfcActivity : AppCompatActivity() {
     private var write_count = 0
     private var tagTech: String? = null
     private var hasTestedElite = false
+
+    private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.action
+            if (NfcAdapter.ACTION_ADAPTER_STATE_CHANGED == action) {
+                if (!nfcAdapter!!.isEnabled) {
+                    showError(getString(R.string.nfc_disabled))
+                } else {
+                    clearError()
+                    listenForTags()
+                }
+            }
+        }
+    }
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Preferences(applicationContext)
@@ -88,35 +104,6 @@ class NfcActivity : AppCompatActivity() {
         configureInterface()
         bankPicker.setBackgroundResource(R.drawable.picker_border)
         nfcAnimation = AnimationUtils.loadAnimation(this, R.anim.nfc_scanning)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        clearError()
-        if (null == keyManager)
-            keyManager = KeyManager(this)
-        if (null == nfcAdapter)
-            nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        when (intent.action) {
-            NFCIntent.ACTION_WRITE_TAG_FULL, NFCIntent.ACTION_WRITE_TAG_DATA -> {
-                if (keyManager!!.isKeyMissing) {
-                    showError("Keys not loaded")
-                    nfcAdapter = null
-                }
-                startNfcMonitor()
-            }
-            NFCIntent.ACTION_WRITE_TAG_RAW,
-            NFCIntent.ACTION_WRITE_ALL_TAGS,
-            NFCIntent.ACTION_ERASE_ALL_TAGS,
-            NFCIntent.ACTION_BACKUP_AMIIBO,
-            NFCIntent.ACTION_SCAN_TAG,
-            NFCIntent.ACTION_SET_BANK_COUNT,
-            NFCIntent.ACTION_ACTIVATE_BANK,
-            NFCIntent.ACTION_ERASE_BANK,
-            NFCIntent.ACTION_LOCK_AMIIBO,
-            NFCIntent.ACTION_UNLOCK_UNIT,
-            NFCIntent.ACTION_BLIND_SCAN -> startNfcMonitor()
-        }
     }
 
     private fun getPosition(picker: NumberPicker?): Int {
@@ -200,22 +187,6 @@ class NfcActivity : AppCompatActivity() {
                 setTitle(R.string.error_caps)
                 finish()
             }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        stopNfcMonitor()
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action
-            || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action
-            || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
-            val tech = if (null != tagTech) tagTech!! else getString(R.string.nfc_tag)
-            showMessage(R.string.tag_detected, tech)
-            Executors.newSingleThreadExecutor().execute { onTagDiscovered(intent) }
         }
     }
 
@@ -696,24 +667,64 @@ class NfcActivity : AppCompatActivity() {
         }
     }
 
-    private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val action = intent.action
-            if (NfcAdapter.ACTION_ADAPTER_STATE_CHANGED == action) {
-                if (!nfcAdapter!!.isEnabled) {
-                    showError(getString(R.string.nfc_disabled))
-                } else {
-                    clearError()
-                    listenForTags()
-                }
-            }
-        }
-    }
-
     private fun cancelAction() {
         closeTagSilently(mifare)
         setResult(RESULT_CANCELED)
         finish()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopNfcMonitor()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        clearError()
+        if (null == keyManager)
+            keyManager = KeyManager(this)
+        if (null == nfcAdapter)
+            nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        when (intent.action) {
+            NFCIntent.ACTION_WRITE_TAG_FULL, NFCIntent.ACTION_WRITE_TAG_DATA -> {
+                if (keyManager!!.isKeyMissing) {
+                    showError("Keys not loaded")
+                    nfcAdapter = null
+                }
+                startNfcMonitor()
+            }
+            NFCIntent.ACTION_WRITE_TAG_RAW,
+            NFCIntent.ACTION_WRITE_ALL_TAGS,
+            NFCIntent.ACTION_ERASE_ALL_TAGS,
+            NFCIntent.ACTION_BACKUP_AMIIBO,
+            NFCIntent.ACTION_SCAN_TAG,
+            NFCIntent.ACTION_SET_BANK_COUNT,
+            NFCIntent.ACTION_ACTIVATE_BANK,
+            NFCIntent.ACTION_ERASE_BANK,
+            NFCIntent.ACTION_LOCK_AMIIBO,
+            NFCIntent.ACTION_UNLOCK_UNIT,
+            NFCIntent.ACTION_BLIND_SCAN -> startNfcMonitor()
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action
+            || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action
+            || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
+            val tech = if (null != tagTech) tagTech!! else getString(R.string.nfc_tag)
+            showMessage(R.string.tag_detected, tech)
+            Executors.newSingleThreadExecutor().execute { onTagDiscovered(intent) }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                cancelAction()
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -727,10 +738,5 @@ class NfcActivity : AppCompatActivity() {
             return super.onOptionsItemSelected(item)
         }
         return true
-    }
-
-    @Deprecated("Deprecated in Java", ReplaceWith("cancelAction()"))
-    override fun onBackPressed() {
-        cancelAction()
     }
 }

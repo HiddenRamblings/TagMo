@@ -39,12 +39,12 @@ class HexCodeViewer : AppCompatActivity() {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
-        val tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
         val keyManager = KeyManager(this)
         if (keyManager.isKeyMissing) {
             showErrorDialog(R.string.no_decrypt_key)
             return
         }
+        val tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
         val listView = findViewById<RecyclerView>(R.id.gridView)
         var adapter: HexAdapter
         try {

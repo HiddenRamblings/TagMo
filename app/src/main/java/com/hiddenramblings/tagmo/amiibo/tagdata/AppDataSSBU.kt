@@ -8,8 +8,7 @@ package com.hiddenramblings.tagmo.amiibo.tagdata
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class AppDataSSBU  // 0xE2 - 0D // 0xE3 - 01
-    (appData: ByteArray?) : AppData(appData!!) {
+class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) { // 0xE2 - 0D // 0xE3 - 01
     @Throws(NumberFormatException::class)
     fun checkAppearence(value: Int) {
         if (value < APPEARANCE_MIN_VALUE || value > APPEARANCE_MAX_VALUE) throw NumberFormatException()

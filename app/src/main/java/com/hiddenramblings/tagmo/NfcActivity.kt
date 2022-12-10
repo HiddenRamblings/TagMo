@@ -59,7 +59,7 @@ class NfcActivity : AppCompatActivity() {
     private lateinit var nfcAnimation: Animation
 
     private var nfcAdapter: NfcAdapter? = null
-    private lateinit var keyManager: KeyManager
+    private var keyManager: KeyManager? = null
     private val foomiibo = Foomiibo()
 
     private var isEliteIntent = false
@@ -77,6 +77,8 @@ class NfcActivity : AppCompatActivity() {
             actionBar.setHomeButtonEnabled(true)
             actionBar.setDisplayHomeAsUpEnabled(true)
         }
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        keyManager = KeyManager(this)
         txtMessage = findViewById(R.id.txtMessage)
         txtError = findViewById(R.id.txtError)
         imgNfcBar = findViewById(R.id.imgNfcBar)
@@ -91,11 +93,13 @@ class NfcActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         clearError()
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        keyManager = KeyManager(this)
+        if (null == keyManager)
+            keyManager = KeyManager(this)
+        if (null == nfcAdapter)
+            nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         when (intent.action) {
             NFCIntent.ACTION_WRITE_TAG_FULL, NFCIntent.ACTION_WRITE_TAG_DATA -> {
-                if (keyManager.isKeyMissing) {
+                if (keyManager!!.isKeyMissing) {
                     showError("Keys not loaded")
                     nfcAdapter = null
                 }
@@ -336,7 +340,7 @@ class NfcActivity : AppCompatActivity() {
                             hasTestedElite = false
                             return
                         }
-                        TagWriter.writeEliteAuto(mifare!!, data, keyManager, selection)
+                        TagWriter.writeEliteAuto(mifare!!, data, keyManager!!, selection)
                         val write = Intent(NFCIntent.ACTION_NFC_SCANNED)
                         write.putExtra(
                             NFCIntent.EXTRA_SIGNATURE,
@@ -354,7 +358,7 @@ class NfcActivity : AppCompatActivity() {
                     } else {
                         update = TagReader.readFromTag(mifare)
                         TagWriter.writeToTagAuto(
-                            mifare!!, data!!, keyManager,
+                            mifare!!, data!!, keyManager!!,
                             prefs!!.enable_tag_type_validation()
                         )
                         setResult(RESULT_OK)
@@ -364,7 +368,7 @@ class NfcActivity : AppCompatActivity() {
                             NFCIntent.EXTRA_IGNORE_TAG_ID, false
                         )
                         TagWriter.restoreTag(
-                            mifare!!, data!!, ignoreUid, keyManager,
+                            mifare!!, data!!, ignoreUid, keyManager!!,
                             prefs!!.enable_tag_type_validation()
                         )
                         setResult(RESULT_OK)
@@ -381,7 +385,7 @@ class NfcActivity : AppCompatActivity() {
                                 showMessage(R.string.bank_writing, x + 1, amiiboList.size)
                                 val tagData = amiiboList[x].data
                                 if (null != tagData) {
-                                    TagWriter.writeEliteAuto(mifare!!, tagData, keyManager, x)
+                                    TagWriter.writeEliteAuto(mifare!!, tagData, keyManager!!, x)
                                 } else {
                                     Toasty(this).Long(
                                         getString(
@@ -404,7 +408,7 @@ class NfcActivity : AppCompatActivity() {
                                 )
                                 if (null == tagData) tagData =
                                     foomiibo.generateData(amiiboList[x].id)
-                                TagWriter.writeEliteAuto(mifare!!, tagData, keyManager, x)
+                                TagWriter.writeEliteAuto(mifare!!, tagData, keyManager!!, x)
                                 x++
                             }
                         }

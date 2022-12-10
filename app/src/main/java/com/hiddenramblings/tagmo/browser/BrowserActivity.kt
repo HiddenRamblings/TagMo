@@ -17,7 +17,6 @@ import android.net.Uri
 import android.nfc.NfcAdapter
 import android.os.*
 import android.provider.Settings
-import android.provider.Settings.System.getConfiguration
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.util.DisplayMetrics
@@ -1599,7 +1598,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 return if (BottomSheetBehavior.STATE_EXPANDED == bottomSheet!!.state
                     || View.VISIBLE == amiiboContainer!!.visibility
                     || supportFragmentManager.backStackEntryCount > 0) {
-                    onBackPressed()
+                    onBackPressedDispatcher.onBackPressed()
                     false
                 } else {
                     true
@@ -1839,10 +1838,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     ) { result: ActivityResult ->
         if (result.resultCode != RESULT_OK || result.data == null) return@registerForActivityResult
         val treeUri = result.data!!.data
-        if (Debug.isNewer(Build.VERSION_CODES.KITKAT)) contentResolver.takePersistableUriPermission(
-            treeUri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION
+        if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
+            contentResolver.takePersistableUriPermission(treeUri!!,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
                     or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        )
+            )
         val pickedDir = DocumentFile.fromTreeUri(this, treeUri!!)
 
         // List all existing files inside picked directory
@@ -1869,7 +1869,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } catch (ignored: Exception) {
         }
         if (newBrowserSettings.isRecursiveEnabled != oldBrowserSettings.isRecursiveEnabled) {
-            settings!!.amiiboFiles.clear()
+            oldBrowserSettings.amiiboFiles.clear()
+            newBrowserSettings.amiiboFiles.clear()
             folderChanged = true
             onRecursiveFilesChanged()
         }
@@ -1953,26 +1954,26 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
             newBrowserSettings.lastUpdatedGit = System.currentTimeMillis()
         }
-        prefs!!.browserRootFolder(
-            Storage.getRelativePath(
-                newBrowserSettings.browserRootFolder, prefs!!.preferEmulated()
-            )
+        prefs?.browserRootFolder(Storage.getRelativePath(
+            newBrowserSettings.browserRootFolder, prefs!!.preferEmulated()
+        ))
+        prefs?.browserRootDocument(
+            if (null != newBrowserSettings.browserRootDocument)
+                newBrowserSettings.browserRootDocument.toString()
+            else null
         )
-        prefs!!.browserRootDocument(
-            if (null != newBrowserSettings.browserRootDocument) newBrowserSettings.browserRootDocument.toString() else null
-        )
-        prefs!!.query(newBrowserSettings.query)
-        prefs!!.sort(newBrowserSettings.sort)
-        prefs!!.filterCharacter(newBrowserSettings.getFilter(FILTER.CHARACTER))
-        prefs!!.filterGameSeries(newBrowserSettings.getFilter(FILTER.GAME_SERIES))
-        prefs!!.filterAmiiboSeries(newBrowserSettings.getFilter(FILTER.AMIIBO_SERIES))
-        prefs!!.filterAmiiboType(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE))
-        prefs!!.filterGameTitles(newBrowserSettings.getFilter(FILTER.GAME_TITLES))
-        prefs!!.browserAmiiboView(newBrowserSettings.amiiboView)
-        prefs!!.image_network(newBrowserSettings.imageNetworkSettings)
-        prefs!!.recursiveFolders(newBrowserSettings.isRecursiveEnabled)
-        prefs!!.lastUpdatedAPI(newBrowserSettings.lastUpdatedAPI)
-        prefs!!.lastUpdatedGit(newBrowserSettings.lastUpdatedGit)
+        prefs?.query(newBrowserSettings.query)
+        prefs?.sort(newBrowserSettings.sort)
+        prefs?.filterCharacter(newBrowserSettings.getFilter(FILTER.CHARACTER))
+        prefs?.filterGameSeries(newBrowserSettings.getFilter(FILTER.GAME_SERIES))
+        prefs?.filterAmiiboSeries(newBrowserSettings.getFilter(FILTER.AMIIBO_SERIES))
+        prefs?.filterAmiiboType(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE))
+        prefs?.filterGameTitles(newBrowserSettings.getFilter(FILTER.GAME_TITLES))
+        prefs?.browserAmiiboView(newBrowserSettings.amiiboView)
+        prefs?.image_network(newBrowserSettings.imageNetworkSettings)
+        prefs?.recursiveFolders(newBrowserSettings.isRecursiveEnabled)
+        prefs?.lastUpdatedAPI(newBrowserSettings.lastUpdatedAPI)
+        prefs?.lastUpdatedGit(newBrowserSettings.lastUpdatedGit)
     }
 
     private fun onSortChanged() {

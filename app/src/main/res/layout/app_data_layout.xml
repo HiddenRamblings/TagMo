@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <include
         layout="@layout/app_data_zelda_tp"
         android:id="@+id/appDataZeldaTP" />
 
     <include
-        layout="@layout/app_data_splatoon3"
-        android:id="@+id/appDataSplatoon3" />
+        layout="@layout/app_data_splatoon"
+        android:id="@+id/appDataSplatoon" />
 
     <include
         layout="@layout/app_data_ssb"

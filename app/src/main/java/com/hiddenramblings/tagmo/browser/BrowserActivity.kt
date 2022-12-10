@@ -169,7 +169,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Preferences(applicationContext)
-        keyManager = KeyManager(this)
         if (null != supportActionBar) {
             if (BuildConfig.WEAR_OS) {
                 supportActionBar?.hide()
@@ -180,6 +179,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         }
         setContentView(R.layout.activity_browser)
+        keyManager = KeyManager(this)
         fakeSnackbar = findViewById(R.id.fake_snackbar)
         fakeSnackbarText = findViewById(R.id.snackbar_text)
         fakeSnackbarItem = findViewById(R.id.snackbar_item)

@@ -287,10 +287,9 @@ class TagDataEditor : AppCompatActivity() {
         var amiiboType = ""
         var gameSeries = ""
         // String character = "";
-        val amiiboImageUrl: String?
+        var amiiboImageUrl: String? = null
         if (null == tagData) {
             tagInfo = getString(R.string.no_tag_loaded)
-            amiiboImageUrl = null
         } else {
             val amiiboId: Long = try {
                 Amiibo.dataToId(tagData)
@@ -298,9 +297,10 @@ class TagDataEditor : AppCompatActivity() {
                 Info(e)
                 -1
             }
-            if (amiiboId == 0L) {
+            if (amiiboId == -1L) {
+                tagInfo = getString(R.string.read_error)
+            } else if (amiiboId == 0L) {
                 tagInfo = getString(R.string.blank_tag)
-                amiiboImageUrl = null
             } else {
                 var amiibo: Amiibo? = null
                 if (null != amiiboManager) {

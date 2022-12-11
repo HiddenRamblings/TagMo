@@ -143,7 +143,7 @@ class ImageActivity : AppCompatActivity() {
             if (null != amiibo!!.amiiboSeries) amiiboSeries = amiibo!!.amiiboSeries!!.name
             if (null != amiibo!!.amiiboType) amiiboType = amiibo!!.amiiboType!!.name
             if (null != amiibo!!.gameSeries) gameSeries = amiibo!!.gameSeries!!.name
-        } else {
+        } else if (amiiboId > 0L) {
             tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
         }
         val hasTagInfo = null != tagInfo

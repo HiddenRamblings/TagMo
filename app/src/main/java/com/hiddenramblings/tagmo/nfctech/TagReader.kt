@@ -106,7 +106,7 @@ object TagReader {
         return tags
     }
 
-    fun getBankDetails(tag: NTAG215?): ByteArray? {
+    fun getBankParams(tag: NTAG215?): ByteArray? {
         return tag?.getVersion(false)
     }
 
@@ -158,7 +158,7 @@ object TagReader {
     }
 
     fun needsFirmware(tag: NTAG215?): Boolean {
-        val version = getBankDetails(tag)
+        val version = getBankParams(tag)
         return !((version?.size != 4 || version[3] == 0x03.toByte())
                 && !(version?.size == 2 && version[0].toInt() == 100 && version[1].toInt() == 0))
     }

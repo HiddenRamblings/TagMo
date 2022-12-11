@@ -222,9 +222,8 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {
             if (null != filteredData && filteredData === filterResults.values) return
             filteredData = filterResults.values as ArrayList<AmiiboFile?>
-            if (null != filteredData && null != settings) Collections.sort(
-                filteredData, AmiiboFileComparator(settings)
-            )
+            if (null != filteredData && null != settings)
+                Collections.sort(filteredData, AmiiboFileComparator(settings))
             notifyDataSetChanged()
         }
     }

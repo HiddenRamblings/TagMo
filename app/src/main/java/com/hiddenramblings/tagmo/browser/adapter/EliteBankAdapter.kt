@@ -76,11 +76,6 @@ class EliteBankAdapter     // setHasStableIds(true);
                 settings,
                 listener
             )
-            else -> SimpleViewHolder(
-                parent,
-                settings,
-                listener
-            )
         }
     }
 

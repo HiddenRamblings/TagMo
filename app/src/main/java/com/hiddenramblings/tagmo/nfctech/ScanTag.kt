@@ -70,28 +70,28 @@ class ScanTag {
                     isEliteDevice = isElite(mifare)
                 }
             }
-            val bank_details: ByteArray
-            val bank_count: Int
-            val active_bank: Int
+            val bankParams: ByteArray
+            val bankCount: Int
+            val activeBank: Int
             if (!isEliteDevice) {
-                bank_count = -1
-                active_bank = -1
+                bankCount = -1
+                activeBank = -1
             } else {
-                bank_details = TagReader.getBankDetails(mifare)!!
-                bank_count = bank_details[1].toInt() and 0xFF
-                active_bank = bank_details[0].toInt() and 0xFF
+                bankParams = TagReader.getBankParams(mifare)!!
+                bankCount = bankParams[1].toInt() and 0xFF
+                activeBank = bankParams[0].toInt() and 0xFF
             }
             try {
                 if (isEliteDevice) {
                     val signature = TagReader.getBankSignature(mifare)
                     prefs.elite_signature(signature)
-                    prefs.eliteActiveBank(active_bank)
-                    prefs.eliteBankCount(bank_count)
+                    prefs.eliteActiveBank(activeBank)
+                    prefs.eliteBankCount(bankCount)
                     val args = Bundle()
-                    val titles = TagReader.readTagTitles(mifare, bank_count)
+                    val titles = TagReader.readTagTitles(mifare, bankCount)
                     args.putString(NFCIntent.EXTRA_SIGNATURE, signature)
-                    args.putInt(NFCIntent.EXTRA_BANK_COUNT, bank_count)
-                    args.putInt(NFCIntent.EXTRA_ACTIVE_BANK, active_bank)
+                    args.putInt(NFCIntent.EXTRA_BANK_COUNT, bankCount)
+                    args.putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
                     args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
                     activity.showElitePage(args)
                 } else {

@@ -238,14 +238,16 @@ object TagWriter {
 
     private fun keygen(uuid: ByteArray?): ByteArray? {
         // from AmiiManage (GPL)
+        if (null == uuid) return null
         val key = ByteArray(4)
-        val uuid_to_ints = IntArray(uuid!!.size)
-        for (i in uuid.indices) uuid_to_ints[i] = 0xFF and uuid[i].toInt()
+        val uuidIntArray = IntArray(uuid.size)
+        for (i in uuid.indices)
+            uuidIntArray[i] = 0xFF and uuid[i].toInt()
         if (uuid.size == 7) {
-            key[0] = (0xFF and (0xAA xor (uuid_to_ints[1] xor uuid_to_ints[3]))).toByte()
-            key[1] = (0xFF and (0x55 xor (uuid_to_ints[2] xor uuid_to_ints[4]))).toByte()
-            key[2] = (0xFF and (0xAA xor (uuid_to_ints[3] xor uuid_to_ints[5]))).toByte()
-            key[3] = (0xFF and (0x55 xor (uuid_to_ints[4] xor uuid_to_ints[6]))).toByte()
+            key[0] = (0xFF and (0xAA xor (uuidIntArray[1] xor uuidIntArray[3]))).toByte()
+            key[1] = (0xFF and (0x55 xor (uuidIntArray[2] xor uuidIntArray[4]))).toByte()
+            key[2] = (0xFF and (0xAA xor (uuidIntArray[3] xor uuidIntArray[5]))).toByte()
+            key[3] = (0xFF and (0x55 xor (uuidIntArray[4] xor uuidIntArray[6]))).toByte()
             return key
         }
         return null
@@ -253,13 +255,13 @@ object TagWriter {
 
     @Throws(Exception::class)
     private fun doAuth(tag: NTAG215) {
-        val pages0_1 = tag.readPages(0)
-        if (null == pages0_1 || pages0_1.size != NfcByte.PAGE_SIZE * 4) throw IOException(
+        val pages01 = tag.readPages(0)
+        if (null == pages01 || pages01.size != NfcByte.PAGE_SIZE * 4) throw IOException(
             appContext.getString(
                 R.string.fail_read
             )
         )
-        val uid = uidFromPages(pages0_1)
+        val uid = uidFromPages(pages01)
         val password = keygen(uid)
         Debug.Info(
             TagWriter::class.java, R.string.password, bytesToHex(
@@ -302,13 +304,13 @@ object TagWriter {
 
     @Throws(IOException::class)
     private fun writePassword(tag: NTAG215) {
-        val pages0_1 = tag.readPages(0)
-        if (null == pages0_1 || pages0_1.size != NfcByte.PAGE_SIZE * 4) throw IOException(
+        val pages01 = tag.readPages(0)
+        if (null == pages01 || pages01.size != NfcByte.PAGE_SIZE * 4) throw IOException(
             appContext.getString(
                 R.string.fail_read
             )
         )
-        val uid = uidFromPages(pages0_1)
+        val uid = uidFromPages(pages01)
         val password = keygen(uid)
         Debug.Info(
             TagWriter::class.java, R.string.password, bytesToHex(
@@ -415,24 +417,24 @@ object TagWriter {
                 if (parts.isEmpty()) {
                     break
                 } else if (parts[0] == "C-APDU") {
-                    val apdu_buf = ByteArray(parts.size - 1)
+                    val apduBuf = ByteArray(parts.size - 1)
                     i = 1
                     while (i < parts.size) {
-                        apdu_buf[i - 1] = hexToByte(parts[i])
+                        apduBuf[i - 1] = hexToByte(parts[i])
                         i++
                     }
-                    val sz: Int = apdu_buf[4].toInt() and 0xFF
-                    val iso_cmd = ByteArray(sz)
-                    if (apdu_buf[4] + 5 <= apdu_buf.size && apdu_buf[4] <= iso_cmd.size) {
+                    val sz: Int = apduBuf[4].toInt() and 0xFF
+                    val isoCmd = ByteArray(sz)
+                    if (apduBuf[4] + 5 <= apduBuf.size && apduBuf[4] <= isoCmd.size) {
                         i = 0
                         while (i < sz) {
-                            iso_cmd[i] = apdu_buf[i + 5]
+                            isoCmd[i] = apduBuf[i + 5]
                             i++
                         }
                         var done = false
                         i = 0
                         while (i < 10) {
-                            response = tag.transceive(iso_cmd)
+                            response = tag.transceive(isoCmd)
                             if (null != response) {
                                 done = true
                                 break
@@ -445,18 +447,18 @@ object TagWriter {
                     }
                     return false
                 } else if (parts[0] == "C-RPDU") {
-                    val rpdu_buf = ByteArray(parts.size - 1)
+                    val rpduBuf = ByteArray(parts.size - 1)
                     if (response!!.size != parts.size - 3) {
                         throw Exception(context.getString(R.string.firmware_failed, 2))
                     }
                     i = 1
                     while (i < parts.size) {
-                        rpdu_buf[i - 1] = hexToByte(parts[i])
+                        rpduBuf[i - 1] = hexToByte(parts[i])
                         i++
                     }
                     i = 0
-                    while (i < rpdu_buf.size - 2) {
-                        if (rpdu_buf[i] != response[i]) {
+                    while (i < rpduBuf.size - 2) {
+                        if (rpduBuf[i] != response[i]) {
                             throw Exception(context.getString(R.string.firmware_failed, 3))
                         }
                         i++

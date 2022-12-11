@@ -68,7 +68,7 @@ class ImageActivity : AppCompatActivity() {
         toolbar.setTitle(R.string.imageview_amiibo)
         toolbar.inflateMenu(R.menu.save_menu)
         toolbar.setNavigationIcon(android.R.drawable.ic_menu_revert)
-        toolbar.setNavigationOnClickListener { v: View? -> finish() }
+        toolbar.setNavigationOnClickListener { finish() }
         toolbar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.mnu_save) {
                 onSaveClicked(prefs, amiiboId)
@@ -93,7 +93,7 @@ class ImageActivity : AppCompatActivity() {
         findViewById<View>(R.id.group0).addOnLayoutChangeListener {
                 view: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
             val height = view.height + bottomSheet.paddingTop
-            bottomSheetBehavior!!.peekHeight = height
+            bottomSheetBehavior.peekHeight = height
             imageView.setPadding(
                 imageView.paddingLeft, imageView.paddingTop,
                 imageView.paddingRight, imageView.paddingTop + height
@@ -132,7 +132,6 @@ class ImageActivity : AppCompatActivity() {
         var amiiboType: String? = ""
         var gameSeries: String? = ""
         // String character = "";
-        amiibo = null
         if (amiiboId == -1L) {
             tagInfo = getString(R.string.read_error)
         } else if (amiiboId == 0L) {
@@ -140,7 +139,7 @@ class ImageActivity : AppCompatActivity() {
         } else {
             if (null != amiiboManager) {
                 amiibo = amiiboManager!!.amiibos[amiiboId]
-                if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                    ?: Amiibo(amiiboManager, amiiboId, null, null)
             }
             if (null != amiibo) {
                 amiiboHexId = Amiibo.idToHex(amiibo!!.id)
@@ -184,10 +183,10 @@ class ImageActivity : AppCompatActivity() {
         return Amiibo.getImageUrl(amiiboId)
     }
 
-    fun onSaveClicked(prefs: Preferences, amiiboId: Long) {
+    private fun onSaveClicked(prefs: Preferences, amiiboId: Long) {
         val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
         val dialog = AlertDialog.Builder(this)
-        (view.findViewById<View>(R.id.save_item_label) as TextView).setText(R.string.save_image)
+        view.findViewById<TextView>(R.id.save_item_label).setText(R.string.save_image)
         val input = view.findViewById<EditText>(R.id.save_item_entry)
         if (null != amiibo) {
             input.setText(amiibo!!.name)
@@ -212,7 +211,7 @@ class ImageActivity : AppCompatActivity() {
             imageDialog.dismiss()
         }
         view.findViewById<View>(R.id.button_cancel)
-            .setOnClickListener { v: View? -> imageDialog.dismiss() }
+            .setOnClickListener { imageDialog.dismiss() }
         imageDialog.show()
     }
 

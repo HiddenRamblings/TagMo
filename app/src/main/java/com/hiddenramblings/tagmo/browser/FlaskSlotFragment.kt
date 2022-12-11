@@ -838,8 +838,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             val scanner = mBluetoothAdapter!!.bluetoothLeScanner
             val settings = ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
-            val FlaskUUID = ParcelUuid(FlaskGattService.FlaskNUS)
-            val filterFlask = ScanFilter.Builder().setServiceUuid(FlaskUUID).build()
+            val flaskParcel = ParcelUuid(FlaskGattService.FlaskNUS)
+            val filterFlask = ScanFilter.Builder().setServiceUuid(flaskParcel).build()
             scanCallbackFlaskLP = object : ScanCallback() {
                 override fun onScanResult(callbackType: Int, result: ScanResult) {
                     super.onScanResult(callbackType, result)

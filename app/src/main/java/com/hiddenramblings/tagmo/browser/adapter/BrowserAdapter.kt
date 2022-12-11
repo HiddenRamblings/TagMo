@@ -182,11 +182,6 @@ class BrowserAdapter(
                 settings,
                 listener
             )
-            else -> SimpleViewHolder(
-                parent,
-                settings,
-                listener
-            )
         }
     }
 
@@ -278,9 +273,8 @@ class BrowserAdapter(
         override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {
             if (null != filteredData && filteredData === filterResults.values) return
             filteredData = filterResults.values as ArrayList<AmiiboFile?>
-            if (itemCount > 0) Collections.sort(
-                filteredData, AmiiboFileComparator(settings)
-            )
+            if (itemCount > 0)
+                Collections.sort(filteredData, AmiiboFileComparator(settings))
             notifyDataSetChanged()
         }
     }

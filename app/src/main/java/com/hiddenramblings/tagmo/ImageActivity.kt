@@ -133,18 +133,24 @@ class ImageActivity : AppCompatActivity() {
         var gameSeries: String? = ""
         // String character = "";
         amiibo = null
-        if (null != amiiboManager) {
-            amiibo = amiiboManager!!.amiibos[amiiboId]
-            if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId, null, null)
-        }
-        if (null != amiibo) {
-            amiiboHexId = Amiibo.idToHex(amiibo!!.id)
-            if (null != amiibo!!.name) amiiboName = amiibo!!.name
-            if (null != amiibo!!.amiiboSeries) amiiboSeries = amiibo!!.amiiboSeries!!.name
-            if (null != amiibo!!.amiiboType) amiiboType = amiibo!!.amiiboType!!.name
-            if (null != amiibo!!.gameSeries) gameSeries = amiibo!!.gameSeries!!.name
-        } else if (amiiboId > 0L) {
-            tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
+        if (amiiboId == -1L) {
+            tagInfo = getString(R.string.read_error)
+        } else if (amiiboId == 0L) {
+            tagInfo = getString(R.string.blank_tag)
+        } else {
+            if (null != amiiboManager) {
+                amiibo = amiiboManager!!.amiibos[amiiboId]
+                if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+            }
+            if (null != amiibo) {
+                amiiboHexId = Amiibo.idToHex(amiibo!!.id)
+                if (null != amiibo!!.name) amiiboName = amiibo!!.name
+                if (null != amiibo!!.amiiboSeries) amiiboSeries = amiibo!!.amiiboSeries!!.name
+                if (null != amiibo!!.amiiboType) amiiboType = amiibo!!.amiiboType!!.name
+                if (null != amiibo!!.gameSeries) gameSeries = amiibo!!.gameSeries!!.name
+            } else {
+                tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
+            }
         }
         val hasTagInfo = null != tagInfo
         if (hasTagInfo) {

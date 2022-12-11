@@ -729,7 +729,6 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         amiiboId: Long,
         current_bank: Int
     ) {
-        var amiiboLongId = amiiboId
         val amiiboInfo = rootLayout.findViewById<View>(R.id.amiiboInfo)
         val txtError = rootLayout.findViewById<TextView>(R.id.txtError)
         val txtName = amiiboView!!.findViewById<TextView>(R.id.txtName)
@@ -747,26 +746,33 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         var amiiboType = ""
         var gameSeries = ""
         var amiiboImageUrl: String? = null
-        var amiibo = amiibos[current_bank]
-        if (null == amiibo) {
-            if (null != tagData && tagData.isNotEmpty()) {
+        var amiibo = if (amiibos.size > current_bank) amiibos[current_bank] else null
+        val amiiboLongId = when {
+            null != amiibo && amiibo.id > 0L -> {
+                amiibo.id
+            }
+            null != tagData && tagData.isNotEmpty() -> {
                 try {
-                    amiiboLongId = Amiibo.dataToId(tagData)
+                    Amiibo.dataToId(tagData)
                 } catch (e: Exception) {
                     Debug.Info(e)
+                    amiiboId
                 }
             }
-            val amiiboManager = settings!!.amiiboManager
-            if (amiiboLongId == -1L) {
-                tagInfo = getString(R.string.read_error)
-            } else if (amiiboLongId == 0L) {
-                tagInfo = getString(R.string.blank_tag)
-            } else if (null != amiiboManager) {
-                val generic = amiiboManager.amiibos[amiiboLongId]
-                amiibo = EliteTag(
-                    generic ?: Amiibo(amiiboManager, amiiboLongId, null, null)
-                )
+            else -> {
+                amiiboId
             }
+        }
+        val amiiboManager = settings!!.amiiboManager
+        if (amiiboLongId == -1L) {
+            tagInfo = getString(R.string.read_error)
+        } else if (amiiboLongId == 0L) {
+            tagInfo = getString(R.string.blank_tag)
+        } else if (null != amiiboManager) {
+            val generic = amiiboManager.amiibos[amiiboLongId]
+            amiibo = EliteTag(
+                generic ?: Amiibo(amiiboManager, amiiboLongId, null, null)
+            )
         }
         if (null != amiibo) {
             amiiboView.visibility = View.VISIBLE
@@ -776,7 +782,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
             if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
             if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
-        } else if (amiiboLongId > 0L) {
+        } else if (null == tagInfo) {
             tagInfo = "ID: " + Amiibo.idToHex(amiiboLongId)
             amiiboImageUrl = Amiibo.getImageUrl(amiiboLongId)
         }

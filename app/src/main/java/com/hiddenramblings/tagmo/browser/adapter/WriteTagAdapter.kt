@@ -219,7 +219,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         }
 
         @SuppressLint("NotifyDataSetChanged")
-        override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
+        override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {
             if (null != filteredData && filteredData === filterResults.values) return
             filteredData = filterResults.values as ArrayList<AmiiboFile?>
             if (null != filteredData && null != settings) Collections.sort(

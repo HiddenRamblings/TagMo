@@ -232,7 +232,7 @@ class FoomiiboAdapter(
         }
 
         @SuppressLint("NotifyDataSetChanged")
-        override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
+        override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {
             if (null != filteredData && filteredData === filterResults.values) return
             filteredData = filterResults.values as ArrayList<Amiibo>
             if (itemCount > 0) {

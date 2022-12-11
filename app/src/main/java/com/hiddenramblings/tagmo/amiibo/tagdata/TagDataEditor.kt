@@ -809,7 +809,7 @@ class TagDataEditor : AppCompatActivity() {
                 return filterResults
             }
 
-            override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {}
+            override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {}
         }
 
         init {

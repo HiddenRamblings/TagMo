@@ -746,7 +746,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         var amiiboSeries = ""
         var amiiboType = ""
         var gameSeries = ""
-        val amiiboImageUrl: String?
+        var amiiboImageUrl: String? = null
         var amiibo = amiibos[current_bank]
         if (null == amiibo) {
             if (null != tagData && tagData.isNotEmpty()) {
@@ -776,7 +776,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
             if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
             if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
-        } else {
+        } else if (amiiboLongId > 0L) {
             tagInfo = "ID: " + Amiibo.idToHex(amiiboLongId)
             amiiboImageUrl = Amiibo.getImageUrl(amiiboLongId)
         }

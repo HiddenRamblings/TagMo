@@ -152,7 +152,15 @@ object TagArray {
     }
 
     fun hexToLong(s: String): Long {
-        return java.lang.Long.parseLong(s, 16)
+        var result: Long = 0
+        try {
+            result = s.toLong(16)
+        } catch (nf: NumberFormatException) {
+            for (i in s.indices) {
+                result = (result shl 4) + Character.digit(s[i], 16).toLong()
+            }
+        }
+        return result
     }
 
     fun hexToString(hex: String): String {

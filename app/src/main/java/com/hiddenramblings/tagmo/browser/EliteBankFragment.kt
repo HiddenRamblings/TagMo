@@ -941,7 +941,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     override fun onAmiiboClicked(amiibo: EliteTag?, position: Int) {
-        if (null == amiibo) {
+        if (null == amiibo?.manager) {
             displayWriteDialog(position)
             return
         }

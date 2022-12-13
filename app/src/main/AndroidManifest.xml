@@ -27,13 +27,14 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
+    <uses-feature android:name="android.hardware.camera.any" android:required="false"/>
     <uses-feature android:name="android.software.webview" android:required="false"/>
     <uses-feature android:name="android.hardware.nfc" android:required="false"/>
     <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
     <uses-feature android:name="${wearUsesFeature}" />
 
-    <uses-sdk tools:overrideLibrary="androidx.wear" />
+    <uses-sdk tools:overrideLibrary="androidx.wear, com.google.mlkit.vision.barcode.bundled, com.google.mlkit.vision.barcode.common, com.google.mlkit.vision.common, com.google.mlkit.common, com.google.mlkit.vision.interfaces" />
 
     <queries>
         <package android:name="com.hiddenramblings.tagmo.eightbit" />
@@ -124,6 +125,10 @@
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode" />
+        <!-- To use multiple models: android:value="barcode,model2,model3" -->
 
         <provider
             android:name="androidx.core.content.FileProvider"

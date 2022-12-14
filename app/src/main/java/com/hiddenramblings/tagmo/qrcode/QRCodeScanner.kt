@@ -39,11 +39,10 @@ class QRCodeScanner : AppCompatActivity() {
 
     private fun scanBarcodes(image: InputImage) {
         // [START set_detector_options]
-        val options = BarcodeScannerOptions.Builder()
-            .setBarcodeFormats(
-                Barcode.FORMAT_QR_CODE,
-                Barcode.FORMAT_AZTEC)
-            .build()
+        val options = BarcodeScannerOptions.Builder().setBarcodeFormats(
+            Barcode.FORMAT_QR_CODE,
+            Barcode.FORMAT_AZTEC
+        ).build()
         // [END set_detector_options]
 
         // [START get_detector]
@@ -53,8 +52,7 @@ class QRCodeScanner : AppCompatActivity() {
         // [END get_detector]
 
         // [START run_detector]
-        val result = scanner.process(image)
-            .addOnSuccessListener { barcodes ->
+        val result = scanner.process(image).addOnSuccessListener { barcodes ->
                 // Task completed successfully
                 // [START_EXCLUDE]
                 // [START get_barcodes]

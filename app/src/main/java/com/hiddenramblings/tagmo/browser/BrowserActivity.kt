@@ -1083,18 +1083,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
         toolbar.menu.findItem(R.id.mnu_write).isEnabled = available
         toolbar.menu.findItem(R.id.mnu_update).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_save).isEnabled = available
         toolbar.menu.findItem(R.id.mnu_edit).isEnabled = available
         toolbar.menu.findItem(R.id.mnu_view_hex).isEnabled = available
         toolbar.menu.findItem(R.id.mnu_validate).isEnabled = available
+        var cached = false
         val backup = toolbar.menu.findItem(R.id.mnu_save)
+        backup.isEnabled = available
         val delete = toolbar.menu.findItem(R.id.mnu_delete)
         if (null != amiiboFile) {
             if (null != amiiboFile.docUri) {
                 val relativeDocument = Storage.getRelativeDocument(
                     amiiboFile.docUri!!.uri
                 )
-                backup.isVisible = !relativeDocument.startsWith("/Foomiibo/")
+                cached = relativeDocument.startsWith("/Foomiibo/")
             } else if (null != amiiboFile.filePath) {
                 var relativeFile = Storage.getRelativePath(
                     amiiboFile.filePath!!,
@@ -1103,8 +1104,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 if (null != prefs!!.browserRootFolder()) {
                     relativeFile = relativeFile.replace(prefs!!.browserRootFolder()!!, "")
                 }
-                backup.isVisible = !relativeFile.startsWith("/Foomiibo/")
+                cached = relativeFile.startsWith("/Foomiibo/")
             }
+            if (cached) backup.setTitle(R.string.cache)
             delete.isVisible = true
         } else {
             delete.isVisible = false
@@ -1133,40 +1135,43 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_save -> {
-                    val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
-                    val dialog = AlertDialog.Builder(this)
-                    val input = view.findViewById<EditText>(R.id.save_item_entry)
-                    input.setText(decipherFilename(settings!!.amiiboManager, tagData, true))
-                    val backupDialog: Dialog = dialog.setView(view).create()
-                    view.findViewById<View>(R.id.button_save).setOnClickListener {
-                        try {
-                            var fileName: String? = input.text.toString() + ".bin"
-                            fileName = if (isDocumentStorage) {
-                                val rootDocument = DocumentFile.fromTreeUri(
-                                    this, settings!!.browserRootDocument!!
-                                ) ?: throw NullPointerException()
-                                writeBytesToDocument(
-                                    this, rootDocument,
-                                    fileName!!, tagData
-                                )
-                            } else {
-                                writeBytesToFile(
-                                    Storage.getDownloadDir(
-                                        "TagMo", "Backups"
-                                    ), fileName!!, tagData
-                                )
+                    if (cached) {
+                        fragmentBrowser?.buildFoomiiboFile(tagData)
+                        onRootFolderChanged(true)
+                    } else {
+                        val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
+                        val dialog = AlertDialog.Builder(this)
+                        val input = view.findViewById<EditText>(R.id.save_item_entry)
+                        input.setText(decipherFilename(settings!!.amiiboManager, tagData, true))
+                        val backupDialog: Dialog = dialog.setView(view).create()
+                        view.findViewById<View>(R.id.button_save).setOnClickListener {
+                            try {
+                                var fileName: String? = input.text.toString() + ".bin"
+                                fileName = if (isDocumentStorage) {
+                                    val rootDocument = DocumentFile.fromTreeUri(
+                                        this, settings!!.browserRootDocument!!
+                                    ) ?: throw NullPointerException()
+                                    writeBytesToDocument(
+                                        this, rootDocument, fileName!!, tagData
+                                    )
+                                } else {
+                                    writeBytesToFile(Storage.getDownloadDir(
+                                            "TagMo", "Backups"
+                                    ), fileName!!, tagData)
+                                }
+                                IconifiedSnackbar(this, layout).buildSnackbar(
+                                    getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
+                                ).show()
+                                onRootFolderChanged(true)
+                            } catch (e: IOException) {
+                                e.message?.let { Toasty(this).Short(it) }
                             }
-                            IconifiedSnackbar(this, layout).buildSnackbar(
-                                getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
-                            ).show()
-                            onRootFolderChanged(true)
-                        } catch (e: IOException) {
-                            e.message?.let { Toasty(this).Short(it) }
+                            backupDialog.dismiss()
                         }
-                        backupDialog.dismiss()
+                        view.findViewById<View>(R.id.button_cancel)
+                            .setOnClickListener { backupDialog.dismiss() }
+                        backupDialog.show()
                     }
-                    view.findViewById<View>(R.id.button_cancel).setOnClickListener { backupDialog.dismiss() }
-                    backupDialog.show()
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_edit -> {

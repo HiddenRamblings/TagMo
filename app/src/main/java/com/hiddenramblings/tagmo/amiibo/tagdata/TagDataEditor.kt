@@ -72,6 +72,7 @@ class TagDataEditor : AppCompatActivity() {
     private lateinit var appDataViewSplatoon: LinearLayout
     private lateinit var appDataViewSSB: LinearLayout
     private lateinit var appDataViewSSBU: LinearLayout
+    private lateinit var appDataFormat: AppCompatButton
     private var countryCodeAdapter: CountryCodesAdapter? = null
     private var appIdAdapter: AppIdAdapter? = null
     private var ignoreAppNameSelected = false
@@ -158,6 +159,7 @@ class TagDataEditor : AppCompatActivity() {
         appDataViewSplatoon = findViewById(R.id.appDataSplatoon)
         appDataViewSSB = findViewById(R.id.appDataSSB)
         appDataViewSSBU = findViewById(R.id.appDataSSBU)
+        appDataFormat = findViewById(R.id.format_app_data)
 
         tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
         try {
@@ -185,19 +187,13 @@ class TagDataEditor : AppCompatActivity() {
             false
         }
         userDataSwitch.setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
-            onUserDataSwitchClicked(
-                checked
-            )
+            onUserDataSwitchClicked(checked)
         }
         appDataSwitch.setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
-            onAppDataSwitchClicked(
-                checked
-            )
+            onAppDataSwitchClicked(checked)
         }
         findViewById<View>(R.id.random_serial).setOnClickListener {
-            txtSerialNumber.setText(
-                TagArray.bytesToHex(Foomiibo().generateRandomUID())
-            )
+            txtSerialNumber.setText(TagArray.bytesToHex(Foomiibo().generateRandomUID()))
         }
         findViewById<View>(R.id.txtInitDate).setOnClickListener {
             val c = Calendar.getInstance()
@@ -265,6 +261,11 @@ class TagDataEditor : AppCompatActivity() {
             }
         })
         loadData()
+        appDataFormat.setOnClickListener {
+            amiiboData.appId = 0
+            amiiboData.appData = ByteArray(amiiboData.appData.size)
+            loadData()
+        }
     }
 
     private val imageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
@@ -504,6 +505,7 @@ class TagDataEditor : AppCompatActivity() {
         txtAppId.isEnabled = isUserDataInitialized
         txtAppName.isEnabled = isUserDataInitialized
         appDataSwitch.isEnabled = isUserDataInitialized
+        appDataFormat.isEnabled = isUserDataInitialized
         updateAppDataEnabled(isUserDataInitialized && isAppDataInitialized)
     }
 
@@ -630,11 +632,7 @@ class TagDataEditor : AppCompatActivity() {
     }
 
     private fun loadAppId() {
-        appId = if (initialUserDataInitialized) {
-            amiiboData.appId
-        } else {
-            0
-        }
+        appId = if (initialUserDataInitialized) amiiboData.appId else null
         updateAppIdView(appId)
         updateAppNameView()
         updateAppDataView(appId)
@@ -1547,7 +1545,7 @@ class TagDataEditor : AppCompatActivity() {
         const val AppId_Splatoon3 = 0x38600500
         const val AppId_SSB = 0x10110E00
         const val AppId_SSBU = 0x34F80200
-        const val AppId_Unspecified = 0xFFFFFFFF.toInt()
+        const val AppId_Unspecified = 0x00000000
         private fun getDateString(date: Date): String {
             return SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date)
         }

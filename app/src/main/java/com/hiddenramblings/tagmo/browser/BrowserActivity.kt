@@ -117,6 +117,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         private set
     private var bottomSheet: BottomSheetBehavior<View>? = null
     private var currentFolderView: TextView? = null
+    var reloadTabCollection = false
     private var prefsDrawer: DrawerLayout? = null
     private var switchStorageRoot: AppCompatButton? = null
     private var switchStorageType: AppCompatButton? = null
@@ -429,6 +430,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                     }
                 }
+
+                override fun onDrawerClosed(drawerView: View) {
+                    super.onDrawerClosed(drawerView)
+                    if (reloadTabCollection) {
+                        reloadTabCollection = false
+                        onTabCollectionChanged()
+                    }
+                }
             })
         }
         val foomiiboOptions = findViewById<LinearLayout>(R.id.foomiibo_options)
@@ -545,8 +554,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @SuppressLint("NotifyDataSetChanged")
     fun onTabCollectionChanged() {
-        if (layout!!.currentItem != 0) layout!!.setCurrentItem(0, false)
-        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) onApplicationRecreate() else pagerAdapter.notifyDataSetChanged()
+        if (layout?.currentItem != 0) layout?.setCurrentItem(0, false)
+        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU))
+            onApplicationRecreate()
+        else pagerAdapter.notifyDataSetChanged()
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -2553,11 +2564,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun onShowSettingsFragment() {
         if (BuildConfig.WEAR_OS) {
-            layout!!.post {
-                layout!!.setCurrentItem(if (prefs!!.flask_support()) 2 else 1, false)
+            layout?.post {
+                layout?.setCurrentItem(if (prefs!!.flask_support()) 2 else 1, false)
             }
         } else {
-            prefsDrawer!!.openDrawer(GravityCompat.START)
+            prefsDrawer?.openDrawer(GravityCompat.START)
         }
     }
 

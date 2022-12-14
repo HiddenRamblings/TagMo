@@ -166,7 +166,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         ) 
                     else 
                         enableEliteSupport.summary = getString(R.string.elite_details)
-                    (requireActivity() as BrowserActivity).onTabCollectionChanged()
+                    (requireActivity() as BrowserActivity).reloadTabCollection = true
                     super@SettingsFragment.onPreferenceTreeClick(preference!!)
                 }
         }
@@ -178,13 +178,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
             enableFlaskSupport.onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference? ->
                     prefs.flask_support(enableFlaskSupport.isChecked)
-                    (requireActivity() as BrowserActivity).onTabCollectionChanged()
+                    (requireActivity() as BrowserActivity).reloadTabCollection = true
                     super@SettingsFragment.onPreferenceTreeClick(preference!!)
                 }
             enableFlaskSupport.isVisible = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
         }
-        val databaseSourceSetting =
-            findPreference<ListPreference>(getString(R.string.setting_database_source))
+        val databaseSourceSetting = findPreference<ListPreference>(getString(R.string.setting_database_source))
         if (null != databaseSourceSetting) {
             databaseSourceSetting.setValueIndex(prefs.database_source())
             databaseSourceSetting.summary = databaseSourceSetting.entry
@@ -205,8 +204,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
         }
-        val syncInfo =
-            findPreference<Preference>(getString(R.string.settings_import_info_amiiboapi))
+        val syncInfo = findPreference<Preference>(getString(R.string.settings_import_info_amiiboapi))
         if (null != syncInfo) {
             syncInfo.onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference? ->
@@ -263,8 +261,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
         }
-        val disableDebug =
-            findPreference<CheckBoxPreference>(getString(R.string.settings_disable_debug))
+        val disableDebug = findPreference<CheckBoxPreference>(getString(R.string.settings_disable_debug))
         if (null != disableDebug) {
             disableDebug.isChecked = prefs.disable_debug()
             disableDebug.onPreferenceClickListener =
@@ -360,7 +357,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         view.findViewById<View>(R.id.button_save).setOnClickListener {
             try {
                 keyManager.evaluateKey(ByteArrayInputStream(TagArray.hexToByteArray(
-                            input.text.toString().filter { !it.isWhitespace() }
+                    input.text.toString().filter { !it.isWhitespace() }
                 )))
                 (requireActivity() as BrowserActivity).onKeysLoaded(true)
                 updateKeySummary()

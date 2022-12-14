@@ -16,4 +16,18 @@
     <include
         layout="@layout/app_data_ssbu"
         android:id="@+id/appDataSSBU" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/format_app_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/format_app_data"
+            android:enabled="false"/>
+    </LinearLayout>
 </merge>

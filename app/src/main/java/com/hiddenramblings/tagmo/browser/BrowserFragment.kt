@@ -60,7 +60,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     val onUpdateTagResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode != Activity.RESULT_OK || null == result.data) return@registerForActivityResult
+        if (result.resultCode != Activity.RESULT_OK || null == result.data)
+            return@registerForActivityResult
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action
             && NFCIntent.ACTION_UPDATE_TAG != result.data!!.action
             && NFCIntent.ACTION_EDIT_COMPLETE != result.data!!.action
@@ -281,12 +282,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     fun buildFoomiiboFile(tagData: ByteArray?) {
-        var foomiiboData = tagData
         try {
-            val amiibo = settings!!.amiiboManager!!.amiibos[Amiibo.dataToId(foomiiboData)] ?: return
+            val amiibo = settings?.amiiboManager!!.amiibos[Amiibo.dataToId(tagData)] ?: return
             val directory = File(directory, amiibo.amiiboSeries!!.name)
             directory.mkdirs()
-            foomiiboData = foomiibo.getSignedData(foomiiboData!!)
+            val foomiiboData = foomiibo.getSignedData(tagData!!)
             TagArray.writeBytesToFile(
                 directory, TagArray.decipherFilename(
                     settings!!.amiiboManager, foomiiboData, false

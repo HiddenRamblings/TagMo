@@ -137,7 +137,7 @@ open class BrowserSettings : Parcelable {
         setFilter(FILTER.AMIIBO_TYPE, prefs.filterAmiiboType())
         setFilter(FILTER.GAME_TITLES, prefs.filterGameTitles())
         amiiboView = prefs.browserAmiiboView()
-        imageNetworkSettings = prefs.image_network()
+        imageNetworkSettings = prefs.imageNetwork()
         isRecursiveEnabled = prefs.recursiveFolders()
         lastUpdatedAPI = prefs.lastUpdatedAPI()
         lastUpdatedGit = prefs.lastUpdatedGit()

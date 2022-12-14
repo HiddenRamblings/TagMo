@@ -105,13 +105,13 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         if (browserContent is IndexFastScrollRecyclerView)
                 (browserContent as IndexFastScrollRecyclerView)
                     .setTransientIndexBar(!BuildConfig.WEAR_OS)
-        if (prefs.software_layer())
+        if (prefs.softwareLayer())
             browserContent!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         foomiiboView = view.findViewById(R.id.foomiibo_list)
         if (foomiiboView is IndexFastScrollRecyclerView)
                 (foomiiboView as IndexFastScrollRecyclerView)
                     .setTransientIndexBar(!BuildConfig.WEAR_OS)
-        if (prefs.software_layer())
+        if (prefs.softwareLayer())
             foomiiboView!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         browserContent!!.layoutManager = if (settings!!.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             GridLayoutManager(activity, activity.columnCount)
@@ -191,7 +191,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             browserContent!!.layoutParams.height =
                 if (valueY != -1) valueY else browserContent!!.layoutParams.height
         }
-        if (prefs.disable_foomiibo()) {
+        if (prefs.foomiiboDisabled()) {
             divider.visibility = View.GONE
             browserContent!!.layoutParams.height = requireView().height
         } else {

@@ -9,8 +9,8 @@ import com.hiddenramblings.tagmo.TagMo
 
 class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
     var mPrefs = Preferences(TagMo.appContext)
-    var hasEliteEnabled = mPrefs.elite_support()
-    var hasFlaskEnabled = mPrefs.flask_support()
+    var hasEliteEnabled = mPrefs.eliteEnabled()
+    var hasFlaskEnabled = mPrefs.flaskEnabled()
     val browser = BrowserFragment()
     val eliteBanks = EliteBankFragment()
     val flaskSlots = FlaskSlotFragment()

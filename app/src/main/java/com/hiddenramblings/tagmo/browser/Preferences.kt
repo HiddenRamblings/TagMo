@@ -24,10 +24,12 @@ class Preferences(context: Context?) {
         prefs.edit().putInt(pref, value).apply()
     }
 
+    @Suppress("SameParameterValue")
     private fun getLong(pref: String, defValue: Long): Long {
         return prefs.getLong(pref, defValue)
     }
 
+    @Suppress("SameParameterValue")
     private fun putLong(pref: String, value: Long) {
         prefs.edit().putLong(pref, value).apply()
     }
@@ -116,112 +118,108 @@ class Preferences(context: Context?) {
         putInt(browserAmiiboView, value)
     }
 
-    private val guides_prompted = "guides_prompted"
-    fun guides_prompted(): Boolean {
-        return getBoolean(guides_prompted, false)
+    private val guidesPrompted = "guides_prompted"
+    fun guidesPrompted(): Boolean {
+        return getBoolean(guidesPrompted, false)
     }
 
-    fun guides_prompted(value: Boolean) {
-        putBoolean(guides_prompted, value)
+    fun guidesPrompted(value: Boolean) {
+        putBoolean(guidesPrompted, value)
     }
 
-    private val enable_tag_type_validation = "enable_tag_type_validation"
-    fun enable_tag_type_validation(): Boolean {
-        return getBoolean(enable_tag_type_validation, true)
+    private val tagTypeValidation = "enable_tag_type_validation"
+    fun tagTypeValidation(): Boolean {
+        return getBoolean(tagTypeValidation, true)
     }
 
-    fun enable_tag_type_validation(value: Boolean) {
-        putBoolean(enable_tag_type_validation, value)
+    fun tagTypeValidation(value: Boolean) {
+        putBoolean(tagTypeValidation, value)
     }
 
-    private val enable_automatic_scan = "enable_automatic_scan"
-    fun enable_automatic_scan(): Boolean {
-        return getBoolean(enable_automatic_scan, true)
+    private val automaticScan = "enable_automatic_scan"
+    fun automaticScan(value: Boolean) {
+        putBoolean(automaticScan, value)
     }
 
-    fun enable_automatic_scan(value: Boolean) {
-        putBoolean(enable_automatic_scan, value)
+    private val foomiiboDisabled = "disable_foomiibo_browser"
+    fun foomiiboDisabled(): Boolean {
+        return getBoolean(foomiiboDisabled, false)
     }
 
-    private val disable_foomiibo = "disable_foomiibo_browser"
-    fun disable_foomiibo(): Boolean {
-        return getBoolean(disable_foomiibo, false)
+    fun foomiiboDisabled(value: Boolean) {
+        putBoolean(foomiiboDisabled, value)
     }
 
-    fun disable_foomiibo(value: Boolean) {
-        putBoolean(disable_foomiibo, value)
+    private val imageNetwork = "image_network_settings"
+    fun imageNetwork(): String? {
+        return getString(imageNetwork, GlideTagModule.IMAGE_NETWORK_ALWAYS)
     }
 
-    private val image_network = "image_network_settings"
-    fun image_network(): String? {
-        return getString(image_network, GlideTagModule.IMAGE_NETWORK_ALWAYS)
+    fun imageNetwork(value: String?) {
+        putString(imageNetwork, value)
     }
 
-    fun image_network(value: String?) {
-        putString(image_network, value)
+    private val databaseSource = "database_source_setting"
+    fun databaseSource(): Int {
+        return getInt(databaseSource, 0)
     }
 
-    private val database_source = "database_source_setting"
-    fun database_source(): Int {
-        return getInt(database_source, 0)
+    fun databaseSource(value: Int) {
+        putInt(databaseSource, value)
     }
 
-    fun database_source(value: Int) {
-        putInt(database_source, value)
+    private val powerTagEnabled = "enable_power_tag_support"
+    fun powerTagEnabled(): Boolean {
+        return getBoolean(powerTagEnabled, false)
     }
 
-    private val power_tag_support = "enable_power_tag_support"
-    fun power_tag_support(): Boolean {
-        return getBoolean(power_tag_support, false)
+    fun powerTagEnabled(value: Boolean) {
+        putBoolean(powerTagEnabled, value)
     }
 
-    fun power_tag_support(value: Boolean) {
-        putBoolean(power_tag_support, value)
+    private val eliteEnabled = "enable_elite_support"
+    fun eliteEnabled(): Boolean {
+        return getBoolean(eliteEnabled, false)
     }
 
-    private val elite_support = "enable_elite_support"
-    fun elite_support(): Boolean {
-        return getBoolean(elite_support, false)
+    fun eliteEnabled(value: Boolean) {
+        putBoolean(eliteEnabled, value)
     }
 
-    fun elite_support(value: Boolean) {
-        putBoolean(elite_support, value)
+    private val eliteSignature = "settings_elite_signature"
+    fun eliteSignature(): String? {
+        return getString(eliteSignature, "")
     }
 
-    private val elite_signature = "settings_elite_signature"
-    fun elite_signature(): String? {
-        return getString(elite_signature, "")
+    fun eliteSignature(value: String?) {
+        putString(eliteSignature, value)
     }
 
-    fun elite_signature(value: String?) {
-        putString(elite_signature, value)
+    private val flaskEnabled = "enable_flask_support"
+    fun flaskEnabled(): Boolean {
+        return getBoolean(flaskEnabled, false)
     }
 
-    private val flask_support = "enable_flask_support"
-    fun flask_support(): Boolean {
-        return getBoolean(flask_support, false)
+    fun flaskEnabled(value: Boolean) {
+        putBoolean(flaskEnabled, value)
     }
 
-    fun flask_support(value: Boolean) {
-        putBoolean(flask_support, value)
+    private val softwareLayer = "settings_software_layer"
+    fun softwareLayer(): Boolean {
+        return getBoolean(softwareLayer, Debug.isOxygenOS)
     }
 
-    private val software_layer = "settings_software_layer"
-    fun software_layer(): Boolean {
-        return getBoolean(software_layer, Debug.isOxygenOS)
+    fun softwareLayer(value: Boolean) {
+        putBoolean(softwareLayer, value)
     }
 
-    fun software_layer(value: Boolean) {
-        putBoolean(software_layer, value)
+    private val disableDebug = "settings_disable_debug"
+    fun disableDebug(): Boolean {
+        return getBoolean(disableDebug, false)
     }
 
-    private val disable_debug = "settings_disable_debug"
-    fun disable_debug(): Boolean {
-        return getBoolean(disable_debug, false)
-    }
-
-    fun disable_debug(value: Boolean) {
-        putBoolean(disable_debug, value)
+    fun disableDebug(value: Boolean) {
+        putBoolean(disableDebug, value)
     }
 
     private val browserRootFolder = "browserRootFolder"

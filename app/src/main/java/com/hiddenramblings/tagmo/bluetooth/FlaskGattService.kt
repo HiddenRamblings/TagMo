@@ -259,6 +259,7 @@ class FlaskGattService : Service() {
     }
 
     fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic) {
+        @Suppress("DEPRECATION")
         getCharacteristicValue(characteristic, characteristic.getStringValue(0x0))
     }
 
@@ -285,17 +286,17 @@ class FlaskGattService : Service() {
         override fun onCharacteristicRead(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int
         ) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS)
                 getCharacteristicValue(characteristic, value.decodeToString())
-            }
         }
 
+        @Deprecated("Deprecated in Java", ReplaceWith(
+            "onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int)"
+        ))
         override fun onCharacteristicRead(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                getCharacteristicValue(characteristic)
-            }
+            if (status == BluetoothGatt.GATT_SUCCESS) getCharacteristicValue(characteristic)
         }
 
         override fun onCharacteristicWrite(
@@ -312,6 +313,9 @@ class FlaskGattService : Service() {
             getCharacteristicValue(characteristic, value.decodeToString())
         }
 
+        @Deprecated("Deprecated in Java", ReplaceWith(
+            "onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray)"
+        ))
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic
         ) {
@@ -445,14 +449,13 @@ class FlaskGattService : Service() {
      * Enables or disables notification on a give characteristic.
      *
      * @param characteristic Characteristic to act on.
-     * @param enabled        If true, enable notification.  False otherwise.
+     * @param enabled        If true, enable notification.
      */
+    @Suppress("SameParameterValue")
     private fun setCharacteristicNotification(
         characteristic: BluetoothGattCharacteristic?, enabled: Boolean
     ) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            return
-        }
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) return
         mBluetoothGatt!!.setCharacteristicNotification(characteristic, enabled)
         setResponseDescriptors(characteristic)
     }
@@ -761,7 +764,7 @@ class FlaskGattService : Service() {
             delayedTagCharacteristic("getList()")
         }
 
-    fun getDeviceAmiiboRange(index: Int) {
+    private fun getDeviceAmiiboRange(index: Int) {
         delayedTagCharacteristic("getList($index,$listCount)") // 5 ... 5
     }
 
@@ -805,7 +808,7 @@ class FlaskGattService : Service() {
     }
 
     companion object {
-        val FlaskNUS = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+        val FlaskNUS: UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
         private val FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
         private val FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
     }

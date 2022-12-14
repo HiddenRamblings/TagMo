@@ -35,6 +35,7 @@ class PuckGattService : Service() {
     private val chunkTimeout = 30L
 
     // Command, Slot, Parameters
+    @Suppress("UNUSED")
     private enum class PUCK(bytes: Int) {
         INFO(0x01),
         READ(0x02),
@@ -119,6 +120,7 @@ class PuckGattService : Service() {
     }
 
     fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic) {
+        @Suppress("DEPRECATION")
         getCharacteristicValue(characteristic, characteristic.value)
     }
 
@@ -145,17 +147,17 @@ class PuckGattService : Service() {
         override fun onCharacteristicRead(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int
         ) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS)
                 getCharacteristicValue(characteristic, value)
-            }
         }
 
+        @Deprecated("Deprecated in Java", ReplaceWith(
+            "onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int)"
+        ))
         override fun onCharacteristicRead(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                getCharacteristicValue(characteristic)
-            }
+            if (status == BluetoothGatt.GATT_SUCCESS) getCharacteristicValue(characteristic)
         }
 
         override fun onCharacteristicWrite(
@@ -172,6 +174,9 @@ class PuckGattService : Service() {
             getCharacteristicValue(characteristic, value)
         }
 
+        @Deprecated("Deprecated in Java", ReplaceWith(
+            "onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray)"
+        ))
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic
         ) {
@@ -305,8 +310,9 @@ class PuckGattService : Service() {
      * Enables or disables notification on a give characteristic.
      *
      * @param characteristic Characteristic to act on.
-     * @param enabled        If true, enable notification.  False otherwise.
+     * @param enabled        If true, enable notification.
      */
+    @Suppress("SameParameterValue")
     private fun setCharacteristicNotification(
         characteristic: BluetoothGattCharacteristic?, enabled: Boolean
     ) {
@@ -494,7 +500,8 @@ class PuckGattService : Service() {
         )
     }
 
-    private fun downloadSlotData(slot: Int) {
+    @Suppress("UNUSED")
+    fun downloadSlotData(slot: Int) {
         sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x00, 0x3F), null)
         sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x3F, 0x3F), null)
         sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x7E, 0x11), null)
@@ -519,7 +526,7 @@ class PuckGattService : Service() {
     }
 
     companion object {
-        val PuckNUS = UUID.fromString("78290001-d52e-473f-a9f4-f03da7c67dd1")
+        val PuckNUS: UUID = UUID.fromString("78290001-d52e-473f-a9f4-f03da7c67dd1")
         private val PuckTX = UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1")
         private val PuckRX = UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1")
     }

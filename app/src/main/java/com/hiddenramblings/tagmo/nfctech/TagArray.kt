@@ -72,7 +72,7 @@ object TagArray {
     private val mPrefs = Preferences(TagMo.appContext)
     @JvmStatic
     fun isPowerTag(mifare: NTAG215?): Boolean {
-        if (mPrefs.power_tag_support()) {
+        if (mPrefs.powerTagEnabled()) {
             val signature = mifare?.transceive(NfcByte.POWERTAG_SIG)
             return null != signature && compareRange(
                 signature, NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.size
@@ -83,7 +83,7 @@ object TagArray {
 
     @JvmStatic
     fun isElite(mifare: NTAG215?): Boolean {
-        if (mPrefs.elite_support()) {
+        if (mPrefs.eliteEnabled()) {
             val signature = mifare?.readSignature(false)
             val page10 = hexToByteArray("FFFFFFFFFF")
             return null != signature && compareRange(

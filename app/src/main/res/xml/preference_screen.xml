@@ -13,7 +13,7 @@
             android:title="@string/enable_tag_validation" />
         <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
-            android:key="@string/settings_enable_automatic_scan"
+            android:key="@string/settings_automatic_scan"
             android:summary="@string/automatic_scan_details"
             android:title="@string/enable_automatic_scan" />
         <androidx.preference.CheckBoxPreference

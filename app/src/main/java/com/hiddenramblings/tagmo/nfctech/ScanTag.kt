@@ -48,7 +48,7 @@ class ScanTag {
             mifare = NTAG215[tag!!]
             val tagTech = getTagTechnology(tag)
             if (mifare == null) {
-                if (prefs.elite_support()) {
+                if (prefs.eliteEnabled()) {
                     mifare = NTAG215(NfcA.get(tag))
                     try {
                         mifare.connect()
@@ -84,7 +84,7 @@ class ScanTag {
             try {
                 if (isEliteDevice) {
                     val signature = TagReader.getBankSignature(mifare)
-                    prefs.elite_signature(signature)
+                    prefs.eliteSignature(signature)
                     prefs.eliteActiveBank(activeBank)
                     prefs.eliteBankCount(bankCount)
                     val args = Bundle()
@@ -110,7 +110,7 @@ class ScanTag {
      ${e.cause.toString()}
      """.trimIndent() else error
             if (null != error) {
-                if (prefs.elite_support()) {
+                if (prefs.eliteEnabled()) {
                     val finalMifare = mifare
                     if (e is TagLostException) {
                         if (isEliteDevice) {

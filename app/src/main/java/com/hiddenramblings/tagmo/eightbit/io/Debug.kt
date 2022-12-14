@@ -95,7 +95,7 @@ object Debug {
         }
 
     private fun hasDebugging(): Boolean {
-        return !mPrefs.disable_debug()
+        return !mPrefs.disableDebug()
     }
 
     fun TAG(source: Class<*>): String {

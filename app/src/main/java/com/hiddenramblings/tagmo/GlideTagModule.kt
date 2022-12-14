@@ -12,7 +12,6 @@ import com.bumptech.glide.load.engine.cache.ExternalPreferredCacheDiskCacheFacto
 import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.request.RequestOptions
 import com.hiddenramblings.tagmo.browser.Preferences
-import com.hiddenramblings.tagmo.eightbit.io.Debug
 
 @GlideModule
 class GlideTagModule : AppGlideModule() {
@@ -44,7 +43,7 @@ class GlideTagModule : AppGlideModule() {
 
 
     private fun onlyRetrieveFromCache(context: Context, requestOptions: RequestOptions): RequestOptions {
-        val imageNetworkSetting = Preferences(context.applicationContext).image_network()
+        val imageNetworkSetting = Preferences(context.applicationContext).imageNetwork()
         return if (IMAGE_NETWORK_NEVER == imageNetworkSetting) {
             requestOptions.onlyRetrieveFromCache(true)
         } else if (IMAGE_NETWORK_WIFI == imageNetworkSetting) {

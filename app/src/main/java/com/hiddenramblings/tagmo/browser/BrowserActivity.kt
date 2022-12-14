@@ -237,7 +237,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     BrowserAdapter.resetVisible()
                     FoomiiboAdapter.resetVisible()
                 }
-                val hasFlaskEnabled = prefs!!.flask_support()
+                val hasFlaskEnabled = prefs!!.flaskEnabled()
                 if (BuildConfig.WEAR_OS) {
                     when (position) {
                         1 -> if (hasFlaskEnabled) {
@@ -267,7 +267,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                     }
                 } else {
-                    val hasEliteEnabled = prefs!!.elite_support()
+                    val hasEliteEnabled = prefs!!.eliteEnabled()
                     when (position) {
                         1 -> if (hasEliteEnabled) {
                             showActionButton()
@@ -333,7 +333,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         TabLayoutMediator(findViewById(R.id.navigation_tabs), layout!!, true,
             Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
         ) { tab: TabLayout.Tab, position: Int ->
-            val hasFlaskEnabled = prefs!!.flask_support()
+            val hasFlaskEnabled = prefs!!.flaskEnabled()
             if (BuildConfig.WEAR_OS) {
                 when (position) {
                     1 -> if (hasFlaskEnabled) {
@@ -346,7 +346,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     else -> tab.setText(R.string.browser)
                 }
             } else {
-                val hasEliteEnabled = prefs!!.elite_support()
+                val hasEliteEnabled = prefs!!.eliteEnabled()
                 when (position) {
                     1 -> if (hasEliteEnabled) {
                         tab.setText(R.string.elite_n2)
@@ -537,8 +537,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 donations.onSendDonationClicked()
             }
         }
-        if (!prefs!!.guides_prompted()) {
-            prefs!!.guides_prompted(true)
+        if (!prefs!!.guidesPrompted()) {
+            prefs!!.guidesPrompted(true)
             layout!!.setCurrentItem(pagerAdapter.itemCount - 1, false)
         }
     }
@@ -597,15 +597,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action) return@registerForActivityResult
         if (result.data!!.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             val signature = result.data!!.getStringExtra(NFCIntent.EXTRA_SIGNATURE)
-            prefs!!.elite_signature(signature)
-            val active_bank = result.data!!.getIntExtra(
+            prefs!!.eliteSignature(signature)
+            val activeBank = result.data!!.getIntExtra(
                 NFCIntent.EXTRA_ACTIVE_BANK, prefs!!.eliteActiveBank()
             )
-            prefs!!.eliteActiveBank(active_bank)
-            val bank_count = result.data!!.getIntExtra(
+            prefs!!.eliteActiveBank(activeBank)
+            val bankCount = result.data!!.getIntExtra(
                 NFCIntent.EXTRA_BANK_COUNT, prefs!!.eliteBankCount()
             )
-            prefs!!.eliteBankCount(bank_count)
+            prefs!!.eliteBankCount(bankCount)
             showElitePage(result.data!!.extras)
         } else {
             layout!!.setCurrentItem(0, true)
@@ -1715,7 +1715,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun loadPTagKeyManager() {
-        if (prefs!!.power_tag_support()) {
+        if (prefs!!.powerTagEnabled()) {
             Executors.newSingleThreadExecutor().execute {
                 try {
                     powerTagManager
@@ -1986,7 +1986,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         prefs?.filterAmiiboType(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE))
         prefs?.filterGameTitles(newBrowserSettings.getFilter(FILTER.GAME_TITLES))
         prefs?.browserAmiiboView(newBrowserSettings.amiiboView)
-        prefs?.image_network(newBrowserSettings.imageNetworkSettings)
+        prefs?.imageNetwork(newBrowserSettings.imageNetworkSettings)
         prefs?.recursiveFolders(newBrowserSettings.isRecursiveEnabled)
         prefs?.lastUpdatedAPI(newBrowserSettings.lastUpdatedAPI)
         prefs?.lastUpdatedGit(newBrowserSettings.lastUpdatedGit)
@@ -2081,7 +2081,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
 
         // If we're supporting, didn't arrive from, but scanned an N2...
-        if (prefs!!.elite_support() && result.data!!.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
+        if (prefs!!.eliteEnabled() && result.data!!.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             launchEliteActivity(result.data)
         } else {
             updateAmiiboView(result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA))
@@ -2285,6 +2285,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             return if (columns < 1) 3 else columns.toInt()
         }
 
+    @Suppress("SameParameterValue")
     private fun setViewPagerSensitivity(viewPager: ViewPager2?, sensitivity: Int) {
         try {
             val ff = ViewPager2::class.java.getDeclaredField("mRecyclerView")
@@ -2565,7 +2566,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun onShowSettingsFragment() {
         if (BuildConfig.WEAR_OS) {
             layout?.post {
-                layout?.setCurrentItem(if (prefs!!.flask_support()) 2 else 1, false)
+                layout?.setCurrentItem(if (prefs!!.flaskEnabled()) 2 else 1, false)
             }
         } else {
             prefsDrawer?.openDrawer(GravityCompat.START)
@@ -2573,7 +2574,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun showElitePage(extras: Bundle?) {
-        if (!prefs!!.elite_support()) return
+        if (!prefs!!.eliteEnabled()) return
         layout!!.post {
             fragmentElite!!.arguments = extras
             layout!!.setCurrentItem(1, true)

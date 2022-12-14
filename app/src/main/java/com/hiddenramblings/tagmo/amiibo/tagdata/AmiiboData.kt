@@ -104,6 +104,7 @@ class AmiiboData(tagData: ByteArray) {
         set(value) {
             putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, CharsetCompat.UTF_16LE, value)
         }
+    @Suppress("UNUSED")
     var titleID: Long
         get() = tagData.getLong(TITLE_ID_OFFSET)
         set(value) {

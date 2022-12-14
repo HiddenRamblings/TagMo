@@ -442,7 +442,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
         settings = activity.settings
         flaskContent = rootLayout!!.findViewById(R.id.flask_content)
-        if (prefs!!.software_layer()) flaskContent!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        if (prefs!!.softwareLayer()) flaskContent!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         // flaskContent!!.setHasFixedSize(true);
         if (settings!!.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             flaskContent!!.layoutManager = GridLayoutManager(activity, activity.columnCount) 
@@ -461,10 +461,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         eraseSlots = rootLayout!!.findViewById(R.id.erase_slot_count)
         eraseSlots!!.text = getString(R.string.erase_slots, 0)
         writeSlotsLayout = rootLayout!!.findViewById(R.id.write_list_layout)
-        if (prefs!!.software_layer()) 
+        if (prefs!!.softwareLayer())
             writeSlotsLayout!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         val amiiboFilesView = rootLayout!!.findViewById<RecyclerView>(R.id.amiibo_files_list)
-        if (prefs!!.software_layer()) 
+        if (prefs!!.softwareLayer())
             amiiboFilesView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         // amiiboFilesView.setHasFixedSize(true);
         val toggle = rootLayout!!.findViewById<AppCompatImageView>(R.id.toggle)

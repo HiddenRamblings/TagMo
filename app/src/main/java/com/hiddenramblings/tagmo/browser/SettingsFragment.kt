@@ -69,7 +69,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         updateKeySummary()
         imageNetworkSetting = findPreference(getString(R.string.image_network_settings))
         if (null != imageNetworkSetting) {
-            onImageNetworkChange(imageNetworkSetting, prefs.image_network())
+            onImageNetworkChange(imageNetworkSetting, prefs.imageNetwork())
             imageNetworkSetting!!.onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { preference: Preference?, newValue: Any ->
                     onImageNetworkChange(imageNetworkSetting, newValue.toString())
@@ -81,29 +81,29 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 onImportKeysClicked()
                 super@SettingsFragment.onPreferenceTreeClick(preference!!)
             }
-        val enableTagTypeValidation = findPreference<CheckBoxPreference>(
+        val tagTypeValidation = findPreference<CheckBoxPreference>(
             getString(R.string.settings_tag_type_validation)
         )
-        if (null != enableTagTypeValidation) {
-            enableTagTypeValidation.isChecked = prefs.enable_tag_type_validation()
-            enableTagTypeValidation.onPreferenceClickListener =
+        if (null != tagTypeValidation) {
+            tagTypeValidation.isChecked = prefs.tagTypeValidation()
+            tagTypeValidation.onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference? ->
-                    prefs.enable_tag_type_validation(enableTagTypeValidation.isChecked)
+                    prefs.tagTypeValidation(tagTypeValidation.isChecked)
                     super@SettingsFragment.onPreferenceTreeClick(preference!!)
                 }
         }
-        val enableAutomaticScan = findPreference<CheckBoxPreference>(
-            getString(R.string.settings_enable_automatic_scan)
+        val automaticScan = findPreference<CheckBoxPreference>(
+            getString(R.string.settings_automatic_scan)
         )
-        if (null != enableAutomaticScan) {
-            enableAutomaticScan.isChecked =
+        if (null != automaticScan) {
+            automaticScan.isChecked =
                 requireContext().packageManager.getComponentEnabledSetting(
                     FilterComponent
                 ) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED
-            enableAutomaticScan.onPreferenceClickListener =
+            automaticScan.onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference? ->
-                    val isChecked = enableAutomaticScan.isChecked
-                    prefs.enable_automatic_scan(isChecked)
+                    val isChecked = automaticScan.isChecked
+                    prefs.automaticScan(isChecked)
                     if (isChecked) {
                         requireContext().packageManager.setComponentEnabledSetting(
                             FilterComponent,
@@ -124,11 +124,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
             getString(R.string.settings_hide_foomiibo_panel)
         )
         if (null != disableFoomiiboPanel && null != activity) {
-            disableFoomiiboPanel.isChecked = prefs.disable_foomiibo()
+            disableFoomiiboPanel.isChecked = prefs.foomiiboDisabled()
             disableFoomiiboPanel.onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference? ->
                     val isChecked = disableFoomiiboPanel.isChecked
-                    prefs.disable_foomiibo(isChecked)
+                    prefs.foomiiboDisabled(isChecked)
                     (activity as BrowserActivity?)!!.setFoomiiboPanelVisibility()
                     super@SettingsFragment.onPreferenceTreeClick(preference!!)
                 }
@@ -140,7 +140,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             enablePowerTagSupport.onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference? ->
                     val isEnabled = enablePowerTagSupport.isChecked
-                    prefs.power_tag_support(isEnabled)
+                    prefs.powerTagEnabled(isEnabled)
                     if (isEnabled) {
                         (requireActivity() as BrowserActivity).loadPTagKeyManager()
                     }
@@ -151,18 +151,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
             getString(R.string.settings_enable_elite_support)
         )
         if (null != enableEliteSupport) {
-            val isElite = prefs.elite_support()
+            val isElite = prefs.eliteEnabled()
             enableEliteSupport.isChecked = isElite
-            if (isElite && null != prefs.elite_signature() && prefs.elite_signature()!!.isNotEmpty()) {
-                enableEliteSupport.summary = getString(R.string.elite_signature, prefs.elite_signature())
+            if (isElite && null != prefs.eliteSignature() && prefs.eliteSignature()!!.isNotEmpty()) {
+                enableEliteSupport.summary = getString(R.string.elite_signature, prefs.eliteSignature())
             }
             enableEliteSupport.onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference? ->
                     val isEnabled = enableEliteSupport.isChecked
-                    prefs.elite_support(enableEliteSupport.isChecked)
-                    if (isEnabled && !prefs.elite_signature().isNullOrEmpty()) 
+                    prefs.eliteEnabled(enableEliteSupport.isChecked)
+                    if (isEnabled && !prefs.eliteSignature().isNullOrEmpty())
                         enableEliteSupport.summary = getString(
-                            R.string.elite_signature, prefs.elite_signature()
+                            R.string.elite_signature, prefs.eliteSignature()
                         ) 
                     else 
                         enableEliteSupport.summary = getString(R.string.elite_details)
@@ -174,10 +174,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             getString(R.string.settings_enable_flask_support)
         )
         if (null != enableFlaskSupport) {
-            enableFlaskSupport.isChecked = prefs.flask_support()
+            enableFlaskSupport.isChecked = prefs.flaskEnabled()
             enableFlaskSupport.onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference? ->
-                    prefs.flask_support(enableFlaskSupport.isChecked)
+                    prefs.flaskEnabled(enableFlaskSupport.isChecked)
                     (requireActivity() as BrowserActivity).reloadTabCollection = true
                     super@SettingsFragment.onPreferenceTreeClick(preference!!)
                 }
@@ -185,12 +185,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         val databaseSourceSetting = findPreference<ListPreference>(getString(R.string.setting_database_source))
         if (null != databaseSourceSetting) {
-            databaseSourceSetting.setValueIndex(prefs.database_source())
+            databaseSourceSetting.setValueIndex(prefs.databaseSource())
             databaseSourceSetting.summary = databaseSourceSetting.entry
             databaseSourceSetting.onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference ->
                     (preference as ListPreference).setValueIndex(
-                        prefs.database_source()
+                        prefs.databaseSource()
                     )
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
@@ -198,7 +198,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
                     val databaseSource = preference as ListPreference
                     val index = databaseSource.findIndexOfValue(newValue.toString())
-                    prefs.database_source(index)
+                    prefs.databaseSource(index)
                     databaseSource.summary = databaseSource.entries[index]
                     rebuildAmiiboDatabase()
                     super@SettingsFragment.onPreferenceTreeClick(preference)
@@ -234,10 +234,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val softwareLayer =
             findPreference<CheckBoxPreference>(getString(R.string.settings_software_layer))
         if (null != softwareLayer) {
-            softwareLayer.isChecked = prefs.software_layer()
+            softwareLayer.isChecked = prefs.softwareLayer()
             softwareLayer.onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference? ->
-                    prefs.software_layer(softwareLayer.isChecked)
+                    prefs.softwareLayer(softwareLayer.isChecked)
                     (requireActivity() as BrowserActivity).onApplicationRecreate()
                     super@SettingsFragment.onPreferenceTreeClick(preference!!)
                 }
@@ -263,10 +263,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         val disableDebug = findPreference<CheckBoxPreference>(getString(R.string.settings_disable_debug))
         if (null != disableDebug) {
-            disableDebug.isChecked = prefs.disable_debug()
+            disableDebug.isChecked = prefs.disableDebug()
             disableDebug.onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference? ->
-                    prefs.disable_debug(disableDebug.isChecked)
+                    prefs.disableDebug(disableDebug.isChecked)
                     super@SettingsFragment.onPreferenceTreeClick(preference!!)
                 }
         }
@@ -319,7 +319,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (index == -1) {
             onImageNetworkChange(imageNetworkSetting, GlideTagModule.IMAGE_NETWORK_ALWAYS)
         } else {
-            prefs.image_network(newValue)
+            prefs.imageNetwork(newValue)
             imageNetworkSetting.value = newValue
             imageNetworkSetting.summary = imageNetworkSetting.entry
             val activity = requireActivity() as BrowserActivity
@@ -494,7 +494,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         activity.runOnUiThread { syncMessage.show() }
         Executors.newSingleThreadExecutor().execute {
             try {
-                val url: URL = if (prefs.database_source() == 0) {
+                val url: URL = if (prefs.databaseSource() == 0) {
                     URL(AmiiboManager.RENDER_RAW + "database/amiibo.json")
                 } else {
                     URL(AmiiboManager.AMIIBO_API + "amiibo/")
@@ -724,7 +724,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun onUpdateRequested(isMenuClicked: Boolean) {
-        if (prefs.database_source() == 0) {
+        if (prefs.databaseSource() == 0) {
             JSONExecutor(
                 requireActivity(),
                 "https://api.github.com/repos/8bitDream/AmiiboAPI/",

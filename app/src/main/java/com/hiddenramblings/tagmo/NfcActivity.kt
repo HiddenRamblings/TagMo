@@ -250,7 +250,7 @@ class NfcActivity : AppCompatActivity() {
                 hasTestedElite = true
                 if (TagArray.isPowerTag(mifare)) {
                     showMessage(R.string.tag_scanning, getString(R.string.power_tag))
-                } else if (prefs!!.elite_support()) {
+                } else if (prefs!!.eliteEnabled()) {
                     isEliteDevice = (TagArray.isElite(mifare)
                             || NFCIntent.ACTION_UNLOCK_UNIT == mode
                             || NFCIntent.ACTION_BLIND_SCAN == mode)
@@ -296,7 +296,7 @@ class NfcActivity : AppCompatActivity() {
                         update = TagReader.readFromTag(mifare)
                         TagWriter.writeToTagRaw(
                             mifare!!, data!!,
-                            prefs!!.enable_tag_type_validation()
+                            prefs!!.tagTypeValidation()
                         )
                         setResult(RESULT_OK)
                     }
@@ -331,7 +331,7 @@ class NfcActivity : AppCompatActivity() {
                         update = TagReader.readFromTag(mifare)
                         TagWriter.writeToTagAuto(
                             mifare!!, data!!, keyManager!!,
-                            prefs!!.enable_tag_type_validation()
+                            prefs!!.tagTypeValidation()
                         )
                         setResult(RESULT_OK)
                     }
@@ -341,7 +341,7 @@ class NfcActivity : AppCompatActivity() {
                         )
                         TagWriter.restoreTag(
                             mifare!!, data!!, ignoreUid, keyManager!!,
-                            prefs!!.enable_tag_type_validation()
+                            prefs!!.tagTypeValidation()
                         )
                         setResult(RESULT_OK)
                     }
@@ -536,7 +536,7 @@ class NfcActivity : AppCompatActivity() {
                             }
                             .show()
                     }
-                } else if (prefs!!.elite_support()) {
+                } else if (prefs!!.eliteEnabled()) {
                     if (e is TagLostException) {
                         showMessage(R.string.speed_scan)
                         closeTagSilently(mifare)

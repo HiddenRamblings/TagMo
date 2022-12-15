@@ -646,7 +646,7 @@ class TagDataEditor : AppCompatActivity() {
         }
     }
 
-    @Throws(Exception::class)
+    @Throws(IOException::class, NumberFormatException::class)
     private fun parseAppId(): Int {
         var text = txtAppId.unMaskedText
         return if (null != text) {
@@ -1365,6 +1365,7 @@ class TagDataEditor : AppCompatActivity() {
         txtStatDefenseU?.isEnabled = enabled
     }
 
+    @Throws(NumberFormatException::class)
     private fun onAppDataZeldaTPSaved(): ByteArray {
         try {
             val level = txtLevelZeldaTP!!.text.toString().toInt()
@@ -1388,6 +1389,7 @@ class TagDataEditor : AppCompatActivity() {
         return appDataSplatoon!!.array()
     }
 
+    @Throws(Exception::class)
     private fun onAppDataSSBSaved(): ByteArray {
         try {
             val appearance = spnAppearance!!.selectedItemPosition
@@ -1485,6 +1487,7 @@ class TagDataEditor : AppCompatActivity() {
         return appDataSSB!!.array()
     }
 
+    @Throws(Exception::class)
     private fun onAppDataSSBUSaved(): ByteArray {
         try {
             val appearance = spnAppearanceU!!.selectedItemPosition

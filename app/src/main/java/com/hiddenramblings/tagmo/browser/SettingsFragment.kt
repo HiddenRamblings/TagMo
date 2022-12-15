@@ -274,9 +274,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (null != disclaimerFoomiibo) {
             try {
                 resources.openRawResource(R.raw.tos_foomiibo).use { `in` ->
-                    BufferedReader(
-                        InputStreamReader(`in`)
-                    ).use { r ->
+                    BufferedReader(InputStreamReader(`in`)).use { r ->
                         val total = StringBuilder()
                         var line: String?
                         while (null != r.readLine().also { line = it }) {
@@ -293,9 +291,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (null != disclaimerTagMo) {
             try {
                 resources.openRawResource(R.raw.tos_tagmo).use { `in` ->
-                    BufferedReader(
-                        InputStreamReader(`in`)
-                    ).use { r ->
+                    BufferedReader(InputStreamReader(`in`)).use { r ->
                         val total = StringBuilder()
                         var line: String?
                         while (null != r.readLine().also { line = it }) {

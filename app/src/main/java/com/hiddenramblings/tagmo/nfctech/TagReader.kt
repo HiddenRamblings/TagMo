@@ -41,11 +41,9 @@ object TagReader {
                 DataInputStream(inputStream).readFully(tagData)
                 tagData
             }
-            else -> throw IOException(
-                appContext.getString(
+            else -> throw IOException(appContext.getString(
                     R.string.invalid_file_size, path, length, NfcByte.TAG_DATA_SIZE
-                )
-            )
+            ))
         }
     }
 
@@ -56,8 +54,7 @@ object TagReader {
 
     @Throws(Exception::class)
     fun readTagDocument(uri: Uri): ByteArray {
-        appContext
-            .contentResolver.openInputStream(uri)
+        appContext.contentResolver.openInputStream(uri)
             .use { inputStream -> return getTagData(uri.path, inputStream!!) }
     }
 
@@ -85,6 +82,7 @@ object TagReader {
         return tag.amiiboFastRead(0x15, 0x16, bank)
     }
 
+    @Throws(NullPointerException::class)
     fun readTagTitles(tag: NTAG215, numBanks: Int): ArrayList<String> {
         val tags = ArrayList<String>()
         var i = 0
@@ -98,8 +96,7 @@ object TagReader {
                 i++
             } catch (e: Exception) {
                 Warn(
-                    TagReader::class.java, appContext
-                        .getString(R.string.fail_parse_banks)
+                    TagReader::class.java, appContext.getString(R.string.fail_parse_banks)
                 )
             }
         }
@@ -119,24 +116,15 @@ object TagReader {
     fun scanTagToBytes(tag: NTAG215, bank: Int): ByteArray {
         val tagData = ByteArray(NfcByte.TAG_DATA_SIZE)
         return try {
-            val data =
-                (if (bank == -1) tag.fastRead(0x00, 0x86) else tag.amiiboFastRead(0x00, 0x86, bank))
-                    ?: throw NullPointerException(
-                        appContext
-                            .getString(R.string.fail_read_amiibo)
-                    )
+            val data = (if (bank == -1) tag.fastRead(0x00, 0x86)
+            else tag.amiiboFastRead(0x00, 0x86, bank))
+                ?: throw NullPointerException(appContext.getString(R.string.fail_read_amiibo))
             System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_DATA_SIZE)
             tagData
         } catch (e: IllegalStateException) {
-            throw IllegalStateException(
-                appContext
-                    .getString(R.string.fail_early_remove)
-            )
+            throw IllegalStateException(appContext.getString(R.string.fail_early_remove))
         } catch (npe: NullPointerException) {
-            throw NullPointerException(
-                appContext
-                    .getString(R.string.fail_amiibo_null)
-            )
+            throw NullPointerException(appContext.getString(R.string.fail_amiibo_null))
         }
     }
 

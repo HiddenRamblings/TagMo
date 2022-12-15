@@ -282,14 +282,16 @@ class NfcActivity : AppCompatActivity() {
                     && NFCIntent.ACTION_SET_BANK_COUNT != mode
                 ) {
                     selection = getPosition(bankPicker)
-                    if (selection > bankCount) throw Exception(getString(R.string.fail_bank_oob))
+                    if (selection > bankCount)
+                        throw Exception(getString(R.string.fail_bank_oob))
                 }
             }
             try {
                 var data: ByteArray? = ByteArray(0)
                 if (commandIntent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
                     data = commandIntent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
-                    if (null == data || data.size <= 1) throw IOException(getString(R.string.error_no_data))
+                    if (null == data || data.size <= 1)
+                        throw IOException(getString(R.string.error_no_data))
                 }
                 when (mode) {
                     NFCIntent.ACTION_WRITE_TAG_RAW -> {

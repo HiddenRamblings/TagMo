@@ -61,10 +61,10 @@ class TagDataEditor : AppCompatActivity() {
     private lateinit var txtModifiedDate: EditText
     private lateinit var txtNickname: EditText
     private lateinit var txtMiiName: EditText
-    private lateinit var txtAppId: MaskedEditText
     private lateinit var txtWriteCounter: EditText
     private lateinit var txtSerialNumber: EditText
     private lateinit var txtAppName: Spinner
+    private lateinit var txtAppId: MaskedEditText
     private lateinit var appDataSwitch: SwitchCompat
     private lateinit var userDataSwitch: SwitchCompat
     private lateinit var generateSerial: AppCompatButton
@@ -148,10 +148,10 @@ class TagDataEditor : AppCompatActivity() {
         txtModifiedDate = findViewById(R.id.txtModifiedDate)
         txtNickname = findViewById(R.id.txtNickname)
         txtMiiName = findViewById(R.id.txtMiiName)
-        txtAppId = findViewById(R.id.txtAppId)
         txtWriteCounter = findViewById(R.id.txtWriteCounter)
         txtSerialNumber = findViewById(R.id.txtSerialNumber)
         txtAppName = findViewById(R.id.txtAppName)
+        txtAppId = findViewById(R.id.txtAppId)
         appDataSwitch = findViewById(R.id.appDataSwitch)
         userDataSwitch = findViewById(R.id.userDataSwitch)
         generateSerial = findViewById(R.id.random_serial)
@@ -238,12 +238,12 @@ class TagDataEditor : AppCompatActivity() {
             runOnUiThread { updateAmiiboView(tagData) }
         }
         updateAmiiboView(tagData)
-        txtAppName.onItemSelectedListener = onAppNameSelected
-        txtAppId.addTextChangedListener(onAppIdChange)
         countryCodeAdapter = CountryCodesAdapter(AmiiboData.countryCodes)
         txtCountryCode.adapter = countryCodeAdapter
         appIdAdapter = AppIdAdapter(appIds)
         txtAppName.adapter = appIdAdapter
+        txtAppName.onItemSelectedListener = onAppNameSelected
+        txtAppId.addTextChangedListener(onAppIdChange)
         txtWriteCounter.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
@@ -502,8 +502,8 @@ class TagDataEditor : AppCompatActivity() {
         txtWriteCounter.isEnabled = isUserDataInitialized
         txtSerialNumber.isEnabled = isUserDataInitialized
         generateSerial.isEnabled = isUserDataInitialized
-        txtAppId.isEnabled = isUserDataInitialized
         txtAppName.isEnabled = isUserDataInitialized
+        txtAppId.isEnabled = isUserDataInitialized
         appDataSwitch.isEnabled = isUserDataInitialized
         appDataFormat.isEnabled = isUserDataInitialized
         updateAppDataEnabled(isUserDataInitialized && isAppDataInitialized)
@@ -664,6 +664,40 @@ class TagDataEditor : AppCompatActivity() {
         }
     }
 
+    private val onAppNameSelected: AdapterView.OnItemSelectedListener =
+        object : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(adapterView: AdapterView<*>, view: View, i: Int, l: Long) {
+            if (ignoreAppNameSelected) {
+                ignoreAppNameSelected = false
+                return
+            }
+            val selectedItem = adapterView.getItemAtPosition(i)
+            if (null != selectedItem) {
+                appId = (selectedItem as Map.Entry<*, *>).key as Int?
+            }
+            updateAppIdView(appId)
+            updateAppDataView(appId)
+        }
+
+        override fun onNothingSelected(adapterView: AdapterView<*>?) {}
+    }
+
+    private fun updateAppNameView() {
+        var index = 0
+        if (null != appIdAdapter) {
+            for (i in 0 until appIdAdapter!!.count) {
+                if (appIdAdapter!!.getItem(i).key == appId) {
+                    index = i
+                    break
+                }
+            }
+        }
+        if (txtAppName.selectedItemPosition != index) {
+            ignoreAppNameSelected = true
+            txtAppName.setSelection(index)
+        }
+    }
+
     private val onAppIdChange: TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
         override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
@@ -679,40 +713,6 @@ class TagDataEditor : AppCompatActivity() {
             updateAppDataView(appId)
         }
     }
-
-    private fun updateAppNameView() {
-        var index = 0
-        if (null != appIdAdapter) {
-            for (i in 0 until appIdAdapter!!.count) {
-                val item = appIdAdapter!!.getItem(i) as Map.Entry<*, *>
-                if (item.key == appId) {
-                    index = i
-                }
-            }
-        }
-        if (txtAppName.selectedItemPosition != index) {
-            ignoreAppNameSelected = true
-            txtAppName.setSelection(index)
-        }
-    }
-
-    private val onAppNameSelected: AdapterView.OnItemSelectedListener =
-        object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>, view: View, i: Int, l: Long) {
-                if (ignoreAppNameSelected) {
-                    ignoreAppNameSelected = false
-                    return
-                }
-                val selectedItem = adapterView.getItemAtPosition(i)
-                if (null != selectedItem) {
-                    appId = (selectedItem as Map.Entry<*, *>).key as Int?
-                }
-                updateAppIdView(appId)
-                updateAppDataView(appId)
-            }
-
-            override fun onNothingSelected(adapterView: AdapterView<*>?) {}
-        }
 
     private fun updateAppDataView(appId: Int?) {
         appDataViewZeldaTP.visibility = View.GONE
@@ -982,8 +982,8 @@ class TagDataEditor : AppCompatActivity() {
         }
         buttonInject = findViewById(R.id.inject_game_data)
         buttonInject?.setOnClickListener {
-            appDataSplatoon!!.injectSaveData(Random().nextBoolean())
-            it.isEnabled = false
+            appDataSplatoon!!.injectSaveData()
+            it.isEnabled = !appDataSplatoon!!.checkSaveData()
         }
         onAppDataSplatoonChecked(isAppDataInitialized)
     }
@@ -1335,6 +1335,7 @@ class TagDataEditor : AppCompatActivity() {
     }
 
     private fun onAppDataSplatoonChecked(enabled: Boolean) {
+        if (null == buttonInject) return
         buttonInject?.isEnabled = enabled && !appDataSplatoon!!.checkSaveData()
     }
 
@@ -1355,6 +1356,7 @@ class TagDataEditor : AppCompatActivity() {
     }
 
     private fun onAppDataSSBUChecked(enabled: Boolean) {
+        if (null == spnAppearanceU) return
         spnAppearanceU?.isEnabled = enabled
         txtLevelSSBU?.isEnabled = enabled
         // txtGiftCount?.isEnabled = enabled
@@ -1402,7 +1404,7 @@ class TagDataEditor : AppCompatActivity() {
                 null
             }
 
-            //level is a granular value as such we don't want to overwrite it in case its halfway through a level
+            // level is a granular value, so we don't want to overwrite it halfway through a level
             if (null == oldLevel || level != oldLevel) {
                 appDataSSB!!.level = level
             }
@@ -1499,7 +1501,7 @@ class TagDataEditor : AppCompatActivity() {
                 null
             }
 
-            //level is a granular value as such we don't want to overwrite it in case its halfway through a level
+            // level is a granular value, so we don't want to overwrite it halfway through a level
             if (null == oldLevel || level != oldLevel) {
                 appDataSSBU!!.level = level
             }

@@ -123,7 +123,8 @@ class KeyManager(var context: Context) {
 
     @Throws(RuntimeException::class)
     fun encrypt(tagData: ByteArray): ByteArray {
-        if (!hasFixedKey() || !hasUnFixedKey()) throw RuntimeException(context.getString(R.string.key_not_present))
+        if (!hasFixedKey() || !hasUnFixedKey())
+            throw RuntimeException(context.getString(R.string.key_not_present))
         val tool = AmiiTool()
         if (tool.setKeysFixed(
                 fixedKey, fixedKey!!.size) == 0

@@ -888,13 +888,14 @@ class TagDataEditor : AppCompatActivity() {
             }
             try {
                 appDataZeldaTP!!.checkHearts(hearts * 4)
-                txtHearts1!!.error = null
+                txtHearts1?.error = null
             } catch (e: Exception) {
-                txtHearts1!!.error = getString(R.string.error_min_max, 0, 20)
+                txtHearts1?.error = getString(R.string.error_min_max, 0, 20)
             }
         } catch (e: NumberFormatException) {
-            txtHearts1!!.error = getString(R.string.error_min_max, 0, 20)
-            txtHearts2!!.isEnabled = txtHearts1!!.isEnabled
+            txtHearts1?.error = getString(R.string.error_min_max, 0, 20)
+            if (null != txtHearts1)
+                txtHearts2?.isEnabled = txtHearts1!!.isEnabled
         }
     }
 
@@ -950,12 +951,12 @@ class TagDataEditor : AppCompatActivity() {
                     val text = txtLevelZeldaTP!!.text.toString().toInt()
                     try {
                         appDataZeldaTP!!.checkLevel(text)
-                        txtLevelZeldaTP!!.error = null
+                        txtLevelZeldaTP?.error = null
                     } catch (e: Exception) {
-                        txtLevelZeldaTP!!.error = getString(R.string.error_min_max, 0, 40)
+                        txtLevelZeldaTP?.error = getString(R.string.error_min_max, 0, 40)
                     }
                 } catch (e: NumberFormatException) {
-                    txtLevelZeldaTP!!.error = getString(R.string.error_min_max, 0, 40)
+                    txtLevelZeldaTP?.error = getString(R.string.error_min_max, 0, 40)
                 }
             }
 
@@ -980,9 +981,9 @@ class TagDataEditor : AppCompatActivity() {
             return
         }
         buttonInject = findViewById(R.id.inject_game_data)
-        buttonInject!!.setOnClickListener {
+        buttonInject?.setOnClickListener {
             appDataSplatoon!!.injectSaveData(Random().nextBoolean())
-            buttonInject!!.isEnabled = false
+            it.isEnabled = false
         }
         onAppDataSplatoonChecked(isAppDataInitialized)
     }
@@ -1122,12 +1123,12 @@ class TagDataEditor : AppCompatActivity() {
                 try {
                     val text = txtLevelSSB!!.text.toString().toInt()
                     if (text < 1 || text > 50) {
-                        txtLevelSSB!!.error = getString(R.string.error_min_max, 1, 50)
+                        txtLevelSSB?.error = getString(R.string.error_min_max, 1, 50)
                     } else {
-                        txtLevelSSB!!.error = null
+                        txtLevelSSB?.error = null
                     }
                 } catch (e: NumberFormatException) {
-                    txtLevelSSB!!.error = getString(R.string.error_min_max, 1, 50)
+                    txtLevelSSB?.error = getString(R.string.error_min_max, 1, 50)
                 }
             }
 
@@ -1140,12 +1141,12 @@ class TagDataEditor : AppCompatActivity() {
                     val text = txtStatAttack!!.text.toString().toInt()
                     try {
                         appDataSSB!!.checkStat(text)
-                        txtStatAttack!!.error = null
+                        txtStatAttack?.error = null
                     } catch (e: Exception) {
-                        txtStatAttack!!.error = getString(R.string.error_min_max, -200, 200)
+                        txtStatAttack?.error = getString(R.string.error_min_max, -200, 200)
                     }
                 } catch (e: NumberFormatException) {
-                    txtStatAttack!!.error = getString(R.string.error_min_max, -200, 200)
+                    txtStatAttack?.error = getString(R.string.error_min_max, -200, 200)
                 }
             }
 
@@ -1158,12 +1159,12 @@ class TagDataEditor : AppCompatActivity() {
                     val text = txtStatDefense!!.text.toString().toInt()
                     try {
                         appDataSSB!!.checkStat(text)
-                        txtStatDefense!!.error = null
+                        txtStatDefense?.error = null
                     } catch (e: Exception) {
-                        txtStatDefense!!.error = getString(R.string.error_min_max, -200, 200)
+                        txtStatDefense?.error = getString(R.string.error_min_max, -200, 200)
                     }
                 } catch (e: NumberFormatException) {
-                    txtStatDefense!!.error = getString(R.string.error_min_max, -200, 200)
+                    txtStatDefense?.error = getString(R.string.error_min_max, -200, 200)
                 }
             }
 
@@ -1176,12 +1177,12 @@ class TagDataEditor : AppCompatActivity() {
                     val text = txtStatSpeed!!.text.toString().toInt()
                     try {
                         appDataSSB!!.checkStat(text)
-                        txtStatSpeed!!.error = null
+                        txtStatSpeed?.error = null
                     } catch (e: Exception) {
-                        txtStatSpeed!!.error = getString(R.string.error_min_max, -200, 200)
+                        txtStatSpeed?.error = getString(R.string.error_min_max, -200, 200)
                     }
                 } catch (e: NumberFormatException) {
-                    txtStatSpeed!!.error = getString(R.string.error_min_max, -200, 200)
+                    txtStatSpeed?.error = getString(R.string.error_min_max, -200, 200)
                 }
             }
 
@@ -1277,12 +1278,12 @@ class TagDataEditor : AppCompatActivity() {
                 try {
                     val text = txtLevelSSBU!!.text.toString().toInt()
                     if (text < 1 || text > 50) {
-                        txtLevelSSBU!!.error = getString(R.string.error_min_max, 1, 50)
+                        txtLevelSSBU?.error = getString(R.string.error_min_max, 1, 50)
                     } else {
-                        txtLevelSSBU!!.error = null
+                        txtLevelSSBU?.error = null
                     }
                 } catch (e: NumberFormatException) {
-                    txtLevelSSBU!!.error = getString(R.string.error_min_max, 1, 50)
+                    txtLevelSSBU?.error = getString(R.string.error_min_max, 1, 50)
                 }
             }
 
@@ -1295,12 +1296,12 @@ class TagDataEditor : AppCompatActivity() {
                     val text = txtStatAttackU!!.text.toString().toInt()
                     try {
                         appDataSSBU!!.checkStat(text)
-                        txtStatAttackU!!.error = null
+                        txtStatAttackU?.error = null
                     } catch (e: Exception) {
-                        txtStatAttackU!!.error = getString(R.string.error_min_max, -0, 2500)
+                        txtStatAttackU?.error = getString(R.string.error_min_max, -0, 2500)
                     }
                 } catch (e: NumberFormatException) {
-                    txtStatAttackU!!.error = getString(R.string.error_min_max, 0, 2500)
+                    txtStatAttackU?.error = getString(R.string.error_min_max, 0, 2500)
                 }
             }
 
@@ -1313,12 +1314,12 @@ class TagDataEditor : AppCompatActivity() {
                     val text = txtStatDefenseU!!.text.toString().toInt()
                     try {
                         appDataSSBU!!.checkStat(text)
-                        txtStatDefenseU!!.error = null
+                        txtStatDefenseU?.error = null
                     } catch (e: Exception) {
-                        txtStatDefenseU!!.error = getString(R.string.error_min_max, 0, 2500)
+                        txtStatDefenseU?.error = getString(R.string.error_min_max, 0, 2500)
                     }
                 } catch (e: NumberFormatException) {
-                    txtStatDefenseU!!.error = getString(R.string.error_min_max, 0, 2500)
+                    txtStatDefenseU?.error = getString(R.string.error_min_max, 0, 2500)
                 }
             }
 
@@ -1328,38 +1329,38 @@ class TagDataEditor : AppCompatActivity() {
 
     private fun onAppDataZeldaTPChecked(enabled: Boolean) {
         if (null == txtHearts2) return
-        txtHearts1!!.isEnabled = enabled
+        txtHearts1?.isEnabled = enabled
         onHeartsUpdate()
-        txtLevelZeldaTP!!.isEnabled = enabled
+        txtLevelZeldaTP?.isEnabled = enabled
     }
 
     private fun onAppDataSplatoonChecked(enabled: Boolean) {
-        buttonInject!!.isEnabled = enabled && !appDataSplatoon!!.checkSaveData()
+        buttonInject?.isEnabled = enabled && !appDataSplatoon!!.checkSaveData()
     }
 
     private fun onAppDataSSBChecked(enabled: Boolean) {
         if (null == spnAppearance) return
-        spnAppearance!!.isEnabled = enabled
-        txtLevelSSB!!.isEnabled = enabled
-        spnSpecialNeutral!!.isEnabled = enabled
-        spnSpecialSide!!.isEnabled = enabled
-        spnSpecialUp!!.isEnabled = enabled
-        spnSpecialDown!!.isEnabled = enabled
-        txtStatAttack!!.isEnabled = enabled
-        txtStatDefense!!.isEnabled = enabled
-        txtStatSpeed!!.isEnabled = enabled
-        spnEffect1!!.isEnabled = enabled
-        spnEffect2!!.isEnabled = enabled
-        spnEffect3!!.isEnabled = enabled
+        spnAppearance?.isEnabled = enabled
+        txtLevelSSB?.isEnabled = enabled
+        spnSpecialNeutral?.isEnabled = enabled
+        spnSpecialSide?.isEnabled = enabled
+        spnSpecialUp?.isEnabled = enabled
+        spnSpecialDown?.isEnabled = enabled
+        txtStatAttack?.isEnabled = enabled
+        txtStatDefense?.isEnabled = enabled
+        txtStatSpeed?.isEnabled = enabled
+        spnEffect1?.isEnabled = enabled
+        spnEffect2?.isEnabled = enabled
+        spnEffect3?.isEnabled = enabled
     }
 
     private fun onAppDataSSBUChecked(enabled: Boolean) {
-        spnAppearanceU!!.isEnabled = enabled
-        txtLevelSSBU!!.isEnabled = enabled
-        // txtGiftCount.setEnabled(enabled);
-        // txtLevelCPU.setEnabled(enabled);
-        txtStatAttackU!!.isEnabled = enabled
-        txtStatDefenseU!!.isEnabled = enabled
+        spnAppearanceU?.isEnabled = enabled
+        txtLevelSSBU?.isEnabled = enabled
+        // txtGiftCount?.isEnabled = enabled
+        // txtLevelCPU?.isEnabled = enabled
+        txtStatAttackU?.isEnabled = enabled
+        txtStatDefenseU?.isEnabled = enabled
     }
 
     private fun onAppDataZeldaTPSaved(): ByteArray {
@@ -1367,7 +1368,7 @@ class TagDataEditor : AppCompatActivity() {
             val level = txtLevelZeldaTP!!.text.toString().toInt()
             appDataZeldaTP!!.level = level
         } catch (e: NumberFormatException) {
-            txtLevelZeldaTP!!.requestFocus()
+            txtLevelZeldaTP?.requestFocus()
             throw e
         }
         try {
@@ -1375,7 +1376,7 @@ class TagDataEditor : AppCompatActivity() {
             val hearts2 = txtHearts2!!.selectedItemPosition
             appDataZeldaTP!!.hearts = hearts1 * 4 + hearts2
         } catch (e: NumberFormatException) {
-            txtHearts1!!.requestFocus()
+            txtHearts1?.requestFocus()
             throw e
         }
         return appDataZeldaTP!!.array()
@@ -1390,7 +1391,7 @@ class TagDataEditor : AppCompatActivity() {
             val appearance = spnAppearance!!.selectedItemPosition
             appDataSSB!!.appearence = appearance
         } catch (e: NumberFormatException) {
-            spnAppearance!!.requestFocus()
+            spnAppearance?.requestFocus()
             throw e
         }
         try {
@@ -1406,77 +1407,77 @@ class TagDataEditor : AppCompatActivity() {
                 appDataSSB!!.level = level
             }
         } catch (e: NumberFormatException) {
-            txtLevelSSB!!.requestFocus()
+            txtLevelSSB?.requestFocus()
             throw e
         }
         try {
             val specialNeutral = spnSpecialNeutral!!.selectedItemPosition
             appDataSSB!!.specialNeutral = specialNeutral
         } catch (e: NumberFormatException) {
-            spnSpecialNeutral!!.requestFocus()
+            spnSpecialNeutral?.requestFocus()
             throw e
         }
         try {
             val specialSide = spnSpecialSide!!.selectedItemPosition
             appDataSSB!!.specialSide = specialSide
         } catch (e: NumberFormatException) {
-            spnSpecialSide!!.requestFocus()
+            spnSpecialSide?.requestFocus()
             throw e
         }
         try {
             val specialUp = spnSpecialUp!!.selectedItemPosition
             appDataSSB!!.specialUp = specialUp
         } catch (e: NumberFormatException) {
-            spnSpecialUp!!.requestFocus()
+            spnSpecialUp?.requestFocus()
             throw e
         }
         try {
             val specialDown = spnSpecialDown!!.selectedItemPosition
             appDataSSB!!.specialDown = specialDown
         } catch (e: NumberFormatException) {
-            spnSpecialDown!!.requestFocus()
+            spnSpecialDown?.requestFocus()
             throw e
         }
         try {
             val statAttack = txtStatAttack!!.text.toString().toInt()
             appDataSSB!!.statAttack = statAttack
         } catch (e: NumberFormatException) {
-            txtStatAttack!!.requestFocus()
+            txtStatAttack?.requestFocus()
             throw e
         }
         try {
             val statDefense = txtStatDefense!!.text.toString().toInt()
             appDataSSB!!.statDefense = statDefense
         } catch (e: NumberFormatException) {
-            txtStatDefense!!.requestFocus()
+            txtStatDefense?.requestFocus()
             throw e
         }
         try {
             val statSpeed = txtStatSpeed!!.text.toString().toInt()
             appDataSSB!!.statSpeed = statSpeed
         } catch (e: NumberFormatException) {
-            txtStatSpeed!!.requestFocus()
+            txtStatSpeed?.requestFocus()
             throw e
         }
         try {
             val bonusEffect1 = getEffectValue(spnEffect1)
             appDataSSB!!.bonusEffect1 = bonusEffect1
         } catch (e: NumberFormatException) {
-            spnEffect1!!.requestFocus()
+            spnEffect1?.requestFocus()
             throw e
         }
         try {
             val bonusEffect2 = getEffectValue(spnEffect2)
             appDataSSB!!.bonusEffect2 = bonusEffect2
         } catch (e: NumberFormatException) {
-            spnEffect2!!.requestFocus()
+            spnEffect2?.requestFocus()
             throw e
         }
         try {
             val bonusEffect3 = getEffectValue(spnEffect3)
             appDataSSB!!.bonusEffect3 = bonusEffect3
         } catch (e: NumberFormatException) {
-            spnEffect3!!.requestFocus()
+            spnEffect3?.requestFocus()
             throw e
         }
         return appDataSSB!!.array()
@@ -1487,7 +1488,7 @@ class TagDataEditor : AppCompatActivity() {
             val appearance = spnAppearanceU!!.selectedItemPosition
             appDataSSBU!!.appearence = appearance
         } catch (e: NumberFormatException) {
-            spnAppearanceU!!.requestFocus()
+            spnAppearanceU?.requestFocus()
             throw e
         }
         try {
@@ -1503,21 +1504,21 @@ class TagDataEditor : AppCompatActivity() {
                 appDataSSBU!!.level = level
             }
         } catch (e: NumberFormatException) {
-            txtLevelSSBU!!.requestFocus()
+            txtLevelSSBU?.requestFocus()
             throw e
         }
         try {
             val statAttack = txtStatAttackU!!.text.toString().toInt()
             appDataSSBU!!.statAttack = statAttack
         } catch (e: NumberFormatException) {
-            txtStatAttackU!!.requestFocus()
+            txtStatAttackU?.requestFocus()
             throw e
         }
         try {
             val statDefense = txtStatDefenseU!!.text.toString().toInt()
             appDataSSBU!!.statDefense = statDefense
         } catch (e: NumberFormatException) {
-            txtStatDefenseU!!.requestFocus()
+            txtStatDefenseU?.requestFocus()
             throw e
         }
         return appDataSSBU!!.withChecksum().array()

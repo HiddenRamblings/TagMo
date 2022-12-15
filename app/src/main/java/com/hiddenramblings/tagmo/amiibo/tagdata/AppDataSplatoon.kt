@@ -6,6 +6,7 @@
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import java.util.*
 
 class AppDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
     private var saveDataHex = "01 01 00 00" +
@@ -43,8 +44,8 @@ class AppDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
         return saveDataBytes.contentEquals(saveData) || saveDataBytes2.contentEquals(saveData)
     }
 
-    fun injectSaveData(source: Boolean) {
-        val appDataBytes = if (source) saveDataBytes else saveDataBytes2
+    fun injectSaveData() {
+        val appDataBytes = if (Random().nextBoolean()) saveDataBytes else saveDataBytes2
         for (i in appDataBytes.indices) {
             appData.put(GAME_DATA_OFFSET + i, appDataBytes[i])
         }

@@ -1,33 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <include
-        layout="@layout/app_data_zelda_tp"
-        android:id="@+id/appDataZeldaTP" />
-
-    <include
-        layout="@layout/app_data_splatoon"
-        android:id="@+id/appDataSplatoon" />
-
-    <include
-        layout="@layout/app_data_ssb"
-        android:id="@+id/appDataSSB" />
-
-    <include
-        layout="@layout/app_data_ssbu"
-        android:id="@+id/appDataSSBU" />
-
     <LinearLayout
+        android:id="@+id/appData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="2dp">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/format_app_data"
+        <include
+            layout="@layout/app_data_splatoon"
+            android:id="@+id/appDataSplatoon" />
+
+        <include
+            layout="@layout/app_data_zelda_tp"
+            android:id="@+id/appDataZeldaTP" />
+
+        <include
+            layout="@layout/app_data_ssb"
+            android:id="@+id/appDataSSB" />
+
+        <include
+            layout="@layout/app_data_ssbu"
+            android:id="@+id/appDataSSBU" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/format_app_data"
-            android:enabled="false"/>
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/format_app_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/format_app_data"
+                android:enabled="false"/>
+        </LinearLayout>
     </LinearLayout>
 </merge>

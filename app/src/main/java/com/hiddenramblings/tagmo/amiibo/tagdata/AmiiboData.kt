@@ -37,7 +37,7 @@ class AmiiboData(tagData: ByteArray) {
         set(value) {
             tagData.putLong(AMIIBO_ID_OFFSET, value)
         }
-    var settingFlags: BitSet
+    private var settingFlags: BitSet
         get() = getBitSet(tagData, SETTING_FLAGS_OFFSET, SETTING_FLAGS_LENGTH)
         set(value) {
             putBitSet(tagData, SETTING_FLAGS_OFFSET, SETTING_FLAGS_LENGTH, value)

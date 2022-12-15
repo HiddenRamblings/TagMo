@@ -2,9 +2,7 @@ package com.hiddenramblings.tagmo.amiibo
 
 class GameSeries(val manager: AmiiboManager, val id: Long, val name: String) :
     Comparable<GameSeries> {
-    constructor(manager: AmiiboManager, id: String, name: String) : this(
-        manager, hexToId(id), name
-    )
+    constructor(manager: AmiiboManager, id: String, name: String) : this(manager, hexToId(id), name)
 
     override fun compareTo(other: GameSeries): Int {
         return name.compareTo(other.name)

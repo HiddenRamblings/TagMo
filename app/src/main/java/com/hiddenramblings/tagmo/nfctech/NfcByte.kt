@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.nfctech
 
+@Suppress("UNUSED")
 object NfcByte {
     const val KEY_FILE_SIZE = 80 // Each key read separately
     const val KEY_RETAIL_SZ = 160 // Each key read separately

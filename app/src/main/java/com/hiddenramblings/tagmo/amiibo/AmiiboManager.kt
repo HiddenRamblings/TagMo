@@ -256,7 +256,7 @@ class AmiiboManager {
         }
 
         @Throws(JSONException::class, ParseException::class)
-        fun parseAmiiboAPI(string: String?): AmiiboManager {
+        fun parseAmiiboAPI(string: String): AmiiboManager {
             return parseAmiiboAPI(JSONObject(string))
         }
 
@@ -295,7 +295,7 @@ class AmiiboManager {
             }
         }
 
-        fun readDatabase(context: Context): String? {
+        private fun readDatabase(context: Context): String? {
             val database = StringBuilder()
             var inputStream: InputStream? = null
             var reader: BufferedReader? = null

@@ -8,37 +8,38 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.IOException
 
 class NTAG215 : TagTechnology {
-    private val m_mifare: MifareUltralight?
-    private val m_nfcA: NfcA?
+    private val tagMifare: MifareUltralight?
+    private val tagNfcA: NfcA?
     private val maxTransceiveLength: Int
 
     constructor(nfcA: NfcA?) {
-        m_nfcA = nfcA
-        m_mifare = null
-        maxTransceiveLength = m_nfcA!!.maxTransceiveLength / 4 + 1
+        tagNfcA = nfcA
+        tagMifare = null
+        maxTransceiveLength = tagNfcA!!.maxTransceiveLength / 4 + 1
     }
 
     constructor(mifare: MifareUltralight?) {
-        m_nfcA = null
-        m_mifare = mifare
-        maxTransceiveLength = m_mifare!!.maxTransceiveLength / 4 + 1
+        tagNfcA = null
+        tagMifare = mifare
+        maxTransceiveLength = tagMifare!!.maxTransceiveLength / 4 + 1
     }
 
+    @Suppress("UNUSED")
     var timeout: Int
-        get() = m_mifare?.timeout ?: (m_nfcA?.timeout ?: 0)
+        get() = tagMifare?.timeout ?: (tagNfcA?.timeout ?: 0)
         set(timeout) {
-            if (null != m_mifare) m_mifare.timeout = timeout
-            if (null != m_nfcA) {
-                m_nfcA.timeout = timeout
+            if (null != tagMifare) tagMifare.timeout = timeout
+            if (null != tagNfcA) {
+                tagNfcA.timeout = timeout
             }
         }
 
     fun transceive(data: ByteArray?): ByteArray? {
         try {
-            if (null != m_mifare) {
-                return m_mifare.transceive(data)
-            } else if (null != m_nfcA) {
-                return m_nfcA.transceive(data)
+            if (null != tagMifare) {
+                return tagMifare.transceive(data)
+            } else if (null != tagNfcA) {
+                return tagNfcA.transceive(data)
             }
         } catch (e: IOException) {
             Debug.Warn(e)
@@ -48,47 +49,47 @@ class NTAG215 : TagTechnology {
 
     @Throws(IOException::class)
     fun readPages(pageOffset: Int): ByteArray? {
-        if (null != m_mifare) return m_mifare.readPages(pageOffset) else if (null != m_nfcA) {
+        if (null != tagMifare) return tagMifare.readPages(pageOffset) else if (null != tagNfcA) {
             validatePageIndex(pageOffset)
             //checkConnected();
             val cmd = byteArrayOf(
                 NfcByte.CMD_READ.toByte(), pageOffset.toByte()
             )
-            return m_nfcA.transceive(cmd)
+            return tagNfcA.transceive(cmd)
         }
         return null
     }
 
     @Throws(IOException::class)
     fun writePage(pageOffset: Int, data: ByteArray) {
-        if (null != m_mifare) {
-            m_mifare.writePage(pageOffset, data)
-        } else if (null != m_nfcA) {
+        if (null != tagMifare) {
+            tagMifare.writePage(pageOffset, data)
+        } else if (null != tagNfcA) {
             validatePageIndex(pageOffset)
             //m_nfcA.checkConnected();
             val cmd = ByteArray(data.size + 2)
             cmd[0] = NfcByte.CMD_WRITE.toByte()
             cmd[1] = pageOffset.toByte()
             System.arraycopy(data, 0, cmd, 2, data.size)
-            m_nfcA.transceive(cmd)
+            tagNfcA.transceive(cmd)
         }
     }
 
     @Throws(IOException::class)
     override fun connect() {
-        m_mifare?.connect() ?: m_nfcA?.connect()
+        tagMifare?.connect() ?: tagNfcA?.connect()
     }
 
     @Throws(IOException::class)
     override fun close() {
-        m_mifare?.close() ?: m_nfcA?.close()
+        tagMifare?.close() ?: tagNfcA?.close()
     }
 
     override fun getTag(): Tag? {
-        if (null != m_mifare) {
-            return m_mifare.tag
-        } else if (null != m_nfcA) {
-            return m_nfcA.tag
+        if (null != tagMifare) {
+            return tagMifare.tag
+        } else if (null != tagNfcA) {
+            return tagNfcA.tag
         }
         return null
     }
@@ -106,6 +107,7 @@ class NTAG215 : TagTechnology {
         return transceive(command)
     }
 
+    @Suppress("UNUSED")
     val bankCount: ByteArray?
         get() {
             val req = ByteArray(1)
@@ -336,7 +338,7 @@ class NTAG215 : TagTechnology {
     }
 
     override fun isConnected(): Boolean {
-        return m_nfcA!!.isConnected
+        return tagNfcA!!.isConnected
     }
 
     companion object {

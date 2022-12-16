@@ -1041,14 +1041,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val delete = toolbar.menu.findItem(R.id.mnu_delete)
         if (null != amiiboFile) {
             if (null != amiiboFile.docUri) {
-                val relativeDocument = Storage.getRelativeDocument(
-                    amiiboFile.docUri!!.uri
-                )
+                val relativeDocument = Storage.getRelativeDocument(amiiboFile.docUri!!.uri)
                 cached = relativeDocument.startsWith("/Foomiibo/")
             } else if (null != amiiboFile.filePath) {
                 var relativeFile = Storage.getRelativePath(
-                    amiiboFile.filePath!!,
-                    prefs!!.preferEmulated()
+                    amiiboFile.filePath!!, prefs!!.preferEmulated()
                 )
                 if (null != prefs!!.browserRootFolder()) {
                     relativeFile = relativeFile.replace(prefs!!.browserRootFolder()!!, "")
@@ -1060,11 +1057,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } else {
             delete.isVisible = false
         }
-        toolbar.setOnMenuItemClickListener { item: MenuItem ->
+        toolbar.setOnMenuItemClickListener {
             clickedAmiibo = amiiboFile
             val args = Bundle()
             val scan = Intent(this, NfcActivity::class.java)
-            when (item.itemId) {
+            when (it.itemId) {
                 R.id.mnu_scan -> {
                     scan.action = NFCIntent.ACTION_SCAN_TAG
                     onUpdateTagResult.launch(scan)
@@ -1117,8 +1114,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                             backupDialog.dismiss()
                         }
-                        view.findViewById<View>(R.id.button_cancel)
-                            .setOnClickListener { backupDialog.dismiss() }
+                        view.findViewById<View>(R.id.button_cancel).setOnClickListener {
+                            backupDialog.dismiss()
+                        }
                         backupDialog.show()
                     }
                     return@setOnMenuItemClickListener true
@@ -1154,8 +1152,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_ignore_tag_id -> {
-                    ignoreTagId = !item.isChecked
-                    item.isChecked = ignoreTagId
+                    ignoreTagId = !it.isChecked
+                    it.isChecked = ignoreTagId
                     return@setOnMenuItemClickListener true
                 }
                 else -> false
@@ -1164,18 +1162,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun getToolbarOptions(
-        fragment: BrowserFragment,
-        toolbar: Toolbar,
-        tagData: ByteArray?,
-        itemView: View
+        fragment: BrowserFragment, toolbar: Toolbar, tagData: ByteArray?, itemView: View
     ) {
         if (!toolbar.menu.hasVisibleItems()) toolbar.inflateMenu(R.menu.amiibo_menu)
         toolbar.menu.findItem(R.id.mnu_save).setTitle(R.string.cache)
         toolbar.menu.findItem(R.id.mnu_scan).isVisible = false
-        toolbar.setOnMenuItemClickListener { item: MenuItem ->
+        toolbar.setOnMenuItemClickListener {
             val args = Bundle()
             val scan = Intent(this, NfcActivity::class.java)
-            when (item.itemId) {
+            when (it.itemId) {
                 R.id.mnu_write -> {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
                     scan.action = NFCIntent.ACTION_WRITE_TAG_FULL
@@ -1240,8 +1235,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_ignore_tag_id -> {
-                    ignoreTagId = !item.isChecked
-                    item.isChecked = ignoreTagId
+                    ignoreTagId = !it.isChecked
+                    it.isChecked = ignoreTagId
                     return@setOnMenuItemClickListener true
                 }
                 else -> false
@@ -1279,8 +1274,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     val isDocumentStorage: Boolean
-        get() = if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)
-            && null != settings!!.browserRootDocument
+        get() = if (
+            Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != settings!!.browserRootDocument
         ) {
             try {
                 DocumentFile.fromTreeUri(this, settings!!.browserRootDocument!!)
@@ -1314,11 +1309,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun onStorageEnabled() {
         if (BuildConfig.WEAR_OS) {
-            if (keyManager!!.isKeyMissing) {
+            if (keyManager!!.isKeyMissing)
                 onShowSettingsFragment()
-            } else {
-                onRefresh(true)
-            }
+            else onRefresh(true)
         } else {
             if (isDocumentStorage) {
                 switchStorageRoot!!.visibility = View.VISIBLE
@@ -1347,11 +1340,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 } else {
                     switchStorageType!!.visibility = View.GONE
                 }
-                if (keyManager!!.isKeyMissing) {
+                if (keyManager!!.isKeyMissing)
                     onShowSettingsFragment()
-                } else {
-                    onRefresh(true)
-                }
+                else onRefresh(true)
             } else {
                 val internal = prefs!!.preferEmulated()
                 val storage = Storage.getFile(internal)
@@ -1427,19 +1418,22 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 settings!!.notifyChanges()
             }
             R.id.view_simple -> {
-                if (null != amiibosView) amiibosView!!.layoutManager = LinearLayoutManager(this)
+                if (null != amiibosView)
+                    amiibosView!!.layoutManager = LinearLayoutManager(this)
                 foomiiboView!!.layoutManager = LinearLayoutManager(this)
                 settings!!.amiiboView = VIEW.SIMPLE.value
                 settings!!.notifyChanges()
             }
             R.id.view_compact -> {
-                if (null != amiibosView) amiibosView!!.layoutManager = LinearLayoutManager(this)
+                if (null != amiibosView)
+                    amiibosView!!.layoutManager = LinearLayoutManager(this)
                 foomiiboView!!.layoutManager = LinearLayoutManager(this)
                 settings!!.amiiboView = VIEW.COMPACT.value
                 settings!!.notifyChanges()
             }
             R.id.view_large -> {
-                if (null != amiibosView) amiibosView!!.layoutManager = LinearLayoutManager(this)
+                if (null != amiibosView)
+                    amiibosView!!.layoutManager = LinearLayoutManager(this)
                 foomiiboView!!.layoutManager = LinearLayoutManager(this)
                 settings!!.amiiboView = VIEW.LARGE.value
                 settings!!.notifyChanges()
@@ -1640,8 +1634,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 getValidatedFile(keyManager, amiiboFile.filePath!!)!!
             if (settings!!.amiiboView != VIEW.IMAGE.value) {
                 getToolbarOptions(
-                    itemView!!.findViewById<View>(R.id.menu_options)
-                        .findViewById(R.id.toolbar), tagData, amiiboFile
+                    itemView!!.findViewById<View>(R.id.menu_options).findViewById(R.id.toolbar),
+                    tagData, amiiboFile
                 )
                 getGameCompatibility(itemView.findViewById(R.id.txtUsage), tagData)
             } else {
@@ -1751,9 +1745,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         Executors.newSingleThreadExecutor().execute {
             val amiiboFiles = listAmiibos(keyManager, rootFolder, recursiveFiles)
             val download = Storage.getDownloadDir(null)
-            if (isDirectoryHidden(rootFolder, download, recursiveFiles)) amiiboFiles.addAll(
-                listAmiibos(keyManager, download, true)
-            )
+            if (isDirectoryHidden(rootFolder, download, recursiveFiles))
+                amiiboFiles.addAll(listAmiibos(keyManager, download, true))
             val foomiibo = File(filesDir, "Foomiibo")
             amiiboFiles.addAll(listAmiibos(keyManager, foomiibo, true))
             if (Thread.currentThread().isInterrupted) return@execute
@@ -1768,7 +1761,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     @SuppressLint("NewApi")
     private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
         Executors.newSingleThreadExecutor().execute {
-            val amiiboFiles = listAmiiboDocuments(this, keyManager, rootFolder!!, recursiveFiles)
+            val amiiboFiles = listAmiiboDocuments(
+                this, keyManager, rootFolder!!, recursiveFiles
+            )
             if (amiiboFiles.isEmpty() && null == prefs!!.browserRootDocument()) {
                 onDocumentRequested()
                 return@execute
@@ -1899,8 +1894,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         appUpdate = appUpdateInfo
                         if (BuildConfig.WEAR_OS)
                             onCreateWearOptionsMenu()
-                        else
-                            invalidateOptionsMenu()
+                        else invalidateOptionsMenu()
                     }
                 })
             } else {
@@ -1909,8 +1903,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         updateUrl = downloadUrl
                         if (BuildConfig.WEAR_OS)
                             onCreateWearOptionsMenu()
-                        else
-                            invalidateOptionsMenu()
+                        else invalidateOptionsMenu()
                     }
                 })
             }
@@ -1964,8 +1957,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun onRootFolderChanged(indicator: Boolean) {
         if (isDocumentStorage) {
             val rootDocument = DocumentFile.fromTreeUri(
-                this,
-                settings!!.browserRootDocument!!
+                this, settings!!.browserRootDocument!!
             )
             if (!keyManager!!.isKeyMissing) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list))
@@ -2046,8 +2038,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     amiiboContainer!!.visibility = View.GONE
                     amiiboFile.filePath?.delete()
                     IconifiedSnackbar(this, layout).buildSnackbar(
-                        getString(R.string.delete_file, relativeFile),
-                        Snackbar.LENGTH_SHORT
+                        getString(R.string.delete_file, relativeFile), Snackbar.LENGTH_SHORT
                     ).show()
                     onRootFolderChanged(true)
                     dialog.dismiss()
@@ -2061,17 +2052,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun deleteAmiiboDocument(amiiboFile: AmiiboFile?) {
         if (null != amiiboFile?.docUri) {
-            val relativeDocument = Storage.getRelativeDocument(
-                amiiboFile.docUri!!.uri
-            )
+            val relativeDocument = Storage.getRelativeDocument(amiiboFile.docUri!!.uri)
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.warn_delete_file, relativeDocument))
                 .setPositiveButton(R.string.delete) { dialog: DialogInterface, _: Int ->
                     amiiboContainer!!.visibility = View.GONE
                     amiiboFile.docUri?.delete()
                     IconifiedSnackbar(this, layout).buildSnackbar(
-                        getString(R.string.delete_file, relativeDocument),
-                        Snackbar.LENGTH_SHORT
+                        getString(R.string.delete_file, relativeDocument), Snackbar.LENGTH_SHORT
                     ).show()
                     onRootFolderChanged(true)
                     dialog.dismiss()
@@ -2146,7 +2134,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 val amiiboManager = settings!!.amiiboManager
                 if (null != amiiboManager) {
                     amiibo = amiiboManager.amiibos[amiiboId]
-                    if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                    if (null == amiibo)
+                        amiibo = Amiibo(amiiboManager, amiiboId, null, null)
                 }
                 if (null != amiibo) {
                     amiiboHexId = Amiibo.idToHex(amiibo.id)
@@ -2197,8 +2186,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 imageAmiibo!!.visibility = View.GONE
                 GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
                 if (null != amiiboImageUrl) {
-                    GlideApp.with(imageAmiibo!!).asBitmap()
-                        .load(amiiboImageUrl).into(imageTarget)
+                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(imageTarget)
                     val amiiboTagId = amiiboId
                     imageAmiibo!!.setOnClickListener {
                         val bundle = Bundle()
@@ -2280,13 +2268,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     items.sort()
                     android.app.AlertDialog.Builder(this)
                         .setTitle(R.string.pref_amiibo_characters)
-                        .setAdapter(object : ArrayAdapter<Character>(this,
-                            android.R.layout.simple_list_item_2, android.R.id.text1, items
+                        .setAdapter(object : ArrayAdapter<Character>(
+                            this, android.R.layout.simple_list_item_2, android.R.id.text1, items
                         ) {
                             override fun getView(
-                                position: Int,
-                                convertView: View?,
-                                parent: ViewGroup
+                                position: Int, convertView: View?, parent: ViewGroup
                             ): View {
                                 val view = super.getView(position, convertView, parent)
                                 val text1 = view.findViewById<TextView>(android.R.id.text1)
@@ -2312,12 +2298,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                     android.app.AlertDialog.Builder(this)
                         .setTitle(R.string.pref_amiibo_types)
-                        .setAdapter(
-                            ArrayAdapter(
-                                this,
-                                android.R.layout.simple_list_item_1, items
-                            ), null
-                        )
+                        .setAdapter(ArrayAdapter(
+                                this, android.R.layout.simple_list_item_1, items
+                        ), null)
                         .setPositiveButton(R.string.close, null)
                         .show()
                 }
@@ -2347,7 +2330,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
     private fun getAdapterStats(amiiboManager: AmiiboManager): IntArray {
-        if (null != amiibosView && null != amiibosView!!.adapter && amiibosView!!.adapter is BrowserAdapter) {
+        if (null != amiibosView && null != amiibosView!!.adapter
+            && amiibosView!!.adapter is BrowserAdapter) {
             val adapter = amiibosView!!.adapter as BrowserAdapter?
             val size = adapter!!.itemCount
             var count = 0

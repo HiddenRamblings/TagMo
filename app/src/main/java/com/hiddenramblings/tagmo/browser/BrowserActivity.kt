@@ -680,11 +680,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         popup.menu.findItem(R.id.mnu_scan).isEnabled = false
         popup.menu.findItem(R.id.mnu_backup).isEnabled = false
         popup.menu.findItem(R.id.mnu_validate).isEnabled = false
-        popup.menu.findItem(R.id.mnu_qr_code).isEnabled = false
-//        popup.menu.findItem(R.id.mnu_lego).isEnabled = false
-        val joyConItem = popup.menu.findItem(R.id.mnu_joy_con)
-        joyConItem.isEnabled = false
-        joyConItem.isVisible = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
+        popup.menu.findItem(R.id.mnu_lego).isEnabled = false
+        val qrCode = popup.menu.findItem(R.id.mnu_qr_code)
+        qrCode.isEnabled = false
+        qrCode.isVisible = Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)
         popup.show()
         val popupHandler: Handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -693,48 +692,47 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
         popupHandler.postDelayed({
             var baseDelay = 0
-            if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
                 baseDelay = 75
-                popupHandler.sendEmptyMessageDelayed(R.id.mnu_joy_con, baseDelay.toLong())
+                popupHandler.sendEmptyMessageDelayed(R.id.mnu_qr_code, baseDelay.toLong())
             }
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_qr_code, (75 + baseDelay).toLong())
-//            popupHandler.sendEmptyMessageDelayed(R.id.mnu_lego, (75 + baseDelay).toLong())
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_lego, (75 + baseDelay).toLong())
             popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, (175 + baseDelay).toLong())
             popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, (275 + baseDelay).toLong())
             popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, (375 + baseDelay).toLong())
         }, 275)
         popup.setOnMenuItemClickListener { item: MenuItem ->
-            if (item.itemId == R.id.mnu_scan) {
-                onNFCActivity.launch(
-                    Intent(this, NfcActivity::class.java)
-                        .setAction(NFCIntent.ACTION_SCAN_TAG)
-                )
-                return@setOnMenuItemClickListener true
-            } else if (item.itemId == R.id.mnu_backup) {
-                val backup = Intent(this, NfcActivity::class.java)
-                backup.action = NFCIntent.ACTION_BACKUP_AMIIBO
-                onBackupActivity.launch(backup)
-                return@setOnMenuItemClickListener true
-            } else if (item.itemId == R.id.mnu_validate) {
-                onValidateActivity.launch(
-                    Intent(this, NfcActivity::class.java)
-                        .setAction(NFCIntent.ACTION_SCAN_TAG)
-                )
-                return@setOnMenuItemClickListener true
-            } else if (item.itemId == R.id.mnu_qr_code) {
-                startActivity(Intent(this, QRCodeScanner::class.java))
-                return@setOnMenuItemClickListener true
-//            } else if (item.itemId == R.id.mnu_lego) {
-//                Toasty(this).Short(R.string.notice_incomplete)
-//                return@setOnMenuItemClickListener true
-            } else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
-                && item.itemId == R.id.mnu_joy_con
-            ) {
-                Toasty(this).Short(R.string.notice_incomplete)
-                onShowJoyConFragment()
-                return@setOnMenuItemClickListener true
+            when (item.itemId) {
+                R.id.mnu_scan -> {
+                    onNFCActivity.launch(
+                        Intent(this, NfcActivity::class.java)
+                            .setAction(NFCIntent.ACTION_SCAN_TAG)
+                    )
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_backup -> {
+                    val backup = Intent(this, NfcActivity::class.java)
+                    backup.action = NFCIntent.ACTION_BACKUP_AMIIBO
+                    onBackupActivity.launch(backup)
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_validate -> {
+                    onValidateActivity.launch(
+                        Intent(this, NfcActivity::class.java)
+                            .setAction(NFCIntent.ACTION_SCAN_TAG)
+                    )
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_lego -> {
+                    Toasty(this).Short(R.string.notice_incomplete)
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_qr_code -> {
+                    startActivity(Intent(this, QRCodeScanner::class.java))
+                    return@setOnMenuItemClickListener true
+                }
+                else -> false
             }
-            false
         }
     }
 
@@ -781,18 +779,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             when (filterType) {
                 FILTER.CHARACTER -> {
                     val character = amiibo.character
-                    if (null != character &&
-                        Amiibo.matchesGameSeriesFilter(
-                            amiibo.gameSeries,
-                            settings!!.getFilter(FILTER.GAME_SERIES)
-                        ) &&
-                        Amiibo.matchesAmiiboSeriesFilter(
-                            amiibo.amiiboSeries,
-                            settings!!.getFilter(FILTER.AMIIBO_SERIES)
-                        ) &&
-                        Amiibo.matchesAmiiboTypeFilter(
-                            amiibo.amiiboType,
-                            settings!!.getFilter(FILTER.AMIIBO_TYPE)
+                    if (null != character && Amiibo.matchesGameSeriesFilter(
+                            amiibo.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                        ) && Amiibo.matchesAmiiboSeriesFilter(
+                            amiibo.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                        ) && Amiibo.matchesAmiiboTypeFilter(
+                            amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                         )
                     ) {
                         if (character.name == filter) items.add(amiibo.id)
@@ -800,18 +792,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 FILTER.GAME_SERIES -> {
                     val gameSeries = amiibo.gameSeries
-                    if (null != gameSeries &&
-                        Amiibo.matchesCharacterFilter(
-                            amiibo.character,
-                            settings!!.getFilter(FILTER.CHARACTER)
-                        ) &&
-                        Amiibo.matchesAmiiboSeriesFilter(
-                            amiibo.amiiboSeries,
-                            settings!!.getFilter(FILTER.AMIIBO_SERIES)
-                        ) &&
-                        Amiibo.matchesAmiiboTypeFilter(
-                            amiibo.amiiboType,
-                            settings!!.getFilter(FILTER.AMIIBO_TYPE)
+                    if (null != gameSeries && Amiibo.matchesCharacterFilter(
+                            amiibo.character, settings!!.getFilter(FILTER.CHARACTER)
+                        ) && Amiibo.matchesAmiiboSeriesFilter(
+                            amiibo.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                        ) && Amiibo.matchesAmiiboTypeFilter(
+                            amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                         )
                     ) {
                         if (gameSeries.name == filter) items.add(amiibo.id)
@@ -819,18 +805,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 FILTER.AMIIBO_SERIES -> {
                     val amiiboSeries = amiibo.amiiboSeries
-                    if (null != amiiboSeries &&
-                        Amiibo.matchesGameSeriesFilter(
-                            amiibo.gameSeries,
-                            settings!!.getFilter(FILTER.GAME_SERIES)
-                        ) &&
-                        Amiibo.matchesCharacterFilter(
-                            amiibo.character,
-                            settings!!.getFilter(FILTER.CHARACTER)
-                        ) &&
-                        Amiibo.matchesAmiiboTypeFilter(
-                            amiibo.amiiboType,
-                            settings!!.getFilter(FILTER.AMIIBO_TYPE)
+                    if (null != amiiboSeries && Amiibo.matchesGameSeriesFilter(
+                            amiibo.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                        ) && Amiibo.matchesCharacterFilter(
+                            amiibo.character, settings!!.getFilter(FILTER.CHARACTER)
+                        ) && Amiibo.matchesAmiiboTypeFilter(
+                            amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                         )
                     ) {
                         if (amiiboSeries.name == filter) items.add(amiibo.id)
@@ -838,38 +818,25 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 FILTER.AMIIBO_TYPE -> {
                     val amiiboType = amiibo.amiiboType
-                    if (null != amiiboType &&
-                        Amiibo.matchesGameSeriesFilter(
-                            amiibo.gameSeries,
-                            settings!!.getFilter(FILTER.GAME_SERIES)
-                        ) &&
-                        Amiibo.matchesCharacterFilter(
-                            amiibo.character,
-                            settings!!.getFilter(FILTER.CHARACTER)
-                        ) &&
-                        Amiibo.matchesAmiiboSeriesFilter(
-                            amiibo.amiiboSeries,
-                            settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                    if (null != amiiboType && Amiibo.matchesGameSeriesFilter(
+                            amiibo.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                        ) && Amiibo.matchesCharacterFilter(
+                            amiibo.character, settings!!.getFilter(FILTER.CHARACTER)
+                        ) && Amiibo.matchesAmiiboSeriesFilter(
+                            amiibo.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
                         )
                     ) {
                         if (amiiboType.name == filter) items.add(amiibo.id)
                     }
                 }
                 FILTER.GAME_TITLES -> if (Amiibo.matchesGameSeriesFilter(
-                        amiibo.gameSeries,
-                        settings!!.getFilter(FILTER.GAME_SERIES)
-                    ) &&
-                    Amiibo.matchesCharacterFilter(
-                        amiibo.character,
-                        settings!!.getFilter(FILTER.CHARACTER)
-                    ) &&
-                    Amiibo.matchesAmiiboSeriesFilter(
-                        amiibo.amiiboSeries,
-                        settings!!.getFilter(FILTER.AMIIBO_SERIES)
-                    ) &&
-                    Amiibo.matchesAmiiboTypeFilter(
-                        amiibo.amiiboType,
-                        settings!!.getFilter(FILTER.AMIIBO_TYPE)
+                        amiibo.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                    ) && Amiibo.matchesCharacterFilter(
+                        amiibo.character, settings!!.getFilter(FILTER.CHARACTER)
+                    ) && Amiibo.matchesAmiiboSeriesFilter(
+                        amiibo.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                    ) && Amiibo.matchesAmiiboTypeFilter(
+                        amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                     )
                 ) {
                     if (null != gamesManager) items.addAll(
@@ -889,20 +856,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         subMenu!!.clear()
         settings!!.amiiboManager ?: return true
         val items: MutableSet<String> = HashSet()
-        for (amiibo in settings!!.amiiboManager!!.amiibos.values) {
-            val character = amiibo.character
-            if (null != character &&
-                Amiibo.matchesGameSeriesFilter(
-                    amiibo.gameSeries,
-                    settings!!.getFilter(FILTER.GAME_SERIES)
-                ) &&
-                Amiibo.matchesAmiiboSeriesFilter(
-                    amiibo.amiiboSeries,
-                    settings!!.getFilter(FILTER.AMIIBO_SERIES)
-                ) &&
-                Amiibo.matchesAmiiboTypeFilter(
-                    amiibo.amiiboType,
-                    settings!!.getFilter(FILTER.AMIIBO_TYPE)
+        settings!!.amiiboManager!!.amiibos.values.forEach {
+            val character = it.character
+            if (null != character && Amiibo.matchesGameSeriesFilter(
+                    it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                ) && Amiibo.matchesAmiiboSeriesFilter(
+                    it.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                ) && Amiibo.matchesAmiiboTypeFilter(
+                    it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                 )
             ) {
                 items.add(character.name)
@@ -931,20 +892,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         subMenu!!.clear()
         settings!!.amiiboManager ?: return false
         val items: MutableSet<String> = HashSet()
-        for (amiibo in settings!!.amiiboManager!!.amiibos.values) {
-            val gameSeries = amiibo.gameSeries
-            if (null != gameSeries &&
-                Amiibo.matchesCharacterFilter(
-                    amiibo.character,
-                    settings!!.getFilter(FILTER.CHARACTER)
-                ) &&
-                Amiibo.matchesAmiiboSeriesFilter(
-                    amiibo.amiiboSeries,
-                    settings!!.getFilter(FILTER.AMIIBO_SERIES)
-                ) &&
-                Amiibo.matchesAmiiboTypeFilter(
-                    amiibo.amiiboType,
-                    settings!!.getFilter(FILTER.AMIIBO_TYPE)
+        settings!!.amiiboManager!!.amiibos.values.forEach {
+            val gameSeries = it.gameSeries
+            if (null != gameSeries && Amiibo.matchesCharacterFilter(
+                    it.character, settings!!.getFilter(FILTER.CHARACTER)
+                ) && Amiibo.matchesAmiiboSeriesFilter(
+                    it.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                ) && Amiibo.matchesAmiiboTypeFilter(
+                    it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                 )
             ) {
                 items.add(gameSeries.name)
@@ -973,20 +928,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         subMenu!!.clear()
         val amiiboManager = settings!!.amiiboManager ?: return true
         val items: MutableSet<String> = HashSet()
-        for (amiibo in amiiboManager.amiibos.values) {
-            val amiiboSeries = amiibo.amiiboSeries
-            if (null != amiiboSeries &&
-                Amiibo.matchesGameSeriesFilter(
-                    amiibo.gameSeries,
-                    settings!!.getFilter(FILTER.GAME_SERIES)
-                ) &&
-                Amiibo.matchesCharacterFilter(
-                    amiibo.character,
-                    settings!!.getFilter(FILTER.CHARACTER)
-                ) &&
-                Amiibo.matchesAmiiboTypeFilter(
-                    amiibo.amiiboType,
-                    settings!!.getFilter(FILTER.AMIIBO_TYPE)
+        amiiboManager.amiibos.values.forEach {
+            val amiiboSeries = it.amiiboSeries
+            if (null != amiiboSeries && Amiibo.matchesGameSeriesFilter(
+                    it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                ) && Amiibo.matchesCharacterFilter(
+                    it.character, settings!!.getFilter(FILTER.CHARACTER)
+                ) && Amiibo.matchesAmiiboTypeFilter(
+                    it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                 )
             ) {
                 items.add(amiiboSeries.name)
@@ -1015,20 +964,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         subMenu!!.clear()
         val amiiboManager = settings!!.amiiboManager ?: return true
         val items: MutableSet<AmiiboType> = HashSet()
-        for (amiibo in amiiboManager.amiibos.values) {
-            val amiiboType = amiibo.amiiboType
-            if (null != amiiboType &&
-                Amiibo.matchesGameSeriesFilter(
-                    amiibo.gameSeries,
-                    settings!!.getFilter(FILTER.GAME_SERIES)
-                ) &&
-                Amiibo.matchesCharacterFilter(
-                    amiibo.character,
-                    settings!!.getFilter(FILTER.CHARACTER)
-                ) &&
-                Amiibo.matchesAmiiboSeriesFilter(
-                    amiibo.amiiboSeries,
-                    settings!!.getFilter(FILTER.AMIIBO_SERIES)
+        amiiboManager.amiibos.values.forEach {
+            val amiiboType = it.amiiboType
+            if (null != amiiboType && Amiibo.matchesGameSeriesFilter(
+                    it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                ) && Amiibo.matchesCharacterFilter(
+                    it.character, settings!!.getFilter(FILTER.CHARACTER)
+                ) && Amiibo.matchesAmiiboSeriesFilter(
+                    it.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
                 )
             ) {
                 items.add(amiiboType)
@@ -1058,16 +1001,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         settings!!.amiiboManager ?: return
         val gamesManager = settings!!.gamesManager
         val items: MutableSet<String> = HashSet()
-        if (null != gamesManager) {
-            for (gameTitle in gamesManager.gameTitles) {
-                items.add(gameTitle.name)
-            }
-        }
+        gamesManager?.gameTitles!!.forEach { items.add(it.name) }
         val list = ArrayList(items)
         list.sort()
-        for (item in list) {
-            subMenu.add(R.id.filter_game_titles_group, Menu.NONE, 0, item)
-                .setChecked(item == settings!!.getFilter(FILTER.GAME_TITLES))
+        list.forEach {
+            subMenu.add(R.id.filter_game_titles_group, Menu.NONE, 0, it)
+                .setChecked(it == settings!!.getFilter(FILTER.GAME_TITLES))
                 .setOnMenuItemClickListener(onFilterGameTitlesItemClick)
         }
         subMenu.setGroupCheckable(R.id.filter_game_titles_group, true, true)
@@ -1516,6 +1455,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 settings!!.isRecursiveEnabled = !settings!!.isRecursiveEnabled
                 settings!!.notifyChanges()
             }
+            R.id.mnu_joy_con -> {
+                Toasty(this).Short(R.string.notice_incomplete)
+                if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) onShowJoyConFragment()
+            }
             R.id.capture_logcat -> {
                 onCaptureLogcatClicked()
             }
@@ -1559,6 +1502,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             menuViewLarge = toolbar.menu.findItem(R.id.view_large)
             menuViewImage = toolbar.menu.findItem(R.id.view_image)
             menuRecursiveFiles = toolbar.menu.findItem(R.id.recursive)
+            toolbar.menu.findItem(R.id.mnu_joy_con).isVisible =
+                Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
         }
         onSortChanged()
         onViewChanged()
@@ -1595,6 +1540,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         menuViewLarge = menu.findItem(R.id.view_large)
         menuViewImage = menu.findItem(R.id.view_image)
         menuRecursiveFiles = menu.findItem(R.id.recursive)
+        menu.findItem(R.id.mnu_joy_con).isVisible =
+            Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
         if (null == settings) return false
         onSortChanged()
         onViewChanged()

@@ -183,6 +183,9 @@
     <string name="storage_unavailable">Device storage inaccessible!</string>
     <string name="allow">Allow</string>
 
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+
     <string name="qr_type">QR Format</string>
     <string name="qr_raw">QR Text</string>
     <string name="qr_bytes">QR Data</string>

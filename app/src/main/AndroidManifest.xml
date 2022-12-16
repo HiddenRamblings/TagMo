@@ -108,6 +108,12 @@
         <activity
             android:name=".amiibo.tagdata.TagDataEditor"
             android:theme="@style/DialogTheme.NoActionBar" />
+        <activity
+            android:name=".qrcode.QRCodeScanner"
+            android:label="@string/qr_code_scanner"
+            android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
+            android:launchMode="singleTop">
+        </activity>
         <service
             android:name=".bluetooth.FlaskGattService" />
         <service

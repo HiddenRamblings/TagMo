@@ -42,6 +42,7 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.TagArray
@@ -311,6 +312,7 @@ class QRCodeScanner : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.qr_code_menu, menu)
         setOptionalIconsVisible(menu)
+        menu.findItem(R.id.mnu_camera).isVisible = !BuildConfig.WEAR_OS
         return super.onCreateOptionsMenu(menu)
     }
 

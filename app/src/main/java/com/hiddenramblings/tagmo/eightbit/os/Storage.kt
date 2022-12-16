@@ -116,12 +116,11 @@ object Storage : Environment() {
     private fun setFileMounts(): File {
         val extStorage = externalMounts
         if (extStorage.isNotEmpty()) {
-            for (sd in extStorage) {
+            extStorage.forEach {
                 // Workaround for WRITE_MEDIA_STORAGE
-                val sdCardPath = sd.replace("mnt/media_rw", "storage")
+                val sdCardPath = it.replace("mnt/media_rw", "storage")
                 if (sdCardPath != getExternalStorageDirectory().absolutePath
-                    && File(sdCardPath).canRead()
-                ) {
+                    && File(sdCardPath).canRead()) {
                     isPhysicalAvailable = true
                     return File(sdCardPath)
                 }
@@ -135,11 +134,11 @@ object Storage : Environment() {
         var physical: File? = null
         try {
             if (!File(STORAGE_ROOT).listFiles().isNullOrEmpty()) {
-                for (directory in File(STORAGE_ROOT).listFiles()!!) {
-                    if (directory.absolutePath.endsWith("emulated")) emulated = File(
-                        directory,
-                        "0"
-                    ) else if (!directory.absolutePath.endsWith("self")) physical = directory
+                File(STORAGE_ROOT).listFiles()!!.forEach {
+                    if (it.absolutePath.endsWith("emulated"))
+                        emulated = File(it, "0")
+                    else if (!it.absolutePath.endsWith("self"))
+                        physical = it
                 }
                 // Force a possible failure to prevent crash later
                 Log.d("EMULATED", (emulated as File).absolutePath)
@@ -189,11 +188,11 @@ object Storage : Environment() {
         var physical: File? = null
         try {
             if (!getStorageDirectory().listFiles().isNullOrEmpty()) {
-                for (directory in getStorageDirectory().listFiles()!!) {
-                    if (directory.absolutePath.endsWith("emulated")) emulated = File(
-                        directory,
-                        "0"
-                    ) else if (!directory.absolutePath.endsWith("self")) physical = directory
+                getStorageDirectory().listFiles()!!.forEach {
+                    if (it.absolutePath.endsWith("emulated"))
+                        emulated = File(it, "0")
+                    else if (!it.absolutePath.endsWith("self"))
+                        physical = it
                 }
                 // Force a possible failure to prevent crash later
                 Log.d("EMULATED", (emulated as File).absolutePath)

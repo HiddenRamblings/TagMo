@@ -169,8 +169,8 @@ open class BrowserSettings : Parcelable {
     }
 
     fun notifyChanges() {
-        for (listener in listeners) {
-            listener?.onBrowserSettingsChanged(this, oldBrowserSettings)
+        listeners.forEach {
+            it?.onBrowserSettingsChanged(this, oldBrowserSettings)
         }
         oldBrowserSettings = copy()
     }

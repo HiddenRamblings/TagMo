@@ -137,8 +137,8 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
                         iapList.add(getIAP(50))
                         iapList.add(getIAP(75))
                         iapList.add(getIAP(99))
-                        for (productId in iapList) {
-                            val productList = Product.newBuilder().setProductId(productId)
+                        iapList.forEach {
+                            val productList = Product.newBuilder().setProductId(it)
                                 .setProductType(BillingClient.ProductType.INAPP).build()
                             val params = QueryProductDetailsParams
                                 .newBuilder().setProductList(listOf(productList))
@@ -161,10 +161,8 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
                     subList.add(getSub(50))
                     subList.add(getSub(75))
                     subList.add(getSub(99))
-                    for (productId in subList) {
-                        val productList = Product.newBuilder().setProductId(
-                            productId
-                        )
+                    subList.forEach {
+                        val productList = Product.newBuilder().setProductId(it)
                             .setProductType(BillingClient.ProductType.SUBS).build()
                         val params = QueryProductDetailsParams
                             .newBuilder().setProductList(listOf(productList))

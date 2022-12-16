@@ -219,12 +219,14 @@ class FoomiiboAdapter(
                 filterResults.values = data
             }
             settings.query = query
-            if (null != settings.amiiboManager) data =
-                ArrayList(settings.amiiboManager?.amiibos!!.values) else data.clear()
+            if (null != settings.amiiboManager)
+                data = ArrayList(settings.amiiboManager?.amiibos!!.values)
+            else
+                data.clear()
             val tempList = ArrayList<Amiibo>()
             val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
-            for (amiibo in data) {
-                if (settings.amiiboContainsQuery(amiibo, queryText)) tempList.add(amiibo)
+            data.forEach {
+                if (settings.amiiboContainsQuery(it, queryText)) tempList.add(it)
             }
             filterResults.count = tempList.size
             filterResults.values = tempList
@@ -239,8 +241,8 @@ class FoomiiboAdapter(
                 Collections.sort(filteredData, AmiiboComparator(settings))
                 val missingFiles = ArrayList<Amiibo>()
                 val amiiboIds = HashSet<Long>()
-                for (amiiboFile in settings.amiiboFiles) {
-                    amiiboIds.add(amiiboFile!!.id)
+                settings.amiiboFiles.forEach {
+                    amiiboIds.add(it!!.id)
                 }
                 val iterator = filteredData!!.iterator()
                 while (iterator.hasNext()) {

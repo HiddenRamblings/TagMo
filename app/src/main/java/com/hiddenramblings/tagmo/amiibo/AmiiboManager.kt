@@ -375,13 +375,13 @@ class AmiiboManager {
             val amiiboFiles = ArrayList<AmiiboFile?>()
             val files = rootFolder?.listFiles { _: File?, name: String -> binFileMatches(name) }
             if (!files.isNullOrEmpty()) {
-                for (file in files) {
+                files.forEach {
                     if (Thread.currentThread().isInterrupted) return amiiboFiles
                     try {
-                        val data = TagArray.getValidatedFile(keyManager, file)
+                        val data = TagArray.getValidatedFile(keyManager, it)
                         if (null != data) {
                             amiiboFiles.add(
-                                AmiiboFile(file, Amiibo.dataToId(data), data)
+                                AmiiboFile(it, Amiibo.dataToId(data), data)
                             )
                         }
                     } catch (e: Exception) {
@@ -391,9 +391,9 @@ class AmiiboManager {
             } else if (recursiveFiles) {
                 val directories = rootFolder?.listFiles()
                 if (directories == null || directories.isEmpty()) return amiiboFiles
-                for (directory in directories) {
-                    if (directory.isDirectory) amiiboFiles
-                        .addAll(listAmiibos(keyManager, directory, true))
+                directories.forEach {
+                    if (it.isDirectory) amiiboFiles
+                        .addAll(listAmiibos(keyManager, it, true))
                 }
             }
             return amiiboFiles
@@ -407,14 +407,14 @@ class AmiiboManager {
             val uris = AmiiboDocument(context!!)
                 .listFiles(rootFolder.uri, recursiveFiles)
             if (uris.isEmpty()) return amiiboFiles
-            for (uri in uris) {
+            uris.forEach {
                 if (Thread.currentThread().isInterrupted) return amiiboFiles
                 try {
-                    val data = TagArray.getValidatedDocument(keyManager, uri)
+                    val data = TagArray.getValidatedDocument(keyManager, it)
                     if (null != data) {
                         amiiboFiles.add(
                             AmiiboFile(
-                                DocumentFile.fromSingleUri(context, uri),
+                                DocumentFile.fromSingleUri(context, it),
                                 Amiibo.dataToId(data), data
                             )
                         )

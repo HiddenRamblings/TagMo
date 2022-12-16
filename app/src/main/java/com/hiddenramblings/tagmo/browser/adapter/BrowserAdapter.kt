@@ -243,21 +243,20 @@ class BrowserAdapter(
             val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
             val amiiboManager = settings.amiiboManager
             val amiiboFiles = settings.amiiboFiles
-            for (amiiboFile in amiiboFiles) {
+            amiiboFiles.forEach {
                 var add = false
                 if (null != amiiboManager) {
-                    var amiibo = amiiboManager.amiibos[amiiboFile!!.id]
+                    var amiibo = amiiboManager.amiibos[it!!.id]
                     if (null == amiibo) amiibo = Amiibo(
-                        amiiboManager, amiiboFile.id,
-                        null, null
+                        amiiboManager, it.id, null, null
                     )
                     add = settings.amiiboContainsQuery(amiibo, queryText)
                 }
-                if (!add && null != amiiboFile?.docUri)
-                    add = pathContainsQuery(amiiboFile.docUri.toString(), queryText)
-                if (!add && null != amiiboFile?.filePath)
-                    add = pathContainsQuery(amiiboFile.filePath!!.absolutePath, queryText)
-                if (add) tempList.add(amiiboFile!!)
+                if (!add && null != it?.docUri)
+                    add = pathContainsQuery(it.docUri.toString(), queryText)
+                if (!add && null != it?.filePath)
+                    add = pathContainsQuery(it.filePath!!.absolutePath, queryText)
+                if (add) tempList.add(it!!)
             }
             filterResults.count = tempList.size
             filterResults.values = tempList

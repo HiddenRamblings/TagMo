@@ -66,22 +66,17 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             val installer = activity.applicationContext
                 .packageManager.packageInstaller
-            for (session in installer.mySessions) {
+            installer.mySessions.forEach {
                 try {
-                    installer.abandonSession(session.sessionId)
-                } catch (ignored: Exception) {
-                }
+                    installer.abandonSession(it.sessionId)
+                } catch (ignored: Exception) { }
             }
         }
         Executors.newSingleThreadExecutor().execute {
             val files = activity.externalCacheDir!!.listFiles {
                     _: File?, name: String -> name.lowercase().endsWith(".apk")
             }
-            if (null != files && files.isNotEmpty()) {
-                for (file in files) {
-                    file.delete()
-                }
-            }
+            files?.forEach { if (!it.isDirectory) it.delete() }
         }
         Executors.newSingleThreadExecutor().execute {
             JSONExecutor(

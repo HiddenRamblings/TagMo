@@ -36,9 +36,9 @@ object TagArray {
         val context = TagMo.appContext
         var type = context.getString(R.string.unknown_type)
         if (null == tag) return type
-        for (tech in tag.techList) {
+        tag.techList.forEach {
             when {
-                MifareClassic::class.java.name == tech -> {
+                MifareClassic::class.java.name == it -> {
                     type = when (MifareClassic.get(tag).type) {
                         MifareClassic.TYPE_CLASSIC -> context.getString(R.string.mifare_classic)
                         MifareClassic.TYPE_PLUS -> context.getString(R.string.mifare_plus)
@@ -47,7 +47,7 @@ object TagArray {
                     }
                     return type
                 }
-                MifareUltralight::class.java.name == tech -> {
+                MifareUltralight::class.java.name == it -> {
                     type = when (MifareUltralight.get(tag).type) {
                         MifareUltralight.TYPE_ULTRALIGHT -> context.getString(R.string.mifare_ultralight)
                         MifareUltralight.TYPE_ULTRALIGHT_C -> context.getString(R.string.mifare_ultralight_c)
@@ -55,13 +55,13 @@ object TagArray {
                     }
                     return type
                 }
-                IsoDep::class.java.name == tech -> {
+                IsoDep::class.java.name == it -> {
                     return context.getString(R.string.isodep)
                 }
-                Ndef::class.java.name == tech -> {
+                Ndef::class.java.name == it -> {
                     return context.getString(R.string.ndef)
                 }
-                NdefFormatable::class.java.name == tech -> {
+                NdefFormatable::class.java.name == it -> {
                     return context.getString(R.string.ndef_formatable)
                 }
             }
@@ -113,10 +113,8 @@ object TagArray {
     @JvmStatic
     fun bytesToHex(bytes: ByteArray?): String {
         val sb = java.lang.StringBuilder()
-        if (null != bytes) {
-            for (b in bytes) {
-                sb.append(String.format("%02X", b))
-            }
+        bytes?.forEach {
+            sb.append(String.format("%02X", it))
         }
         return sb.toString()
     }

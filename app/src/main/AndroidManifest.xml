@@ -26,6 +26,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature android:name="android.hardware.camera.any" android:required="false"/>
     <uses-feature android:name="android.software.webview" android:required="false"/>
@@ -34,7 +35,10 @@
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
     <uses-feature android:name="${wearUsesFeature}" />
 
-    <uses-sdk tools:overrideLibrary="androidx.wear, com.google.mlkit.vision.barcode.bundled, com.google.mlkit.vision.barcode.common, com.google.mlkit.vision.common, com.google.mlkit.common, com.google.mlkit.vision.interfaces" />
+    <uses-sdk tools:overrideLibrary="androidx.wear,
+    com.google.mlkit.vision.barcode.bundled, com.google.mlkit.vision.barcode.common,
+    com.google.mlkit.vision.common, com.google.mlkit.common, com.google.mlkit.vision.interfaces,
+    androidx.camera.camera2, androidx.camera.core, androidx.camera.view, androidx.camera.lifecycle" />
 
     <queries>
         <package android:name="com.hiddenramblings.tagmo.eightbit" />

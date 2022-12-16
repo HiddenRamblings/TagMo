@@ -34,8 +34,8 @@ class Checksum {
         val checksum = ByteArray(212) // 0xD4
         System.arraycopy(appData.array(), 0xE0, checksum, 0, checksum.size)
         var t = 0x0
-        for (k in checksum) {
-            t = t shr 0x8 xor u0[k.toInt() xor t and 0xFF].toInt()
+        checksum.forEach {
+            t = t shr 0x8 xor u0[it.toInt() xor t and 0xFF].toInt()
         }
         return t xor -0x1
     }

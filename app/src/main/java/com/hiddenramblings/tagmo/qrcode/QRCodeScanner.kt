@@ -36,6 +36,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
@@ -59,7 +60,8 @@ class QRCodeScanner : AppCompatActivity() {
     private lateinit var qrTypeSpinner: Spinner
     private var captureUri: Uri? = null
 
-    private var previewView: PreviewView? = null
+    private lateinit var barcodePreview: AppCompatImageView
+    private var cameraPreview: PreviewView? = null
     private var cameraProvider: ProcessCameraProvider? = null
     private var cameraSelector: CameraSelector? = null
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -88,8 +90,9 @@ class QRCodeScanner : AppCompatActivity() {
             ).build()
         )
 
+        barcodePreview = findViewById(R.id.barcodePreview)
         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
-            previewView = findViewById(R.id.preview_view)
+            cameraPreview = findViewById(R.id.cameraPreview)
         qrTypeSpinner = findViewById(R.id.txtTypeValue)
         val adapter = ArrayAdapter.createFromResource(
             this, R.array.qr_code_type, R.layout.spinner_text
@@ -180,7 +183,8 @@ class QRCodeScanner : AppCompatActivity() {
                     }
                     if (null != bitmap) {
                         runOnUiThread {
-                            findViewById<AppCompatImageView>(R.id.imageQR).setImageBitmap(bitmap)
+                            barcodePreview.isVisible = true
+                            barcodePreview.setImageBitmap(bitmap)
                         }
                         scanBarcodes(InputImage.fromBitmap(bitmap, rotation))
                     }
@@ -227,6 +231,7 @@ class QRCodeScanner : AppCompatActivity() {
                 this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)
             )[CameraXViewModel::class.java].processCameraProvider.observe(this) {
                 cameraProvider = it
+                runOnUiThread { barcodePreview.isVisible = false }
                 bindCameraUseCases()
             }
         }
@@ -240,16 +245,14 @@ class QRCodeScanner : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun bindPreviewUseCase() {
-        if (cameraProvider == null) return
-        if (previewUseCase != null) {
-            cameraProvider!!.unbind(previewUseCase)
-        }
+        if (null == cameraProvider) return
+        if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
 
         previewUseCase = Preview.Builder()
             .setTargetAspectRatio(screenAspectRatio)
-            .setTargetRotation(previewView!!.display.rotation)
+            .setTargetRotation(cameraPreview!!.display.rotation)
             .build()
-        previewUseCase!!.setSurfaceProvider(previewView!!.surfaceProvider)
+        previewUseCase!!.setSurfaceProvider(cameraPreview!!.surfaceProvider)
 
         try {
             cameraProvider!!.bindToLifecycle(
@@ -264,14 +267,12 @@ class QRCodeScanner : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun bindAnalyseUseCase() {
-        if (cameraProvider == null) return
-        if (analysisUseCase != null) {
-            cameraProvider!!.unbind(analysisUseCase)
-        }
+        if (null == cameraProvider) return
+        if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
 
         analysisUseCase = ImageAnalysis.Builder()
             .setTargetAspectRatio(screenAspectRatio)
-            .setTargetRotation(previewView!!.display.rotation)
+            .setTargetRotation(cameraPreview!!.display.rotation)
             .build()
 
         analysisUseCase?.setAnalyzer(Executors.newSingleThreadExecutor()) {
@@ -297,11 +298,7 @@ class QRCodeScanner : AppCompatActivity() {
         )
         barcodeScanner?.process(image)!!.addOnSuccessListener { barcodes ->
             barcodes.forEach { processBarcode(it) }
-            runOnUiThread {
-                findViewById<AppCompatImageView>(R.id.imageQR).setImageBitmap(image.bitmapInternal)
-            }
-        }.addOnFailureListener { Debug.Error(it)
-        }.addOnCompleteListener { imageProxy.close() }
+        }.addOnFailureListener { Debug.Error(it) }.addOnCompleteListener { imageProxy.close() }
     }
 
     @SuppressLint("RestrictedApi")
@@ -337,6 +334,10 @@ class QRCodeScanner : AppCompatActivity() {
                 }
             }
             R.id.mnu_gallery -> {
+                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != cameraProvider) {
+                    if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
+                    if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
+                }
                 onPickImage.launch(
                     Intent.createChooser(Intent(if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
                         Intent.ACTION_OPEN_DOCUMENT else Intent.ACTION_GET_CONTENT
@@ -347,6 +348,10 @@ class QRCodeScanner : AppCompatActivity() {
                         .putExtra("android.content.extra.FANCY", true), title))
             }
             R.id.mnu_generate -> {
+                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != cameraProvider) {
+                    if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
+                    if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
+                }
                 val typeArray = resources.getStringArray(R.array.qr_code_type)
                 val selection = when (qrTypeSpinner.selectedItem) {
                     typeArray[TYPE.UNKNOWN.ordinal] -> { QRGContents.Type.UNKNOWN }
@@ -396,7 +401,7 @@ class QRCodeScanner : AppCompatActivity() {
                 try {
                     val bitmap = qrgEncoder.bitmap
                     runOnUiThread {
-                        val image = findViewById<AppCompatImageView>(R.id.imageQR)
+                        val image = findViewById<AppCompatImageView>(R.id.barcodePreview)
                         image.setImageBitmap(bitmap)
                     }
                     scanBarcodes(InputImage.fromBitmap(bitmap, 0))

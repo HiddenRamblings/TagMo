@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="10dp">
+
+    <LinearLayout
+        android:id="@+id/qr_code_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageQR"
+        android:contentDescription="@string/imageview_amiibo"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginBottom="4dp" />
+
+    <View
+        android:id="@+id/imageDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/bottom_divider"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="2dp">
+
+            <TextView
+                android:id="@+id/txtTypeLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="@string/qr_type"
+                android:textColor="@color/tag_text"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="1dp"/>
+
+            <Spinner
+                android:id="@+id/txtTypeValue"
+                style="@style/TagEditor.Spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:gravity="end"
+                android:textColor="@color/tag_text"
+                android:textSize="18sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtRawLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="@string/qr_raw"
+                android:textColor="@color/tag_text"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="1dp"/>
+
+            <EditText
+                android:id="@+id/txtRawValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:gravity="end"
+                android:textColor="@color/tag_text"
+                android:textSize="14sp"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                tools:ignore="LabelFor,TextFields" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtBytesLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="@string/qr_bytes"
+                android:textColor="@color/tag_text"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="1dp"/>
+
+            <EditText
+                android:id="@+id/txtRawBytes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:gravity="end"
+                android:textColor="@color/tag_text"
+                android:textSize="14sp"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                tools:ignore="LabelFor,TextFields" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

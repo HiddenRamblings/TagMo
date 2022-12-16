@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/mnu_scanner"
+        android:title="@string/activate"
+        android:icon="@drawable/ic_baseline_qr_code_scanner_24"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_generate"
+        android:title="@string/activate"
+        android:icon="@drawable/ic_baseline_qr_code_24"
+        app:showAsAction="always"/>
+</menu>

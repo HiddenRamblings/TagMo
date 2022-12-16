@@ -86,6 +86,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.validateData
 import com.hiddenramblings.tagmo.nfctech.TagArray.writeBytesToDocument
 import com.hiddenramblings.tagmo.nfctech.TagArray.writeBytesToFile
 import com.hiddenramblings.tagmo.nfctech.TagReader
+import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.wajahatkarim3.easyflipviewpager.CardFlipPageTransformer2
 import eightbitlab.com.blurview.BlurView
@@ -676,15 +677,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun showPopupMenu(popup: PopupMenu) {
-        val scanItem = popup.menu.findItem(R.id.mnu_scan)
-        val backupItem = popup.menu.findItem(R.id.mnu_backup)
-        val validateItem = popup.menu.findItem(R.id.mnu_validate)
-        val legoItem = popup.menu.findItem(R.id.mnu_lego)
+        popup.menu.findItem(R.id.mnu_scan).isEnabled = false
+        popup.menu.findItem(R.id.mnu_backup).isEnabled = false
+        popup.menu.findItem(R.id.mnu_validate).isEnabled = false
+        popup.menu.findItem(R.id.mnu_qr_code).isEnabled = false
+//        popup.menu.findItem(R.id.mnu_lego).isEnabled = false
         val joyConItem = popup.menu.findItem(R.id.mnu_joy_con)
-        scanItem.isEnabled = false
-        backupItem.isEnabled = false
-        validateItem.isEnabled = false
-        legoItem.isEnabled = false
         joyConItem.isEnabled = false
         joyConItem.isVisible = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
         popup.show()
@@ -699,7 +697,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 baseDelay = 75
                 popupHandler.sendEmptyMessageDelayed(R.id.mnu_joy_con, baseDelay.toLong())
             }
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_lego, (75 + baseDelay).toLong())
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_qr_code, (75 + baseDelay).toLong())
+//            popupHandler.sendEmptyMessageDelayed(R.id.mnu_lego, (75 + baseDelay).toLong())
             popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, (175 + baseDelay).toLong())
             popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, (275 + baseDelay).toLong())
             popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, (375 + baseDelay).toLong())
@@ -707,10 +706,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         popup.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.mnu_scan) {
                 onNFCActivity.launch(
-                    Intent(
-                        this,
-                        NfcActivity::class.java
-                    ).setAction(NFCIntent.ACTION_SCAN_TAG)
+                    Intent(this, NfcActivity::class.java)
+                        .setAction(NFCIntent.ACTION_SCAN_TAG)
                 )
                 return@setOnMenuItemClickListener true
             } else if (item.itemId == R.id.mnu_backup) {
@@ -720,14 +717,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 return@setOnMenuItemClickListener true
             } else if (item.itemId == R.id.mnu_validate) {
                 onValidateActivity.launch(
-                    Intent(
-                        this, NfcActivity::class.java
-                    ).setAction(NFCIntent.ACTION_SCAN_TAG)
+                    Intent(this, NfcActivity::class.java)
+                        .setAction(NFCIntent.ACTION_SCAN_TAG)
                 )
                 return@setOnMenuItemClickListener true
-            } else if (item.itemId == R.id.mnu_lego) {
-                Toasty(this).Short(R.string.notice_incomplete)
+            } else if (item.itemId == R.id.mnu_qr_code) {
+                startActivity(Intent(this, QRCodeScanner::class.java))
                 return@setOnMenuItemClickListener true
+//            } else if (item.itemId == R.id.mnu_lego) {
+//                Toasty(this).Short(R.string.notice_incomplete)
+//                return@setOnMenuItemClickListener true
             } else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
                 && item.itemId == R.id.mnu_joy_con
             ) {

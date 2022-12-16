@@ -130,6 +130,10 @@
         </menu>
     </item>
     <item
+        android:id="@+id/mnu_joy_con"
+        android:icon="@drawable/ic_joy_cons_24dp"
+        android:title="@string/connect_joy_con"/>
+    <item
         android:id="@+id/capture_logcat"
         android:icon="@drawable/ic_support_required_24dp"
         android:title="@string/logcat_support"

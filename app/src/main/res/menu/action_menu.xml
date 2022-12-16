@@ -13,16 +13,12 @@
         android:id="@+id/mnu_validate"
         android:icon="@drawable/ic_baseline_compare_24dp"
         android:title="@string/validate_data"/>
-<!--    <item-->
-<!--        android:id="@+id/mnu_lego"-->
-<!--        android:icon="@drawable/ic_lego_face_24dp"-->
-<!--        android:title="@string/lego_dimensions"/>-->
+    <item
+        android:id="@+id/mnu_lego"
+        android:icon="@drawable/ic_lego_face_24dp"
+        android:title="@string/lego_dimensions"/>
     <item
         android:id="@+id/mnu_qr_code"
         android:icon="@drawable/ic_baseline_qr_code_2_24"
         android:title="@string/qr_code_scanner"/>
-    <item
-        android:id="@+id/mnu_joy_con"
-        android:icon="@drawable/ic_joy_cons_24dp"
-        android:title="@string/connect_joy_con"/>
 </menu>

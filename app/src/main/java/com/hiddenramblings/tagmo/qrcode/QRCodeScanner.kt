@@ -6,6 +6,8 @@
 
 package com.hiddenramblings.tagmo.qrcode
 
+import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -15,7 +17,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Base64
 import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
@@ -29,6 +30,7 @@ import androidmads.library.qrgenearator.QRGEncoder
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.AppCompatImageView
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -46,6 +48,7 @@ import javax.crypto.spec.SecretKeySpec
 class QRCodeScanner : AppCompatActivity() {
 
     private lateinit var qrTypeSpinner: Spinner
+    private var captureUri: Uri? = null
 
     private enum class TYPE {
         UNKNOWN, WIFI, URL, PRODUCT, TEXT, CALENDAR,
@@ -106,16 +109,15 @@ class QRCodeScanner : AppCompatActivity() {
                         findViewById<TextView>(R.id.txtRawBytes).setText(
                             TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE
                         )
-                        if (Debug.isNewer(Build.VERSION_CODES.KITKAT)) {
-                            try {
-                                decryptMii(barcode.rawBytes)
-                            } catch (ex: Exception) {
-                                Debug.Warn(ex)
-                            }
-                        }
                         qrTypeSpinner.requestFocus()
                     }
-
+                    if (Debug.isNewer(Build.VERSION_CODES.KITKAT)) {
+                        try {
+                            decryptMii(barcode.rawBytes)
+                        } catch (ex: Exception) {
+                            Debug.Warn(ex)
+                        }
+                    }
                 }
             }
             .addOnFailureListener { Debug.Warn(it) }
@@ -123,16 +125,25 @@ class QRCodeScanner : AppCompatActivity() {
 
     private val onPickImage = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK && null != result.data) {
-            var photoUri: Uri? = null
-            if (null != result.data!!.clipData && result.data?.clipData!!.itemCount > 0) {
-                photoUri = result.data!!.clipData!!.getItemAt(0)!!.uri
-            } else if (null != result.data!!.data) {
-                photoUri = result.data!!.data!!
+        if (result.resultCode == RESULT_OK && (null != captureUri || null != result.data)) {
+            val photoUri: Uri? = when {
+                null != captureUri -> {
+                    captureUri
+                }
+                null != result.data!!.clipData && result.data?.clipData!!.itemCount > 0 -> {
+                    result.data!!.clipData!!.getItemAt(0)!!.uri
+                }
+                null != result.data!!.data -> {
+                    result.data!!.data!!
+                }
+                else -> {
+                    null
+                }
             }
+            captureUri = null
             if (null != photoUri) {
                 Executors.newSingleThreadExecutor().execute {
-                    var rotation = -1
+                    var rotation = 0
                     val bitmap: Bitmap? = if (Debug.isNewer(Build.VERSION_CODES.P)) {
                         val source: ImageDecoder.Source = ImageDecoder.createSource(
                             this.contentResolver, photoUri
@@ -162,8 +173,14 @@ class QRCodeScanner : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("RestrictedApi")
+    private fun setOptionalIconsVisible(menu: Menu) {
+        if (menu is MenuBuilder) menu.setOptionalIconsVisible(true)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.qr_code_menu, menu)
+        setOptionalIconsVisible(menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -172,7 +189,18 @@ class QRCodeScanner : AppCompatActivity() {
             android.R.id.home -> {
                 finish()
             }
-            R.id.mnu_scanner -> {
+            R.id.mnu_camera -> {
+                val values = ContentValues()
+                values.put(MediaStore.Images.Media.TITLE, "TagMo QR")
+                values.put(MediaStore.Images.Media.DESCRIPTION, "TagMo QR Code Capture")
+                captureUri = contentResolver.insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
+                )
+                onPickImage.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(
+                    MediaStore.EXTRA_OUTPUT, captureUri
+                ))
+            }
+            R.id.mnu_gallery -> {
                 onPickImage.launch(
                     Intent.createChooser(Intent(if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
                         Intent.ACTION_OPEN_DOCUMENT else Intent.ACTION_GET_CONTENT
@@ -257,17 +285,14 @@ class QRCodeScanner : AppCompatActivity() {
         return true
     }
 
-    private fun byteArrayOfInts(vararg ints: Int) = ByteArray(ints.size) {
-            pos -> ints[pos].toByte()
-    }
-
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     @Throws(Exception::class)
     private fun decryptMii(qrData: ByteArray?) {
         if (null == qrData) return
-        val key = byteArrayOfInts(
-            0x59, 0xFC, 0x81, 0x7E, 0x64, 0x46, 0xEA, 0x61,
-            0x90, 0x34, 0x7B, 0x20, 0xE9, 0xBD, 0xCE, 0x52
+        val key = byteArrayOf(
+            0x59, 0xFC.toByte(), 0x81.toByte(), 0x7E, 0x64, 0x46,
+            0xEA.toByte(), 0x61, 0x90.toByte(), 0x34, 0x7B, 0x20,
+            0xE9.toByte(), 0xBD.toByte(), 0xCE.toByte(), 0x52
         )
         val nonce = qrData.copyOfRange(0, 8)
 

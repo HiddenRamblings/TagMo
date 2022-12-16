@@ -5,7 +5,18 @@
         android:id="@+id/mnu_scanner"
         android:title="@string/activate"
         android:icon="@drawable/ic_baseline_qr_code_scanner_24"
-        app:showAsAction="always"/>
+        app:showAsAction="always">
+    <menu>
+        <item
+            android:id="@+id/mnu_camera"
+            android:title="@string/camera"
+            android:icon="@drawable/ic_baseline_camera_24"/>
+        <item
+            android:id="@+id/mnu_gallery"
+            android:title="@string/gallery"
+            android:icon="@drawable/ic_baseline_photo_24"/>
+    </menu>
+    </item>
     <item
         android:id="@+id/mnu_generate"
         android:title="@string/activate"

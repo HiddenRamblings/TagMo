@@ -210,14 +210,14 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         if (!directory.exists()) return
         val files = dir!!.listFiles()
         if (null != files && files.isNotEmpty()) {
-            for (file in files) {
-                if (file.isDirectory) {
+            files.forEach {
+                if (it.isDirectory) {
                     handler?.post {
-                        dialog!!.setMessage(getString(R.string.foomiibo_removing, file.name))
+                        dialog!!.setMessage(getString(R.string.foomiibo_removing, it.name))
                     }
-                    deleteDir(handler, dialog, file)
+                    deleteDir(handler, dialog, it)
                 } else {
-                    file.delete()
+                    it.delete()
                 }
             }
         }
@@ -314,10 +314,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         Executors.newSingleThreadExecutor().execute {
             deleteDir(null, null, directory)
             directory.mkdirs()
-            for (amiibo in amiiboManager.amiibos.values) {
-                buildFoomiiboFile(amiibo)
+            amiiboManager.amiibos.values.forEach {
+                buildFoomiiboFile(it)
                 handler.post {
-                    dialog.setMessage(getString(R.string.foomiibo_progress, amiibo.character!!.name))
+                    dialog.setMessage(getString(R.string.foomiibo_progress, it.character!!.name))
                 }
             }
             handler.post {

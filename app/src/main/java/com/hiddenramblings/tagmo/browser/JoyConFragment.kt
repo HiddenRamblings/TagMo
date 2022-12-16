@@ -80,8 +80,8 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
             }
         }
         if (null != adapter && hasProController) {
-            for (device in adapter.bondedDevices) {
-                if (device.name == "Pro Controller") {
+            adapter.bondedDevices.forEach {
+                if (it.name == "Pro Controller") {
                     bluetoothHelper = BluetoothHelper()
                     bluetoothHelper!!.register(requireContext(), object : StateChangedCallback {
                         override fun onStateChanged(
@@ -89,7 +89,7 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
                         ) { }
                     })
                     // bluetoothHelper.connectL2cap(device);
-                    val proController = JoyCon(bluetoothHelper, device)
+                    val proController = JoyCon(bluetoothHelper, it)
                     // proController.poll(JoyCon.PollType.STANDARD);
                     proController.setPlayer(0, 0)
                     proController.setPlayer(0, 4)

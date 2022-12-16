@@ -870,12 +870,12 @@ class TagDataEditor : AppCompatActivity() {
     }
 
     private fun setListForSpinners(controls: Array<Spinner?>, list: Int) {
-        for (control in controls) {
+        controls.forEach {
             val adapter = ArrayAdapter.createFromResource(
                 this, list, R.layout.spinner_text
             )
             adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-            control!!.adapter = adapter
+            it!!.adapter = adapter
         }
     }
 

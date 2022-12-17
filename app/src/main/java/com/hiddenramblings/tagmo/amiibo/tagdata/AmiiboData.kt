@@ -100,9 +100,15 @@ class AmiiboData(tagData: ByteArray) {
 
     @get:Throws(UnsupportedEncodingException::class)
     var miiName: String
-        get() = getString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, CharsetCompat.UTF_16LE)
+        get() = getString(tagData, MII_NAME_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE)
         set(value) {
-            putString(tagData, MII_NAME_OFFSET, MII_NAME_LENGTH, CharsetCompat.UTF_16LE, value)
+            putString(tagData, MII_NAME_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE, value)
+        }
+    @get:Throws(UnsupportedEncodingException::class)
+    var miiAuthor: String
+        get() = getString(tagData, MII_AUTHOR_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE)
+        set(value) {
+            putString(tagData, MII_AUTHOR_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE, value)
         }
     @Suppress("UNUSED")
     var titleID: Long
@@ -161,7 +167,8 @@ class AmiiboData(tagData: ByteArray) {
         private const val NICKNAME_OFFSET = 0x38
         private const val NICKNAME_LENGTH = 0x14
         private const val MII_NAME_OFFSET = 0x4C + 0x1A
-        private const val MII_NAME_LENGTH = 0x14
+        private const val MII_AUTHOR_OFFSET = 0x4C + 0x48
+        private const val MII_TEXT_LENGTH = 0x14
         private const val TITLE_ID_OFFSET = 0xB6 - 0x8A + 0x80
         const val WRITE_COUNT_MIN_VALUE = 0
         const val WRITE_COUNT_MAX_VALUE: Int = Short.MAX_VALUE.toInt() and 0xFFFF

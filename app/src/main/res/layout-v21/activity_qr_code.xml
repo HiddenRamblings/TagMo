@@ -15,29 +15,26 @@
         <androidx.camera.view.PreviewView
             android:id="@+id/cameraPreview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"/>
+            android:layout_height="wrap_content" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/barcodePreview"
             android:contentDescription="@string/imageview_amiibo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp" />
+            android:layout_height="wrap_content" />
 
         <View
             android:id="@+id/imageDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@drawable/bottom_divider"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="4dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="2dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/txtTypeLabel"
@@ -47,7 +44,7 @@
                 android:gravity="start"
                 android:text="@string/qr_type"
                 android:textColor="@color/tag_text"
-                android:textSize="18sp" />
+                android:textSize="14sp" />
 
             <View
                 android:layout_width="4dp"
@@ -61,7 +58,7 @@
                 android:layout_weight="3"
                 android:gravity="end"
                 android:textColor="@color/tag_text"
-                android:textSize="18sp"/>
+                android:textSize="14sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -133,7 +130,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="4dp"
         android:layout_gravity="bottom">
 
         <TextView

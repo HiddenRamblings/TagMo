@@ -21,7 +21,6 @@ import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
-import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
@@ -76,6 +75,8 @@ class QRCodeScanner : AppCompatActivity() {
         UNKNOWN, WIFI, URL, PRODUCT, TEXT, CALENDAR,
         CONTACT, LICENSE, EMAIL, GEO, ISBN, PHONE, SMS
     }
+
+    private val metrics = DisplayMetrics()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,18 +155,12 @@ class QRCodeScanner : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK && (null != captureUri || null != result.data)) {
             val photoUri: Uri? = when {
-                null != captureUri -> {
-                    captureUri
-                }
+                null != captureUri -> { captureUri }
                 null != result.data!!.clipData && result.data?.clipData!!.itemCount > 0 -> {
                     result.data!!.clipData!!.getItemAt(0)!!.uri
                 }
-                null != result.data!!.data -> {
-                    result.data!!.data!!
-                }
-                else -> {
-                    null
-                }
+                null != result.data!!.data -> { result.data!!.data!! }
+                else -> { null }
             }
             captureUri = null
             if (null != photoUri) {
@@ -203,21 +198,23 @@ class QRCodeScanner : AppCompatActivity() {
     private val screenAspectRatio: Int
         @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
         get() {
-            val metrics = DisplayMetrics()
             val width: Int
             val height: Int
-            val mWindowManager = getSystemService(WINDOW_SERVICE) as WindowManager
             if (Debug.isNewer(Build.VERSION_CODES.S)) {
-                val bounds: Rect = mWindowManager.currentWindowMetrics.bounds
+                val bounds: Rect = windowManager.currentWindowMetrics.bounds
                 width = bounds.width()
                 height = bounds.height()
             } else {
-                if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                if (Debug.isNewer(Build.VERSION_CODES.R))
                     @Suppress("DEPRECATION")
-                    mWindowManager.defaultDisplay.getRealMetrics(metrics)
+                    display?.getRealMetrics(metrics)
+                        ?: windowManager.defaultDisplay.getRealMetrics(metrics)
+                else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                    @Suppress("DEPRECATION")
+                    windowManager.defaultDisplay.getRealMetrics(metrics)
                 else
                     @Suppress("DEPRECATION")
-                    mWindowManager.defaultDisplay.getMetrics(metrics)
+                    windowManager.defaultDisplay.getMetrics(metrics)
                 width = metrics.widthPixels
                 height = metrics.heightPixels
             }
@@ -384,27 +381,27 @@ class QRCodeScanner : AppCompatActivity() {
                     else -> { QRGContents.Type.UNKNOWN }
                 }
                 val data = txtRawBytes.text
-                val text = if (null != data) {
+                val text = if (null != data)
                     TagArray.hexToString(data.toString())
-                } else {
-                    txtRawValue.text.toString()
-                }
+                else txtRawValue.text.toString()
 
-                val metrics = DisplayMetrics()
-                val mWindowManager = getSystemService(WINDOW_SERVICE) as WindowManager
                 val dimension = if (Debug.isNewer(Build.VERSION_CODES.S)) {
-                    val bounds: Rect = mWindowManager.currentWindowMetrics.bounds
+                    val bounds: Rect = windowManager.currentWindowMetrics.bounds
                     val params = if (bounds.width() < bounds.height())
                         bounds.width()
                     else bounds.height()
                     ((params * 3 / 4) / (resources.configuration.densityDpi / 160)) + 0.5
                 } else {
-                    if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                    if (Debug.isNewer(Build.VERSION_CODES.R))
                         @Suppress("DEPRECATION")
-                        mWindowManager.defaultDisplay.getRealMetrics(metrics)
+                        display?.getRealMetrics(metrics)
+                            ?: windowManager.defaultDisplay.getRealMetrics(metrics)
+                    else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                        @Suppress("DEPRECATION")
+                        windowManager.defaultDisplay.getRealMetrics(metrics)
                     else
                         @Suppress("DEPRECATION")
-                        mWindowManager.defaultDisplay.getMetrics(metrics)
+                        windowManager.defaultDisplay.getMetrics(metrics)
                     val params = if (metrics.widthPixels < metrics.heightPixels)
                         metrics.widthPixels
                     else metrics.heightPixels

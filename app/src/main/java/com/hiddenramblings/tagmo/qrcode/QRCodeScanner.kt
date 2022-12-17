@@ -183,7 +183,6 @@ class QRCodeScanner : AppCompatActivity() {
                     }
                     if (null != bitmap) {
                         runOnUiThread {
-                            barcodePreview.isVisible = true
                             barcodePreview.setImageBitmap(bitmap)
                         }
                         scanBarcodes(InputImage.fromBitmap(bitmap, rotation))
@@ -231,7 +230,10 @@ class QRCodeScanner : AppCompatActivity() {
                 this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)
             )[CameraXViewModel::class.java].processCameraProvider.observe(this) {
                 cameraProvider = it
-                runOnUiThread { barcodePreview.isVisible = false }
+                runOnUiThread {
+                    barcodePreview.setImageResource(0)
+                    cameraPreview?.isVisible = true
+                }
                 bindCameraUseCases()
             }
         }
@@ -337,6 +339,7 @@ class QRCodeScanner : AppCompatActivity() {
                 if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != cameraProvider) {
                     if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
                     if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
+                    cameraPreview?.isVisible = false
                 }
                 onPickImage.launch(
                     Intent.createChooser(Intent(if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
@@ -351,6 +354,7 @@ class QRCodeScanner : AppCompatActivity() {
                 if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != cameraProvider) {
                     if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
                     if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
+                    cameraPreview?.isVisible = false
                 }
                 val typeArray = resources.getStringArray(R.array.qr_code_type)
                 val selection = when (qrTypeSpinner.selectedItem) {
@@ -400,10 +404,7 @@ class QRCodeScanner : AppCompatActivity() {
                 val qrgEncoder = QRGEncoder(text, null, selection, dimension)
                 try {
                     val bitmap = qrgEncoder.bitmap
-                    runOnUiThread {
-                        val image = findViewById<AppCompatImageView>(R.id.barcodePreview)
-                        image.setImageBitmap(bitmap)
-                    }
+                    runOnUiThread { barcodePreview.setImageBitmap(bitmap) }
                     scanBarcodes(InputImage.fromBitmap(bitmap, 0))
                 } catch (ex: Exception) {
                     Debug.Warn(ex)

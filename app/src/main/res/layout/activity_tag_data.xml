@@ -365,6 +365,26 @@
                 tools:ignore="LabelFor,TextFields" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="2dp">
+
+            <TextView
+                style="@style/TagEditor.InputHint"
+                android:text="@string/mii_author"/>
+
+            <EditText
+                android:id="@+id/txtMiiAuthor"
+                android:importantForAutofill="no"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="10"
+                android:maxLines="1"
+                tools:ignore="LabelFor,TextFields" />
+        </LinearLayout>
+
         <TextView
             style="@style/TagEditor.Header"
             android:text="@string/app"/>

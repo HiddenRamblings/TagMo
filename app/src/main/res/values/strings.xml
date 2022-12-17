@@ -102,6 +102,7 @@
     <string name="properties">Properties</string>
     <string name="mii" translatable="false">Mii</string>
     <string name="mii_name">Mii Name</string>
+    <string name="mii_author">Mii Author</string>
     <string name="app">Application</string>
     <string name="app_id">App ID</string>
     <string name="app_data">App Data</string>
@@ -189,6 +190,7 @@
     <string name="qr_type">QR Format</string>
     <string name="qr_raw">QR Text</string>
     <string name="qr_bytes">QR Data</string>
+    <string name="qr_mii">Mii Data</string>
 
     <string name="settings">Settings</string>
     <string name="guides">Guides</string>

@@ -61,6 +61,7 @@ class TagDataEditor : AppCompatActivity() {
     private lateinit var txtModifiedDate: EditText
     private lateinit var txtNickname: EditText
     private lateinit var txtMiiName: EditText
+    private lateinit var txtMiiAuthor: EditText
     private lateinit var txtWriteCounter: EditText
     private lateinit var txtSerialNumber: EditText
     private lateinit var txtAppName: Spinner
@@ -148,6 +149,7 @@ class TagDataEditor : AppCompatActivity() {
         txtModifiedDate = findViewById(R.id.txtModifiedDate)
         txtNickname = findViewById(R.id.txtNickname)
         txtMiiName = findViewById(R.id.txtMiiName)
+        txtMiiAuthor = findViewById(R.id.txtMiiAuthor)
         txtWriteCounter = findViewById(R.id.txtWriteCounter)
         txtSerialNumber = findViewById(R.id.txtSerialNumber)
         txtAppName = findViewById(R.id.txtAppName)
@@ -370,6 +372,7 @@ class TagDataEditor : AppCompatActivity() {
         loadModifiedDate()
         loadNickname()
         loadMiiName()
+        loadMiiAuthor()
         loadWriteCounter()
         loadSerialNumber()
         loadAppId()
@@ -428,6 +431,13 @@ class TagDataEditor : AppCompatActivity() {
                 newAmiiboData.miiName = miiName
             } catch (e: Exception) {
                 txtMiiName.requestFocus()
+                return
+            }
+            try {
+                val miiAuthor = txtMiiAuthor.text.toString()
+                newAmiiboData.miiAuthor = miiAuthor
+            } catch (e: Exception) {
+                txtMiiAuthor.requestFocus()
                 return
             }
             try {
@@ -499,6 +509,7 @@ class TagDataEditor : AppCompatActivity() {
         txtModifiedDate.isEnabled = isUserDataInitialized
         txtNickname.isEnabled = isUserDataInitialized
         txtMiiName.isEnabled = isUserDataInitialized
+        txtMiiAuthor.isEnabled = isUserDataInitialized
         txtWriteCounter.isEnabled = isUserDataInitialized
         txtSerialNumber.isEnabled = isUserDataInitialized
         generateSerial.isEnabled = isUserDataInitialized
@@ -629,6 +640,19 @@ class TagDataEditor : AppCompatActivity() {
             ""
         }
         txtMiiName.setText(miiName)
+    }
+
+    private fun loadMiiAuthor() {
+        val miiAuthor: String = if (initialUserDataInitialized) {
+            try {
+                amiiboData.miiAuthor.trim { it <= ' ' }
+            } catch (e: UnsupportedEncodingException) {
+                ""
+            }
+        } else {
+            ""
+        }
+        txtMiiAuthor.setText(miiAuthor)
     }
 
     private fun loadAppId() {

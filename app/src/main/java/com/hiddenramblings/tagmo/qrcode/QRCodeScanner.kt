@@ -56,11 +56,14 @@ import kotlin.math.abs
 
 class QRCodeScanner : AppCompatActivity() {
 
-    private var barcodeScanner: BarcodeScanner? = null
     private lateinit var qrTypeSpinner: Spinner
-    private var captureUri: Uri? = null
+    private lateinit var txtRawValue: EditText
+    private lateinit var txtRawBytes: EditText
+    private lateinit var txtMiiValue: TextView
 
     private lateinit var barcodePreview: AppCompatImageView
+    private var barcodeScanner: BarcodeScanner? = null
+    private var captureUri: Uri? = null
     private var cameraPreview: PreviewView? = null
     private var cameraProvider: ProcessCameraProvider? = null
     private var cameraSelector: CameraSelector? = null
@@ -99,6 +102,9 @@ class QRCodeScanner : AppCompatActivity() {
         )
         adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
         qrTypeSpinner.adapter = adapter
+        txtRawValue = findViewById(R.id.txtRawValue)
+        txtRawBytes = findViewById(R.id.txtRawBytes)
+        txtMiiValue = findViewById(R.id.txtMiiValue)
     }
 
     private fun processBarcode(barcode: Barcode) {
@@ -120,19 +126,20 @@ class QRCodeScanner : AppCompatActivity() {
                 else -> { TYPE.UNKNOWN }
             }
             qrTypeSpinner.setSelection(selection.ordinal)
-            findViewById<TextView>(R.id.txtRawValue).setText(
+            txtRawValue.setText(
                 barcode.rawValue, TextView.BufferType.EDITABLE
             )
-            findViewById<TextView>(R.id.txtRawBytes).setText(
+            txtRawBytes.setText(
                 TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE
             )
             qrTypeSpinner.requestFocus()
-        }
-        if (Debug.isNewer(Build.VERSION_CODES.KITKAT)) {
-            try {
-                decryptMii(barcode.rawBytes)
-            } catch (ex: Exception) {
-                Debug.Warn(ex)
+            if (Debug.isNewer(Build.VERSION_CODES.KITKAT) && selection == TYPE.TEXT) {
+                try {
+                    decryptMii(barcode.rawBytes)
+                } catch (ex: Exception) {
+                    Debug.Warn(ex)
+                    txtMiiValue.text = ex.localizedMessage
+                }
             }
         }
     }
@@ -321,6 +328,7 @@ class QRCodeScanner : AppCompatActivity() {
                 finish()
             }
             R.id.mnu_camera -> {
+                txtMiiValue.text = ""
                 if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
                     onRequestCamera.launch(Manifest.permission.CAMERA)
                 } else {
@@ -336,6 +344,7 @@ class QRCodeScanner : AppCompatActivity() {
                 }
             }
             R.id.mnu_gallery -> {
+                txtMiiValue.text = ""
                 if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != cameraProvider) {
                     if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
                     if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
@@ -351,6 +360,7 @@ class QRCodeScanner : AppCompatActivity() {
                         .putExtra("android.content.extra.FANCY", true), title))
             }
             R.id.mnu_generate -> {
+                txtMiiValue.text = ""
                 if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != cameraProvider) {
                     if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
                     if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
@@ -373,11 +383,11 @@ class QRCodeScanner : AppCompatActivity() {
                     typeArray[TYPE.SMS.ordinal] -> { QRGContents.Type.SMS }
                     else -> { QRGContents.Type.UNKNOWN }
                 }
-                val data = findViewById<EditText>(R.id.txtRawBytes).text
+                val data = txtRawBytes.text
                 val text = if (null != data) {
                     TagArray.hexToString(data.toString())
                 } else {
-                    findViewById<EditText>(R.id.txtRawValue).text.toString()
+                    txtRawValue.text.toString()
                 }
 
                 val metrics = DisplayMetrics()
@@ -410,10 +420,10 @@ class QRCodeScanner : AppCompatActivity() {
                     Debug.Warn(ex)
                     runOnUiThread {
                         qrTypeSpinner.setSelection(12)
-                        findViewById<EditText>(R.id.txtRawValue).setText(
+                        txtRawValue.setText(
                             "", TextView.BufferType.EDITABLE
                         )
-                        findViewById<TextView>(R.id.txtRawBytes).setText(
+                        txtRawBytes.setText(
                             "", TextView.BufferType.EDITABLE
                         )
                         qrTypeSpinner.requestFocus()
@@ -440,13 +450,16 @@ class QRCodeScanner : AppCompatActivity() {
 
         val cipher = Cipher.getInstance("AES/CCM/NoPadding")
         cipher.init(
-            Cipher.DECRYPT_MODE,
-            SecretKeySpec(key, "AES"),
+            Cipher.DECRYPT_MODE, SecretKeySpec(key, "AES"),
             IvParameterSpec(nonce.plus(ByteArray(4)))
         )
-        val content = cipher.doFinal(qrData.copyOfRange(8, 0x58))
-        Debug.Info(this.javaClass, TagArray.bytesToHex(
+        val content = try {
+            cipher.doFinal(qrData, 0, 0x58)
+        } catch (ex: Exception) {
+            cipher.doFinal(qrData, 8, 0x58 + 8)
+        }
+        txtMiiValue.text = TagArray.bytesToHex(
             content.copyOfRange(0, 12).plus(nonce).plus(content.copyOfRange(12, content.size))
-        ))
+        )
     }
 }

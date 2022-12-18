@@ -434,27 +434,23 @@ class QRCodeScanner : AppCompatActivity() {
         return true
     }
 
+    private val secretKeySpec = SecretKeySpec(byteArrayOf(
+        0x59, 0xFC.toByte(), 0x81.toByte(), 0x7E, 0x64, 0x46,
+        0xEA.toByte(), 0x61, 0x90.toByte(), 0x34, 0x7B, 0x20,
+        0xE9.toByte(), 0xBD.toByte(), 0xCE.toByte(), 0x52
+    ), "AES")
+
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     @Throws(Exception::class)
     private fun decryptMii(qrData: ByteArray?) {
         if (null == qrData) return
-        val key = byteArrayOf(
-            0x59, 0xFC.toByte(), 0x81.toByte(), 0x7E, 0x64, 0x46,
-            0xEA.toByte(), 0x61, 0x90.toByte(), 0x34, 0x7B, 0x20,
-            0xE9.toByte(), 0xBD.toByte(), 0xCE.toByte(), 0x52
-        )
         val nonce = qrData.copyOfRange(0, 8)
 
         val cipher = Cipher.getInstance("AES/CCM/NoPadding")
         cipher.init(
-            Cipher.DECRYPT_MODE, SecretKeySpec(key, "AES"),
-            IvParameterSpec(nonce.plus(ByteArray(4)))
+            Cipher.DECRYPT_MODE, secretKeySpec, IvParameterSpec(nonce.plus(ByteArray(4)))
         )
-        val content = try {
-            cipher.doFinal(qrData, 0, 0x58)
-        } catch (ex: Exception) {
-            cipher.doFinal(qrData, 8, 0x58 + 8)
-        }
+        val content = cipher.doFinal(qrData, 0, 0x58)
         txtMiiValue.text = TagArray.bytesToHex(
             content.copyOfRange(0, 12).plus(nonce).plus(content.copyOfRange(12, content.size))
         )

@@ -134,13 +134,11 @@ class QRCodeScanner : AppCompatActivity() {
                 TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE
             )
             qrTypeSpinner.requestFocus()
-            if (Debug.isNewer(Build.VERSION_CODES.KITKAT) && selection == TYPE.TEXT) {
-                try {
-                    decryptMii(barcode.rawBytes)
-                } catch (ex: Exception) {
-                    Debug.Warn(ex)
-                    txtMiiValue.text = ex.localizedMessage
-                }
+            try {
+                decryptMii(barcode.rawBytes)
+            } catch (ex: Exception) {
+                Debug.Warn(ex)
+                txtMiiValue.text = ex.localizedMessage
             }
         }
     }
@@ -440,12 +438,10 @@ class QRCodeScanner : AppCompatActivity() {
         0xE9.toByte(), 0xBD.toByte(), 0xCE.toByte(), 0x52
     ), "AES")
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     @Throws(Exception::class)
     private fun decryptMii(qrData: ByteArray?) {
         if (null == qrData) return
         val nonce = qrData.copyOfRange(0, 8)
-
         val cipher = Cipher.getInstance("AES/CCM/NoPadding")
         cipher.init(
             Cipher.DECRYPT_MODE, secretKeySpec, IvParameterSpec(nonce.plus(ByteArray(4)))

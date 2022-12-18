@@ -104,7 +104,7 @@ import java.util.concurrent.Executors
 class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     BrowserAdapter.OnAmiiboClickListener {
     private var prefs: Preferences? = null
-    private var keyManager: KeyManager? = null
+    private lateinit var keyManager: KeyManager
     private var filteredCount = 0
     private var clickedAmiibo: AmiiboFile? = null
     var settings: BrowserSettings? = null
@@ -1057,11 +1057,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } else {
             delete.isVisible = false
         }
-        toolbar.setOnMenuItemClickListener {
+        toolbar.setOnMenuItemClickListener { menuItem ->
             clickedAmiibo = amiiboFile
             val args = Bundle()
             val scan = Intent(this, NfcActivity::class.java)
-            when (it.itemId) {
+            when (menuItem.itemId) {
                 R.id.mnu_scan -> {
                     scan.action = NFCIntent.ACTION_SCAN_TAG
                     onUpdateTagResult.launch(scan)
@@ -1152,8 +1152,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_ignore_tag_id -> {
-                    ignoreTagId = !it.isChecked
-                    it.isChecked = ignoreTagId
+                    ignoreTagId = !menuItem.isChecked
+                    menuItem.isChecked = ignoreTagId
                     return@setOnMenuItemClickListener true
                 }
                 else -> false
@@ -1309,7 +1309,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun onStorageEnabled() {
         if (BuildConfig.WEAR_OS) {
-            if (keyManager!!.isKeyMissing)
+            if (keyManager.isKeyMissing)
                 onShowSettingsFragment()
             else onRefresh(true)
         } else {
@@ -1340,7 +1340,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 } else {
                     switchStorageType!!.visibility = View.GONE
                 }
-                if (keyManager!!.isKeyMissing)
+                if (keyManager.isKeyMissing)
                     onShowSettingsFragment()
                 else onRefresh(true)
             } else {
@@ -1373,7 +1373,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 } else {
                     switchStorageType!!.visibility = View.GONE
                 }
-                if (keyManager!!.isKeyMissing) {
+                if (keyManager.isKeyMissing) {
                     hideFakeSnackbar()
                     showFakeSnackbar(getString(R.string.locating_keys))
                     locateKeyFiles()
@@ -1959,13 +1959,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val rootDocument = DocumentFile.fromTreeUri(
                 this, settings!!.browserRootDocument!!
             )
-            if (!keyManager!!.isKeyMissing) {
+            if (!keyManager.isKeyMissing) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list))
                 loadAmiiboDocuments(rootDocument, settings!!.isRecursiveEnabled)
             }
         } else {
             val rootFolder = settings!!.browserRootFolder
-            if (!keyManager!!.isKeyMissing) {
+            if (!keyManager.isKeyMissing) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list))
                 loadAmiiboFiles(rootFolder, settings!!.isRecursiveEnabled)
             }
@@ -2524,29 +2524,27 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun locateKeyFilesRecursive(rootFolder: File?) {
-        Executors.newSingleThreadExecutor().execute {
-            val files = rootFolder?.listFiles { _: File?, name: String -> keyNameMatcher(name) }
-            if (!files.isNullOrEmpty()) {
-                for (file in files) {
-                    try {
-                        FileInputStream(file).use { inputStream ->
-                            try {
-                                keyManager!!.evaluateKey(inputStream)
-                            } catch (ex: Exception) {
-                                onShowSettingsFragment()
-                            }
-                            hideFakeSnackbar()
+        val files = rootFolder?.listFiles { _: File?, name: String -> keyNameMatcher(name) }
+        if (!files.isNullOrEmpty()) {
+            for (file in files) {
+                try {
+                    FileInputStream(file).use { inputStream ->
+                        try {
+                            keyManager.evaluateKey(inputStream)
+                        } catch (ex: Exception) {
+                            onShowSettingsFragment()
                         }
-                    } catch (e: Exception) {
-                        Debug.Warn(e)
+                        hideFakeSnackbar()
                     }
+                } catch (e: Exception) {
+                    Debug.Warn(e)
                 }
-            } else {
-                val directories = rootFolder?.listFiles()
-                if (directories.isNullOrEmpty()) return@execute
-                for (directory in directories) {
-                    if (directory.isDirectory) locateKeyFilesRecursive(directory)
-                }
+            }
+        } else {
+            val directories = rootFolder?.listFiles()
+            if (directories.isNullOrEmpty()) return
+            for (directory in directories) {
+                if (directory.isDirectory) locateKeyFilesRecursive(directory)
             }
         }
     }
@@ -2560,7 +2558,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     try {
                         FileInputStream(file).use { inputStream ->
                             try {
-                                keyManager!!.evaluateKey(inputStream)
+                                keyManager.evaluateKey(inputStream)
                             } catch (ex: Exception) {
                                 onShowSettingsFragment()
                             }
@@ -2572,6 +2570,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
             } else {
                 locateKeyFilesRecursive(Storage.getFile(prefs!!.preferEmulated()))
+            }
+            if (keyManager.isKeyMissing) {
+                hideFakeSnackbar()
+                onShowSettingsFragment()
             }
         }
     }
@@ -2634,9 +2636,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action
             || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action
             || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
-            if (keyManager!!.isKeyMissing) return
-            Executors.newSingleThreadExecutor()
-                .execute { tagScanner.onTagDiscovered(this@BrowserActivity, intent) }
+            if (keyManager.isKeyMissing) return
+            Executors.newSingleThreadExecutor().execute {
+                tagScanner.onTagDiscovered(this@BrowserActivity, intent)
+            }
         }
     }
 

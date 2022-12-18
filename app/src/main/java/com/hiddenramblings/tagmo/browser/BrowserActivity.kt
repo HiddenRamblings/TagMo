@@ -681,9 +681,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         popup.menu.findItem(R.id.mnu_backup).isEnabled = false
         popup.menu.findItem(R.id.mnu_validate).isEnabled = false
         popup.menu.findItem(R.id.mnu_lego).isEnabled = false
-        val qrCode = popup.menu.findItem(R.id.mnu_qr_code)
-        qrCode.isEnabled = false
-        qrCode.isVisible = Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)
+        popup.menu.findItem(R.id.mnu_qr_code).isEnabled = false
         popup.show()
         val popupHandler: Handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -691,11 +689,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         }
         popupHandler.postDelayed({
-            var baseDelay = 0
-            if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
-                baseDelay = 75
-                popupHandler.sendEmptyMessageDelayed(R.id.mnu_qr_code, baseDelay.toLong())
-            }
+            val baseDelay = 75
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_qr_code, baseDelay.toLong())
             popupHandler.sendEmptyMessageDelayed(R.id.mnu_lego, (75 + baseDelay).toLong())
             popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, (175 + baseDelay).toLong())
             popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, (275 + baseDelay).toLong())

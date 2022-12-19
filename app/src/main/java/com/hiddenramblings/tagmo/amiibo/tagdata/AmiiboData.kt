@@ -403,8 +403,8 @@ class AmiiboData(tagData: ByteArray) {
             bb: ByteBuffer, offset: Int, length: Int, charset: Charset, text: String
         ) {
             val bytes = charset.encode(text).array()
-            putBytes(
-                bb, offset, if (bytes.size >= length)
+            putBytes(bb, offset,
+                if (bytes.size >= length)
                     bytes.copyOfRange(0, length)
                 else ByteArray(length)
             )

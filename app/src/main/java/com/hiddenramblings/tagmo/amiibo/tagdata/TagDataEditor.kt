@@ -31,9 +31,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.AppData.Companion.appIds
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.eightbit.io.Debug.Info
-import com.hiddenramblings.tagmo.eightbit.io.Debug.Warn
-import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -72,6 +69,7 @@ class TagDataEditor : AppCompatActivity() {
     private lateinit var generateSerial: AppCompatButton
     private lateinit var appDataViewZeldaTP: LinearLayout
     private lateinit var appDataViewSplatoon: LinearLayout
+    private lateinit var appDataViewSplatoon3: LinearLayout
     private lateinit var appDataViewSSB: LinearLayout
     private lateinit var appDataViewSSBU: LinearLayout
     private lateinit var appDataFormat: AppCompatButton
@@ -104,6 +102,8 @@ class TagDataEditor : AppCompatActivity() {
     private val appDataPikmin: AppDataPikmin? = null
     private var appDataSplatoon: AppDataSplatoon? = null
     private var buttonInject: AppCompatButton? = null
+    private var appDataSplatoon3: AppDataSplatoon3? = null
+    private var buttonInject3: AppCompatButton? = null
     private var spnAppearance: Spinner? = null
     private var txtLevelSSB: EditText? = null
     private var spnSpecialNeutral: Spinner? = null
@@ -160,6 +160,7 @@ class TagDataEditor : AppCompatActivity() {
         generateSerial = findViewById(R.id.random_serial)
         appDataViewZeldaTP = findViewById(R.id.appDataZeldaTP)
         appDataViewSplatoon = findViewById(R.id.appDataSplatoon)
+        appDataViewSplatoon3 = findViewById(R.id.appDataSplatoon3)
         appDataViewSSB = findViewById(R.id.appDataSSB)
         appDataViewSSBU = findViewById(R.id.appDataSSBU)
         appDataFormat = findViewById(R.id.format_app_data)
@@ -172,7 +173,7 @@ class TagDataEditor : AppCompatActivity() {
                 tagData = TagArray.getValidatedData(keyManager, tagData)
                 amiiboData = AmiiboData(tagData as ByteArray)
             } catch (ex: Exception) {
-                Warn(e)
+                Debug.Warn(e)
                 showErrorDialog(R.string.fail_display)
                 return
             }
@@ -227,13 +228,13 @@ class TagDataEditor : AppCompatActivity() {
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
             } catch (e: IOException) {
-                Warn(e)
+                Debug.Warn(e)
                 Toasty(this).Short(getString(R.string.amiibo_info_parse_error))
             } catch (e: JSONException) {
-                Warn(e)
+                Debug.Warn(e)
                 Toasty(this).Short(getString(R.string.amiibo_info_parse_error))
             } catch (e: ParseException) {
-                Warn(e)
+                Debug.Warn(e)
                 Toasty(this).Short(getString(R.string.amiibo_info_parse_error))
             }
             if (Thread.currentThread().isInterrupted) return@execute
@@ -298,7 +299,7 @@ class TagDataEditor : AppCompatActivity() {
             val amiiboId: Long = try {
                 Amiibo.dataToId(tagData)
             } catch (e: Exception) {
-                Info(e)
+                Debug.Info(e)
                 -1
             }
             if (amiiboId == -1L) {
@@ -396,7 +397,7 @@ class TagDataEditor : AppCompatActivity() {
             newAmiiboData.isUserDataInitialized = isUserDataInitialized
             newAmiiboData.isAppDataInitialized = isUserDataInitialized && isAppDataInitialized
         } catch (e: Exception) {
-            Warn(e)
+            Debug.Warn(e)
             showErrorDialog(R.string.fail_save_data)
             return
         }
@@ -424,7 +425,6 @@ class TagDataEditor : AppCompatActivity() {
                 val nickname = txtNickname.text.toString()
                 newAmiiboData.nickname = nickname
             } catch (e: Exception) {
-                Debug.Warn(e)
                 txtNickname.requestFocus()
                 return
             }
@@ -477,6 +477,13 @@ class TagDataEditor : AppCompatActivity() {
                     return
                 }
             }
+            if (appDataSwitch.isChecked && null != appDataSplatoon) {
+                try {
+                    newAmiiboData.appData = onAppDataSplatoon3Saved()
+                } catch (e: Exception) {
+                    return
+                }
+            }
             if (appDataSwitch.isChecked && null != appDataSSBU) {
                 try {
                     newAmiiboData.appData = onAppDataSSBUSaved()
@@ -495,7 +502,7 @@ class TagDataEditor : AppCompatActivity() {
         val tagData: ByteArray = try {
             keyManager.encrypt(newAmiiboData.array())
         } catch (e: Exception) {
-            Warn(e)
+            Debug.Warn(e)
             showErrorDialog(R.string.fail_encrypt)
             return
         }
@@ -525,6 +532,7 @@ class TagDataEditor : AppCompatActivity() {
     private fun updateAppDataEnabled(isAppDataInitialized: Boolean) {
         if (null != appDataZeldaTP) onAppDataZeldaTPChecked(isAppDataInitialized)
         if (null != appDataSplatoon) onAppDataSplatoonChecked(isAppDataInitialized)
+        if (null != appDataSplatoon3) onAppDataSplatoon3Checked(isAppDataInitialized)
         if (null != appDataSSBU) onAppDataSSBUChecked(isAppDataInitialized)
         if (null != appDataSSB) onAppDataSSBChecked(isAppDataInitialized)
     }
@@ -745,6 +753,8 @@ class TagDataEditor : AppCompatActivity() {
         appDataZeldaTP = null
         appDataViewSplatoon.visibility = View.GONE
         appDataSplatoon = null
+        appDataViewSplatoon3.visibility = View.GONE
+        appDataSplatoon3 = null
         appDataViewSSB.visibility = View.GONE
         appDataSSB = null
         appDataViewSSBU.visibility = View.GONE
@@ -755,9 +765,13 @@ class TagDataEditor : AppCompatActivity() {
                     appDataViewZeldaTP.visibility = View.VISIBLE
                     enableAppDataZeldaTP(amiiboData.appData)
                 }
-                AppId_Splatoon, AppId_Splatoon3 -> {
+                AppId_Splatoon -> {
                     appDataViewSplatoon.visibility = View.VISIBLE
                     enableAppDataSplatoon(amiiboData.appData)
+                }
+                AppId_Splatoon3 -> {
+                    appDataViewSplatoon3.visibility = View.VISIBLE
+                    enableAppDataSplatoon3(amiiboData.appData)
                 }
                 AppId_SSB -> {
                     appDataViewSSB.visibility = View.VISIBLE
@@ -838,7 +852,7 @@ class TagDataEditor : AppCompatActivity() {
 
         init {
             this.data = ArrayList(data.entries)
-            if (isNewer(Build.VERSION_CODES.N)) {
+            if (Debug.isNewer(Build.VERSION_CODES.N)) {
                 Collections.sort(this.data, java.util.Map.Entry.comparingByKey())
             } else {
                 this.data.sortWith { (key): Map.Entry<Int, String>, (key1): Map.Entry<Int, String> ->
@@ -853,7 +867,7 @@ class TagDataEditor : AppCompatActivity() {
 
         init {
             this.data = ArrayList(data.entries)
-            if (isNewer(Build.VERSION_CODES.N)) {
+            if (Debug.isNewer(Build.VERSION_CODES.N)) {
                 Collections.sort(this.data, java.util.Map.Entry.comparingByKey())
             } else {
                 this.data.sortWith { (key): Map.Entry<Int, String>, (key1): Map.Entry<Int, String> ->
@@ -1012,6 +1026,21 @@ class TagDataEditor : AppCompatActivity() {
             it.isEnabled = !appDataSplatoon!!.checkSaveData()
         }
         onAppDataSplatoonChecked(isAppDataInitialized)
+    }
+
+    private fun enableAppDataSplatoon3(appData: ByteArray) {
+        try {
+            appDataSplatoon3 = AppDataSplatoon3(appData)
+        } catch (e: Exception) {
+            appDataViewSplatoon3.visibility = View.GONE
+            return
+        }
+        buttonInject3 = findViewById(R.id.inject_game_data_3)
+        buttonInject3?.setOnClickListener {
+            appDataSplatoon3!!.injectSaveData()
+            it.isEnabled = !appDataSplatoon3!!.checkSaveData()
+        }
+        onAppDataSplatoon3Checked(isAppDataInitialized)
     }
 
     private fun enableAppDataSSB(appData: ByteArray) {
@@ -1365,6 +1394,11 @@ class TagDataEditor : AppCompatActivity() {
         buttonInject?.isEnabled = enabled && !appDataSplatoon!!.checkSaveData()
     }
 
+    private fun onAppDataSplatoon3Checked(enabled: Boolean) {
+        if (null == buttonInject3) return
+        buttonInject3?.isEnabled = enabled && !appDataSplatoon3!!.checkSaveData()
+    }
+
     private fun onAppDataSSBChecked(enabled: Boolean) {
         if (null == spnAppearance) return
         spnAppearance?.isEnabled = enabled
@@ -1413,6 +1447,10 @@ class TagDataEditor : AppCompatActivity() {
 
     private fun onAppDataSplatoonSaved(): ByteArray {
         return appDataSplatoon!!.array()
+    }
+
+    private fun onAppDataSplatoon3Saved(): ByteArray {
+        return appDataSplatoon3!!.array()
     }
 
     @Throws(Exception::class)

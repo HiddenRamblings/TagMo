@@ -9,12 +9,16 @@
         android:padding="2dp">
 
         <include
+            layout="@layout/app_data_zelda_tp"
+            android:id="@+id/appDataZeldaTP" />
+
+        <include
             layout="@layout/app_data_splatoon"
             android:id="@+id/appDataSplatoon" />
 
         <include
-            layout="@layout/app_data_zelda_tp"
-            android:id="@+id/appDataZeldaTP" />
+            layout="@layout/app_data_splatoon_3"
+            android:id="@+id/appDataSplatoon3" />
 
         <include
             layout="@layout/app_data_ssb"

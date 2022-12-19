@@ -400,16 +400,14 @@ class AmiiboData(tagData: ByteArray) {
         }
 
         private fun putString(
-            bb: ByteBuffer,
-            offset: Int,
-            length: Int,
-            charset: Charset,
-            text: String
+            bb: ByteBuffer, offset: Int, length: Int, charset: Charset, text: String
         ) {
-            val bytes = ByteArray(length)
-            val bytes2 = charset.encode(text).array()
-            System.arraycopy(bytes2, 0, bytes, 0, bytes2.size)
-            putBytes(bb, offset, bytes)
+            val bytes = charset.encode(text).array()
+            putBytes(
+                bb, offset, if (bytes.size >= length)
+                    bytes.copyOfRange(0, length)
+                else ByteArray(length)
+            )
         }
     }
 }

@@ -71,12 +71,8 @@ class KeyManager(var context: Context) {
             length == NfcByte.KEY_RETAIL_SZ -> {
                 val data = ByteArray(NfcByte.KEY_RETAIL_SZ)
                 DataInputStream(strm).readFully(data)
-                val key2 = ByteArray(NfcByte.KEY_FILE_SIZE)
-                System.arraycopy(data, NfcByte.KEY_FILE_SIZE, key2, 0, NfcByte.KEY_FILE_SIZE)
-                readKey(key2)
-                val key1 = ByteArray(NfcByte.KEY_FILE_SIZE)
-                System.arraycopy(data, 0, key1, 0, NfcByte.KEY_FILE_SIZE)
-                readKey(key1)
+                readKey(data.copyOfRange(NfcByte.KEY_FILE_SIZE, data.size))
+                readKey(data.copyOfRange(0, NfcByte.KEY_FILE_SIZE))
             }
             length == NfcByte.KEY_FILE_SIZE -> {
                 val data = ByteArray(NfcByte.KEY_FILE_SIZE)

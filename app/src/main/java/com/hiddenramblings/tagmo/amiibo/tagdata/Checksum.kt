@@ -31,8 +31,7 @@ class Checksum {
     }
 
     fun generate(appData: ByteBuffer): Int {
-        val checksum = ByteArray(212) // 0xD4
-        System.arraycopy(appData.array(), 0xE0, checksum, 0, checksum.size)
+        val checksum = appData.array().copyOfRange(0xE0, 212) // 0xD4
         var t = 0x0
         checksum.forEach {
             t = t shr 0x8 xor u0[it.toInt() xor t and 0xFF].toInt()

@@ -434,12 +434,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 NFCIntent.EXTRA_CURRENT_BANK, clickedPosition
             )
         }
-        var tagData = if (amiibos.isNotEmpty() && null != amiibos[clickedPosition])
-            amiibos[clickedPosition]!!.data
-        else null
+        var tagData = if (amiibos.size > clickedPosition && null != amiibos[clickedPosition])
+            amiibos[clickedPosition]!!.data else null
         if (result.data!!.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
             tagData = result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
-            if (amiibos.isNotEmpty() && null != amiibos[clickedPosition])
+            if (amiibos.size > clickedPosition && null != amiibos[clickedPosition])
                 amiibos[clickedPosition]!!.data = tagData
         }
         if (result.data!!.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
@@ -468,7 +467,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         clickedPosition = result.data!!.getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition)
         val args = Bundle()
         args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
-        if (amiibos.isNotEmpty() && null != amiibos[clickedPosition])
+        if (amiibos.size > clickedPosition && null != amiibos[clickedPosition])
             amiibos[clickedPosition]!!.data = tagData
         when (status) {
             CLICKED.NOTHING -> {}

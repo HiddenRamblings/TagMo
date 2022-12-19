@@ -30,6 +30,7 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.AppData.Companion.appIds
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.io.Debug.Info
 import com.hiddenramblings.tagmo.eightbit.io.Debug.Warn
 import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
@@ -423,6 +424,7 @@ class TagDataEditor : AppCompatActivity() {
                 val nickname = txtNickname.text.toString()
                 newAmiiboData.nickname = nickname
             } catch (e: Exception) {
+                Debug.Warn(e)
                 txtNickname.requestFocus()
                 return
             }

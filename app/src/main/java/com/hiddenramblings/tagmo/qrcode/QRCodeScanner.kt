@@ -48,6 +48,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import java.util.concurrent.Executors
 import javax.crypto.Cipher
+import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import kotlin.math.abs
@@ -442,9 +443,13 @@ class QRCodeScanner : AppCompatActivity() {
     private fun decryptMii(qrData: ByteArray?) {
         if (null == qrData) return
         val nonce = qrData.copyOfRange(0, 8)
+        val empty = byteArrayOf(0, 0, 0, 0)
         val cipher = Cipher.getInstance("AES/CCM/NoPadding")
         cipher.init(
-            Cipher.DECRYPT_MODE, secretKeySpec, IvParameterSpec(nonce.plus(ByteArray(4)))
+            Cipher.DECRYPT_MODE, secretKeySpec,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                GCMParameterSpec(nonce.size + empty.size, nonce.plus(empty))
+            else IvParameterSpec(nonce.plus(empty))
         )
         val content = cipher.doFinal(qrData, 0, 0x58)
         txtMiiValue.text = TagArray.bytesToHex(

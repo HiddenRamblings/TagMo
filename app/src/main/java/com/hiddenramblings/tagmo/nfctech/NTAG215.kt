@@ -243,13 +243,12 @@ class NTAG215 : TagTechnology {
         return if (null != data && data.size % 4 == 0) {
             internalWrite(object : IFastWrite {
                 override fun doFastWrite(addr: Int, bank: Int, data: ByteArray): Boolean {
-                    val req = ByteArray(7)
+                    val req = ByteArray(3)
                     req[0] = NfcByte.N2_WRITE.toByte()
                     req[1] = (addr and 0xFF).toByte()
                     req[2] = (bank and 0xFF).toByte()
                     return try {
-                        System.arraycopy(data, 0, req, 3, 4)
-                        transceive(req)
+                        transceive(req.plus(data.copyOfRange(0, 4)))
                         true
                     } catch (e: Exception) {
                         false
@@ -292,16 +291,13 @@ class NTAG215 : TagTechnology {
             false
         } else internalFastWrite(object : IFastWrite {
             override fun doFastWrite(addr: Int, bank: Int, data: ByteArray): Boolean {
-                val req = ByteArray(
-                    data.size + 4
-                )
+                val req = ByteArray(4)
                 req[0] = NfcByte.N2_FAST_WRITE.toByte()
                 req[1] = (addr and 0xFF).toByte()
                 req[2] = (bank and 0xFF).toByte()
                 req[3] = (data.size and 0xFF).toByte()
                 return try {
-                    System.arraycopy(data, 0, req, 4, data.size)
-                    transceive(req)
+                    transceive(req.plus(data))
                     true
                 } catch (e: Exception) {
                     false

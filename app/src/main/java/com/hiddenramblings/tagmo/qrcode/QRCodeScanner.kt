@@ -25,7 +25,6 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
-import androidmads.library.qrgenearator.QRGContents
 import androidmads.library.qrgenearator.QRGEncoder
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -72,11 +71,6 @@ class QRCodeScanner : AppCompatActivity() {
     private var previewUseCase: Preview? = null
     private var analysisUseCase: ImageAnalysis? = null
 
-    private enum class TYPE {
-        UNKNOWN, WIFI, URL, PRODUCT, TEXT, CALENDAR,
-        CONTACT, LICENSE, EMAIL, GEO, ISBN, PHONE, SMS
-    }
-
     private val metrics = DisplayMetrics()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,23 +105,7 @@ class QRCodeScanner : AppCompatActivity() {
 
     private fun processBarcode(barcode: Barcode) {
         runOnUiThread {
-            val selection = when (barcode.valueType) {
-                Barcode.TYPE_UNKNOWN -> { TYPE.UNKNOWN }
-                Barcode.TYPE_WIFI -> { TYPE.WIFI }
-                Barcode.TYPE_URL -> { TYPE.URL }
-                Barcode.TYPE_PRODUCT -> { TYPE.PRODUCT }
-                Barcode.TYPE_TEXT -> { TYPE.TEXT }
-                Barcode.TYPE_CALENDAR_EVENT -> { TYPE.CALENDAR }
-                Barcode.TYPE_CONTACT_INFO -> { TYPE.CONTACT }
-                Barcode.TYPE_DRIVER_LICENSE -> { TYPE.LICENSE }
-                Barcode.TYPE_EMAIL -> { TYPE.EMAIL }
-                Barcode.TYPE_GEO -> { TYPE.GEO }
-                Barcode.TYPE_ISBN -> { TYPE.ISBN }
-                Barcode.TYPE_PHONE -> { TYPE.PHONE }
-                Barcode.TYPE_SMS -> { TYPE.SMS }
-                else -> { TYPE.UNKNOWN }
-            }
-            qrTypeSpinner.setSelection(selection.ordinal)
+            qrTypeSpinner.setSelection(barcode.valueType)
             txtRawValue.setText(
                 barcode.rawValue, TextView.BufferType.EDITABLE
             )
@@ -362,23 +340,6 @@ class QRCodeScanner : AppCompatActivity() {
                     if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
                     cameraPreview?.isVisible = false
                 }
-                val typeArray = resources.getStringArray(R.array.qr_code_type)
-                val selection = when (qrTypeSpinner.selectedItem) {
-                    typeArray[TYPE.UNKNOWN.ordinal] -> { QRGContents.Type.UNKNOWN }
-                    typeArray[TYPE.WIFI.ordinal] -> { QRGContents.Type.WIFI }
-                    typeArray[TYPE.URL.ordinal] -> { QRGContents.Type.URL }
-                    typeArray[TYPE.PRODUCT.ordinal] -> { QRGContents.Type.PRODUCT }
-                    typeArray[TYPE.TEXT.ordinal] -> { QRGContents.Type.TEXT }
-                    typeArray[TYPE.CALENDAR.ordinal] -> { QRGContents.Type.CALENDAR }
-                    typeArray[TYPE.CONTACT.ordinal] -> { QRGContents.Type.CONTACT }
-                    typeArray[TYPE.LICENSE.ordinal] -> { QRGContents.Type.LICENSE }
-                    typeArray[TYPE.EMAIL.ordinal] -> { QRGContents.Type.EMAIL }
-                    typeArray[TYPE.GEO.ordinal] -> { QRGContents.Type.LOCATION }
-                    typeArray[TYPE.ISBN.ordinal] -> { QRGContents.Type.ISBN }
-                    typeArray[TYPE.PHONE.ordinal] -> { QRGContents.Type.PHONE }
-                    typeArray[TYPE.SMS.ordinal] -> { QRGContents.Type.SMS }
-                    else -> { QRGContents.Type.UNKNOWN }
-                }
                 val data = txtRawBytes.text
                 val text = if (null != data)
                     TagArray.hexToString(data.toString())
@@ -407,11 +368,15 @@ class QRCodeScanner : AppCompatActivity() {
                     ((params * 3 / 4) / metrics.density) + 0.5
                 }.toInt()
 
-                val qrgEncoder = QRGEncoder(text, null, selection, dimension)
+                val qrgEncoder = QRGEncoder(
+                    text, null, qrTypeSpinner.selectedItemPosition, dimension
+                )
                 try {
                     val bitmap = qrgEncoder.bitmap
-                    runOnUiThread { barcodePreview.setImageBitmap(bitmap) }
-                    scanBarcodes(InputImage.fromBitmap(bitmap, 0))
+                    if (null != bitmap) {
+                        runOnUiThread { barcodePreview.setImageBitmap(bitmap) }
+                        scanBarcodes(InputImage.fromBitmap(bitmap, 0))
+                    }
                 } catch (ex: Exception) {
                     Debug.Warn(ex)
                     runOnUiThread {

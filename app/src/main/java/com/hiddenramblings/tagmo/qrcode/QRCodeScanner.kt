@@ -141,18 +141,17 @@ class QRCodeScanner : AppCompatActivity() {
             }
             if (Thread.currentThread().isInterrupted) return@execute
             this.amiiboManager = amiiboManager
-        }
-
-        if (intent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
-            val data = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
-            try {
-                val bitmap = encodeQR(TagArray.bytesToString(data), Barcode.TYPE_TEXT)
-                if (null != bitmap) {
-                    runOnUiThread { barcodePreview.setImageBitmap(bitmap) }
-                    scanBarcodes(InputImage.fromBitmap(bitmap, 0))
+            if (intent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
+                val data = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
+                try {
+                    val bitmap = encodeQR(TagArray.bytesToString(data), Barcode.TYPE_TEXT)
+                    if (null != bitmap) {
+                        runOnUiThread { barcodePreview.setImageBitmap(bitmap) }
+                        scanBarcodes(InputImage.fromBitmap(bitmap, 0))
+                    }
+                } catch (ex: Exception) {
+                    Debug.Warn(ex)
                 }
-            } catch (ex: Exception) {
-                Debug.Warn(ex)
             }
         }
     }
@@ -243,10 +242,10 @@ class QRCodeScanner : AppCompatActivity() {
         }
     }
 
-    private fun clearPreviews() {
-        amiiboPreview.setImageResource(0)
+    private fun clearPreviews(barcode : Boolean) {
         amiiboPreview.setOnClickListener(null)
-        barcodePreview.setImageResource(0)
+        amiiboPreview.setImageResource(0)
+        if (barcode) barcodePreview.setImageResource(0)
     }
 
     private fun processBarcode(barcode: Barcode) {
@@ -256,7 +255,7 @@ class QRCodeScanner : AppCompatActivity() {
             txtRawBytes.setText(
                 TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE
             )
-            clearPreviews()
+            clearPreviews(false)
             qrTypeSpinner.requestFocus()
         }
         try {
@@ -414,7 +413,7 @@ class QRCodeScanner : AppCompatActivity() {
             )[CameraXViewModel::class.java].processCameraProvider.observe(this) {
                 cameraProvider = it
                 runOnUiThread {
-                    clearPreviews()
+                    clearPreviews(true)
                     cameraPreview?.isVisible = true
                 }
                 bindPreviewUseCase()

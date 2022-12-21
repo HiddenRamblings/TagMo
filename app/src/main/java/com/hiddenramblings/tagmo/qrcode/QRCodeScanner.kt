@@ -41,7 +41,6 @@ import androidx.camera.view.PreviewView
 import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -55,7 +54,6 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.browser.Preferences
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -171,41 +169,6 @@ class QRCodeScanner : AppCompatActivity() {
         }
     } else false
 
-    private fun saveBinFile(amiibo: Amiibo, qrData: ByteArray?) {
-        val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
-        val dialog = AlertDialog.Builder(this)
-        val input = view.findViewById<EditText>(R.id.save_item_entry)
-        input.setText(TagArray.decipherFilename(amiibo, qrData, false))
-        val backupDialog: Dialog = dialog.setView(view).create()
-        view.findViewById<View>(R.id.button_save).setOnClickListener {
-            try {
-                val fileName: String = input.text.toString()
-                if (isDocumentStorage) {
-                    val rootDocument = DocumentFile.fromTreeUri(
-                        this, Uri.parse(prefs.browserRootDocument())
-                    ) ?: throw NullPointerException()
-                    TagArray.writeBytesToDocument(
-                        this, rootDocument, fileName, qrData
-                    )
-                } else {
-                    TagArray.writeBytesToFile(
-                        Storage.getDownloadDir(
-                            "TagMo", "Backups"
-                        ), fileName, qrData
-                    )
-                }
-                setResult(Activity.RESULT_OK)
-            } catch (e: IOException) {
-                e.message?.let { Toasty(this).Short(it) }
-            }
-            backupDialog.dismiss()
-        }
-        view.findViewById<View>(R.id.button_cancel).setOnClickListener {
-            backupDialog.dismiss()
-        }
-        backupDialog.show()
-    }
-
     @Throws(Exception::class)
     private fun decodeAmiibo(qrData: ByteArray?) {
         if (null == qrData) return
@@ -216,7 +179,39 @@ class QRCodeScanner : AppCompatActivity() {
                 txtMiiValue.text = amiibo.name
                 GlideApp.with(amiiboPreview).load(Amiibo.getImageUrl(amiibo.id)).into(amiiboPreview)
                 amiiboPreview.setOnClickListener {
-                    saveBinFile(amiibo, qrData)
+                    val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
+                    val dialog = AlertDialog.Builder(this)
+                    val input = view.findViewById<EditText>(R.id.save_item_entry)
+                    input.setText(TagArray.decipherFilename(amiibo, qrData, true))
+                    val backupDialog: Dialog = dialog.setView(view).create()
+                    view.findViewById<View>(R.id.button_save).setOnClickListener {
+                        try {
+                            val fileName: String = input.text.toString()
+                            if (isDocumentStorage) {
+                                val rootDocument = DocumentFile.fromTreeUri(
+                                    this, Uri.parse(prefs.browserRootDocument())
+                                ) ?: throw NullPointerException()
+                                TagArray.writeBytesToDocument(
+                                    this, rootDocument, fileName, qrData
+                                )
+                            } else {
+                                TagArray.writeBytesToFile(Storage.getDownloadDir(
+                                    "TagMo", "Backups"
+                                ), fileName, qrData)
+                            }
+                            Toasty(this@QRCodeScanner).Long(
+                                getString(R.string.wrote_file, fileName)
+                            )
+                            setResult(Activity.RESULT_OK)
+                        } catch (e: Exception) {
+                            e.message?.let { Toasty(this).Short(it) }
+                        }
+                        backupDialog.dismiss()
+                    }
+                    view.findViewById<View>(R.id.button_cancel).setOnClickListener {
+                        backupDialog.dismiss()
+                    }
+                    backupDialog.show()
                 }
             }}
         }

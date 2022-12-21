@@ -596,19 +596,16 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                         settings!!.browserRootDocument!!
                     ) ?: throw NullPointerException()
                     TagArray.writeBytesToDocument(
-                        requireContext(), rootDocument,
-                        input.text.toString(), tagData
+                        requireContext(), rootDocument, input.text.toString(), tagData
                     )
                 }).toString() else {
-                    TagArray.writeBytesToFile(
-                        Storage.getDownloadDir(
+                    TagArray.writeBytesToFile(Storage.getDownloadDir(
                             "TagMo", "Backups"
-                        ), input.text.toString(), tagData
-                    )
+                    ), input.text.toString(), tagData)
                 }
                 Toasty(requireActivity()).Long(getString(R.string.wrote_file, fileName))
                 activity.loadAmiiboBackground()
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 e.message?.let { Toasty(requireActivity()).Short(it) }
             }
             backupDialog.dismiss()

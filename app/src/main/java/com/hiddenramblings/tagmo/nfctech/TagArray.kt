@@ -333,8 +333,7 @@ object TagArray {
         FileOutputStream(binFile).write(tagData)
         try {
             MediaScannerConnection.scanFile(
-                TagMo.appContext, arrayOf(binFile.absolutePath),
-                null, null
+                TagMo.appContext, arrayOf(binFile.absolutePath), null, null
             )
         } catch (e: Exception) {
             Info(e)

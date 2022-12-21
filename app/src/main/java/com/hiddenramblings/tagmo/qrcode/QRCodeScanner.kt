@@ -8,6 +8,8 @@ package com.hiddenramblings.tagmo.qrcode
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Dialog
 import android.content.ContentValues
 import android.content.Intent
 import android.database.Cursor
@@ -21,14 +23,15 @@ import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import androidmads.library.qrgenearator.QRGEncoder
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.AppCompatImageView
@@ -36,7 +39,9 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.view.isVisible
+import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -48,8 +53,12 @@ import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
+import com.hiddenramblings.tagmo.browser.Preferences
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
+import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.widget.Toasty
 import org.json.JSONException
 import java.io.IOException
 import java.text.ParseException
@@ -62,6 +71,8 @@ import kotlin.math.abs
 
 
 class QRCodeScanner : AppCompatActivity() {
+
+    private lateinit var prefs: Preferences
 
     private lateinit var qrTypeSpinner: Spinner
     private lateinit var txtRawValue: EditText
@@ -87,6 +98,7 @@ class QRCodeScanner : AppCompatActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        prefs = Preferences(applicationContext)
         setContentView(R.layout.activity_qr_code)
 
         val actionBar = supportActionBar
@@ -94,6 +106,8 @@ class QRCodeScanner : AppCompatActivity() {
             actionBar.setHomeButtonEnabled(true)
             actionBar.setDisplayHomeAsUpEnabled(true)
         }
+
+        setResult(Activity.RESULT_CANCELED)
 
         barcodeScanner = BarcodeScanning.getClient(
             BarcodeScannerOptions.Builder().setBarcodeFormats(
@@ -145,6 +159,53 @@ class QRCodeScanner : AppCompatActivity() {
         }
     }
 
+    private val isDocumentStorage: Boolean
+    get() = if (
+        Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != prefs.browserRootDocument()
+    ) {
+        try {
+            DocumentFile.fromTreeUri(this, Uri.parse(prefs.browserRootDocument()))
+            true
+        } catch (iae: IllegalArgumentException) {
+            false
+        }
+    } else false
+
+    private fun saveBinFile(amiibo: Amiibo, qrData: ByteArray?) {
+        val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
+        val dialog = AlertDialog.Builder(this)
+        val input = view.findViewById<EditText>(R.id.save_item_entry)
+        input.setText(TagArray.decipherFilename(amiibo, qrData, false))
+        val backupDialog: Dialog = dialog.setView(view).create()
+        view.findViewById<View>(R.id.button_save).setOnClickListener {
+            try {
+                val fileName: String = input.text.toString()
+                if (isDocumentStorage) {
+                    val rootDocument = DocumentFile.fromTreeUri(
+                        this, Uri.parse(prefs.browserRootDocument())
+                    ) ?: throw NullPointerException()
+                    TagArray.writeBytesToDocument(
+                        this, rootDocument, fileName, qrData
+                    )
+                } else {
+                    TagArray.writeBytesToFile(
+                        Storage.getDownloadDir(
+                            "TagMo", "Backups"
+                        ), fileName, qrData
+                    )
+                }
+                setResult(Activity.RESULT_OK)
+            } catch (e: IOException) {
+                e.message?.let { Toasty(this).Short(it) }
+            }
+            backupDialog.dismiss()
+        }
+        view.findViewById<View>(R.id.button_cancel).setOnClickListener {
+            backupDialog.dismiss()
+        }
+        backupDialog.show()
+    }
+
     @Throws(Exception::class)
     private fun decodeAmiibo(qrData: ByteArray?) {
         if (null == qrData) return
@@ -154,6 +215,9 @@ class QRCodeScanner : AppCompatActivity() {
                 txtMiiLabel.text = getText(R.string.qr_amiibo)
                 txtMiiValue.text = amiibo.name
                 GlideApp.with(amiiboPreview).load(Amiibo.getImageUrl(amiibo.id)).into(amiiboPreview)
+                amiiboPreview.setOnClickListener {
+                    saveBinFile(amiibo, qrData)
+                }
             }}
         }
     }
@@ -184,6 +248,12 @@ class QRCodeScanner : AppCompatActivity() {
         }
     }
 
+    private fun clearPreviews() {
+        amiiboPreview.setImageResource(0)
+        amiiboPreview.setOnClickListener(null)
+        barcodePreview.setImageResource(0)
+    }
+
     private fun processBarcode(barcode: Barcode) {
         runOnUiThread {
             qrTypeSpinner.setSelection(barcode.valueType)
@@ -191,7 +261,7 @@ class QRCodeScanner : AppCompatActivity() {
             txtRawBytes.setText(
                 TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE
             )
-            amiiboPreview.setImageResource(0)
+            clearPreviews()
             qrTypeSpinner.requestFocus()
         }
         try {
@@ -349,8 +419,7 @@ class QRCodeScanner : AppCompatActivity() {
             )[CameraXViewModel::class.java].processCameraProvider.observe(this) {
                 cameraProvider = it
                 runOnUiThread {
-                    amiiboPreview.setImageResource(0)
-                    barcodePreview.setImageResource(0)
+                    clearPreviews()
                     cameraPreview?.isVisible = true
                 }
                 bindPreviewUseCase()

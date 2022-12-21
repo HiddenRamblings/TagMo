@@ -230,9 +230,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 ?: throw Exception()
             val directory = File(directory, amiibo.amiiboSeries!!.name)
             val amiiboFile = File(
-                directory, TagArray.decipherFilename(
-                    settings!!.amiiboManager, tagData, false
-                )
+                directory, TagArray.decipherFilename(amiibo, tagData, false)
             )
             AlertDialog.Builder(requireContext())
                 .setMessage(getString(R.string.warn_delete_file, amiiboFile.name))
@@ -273,9 +271,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             val directory = File(directory, amiibo.amiiboSeries!!.name)
             directory.mkdirs()
             TagArray.writeBytesToFile(
-                directory, TagArray.decipherFilename(
-                    settings!!.amiiboManager, tagData, false
-                ), tagData
+                directory, TagArray.decipherFilename(amiibo, tagData, false), tagData
             )
         } catch (e: Exception) {
             Debug.Warn(e)
@@ -290,7 +286,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             val foomiiboData = foomiibo.getSignedData(tagData!!)
             TagArray.writeBytesToFile(
                 directory, TagArray.decipherFilename(
-                    settings!!.amiiboManager, foomiiboData, false
+                    amiibo, foomiiboData, false
                 ), foomiiboData
             )
             IconifiedSnackbar(requireActivity(), browserContent).buildSnackbar(

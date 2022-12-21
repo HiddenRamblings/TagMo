@@ -628,7 +628,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val backupDialog: Dialog = dialog.setView(view).create()
         view.findViewById<View>(R.id.button_save).setOnClickListener { _: View? ->
             try {
-                var fileName: String? = input.text.toString() + ".bin"
+                var fileName: String? = input.text.toString()
                 fileName = if (isDocumentStorage) {
                     val rootDocument = DocumentFile.fromTreeUri(
                         this, settings!!.browserRootDocument!!
@@ -723,7 +723,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_qr_code -> {
-                    startActivity(Intent(this, QRCodeScanner::class.java))
+                    onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java))
                     return@setOnMenuItemClickListener true
                 }
                 else -> false
@@ -1088,7 +1088,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         val backupDialog: Dialog = dialog.setView(view).create()
                         view.findViewById<View>(R.id.button_save).setOnClickListener {
                             try {
-                                var fileName: String? = input.text.toString() + ".bin"
+                                var fileName: String? = input.text.toString()
                                 fileName = if (isDocumentStorage) {
                                     val rootDocument = DocumentFile.fromTreeUri(
                                         this, settings!!.browserRootDocument!!
@@ -1130,9 +1130,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_share_qr -> {
-                    val hexView = Intent(this, QRCodeScanner::class.java)
-                    hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    startActivity(hexView)
+                    val qrShare = Intent(this, QRCodeScanner::class.java)
+                    qrShare.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    onQRCodeScanner.launch(qrShare)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {
@@ -1217,9 +1217,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_share_qr -> {
-                    val hexView = Intent(this, QRCodeScanner::class.java)
-                    hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    startActivity(hexView)
+                    val qrShare = Intent(this, QRCodeScanner::class.java)
+                    qrShare.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    onQRCodeScanner.launch(qrShare)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {
@@ -1282,16 +1282,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     val isDocumentStorage: Boolean
-        get() = if (
-            Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != settings!!.browserRootDocument
-        ) {
-            try {
-                DocumentFile.fromTreeUri(this, settings!!.browserRootDocument!!)
-                true
-            } catch (iae: IllegalArgumentException) {
-                false
-            }
-        } else false
+    get() = if (
+        Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != settings!!.browserRootDocument
+    ) {
+        try {
+            DocumentFile.fromTreeUri(this, settings!!.browserRootDocument!!)
+            true
+        } catch (iae: IllegalArgumentException) {
+            false
+        }
+    } else false
 
     @Throws(ActivityNotFoundException::class)
     private fun onDocumentRequested() {
@@ -2014,6 +2014,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (resultData!!.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             showElitePage(resultData.extras)
         }
+    }
+
+    private val onQRCodeScanner = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode != RESULT_OK || null == result.data) return@registerForActivityResult
+        onRootFolderChanged(true)
     }
 
     private val onUpdateTagResult = registerForActivityResult(

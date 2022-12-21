@@ -597,7 +597,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     ) ?: throw NullPointerException()
                     TagArray.writeBytesToDocument(
                         requireContext(), rootDocument,
-                        input.text.toString() + ".bin", tagData
+                        input.text.toString(), tagData
                     )
                 }).toString() else {
                     TagArray.writeBytesToFile(

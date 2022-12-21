@@ -244,9 +244,7 @@ object TagArray {
     }
 
     @JvmStatic
-    fun decipherFilename(
-        amiiboManager: AmiiboManager?, tagData: ByteArray?, verified: Boolean
-    ): String {
+    fun decipherFilename(amiibo: Amiibo, tagData: ByteArray?, verified: Boolean): String {
         var status = ""
         if (verified) {
             status = try {
@@ -258,20 +256,28 @@ object TagArray {
             }
         }
         try {
-            val amiiboId = Amiibo.dataToId(tagData)
-            var name = Amiibo.idToHex(amiiboId)
-            if (null != amiiboManager) {
-                val amiibo = amiiboManager.amiibos[amiiboId]
-                if (amiibo?.name != null) {
-                    name = amiibo.name.replace(File.separatorChar, '-')
-                }
-            }
-            val uidHex = bytesToHex(tagData!!.copyOfRange(0, 9))
+            val name = amiibo.name?.replace(File.separatorChar, '-')
+            val uidHex = bytesToHex(tagData?.copyOfRange(0, 9))
             return if (verified) String.format(
                 Locale.ROOT, "%1\$s[%2\$s]-%3\$s.bin", name, uidHex, status
             ) else String.format(
                 Locale.ROOT, "%1\$s[%2\$s].bin", name, uidHex
             )
+        } catch (ex: Exception) {
+            Warn(ex)
+        }
+        return ""
+    }
+
+    @JvmStatic
+    fun decipherFilename(
+        amiiboManager: AmiiboManager?, tagData: ByteArray?, verified: Boolean
+    ): String {
+        try {
+            val amiiboId = Amiibo.dataToId(tagData)
+            if (null != amiiboManager) {
+                return decipherFilename(amiiboManager.amiibos[amiiboId]!!, tagData, verified)
+            }
         } catch (ex: Exception) {
             Warn(ex)
         }
@@ -342,7 +348,7 @@ object TagArray {
         context: Context, directory: DocumentFile, name: String, tagData: ByteArray?
     ): String? {
         val newFile = directory.createFile(
-            context.resources.getStringArray(R.array.mimetype_bin)[0], "$name.bin"
+            context.resources.getStringArray(R.array.mimetype_bin)[0], name
         )
         if (null != newFile) {
             val docWriter = context.contentResolver.openOutputStream(newFile.uri)

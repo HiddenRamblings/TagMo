@@ -79,9 +79,9 @@ class WebsiteFragment : Fragment() {
         webViewSettings.javaScriptEnabled = true
         webViewSettings.domStorageEnabled = true
         webViewSettings.cacheMode = WebSettings.LOAD_NO_CACHE
-        if (isOlder(Build.VERSION_CODES.KITKAT)) {
+        if (isOlder(Build.VERSION_CODES.KITKAT))
+            @Suppress("DEPRECATION")
             webViewSettings.pluginState = WebSettings.PluginState.ON
-        }
         if (isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             val assetLoader = WebViewAssetLoader.Builder().addPathHandler(
                 "/assets/",
@@ -117,8 +117,10 @@ class WebsiteFragment : Fragment() {
                     })
             }
         }
+        @Suppress("DEPRECATION")
         webViewSettings.allowFileAccessFromFileURLs =
             Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
+        @Suppress("DEPRECATION")
         webViewSettings.allowUniversalAccessFromFileURLs =
             Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
         val download = JavaScriptInterface()
@@ -148,6 +150,15 @@ class WebsiteFragment : Fragment() {
         } else {
             val delayedUrl = website
             webHandler.postDelayed({ loadWebsite(delayedUrl) }, TagMo.uiDelay.toLong())
+        }
+    }
+
+    fun hasGoneBack() : Boolean {
+        return if (mWebView!!.canGoBack()) {
+            mWebView!!.goBack()
+            true
+        } else {
+            false
         }
     }
 

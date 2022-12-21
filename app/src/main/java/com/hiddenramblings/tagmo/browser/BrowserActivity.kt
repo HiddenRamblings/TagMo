@@ -2647,8 +2647,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         bottomSheet!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
                     } else if (View.VISIBLE == amiiboContainer!!.visibility) {
                         amiiboContainer!!.visibility = View.GONE
-                    } else if (layout!!.currentItem != 0) {
-                        layout!!.setCurrentItem(0, true)
+                    } else if (layout?.currentItem != 0) {
+                        if (layout?.currentItem == pagerAdapter.itemCount - 1
+                            && pagerAdapter.website.hasGoneBack()) return
+                        else layout!!.setCurrentItem(0, true)
                     } else {
                         finishAffinity()
                     }
@@ -2658,8 +2660,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             bottomSheet!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
                         } else if (View.VISIBLE == amiiboContainer!!.visibility) {
                             amiiboContainer!!.visibility = View.GONE
-                        } else if (layout!!.currentItem != 0) {
-                            layout!!.setCurrentItem(0, true)
+                        } else if (layout?.currentItem != 0) {
+                            if (layout?.currentItem == pagerAdapter.itemCount - 1
+                                && pagerAdapter.website.hasGoneBack()) return
+                                else layout!!.setCurrentItem(0, true)
                         } else {
                             finishAffinity()
                         }

@@ -24,6 +24,10 @@
         android:title="@string/edit_props"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/mnu_share_qr"
+        android:title="@string/share_qr"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/mnu_view_hex"
         android:title="@string/view_hex"
         app:showAsAction="never"/>

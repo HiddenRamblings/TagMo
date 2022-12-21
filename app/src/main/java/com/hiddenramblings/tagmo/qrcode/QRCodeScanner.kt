@@ -42,9 +42,15 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import com.hiddenramblings.tagmo.BuildConfig
+import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.amiibo.Amiibo
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import org.json.JSONException
+import java.io.IOException
+import java.text.ParseException
 import java.util.concurrent.Executors
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
@@ -58,7 +64,10 @@ class QRCodeScanner : AppCompatActivity() {
     private lateinit var qrTypeSpinner: Spinner
     private lateinit var txtRawValue: EditText
     private lateinit var txtRawBytes: EditText
+    private lateinit var txtMiiLabel: TextView
     private lateinit var txtMiiValue: TextView
+
+    private var amiiboManager: AmiiboManager? = null
 
     private lateinit var barcodePreview: AppCompatImageView
     private var barcodeScanner: BarcodeScanner? = null
@@ -100,24 +109,100 @@ class QRCodeScanner : AppCompatActivity() {
         qrTypeSpinner.adapter = adapter
         txtRawValue = findViewById(R.id.txtRawValue)
         txtRawBytes = findViewById(R.id.txtRawBytes)
+        txtMiiLabel = findViewById(R.id.txtMiiLabel)
         txtMiiValue = findViewById(R.id.txtMiiValue)
+
+        Executors.newSingleThreadExecutor().execute {
+            var amiiboManager: AmiiboManager? = null
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
+            } catch (e: IOException) {
+                Debug.Warn(e)
+            } catch (e: JSONException) {
+                Debug.Warn(e)
+            } catch (e: ParseException) {
+                Debug.Warn(e)
+            }
+            if (Thread.currentThread().isInterrupted) return@execute
+            this.amiiboManager = amiiboManager
+        }
+
+        if (intent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
+            val data = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
+            try {
+                val bitmap = encodeQR(TagArray.bytesToString(data), Barcode.TYPE_TEXT)
+                if (null != bitmap) {
+                    runOnUiThread { barcodePreview.setImageBitmap(bitmap) }
+                    scanBarcodes(InputImage.fromBitmap(bitmap, 0))
+                }
+            } catch (ex: Exception) {
+                Debug.Warn(ex)
+            }
+        }
+    }
+
+    @Throws(Exception::class)
+    private fun decodeAmiibo(qrData: ByteArray?) {
+        if (null == qrData) return
+        if (null != amiiboManager) {
+            val amiibo = amiiboManager!!.amiibos[Amiibo.dataToId(qrData)]
+            runOnUiThread {
+                txtMiiLabel.text = getText(R.string.amiibo)
+                txtMiiValue.text = amiibo?.name
+            }
+        }
+    }
+
+    private val secretKeySpec = SecretKeySpec(byteArrayOf(
+        0x59, 0xFC.toByte(), 0x81.toByte(), 0x7E, 0x64, 0x46,
+        0xEA.toByte(), 0x61, 0x90.toByte(), 0x34, 0x7B, 0x20,
+        0xE9.toByte(), 0xBD.toByte(), 0xCE.toByte(), 0x52
+    ), "AES")
+
+    @Throws(Exception::class)
+    private fun decryptMii(qrData: ByteArray?) {
+        if (null == qrData) return
+        val nonce = qrData.copyOfRange(0, 8)
+        val empty = byteArrayOf(0, 0, 0, 0)
+        val cipher = Cipher.getInstance("AES/CCM/NoPadding")
+        cipher.init(
+            Cipher.DECRYPT_MODE, secretKeySpec,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                GCMParameterSpec(nonce.size + empty.size, nonce.plus(empty))
+            else IvParameterSpec(nonce.plus(empty))
+        )
+        val content = cipher.doFinal(qrData, 0, 0x58)
+        runOnUiThread {
+            txtMiiValue.text = TagArray.bytesToHex(
+                content.copyOfRange(0, 12).plus(nonce).plus(content.copyOfRange(12, content.size))
+            )
+        }
     }
 
     private fun processBarcode(barcode: Barcode) {
         runOnUiThread {
             qrTypeSpinner.setSelection(barcode.valueType)
-            txtRawValue.setText(
-                barcode.rawValue, TextView.BufferType.EDITABLE
-            )
+            txtRawValue.setText(barcode.rawValue, TextView.BufferType.EDITABLE)
             txtRawBytes.setText(
                 TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE
             )
             qrTypeSpinner.requestFocus()
+        }
+        try {
+            decodeAmiibo(barcode.rawBytes)
+        } catch (ex: Exception) {
+            Debug.Warn(ex)
+        }
+        if (txtMiiValue.text.isNullOrEmpty()) {
+            txtMiiLabel.text = getText(R.string.qr_mii)
             try {
                 decryptMii(barcode.rawBytes)
             } catch (ex: Exception) {
                 Debug.Warn(ex)
-                txtMiiValue.text = ex.localizedMessage
+                runOnUiThread {
+
+                    txtMiiValue.text = ex.localizedMessage
+                }
             }
         }
     }
@@ -173,57 +258,32 @@ class QRCodeScanner : AppCompatActivity() {
     }
 
     private val screenAspectRatio: Int
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-        get() {
-            val width: Int
-            val height: Int
-            if (Debug.isNewer(Build.VERSION_CODES.S)) {
-                val bounds: Rect = windowManager.currentWindowMetrics.bounds
-                width = bounds.width()
-                height = bounds.height()
-            } else {
-                if (Debug.isNewer(Build.VERSION_CODES.R))
-                    @Suppress("DEPRECATION")
-                    display?.getRealMetrics(metrics)
-                        ?: windowManager.defaultDisplay.getRealMetrics(metrics)
-                else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
-                    @Suppress("DEPRECATION")
-                    windowManager.defaultDisplay.getRealMetrics(metrics)
-                else
-                    @Suppress("DEPRECATION")
-                    windowManager.defaultDisplay.getMetrics(metrics)
-                width = metrics.widthPixels
-                height = metrics.heightPixels
-            }
-            val previewRatio = width.coerceAtLeast(height).toDouble() / width.coerceAtMost(height)
-            if (abs(previewRatio - (4.0 / 3.0)) <= abs(previewRatio - (16.0 / 9.0))) {
-                return AspectRatio.RATIO_4_3
-            }
-            return AspectRatio.RATIO_16_9
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP) get() {
+        val width: Int
+        val height: Int
+        if (Debug.isNewer(Build.VERSION_CODES.S)) {
+            val bounds: Rect = windowManager.currentWindowMetrics.bounds
+            width = bounds.width()
+            height = bounds.height()
+        } else {
+            if (Debug.isNewer(Build.VERSION_CODES.R))
+                @Suppress("DEPRECATION")
+                display?.getRealMetrics(metrics)
+                    ?: windowManager.defaultDisplay.getRealMetrics(metrics)
+            else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                @Suppress("DEPRECATION")
+                windowManager.defaultDisplay.getRealMetrics(metrics)
+            else
+                @Suppress("DEPRECATION")
+                windowManager.defaultDisplay.getMetrics(metrics)
+            width = metrics.widthPixels
+            height = metrics.heightPixels
         }
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private var onRequestCamera = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) {
-            cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-            ViewModelProvider(
-                this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-            )[CameraXViewModel::class.java].processCameraProvider.observe(this) {
-                cameraProvider = it
-                runOnUiThread {
-                    barcodePreview.setImageResource(0)
-                    cameraPreview?.isVisible = true
-                }
-                bindCameraUseCases()
-            }
+        val previewRatio = width.coerceAtLeast(height).toDouble() / width.coerceAtMost(height)
+        if (abs(previewRatio - (4.0 / 3.0)) <= abs(previewRatio - (16.0 / 9.0))) {
+            return AspectRatio.RATIO_4_3
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun bindCameraUseCases() {
-        bindPreviewUseCase()
-        bindAnalyseUseCase()
+        return AspectRatio.RATIO_16_9
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -274,6 +334,30 @@ class QRCodeScanner : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun bindCameraUseCases() {
+        bindPreviewUseCase()
+        bindAnalyseUseCase()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private var onRequestCamera = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) {
+            cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+            ViewModelProvider(
+                this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+            )[CameraXViewModel::class.java].processCameraProvider.observe(this) {
+                cameraProvider = it
+                runOnUiThread {
+                    barcodePreview.setImageResource(0)
+                    cameraPreview?.isVisible = true
+                }
+                bindCameraUseCases()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError")
     private fun processImageProxy(barcodeScanner: BarcodeScanner?, imageProxy: ImageProxy) {
         val image = InputImage.fromMediaImage(
@@ -282,6 +366,35 @@ class QRCodeScanner : AppCompatActivity() {
         barcodeScanner?.process(image)!!.addOnSuccessListener { barcodes ->
             barcodes.forEach { processBarcode(it) }
         }.addOnFailureListener { Debug.Error(it) }.addOnCompleteListener { imageProxy.close() }
+    }
+
+    @Throws(Exception::class)
+    fun encodeQR(text: String, type: Int) : Bitmap? {
+        val dimension = if (Debug.isNewer(Build.VERSION_CODES.S)) {
+            val bounds: Rect = windowManager.currentWindowMetrics.bounds
+            val params = if (bounds.width() < bounds.height())
+                bounds.width()
+            else bounds.height()
+            ((params * 3 / 4) / (resources.configuration.densityDpi / 160)) + 0.5
+        } else {
+            if (Debug.isNewer(Build.VERSION_CODES.R))
+                @Suppress("DEPRECATION")
+                display?.getRealMetrics(metrics)
+                    ?: windowManager.defaultDisplay.getRealMetrics(metrics)
+            else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                @Suppress("DEPRECATION")
+                windowManager.defaultDisplay.getRealMetrics(metrics)
+            else
+                @Suppress("DEPRECATION")
+                windowManager.defaultDisplay.getMetrics(metrics)
+            val params = if (metrics.widthPixels < metrics.heightPixels)
+                metrics.widthPixels
+            else metrics.heightPixels
+            ((params * 3 / 4) / metrics.density) + 0.5
+        }.toInt()
+
+        val qrgEncoder = QRGEncoder(text, null, type, dimension)
+        return qrgEncoder.bitmap
     }
 
     @SuppressLint("RestrictedApi")
@@ -340,39 +453,12 @@ class QRCodeScanner : AppCompatActivity() {
                     if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
                     cameraPreview?.isVisible = false
                 }
-                val data = txtRawBytes.text
-                val text = if (null != data)
-                    TagArray.hexToString(data.toString())
+                val text = if (!txtRawBytes.text.isNullOrEmpty())
+                    TagArray.hexToString(txtRawBytes.text.toString())
                 else txtRawValue.text.toString()
 
-                val dimension = if (Debug.isNewer(Build.VERSION_CODES.S)) {
-                    val bounds: Rect = windowManager.currentWindowMetrics.bounds
-                    val params = if (bounds.width() < bounds.height())
-                        bounds.width()
-                    else bounds.height()
-                    ((params * 3 / 4) / (resources.configuration.densityDpi / 160)) + 0.5
-                } else {
-                    if (Debug.isNewer(Build.VERSION_CODES.R))
-                        @Suppress("DEPRECATION")
-                        display?.getRealMetrics(metrics)
-                            ?: windowManager.defaultDisplay.getRealMetrics(metrics)
-                    else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
-                        @Suppress("DEPRECATION")
-                        windowManager.defaultDisplay.getRealMetrics(metrics)
-                    else
-                        @Suppress("DEPRECATION")
-                        windowManager.defaultDisplay.getMetrics(metrics)
-                    val params = if (metrics.widthPixels < metrics.heightPixels)
-                        metrics.widthPixels
-                    else metrics.heightPixels
-                    ((params * 3 / 4) / metrics.density) + 0.5
-                }.toInt()
-
-                val qrgEncoder = QRGEncoder(
-                    text, null, qrTypeSpinner.selectedItemPosition, dimension
-                )
                 try {
-                    val bitmap = qrgEncoder.bitmap
+                    val bitmap = encodeQR(text, qrTypeSpinner.selectedItemPosition)
                     if (null != bitmap) {
                         runOnUiThread { barcodePreview.setImageBitmap(bitmap) }
                         scanBarcodes(InputImage.fromBitmap(bitmap, 0))
@@ -380,13 +466,9 @@ class QRCodeScanner : AppCompatActivity() {
                 } catch (ex: Exception) {
                     Debug.Warn(ex)
                     runOnUiThread {
-                        qrTypeSpinner.setSelection(12)
-                        txtRawValue.setText(
-                            "", TextView.BufferType.EDITABLE
-                        )
-                        txtRawBytes.setText(
-                            "", TextView.BufferType.EDITABLE
-                        )
+                        qrTypeSpinner.setSelection(0)
+                        txtRawValue.setText("", TextView.BufferType.EDITABLE)
+                        txtRawBytes.setText("", TextView.BufferType.EDITABLE)
                         qrTypeSpinner.requestFocus()
                     }
                 }
@@ -396,29 +478,5 @@ class QRCodeScanner : AppCompatActivity() {
             }
         }
         return true
-    }
-
-    private val secretKeySpec = SecretKeySpec(byteArrayOf(
-        0x59, 0xFC.toByte(), 0x81.toByte(), 0x7E, 0x64, 0x46,
-        0xEA.toByte(), 0x61, 0x90.toByte(), 0x34, 0x7B, 0x20,
-        0xE9.toByte(), 0xBD.toByte(), 0xCE.toByte(), 0x52
-    ), "AES")
-
-    @Throws(Exception::class)
-    private fun decryptMii(qrData: ByteArray?) {
-        if (null == qrData) return
-        val nonce = qrData.copyOfRange(0, 8)
-        val empty = byteArrayOf(0, 0, 0, 0)
-        val cipher = Cipher.getInstance("AES/CCM/NoPadding")
-        cipher.init(
-            Cipher.DECRYPT_MODE, secretKeySpec,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                GCMParameterSpec(nonce.size + empty.size, nonce.plus(empty))
-            else IvParameterSpec(nonce.plus(empty))
-        )
-        val content = cipher.doFinal(qrData, 0, 0x58)
-        txtMiiValue.text = TagArray.bytesToHex(
-            content.copyOfRange(0, 12).plus(nonce).plus(content.copyOfRange(12, content.size))
-        )
     }
 }

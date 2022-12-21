@@ -149,13 +149,13 @@ object TagArray {
         }
     }
 
-    fun hexToLong(s: String): Long {
+    fun hexToLong(hex: String): Long {
         var result: Long = 0
         try {
-            result = s.toLong(16)
+            result = hex.toLong(16)
         } catch (nf: NumberFormatException) {
-            for (i in s.indices) {
-                result = (result shl 4) + Character.digit(s[i], 16).toLong()
+            for (i in hex.indices) {
+                result = (result shl 4) + Character.digit(hex[i], 16).toLong()
             }
         }
         return result
@@ -169,6 +169,10 @@ object TagArray {
             i += 2
         }
         return output.toString()
+    }
+
+    fun bytesToString(bytes: ByteArray?): String {
+        return hexToString(bytesToHex(bytes))
     }
 
     @JvmStatic

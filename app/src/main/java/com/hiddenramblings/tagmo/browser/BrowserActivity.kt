@@ -634,23 +634,18 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         this, settings!!.browserRootDocument!!
                     ) ?: throw NullPointerException()
                     writeBytesToDocument(
-                        this, rootDocument,
-                        fileName!!, tagData
+                        this, rootDocument, fileName!!, tagData
                     )
                 } else {
-                    writeBytesToFile(
-                        Storage.getDownloadDir(
+                    writeBytesToFile(Storage.getDownloadDir(
                             "TagMo", "Backups"
-                        ), fileName!!, tagData
-                    )
+                    ), fileName!!, tagData)
                 }
                 IconifiedSnackbar(this, layout).buildSnackbar(
                     getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
                 ).show()
                 onRootFolderChanged(true)
-            } catch (e: IOException) {
-                e.message?.let { Toasty(this).Short(it) }
-            } catch (e: NullPointerException) {
+            } catch (e: Exception) {
                 e.message?.let { Toasty(this).Short(it) }
             }
             backupDialog.dismiss()
@@ -1105,7 +1100,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                     getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
                                 ).show()
                                 onRootFolderChanged(true)
-                            } catch (e: IOException) {
+                            } catch (e: Exception) {
                                 e.message?.let { Toasty(this).Short(it) }
                             }
                             backupDialog.dismiss()

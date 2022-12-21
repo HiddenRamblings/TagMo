@@ -23,6 +23,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import androidmads.library.qrgenearator.QRGEncoder
@@ -42,6 +43,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import com.hiddenramblings.tagmo.BuildConfig
+import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
@@ -69,6 +71,7 @@ class QRCodeScanner : AppCompatActivity() {
 
     private var amiiboManager: AmiiboManager? = null
 
+    private lateinit var amiiboPreview: AppCompatImageView
     private lateinit var barcodePreview: AppCompatImageView
     private var barcodeScanner: BarcodeScanner? = null
     private var captureUri: Uri? = null
@@ -98,6 +101,7 @@ class QRCodeScanner : AppCompatActivity() {
             ).build()
         )
 
+        amiiboPreview = findViewById(R.id.amiiboPreview)
         barcodePreview = findViewById(R.id.barcodePreview)
         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
             cameraPreview = findViewById(R.id.cameraPreview)
@@ -146,10 +150,11 @@ class QRCodeScanner : AppCompatActivity() {
         if (null == qrData) return
         if (null != amiiboManager) {
             val amiibo = amiiboManager!!.amiibos[Amiibo.dataToId(qrData)]
-            runOnUiThread {
-                txtMiiLabel.text = getText(R.string.amiibo)
-                txtMiiValue.text = amiibo?.name
-            }
+            if (null != amiibo) { runOnUiThread {
+                txtMiiLabel.text = getText(R.string.qr_amiibo)
+                txtMiiValue.text = amiibo.name
+                GlideApp.with(amiiboPreview).load(Amiibo.getImageUrl(amiibo.id)).into(amiiboPreview)
+            }}
         }
     }
 
@@ -186,6 +191,7 @@ class QRCodeScanner : AppCompatActivity() {
             txtRawBytes.setText(
                 TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE
             )
+            amiiboPreview.setImageResource(0)
             qrTypeSpinner.requestFocus()
         }
         try {
@@ -334,12 +340,6 @@ class QRCodeScanner : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun bindCameraUseCases() {
-        bindPreviewUseCase()
-        bindAnalyseUseCase()
-    }
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private var onRequestCamera = registerForActivityResult(
         ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) {
@@ -349,10 +349,12 @@ class QRCodeScanner : AppCompatActivity() {
             )[CameraXViewModel::class.java].processCameraProvider.observe(this) {
                 cameraProvider = it
                 runOnUiThread {
+                    amiiboPreview.setImageResource(0)
                     barcodePreview.setImageResource(0)
                     cameraPreview?.isVisible = true
                 }
-                bindCameraUseCases()
+                bindPreviewUseCase()
+                bindAnalyseUseCase()
             }
         }
     }

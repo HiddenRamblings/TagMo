@@ -16,7 +16,7 @@
             android:id="@+id/barcodePreview"
             android:contentDescription="@string/imageview_amiibo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
         <View
             android:id="@+id/imageDivider"
@@ -124,6 +124,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/amiiboPreview"
+        android:contentDescription="@string/imageview_amiibo"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_gravity="bottom">
 
@@ -150,5 +162,6 @@
             android:textColor="@color/tag_text"
             android:textSize="14sp"
             android:scrollbars="vertical" />
+    </LinearLayout>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

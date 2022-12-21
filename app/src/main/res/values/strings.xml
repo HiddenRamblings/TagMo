@@ -192,6 +192,7 @@
     <string name="qr_raw">QR Text</string>
     <string name="qr_bytes">QR Data</string>
     <string name="qr_mii">Mii Data</string>
+    <string name="qr_amiibo">QR amiibo</string>
 
     <string name="settings">Settings</string>
     <string name="guides">Guides</string>

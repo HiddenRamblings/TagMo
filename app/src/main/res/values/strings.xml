@@ -90,6 +90,7 @@
     <string name="mod_serial">Serial Number</string>
     <string name="view_hex">View Hex Code</string>
     <string name="hex_code">Hex Code</string>
+    <string name="share_qr">Share QR Code</string>
     <string name="edit_props">Edit Properties</string>
     <string name="delete_binary">Delete Binary</string>
     <string name="ignore_tag_id">Ignore Tag ID #</string>

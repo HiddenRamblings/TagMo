@@ -226,7 +226,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     fun deleteFoomiiboFile(tagData: ByteArray?) {
         try {
-            val amiibo = settings!!.amiiboManager!!.amiibos[Amiibo.dataToId(tagData)] ?: throw Exception()
+            val amiibo = settings!!.amiiboManager!!.amiibos[Amiibo.dataToId(tagData)]
+                ?: throw Exception()
             val directory = File(directory, amiibo.amiiboSeries!!.name)
             val amiiboFile = File(
                 directory, TagArray.decipherFilename(

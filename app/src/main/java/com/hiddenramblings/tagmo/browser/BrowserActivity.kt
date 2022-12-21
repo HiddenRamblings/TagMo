@@ -1029,6 +1029,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         toolbar.menu.findItem(R.id.mnu_update).isEnabled = available
         toolbar.menu.findItem(R.id.mnu_edit).isEnabled = available
         toolbar.menu.findItem(R.id.mnu_view_hex).isEnabled = available
+        toolbar.menu.findItem(R.id.mnu_share_qr).isEnabled = available
         toolbar.menu.findItem(R.id.mnu_validate).isEnabled = available
         var cached = false
         val backup = toolbar.menu.findItem(R.id.mnu_save)
@@ -1128,6 +1129,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     startActivity(hexView)
                     return@setOnMenuItemClickListener true
                 }
+                R.id.mnu_share_qr -> {
+                    val hexView = Intent(this, QRCodeScanner::class.java)
+                    hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    startActivity(hexView)
+                    return@setOnMenuItemClickListener true
+                }
                 R.id.mnu_validate -> {
                     try {
                         validateData(tagData)
@@ -1205,6 +1212,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 R.id.mnu_view_hex -> {
                     val hexView = Intent(this, HexCodeViewer::class.java)
+                    hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    startActivity(hexView)
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_share_qr -> {
+                    val hexView = Intent(this, QRCodeScanner::class.java)
                     hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
                     startActivity(hexView)
                     return@setOnMenuItemClickListener true

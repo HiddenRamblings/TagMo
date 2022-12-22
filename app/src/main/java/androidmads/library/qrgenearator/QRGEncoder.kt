@@ -1,3 +1,21 @@
+/*
+ * ====================================================================
+ * Copyright (c) 2016 AndroidMad / Mushtaq M A
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software
+ * is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * Copyright (C) 2022 AbandonedCart @ TagMo
+ * ====================================================================
+ */
+
 package androidmads.library.qrgenearator
 
 import android.graphics.Bitmap
@@ -13,6 +31,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.util.*
 
 class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimension: Int) {
+    
     private var colorWhite = -0x1
     private var colorBlack = -0x1000000
     private var contents: String? = null
@@ -21,6 +40,29 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
         private set
     private var format: BarcodeFormat = BarcodeFormat.QR_CODE
     private var encoded = false
+
+    private val keysPhone = arrayOf<String?>(
+        ContactsContract.Intents.Insert.PHONE,
+        ContactsContract.Intents.Insert.SECONDARY_PHONE,
+        ContactsContract.Intents.Insert.TERTIARY_PHONE
+    )
+    @Suppress("UNUSED")
+    private val keysTypePhone = arrayOf(
+        ContactsContract.Intents.Insert.PHONE_TYPE,
+        ContactsContract.Intents.Insert.SECONDARY_PHONE_TYPE,
+        ContactsContract.Intents.Insert.TERTIARY_PHONE_TYPE
+    )
+    private val keysEmail = arrayOf<String?>(
+        ContactsContract.Intents.Insert.EMAIL,
+        ContactsContract.Intents.Insert.SECONDARY_EMAIL,
+        ContactsContract.Intents.Insert.TERTIARY_EMAIL
+    )
+    @Suppress("UNUSED")
+    private val keysTypeEmail = arrayOf(
+        ContactsContract.Intents.Insert.EMAIL_TYPE,
+        ContactsContract.Intents.Insert.SECONDARY_EMAIL_TYPE,
+        ContactsContract.Intents.Insert.TERTIARY_EMAIL_TYPE
+    )
 
     init {
         encoded = encodeContents(data, bundle, type)
@@ -110,11 +152,11 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                     newContents.append("\n")
                     newDisplayContents.append('\n').append(address)
                 }
-                val uniquePhones: MutableCollection<String> = HashSet(QRGContents.PHONE_KEYS.size)
+                val uniquePhones: MutableCollection<String> = HashSet(keysPhone.size)
                 run {
                     var x = 0
-                    while (x < QRGContents.PHONE_KEYS.size) {
-                        val phone = trim(bundle.getString(QRGContents.PHONE_KEYS[x]))
+                    while (x < keysPhone.size) {
+                        val phone = trim(bundle.getString(keysPhone[x]))
                         if (phone != null) {
                             uniquePhones.add(phone)
                         }
@@ -131,10 +173,10 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                             @Suppress("DEPRECATION") PhoneNumberUtils.formatNumber(phone)
                     )
                 }
-                val uniqueEmails: MutableCollection<String> = HashSet(QRGContents.EMAIL_KEYS.size)
+                val uniqueEmails: MutableCollection<String> = HashSet(keysEmail.size)
                 var x = 0
-                while (x < QRGContents.EMAIL_KEYS.size) {
-                    val email = trim(bundle.getString(QRGContents.EMAIL_KEYS[x]))
+                while (x < keysEmail.size) {
+                    val email = trim(bundle.getString(keysEmail[x]))
                     if (email != null) {
                         uniqueEmails.add(email)
                     }

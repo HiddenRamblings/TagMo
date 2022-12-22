@@ -244,7 +244,7 @@ class QRCodeScanner : AppCompatActivity() {
 
     private fun clearPreviews(barcode : Boolean) {
         amiiboPreview.setOnClickListener(null)
-        amiiboPreview.setImageResource(0)
+        GlideApp.with(amiiboPreview).clear(amiiboPreview)
         if (barcode) barcodePreview.setImageResource(0)
     }
 

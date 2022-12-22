@@ -377,7 +377,7 @@ class FoomiiboAdapter(
                 false
             if (null != imageAmiibo) {
                 GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
-                if (null != amiiboImageUrl) {
+                if (amiiboImageUrl.isNotEmpty()) {
                     GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
                 }
             }
@@ -385,15 +385,15 @@ class FoomiiboAdapter(
 
         private fun setFoomiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {
             if (hasTagInfo) {
-                textView!!.visibility = View.GONE
+                textView?.visibility = View.GONE
             } else {
-                textView!!.visibility = View.VISIBLE
-                if (text!!.isEmpty()) {
-                    textView.setText(R.string.unknown)
-                    textView.isEnabled = false
+                textView?.visibility = View.VISIBLE
+                if (!text.isNullOrEmpty()) {
+                    textView?.text = text
+                    textView?.isEnabled = true
                 } else {
-                    textView.text = text
-                    textView.isEnabled = true
+                    textView?.setText(R.string.unknown)
+                    textView?.isEnabled = false
                 }
             }
         }

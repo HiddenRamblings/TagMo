@@ -391,69 +391,73 @@ class BrowserAdapter(
                     txtGameSeries,
                     boldSpannable.indexOf(gameSeries, query), hasTagInfo
                 )
-                if (null != item?.docUri) {
-                    val relativeDocument = Storage.getRelativeDocument(item.docUri!!.uri)
-                    val expanded = amiiboPath.contains(relativeDocument)
-                    itemView.findViewById<View>(R.id.menu_options).visibility =
-                        if (expanded) View.VISIBLE else View.GONE
-                    itemView.findViewById<View>(R.id.txtUsage).visibility =
-                        if (expanded) View.VISIBLE else View.GONE
-                    if (expanded) listener!!.onAmiiboRebind(itemView, amiiboFile)
-                    itemView.isEnabled = true
-                    txtPath!!.text = boldSpannable.indexOf(relativeDocument, query)
-                    val a = TypedValue()
-                    txtPath.context.theme.resolveAttribute(
-                        android.R.attr.textColor, a, true
-                    )
-                    if (isNewer(Build.VERSION_CODES.Q) && a.isColorType) {
-                        txtPath.setTextColor(a.data)
-                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
-                        && a.type <= TypedValue.TYPE_LAST_COLOR_INT
-                    ) {
-                        txtPath.setTextColor(a.data)
-                    }
-                    setIsHighlighted(relativeDocument.startsWith("/Foomiibo/"))
-                } else if (null != item?.filePath) {
-                    val expanded = amiiboPath.contains(item.filePath!!.absolutePath)
-                    itemView.findViewById<View>(R.id.menu_options).visibility =
-                        if (expanded) View.VISIBLE else View.GONE
-                    itemView.findViewById<View>(R.id.txtUsage).visibility =
-                        if (expanded) View.VISIBLE else View.GONE
-                    if (expanded) listener!!.onAmiiboRebind(itemView, amiiboFile)
-                    var relativeFile = Storage.getRelativePath(
-                        item.filePath,
-                        mPrefs.preferEmulated()
-                    )
-                    if (null != mPrefs.browserRootFolder()) {
-                        relativeFile = relativeFile.replace(
-                            mPrefs.browserRootFolder()!!, ""
+                if (null != txtPath) {
+                    if (null != item?.docUri) {
+                        val relativeDocument = Storage.getRelativeDocument(item.docUri!!.uri)
+                        val expanded = amiiboPath.contains(relativeDocument)
+                        itemView.findViewById<View>(R.id.menu_options).visibility =
+                            if (expanded) View.VISIBLE else View.GONE
+                        itemView.findViewById<View>(R.id.txtUsage).visibility =
+                            if (expanded) View.VISIBLE else View.GONE
+                        if (expanded) listener!!.onAmiiboRebind(itemView, amiiboFile)
+                        itemView.isEnabled = true
+                        txtPath.text = boldSpannable.indexOf(relativeDocument, query)
+                        val a = TypedValue()
+                        txtPath.context.theme.resolveAttribute(
+                            android.R.attr.textColor, a, true
+                        )
+                        if (isNewer(Build.VERSION_CODES.Q) && a.isColorType) {
+                            txtPath.setTextColor(a.data)
+                        } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT
+                        ) {
+                            txtPath.setTextColor(a.data)
+                        }
+                        setIsHighlighted(relativeDocument.startsWith("/Foomiibo/"))
+                    } else if (null != item?.filePath) {
+                        val expanded = amiiboPath.contains(item.filePath!!.absolutePath)
+                        itemView.findViewById<View>(R.id.menu_options).visibility =
+                            if (expanded) View.VISIBLE else View.GONE
+                        itemView.findViewById<View>(R.id.txtUsage).visibility =
+                            if (expanded) View.VISIBLE else View.GONE
+                        if (expanded) listener!!.onAmiiboRebind(itemView, amiiboFile)
+                        var relativeFile = Storage.getRelativePath(
+                            item.filePath,
+                            mPrefs.preferEmulated()
+                        )
+                        if (null != mPrefs.browserRootFolder()) {
+                            relativeFile = relativeFile.replace(
+                                mPrefs.browserRootFolder()!!, ""
+                            )
+                        }
+                        itemView.isEnabled = true
+                        txtPath.text = boldSpannable.indexOf(relativeFile, query)
+                        val a = TypedValue()
+                        txtPath.context.theme.resolveAttribute(
+                            android.R.attr.textColor, a, true
+                        )
+                        if (isNewer(Build.VERSION_CODES.Q) && a.isColorType) {
+                            txtPath.setTextColor(a.data)
+                        } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT
+                        ) {
+                            txtPath.setTextColor(a.data)
+                        }
+                        setIsHighlighted(relativeFile.startsWith("/Foomiibo/"))
+                    } else {
+                        itemView.isEnabled = false
+                        txtPath.text = ""
+                        txtPath.setTextColor(
+                            ContextCompat.getColor(txtPath.context, R.color.tag_text)
                         )
                     }
-                    itemView.isEnabled = true
-                    txtPath!!.text = boldSpannable.indexOf(relativeFile, query)
-                    val a = TypedValue()
-                    txtPath.context.theme.resolveAttribute(
-                        android.R.attr.textColor, a, true
-                    )
-                    if (isNewer(Build.VERSION_CODES.Q) && a.isColorType) {
-                        txtPath.setTextColor(a.data)
-                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
-                        && a.type <= TypedValue.TYPE_LAST_COLOR_INT
-                    ) {
-                        txtPath.setTextColor(a.data)
-                    }
-                    setIsHighlighted(relativeFile.startsWith("/Foomiibo/"))
-                } else {
-                    itemView.isEnabled = false
-                    txtPath!!.text = ""
-                    txtPath.setTextColor(ContextCompat.getColor(txtPath.context, R.color.tag_text))
+                    txtPath.visibility = View.VISIBLE
                 }
-                txtPath.visibility = View.VISIBLE
             }
             if (hasSpoofData(amiiboHexId) && null != txtTagId) txtTagId.isEnabled = false
             if (null != imageAmiibo) {
                 GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
-                if (null != amiiboImageUrl) {
+                if (!amiiboImageUrl.isNullOrEmpty()) {
                     GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
                 }
             }
@@ -461,15 +465,15 @@ class BrowserAdapter(
 
         fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {
             if (hasTagInfo) {
-                textView!!.visibility = View.GONE
+                textView?.visibility = View.GONE
             } else {
-                textView!!.visibility = View.VISIBLE
+                textView?.visibility = View.VISIBLE
                  if (!text.isNullOrEmpty()) {
-                    textView.text = text
-                    textView.isEnabled = true
+                    textView?.text = text
+                    textView?.isEnabled = true
                 } else {
-                    textView.setText(R.string.unknown)
-                    textView.isEnabled = false
+                    textView?.setText(R.string.unknown)
+                    textView?.isEnabled = false
                 }
             }
         }

@@ -741,17 +741,17 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 imageAmiibo.visibility = View.INVISIBLE
             } else if (null != imageAmiibo) {
                 GlideApp.with(imageAmiibo).clear(imageAmiibo)
-                if (null != amiiboImageUrl) {
+                if (!amiiboImageUrl.isNullOrEmpty()) {
                     GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(
                         if (amiiboView === amiiboCard) amiiboCardTarget else amiiboTileTarget
                     )
-                    imageAmiibo.setOnClickListener {
-                        val bundle = Bundle()
-                        bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, active!!.id)
-                        val intent = Intent(requireContext(), ImageActivity::class.java)
-                        intent.putExtras(bundle)
-                        startActivity(intent)
-                    }
+                }
+                imageAmiibo.setOnClickListener {
+                    val bundle = Bundle()
+                    bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, active!!.id)
+                    val intent = Intent(requireContext(), ImageActivity::class.java)
+                    intent.putExtras(bundle)
+                    startActivity(intent)
                 }
             }
         }

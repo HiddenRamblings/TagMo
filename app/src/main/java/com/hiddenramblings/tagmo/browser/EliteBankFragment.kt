@@ -804,20 +804,20 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             imageAmiibo.visibility = View.VISIBLE
         } else if (null != imageAmiibo) {
             GlideApp.with(imageAmiibo).clear(imageAmiibo)
-            if (null != amiiboImageUrl) {
+            if (!amiiboImageUrl.isNullOrEmpty()) {
                 GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(
                     if (amiiboView === amiiboCard) amiiboCardTarget else amiiboTileTarget
                 )
-                imageAmiibo.setOnClickListener {
-                    if (amiiboLongId == -1L) {
-                        return@setOnClickListener
-                    }
-                    val bundle = Bundle()
-                    bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboLongId)
-                    val intent = Intent(requireContext(), ImageActivity::class.java)
-                    intent.putExtras(bundle)
-                    startActivity(intent)
+            }
+            imageAmiibo.setOnClickListener {
+                if (amiiboLongId == -1L) {
+                    return@setOnClickListener
                 }
+                val bundle = Bundle()
+                bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboLongId)
+                val intent = Intent(requireContext(), ImageActivity::class.java)
+                intent.putExtras(bundle)
+                startActivity(intent)
             }
         }
     }

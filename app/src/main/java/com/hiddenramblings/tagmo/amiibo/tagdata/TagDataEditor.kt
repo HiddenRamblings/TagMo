@@ -339,7 +339,7 @@ class TagDataEditor : AppCompatActivity() {
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
         imageAmiibo.visibility = View.GONE
         GlideApp.with(imageAmiibo).clear(imageAmiibo)
-        if (null != amiiboImageUrl) {
+        if (!amiiboImageUrl.isNullOrEmpty()) {
             GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(imageTarget)
         }
     }

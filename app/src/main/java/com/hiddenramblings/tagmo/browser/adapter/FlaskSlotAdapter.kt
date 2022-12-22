@@ -109,13 +109,13 @@ class FlaskSlotAdapter(
         itemView: View, private val settings: BrowserSettings,
         val listener: OnAmiiboClickListener?
     ) : RecyclerView.ViewHolder(itemView) {
-        val txtError: TextView
-        val txtName: TextView
-        val txtTagId: TextView
-        val txtAmiiboSeries: TextView
-        val txtAmiiboType: TextView
-        val txtGameSeries: TextView
-        val txtPath: TextView
+        val txtError: TextView?
+        val txtName: TextView?
+        val txtTagId: TextView?
+        val txtAmiiboSeries: TextView?
+        val txtAmiiboType: TextView?
+        val txtGameSeries: TextView?
+        val txtPath: TextView?
         var imageAmiibo: AppCompatImageView? = null
         var amiibo: Amiibo? = null
         var target: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
@@ -158,12 +158,12 @@ class FlaskSlotAdapter(
             when (amiibo) {
                 null -> {
                     setAmiiboInfoText(txtName, TagMo.appContext.getString(R.string.empty_tag))
-                    txtError.visibility = View.GONE
-                    txtPath.visibility = View.GONE
-                    txtTagId.visibility = View.GONE
-                    txtAmiiboSeries.visibility = View.GONE
-                    txtAmiiboType.visibility = View.GONE
-                    txtGameSeries.visibility = View.GONE
+                    txtError?.visibility = View.GONE
+                    txtPath?.visibility = View.GONE
+                    txtTagId?.visibility = View.GONE
+                    txtAmiiboSeries?.visibility = View.GONE
+                    txtAmiiboType?.visibility = View.GONE
+                    txtGameSeries?.visibility = View.GONE
                     return
                 }
                 is FlaskTag -> {
@@ -175,32 +175,32 @@ class FlaskSlotAdapter(
                 }
             }
             if (settings.amiiboView != VIEW.IMAGE.value) {
-                txtError.visibility = View.GONE
-                txtPath.visibility = View.GONE
+                txtError?.visibility = View.GONE
+                txtPath?.visibility = View.GONE
                 if (amiibo is FlaskTag) {
-                    txtTagId.visibility = View.GONE
-                    txtAmiiboSeries.visibility = View.GONE
-                    txtAmiiboType.visibility = View.GONE
-                    txtGameSeries.visibility = View.GONE
+                    txtTagId?.visibility = View.GONE
+                    txtAmiiboSeries?.visibility = View.GONE
+                    txtAmiiboType?.visibility = View.GONE
+                    txtGameSeries?.visibility = View.GONE
                 } else {
                     amiiboHexId = Amiibo.idToHex(amiibo!!.id)
                     if (null != amiibo!!.amiiboSeries) amiiboSeries = amiibo!!.amiiboSeries!!.name
                     if (null != amiibo!!.amiiboType) amiiboType = amiibo!!.amiiboType!!.name
                     if (null != amiibo!!.gameSeries) gameSeries = amiibo!!.gameSeries!!.name
-                    txtTagId.visibility = View.VISIBLE
-                    txtAmiiboSeries.visibility = View.VISIBLE
-                    txtAmiiboType.visibility = View.VISIBLE
-                    txtGameSeries.visibility = View.VISIBLE
+                    txtTagId?.visibility = View.VISIBLE
+                    txtAmiiboSeries?.visibility = View.VISIBLE
+                    txtAmiiboType?.visibility = View.VISIBLE
+                    txtGameSeries?.visibility = View.VISIBLE
                     setAmiiboInfoText(txtTagId, amiiboHexId)
                     setAmiiboInfoText(txtAmiiboSeries, amiiboSeries)
                     setAmiiboInfoText(txtAmiiboType, amiiboType)
                     setAmiiboInfoText(txtGameSeries, gameSeries)
-                    if (hasSpoofData(amiiboHexId)) txtTagId.isEnabled = false
+                    if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
                 }
             }
             if (null != imageAmiibo) {
                 GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
-                if (null != amiiboImageUrl) {
+                if (!amiiboImageUrl.isNullOrEmpty()) {
                     GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
                 } else {
                     imageAmiibo!!.setImageResource(R.mipmap.ic_launcher_round)
@@ -209,14 +209,14 @@ class FlaskSlotAdapter(
             }
         }
 
-        fun setAmiiboInfoText(textView: TextView, text: CharSequence?) {
-            textView.visibility = View.VISIBLE
+        fun setAmiiboInfoText(textView: TextView?, text: CharSequence?) {
+            textView?.visibility = View.VISIBLE
              if (!text.isNullOrEmpty()) {
-                textView.text = text
-                textView.isEnabled = true
+                textView?.text = text
+                textView?.isEnabled = true
             } else {
-                textView.setText(R.string.unknown)
-                textView.isEnabled = false
+                textView?.setText(R.string.unknown)
+                textView?.isEnabled = false
             }
         }
     }

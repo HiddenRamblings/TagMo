@@ -2195,16 +2195,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (null != imageAmiibo) {
                 imageAmiibo!!.visibility = View.GONE
                 GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
-                if (null != amiiboImageUrl) {
+                if (!amiiboImageUrl.isNullOrEmpty()) {
                     GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(imageTarget)
-                    val amiiboTagId = amiiboId
-                    imageAmiibo!!.setOnClickListener {
-                        val bundle = Bundle()
-                        bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId)
-                        val intent = Intent(this@BrowserActivity, ImageActivity::class.java)
-                        intent.putExtras(bundle)
-                        startActivity(intent)
-                    }
+                }
+                val amiiboTagId = amiiboId
+                imageAmiibo!!.setOnClickListener {
+                    val bundle = Bundle()
+                    bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId)
+                    val intent = Intent(this@BrowserActivity, ImageActivity::class.java)
+                    intent.putExtras(bundle)
+                    startActivity(intent)
                 }
             }
         }

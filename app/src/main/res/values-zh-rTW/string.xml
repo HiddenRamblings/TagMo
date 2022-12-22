@@ -90,17 +90,20 @@
     <string name="mod_serial">序號</string>
     <string name="view_hex">檢視Hex編碼</string>
     <string name="hex_code">Hex編碼</string>
+    <string name="share_qr">分享QR Code</string>
     <string name="edit_props">編輯相關資訊</string>
     <string name="delete_binary">删除二進位檔案</string>
     <string name="ignore_tag_id">忽略此Tag ID #</string>
     <string name="random_serial">隨機序號</string>
     <string name="inject_game_data">寫入遊戲儲存數據</string>
+    <string name="format_app_data">格式化遊戲儲存數據</string>
     <string name="game_titles_view">檢視可支援的相關遊戲</string>
     <string name="game_titles_hide">隱藏可支援的相關遊戲</string>
 
     <string name="properties">相關資訊</string>
     <string name="mii" translatable="false">Mii</string>
     <string name="mii_name">Mii名稱</string>
+    <string name="mii_author">Mii作者</string>
     <string name="app">應用程式</string>
     <string name="app_id">App ID</string>
     <string name="app_data">App 數據</string>
@@ -175,11 +178,21 @@
     <string name="lock_amiibo">鎖住 N2 Elite</string>
     <string name="write_collection">寫入 Collection</string>
     <string name="erase_collection">抹除 Collection</string>
+    <string name="qr_code_scanner">QR Code 工具箱</string>
     <string name="lego_dimensions">樂高次元</string>
     <string name="connect_joy_con">Joy-Con 測試</string>
 
     <string name="storage_unavailable">無法存取手機的儲存空間！</string>
     <string name="allow">允許</string>
+    
+    <string name="camera">相機</string>
+    <string name="gallery">相簿</string>
+
+    <string name="qr_type">QR 類型</string>
+    <string name="qr_raw">QR 文字</string>
+    <string name="qr_bytes">QR 數據</string>
+    <string name="qr_mii">Mii 數據</string>
+    <string name="qr_amiibo">QR amiibo</string>
 
     <string name="settings">設定</string>
     <string name="guides">協助</string>

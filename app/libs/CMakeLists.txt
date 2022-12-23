@@ -3,3 +3,4 @@ project(tagmo)
 
 add_subdirectory(amiitool)
 add_subdirectory(libjoycon/android/jni)
+add_subdirectory(free-reflection)

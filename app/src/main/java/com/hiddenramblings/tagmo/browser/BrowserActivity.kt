@@ -446,14 +446,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         foomiiboOptions.findViewById<View>(R.id.clear_foomiibo_set).setOnClickListener {
             collapseBottomSheet()
             foomiiboHandler.postDelayed(
-                { fragmentBrowser!!.clearFoomiiboSet(statsHandler) },
+                { fragmentBrowser?.clearFoomiiboSet(statsHandler) },
                 TagMo.uiDelay.toLong()
             )
         }
         foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
             collapseBottomSheet()
             foomiiboHandler.postDelayed(
-                { fragmentBrowser!!.buildFoomiiboSet(statsHandler) },
+                { fragmentBrowser?.buildFoomiiboSet(statsHandler) },
                 TagMo.uiDelay.toLong()
             )
         }

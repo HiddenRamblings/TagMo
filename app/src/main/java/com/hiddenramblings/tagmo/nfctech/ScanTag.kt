@@ -104,11 +104,12 @@ class ScanTag {
             }
         } catch (e: Exception) {
             Debug.Warn(e)
-            var error = e.message
-            error = if (null != e.cause) """
-     $error
-     ${e.cause.toString()}
-     """.trimIndent() else error
+            var error: String? = when {
+                null != e.message && null != e.cause -> e.message + "\n" + e.cause.toString()
+                null != e.message -> e.message
+                null != e.cause -> e.cause.toString()
+                else -> null
+            }
             if (null != error) {
                 if (prefs.eliteEnabled()) {
                     val finalMifare = mifare

@@ -69,6 +69,7 @@ import com.hiddenramblings.tagmo.browser.Preferences
 import java.io.*
 import java.util.*
 
+@Suppress("UNUSED")
 object Debug {
     private val context: Context
         get() = TagMo.appContext

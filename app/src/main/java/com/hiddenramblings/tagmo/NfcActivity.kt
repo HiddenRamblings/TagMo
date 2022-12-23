@@ -150,7 +150,8 @@ class NfcActivity : AppCompatActivity() {
             NFCIntent.ACTION_SCAN_TAG,
             NFCIntent.ACTION_SET_BANK_COUNT,
             NFCIntent.ACTION_LOCK_AMIIBO,
-            NFCIntent.ACTION_UNLOCK_UNIT, -> {
+            NFCIntent.ACTION_UNLOCK_UNIT,
+            -> {
                 bankPicker.visibility = View.GONE
                 bankPicker.isEnabled = false
                 bankTextView.visibility = View.GONE
@@ -514,11 +515,12 @@ class NfcActivity : AppCompatActivity() {
             finish()
         } catch (e: Exception) {
             Debug.Warn(e)
-            var error = e.message
-            error = if (null != e.cause) """
-     $error
-     ${e.cause.toString()}
-     """.trimIndent() else error
+            var error: String? = when {
+                null != e.message && null != e.cause -> e.message + "\n" + e.cause.toString()
+                null != e.message -> e.message
+                null != e.cause -> e.cause.toString()
+                else -> null
+            }
             if (null != error) {
                 if (getString(R.string.error_tag_rewrite) == error) {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update)
@@ -701,7 +703,8 @@ class NfcActivity : AppCompatActivity() {
             NFCIntent.ACTION_ACTIVATE_BANK,
             NFCIntent.ACTION_SET_BANK_COUNT,
             NFCIntent.ACTION_LOCK_AMIIBO,
-            NFCIntent.ACTION_UNLOCK_UNIT, -> startNfcMonitor()
+            NFCIntent.ACTION_UNLOCK_UNIT,
+            -> startNfcMonitor()
         }
     }
 

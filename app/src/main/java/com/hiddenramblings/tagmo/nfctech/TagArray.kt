@@ -121,8 +121,13 @@ object TagArray {
 
     @JvmStatic
     fun hexToByteArray(s: String): ByteArray {
-        return ByteArray(s.length / 2) {
-            Integer.parseInt(s, it * 2, (it + 1) * 2, 16).toByte()
+        return try {
+            ByteArray(s.length / 2) {
+                Integer.parseInt(s, it * 2, (it + 1) * 2, 16).toByte()
+            }
+        } catch (e: NumberFormatException) {
+            val byteIterator = s.chunkedSequence(2).map { it.toInt(16).toByte() }.iterator()
+            ByteArray(s.length / 2) { byteIterator.next() }
         }
     }
 
